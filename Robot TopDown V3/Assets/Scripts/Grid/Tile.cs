@@ -34,11 +34,4 @@ public class Tile : MonoBehaviour
 	{
 		m_ui.SetPosition(_x, _y);
 	}
-
-
-	#region Pahtfinding
-
-
-
-	#endregion
 }

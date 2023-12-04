@@ -12,10 +12,10 @@ public class InputManager : MonoBehaviour
 
 		if (Physics.Raycast(ray, out RaycastHit hitInfo, GameConfig.current.game.input.interactionRayCastLength, GameConfig.current.game.input.interactionRayCastLayer))
 		{
-			/*if (hitInfo.transform.TryGetComponent(out IInteractable interractable))
+			if (hitInfo.transform.TryGetComponent(out Tile interractable))
 			{
-				interractable.Interact();
-			}*/
+				interractable.
+			}
 		}
 	}
 }
