@@ -2,9 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Sirenix.OdinInspector;
+using System;
 
 public class GridManager : MonoBehaviour
 {
+	public Action<Tile> onTileSelected;
+	public Action<Tile> onTileHovered;
+
 	private Tile[] m_tiles;
 	public Tile[] Tiles => m_tiles;
 
@@ -13,9 +17,14 @@ public class GridManager : MonoBehaviour
 	private int m_width;
 	public int Width => m_width;
 
+	private Tile m_selectedTile;
+
+
 	public void Awake ()
 	{
 		GenerateGrid(10, 10);
+		onTileSelected += OnTileSelected;
+		onTileHovered += OnTileHovered;
 	}
 
 	[Button("GenerateGrid")]
@@ -51,6 +60,38 @@ public class GridManager : MonoBehaviour
 				newTile.SetPosition(x, z);
 				newTile.coordinates = TileCoordinates.FromOffsetCoordinates(x, z);
 			}
+		}
+	}
+
+	private void OnTileSelected ( Tile _tile )
+	{
+		if(m_selectedTile == null)
+		{
+			m_selectedTile = _tile;
+
+			//display available cell in reach
+			m_selectedTile.UI.EnableOutline(Color.blue);
+		}
+		else if (m_selectedTile == _tile)
+		{
+			//deactivate reachable tile display
+
+		}
+		else
+		{
+			//move to
+			//FindDistancesTo(currentCell);
+		}
+	}
+
+	private void OnTileHovered( Tile _tile )
+	{
+		if (m_selectedTile == null)
+			return;
+
+		if(_tile != m_selectedTile)
+		{
+			m_selectedTile.coordinates.FindDistancesTo(_tile);
 		}
 	}
 }
@@ -162,6 +203,7 @@ public struct TileCoordinates
 	{
 		return GetTile().entity;
 	}
+
 
 	/*public void FindPath ( Tile _fromTile, Tile _toTile )
 	{

@@ -21,4 +21,20 @@ public class TileUIPlugin : MonoBehaviour
 	{
 		m_positionDisplay.text = _distance.ToString();
 	}
+
+	public void DisableOutline ()
+	{
+		m_outline.enabled = false;
+	}
+
+	public void EnableOutline ()
+	{
+		m_outline.enabled = true;
+	}
+
+	public void EnableOutline ( Color color )
+	{
+		m_outline.color = color;
+		m_outline.enabled = true;
+	}
 }

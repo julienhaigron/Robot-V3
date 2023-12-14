@@ -9,6 +9,7 @@ public class Tile : MonoBehaviour
 	public static float innerRadius = outerRadius * 0.866025404f;
 
 	[SerializeField] private TileUIPlugin m_ui;
+	public TileUIPlugin UI => m_ui;
 	public TileCoordinates coordinates;
 
 	public RobotEntity entity;

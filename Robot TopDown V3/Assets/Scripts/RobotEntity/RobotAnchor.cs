@@ -32,7 +32,7 @@ public class RobotAnchor : MonoBehaviour
 		public InitializationState initializationState;
 	}
 
-	private void Awake ()
+	private void Start ()
 	{
 		SpawnRobot();
 	}
