@@ -1,14 +1,19 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class InputManager : MonoBehaviour
 {
 
 	private Vector3 m_mousePosition;
 
-	private void OnMouseUp ()
+
+	public void OnInteract ( InputAction.CallbackContext context )
 	{
+		if (context.started == false)
+			return;
+
 		Ray ray = CameraManager.Instance.Camera.ScreenPointToRay(Input.mousePosition);
 
 		if (Physics.Raycast(ray, out RaycastHit hitInfo, GameConfig.current.game.input.interactionRayCastLength, GameConfig.current.game.input.interactionRayCastLayer))

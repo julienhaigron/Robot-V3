@@ -17,8 +17,9 @@ public class GridManager : MonoBehaviour
 	private int m_width;
 	public int Width => m_width;
 
+	private Coroutine m_searchCoroutine;
 	private Tile m_selectedTile;
-
+	private Tile m_hoveredTile;
 
 	public void Awake ()
 	{
@@ -27,6 +28,11 @@ public class GridManager : MonoBehaviour
 		onTileHovered += OnTileHovered;
 	}
 
+	/*public void LoadGrid(GridData _data )
+	{
+
+	}*/
+
 	[Button("GenerateGrid")]
 	public void GenerateGrid ( int _height, int _width )
 	{
@@ -34,38 +40,113 @@ public class GridManager : MonoBehaviour
 		m_height = _height;
 		m_width = _width;
 
-		if (m_tiles != null)
-		{
-			foreach (Tile tile in m_tiles)
-			{
-				if (tile != null)
-					DestroyImmediate(tile.gameObject);
-			}
-		}
+		for (int i = transform.childCount; i > 0; --i)
+			DestroyImmediate(transform.GetChild(0).gameObject);
 
 		for (int z = 0, i = 0; z < _height; z++)
 		{
 			for (int x = 0; x < _width; x++)
 			{
-				Tile newTile = Instantiate(GameAssets.current.game.baseTile);
-				m_tiles[i++] = newTile;
-
-				Vector3 position;
-				position.x = (x + z * 0.5f - z / 2) * (Tile.innerRadius * 2f);
-				position.y = 0f;
-				position.z = z * (Tile.outerRadius * 1.5f);
-
-				newTile.transform.SetParent(transform, false);
-				newTile.transform.localPosition = position;
-				newTile.SetPosition(x, z);
-				newTile.coordinates = TileCoordinates.FromOffsetCoordinates(x, z);
+				CreateTile(x, z ,i++);				
 			}
 		}
 	}
 
+	private void CreateTile(int _x, int _z, int _i )
+	{
+		Vector3 position;
+		position.x = (_x + _z * 0.5f - _z / 2) * (Tile.innerRadius * 2f);
+		position.y = 0f;
+		position.z = _z * (Tile.outerRadius * 1.5f);
+
+		Tile newTile = Instantiate(GameAssets.current.game.baseTile);
+		m_tiles[_i] = newTile;
+
+		newTile.transform.SetParent(transform, false);
+		newTile.transform.localPosition = position;
+		newTile.Init(_x, _z);
+		newTile.coordinates = TileCoordinates.FromOffsetCoordinates(_x, _z);
+
+		if (_x > 0)
+		{
+			newTile.SetNeighbor(HexDirection.W, m_tiles[_i - 1]);
+		}
+		if (_z > 0)
+		{
+			if ((_z & 1) == 0)
+			{
+				newTile.SetNeighbor(HexDirection.SE, m_tiles[_i - m_width]);
+				if (_x > 0)
+				{
+					newTile.SetNeighbor(HexDirection.SW, m_tiles[_i - m_width - 1]);
+				}
+			}
+			else
+			{
+				newTile.SetNeighbor(HexDirection.SW, m_tiles[_i - m_width]);
+				if (_x < m_width - 1)
+				{
+					newTile.SetNeighbor(HexDirection.SE, m_tiles[_i - m_width + 1]);
+				}
+			}
+		}
+	}
+
+	public void FindDistancesTo ( Tile _tile )
+	{
+		if (m_searchCoroutine != null)
+			StopCoroutine(m_searchCoroutine);
+
+		m_searchCoroutine = StartCoroutine(Search(_tile));
+	}
+
+	private IEnumerator Search ( Tile cell )
+	{
+		for (int i = 0; i < m_tiles.Length; i++)
+		{
+			m_tiles[i].Distance = int.MaxValue;
+		}
+
+		Queue<Tile> frontier = new Queue<Tile>();
+		cell.Distance = 0;
+		frontier.Enqueue(cell);
+
+		while (frontier.Count > 0)
+		{
+			Tile current = frontier.Dequeue();
+			for(int i = 0; i < 6; i++)
+			{
+				yield return new WaitForSeconds(1 / 60f);
+				Tile neighbor = current.GetNeighbor((HexDirection)i);
+				if (neighbor == null || neighbor.Distance != int.MaxValue)
+				{
+					continue;
+				}
+
+				//obstacle
+				if (neighbor.IsObstacle())
+				{
+					continue;
+				}
+
+				neighbor.Distance = current.Distance + 1;
+				frontier.Enqueue(neighbor);
+				
+			}
+		}
+	}
+
+	#region Callbacks
+
 	private void OnTileSelected ( Tile _tile )
 	{
-		if(m_selectedTile == null)
+		if(m_selectedTile != _tile)
+		{
+			m_selectedTile = _tile;
+			FindDistancesTo(m_selectedTile);
+		}
+
+		/*if (m_selectedTile == null)
 		{
 			m_selectedTile = _tile;
 
@@ -75,25 +156,30 @@ public class GridManager : MonoBehaviour
 		else if (m_selectedTile == _tile)
 		{
 			//deactivate reachable tile display
-
+			m_selectedTile.UI.EnableOutline(Color.black);
+			m_selectedTile = null;
 		}
 		else
 		{
 			//move to
 			//FindDistancesTo(currentCell);
-		}
+		}*/
 	}
 
-	private void OnTileHovered( Tile _tile )
+	private void OnTileHovered ( Tile _tile )
 	{
 		if (m_selectedTile == null)
 			return;
 
-		if(_tile != m_selectedTile)
+		if (_tile != m_selectedTile && _tile != m_hoveredTile)
 		{
-			m_selectedTile.coordinates.FindDistancesTo(_tile);
+			m_hoveredTile = _tile;
+			//FindDistancesTo(m_selectedTile);
 		}
 	}
+
+	#endregion
+
 }
 
 [System.Serializable]
@@ -160,15 +246,6 @@ public struct TileCoordinates
 		return X.ToString() + "\n" + Y.ToString() + "\n" + Z.ToString();
 	}
 
-
-	public void FindDistancesTo ( Tile _tile )
-	{
-		for (int i = 0; i < GameManager.Instance.Grid.Tiles.Length; i++)
-		{
-			GameManager.Instance.Grid.Tiles[i].Distance = _tile.coordinates.DistanceTo(GameManager.Instance.Grid.Tiles[i].coordinates);
-		}
-	}
-
 	public static TileCoordinates FromPosition ( Vector3 position )
 	{
 		float x = position.x / (Tile.innerRadius * 2f);
@@ -201,26 +278,28 @@ public struct TileCoordinates
 
 	public RobotEntity IsOccupied ()
 	{
-		return GetTile().entity;
+		return GetTile().Entity;
 	}
 
+}
 
-	/*public void FindPath ( Tile _fromTile, Tile _toTile )
+public enum HexDirection
+{
+	NE, E, SE, SW, W, NW
+}
+
+public enum TileGroundType
+{
+	Empty,
+	Wall,
+	Door
+}
+
+public static class HexDirectionExtensions
+{
+
+	public static HexDirection Opposite ( this HexDirection direction )
 	{
-		StopAllCoroutines();
-		StartCoroutine(Search(_fromTile, _toTile));
+		return (int)direction < 3 ? (direction + 3) : (direction - 3);
 	}
-
-	IEnumerator Search ( Tile _fromTile, Tile _toTile )
-	{
-		for (int i = 0; i < m_tiles.Length; i++)
-		{
-			m_tiles[i].Distance = int.MaxValue;
-		}
-
-		WaitForSeconds delay = new WaitForSeconds(1 / 60f);
-		List<Tile> frontier = new List<Tile>();
-		_fromTile.Distance = 0;
-		frontier.Add(_fromTile);
-	}*/
 }

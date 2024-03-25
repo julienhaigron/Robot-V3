@@ -17,5 +17,8 @@ public class GameAssets : ScriptableObject
         public Tile baseTile;
         public RobotEntity baseRobotEntity;
 
+        public List<GridData> maps = new();
+
     }
+
 }

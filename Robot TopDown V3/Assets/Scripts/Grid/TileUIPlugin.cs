@@ -19,7 +19,7 @@ public class TileUIPlugin : MonoBehaviour
 
 	public void UpdateDistanceLabel (int _distance)
 	{
-		m_positionDisplay.text = _distance.ToString();
+		m_positionDisplay.text = _distance == int.MaxValue ? "" :  _distance.ToString();
 	}
 
 	public void DisableOutline ()

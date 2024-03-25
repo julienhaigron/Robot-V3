@@ -224,7 +224,8 @@ GameObject:
   - component: {fileID: 5029537534596105412}
   - component: {fileID: 1296925374456379223}
   - component: {fileID: 2079859369203581924}
-  m_Layer: 0
+  - component: {fileID: 8657804844169635427}
+  m_Layer: 7
   m_Name: Tile
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -261,6 +262,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_ui: {fileID: 2079859369203581924}
+  coordinates:
+    m_x: 0
+    m_z: 0
+  entity: {fileID: 0}
 --- !u!114 &2079859369203581924
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -276,6 +281,20 @@ MonoBehaviour:
   m_linkedTile: {fileID: 1296925374456379223}
   m_positionDisplay: {fileID: 4033572326057355261}
   m_outline: {fileID: 6768519738426498548}
+--- !u!64 &8657804844169635427
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1314963655998589182}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 1
+  m_CookingOptions: 30
+  m_Mesh: {fileID: -4575734979276873811, guid: ee6a8d9f371bc1e408c135969a7ce652, type: 3}
 --- !u!1 &2691580636154038815
 GameObject:
   m_ObjectHideFlags: 0
@@ -435,14 +454,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7126622203393269214}
-  m_LocalRotation: {x: -0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: -0.25, z: 0}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: -0.24, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5029537534596105412}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: -90, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &711164394942712461
 MeshFilter:
   m_ObjectHideFlags: 0
