@@ -7,6 +7,8 @@ public class GridEditorWindows : EditorWindow
 {
 	public GridData m_data;
 
+	private TileGroundType m_currentGroundBrushSelected;
+
 	[MenuItem("Tools/Grid Editor")]
 	public static void LoadWindows ()
 	{
@@ -30,6 +32,7 @@ public class GridEditorWindows : EditorWindow
 		GUILayoutOption group = GUILayout.Height(30f);
 
 		StartBox("Grid");
+		EditorGUILayout.BeginHorizontal(group);
 
 		m_data = (GridData)EditorGUILayout.ObjectField("Data: ", m_data, typeof(GridData), true);
 
@@ -37,6 +40,9 @@ public class GridEditorWindows : EditorWindow
 		{
 			SaveGrid();
 		}
+		EditorGUILayout.EndHorizontal();
+
+		m_currentGroundBrushSelected = (TileGroundType)EditorGUILayout.EnumPopup("Current ground brush: ", m_currentGroundBrushSelected);
 		EndBox();
 	}
 
