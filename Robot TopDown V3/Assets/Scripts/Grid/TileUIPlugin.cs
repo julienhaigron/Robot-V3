@@ -11,6 +11,7 @@ public class TileUIPlugin : MonoBehaviour
 
     [SerializeField] private TextMeshProUGUI m_positionDisplay;
 	[SerializeField] private Image m_outline;
+	[SerializeField] private MeshRenderer m_groundMeshRendered;
 
 	public void SetPosition(int _x, int _y )
 	{
@@ -20,6 +21,11 @@ public class TileUIPlugin : MonoBehaviour
 	public void UpdateDistanceLabel (int _distance)
 	{
 		m_positionDisplay.text = _distance == int.MaxValue ? "" :  _distance.ToString();
+	}
+
+	public void UpdateGroundMaterial ()
+	{
+		m_groundMeshRendered.material = GameAssets.current.material.tileGroundMaterials[m_linkedTile.GroundType];
 	}
 
 	public void DisableOutline ()

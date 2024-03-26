@@ -7,7 +7,6 @@ public class GridEditorWindows : EditorWindow
 {
 	public GridData m_data;
 
-	private TileGroundType m_currentGroundBrushSelected;
 
 	[MenuItem("Tools/Grid Editor")]
 	public static void LoadWindows ()
@@ -42,13 +41,17 @@ public class GridEditorWindows : EditorWindow
 		}
 		EditorGUILayout.EndHorizontal();
 
-		m_currentGroundBrushSelected = (TileGroundType)EditorGUILayout.EnumPopup("Current ground brush: ", m_currentGroundBrushSelected);
+		GridManager.Instance.isGroundBrushSelected = EditorGUILayout.Toggle("IsGroundBrushSelected: ", GridManager.Instance.isGroundBrushSelected, group);
+
+		if(GridManager.Instance.isGroundBrushSelected)
+			GridManager.Instance.currentGroundBrushSelected = (TileGroundType)EditorGUILayout.EnumPopup("Current ground brush: ", GridManager.Instance.currentGroundBrushSelected);
+
 		EndBox();
 	}
 
 	public void SaveGrid ()
 	{
-		GridManager grid = GameManager.Instance.Grid;
+		GridManager grid = GridManager.Instance;
 		m_data.height = grid.Height;
 		m_data.width = grid.Width;
 		m_data.tiles = new GridData.TileData[grid.Tiles.Length];

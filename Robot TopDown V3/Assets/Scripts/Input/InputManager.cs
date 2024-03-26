@@ -20,7 +20,7 @@ public class InputManager : MonoBehaviour
 		{
 			if (hitInfo.transform.TryGetComponent(out Tile tile))
 			{
-				GameManager.Instance.Grid.onTileSelected?.Invoke(tile);
+				GridManager.Instance.onTileSelected?.Invoke(tile);
 			}
 		}
 	}
@@ -37,7 +37,7 @@ public class InputManager : MonoBehaviour
 		{
 			if (hitInfo.transform.TryGetComponent(out Tile tile))
 			{
-				GameManager.Instance.Grid.onTileHovered?.Invoke(tile);
+				GridManager.Instance.onTileHovered?.Invoke(tile);
 			}
 		}
 	}

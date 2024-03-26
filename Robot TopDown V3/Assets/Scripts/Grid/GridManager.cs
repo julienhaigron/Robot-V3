@@ -4,7 +4,7 @@ using UnityEngine;
 using Sirenix.OdinInspector;
 using System;
 
-public class GridManager : MonoBehaviour
+public class GridManager : Singleton<GridManager>
 {
 	public Action<Tile> onTileSelected;
 	public Action<Tile> onTileHovered;
@@ -21,17 +21,34 @@ public class GridManager : MonoBehaviour
 	private Tile m_selectedTile;
 	private Tile m_hoveredTile;
 
-	public void Awake ()
+	#region Editor
+#if UNITY_EDITOR
+
+	public bool isGroundBrushSelected = false;
+	public TileGroundType currentGroundBrushSelected;
+
+
+#endif
+	#endregion
+
+	public override void Awake ()
 	{
+		base.Awake();
 		GenerateGrid(10, 10);
 		onTileSelected += OnTileSelected;
 		onTileHovered += OnTileHovered;
 	}
 
-	/*public void LoadGrid(GridData _data )
+	[Button("LoadGrid")]
+	public void LoadGrid ( GridData _data )
 	{
+		GenerateGrid(_data.height, _data.width);
 
-	}*/
+		for(int i = 0; i < m_tiles.Length; i++)
+		{
+			m_tiles[i].SetGroundType(_data.tiles[i].groundType);
+		}
+	}
 
 	[Button("GenerateGrid")]
 	public void GenerateGrid ( int _height, int _width )
@@ -47,12 +64,12 @@ public class GridManager : MonoBehaviour
 		{
 			for (int x = 0; x < _width; x++)
 			{
-				CreateTile(x, z ,i++);				
+				CreateTile(x, z, i++);
 			}
 		}
 	}
 
-	private void CreateTile(int _x, int _z, int _i )
+	private void CreateTile ( int _x, int _z, int _i )
 	{
 		Vector3 position;
 		position.x = (_x + _z * 0.5f - _z / 2) * (Tile.innerRadius * 2f);
@@ -114,7 +131,7 @@ public class GridManager : MonoBehaviour
 		while (frontier.Count > 0)
 		{
 			Tile current = frontier.Dequeue();
-			for(int i = 0; i < 6; i++)
+			for (int i = 0; i < 6; i++)
 			{
 				yield return new WaitForSeconds(1 / 60f);
 				Tile neighbor = current.GetNeighbor((HexDirection)i);
@@ -131,7 +148,7 @@ public class GridManager : MonoBehaviour
 
 				neighbor.Distance = current.Distance + 1;
 				frontier.Enqueue(neighbor);
-				
+
 			}
 		}
 	}
@@ -140,7 +157,17 @@ public class GridManager : MonoBehaviour
 
 	private void OnTileSelected ( Tile _tile )
 	{
-		if(m_selectedTile != _tile)
+
+#if UNITY_EDITOR
+		if (isGroundBrushSelected)
+		{
+			_tile.SetGroundType(currentGroundBrushSelected);
+			return;
+		}
+
+#endif
+
+		if (m_selectedTile != _tile)
 		{
 			m_selectedTile = _tile;
 			FindDistancesTo(m_selectedTile);
@@ -224,7 +251,7 @@ public struct TileCoordinates
 
 	public Tile GetTile ()
 	{
-		return GameManager.Instance.Grid.Tiles[Z * GameManager.Instance.Grid.Width + X];
+		return GridManager.Instance.Tiles[Z * GridManager.Instance.Width + X];
 	}
 
 	public int DistanceTo ( TileCoordinates other )

@@ -54,6 +54,12 @@ public class Tile : MonoBehaviour
 		m_groundType = _groundType;
 	}
 
+	public void SetGroundType (TileGroundType _groundType)
+	{
+		m_groundType = _groundType;
+		m_ui.UpdateGroundMaterial();
+	}
+
 	public Tile GetNeighbor ( HexDirection _direction )
 	{
 		return m_neighbors[(int)_direction];

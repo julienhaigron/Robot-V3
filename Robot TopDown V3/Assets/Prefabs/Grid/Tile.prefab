@@ -265,7 +265,7 @@ MonoBehaviour:
   coordinates:
     m_x: 0
     m_z: 0
-  entity: {fileID: 0}
+  m_neighbors: []
 --- !u!114 &2079859369203581924
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -281,6 +281,7 @@ MonoBehaviour:
   m_linkedTile: {fileID: 1296925374456379223}
   m_positionDisplay: {fileID: 4033572326057355261}
   m_outline: {fileID: 6768519738426498548}
+  m_groundMeshRendered: {fileID: 6469387334212366252}
 --- !u!64 &8657804844169635427
 MeshCollider:
   m_ObjectHideFlags: 0

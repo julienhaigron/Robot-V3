@@ -15,3 +15,12 @@ MonoBehaviour:
   game:
     baseTile: {fileID: 1296925374456379223, guid: de323a5a1d0a9594f928198e7ec5f84c, type: 3}
     baseRobotEntity: {fileID: 4737523583837535854, guid: facf97aac763a09489a27b119520aaff, type: 3}
+    maps:
+    - {fileID: 11400000, guid: 6f08d292abbf2bc4d8b8635617613b35, type: 2}
+  material:
+    tileGroundMaterials:
+      keys: 000000000100000002000000
+      values:
+      - {fileID: 2100000, guid: 1a73847705538ca408ca82d46b2a6c03, type: 2}
+      - {fileID: 2100000, guid: 0b6a1d286fb392946b3aff8e369309ae, type: 2}
+      - {fileID: 2100000, guid: a2df0a1e7e61b8347bb61d432ed08714, type: 2}

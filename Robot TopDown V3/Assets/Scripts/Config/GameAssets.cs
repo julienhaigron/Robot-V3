@@ -10,6 +10,7 @@ public class GameAssets : ScriptableObject
 
 
     public Game game;
+    public Material material;
 
     [System.Serializable]
     public class Game
@@ -20,5 +21,12 @@ public class GameAssets : ScriptableObject
         public List<GridData> maps = new();
 
     }
+
+    [System.Serializable]
+    public class Material
+	{
+        [Title("Tile")]
+        public SerializableDictionary<TileGroundType, UnityEngine.Material> tileGroundMaterials = new();
+	}
 
 }
