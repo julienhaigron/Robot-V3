@@ -178,6 +178,18 @@ PrefabInstance:
       propertyPath: m_Name
       value: GameManager
       objectReference: {fileID: 0}
+    - target: {fileID: 9152403339332330190, guid: 72a8cdbae79f9a74f90a70843427bc89, type: 3}
+      propertyPath: m_map
+      value: 
+      objectReference: {fileID: 11400000, guid: 6f08d292abbf2bc4d8b8635617613b35, type: 2}
+    - target: {fileID: 9152403339332330190, guid: 72a8cdbae79f9a74f90a70843427bc89, type: 3}
+      propertyPath: m_robots.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9152403339332330190, guid: 72a8cdbae79f9a74f90a70843427bc89, type: 3}
+      propertyPath: m_robots.Array.data[0]
+      value: 
+      objectReference: {fileID: 11400000, guid: 11de9230c09867747908272f3310089f, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 72a8cdbae79f9a74f90a70843427bc89, type: 3}
 --- !u!1 &705507993

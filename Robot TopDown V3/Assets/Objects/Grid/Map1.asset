@@ -26,41 +26,11 @@ MonoBehaviour:
   - groundType: 0
   - groundType: 0
   - groundType: 0
-  - groundType: 0
-  - groundType: 0
-  - groundType: 0
-  - groundType: 0
-  - groundType: 0
-  - groundType: 0
-  - groundType: 0
-  - groundType: 0
-  - groundType: 0
-  - groundType: 0
-  - groundType: 0
-  - groundType: 0
-  - groundType: 0
-  - groundType: 0
-  - groundType: 0
-  - groundType: 0
-  - groundType: 0
-  - groundType: 0
-  - groundType: 0
-  - groundType: 0
-  - groundType: 0
+  - groundType: 1
   - groundType: 0
   - groundType: 1
   - groundType: 1
   - groundType: 1
-  - groundType: 0
-  - groundType: 0
-  - groundType: 0
-  - groundType: 0
-  - groundType: 0
-  - groundType: 0
-  - groundType: 1
-  - groundType: 0
-  - groundType: 0
-  - groundType: 0
   - groundType: 0
   - groundType: 1
   - groundType: 0
@@ -72,18 +42,8 @@ MonoBehaviour:
   - groundType: 0
   - groundType: 0
   - groundType: 0
+  - groundType: 0
   - groundType: 1
-  - groundType: 0
-  - groundType: 0
-  - groundType: 0
-  - groundType: 0
-  - groundType: 0
-  - groundType: 0
-  - groundType: 0
-  - groundType: 0
-  - groundType: 0
-  - groundType: 0
-  - groundType: 0
   - groundType: 0
   - groundType: 0
   - groundType: 0
@@ -99,10 +59,50 @@ MonoBehaviour:
   - groundType: 0
   - groundType: 0
   - groundType: 0
+  - groundType: 3
   - groundType: 0
   - groundType: 0
   - groundType: 0
   - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 1
+  - groundType: 1
+  - groundType: 1
+  - groundType: 1
+  - groundType: 1
+  - groundType: 1
+  - groundType: 1
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 4
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 4
   - groundType: 0
   - groundType: 0
   - groundType: 0

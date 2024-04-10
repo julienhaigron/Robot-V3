@@ -28,9 +28,10 @@ public class TileUIPlugin : MonoBehaviour
 		m_groundMeshRendered.material = GameAssets.current.material.tileGroundMaterials[m_linkedTile.GroundType];
 	}
 
-	public void DisableOutline ()
+	public void ResetOutline ()
 	{
 		m_outline.enabled = false;
+		m_outline.color = Color.black;
 	}
 
 	public void EnableOutline ()

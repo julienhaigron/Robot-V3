@@ -7,8 +7,6 @@ public class RobotAnchor : MonoBehaviour
     private List<RobotEntity> m_robots = new();
     public List<RobotEntity> Robots => m_robots;
 
-	public RobotEntity SelectedRobot;
-
 	[SerializeField] private List<Spawn> m_spawnCoordinates = new();
 
 	[System.Serializable]
@@ -32,9 +30,18 @@ public class RobotAnchor : MonoBehaviour
 		public InitializationState initializationState;
 	}
 
-	private void Start ()
+	public void AddSpawn( TileCoordinates _coordinates )
 	{
-		SpawnRobot();
+		Spawn newSpawn = new Spawn(_coordinates);
+		m_spawnCoordinates.Add(newSpawn);
+	}
+
+	public void Init (List<RobotEntityData> _robots)
+	{
+		foreach(RobotEntityData robotData in _robots)
+		{
+			SpawnRobot(robotData);
+		}
 	}
 
 	private Spawn GetRandomAvailableSpawnPosition ()
@@ -49,7 +56,7 @@ public class RobotAnchor : MonoBehaviour
 		return new Spawn(new TileCoordinates(0, 0), Spawn.InitializationState.Failure);
 	}
 
-	private void SpawnRobot ()
+	private void SpawnRobot ( RobotEntityData _robotData )
 	{
 		RobotEntity robot = Instantiate(GameAssets.current.game.baseRobotEntity, transform);
 		m_robots.Add(robot);

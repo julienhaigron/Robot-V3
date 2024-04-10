@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Sirenix.OdinInspector;
 using System;
+using System.Linq;
 
 public class GridManager : Singleton<GridManager>
 {
@@ -17,16 +18,12 @@ public class GridManager : Singleton<GridManager>
 	private int m_width;
 	public int Width => m_width;
 
-	private Coroutine m_searchCoroutine;
-	private Tile m_selectedTile;
-	private Tile m_hoveredTile;
 
 	#region Editor
 #if UNITY_EDITOR
 
-	public bool isGroundBrushSelected = false;
-	public TileGroundType currentGroundBrushSelected;
-
+	[HideInInspector] public bool isGroundBrushSelected = false;
+	[HideInInspector] public TileGroundType currentGroundBrushSelected;
 
 #endif
 	#endregion
@@ -34,9 +31,7 @@ public class GridManager : Singleton<GridManager>
 	public override void Awake ()
 	{
 		base.Awake();
-		GenerateGrid(10, 10);
 		onTileSelected += OnTileSelected;
-		onTileHovered += OnTileHovered;
 	}
 
 	[Button("LoadGrid")]
@@ -46,7 +41,11 @@ public class GridManager : Singleton<GridManager>
 
 		for(int i = 0; i < m_tiles.Length; i++)
 		{
-			m_tiles[i].SetGroundType(_data.tiles[i].groundType);
+			TileGroundType groundType = _data.tiles[i].groundType;
+			m_tiles[i].SetGroundType(groundType);
+
+			if (groundType == TileGroundType.PlayerSpawn)
+				GameManager.Instance.RobotsAnchor.AddSpawn(m_tiles[i].coordinates);
 		}
 	}
 
@@ -109,33 +108,71 @@ public class GridManager : Singleton<GridManager>
 		}
 	}
 
-	public void FindDistancesTo ( Tile _tile )
+	public List<Tile> GetPath ( Tile _from, Tile _to )
 	{
-		if (m_searchCoroutine != null)
-			StopCoroutine(m_searchCoroutine);
+		BFS(_from, _to: _to);
 
-		m_searchCoroutine = StartCoroutine(Search(_tile));
+		if (_to.Distance == int.MaxValue)
+			return null;
+
+		List<Tile> path = new();
+		path.Add(_to);
+		Queue<Tile> search = new Queue<Tile>();
+		search.Enqueue(_to);
+
+		int currentDistance = _to.Distance;
+		while(search.Count > 0)
+		{
+			Tile current = search.Dequeue();
+			for (int i = 0; i < 6; i++)
+			{
+				Tile neighbor = current.GetNeighbor((HexDirection)i);
+				if (neighbor == null || neighbor.Distance >= currentDistance)
+				{
+					continue;
+				}
+
+				currentDistance = neighbor.Distance;
+				search.Enqueue(neighbor);
+				path.Add(neighbor);
+			}
+		}
+
+		return path;
 	}
 
-	private IEnumerator Search ( Tile cell )
+	public void BFS ( Tile cell , int _maxDistance = -1, Tile _to = null)
 	{
 		for (int i = 0; i < m_tiles.Length; i++)
 		{
 			m_tiles[i].Distance = int.MaxValue;
+			m_tiles[i].UI.ResetOutline();
 		}
 
 		Queue<Tile> frontier = new Queue<Tile>();
 		cell.Distance = 0;
 		frontier.Enqueue(cell);
+		bool isDestinationReached = false;
 
-		while (frontier.Count > 0)
+		while (frontier.Count > 0 && isDestinationReached == false)
 		{
 			Tile current = frontier.Dequeue();
 			for (int i = 0; i < 6; i++)
 			{
-				yield return new WaitForSeconds(1 / 60f);
+				//yield return new WaitForSeconds(1 / 60f);
 				Tile neighbor = current.GetNeighbor((HexDirection)i);
+
+				//destination reached
+				if (_to != null && neighbor == _to)
+					isDestinationReached = true;
+
 				if (neighbor == null || neighbor.Distance != int.MaxValue)
+				{
+					continue;
+				}
+
+				//max distance
+				if(_maxDistance != -1 && current.Distance + 1 > _maxDistance)
 				{
 					continue;
 				}
@@ -148,7 +185,6 @@ public class GridManager : Singleton<GridManager>
 
 				neighbor.Distance = current.Distance + 1;
 				frontier.Enqueue(neighbor);
-
 			}
 		}
 	}
@@ -167,42 +203,6 @@ public class GridManager : Singleton<GridManager>
 
 #endif
 
-		if (m_selectedTile != _tile)
-		{
-			m_selectedTile = _tile;
-			FindDistancesTo(m_selectedTile);
-		}
-
-		/*if (m_selectedTile == null)
-		{
-			m_selectedTile = _tile;
-
-			//display available cell in reach
-			m_selectedTile.UI.EnableOutline(Color.blue);
-		}
-		else if (m_selectedTile == _tile)
-		{
-			//deactivate reachable tile display
-			m_selectedTile.UI.EnableOutline(Color.black);
-			m_selectedTile = null;
-		}
-		else
-		{
-			//move to
-			//FindDistancesTo(currentCell);
-		}*/
-	}
-
-	private void OnTileHovered ( Tile _tile )
-	{
-		if (m_selectedTile == null)
-			return;
-
-		if (_tile != m_selectedTile && _tile != m_hoveredTile)
-		{
-			m_hoveredTile = _tile;
-			//FindDistancesTo(m_selectedTile);
-		}
 	}
 
 	#endregion
@@ -319,7 +319,9 @@ public enum TileGroundType
 {
 	Empty,
 	Wall,
-	Door
+	Door,
+	PlayerSpawn,
+	EnemySpawn
 }
 
 public static class HexDirectionExtensions
