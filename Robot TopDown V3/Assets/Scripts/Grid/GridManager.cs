@@ -7,9 +7,6 @@ using System.Linq;
 
 public class GridManager : Singleton<GridManager>
 {
-	public Action<Tile> onTileSelected;
-	public Action<Tile> onTileHovered;
-
 	private Tile[] m_tiles;
 	public Tile[] Tiles => m_tiles;
 
@@ -31,7 +28,12 @@ public class GridManager : Singleton<GridManager>
 	public override void Awake ()
 	{
 		base.Awake();
-		onTileSelected += OnTileSelected;
+		InputManager.onTileSelected += OnTileSelected;
+	}
+
+	private void OnDestroy ()
+	{
+		InputManager.onTileSelected -= OnTileSelected;
 	}
 
 	[Button("LoadGrid")]
@@ -141,6 +143,14 @@ public class GridManager : Singleton<GridManager>
 		return path;
 	}
 
+	public void ClearTileOutile ()
+	{
+		for (int i = 0; i < m_tiles.Length; i++)
+		{
+			m_tiles[i].UI.ResetOutline();
+		}
+	}
+
 	public void BFS ( Tile cell , int _maxDistance = -1, Tile _to = null)
 	{
 		for (int i = 0; i < m_tiles.Length; i++)
@@ -187,6 +197,28 @@ public class GridManager : Singleton<GridManager>
 				frontier.Enqueue(neighbor);
 			}
 		}
+	}
+
+	public float GetAngleFrom ( Vector2Int origin, Vector2Int destination )
+	{
+		/*int deltaX = origin.x - destination.x;
+		int deltaY = origin.y - destination.y;
+		return Mathf.Atan2(deltaY, deltaX) * 180f / Mathf.PI;*/
+		int x1 = origin.x + 1 - origin.x; //Vector 1 - x
+		int y1 = origin.y - origin.y; //Vector 1 - y
+
+		int x2 = destination.x - origin.x; //Vector 2 - x
+		int y2 = destination.y - origin.y; //Vector 2 - y
+
+		float angle = Mathf.Atan2(y1, x1) - Mathf.Atan2(y2, x2);
+		angle = angle * 360 / (2 * Mathf.PI);
+
+		if (angle < 0)
+		{
+			angle += 360;
+		}
+
+		return angle;
 	}
 
 	#region Callbacks
@@ -239,6 +271,12 @@ public struct TileCoordinates
 	}
 
 	public TileCoordinates ( int x, int z )
+	{
+		m_x = x;
+		m_z = z;
+	}
+
+	public void SetCoordinate(int x, int z )
 	{
 		m_x = x;
 		m_z = z;

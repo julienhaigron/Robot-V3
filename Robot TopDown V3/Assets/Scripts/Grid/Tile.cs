@@ -54,6 +54,11 @@ public class Tile : MonoBehaviour
 		m_groundType = _groundType;
 	}
 
+	public void SetEntity(RobotEntity _entity )
+	{
+		m_entity = _entity;
+	}
+
 	public void SetGroundType (TileGroundType _groundType)
 	{
 		m_groundType = _groundType;

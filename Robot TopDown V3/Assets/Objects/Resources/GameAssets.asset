@@ -17,6 +17,12 @@ MonoBehaviour:
     baseRobotEntity: {fileID: 4737523583837535854, guid: facf97aac763a09489a27b119520aaff, type: 3}
     maps:
     - {fileID: 11400000, guid: 6f08d292abbf2bc4d8b8635617613b35, type: 2}
+    defaultWeapon: {fileID: 11400000, guid: dc7d2dbc3edd72d4f9025dff20a7cbaa, type: 2}
+    weapons:
+      keys:
+      - default
+      values:
+      - {fileID: 2993856260627974788, guid: c42db52ce80b83f4f9a7387a30cccf87, type: 3}
   material:
     tileGroundMaterials:
       keys: 0000000001000000020000000300000004000000

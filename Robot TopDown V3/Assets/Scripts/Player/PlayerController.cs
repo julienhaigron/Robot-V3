@@ -9,25 +9,39 @@ public class PlayerController : MonoBehaviour
 
 	private RobotEntity m_selectedEntity;
 
-	private void Awake ()
+	private void Start ()
 	{
-		GridManager.Instance.onTileSelected += OnTileSelected;
-		GridManager.Instance.onTileHovered += OnTileHovered;
+		InputManager.onTileSelected += OnTileSelected;
+		InputManager.onTileHovered += OnTileHovered;
 	}
 
 	private void OnDestroy ()
 	{
-		GridManager.Instance.onTileSelected-= OnTileSelected;
-		GridManager.Instance.onTileHovered -= OnTileHovered;
+		InputManager.onTileSelected-= OnTileSelected;
+		InputManager.onTileHovered -= OnTileHovered;
 	}
 
 	private void OnTileSelected ( Tile _tile )
 	{
-		if (m_selectedTile != _tile && _tile.Entity != null)
+		if(m_selectedTile != null && m_selectedTile != _tile)
+		{
+			m_selectedEntity.Displacement.MoveToTile(_tile);
+			m_selectedEntity = null;
+			m_selectedTile = null;
+			GridManager.Instance.ClearTileOutile();
+		}
+		else if (m_selectedTile != _tile && _tile.Entity != null && _tile.Entity == m_selectedEntity)
+		{
+			m_selectedEntity.Deselect();
+			m_selectedEntity = null;
+			m_selectedTile = null;
+			GridManager.Instance.ClearTileOutile();
+		}
+		else if (m_selectedTile != _tile && _tile.Entity != null)
 		{
 			m_selectedTile = _tile;
 			m_selectedEntity = _tile.Entity;
-
+			m_selectedEntity.Select();
 			GridManager.Instance.BFS(_tile);
 		}
 	}
@@ -39,6 +53,9 @@ public class PlayerController : MonoBehaviour
 
 		if (_tile != m_hoveredTile)
 		{
+			string weaponID = "default";
+			m_selectedEntity.Equipment.AimAtTile(weaponID, _tile);
+
 			m_hoveredTile = _tile;
 			List<Tile> path = GridManager.Instance.GetPath(m_selectedTile, m_hoveredTile);
 

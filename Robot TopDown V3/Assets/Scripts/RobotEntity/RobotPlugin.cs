@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class RobotPlugin : MonoBehaviour
 {
-    [SerializeField] private RobotEntity m_linkedEntity;
+    [SerializeField] protected RobotEntity m_linkedEntity;
 
 	private void Reset ()
 	{

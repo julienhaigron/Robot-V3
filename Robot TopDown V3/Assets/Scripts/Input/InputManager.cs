@@ -2,9 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using System;
 
 public class InputManager : MonoBehaviour
 {
+	public static Action<Tile> onTileSelected;
+	public static Action<Tile> onTileHovered;
 
 	private Vector3 m_mousePosition;
 
@@ -20,7 +23,7 @@ public class InputManager : MonoBehaviour
 		{
 			if (hitInfo.transform.TryGetComponent(out Tile tile))
 			{
-				GridManager.Instance.onTileSelected?.Invoke(tile);
+				onTileSelected?.Invoke(tile);
 			}
 		}
 	}
@@ -37,7 +40,7 @@ public class InputManager : MonoBehaviour
 		{
 			if (hitInfo.transform.TryGetComponent(out Tile tile))
 			{
-				GridManager.Instance.onTileHovered?.Invoke(tile);
+				onTileHovered?.Invoke(tile);
 			}
 		}
 	}

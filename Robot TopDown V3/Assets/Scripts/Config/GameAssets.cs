@@ -20,6 +20,9 @@ public class GameAssets : ScriptableObject
 
         public List<GridData> maps = new();
 
+        public WeaponData defaultWeapon;
+        public SerializableDictionary<string, Weapon> weapons;
+
     }
 
     [System.Serializable]

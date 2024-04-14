@@ -174,7 +174,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c3c1800c74466494d86369113a96512f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SelectedRobot: {fileID: 0}
   m_spawnCoordinates:
   - coordinates:
       m_x: 0
@@ -194,6 +193,7 @@ GameObject:
   - component: {fileID: 4856106718111207569}
   - component: {fileID: 7788347158712041288}
   - component: {fileID: 4616643392036083610}
+  - component: {fileID: 7046302440515799230}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -231,8 +231,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c4043acb96fa9614785a34d9bb1430e9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_gridManager: {fileID: 9014214051813441976}
   m_robotAnchor: {fileID: 1618352944327094151}
+  m_map: {fileID: 0}
+  m_robots: []
 --- !u!114 &6329207692699311254
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -368,6 +369,18 @@ MonoBehaviour:
   m_DefaultActionMap: Player
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 4593530489708470118}
+--- !u!114 &7046302440515799230
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8375078075185135005}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8fb5f8303f4426146afd8c7ac6d779b1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &5962065622948263214
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -430,14 +443,3 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 8514683190801440059, guid: 74398ae095029cd4c93c8ed52c57a552, type: 3}
   m_PrefabInstance: {fileID: 5962065622948263214}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &9014214051813441976 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 3433265687194956950, guid: 74398ae095029cd4c93c8ed52c57a552, type: 3}
-  m_PrefabInstance: {fileID: 5962065622948263214}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7a9655869e9ab3a449b3e32e5141b424, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
