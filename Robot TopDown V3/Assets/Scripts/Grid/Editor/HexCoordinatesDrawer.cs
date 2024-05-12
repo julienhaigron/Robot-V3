@@ -12,7 +12,8 @@ public class HexCoordinatesDrawer : PropertyDrawer
 	{
 		TileCoordinates coordinates = new TileCoordinates(
 			property.FindPropertyRelative("m_x").intValue,
-			property.FindPropertyRelative("m_z").intValue
+			property.FindPropertyRelative("m_z").intValue,
+			property.FindPropertyRelative("m_id").intValue
 		);
 
 		position = EditorGUI.PrefixLabel(position, label);

@@ -21,7 +21,7 @@ public class InputManager : MonoBehaviour
 
 		if (Physics.Raycast(ray, out RaycastHit hitInfo, GameConfig.current.game.input.interactionRayCastLength, GameConfig.current.game.input.interactionRayCastLayer))
 		{
-			if (hitInfo.transform.TryGetComponent(out Tile tile))
+			if (hitInfo.transform.parent.TryGetComponent(out Tile tile))
 			{
 				onTileSelected?.Invoke(tile);
 			}
@@ -38,7 +38,7 @@ public class InputManager : MonoBehaviour
 
 		if (Physics.Raycast(ray, out RaycastHit hitInfo, GameConfig.current.game.input.interactionRayCastLength, GameConfig.current.game.input.interactionRayCastLayer))
 		{
-			if (hitInfo.transform.TryGetComponent(out Tile tile))
+			if (hitInfo.transform.parent.TryGetComponent(out Tile tile))
 			{
 				onTileHovered?.Invoke(tile);
 			}

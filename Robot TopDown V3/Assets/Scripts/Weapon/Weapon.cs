@@ -10,6 +10,8 @@ public class Weapon : MonoBehaviour
 
     [SerializeField] private GameObject m_activeCone;
     [SerializeField] private GameObject m_unactiveCone;
+
+    public float aimedRotation;
     
     public void Init (WeaponData _data)
 	{

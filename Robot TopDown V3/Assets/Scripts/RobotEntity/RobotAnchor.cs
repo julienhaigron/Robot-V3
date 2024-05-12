@@ -53,7 +53,7 @@ public class RobotAnchor : MonoBehaviour
 				return spawn;
 		}
 
-		return new Spawn(new TileCoordinates(0, 0), Spawn.InitializationState.Failure);
+		return new Spawn(new TileCoordinates(0, 0, 0), Spawn.InitializationState.Failure);
 	}
 
 	private void SpawnRobot ( RobotEntityData _robotData )

@@ -16,4 +16,4 @@ MonoBehaviour:
   accuracy: 0.5
   damage: 1
   range: 5
-  visionCone: 60
+  visionConeRange: 30

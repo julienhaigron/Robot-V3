@@ -53,8 +53,15 @@ public class PlayerController : MonoBehaviour
 
 		if (_tile != m_hoveredTile)
 		{
+			GridManager.Instance.ClearTileOutile();
 			string weaponID = "default";
 			m_selectedEntity.Equipment.AimAtTile(weaponID, _tile);
+			List<Tile> tilesInRange = m_selectedEntity.Equipment.GetTilesInRange(weaponID);
+
+			foreach(Tile tile in tilesInRange)
+			{
+				tile.UI.EnableOutline(Color.green);
+			}
 
 			m_hoveredTile = _tile;
 			List<Tile> path = GridManager.Instance.GetPath(m_selectedTile, m_hoveredTile);

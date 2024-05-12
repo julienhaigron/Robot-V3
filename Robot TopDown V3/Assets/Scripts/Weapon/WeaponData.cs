@@ -10,6 +10,6 @@ public class WeaponData : ScriptableObject
     public float accuracy;
     public float damage;
     public int range;
-    public int visionCone;
+    public int visionConeRange;
 
 }

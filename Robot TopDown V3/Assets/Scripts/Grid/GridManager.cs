@@ -83,7 +83,7 @@ public class GridManager : Singleton<GridManager>
 		newTile.transform.SetParent(transform, false);
 		newTile.transform.localPosition = position;
 		newTile.Init(_x, _z);
-		newTile.coordinates = TileCoordinates.FromOffsetCoordinates(_x, _z);
+		newTile.coordinates = TileCoordinates.FromOffsetCoordinates(_x, _z, _i);
 
 		if (_x > 0)
 		{
@@ -156,7 +156,7 @@ public class GridManager : Singleton<GridManager>
 		for (int i = 0; i < m_tiles.Length; i++)
 		{
 			m_tiles[i].Distance = int.MaxValue;
-			m_tiles[i].UI.ResetOutline();
+			//m_tiles[i].UI.ResetOutline();
 		}
 
 		Queue<Tile> frontier = new Queue<Tile>();
@@ -247,6 +247,7 @@ public struct TileCoordinates
 
 	[SerializeField] private int m_x;
 	[SerializeField] private int m_z;
+	[SerializeField] private int m_id;
 
 	public int X
 	{
@@ -270,35 +271,41 @@ public struct TileCoordinates
 		}
 	}
 
-	public TileCoordinates ( int x, int z )
+	public int ID => m_id;
+
+	public TileCoordinates ( int x, int z, int id )
 	{
 		m_x = x;
 		m_z = z;
+		m_id = id;
 	}
 
-	public void SetCoordinate(int x, int z )
+	public void SetCoordinate(int x, int z, int id )
 	{
 		m_x = x;
 		m_z = z;
+		m_id = id;
 	}
 
-	public static TileCoordinates FromOffsetCoordinates ( int x, int z )
+	public static TileCoordinates FromOffsetCoordinates ( int x, int z, int id )
 	{
-		return new TileCoordinates(x - z / 2, z);
+		return new TileCoordinates(x - z / 2, z, id);
 	}
 
 	public Tile GetTile ()
 	{
-		return GridManager.Instance.Tiles[Z * GridManager.Instance.Width + X];
+		Tile tile = GridManager.Instance.Tiles[ID];
+		Debug.Log("this :" + X + "," + Z + " getTile: " + tile.coordinates.X +"," + tile.coordinates.Z);
+		return tile;
 	}
 
-	public int DistanceTo ( TileCoordinates other )
+	/*public int DistanceTo ( TileCoordinates other )
 	{
 		return
 		((m_x < other.m_x ? other.m_x - m_x : m_x - other.m_x) +
 		(Y < other.Y ? other.Y - Y : Y - other.Y) +
 		(m_z < other.m_z ? other.m_z - m_z : m_z - other.m_z)) / 2;
-	}
+	}*/
 
 	public override string ToString ()
 	{
@@ -306,12 +313,12 @@ public struct TileCoordinates
 			X.ToString() + ", " + Y.ToString() + ", " + Z.ToString() + ")";
 	}
 
-	public string ToStringOnSeparateLines ()
+	/*public string ToStringOnSeparateLines ()
 	{
 		return X.ToString() + "\n" + Y.ToString() + "\n" + Z.ToString();
-	}
+	}*/
 
-	public static TileCoordinates FromPosition ( Vector3 position )
+	/*public static TileCoordinates FromPosition ( Vector3 position )
 	{
 		float x = position.x / (Tile.innerRadius * 2f);
 		float y = -x;
@@ -339,7 +346,7 @@ public struct TileCoordinates
 		}
 
 		return new TileCoordinates(iX, iZ);
-	}
+	}*/
 
 	public RobotEntity IsOccupied ()
 	{

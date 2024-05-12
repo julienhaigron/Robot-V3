@@ -45,6 +45,7 @@ public class RobotEquipmentPlugin : RobotPlugin
 	{
 		Weapon newWeapon = Instantiate(GameAssets.current.game.weapons[_data.saveKey], m_weaponParent);
 		m_weapons.Add(_data.saveKey, newWeapon);
+		newWeapon.Init(_data);
 
 		return newWeapon;
 	}
@@ -52,26 +53,79 @@ public class RobotEquipmentPlugin : RobotPlugin
 
 	public void AimAtTile(string _weaponID, Tile _tile )
 	{
+		//OLD : get angle and apply to cone
 		Weapon selectedWeapon = m_weapons[_weaponID];
 		Vector3 oldRotation = selectedWeapon.transform.localRotation.eulerAngles;
-
-		//Vector2Int currentLocation = _currentTile._location;
-		/*Vector2Int currentLocation = new Vector2Int(m_linkedEntity.Displacement.Coordinates.X, m_linkedEntity.Displacement.Coordinates.Z);
-		Vector2Int destination = new Vector2Int(_tile.coordinates.X, _tile.coordinates.Z);*/
 		Vector2Int currentLocation = new Vector2Int((int) m_linkedEntity.Displacement.Coordinates.GetTile().transform.position.x, (int)m_linkedEntity.Displacement.Coordinates.GetTile().transform.position.z);
 		Vector2Int destination = new Vector2Int((int)_tile.transform.position.x, (int)_tile.transform.position.z);
 
 		float angle = GridManager.Instance.GetAngleFrom(currentLocation, destination);
-		Debug.Log("Rot : " + angle);
-		//selectedWeapon.AimAtAngle(angle);
-		
-		/*Vector3 newRotationV3 = new Vector3(0, angle, 0);
-		Quaternion newRotationQUAT = new Quaternion();
-		newRotationQUAT.eulerAngles = newRotationV3;
-		selectedWeapon.transform.localRotation = newRotationQUAT;*/
-		//selectedWeapon.transform.localRotation = Quaternion.Euler(0, angle, 0);
-		selectedWeapon.transform.localRotation = Quaternion.LookRotation(_tile.transform.position);
+		selectedWeapon.aimedRotation = angle;
+		//Debug.Log("Rot : " + angle);
+		selectedWeapon.transform.localRotation = Quaternion.Euler(0, angle, 0);
 
-		//Debug.Log("new rot: " + selectedWeapon.transform.localRotation.eulerAngles);
+		//new: look at tile
+	}
+
+	public List<Tile> GetTilesInRange(string _weaponID)
+	{
+		List<Tile> tilesInRange = new();
+
+		Weapon selectedWeapon = m_weapons[_weaponID];
+		//shoot ray from tile to other tiles in range
+		float angle = selectedWeapon.aimedRotation;
+
+		int nbOfRayPerAngle = 1;
+		int totalNbOfRay = selectedWeapon.Data.visionConeRange * nbOfRayPerAngle;
+		for(int i = 0; i< totalNbOfRay; i++)
+		{
+			//calculate angle
+			float rayAngle = Mathf.LerpAngle(angle - (selectedWeapon.Data.visionConeRange / 2), angle + (selectedWeapon.Data.visionConeRange / 2), (float)i / (float)totalNbOfRay);
+			rayAngle += 90f;
+			//get position in at angle Y at distance X from linkedEntity
+			if (rayAngle < 0)
+				rayAngle += 360;
+
+			float radians = rayAngle * Mathf.Deg2Rad;
+			Vector3 aimedPosition = new Vector3(Mathf.Sin(radians), 0, Mathf.Cos(radians));
+			RaycastHit[] hits = Physics.RaycastAll(m_linkedEntity.Displacement.Coordinates.GetTile().transform.position, aimedPosition * selectedWeapon.Data.range, selectedWeapon.Data.range, GameConfig.current.game.input.tileInternRayCastLayer);
+			foreach(RaycastHit hitInfo in hits)
+			{
+				if (hitInfo.transform.TryGetComponent(out Tile tile) && !tilesInRange.Contains(tile))
+				{
+					tilesInRange.Add(tile);
+				}
+			}
+		}
+
+		return tilesInRange;
+	}
+
+	private void OnDrawGizmos ()
+	{
+		foreach(string weapongID in m_weapons.Keys)
+		{
+			Weapon selectedWeapon = m_weapons[weapongID];
+			//shoot ray from tile to other tiles in range
+			float angle = selectedWeapon.aimedRotation;
+
+			int nbOfRayPerAngle = 1;
+			int totalNbOfRay = selectedWeapon.Data.visionConeRange * nbOfRayPerAngle;
+			for (int i = 0; i < totalNbOfRay; i++)
+			{
+				//calculate angle
+				float rayAngle = Mathf.Lerp(angle + (selectedWeapon.Data.visionConeRange / 2), angle - (selectedWeapon.Data.visionConeRange / 2), (float)i / (float)totalNbOfRay);
+				rayAngle += 90f;
+				//get position in at angle Y at distance X from linkedEntity
+				if (rayAngle < 0)
+					rayAngle += 360;
+
+				float radians = rayAngle * Mathf.Deg2Rad;
+				Vector3 aimedPosition = new Vector3(Mathf.Sin(radians), 0, Mathf.Cos(radians));
+
+				Gizmos.color = Color.red;
+				Gizmos.DrawRay(m_linkedEntity.Displacement.Coordinates.GetTile().transform.position, aimedPosition * selectedWeapon.Data.range);
+			}
+		}
 	}
 }
