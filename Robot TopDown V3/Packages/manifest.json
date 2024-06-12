@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "com.marijnzwemmer.unity-toolbar-extender": "file:C:/Users/julie/Desktop/unity-toolbar-extender-master",
     "com.unity.collab-proxy": "2.0.7",
     "com.unity.feature.development": "1.0.1",
     "com.unity.ide.rider": "3.0.24",
