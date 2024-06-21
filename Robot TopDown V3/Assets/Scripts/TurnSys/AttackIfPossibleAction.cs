@@ -16,6 +16,6 @@ public class AttackIfPossibleAction : AIAction
 
     public override void Perform()
     {
-        _robot.AttackIfPossible(_weaponId);
+        //_robot.AttackIfPossible(_weaponId);
     }
 }
