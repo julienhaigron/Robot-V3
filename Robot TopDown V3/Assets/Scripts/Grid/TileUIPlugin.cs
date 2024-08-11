@@ -13,6 +13,7 @@ public class TileUIPlugin : MonoBehaviour
 	[SerializeField] private Image m_outline;
 	[SerializeField] private MeshRenderer m_groundMeshRendered;
 
+	#region base
 	public void SetPosition(int _x, int _y )
 	{
 		m_positionDisplay.text = _x + "." + _y;
@@ -43,5 +44,12 @@ public class TileUIPlugin : MonoBehaviour
 	{
 		m_outline.color = color;
 		m_outline.enabled = true;
+	}
+	#endregion
+
+	public void SetAsInteractable(EntityAction _correspondingAction )
+	{
+		m_outline.enabled = true;
+		m_outline.color = Color.green;
 	}
 }

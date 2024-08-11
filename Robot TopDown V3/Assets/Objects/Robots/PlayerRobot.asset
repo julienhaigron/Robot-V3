@@ -12,3 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc8df56b521c00d438b05733a592a56d, type: 3}
   m_Name: PlayerRobot
   m_EditorClassIdentifier: 
+  actionTokenAmount: 8
+  knownedActions: 0000000002000000

@@ -12,7 +12,6 @@ public class Tile : MonoBehaviour
 	[Title("Depedencies")]
 	[SerializeField] private TileUIPlugin m_ui;
 	public TileUIPlugin UI => m_ui;
-	
 
 	public TileCoordinates coordinates;
 	[SerializeField, ReadOnly] Tile[] m_neighbors;
@@ -22,9 +21,15 @@ public class Tile : MonoBehaviour
 	private TileGroundType m_groundType;
 	public TileGroundType GroundType => m_groundType;
 
+	public bool canInteract = false;
+
 	//Content on tile
-	private RobotEntity m_entity;
-	public RobotEntity Entity => m_entity;
+	public TileContent currentContent;
+	public TileContent nextTurnActionContent;
+	public struct TileContent
+	{
+		public Entity entity;
+	}
 
 	#region Pathfinding params
 	private int m_distance;
@@ -48,15 +53,24 @@ public class Tile : MonoBehaviour
 		m_neighbors = new Tile[6];
 	}
 
+	private void Start ()
+	{
+		TurnManager.onActionAdded += OnActionAdded;
+		TurnManager.onActionSelected += OnActionSelected;
+	}
+
+	private void OnDestroy ()
+	{
+		TurnManager.onActionAdded -= OnActionAdded;
+		TurnManager.onActionSelected -= OnActionSelected;
+	}
+
+	#region Grid sys
+
 	public void Init(int _x, int _y, TileGroundType _groundType = TileGroundType.Empty)
 	{
 		m_ui.SetPosition(_x, _y);
 		m_groundType = _groundType;
-	}
-
-	public void SetEntity(RobotEntity _entity )
-	{
-		m_entity = _entity;
 	}
 
 	public void SetGroundType (TileGroundType _groundType)
@@ -78,7 +92,7 @@ public class Tile : MonoBehaviour
 
 	public bool IsObstacle ()
 	{
-		if (m_groundType != TileGroundType.Empty || m_entity != null)
+		if (m_groundType != TileGroundType.Empty)
 			return true;
 
 		return false;
@@ -91,4 +105,52 @@ public class Tile : MonoBehaviour
 
 		return true;
 	}
+
+	#endregion
+
+
+	#region Turn sys
+
+	private void OnActionSelected (EntityAction _action)
+	{
+
+		if (_action.TileInteractPredicate(this))
+		{
+			//show tile can interact
+			canInteract = true;
+			UI.SetAsInteractable(_action);
+		}
+	}
+
+	private void OnActionAdded (EntityAction _action)
+	{
+		//TODO : clear visual
+		UI.ResetOutline();
+		canInteract = false;
+	}
+
+	public void NewPhase ()
+	{
+		nextTurnActionContent = new TileContent { entity = currentContent.entity };
+	}
+
+	public void SetEntity ( Entity _entity, bool _isThisTurn )
+	{
+		if (_isThisTurn)
+			currentContent.entity = _entity;
+		else
+			nextTurnActionContent.entity = _entity;
+	}
+
+	public Entity GetEntity ( bool _isThisTurn )
+	{
+		if (_isThisTurn)
+			return currentContent.entity;
+		else
+			return nextTurnActionContent.entity;
+	}
+
+
+
+	#endregion
 }

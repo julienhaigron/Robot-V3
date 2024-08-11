@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class GameManager : Singleton<GameManager>
 {
@@ -9,8 +10,8 @@ public class GameManager : Singleton<GameManager>
 	public RobotAnchor RobotsAnchor => m_robotAnchor;
 
 	[SerializeField] private GridData m_map;
-	[SerializeField] private List<RobotEntityData> m_robots;
-		
+	[SerializeField] private List<EntityData> m_robots;
+
 
 	private void Start ()
 	{
@@ -21,6 +22,8 @@ public class GameManager : Singleton<GameManager>
 
 
 		m_robotAnchor.Init(m_robots);
+
+		TurnManager.Instance.StartInputPhase();
 	}
 
 }

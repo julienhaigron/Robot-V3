@@ -36,6 +36,8 @@ public class GridManager : Singleton<GridManager>
 		InputManager.onTileSelected -= OnTileSelected;
 	}
 
+	#region Creation
+
 	[Button("LoadGrid")]
 	public void LoadGrid ( GridData _data )
 	{
@@ -110,9 +112,13 @@ public class GridManager : Singleton<GridManager>
 		}
 	}
 
-	public List<Tile> GetPath ( Tile _from, Tile _to )
+	#endregion
+
+	#region Utils
+
+	public List<Tile> GetPath ( Tile _from, Tile _to , bool _isThisTurn)
 	{
-		BFS(_from, _to: _to);
+		BFS(_from, _to: _to, _isThisTurn: _isThisTurn);
 
 		if (_to.Distance == int.MaxValue)
 			return null;
@@ -143,6 +149,13 @@ public class GridManager : Singleton<GridManager>
 		return path;
 	}
 
+	public int GetDistance(Tile _from, Tile _to )
+	{
+		BFS(_from, _to: _to, _isThisTurn: true);
+
+		return _to.Distance;
+	}
+
 	public void ClearTileOutile ()
 	{
 		for (int i = 0; i < m_tiles.Length; i++)
@@ -151,7 +164,7 @@ public class GridManager : Singleton<GridManager>
 		}
 	}
 
-	public void BFS ( Tile cell , int _maxDistance = -1, Tile _to = null)
+	public void BFS ( Tile cell , int _maxDistance = -1, Tile _to = null, bool _isThisTurn = false)
 	{
 		for (int i = 0; i < m_tiles.Length; i++)
 		{
@@ -188,7 +201,7 @@ public class GridManager : Singleton<GridManager>
 				}
 
 				//obstacle
-				if (neighbor.IsObstacle())
+				if (neighbor.IsObstacle() || neighbor.GetEntity(_isThisTurn) != null)
 				{
 					continue;
 				}
@@ -221,7 +234,21 @@ public class GridManager : Singleton<GridManager>
 		return angle;
 	}
 
-	#region Callbacks
+	#endregion
+
+	#region Turn sys
+
+	public void StartNewPhase ()
+	{
+		for(int i = 0; i < m_tiles.Length; i++)
+		{
+			m_tiles[i].NewPhase();
+		}
+	}
+
+	#endregion
+
+	#region Editor Callbacks
 
 	private void OnTileSelected ( Tile _tile )
 	{
@@ -295,7 +322,7 @@ public struct TileCoordinates
 	public Tile GetTile ()
 	{
 		Tile tile = GridManager.Instance.Tiles[ID];
-		Debug.Log("this :" + X + "," + Z + " getTile: " + tile.coordinates.X +"," + tile.coordinates.Z);
+		//Debug.Log("this :" + X + "," + Z + " getTile: " + tile.coordinates.X +"," + tile.coordinates.Z);
 		return tile;
 	}
 
@@ -348,9 +375,9 @@ public struct TileCoordinates
 		return new TileCoordinates(iX, iZ);
 	}*/
 
-	public RobotEntity IsOccupied ()
+	public Entity IsOccupied (bool _isThisTurn)
 	{
-		return GetTile().Entity;
+		return GetTile().GetEntity(_isThisTurn: _isThisTurn);
 	}
 
 }

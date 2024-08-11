@@ -16,12 +16,15 @@ public class GameAssets : ScriptableObject
     public class Game
     {
         public Tile baseTile;
-        public RobotEntity baseRobotEntity;
+        public Entity baseRobotEntity;
 
         public List<GridData> maps = new();
 
         public WeaponData defaultWeapon;
-        public SerializableDictionary<string, Weapon> weapons;
+        public SerializableDictionary<string, Weapon> weapons = new SerializableDictionary<string, Weapon>();
+
+        public SerializableDictionary<EntityActionEnum, EntityActionData
+            > entityActionsData = new SerializableDictionary<EntityActionEnum, EntityActionData>();
 
     }
 
