@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-public class EntityAction
+public abstract class AEntityAction
 {
     public Action onPerform;
     public Action<Entity> onEndPerform;
@@ -12,13 +12,17 @@ public class EntityAction
     public int cooldown;
     public EntityActionEnum type;
     public Entity performingEntity;
+    public Tile positionAtActionStart;
+    public Tile positionAtActionEnd;
 
-    public void Init(EntityActionData _data, Entity _performingEntity )
+    public virtual void Init(EntityActionData _data, Entity _performingEntity, Tile _positionAtActionStart )
 	{
         cost = _data.tokenCost;
         cooldown = _data.tokenCooldown;
         type = _data.type;
         performingEntity = _performingEntity;
+        positionAtActionStart = _positionAtActionStart;
+        positionAtActionEnd = _positionAtActionStart;
     }
 
     public virtual void Prepare ( Entity.EntityState _state )
@@ -31,18 +35,16 @@ public class EntityAction
         onPerform?.Invoke();
     }
 
-    public virtual bool TileInteractPredicate(Tile _tile )
-	{
-        return true;
-	}
+    public abstract bool TileInteractPredicate ( Tile _tile );
+
+    public abstract void RegisterInteraction ( Tile _tile);
 
     public virtual void EndPerform ()
     {
         onEndPerform?.Invoke(performingEntity);
     }
 
-    public virtual bool CheckConflict(EntityAction _otherAction )
-	{
-        return false;
-	}
+    public abstract bool CheckConflict ( AEntityAction _otherAction );
+
+    public abstract void Display ();
 }

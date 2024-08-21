@@ -111,9 +111,8 @@ public class Tile : MonoBehaviour
 
 	#region Turn sys
 
-	private void OnActionSelected (EntityAction _action)
+	private void OnActionSelected (AEntityAction _action)
 	{
-
 		if (_action.TileInteractPredicate(this))
 		{
 			//show tile can interact
@@ -122,9 +121,8 @@ public class Tile : MonoBehaviour
 		}
 	}
 
-	private void OnActionAdded (EntityAction _action)
+	private void OnActionAdded (AEntityAction _action)
 	{
-		//TODO : clear visual
 		UI.ResetOutline();
 		canInteract = false;
 	}

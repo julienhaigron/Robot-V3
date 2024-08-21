@@ -2,10 +2,23 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class WaitAction : EntityAction
+public class WaitAction : AEntityAction
 {
+	public override bool TileInteractPredicate ( Tile _tile )
+	{
+		return _tile == PlayerController.Instance.SelectedEntity.Displacement.Coordinates.GetTile();
+	}
 
-	
+	public override void RegisterInteraction ( Tile _tile )
+	{
+		//nothing to do
+	}
+
+	public override bool CheckConflict ( AEntityAction _otherAction )
+	{
+		return false;
+	}
+
 
 	public override void Perform ( Entity.EntityState _state )
 	{
@@ -18,5 +31,10 @@ public class WaitAction : EntityAction
 	{
 		base.EndPerform();
 
+	}
+
+	public override void Display ()
+	{
+		
 	}
 }

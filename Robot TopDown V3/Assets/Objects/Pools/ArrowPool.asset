@@ -9,11 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2a743e40aeafc0445b10e59cec8dfa98, type: 3}
-  m_Name: MoveAction
+  m_Script: {fileID: 11500000, guid: 0d02b80ed8cd5c24fba1eb98ab380ef5, type: 3}
+  m_Name: ArrowPool
   m_EditorClassIdentifier: 
-  displayName: Move
-  type: 0
-  icon: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
-  tokenCost: 1
-  tokenCooldown: 1
+  baseElement: {fileID: 7979603408891479760, guid: d22494e23aab8724dbce621d66be01fb, type: 3}
+  size: 15

@@ -23,9 +23,10 @@ public class GameAssets : ScriptableObject
         public WeaponData defaultWeapon;
         public SerializableDictionary<string, Weapon> weapons = new SerializableDictionary<string, Weapon>();
 
-        public SerializableDictionary<EntityActionEnum, EntityActionData
-            > entityActionsData = new SerializableDictionary<EntityActionEnum, EntityActionData>();
+        public SerializableDictionary<EntityActionEnum, EntityActionData> entityActionsData = new SerializableDictionary<EntityActionEnum, EntityActionData>();
 
+        [Title("Pools")]
+        public PoolData arrowPoolData;
     }
 
     [System.Serializable]

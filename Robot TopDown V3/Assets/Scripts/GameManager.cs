@@ -10,8 +10,7 @@ public class GameManager : Singleton<GameManager>
 	public RobotAnchor RobotsAnchor => m_robotAnchor;
 
 	[SerializeField] private GridData m_map;
-	[SerializeField] private List<EntityData> m_robots;
-
+	[SerializeField] private List<EntityData> m_robotDatas;
 
 	private void Start ()
 	{
@@ -21,7 +20,7 @@ public class GameManager : Singleton<GameManager>
 			GridManager.Instance.GenerateGrid(10, 10);
 
 
-		m_robotAnchor.Init(m_robots);
+		m_robotAnchor.Init(m_robotDatas);
 
 		TurnManager.Instance.StartInputPhase();
 	}

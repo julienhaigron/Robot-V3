@@ -16,17 +16,18 @@ using Sirenix.OdinInspector;
 
 public class TurnManager : Singleton<TurnManager>
 {
-	public static System.Action<EntityAction> onActionAdded;
-	public static System.Action<EntityAction> onActionSelected;
+	public static System.Action<AEntityAction> onActionAdded;
+	public static System.Action<AEntityAction> onActionSelected;
 
-	[SerializeField] private SerializableDictionary<Entity, Queue<RecordedAction>> m_recordedActionInput = new();
-	[SerializeField] private SerializableDictionary<Entity, Queue<RecordedAction>> m_actionsToPlay = new();
-	private Dictionary<Entity, RecordedAction> m_actionsBeingDone = new();
+	[SerializeField] private SerializableDictionary<Entity, Queue<RecordedAction>> m_recordedActionInput = new(); //all actions this turn
+	public SerializableDictionary<Entity, Queue<RecordedAction>> RecordedActions => m_recordedActionInput;
+	[SerializeField] private SerializableDictionary<Entity, Queue<RecordedAction>> m_actionsToPlay = new(); //this phase action
+	private Dictionary<Entity, RecordedAction> m_actionsBeingDone = new(); //current actions running
 
 	private List<System.Tuple<RecordedAction, RecordedAction>> m_recordedConflict;
 
-	private EntityAction m_currentEntityAction;
-	public EntityAction CurrentActionSelected => m_currentEntityAction;
+	private AEntityAction m_currentEntityAction;
+	public AEntityAction CurrentActionSelected => m_currentEntityAction;
 	private EntityActionEnum m_currentActionTypeSelected;
 	public EntityActionEnum CurrentActionTypeSelected => m_currentActionTypeSelected;
 
@@ -35,12 +36,20 @@ public class TurnManager : Singleton<TurnManager>
 
 	public struct RecordedAction
 	{
-		public EntityAction action;
+		public AEntityAction action;
 		public Entity.EntityState entityState;
-		public TileCoordinates entityCoordinateAtStart;
 	}
 
 	#region Recording phase
+
+	public Tile GetLastRegisteredPositionOfEntity (Entity _entity)
+	{
+		if (m_recordedActionInput.ContainsKey(_entity) == false)
+			return _entity.Displacement.Coordinates.GetTile();
+
+		RecordedAction lastRecordedAction = m_recordedActionInput[_entity].ToArray()[^1];
+		return lastRecordedAction.action.positionAtActionEnd;
+	}
 
 	public void SetCurrentActionSelected( EntityActionEnum _action )
 	{
@@ -50,15 +59,15 @@ public class TurnManager : Singleton<TurnManager>
 		{
 			case EntityActionEnum.Move:
 				m_currentEntityAction = new MoveAction();
-				m_currentEntityAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnum.Move], PlayerController.Instance.SelectedEntity);
+				m_currentEntityAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnum.Move], PlayerController.Instance.SelectedEntity, GetLastRegisteredPositionOfEntity(PlayerController.Instance.SelectedEntity));
 				break;
 			/*case EntityActionEnum.Attack:
 				m_currentEntityAction = new Action();
-				m_currentEntityAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnum.Attack], PlayerController.Instance.SelectedEntity);
+				m_currentEntityAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnum.Attack], PlayerController.Instance.SelectedEntity, GetCurrentSelectedEntityTile());
 				break;*/
 			case EntityActionEnum.Wait:
 				m_currentEntityAction = new WaitAction();
-				m_currentEntityAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnum.Wait], PlayerController.Instance.SelectedEntity);
+				m_currentEntityAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnum.Wait], PlayerController.Instance.SelectedEntity, GetLastRegisteredPositionOfEntity(PlayerController.Instance.SelectedEntity));
 				break;
 
 		}
@@ -67,7 +76,7 @@ public class TurnManager : Singleton<TurnManager>
 		onActionSelected?.Invoke(m_currentEntityAction);
 	}
 
-	public bool AddAction ( Entity _entity, EntityAction _action )
+	public bool AddAction ( Entity _entity, AEntityAction _action )
 	{
 		Debug.Log("Action added");
 		if (m_recordedActionInput.ContainsKey(_entity) == false)
@@ -84,7 +93,22 @@ public class TurnManager : Singleton<TurnManager>
 		//Update action display on grid + UI
 		onActionAdded?.Invoke(_action);
 
+		//TODO : refresh selected entity actions display
+		RefreshSelectedEntityActionDisplay();
+
 		return true;
+	}
+
+	public void RefreshSelectedEntityActionDisplay () 
+	{ 
+		//1) pop ghost if no ghost
+		//else: refresh ghost position
+		
+		//2) display all selected entity actions
+		foreach(RecordedAction recordedAction in m_recordedActionInput[PlayerController.Instance.SelectedEntity])
+		{
+			recordedAction.action.Display();
+		}
 	}
 
 	[Button]
@@ -101,6 +125,8 @@ public class TurnManager : Singleton<TurnManager>
 		m_recordedActionInput.Clear();
 		foreach (Entity entity in recordedActionInput.Keys)
 		{
+			m_recordedActionInput.Add(entity, new Queue<RecordedAction>());
+			
 			foreach (RecordedAction record in recordedActionInput[entity])
 			{
 				m_recordedActionInput[entity].Enqueue(record);
@@ -130,6 +156,32 @@ public class TurnManager : Singleton<TurnManager>
 	{
 		Debug.Log("StartRound");
 
+		/*//1 - calculate phase
+
+		//a)get all actions played by entities in one phase
+		SerializableDictionary<Entity, Queue<RecordedAction>> recordedActions = new(m_recordedActionInput);
+		m_actionsToPlay.Clear();
+		foreach (Entity entity in recordedActions.Keys)
+		{
+			Queue<RecordedAction> actionsPlayedThisRound = new();
+			m_actionsToPlay.Add(entity, actionsPlayedThisRound);
+			int totalCost = 0;
+			while (totalCost < 1 && recordedActions[entity].Count > 0)
+			{
+				RecordedAction recordedAction = recordedActions[entity].Dequeue();
+				m_actionsToPlay[entity].Enqueue(recordedAction);
+				totalCost += recordedAction.action.cost;
+			}
+		}
+		m_recordedActionInput = new(recordedActions);*/
+
+		StartNextPhase();
+	}
+
+	private void StartNextPhase ()
+	{
+		Debug.Log("StartNextPhase");
+
 		//1 - calculate phase
 
 		//a)get all actions played by entities in one phase
@@ -140,7 +192,7 @@ public class TurnManager : Singleton<TurnManager>
 			Queue<RecordedAction> actionsPlayedThisRound = new();
 			m_actionsToPlay.Add(entity, actionsPlayedThisRound);
 			int totalCost = 0;
-			while (totalCost <= 1 && recordedActions[entity].Count > 0)
+			while (totalCost < 1 && recordedActions[entity].Count > 0)
 			{
 				RecordedAction recordedAction = recordedActions[entity].Dequeue();
 				m_actionsToPlay[entity].Enqueue(recordedAction);
@@ -148,14 +200,6 @@ public class TurnManager : Singleton<TurnManager>
 			}
 		}
 		m_recordedActionInput = new(recordedActions);
-
-		StartNextPhase();
-	}
-
-	private void StartNextPhase ()
-	{
-		Debug.Log("StartNextPhase");
-
 
 		currentPhase = TurnPhase.Calculating;
 		GridManager.Instance.StartNewPhase();
@@ -175,12 +219,10 @@ public class TurnManager : Singleton<TurnManager>
 		//2-recursively check for possible conflict and change actions if needed
 		//	     => dealing with conflict can create new one
 		m_recordedConflict = CheckForConflicts();
-		do
+		while (m_recordedConflict.Count > 0)
 		{
 			m_recordedConflict = ResolveConflicts();
 		}
-		while (m_recordedConflict != null || m_recordedConflict.Count > 0);
-
 
 		//c)play this phases entities turn actions
 

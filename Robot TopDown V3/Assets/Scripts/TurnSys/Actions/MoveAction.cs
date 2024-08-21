@@ -3,22 +3,31 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-public class MoveAction : EntityAction
+public class MoveAction : AEntityAction
 {
 	public Entity targetEntiy;
 	public Tile targetTile;
 	public MoveActionMode mode;
 
-
 	public Tile finalTargetTile;
 
 	public enum MoveActionMode { Coordinate, Entity }
+
+	public override void Init ( EntityActionData _data, Entity _performingEntity, Tile _positionAtActionStart )
+	{
+		base.Init(_data, _performingEntity, _positionAtActionStart);
+
+		if (mode == MoveActionMode.Coordinate)
+			positionAtActionEnd = targetTile;
+		else if(mode == MoveActionMode.Entity)
+			positionAtActionEnd = targetEntiy.Displacement.Coordinates.GetTile();
+	}
 
 	public override void Prepare ( Entity.EntityState _state )
 	{
 		base.Prepare(_state);
 
-		targetEntiy.Displacement.Coordinates.GetTile().SetEntity(null, _isThisTurn: false);
+		performingEntity.Displacement.Coordinates.GetTile().SetEntity(null, _isThisTurn: false);
 
 		switch (mode)
 		{
@@ -49,17 +58,24 @@ public class MoveAction : EntityAction
 
 	public override bool TileInteractPredicate ( Tile _tile )
 	{
-		if (_tile.IsObstacle() || GridManager.Instance.GetDistance(performingEntity.Displacement.Coordinates.GetTile(), _tile) > 1)
+		if (_tile.IsObstacle() || GridManager.Instance.GetDistance(TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntity), _tile) != 1)
 			return false;
 
-		return base.TileInteractPredicate(_tile);
+		return true;
 	}
 
-	public override bool CheckConflict ( EntityAction _otherAction )
+	public override void RegisterInteraction ( Tile _tile )
 	{
-		if (base.CheckConflict(_otherAction))
-			return true;
+		if (mode == MoveActionMode.Coordinate)
+			targetTile = _tile;
+		else if(mode == MoveActionMode.Entity)
+			targetEntiy = _tile.GetEntity(true);
 
+		positionAtActionEnd = _tile;
+	}
+
+	public override bool CheckConflict ( AEntityAction _otherAction )
+	{
 		if(finalTargetTile == null)
 		{
 			RefreshDestinatedTile();
@@ -73,7 +89,6 @@ public class MoveAction : EntityAction
 			if ((_otherAction as MoveAction).finalTargetTile == finalTargetTile)
 			{
 				hasConflict = true;
-				//TODO : make a roll to see who goes to it
 
 				int roll = UnityEngine.Random.Range((int)0, 2);
 				if (roll == 0)
@@ -93,7 +108,6 @@ public class MoveAction : EntityAction
 		if (IsDestinationOccupiedOnNextTurnAction())
 		{
 			hasConflict = true;
-			//TODO : find new destination
 			RefreshDestinatedTile();
 
 			if (finalTargetTile != null)
@@ -122,5 +136,15 @@ public class MoveAction : EntityAction
 			return;
 
 		finalTargetTile = pathToTile[^1];
+	}
+
+	public override void Display ()
+	{
+		PoolElement arrow = ObjectsPooling.GetElement(GameAssets.current.game.arrowPoolData);
+		Vector3 startPos = positionAtActionStart.transform.position;
+		Vector3 destination = positionAtActionEnd.transform.position;
+		Vector3 position = Vector3.Lerp(startPos, destination, .5f);
+		arrow.transform.position = position;
+		arrow.transform.LookAt(positionAtActionEnd.transform);
 	}
 }

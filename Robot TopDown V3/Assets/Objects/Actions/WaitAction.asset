@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a743e40aeafc0445b10e59cec8dfa98, type: 3}
   m_Name: WaitAction
   m_EditorClassIdentifier: 
-  displayName: Move
-  type: 0
+  displayName: Wait
+  type: 2
   icon: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
   tokenCost: 1
   tokenCooldown: 1

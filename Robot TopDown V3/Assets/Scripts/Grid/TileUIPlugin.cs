@@ -47,7 +47,7 @@ public class TileUIPlugin : MonoBehaviour
 	}
 	#endregion
 
-	public void SetAsInteractable(EntityAction _correspondingAction )
+	public void SetAsInteractable(AEntityAction _correspondingAction )
 	{
 		m_outline.enabled = true;
 		m_outline.color = Color.green;

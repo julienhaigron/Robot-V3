@@ -56,7 +56,6 @@ public class ActionButton : MonoBehaviour
 
 	private void OnClick ()
 	{
-		Debug.Log("ActionButton onCLick");
 		TurnManager.Instance.SetCurrentActionSelected(m_actionType);
 	}
 

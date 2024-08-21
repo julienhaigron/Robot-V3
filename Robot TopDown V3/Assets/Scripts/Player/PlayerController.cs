@@ -59,6 +59,9 @@ public class PlayerController : Singleton<PlayerController>
 			//  => add new action of current selected action type to queue
 			if (_tile.canInteract)
 			{
+				//TODO : give info to action before adding it
+				TurnManager.Instance.CurrentActionSelected.RegisterInteraction(_tile);
+
 				TurnManager.Instance.AddAction(m_selectedEntity, TurnManager.Instance.CurrentActionSelected);
 			}
 		}

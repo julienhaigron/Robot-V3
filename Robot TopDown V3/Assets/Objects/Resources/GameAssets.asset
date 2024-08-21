@@ -28,6 +28,7 @@ MonoBehaviour:
       values:
       - {fileID: 11400000, guid: 0df61fa55d03a8e46990aef684fa54e3, type: 2}
       - {fileID: 11400000, guid: 61635f88cdfa6ab44b50dbc9c3aa34e0, type: 2}
+    arrowPoolData: {fileID: 11400000, guid: 64f7846c9740e524a979a96964270b2f, type: 2}
   material:
     tileGroundMaterials:
       keys: 0000000001000000020000000300000004000000

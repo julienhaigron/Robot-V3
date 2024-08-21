@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
 
 public class EntityDisplacementPlugin : RobotPlugin
 {
@@ -18,10 +19,11 @@ public class EntityDisplacementPlugin : RobotPlugin
 	{
 		m_coordinate.GetTile().SetEntity(null, _isThisTurn: true);
 
-		transform.position = _tile.transform.position - m_bottomPosition.localPosition;
+		transform.DOMove(_tile.transform.position - m_bottomPosition.localPosition, 1.5f).SetEase(Ease.OutExpo).OnComplete(() => onMovementDoneAction?.Invoke());
 		_tile.SetEntity(m_linkedEntity, _isThisTurn: true);
 		m_coordinate.SetCoordinate(_tile.coordinates.X, _tile.coordinates.Z, _tile.coordinates.ID);
 
-		onMovementDoneAction?.Invoke();
+		//transform.position = _tile.transform.position - m_bottomPosition.localPosition;
+		//onMovementDoneAction?.Invoke();
 	}
 }
