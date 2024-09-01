@@ -31,7 +31,7 @@ public class TurnManager : Singleton<TurnManager>
 	private EntityActionEnum m_currentActionTypeSelected;
 	public EntityActionEnum CurrentActionTypeSelected => m_currentActionTypeSelected;
 
-	public enum TurnPhase { Recording, Calculating, Playing}
+	public enum TurnPhase { Recording, Calculating, Playing }
 	public TurnPhase currentPhase;
 
 	public struct RecordedAction
@@ -42,7 +42,7 @@ public class TurnManager : Singleton<TurnManager>
 
 	#region Recording phase
 
-	public Tile GetLastRegisteredPositionOfEntity (Entity _entity)
+	public Tile GetLastRegisteredPositionOfEntity ( Entity _entity )
 	{
 		if (m_recordedActionInput.ContainsKey(_entity) == false)
 			return _entity.Displacement.Coordinates.GetTile();
@@ -51,7 +51,7 @@ public class TurnManager : Singleton<TurnManager>
 		return lastRecordedAction.action.positionAtActionEnd;
 	}
 
-	public void SetCurrentActionSelected( EntityActionEnum _action )
+	public void SetCurrentActionSelected ( EntityActionEnum _action )
 	{
 		m_currentActionTypeSelected = _action;
 
@@ -99,13 +99,13 @@ public class TurnManager : Singleton<TurnManager>
 		return true;
 	}
 
-	public void RefreshSelectedEntityActionDisplay () 
-	{ 
+	public void RefreshSelectedEntityActionDisplay ()
+	{
 		//1) pop ghost if no ghost
 		//else: refresh ghost position
-		
+
 		//2) display all selected entity actions
-		foreach(RecordedAction recordedAction in m_recordedActionInput[PlayerController.Instance.SelectedEntity])
+		foreach (RecordedAction recordedAction in m_recordedActionInput[PlayerController.Instance.SelectedEntity])
 		{
 			recordedAction.action.Display();
 		}
@@ -126,7 +126,7 @@ public class TurnManager : Singleton<TurnManager>
 		foreach (Entity entity in recordedActionInput.Keys)
 		{
 			m_recordedActionInput.Add(entity, new Queue<RecordedAction>());
-			
+
 			foreach (RecordedAction record in recordedActionInput[entity])
 			{
 				m_recordedActionInput[entity].Enqueue(record);
@@ -231,24 +231,17 @@ public class TurnManager : Singleton<TurnManager>
 		m_actionsBeingDone = new();
 		foreach (Entity entity in m_actionsToPlay.Keys)
 		{
-			if (m_actionsToPlay[entity].Count == 0)
+			if (m_actionsToPlay[entity].Count != 0)
 			{
-				m_actionsToPlay.Remove(entity);
-
-				if (m_actionsToPlay.Keys.Count == 0)
-					EndRound(); //end turn
-				else
-					continue;
+				RecordedAction action = m_actionsToPlay[entity].Dequeue();
+				m_actionsBeingDone[entity] = action;
+				action.action.onEndPerform += OnActionEndPerform;
+				action.action.Perform(action.entityState);
+				//TODO : display action on cam one by one when in conflict
 			}
-
-			RecordedAction action = m_actionsToPlay[entity].Dequeue();
-			m_actionsBeingDone[entity] = action;
-			action.action.onEndPerform += OnActionEndPerform;
-			action.action.Perform(action.entityState);
-
-			//TODO : display action on cam one by one when in conflict
 		}
 	}
+
 
 	private List<System.Tuple<RecordedAction, RecordedAction>> CheckForConflicts ()
 	{
@@ -290,7 +283,7 @@ public class TurnManager : Singleton<TurnManager>
 	private void OnActionEndPerform ( Entity _performingEntity )
 	{
 		//d)wait for all entity to perform their actions to play in this phase to play the next one
-		if (m_actionsToPlay[_performingEntity].Count > 0)
+		if (m_actionsToPlay.ContainsKey(_performingEntity) && m_actionsToPlay[_performingEntity].Count > 0)
 		{
 			RecordedAction action = m_actionsToPlay[_performingEntity].Dequeue();
 			m_actionsBeingDone[_performingEntity] = action;
@@ -302,8 +295,17 @@ public class TurnManager : Singleton<TurnManager>
 			m_actionsBeingDone.Remove(_performingEntity);
 			if (m_actionsBeingDone.Keys.Count == 0)
 			{
+				if (m_recordedActionInput[_performingEntity].Count == 0)
+				{
+					m_recordedActionInput.Remove(_performingEntity);
+				}
+
+				if (m_recordedActionInput.Keys.Count == 0)
+					EndRound(); //end turn
+				else if(m_actionsBeingDone.Count == 0)
+					StartNextPhase();
+
 				//end this phase
-				StartNextPhase();
 			}
 		}
 
