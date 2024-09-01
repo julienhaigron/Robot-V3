@@ -18,6 +18,7 @@ public class TurnManager : Singleton<TurnManager>
 {
 	public static System.Action<AEntityAction> onActionAdded;
 	public static System.Action<AEntityAction> onActionSelected;
+	public static System.Action onEndInputPhase;
 
 	[SerializeField] private SerializableDictionary<Entity, Queue<RecordedAction>> m_recordedActionInput = new(); //all actions this turn
 	public SerializableDictionary<Entity, Queue<RecordedAction>> RecordedActions => m_recordedActionInput;
@@ -121,6 +122,8 @@ public class TurnManager : Singleton<TurnManager>
 	[Button]
 	public void EndInputPhase ()
 	{
+		onEndInputPhase?.Invoke();
+
 		SerializableDictionary<Entity, Queue<RecordedAction>> recordedActionInput = new(m_recordedActionInput);
 		m_recordedActionInput.Clear();
 		foreach (Entity entity in recordedActionInput.Keys)

@@ -146,5 +146,7 @@ public class MoveAction : AEntityAction
 		Vector3 position = Vector3.Lerp(startPos, destination, .5f);
 		arrow.transform.position = position;
 		arrow.transform.LookAt(positionAtActionEnd.transform);
+
+		PlayerController.Instance.arrows.Add(arrow as Arrow);
 	}
 }

@@ -12,11 +12,13 @@ public class UIEntityActionList : MonoBehaviour
 	private void Awake ()
 	{
 		PlayerController.onEntitySelected += OnEntitySelected;
+		TurnManager.onEndInputPhase += HideButtons;
 	}
 
 	private void OnDestroy ()
 	{
 		PlayerController.onEntitySelected -= OnEntitySelected;
+		TurnManager.onEndInputPhase -= HideButtons;
 	}
 
 
@@ -48,5 +50,10 @@ public class UIEntityActionList : MonoBehaviour
 		ActionButton newBtn = Instantiate(m_baseButtonPrefab, m_buttonsParent);
 		m_buttons.Add(newBtn);
 		return newBtn;
+	}
+
+	public void HideButtons ()
+	{
+		OnEntitySelected(null);
 	}
 }

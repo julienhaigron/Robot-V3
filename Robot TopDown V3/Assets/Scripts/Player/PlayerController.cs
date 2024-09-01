@@ -13,16 +13,20 @@ public class PlayerController : Singleton<PlayerController>
 	private Entity m_selectedEntity;
 	public Entity SelectedEntity => m_selectedEntity;
 
+	public List<Arrow> arrows = new();
+
 	private void Start ()
 	{
 		InputManager.onTileSelected += OnTileSelected;
 		InputManager.onTileHovered += OnTileHovered;
+		TurnManager.onEndInputPhase += ClearArrows;
 	}
 
 	private void OnDestroy ()
 	{
 		InputManager.onTileSelected-= OnTileSelected;
 		InputManager.onTileHovered -= OnTileHovered;
+		TurnManager.onEndInputPhase -= ClearArrows;
 	}
 
 	private void OnTileSelected ( Tile _tile )
@@ -38,6 +42,7 @@ public class PlayerController : Singleton<PlayerController>
 				m_selectedEntity.Deselect();
 				m_selectedEntity = null;
 				onEntitySelected?.Invoke(m_selectedEntity);
+				ClearArrows();
 				return;
 			}
 			else if(m_selectedEntity == null)
@@ -47,7 +52,7 @@ public class PlayerController : Singleton<PlayerController>
 
 				if(m_selectedEntity != null)
 					m_selectedEntity.Select();
-
+				ClearArrows();
 				return;
 			}
 		}
@@ -116,6 +121,14 @@ public class PlayerController : Singleton<PlayerController>
 			{
 				tile.UI.EnableOutline(Color.blue);
 			}
+		}
+	}
+
+	public void ClearArrows ()
+	{
+		foreach(Arrow arrow in arrows)
+		{
+			arrow.Discard();
 		}
 	}
 }
