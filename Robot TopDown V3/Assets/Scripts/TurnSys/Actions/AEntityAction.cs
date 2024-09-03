@@ -41,6 +41,7 @@ public abstract class AEntityAction
 
     public virtual void EndPerform ()
     {
+        Debug.Log("End perform");
         onEndPerform?.Invoke(performingEntity);
     }
 

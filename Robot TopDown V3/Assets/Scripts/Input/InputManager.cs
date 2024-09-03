@@ -19,7 +19,7 @@ public class InputManager : MonoBehaviour
 
 		Ray ray = CameraManager.Instance.Camera.ScreenPointToRay(Input.mousePosition);
 
-		if (Physics.Raycast(ray, out RaycastHit hitInfo, GameConfig.current.game.input.interactionRayCastLength, GameConfig.current.game.input.interactionRayCastLayer))
+		if (Physics.Raycast(ray, out RaycastHit hitInfo, GameConfig.current.input.interactionRayCastLength, GameConfig.current.input.interactionRayCastLayer))
 		{
 			if (hitInfo.transform.parent.TryGetComponent(out Tile tile))
 			{
@@ -36,7 +36,7 @@ public class InputManager : MonoBehaviour
 		m_mousePosition = Input.mousePosition;
 		Ray ray = CameraManager.Instance.Camera.ScreenPointToRay(m_mousePosition);
 
-		if (Physics.Raycast(ray, out RaycastHit hitInfo, GameConfig.current.game.input.interactionRayCastLength, GameConfig.current.game.input.interactionRayCastLayer))
+		if (Physics.Raycast(ray, out RaycastHit hitInfo, GameConfig.current.input.interactionRayCastLength, GameConfig.current.input.interactionRayCastLayer))
 		{
 			if (hitInfo.transform.parent.TryGetComponent(out Tile tile))
 			{

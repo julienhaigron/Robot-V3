@@ -23,7 +23,7 @@ public class TurnManager : Singleton<TurnManager>
 	[SerializeField] private SerializableDictionary<Entity, Queue<RecordedAction>> m_recordedActionInput = new(); //all actions this turn
 	public SerializableDictionary<Entity, Queue<RecordedAction>> RecordedActions => m_recordedActionInput;
 	[SerializeField] private SerializableDictionary<Entity, Queue<RecordedAction>> m_actionsToPlay = new(); //this phase action
-	private Dictionary<Entity, RecordedAction> m_actionsBeingDone = new(); //current actions running
+	private SerializableDictionary<Entity, RecordedAction> m_actionsBeingDone = new(); //current actions running
 
 	private List<System.Tuple<RecordedAction, RecordedAction>> m_recordedConflict;
 
@@ -190,8 +190,14 @@ public class TurnManager : Singleton<TurnManager>
 		//a)get all actions played by entities in one phase
 		SerializableDictionary<Entity, Queue<RecordedAction>> recordedActions = new(m_recordedActionInput);
 		m_actionsToPlay.Clear();
-		foreach (Entity entity in recordedActions.Keys)
+		foreach (Entity entity in m_recordedActionInput.Keys)
 		{
+			if (m_recordedActionInput[entity].Count == 0)
+			{
+				recordedActions.Remove(entity);
+				continue;
+			}
+
 			Queue<RecordedAction> actionsPlayedThisRound = new();
 			m_actionsToPlay.Add(entity, actionsPlayedThisRound);
 			int totalCost = 0;
@@ -231,13 +237,14 @@ public class TurnManager : Singleton<TurnManager>
 
 		currentPhase = TurnPhase.Playing;
 
-		m_actionsBeingDone = new();
-		foreach (Entity entity in m_actionsToPlay.Keys)
+		m_actionsBeingDone.Clear();
+		List<Entity> playingEntities = new(m_actionsToPlay.Keys);
+		foreach (Entity entity in playingEntities)
 		{
 			if (m_actionsToPlay[entity].Count != 0)
 			{
 				RecordedAction action = m_actionsToPlay[entity].Dequeue();
-				m_actionsBeingDone[entity] = action;
+				m_actionsBeingDone.Add(entity, action);
 				action.action.onEndPerform += OnActionEndPerform;
 				action.action.Perform(action.entityState);
 				//TODO : display action on cam one by one when in conflict
@@ -258,7 +265,7 @@ public class TurnManager : Singleton<TurnManager>
 				{
 					if (entity == otherEntity) continue;
 
-					Queue<RecordedAction> otherEntityActionsPlayedThisRound = m_actionsToPlay[entity];
+					Queue<RecordedAction> otherEntityActionsPlayedThisRound = m_actionsToPlay[otherEntity];
 					foreach (RecordedAction otherAction in otherEntityActionsPlayedThisRound.ToArray())
 					{
 						if (action.action.CheckConflict(otherAction.action))
@@ -285,9 +292,9 @@ public class TurnManager : Singleton<TurnManager>
 
 	private void OnActionEndPerform ( Entity _performingEntity )
 	{
-		//d)wait for all entity to perform their actions to play in this phase to play the next one
 		if (m_actionsToPlay.ContainsKey(_performingEntity) && m_actionsToPlay[_performingEntity].Count > 0)
 		{
+			//performing entity still has actions this phase to do
 			RecordedAction action = m_actionsToPlay[_performingEntity].Dequeue();
 			m_actionsBeingDone[_performingEntity] = action;
 			action.action.onEndPerform += OnActionEndPerform;
@@ -295,20 +302,14 @@ public class TurnManager : Singleton<TurnManager>
 		}
 		else
 		{
+			//no more action for thos entity
 			m_actionsBeingDone.Remove(_performingEntity);
 			if (m_actionsBeingDone.Keys.Count == 0)
 			{
-				if (m_recordedActionInput[_performingEntity].Count == 0)
-				{
-					m_recordedActionInput.Remove(_performingEntity);
-				}
-
 				if (m_recordedActionInput.Keys.Count == 0)
 					EndRound(); //end turn
-				else if(m_actionsBeingDone.Count == 0)
-					StartNextPhase();
-
-				//end this phase
+				else
+					StartNextPhase(); //end this phase
 			}
 		}
 

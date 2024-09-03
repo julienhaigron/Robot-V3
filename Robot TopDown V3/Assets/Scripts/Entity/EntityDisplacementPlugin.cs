@@ -12,18 +12,19 @@ public class EntityDisplacementPlugin : RobotPlugin
 
 	public void Init ( RobotAnchor.Spawn _spawn )
 	{
-		MoveToTile(_spawn.coordinates.GetTile(), null);
+		//MoveToTile(_spawn.coordinates.GetTile(), null);
+		Tile spawn = _spawn.coordinates.GetTile();
+		transform.position = spawn.transform.position - m_bottomPosition.localPosition;
+		spawn.SetEntity(m_linkedEntity, _isThisTurn: true);
+		m_coordinate.SetCoordinate(spawn.coordinates.X, spawn.coordinates.Z, spawn.coordinates.ID);
 	}
 
 	public void MoveToTile( Tile _tile , System.Action onMovementDoneAction)
 	{
 		m_coordinate.GetTile().SetEntity(null, _isThisTurn: true);
 
-		transform.DOMove(_tile.transform.position - m_bottomPosition.localPosition, 1.5f).SetEase(Ease.OutExpo).OnComplete(() => onMovementDoneAction?.Invoke());
+		transform.DOMove(_tile.transform.position - m_bottomPosition.localPosition, GameConfig.current.game.entityMovementSpeed).SetEase(Ease.OutExpo).OnComplete(() => onMovementDoneAction?.Invoke());
 		_tile.SetEntity(m_linkedEntity, _isThisTurn: true);
 		m_coordinate.SetCoordinate(_tile.coordinates.X, _tile.coordinates.Z, _tile.coordinates.ID);
-
-		//transform.position = _tile.transform.position - m_bottomPosition.localPosition;
-		//onMovementDoneAction?.Invoke();
 	}
 }

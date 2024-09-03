@@ -130,5 +130,6 @@ public class PlayerController : Singleton<PlayerController>
 		{
 			arrow.Discard();
 		}
+		arrows.Clear();
 	}
 }

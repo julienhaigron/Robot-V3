@@ -45,10 +45,10 @@ public class MoveAction : AEntityAction
 		base.Perform(_state);
 
 		//move to targetTile
-		if (finalTargetTile != null && finalTargetTile.GetEntity(false) == null)
+		if (finalTargetTile != null/* && finalTargetTile.GetEntity(false) == null*/)
 			performingEntity.Displacement.MoveToTile(finalTargetTile, EndPerform);
 		else
-			EndPerform();
+			DG.Tweening.DOVirtual.DelayedCall(.5f, () => EndPerform());
 	}
 
 	public override void EndPerform ()
@@ -78,9 +78,7 @@ public class MoveAction : AEntityAction
 	{
 		if(finalTargetTile == null)
 		{
-			RefreshDestinatedTile();
-			if (finalTargetTile == null)
-				return false;
+			return false;
 		}
 
 		bool hasConflict = false;
@@ -95,12 +93,14 @@ public class MoveAction : AEntityAction
 				{
 					//performing entity wins roll
 					finalTargetTile.SetEntity(performingEntity, _isThisTurn: false);
-					(_otherAction as MoveAction).RefreshDestinatedTile();
+					(_otherAction as MoveAction).finalTargetTile = null;
+					(_otherAction as MoveAction).performingEntity.Displacement.Coordinates.GetTile().SetEntity((_otherAction as MoveAction).performingEntity, _isThisTurn: false);
 				}
 				else
 				{
 					(_otherAction as MoveAction).finalTargetTile.SetEntity(_otherAction.performingEntity, _isThisTurn: false);
-					RefreshDestinatedTile();
+					finalTargetTile = null;
+					performingEntity.Displacement.Coordinates.GetTile().SetEntity(performingEntity, _isThisTurn: false);
 				}
 			}
 		}
@@ -125,15 +125,26 @@ public class MoveAction : AEntityAction
 
 	private bool IsDestinationOccupiedOnNextTurnAction ()
 	{
-		return finalTargetTile.GetEntity(_isThisTurn: false) != null || finalTargetTile.IsObstacle();
+		if (finalTargetTile == null)
+			return false;
+
+		Entity entityOnDestination = finalTargetTile.GetEntity(_isThisTurn: false);
+
+		return (entityOnDestination != null && entityOnDestination != performingEntity) || finalTargetTile.IsObstacle();
 	}
 
 	private void RefreshDestinatedTile ()
 	{
+		if (finalTargetTile == null)
+			return;
+
 		List<Tile> pathToTile = GridManager.Instance.GetPath(performingEntity.Displacement.Coordinates.GetTile(), finalTargetTile, _isThisTurn: false);
 
 		if (pathToTile == null || pathToTile.Count == 0)
+		{
+			finalTargetTile = null;
 			return;
+		}
 
 		finalTargetTile = pathToTile[^1];
 	}

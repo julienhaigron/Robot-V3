@@ -88,7 +88,7 @@ public class EntityEquipmentPlugin : RobotPlugin
 
 			float radians = rayAngle * Mathf.Deg2Rad;
 			Vector3 aimedPosition = new Vector3(Mathf.Sin(radians), 0, Mathf.Cos(radians));
-			RaycastHit[] hits = Physics.RaycastAll(m_linkedEntity.Displacement.Coordinates.GetTile().transform.position, aimedPosition * selectedWeapon.Data.range, selectedWeapon.Data.range, GameConfig.current.game.input.tileInternRayCastLayer);
+			RaycastHit[] hits = Physics.RaycastAll(m_linkedEntity.Displacement.Coordinates.GetTile().transform.position, aimedPosition * selectedWeapon.Data.range, selectedWeapon.Data.range, GameConfig.current.input.tileInternRayCastLayer);
 			foreach(RaycastHit hitInfo in hits)
 			{
 				if (hitInfo.transform.TryGetComponent(out Tile tile) && !tilesInRange.Contains(tile))
