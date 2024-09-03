@@ -80,7 +80,7 @@ public class MoveAction : AEntityAction
 		{
 			//entity move action canceled
 			if (performingEntity.Displacement.Coordinates.GetTile().GetEntity(false) != null)
-				Debug.Log("CRITICAL ERROR : performing entity " + performingEntity.Data.name + " cant go back to where it was. Hope this never happens");
+				Debug.LogError("CRITICAL ERROR : performing entity " + performingEntity.Data.name + " cant go back to where it was. Hope this never happens");
 			else
 				performingEntity.Displacement.Coordinates.GetTile().SetEntity(performingEntity, _isThisTurn: false);
 			return false;
