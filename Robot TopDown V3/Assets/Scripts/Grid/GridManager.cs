@@ -234,6 +234,13 @@ public class GridManager : Singleton<GridManager>
 		return angle;
 	}
 
+	public int GetDistanceBetween(Tile _from, Tile _to, bool _isThisTurn = false )
+	{
+		BFS(_from, _to: _to, _isThisTurn: _isThisTurn);
+
+		return _to.Distance;
+	}
+
 	#endregion
 
 	#region Turn sys

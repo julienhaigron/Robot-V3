@@ -19,7 +19,7 @@ public class MoveAction : AEntityAction
 
 		if (mode == MoveActionMode.Coordinate)
 			positionAtActionEnd = targetTile;
-		else if(mode == MoveActionMode.Entity)
+		else if (mode == MoveActionMode.Entity)
 			positionAtActionEnd = targetEntiy.Displacement.Coordinates.GetTile();
 	}
 
@@ -68,7 +68,7 @@ public class MoveAction : AEntityAction
 	{
 		if (mode == MoveActionMode.Coordinate)
 			targetTile = _tile;
-		else if(mode == MoveActionMode.Entity)
+		else if (mode == MoveActionMode.Entity)
 			targetEntiy = _tile.GetEntity(true);
 
 		positionAtActionEnd = _tile;
@@ -76,44 +76,50 @@ public class MoveAction : AEntityAction
 
 	public override bool CheckConflict ( AEntityAction _otherAction )
 	{
-		if(finalTargetTile == null)
+		if (finalTargetTile == null)
 		{
+			//entity move action canceled
+			if (performingEntity.Displacement.Coordinates.GetTile().GetEntity(false) != null)
+				Debug.Log("CRITICAL ERROR : performing entity " + performingEntity.Data.name + " cant go back to where it was. Hope this never happens");
+			else
+				performingEntity.Displacement.Coordinates.GetTile().SetEntity(performingEntity, _isThisTurn: false);
 			return false;
 		}
 
 		bool hasConflict = false;
-		if (_otherAction is MoveAction)
-		{
-			if ((_otherAction as MoveAction).finalTargetTile == finalTargetTile)
-			{
-				hasConflict = true;
 
-				int roll = UnityEngine.Random.Range((int)0, 2);
-				if (roll == 0)
-				{
-					//performing entity wins roll
-					finalTargetTile.SetEntity(performingEntity, _isThisTurn: false);
-					(_otherAction as MoveAction).finalTargetTile = null;
-					(_otherAction as MoveAction).performingEntity.Displacement.Coordinates.GetTile().SetEntity((_otherAction as MoveAction).performingEntity, _isThisTurn: false);
-				}
-				else
-				{
-					(_otherAction as MoveAction).finalTargetTile.SetEntity(_otherAction.performingEntity, _isThisTurn: false);
-					finalTargetTile = null;
-					performingEntity.Displacement.Coordinates.GetTile().SetEntity(performingEntity, _isThisTurn: false);
-				}
+		if (_otherAction is MoveAction && (_otherAction as MoveAction).finalTargetTile == finalTargetTile)
+		{
+			hasConflict = true;
+
+			int roll = UnityEngine.Random.Range((int)0, 2);
+			if (roll == 0)
+			{
+				//performing entity wins roll
+				//finalTargetTile.SetEntity(performingEntity, _isThisTurn: false);
+				//(_otherAction as MoveAction).performingEntity.Displacement.Coordinates.GetTile().SetEntity((_otherAction as MoveAction).performingEntity, _isThisTurn: false);
+				(_otherAction as MoveAction).finalTargetTile = null;
+			}
+			else
+			{
+				//(_otherAction as MoveAction).finalTargetTile.SetEntity(_otherAction.performingEntity, _isThisTurn: false);				
+				finalTargetTile = null;
 			}
 		}
-		
-		if (IsDestinationOccupiedOnNextTurnAction())
+		else if (IsDestinationOccupiedOnNextTurnAction())
 		{
 			hasConflict = true;
 			RefreshDestinatedTile();
 
-			if (finalTargetTile != null)
-				finalTargetTile.SetEntity(performingEntity, _isThisTurn: false);
+			/*if (finalTargetTile != null)
+				finalTargetTile.SetEntity(performingEntity, _isThisTurn: false);*/
 		}
-
+		//check if tile too far
+		else if (finalTargetTile != null && GridManager.Instance.GetDistanceBetween(performingEntity.Displacement.Coordinates.GetTile(), finalTargetTile, false) > 1)
+		{
+			hasConflict = true;
+			RefreshDestinatedTile();
+		}
 
 		if (hasConflict == false)
 		{
@@ -140,13 +146,13 @@ public class MoveAction : AEntityAction
 
 		List<Tile> pathToTile = GridManager.Instance.GetPath(performingEntity.Displacement.Coordinates.GetTile(), finalTargetTile, _isThisTurn: false);
 
-		if (pathToTile == null || pathToTile.Count == 0)
+		if (pathToTile == null || pathToTile.Count < 2 || pathToTile[^2] == performingEntity.Displacement.Coordinates.GetTile())
 		{
 			finalTargetTile = null;
 			return;
 		}
 
-		finalTargetTile = pathToTile[^1];
+		finalTargetTile = pathToTile[^2];
 	}
 
 	public override void Display ()
