@@ -4,7 +4,8 @@ using UnityEngine;
 
 public enum EntityActionEnum
 {
-    Move,
+    NeighborMove,
+    TargetTileMove,
     Attack,
     Wait
 }

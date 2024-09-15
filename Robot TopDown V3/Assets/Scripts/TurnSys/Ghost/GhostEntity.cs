@@ -22,7 +22,7 @@ public class GhostEntity : MonoBehaviour
 			return false;
 
 		TurnManager.RecordedAction displayedAction = TurnManager.Instance.RecordedActions[m_linkedEntity].ToArray()[_actionPos];
-		transform.position = displayedAction.action.positionAtActionStart.transform.position - new Vector3(0, -.5f, 0); //ground offset
+		transform.position = displayedAction.action.supposedPositionAtActionStart.transform.position - new Vector3(0, -.5f, 0); //ground offset
 
 		//put ghost at tile he would be at beginning of action
 		//draw green arrow if movement to tile

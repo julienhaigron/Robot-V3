@@ -24,6 +24,8 @@ public class TurnManager : Singleton<TurnManager>
 	public SerializableDictionary<Entity, Queue<RecordedAction>> RecordedActions => m_recordedActionInput;
 	[SerializeField] private SerializableDictionary<Entity, Queue<RecordedAction>> m_actionsToPlay = new(); //this phase action
 	private SerializableDictionary<Entity, RecordedAction> m_actionsBeingDone = new(); //current actions running
+	private SerializableDictionary<Entity, int> m_remainingActionToken = new();
+	public SerializableDictionary<Entity, int> RemainingActionToken => m_remainingActionToken;
 
 	private List<System.Tuple<RecordedAction, RecordedAction>> m_recordedConflict;
 
@@ -58,9 +60,13 @@ public class TurnManager : Singleton<TurnManager>
 
 		switch (_action)
 		{
-			case EntityActionEnum.Move:
-				m_currentEntityAction = new MoveAction();
-				m_currentEntityAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnum.Move], PlayerController.Instance.SelectedEntity, GetLastRegisteredPositionOfEntity(PlayerController.Instance.SelectedEntity));
+			case EntityActionEnum.NeighborMove:
+				m_currentEntityAction = new MoveToNeighborAction();
+				m_currentEntityAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnum.NeighborMove], PlayerController.Instance.SelectedEntity, GetLastRegisteredPositionOfEntity(PlayerController.Instance.SelectedEntity));
+				break;
+			case EntityActionEnum.TargetTileMove:
+				m_currentEntityAction = new MoveToTargetAction();
+				m_currentEntityAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnum.TargetTileMove], PlayerController.Instance.SelectedEntity, GetLastRegisteredPositionOfEntity(PlayerController.Instance.SelectedEntity));
 				break;
 			/*case EntityActionEnum.Attack:
 				m_currentEntityAction = new Action();
@@ -79,11 +85,11 @@ public class TurnManager : Singleton<TurnManager>
 
 	public bool AddAction ( Entity _entity, AEntityAction _action )
 	{
-		Debug.Log("Action added");
 		if (m_recordedActionInput.ContainsKey(_entity) == false)
 			m_recordedActionInput.Add(_entity, new());
-		/*else
-			return false;*/
+
+		if (m_remainingActionToken[_entity] <= 0)
+			return false;
 
 		m_recordedActionInput[_entity].Enqueue(new RecordedAction
 		{
@@ -91,10 +97,11 @@ public class TurnManager : Singleton<TurnManager>
 			entityState = _entity.State
 		});
 
+		m_remainingActionToken[_entity]--;
+
 		//Update action display on grid + UI
 		onActionAdded?.Invoke(_action);
 
-		//TODO : refresh selected entity actions display
 		RefreshSelectedEntityActionDisplay();
 
 		return true;
@@ -117,6 +124,13 @@ public class TurnManager : Singleton<TurnManager>
 	{
 		currentPhase = TurnPhase.Recording;
 		//UIManager.Instance.OpenPanel<InGamePanel>();
+
+		//reset RemainingActionToken
+		m_remainingActionToken.Clear();
+		foreach (Entity entity in GameManager.Instance.RobotsAnchor.Robots)
+		{
+			m_remainingActionToken.Add(entity, entity.Data.actionTokenAmount);
+		}
 	}
 
 	[Button]
@@ -192,12 +206,6 @@ public class TurnManager : Singleton<TurnManager>
 		m_actionsToPlay.Clear();
 		foreach (Entity entity in m_recordedActionInput.Keys)
 		{
-			if (m_recordedActionInput[entity].Count == 0)
-			{
-				recordedActions.Remove(entity);
-				continue;
-			}
-
 			Queue<RecordedAction> actionsPlayedThisRound = new();
 			m_actionsToPlay.Add(entity, actionsPlayedThisRound);
 			int totalCost = 0;
@@ -206,6 +214,12 @@ public class TurnManager : Singleton<TurnManager>
 				RecordedAction recordedAction = recordedActions[entity].Dequeue();
 				m_actionsToPlay[entity].Enqueue(recordedAction);
 				totalCost += recordedAction.action.cost;
+			}
+
+			if (m_recordedActionInput[entity].Count == 0)
+			{
+				recordedActions.Remove(entity);
+				continue;
 			}
 		}
 		m_recordedActionInput = new(recordedActions);
@@ -283,7 +297,7 @@ public class TurnManager : Singleton<TurnManager>
 		List<System.Tuple<RecordedAction, RecordedAction>> remainingConflict = new();
 		foreach (System.Tuple<RecordedAction, RecordedAction> conflict in m_recordedConflict)
 		{
-			if (conflict.Item1.action.CheckConflict(conflict.Item2.action))
+			if (conflict.Item1.action.CheckConflict(conflict.Item2.action, false))
 				remainingConflict.Add(conflict);
 		}
 

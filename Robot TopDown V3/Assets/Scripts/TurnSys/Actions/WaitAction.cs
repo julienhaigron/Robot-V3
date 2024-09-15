@@ -14,7 +14,7 @@ public class WaitAction : AEntityAction
 		//nothing to do
 	}
 
-	public override bool CheckConflict ( AEntityAction _otherAction )
+	public override bool CheckConflict ( AEntityAction _otherAction, bool _isCheck = true )
 	{
 		return false;
 	}

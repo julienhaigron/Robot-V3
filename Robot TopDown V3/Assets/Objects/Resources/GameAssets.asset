@@ -24,10 +24,11 @@ MonoBehaviour:
       values:
       - {fileID: 2993856260627974788, guid: c42db52ce80b83f4f9a7387a30cccf87, type: 3}
     entityActionsData:
-      keys: 0000000002000000
+      keys: 000000000300000001000000
       values:
       - {fileID: 11400000, guid: 0df61fa55d03a8e46990aef684fa54e3, type: 2}
       - {fileID: 11400000, guid: 61635f88cdfa6ab44b50dbc9c3aa34e0, type: 2}
+      - {fileID: 11400000, guid: b8ac4dc65be2b4147a3477108787f128, type: 2}
     arrowPoolData: {fileID: 11400000, guid: 64f7846c9740e524a979a96964270b2f, type: 2}
   material:
     tileGroundMaterials:

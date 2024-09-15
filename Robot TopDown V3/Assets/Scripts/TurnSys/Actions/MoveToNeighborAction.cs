@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-public class MoveAction : AEntityAction
+public class MoveToNeighborAction : AEntityAction
 {
 	public Entity targetEntiy;
 	public Tile targetTile;
@@ -72,15 +72,17 @@ public class MoveAction : AEntityAction
 			targetEntiy = _tile.GetEntity(true);
 
 		positionAtActionEnd = _tile;
+
+		base.RegisterInteraction(_tile);
 	}
 
-	public override bool CheckConflict ( AEntityAction _otherAction )
+	public override bool CheckConflict ( AEntityAction _otherAction , bool _isCheck = true )
 	{
 		if (finalTargetTile == null)
 		{
 			//entity move action canceled
 			if (performingEntity.Displacement.Coordinates.GetTile().GetEntity(false) != null)
-				Debug.LogError("CRITICAL ERROR : performing entity " + performingEntity.Data.name + " cant go back to where it was. Hope this never happens");
+				Debug.LogError("CRITICAL ERROR : performing entity " + performingEntity.Data.name + " cant go back to where it was. Hope this never happens"); // solution? insta kill performing entity
 			else
 				performingEntity.Displacement.Coordinates.GetTile().SetEntity(performingEntity, _isThisTurn: false);
 			return false;
@@ -88,7 +90,7 @@ public class MoveAction : AEntityAction
 
 		bool hasConflict = false;
 
-		if (_otherAction is MoveAction && (_otherAction as MoveAction).finalTargetTile == finalTargetTile)
+		if (_otherAction is MoveToNeighborAction && (_otherAction as MoveToNeighborAction).finalTargetTile == finalTargetTile)
 		{
 			hasConflict = true;
 
@@ -98,11 +100,26 @@ public class MoveAction : AEntityAction
 				//performing entity wins roll
 				//finalTargetTile.SetEntity(performingEntity, _isThisTurn: false);
 				//(_otherAction as MoveAction).performingEntity.Displacement.Coordinates.GetTile().SetEntity((_otherAction as MoveAction).performingEntity, _isThisTurn: false);
-				(_otherAction as MoveAction).finalTargetTile = null;
+				(_otherAction as MoveToNeighborAction).finalTargetTile = null;
 			}
 			else
 			{
 				//(_otherAction as MoveAction).finalTargetTile.SetEntity(_otherAction.performingEntity, _isThisTurn: false);				
+				finalTargetTile = null;
+			}
+		}
+		else if (_otherAction is MoveToTargetAction && (_otherAction as MoveToTargetAction).thisActionDestination == finalTargetTile)
+		{
+			hasConflict = true;
+
+			int roll = UnityEngine.Random.Range((int)0, 2);
+			if (roll == 0)
+			{
+				//performing entity wins roll
+				(_otherAction as MoveToTargetAction).thisActionDestination = null;
+			}
+			else
+			{
 				finalTargetTile = null;
 			}
 		}
@@ -157,13 +174,13 @@ public class MoveAction : AEntityAction
 
 	public override void Display ()
 	{
-		PoolElement arrow = ObjectsPooling.GetElement(GameAssets.current.game.arrowPoolData);
-		Vector3 startPos = positionAtActionStart.transform.position;
+		Arrow arrow = ObjectsPooling.GetElement(GameAssets.current.game.arrowPoolData) as Arrow;
+		Vector3 startPos = supposedPositionAtActionStart.transform.position;
 		Vector3 destination = positionAtActionEnd.transform.position;
 		Vector3 position = Vector3.Lerp(startPos, destination, .5f);
 		arrow.transform.position = position;
 		arrow.transform.LookAt(positionAtActionEnd.transform);
 
-		PlayerController.Instance.arrows.Add(arrow as Arrow);
+		PlayerController.Instance.arrows.Add(arrow);
 	}
 }

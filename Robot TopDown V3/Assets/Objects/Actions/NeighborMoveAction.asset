@@ -9,8 +9,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fc8df56b521c00d438b05733a592a56d, type: 3}
-  m_Name: PlayerRobot
+  m_Script: {fileID: 11500000, guid: 2a743e40aeafc0445b10e59cec8dfa98, type: 3}
+  m_Name: NeighborMoveAction
   m_EditorClassIdentifier: 
-  actionTokenAmount: 5
-  knownedActions: 000000000300000001000000
+  displayName: Single Move
+  type: 0
+  icon: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
+  tokenCost: 1
+  tokenCooldown: 1

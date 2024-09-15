@@ -12,8 +12,9 @@ public abstract class AEntityAction
     public int cooldown;
     public EntityActionEnum type;
     public Entity performingEntity;
-    public Tile positionAtActionStart;
+    public Tile supposedPositionAtActionStart;
     public Tile positionAtActionEnd;
+    public bool isVisible;
 
     public virtual void Init(EntityActionData _data, Entity _performingEntity, Tile _positionAtActionStart )
 	{
@@ -21,7 +22,7 @@ public abstract class AEntityAction
         cooldown = _data.tokenCooldown;
         type = _data.type;
         performingEntity = _performingEntity;
-        positionAtActionStart = _positionAtActionStart;
+        supposedPositionAtActionStart = _positionAtActionStart;
         positionAtActionEnd = _positionAtActionStart;
     }
 
@@ -37,7 +38,10 @@ public abstract class AEntityAction
 
     public abstract bool TileInteractPredicate ( Tile _tile );
 
-    public abstract void RegisterInteraction ( Tile _tile);
+    public virtual void RegisterInteraction ( Tile _tile )
+	{
+        TurnManager.Instance.AddAction(performingEntity, TurnManager.Instance.CurrentActionSelected);
+    }
 
     public virtual void EndPerform ()
     {
@@ -45,7 +49,7 @@ public abstract class AEntityAction
         onEndPerform?.Invoke(performingEntity);
     }
 
-    public abstract bool CheckConflict ( AEntityAction _otherAction );
+    public abstract bool CheckConflict ( AEntityAction _otherAction, bool _isCheck = true );
 
     public abstract void Display ();
 }

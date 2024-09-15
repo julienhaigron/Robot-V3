@@ -66,8 +66,6 @@ public class PlayerController : Singleton<PlayerController>
 			{
 				//TODO : give info to action before adding it
 				TurnManager.Instance.CurrentActionSelected.RegisterInteraction(_tile);
-
-				TurnManager.Instance.AddAction(m_selectedEntity, TurnManager.Instance.CurrentActionSelected);
 			}
 		}
 
