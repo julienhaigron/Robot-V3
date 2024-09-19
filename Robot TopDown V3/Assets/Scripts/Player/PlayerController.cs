@@ -42,7 +42,6 @@ public class PlayerController : Singleton<PlayerController>
 				m_selectedEntity.Deselect();
 				m_selectedEntity = null;
 				onEntitySelected?.Invoke(m_selectedEntity);
-				ClearArrows();
 				return;
 			}
 			else if(m_selectedEntity == null)
@@ -52,7 +51,6 @@ public class PlayerController : Singleton<PlayerController>
 
 				if(m_selectedEntity != null)
 					m_selectedEntity.Select();
-				ClearArrows();
 				return;
 			}
 		}

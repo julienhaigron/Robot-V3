@@ -30,11 +30,11 @@ public class MoveToTargetAction : AEntityAction
 		positionAtActionEnd = thisActionDestination;
 	}
 
-	public override void Prepare ( Entity.EntityState _state )
+	public override EntityActionEnum Prepare ( Entity.EntityState _state )
 	{
-		base.Prepare(_state);
-
 		performingEntity.Displacement.Coordinates.GetTile().SetEntity(null, _isThisTurn: false);
+
+		return type;
 	}
 
 	public override void Perform ( Entity.EntityState _state )
@@ -85,6 +85,7 @@ public class MoveToTargetAction : AEntityAction
 			action.Init(GameAssets.current.game.entityActionsData[EntityActionEnum.TargetTileMove], performingEntity, path[i]);
 
 			TurnManager.Instance.AddAction(performingEntity, action);
+			TurnManager.Instance.RefreshActionDisplay(performingEntity);
 		}
 	}
 
@@ -191,6 +192,7 @@ public class MoveToTargetAction : AEntityAction
 
 	public override void Display ()
 	{
+		Debug.Log("Display");
 		Arrow arrow = ObjectsPooling.GetElement(GameAssets.current.game.arrowPoolData) as Arrow;
 		Vector3 startPos = supposedPositionAtActionStart.transform.position;
 		Vector3 destination = thisActionDestination.transform.position;

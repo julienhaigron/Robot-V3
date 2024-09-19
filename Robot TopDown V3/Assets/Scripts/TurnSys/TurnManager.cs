@@ -43,6 +43,22 @@ public class TurnManager : Singleton<TurnManager>
 		public Entity.EntityState entityState;
 	}
 
+	public override void Awake ()
+	{
+		base.Awake();
+		PlayerController.onEntitySelected += OnEntitySelected;
+	}
+
+	private void OnDestroy ()
+	{
+		PlayerController.onEntitySelected -= OnEntitySelected;
+	}
+
+	private void OnEntitySelected ( Entity _selectedEntity )
+	{
+		RefreshActionDisplay(_selectedEntity);
+	}
+
 	#region Recording phase
 
 	public Tile GetLastRegisteredPositionOfEntity ( Entity _entity )
@@ -57,30 +73,37 @@ public class TurnManager : Singleton<TurnManager>
 	public void SetCurrentActionSelected ( EntityActionEnum _action )
 	{
 		m_currentActionTypeSelected = _action;
+		m_currentEntityAction = GetAction(_action, PlayerController.Instance.SelectedEntity);
 
-		switch (_action)
+		onActionSelected?.Invoke(m_currentEntityAction);
+	}
+
+	private AEntityAction GetAction(EntityActionEnum _actionType, Entity _performingEntity )
+	{
+		AEntityAction action = null;
+
+		switch (_actionType)
 		{
 			case EntityActionEnum.NeighborMove:
-				m_currentEntityAction = new MoveToNeighborAction();
-				m_currentEntityAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnum.NeighborMove], PlayerController.Instance.SelectedEntity, GetLastRegisteredPositionOfEntity(PlayerController.Instance.SelectedEntity));
+				action = new MoveToNeighborAction();
+				action.Init(GameAssets.current.game.entityActionsData[EntityActionEnum.NeighborMove], _performingEntity, GetLastRegisteredPositionOfEntity(_performingEntity));
 				break;
 			case EntityActionEnum.TargetTileMove:
-				m_currentEntityAction = new MoveToTargetAction();
-				m_currentEntityAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnum.TargetTileMove], PlayerController.Instance.SelectedEntity, GetLastRegisteredPositionOfEntity(PlayerController.Instance.SelectedEntity));
+				action = new MoveToTargetAction();
+				action.Init(GameAssets.current.game.entityActionsData[EntityActionEnum.TargetTileMove], _performingEntity, GetLastRegisteredPositionOfEntity(_performingEntity));
 				break;
 			/*case EntityActionEnum.Attack:
-				m_currentEntityAction = new Action();
-				m_currentEntityAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnum.Attack], PlayerController.Instance.SelectedEntity, GetCurrentSelectedEntityTile());
+				action = new Action();
+				action.Init(GameAssets.current.game.entityActionsData[EntityActionEnum.Attack], _performingEntity, GetCurrentSelectedEntityTile());
 				break;*/
 			case EntityActionEnum.Wait:
-				m_currentEntityAction = new WaitAction();
-				m_currentEntityAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnum.Wait], PlayerController.Instance.SelectedEntity, GetLastRegisteredPositionOfEntity(PlayerController.Instance.SelectedEntity));
+				action = new WaitAction();
+				action.Init(GameAssets.current.game.entityActionsData[EntityActionEnum.Wait], _performingEntity, GetLastRegisteredPositionOfEntity(_performingEntity));
 				break;
 
 		}
 
-
-		onActionSelected?.Invoke(m_currentEntityAction);
+		return action;
 	}
 
 	public bool AddAction ( Entity _entity, AEntityAction _action )
@@ -101,19 +124,23 @@ public class TurnManager : Singleton<TurnManager>
 
 		//Update action display on grid + UI
 		onActionAdded?.Invoke(_action);
-
-		RefreshSelectedEntityActionDisplay();
-
 		return true;
 	}
 
-	public void RefreshSelectedEntityActionDisplay ()
+	public void RefreshActionDisplay (Entity _selectedEntity)
 	{
+		PlayerController.Instance.ClearArrows();
+
+		Debug.Log("ClearArrows");
+
+		if (_selectedEntity == null || !m_recordedActionInput.ContainsKey(_selectedEntity))
+			return;
+
 		//1) pop ghost if no ghost
 		//else: refresh ghost position
 
 		//2) display all selected entity actions
-		foreach (RecordedAction recordedAction in m_recordedActionInput[PlayerController.Instance.SelectedEntity])
+		foreach (RecordedAction recordedAction in m_recordedActionInput[_selectedEntity].ToArray())
 		{
 			recordedAction.action.Display();
 		}
@@ -228,15 +255,28 @@ public class TurnManager : Singleton<TurnManager>
 		GridManager.Instance.StartNewPhase();
 
 		//1- register action (like movment in grid)
-		//   => checks at this moment if action result in conflict
+		//   => checks at this moment if action changes in another
 		//
-		foreach (Entity entity in m_actionsToPlay.Keys)
+		List<Entity> entities = new(m_actionsToPlay.Keys);
+
+		foreach (Entity entity in entities)
 		{
-			Queue<RecordedAction> actionsPlayedThisRound = m_actionsToPlay[entity];
-			foreach (RecordedAction recordedAction in actionsPlayedThisRound.ToArray())
+			Queue<RecordedAction> returnActionToPlayThisRound = new Queue<RecordedAction>();
+			foreach (RecordedAction recordedAction in m_actionsToPlay[entity].ToArray())
 			{
-				recordedAction.action.Prepare(recordedAction.entityState);
+				EntityActionEnum returnedActionType = recordedAction.action.Prepare(recordedAction.entityState);
+				if (returnedActionType == recordedAction.action.type)
+					returnActionToPlayThisRound.Enqueue(recordedAction);
+				else
+				{
+					AEntityAction newAction = null;
+					newAction = GetAction(returnedActionType, entity);
+					newAction.Prepare(recordedAction.entityState);
+					returnActionToPlayThisRound.Enqueue(new RecordedAction() { action = newAction, entityState = recordedAction.entityState});
+				}
 			}
+
+			m_actionsToPlay[entity] = new(returnActionToPlayThisRound);
 		}
 
 		//2-recursively check for possible conflict and change actions if needed
@@ -341,6 +381,5 @@ public class TurnManager : Singleton<TurnManager>
 
 
 	#endregion
-
 
 }

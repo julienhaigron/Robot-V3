@@ -13,6 +13,11 @@ public class WaitAction : AEntityAction
 	{
 		//nothing to do
 	}
+	
+	public override EntityActionEnum Prepare ( Entity.EntityState _state )
+	{
+		return type;
+	}
 
 	public override bool CheckConflict ( AEntityAction _otherAction, bool _isCheck = true )
 	{
@@ -37,4 +42,6 @@ public class WaitAction : AEntityAction
 	{
 		
 	}
+
+	
 }

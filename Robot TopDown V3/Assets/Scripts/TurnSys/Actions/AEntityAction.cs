@@ -26,10 +26,7 @@ public abstract class AEntityAction
         positionAtActionEnd = _positionAtActionStart;
     }
 
-    public virtual void Prepare ( Entity.EntityState _state )
-	{
-
-	}
+    public abstract EntityActionEnum Prepare ( Entity.EntityState _state );
 
     public virtual void Perform (Entity.EntityState _state)
 	{
@@ -41,6 +38,8 @@ public abstract class AEntityAction
     public virtual void RegisterInteraction ( Tile _tile )
 	{
         TurnManager.Instance.AddAction(performingEntity, TurnManager.Instance.CurrentActionSelected);
+
+        TurnManager.Instance.RefreshActionDisplay(performingEntity);
     }
 
     public virtual void EndPerform ()
