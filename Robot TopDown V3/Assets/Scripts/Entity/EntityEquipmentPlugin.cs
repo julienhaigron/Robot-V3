@@ -2,9 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EntityEquipmentPlugin : RobotPlugin
+public class EntityEquipmentPlugin : EntityPlugin
 {
     private Dictionary<string, Weapon> m_weapons = new();
+	public Dictionary<string, Weapon> Weapons => m_weapons;
 	[SerializeField] private Transform m_weaponParent;
 
 	private void Awake ()

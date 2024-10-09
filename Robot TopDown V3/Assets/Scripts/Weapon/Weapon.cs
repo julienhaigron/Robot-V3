@@ -16,7 +16,9 @@ public class Weapon : MonoBehaviour
     public void Init (WeaponData _data)
 	{
         m_data = _data;
-	}
+
+        DisableAllCones();
+    }
 
     public void ActivateActiveCone ()
 	{

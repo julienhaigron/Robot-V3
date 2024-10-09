@@ -12,8 +12,7 @@ public class ActionButton : MonoBehaviour
 	[SerializeField] private TextMeshProUGUI m_name;
 	[SerializeField] private TextMeshProUGUI m_tokenCost;
 
-
-	private EntityActionEnum m_actionType;
+	private EntityActionType m_actionType;
 	private bool m_isVisible = false;
 
 	private void Awake ()
@@ -27,7 +26,7 @@ public class ActionButton : MonoBehaviour
 	}
 
 
-	public void Init( EntityActionEnum _action )
+	public void Init( EntityActionType _action )
 	{
 		m_actionType = _action;
 		EntityActionData data = GameAssets.current.game.entityActionsData[_action];

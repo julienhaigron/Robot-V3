@@ -37,22 +37,26 @@ public class PlayerController : Singleton<PlayerController>
 		//Event => Select // unselect entity
 		if(_tile.GetEntity(true) != null && !_tile.canInteract)
 		{
-			if(m_selectedEntity == _tile.GetEntity(true))
-			{
-				m_selectedEntity.Deselect();
-				m_selectedEntity = null;
-				onEntitySelected?.Invoke(m_selectedEntity);
-				return;
-			}
-			else if(m_selectedEntity == null)
-			{
-				m_selectedEntity = _tile.GetEntity(true);
-				onEntitySelected?.Invoke(m_selectedEntity);
+			if (_tile.GetEntity(true).Data.faction == Entity.EntityFaction.Ally) 
+			{ 
+				if(m_selectedEntity == _tile.GetEntity(true))
+				{
+					m_selectedEntity.Deselect();
+					m_selectedEntity = null;
+					onEntitySelected?.Invoke(m_selectedEntity);
+					return;
+				}
+				else if(m_selectedEntity == null)
+				{
+					m_selectedEntity = _tile.GetEntity(true);
+					onEntitySelected?.Invoke(m_selectedEntity);
 
-				if(m_selectedEntity != null)
-					m_selectedEntity.Select();
-				return;
+					if(m_selectedEntity != null)
+						m_selectedEntity.Select();
+					return;
+				}
 			}
+			
 		}
 
 		//validate action

@@ -10,7 +10,7 @@ public abstract class AEntityAction
 
     public int cost;
     public int cooldown;
-    public EntityActionEnum type;
+    public EntityActionType type;
     public Entity performingEntity;
     public Tile supposedPositionAtActionStart;
     public Tile positionAtActionEnd;
@@ -26,7 +26,7 @@ public abstract class AEntityAction
         positionAtActionEnd = _positionAtActionStart;
     }
 
-    public abstract EntityActionEnum Prepare ( Entity.EntityState _state );
+    public abstract void Prepare ( Entity.EntityState _state );
 
     public virtual void Perform (Entity.EntityState _state)
 	{

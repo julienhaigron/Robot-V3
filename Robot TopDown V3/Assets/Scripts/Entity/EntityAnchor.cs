@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class RobotAnchor : MonoBehaviour
+public class EntityAnchor : MonoBehaviour
 {
     private List<Entity> m_robots = new();
     public List<Entity> Robots => m_robots;

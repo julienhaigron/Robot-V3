@@ -49,7 +49,9 @@ public class GridManager : Singleton<GridManager>
 			m_tiles[i].SetGroundType(groundType);
 
 			if (groundType == TileGroundType.PlayerSpawn)
-				GameManager.Instance.RobotsAnchor.AddSpawn(m_tiles[i].coordinates);
+				GameManager.Instance.PlayerRobotsAnchor.AddSpawn(m_tiles[i].coordinates);
+			else if(groundType == TileGroundType.EnemySpawn)
+				GameManager.Instance.EnnemiRobotsAnchor.AddSpawn(m_tiles[i].coordinates);
 		}
 	}
 
@@ -149,11 +151,52 @@ public class GridManager : Singleton<GridManager>
 		return path;
 	}
 
-	public int GetDistance(Tile _from, Tile _to )
+	public List<Entity> GetEntitiesInRange(Tile _from, int _maxDist, bool _isThisTurn )
 	{
-		BFS(_from, _to: _to, _isThisTurn: true);
+		List<Entity> entitiesInRange = new();
 
-		return _to.Distance;
+		for (int i = 0; i < m_tiles.Length; i++)
+		{
+			m_tiles[i].Distance = int.MaxValue;
+			//m_tiles[i].UI.ResetOutline();
+		}
+
+		Queue<Tile> frontier = new Queue<Tile>();
+		_from.Distance = 0;
+		frontier.Enqueue(_from);
+
+		while (frontier.Count > 0)
+		{
+			Tile current = frontier.Dequeue();
+			for (int i = 0; i < 6; i++)
+			{
+				//yield return new WaitForSeconds(1 / 60f);
+				Tile neighbor = current.GetNeighbor((HexDirection)i);
+
+				if (neighbor == null || neighbor.Distance != int.MaxValue)
+				{
+					continue;
+				}
+
+				//max distance
+				if (current.Distance + 1 > _maxDist)
+				{
+					continue;
+				}
+
+				//obstacle
+				if (neighbor.GetEntity(_isThisTurn) != null)
+				{
+					entitiesInRange.Add(neighbor.GetEntity(_isThisTurn));
+				}
+
+				neighbor.Distance = current.Distance + 1;
+				frontier.Enqueue(neighbor);
+			}
+		}
+
+
+		return entitiesInRange;
 	}
 
 	public void ClearTileOutile ()

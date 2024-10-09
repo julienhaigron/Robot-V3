@@ -206,6 +206,26 @@ PrefabInstance:
       propertyPath: m_robotDatas.Array.data[1]
       value: 
       objectReference: {fileID: 11400000, guid: d1ff8cefde9698646866f7c141843e06, type: 2}
+    - target: {fileID: 9152403339332330190, guid: 72a8cdbae79f9a74f90a70843427bc89, type: 3}
+      propertyPath: m_ennemiRobotDatas.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9152403339332330190, guid: 72a8cdbae79f9a74f90a70843427bc89, type: 3}
+      propertyPath: m_playerRobotDatas.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 9152403339332330190, guid: 72a8cdbae79f9a74f90a70843427bc89, type: 3}
+      propertyPath: m_ennemiRobotDatas.Array.data[0]
+      value: 
+      objectReference: {fileID: 11400000, guid: 11de9230c09867747908272f3310089f, type: 2}
+    - target: {fileID: 9152403339332330190, guid: 72a8cdbae79f9a74f90a70843427bc89, type: 3}
+      propertyPath: m_playerRobotDatas.Array.data[0]
+      value: 
+      objectReference: {fileID: 11400000, guid: 11de9230c09867747908272f3310089f, type: 2}
+    - target: {fileID: 9152403339332330190, guid: 72a8cdbae79f9a74f90a70843427bc89, type: 3}
+      propertyPath: m_playerRobotDatas.Array.data[1]
+      value: 
+      objectReference: {fileID: 11400000, guid: 11de9230c09867747908272f3310089f, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 72a8cdbae79f9a74f90a70843427bc89, type: 3}
 --- !u!1 &705507993
@@ -397,23 +417,8 @@ PrefabInstance:
       propertyPath: m_Name
       value: UIManager
       objectReference: {fileID: 0}
-    - target: {fileID: 6821883086484402786, guid: eae536bd8400d134eab9a71e46db670f, type: 3}
-      propertyPath: m_entityActionList
-      value: 
-      objectReference: {fileID: 2034904381}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: eae536bd8400d134eab9a71e46db670f, type: 3}
---- !u!114 &2034904381 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 2606145908995249020, guid: eae536bd8400d134eab9a71e46db670f, type: 3}
-  m_PrefabInstance: {fileID: 2034904380}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1700dcea303636345b061bf6cecc070b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &2043805659 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8375078075185135005, guid: 72a8cdbae79f9a74f90a70843427bc89, type: 3}

@@ -31,8 +31,8 @@ public class TurnManager : Singleton<TurnManager>
 
 	private AEntityAction m_currentEntityAction;
 	public AEntityAction CurrentActionSelected => m_currentEntityAction;
-	private EntityActionEnum m_currentActionTypeSelected;
-	public EntityActionEnum CurrentActionTypeSelected => m_currentActionTypeSelected;
+	private EntityActionType m_currentActionTypeSelected;
+	public EntityActionType CurrentActionTypeSelected => m_currentActionTypeSelected;
 
 	public enum TurnPhase { Recording, Calculating, Playing }
 	public TurnPhase currentPhase;
@@ -70,7 +70,7 @@ public class TurnManager : Singleton<TurnManager>
 		return lastRecordedAction.action.positionAtActionEnd;
 	}
 
-	public void SetCurrentActionSelected ( EntityActionEnum _action )
+	public void SetCurrentActionSelected ( EntityActionType _action )
 	{
 		m_currentActionTypeSelected = _action;
 		m_currentEntityAction = GetAction(_action, PlayerController.Instance.SelectedEntity);
@@ -78,32 +78,39 @@ public class TurnManager : Singleton<TurnManager>
 		onActionSelected?.Invoke(m_currentEntityAction);
 	}
 
-	private AEntityAction GetAction(EntityActionEnum _actionType, Entity _performingEntity )
+	private AEntityAction GetAction(EntityActionType _actionType, Entity _performingEntity )
 	{
 		AEntityAction action = null;
 
 		switch (_actionType)
 		{
-			case EntityActionEnum.NeighborMove:
+			case EntityActionType.NeighborMove:
 				action = new MoveToNeighborAction();
-				action.Init(GameAssets.current.game.entityActionsData[EntityActionEnum.NeighborMove], _performingEntity, GetLastRegisteredPositionOfEntity(_performingEntity));
+				action.Init(GameAssets.current.game.entityActionsData[EntityActionType.NeighborMove], _performingEntity, GetLastRegisteredPositionOfEntity(_performingEntity));
 				break;
-			case EntityActionEnum.TargetTileMove:
+			case EntityActionType.TargetTileMove:
 				action = new MoveToTargetAction();
-				action.Init(GameAssets.current.game.entityActionsData[EntityActionEnum.TargetTileMove], _performingEntity, GetLastRegisteredPositionOfEntity(_performingEntity));
+				action.Init(GameAssets.current.game.entityActionsData[EntityActionType.TargetTileMove], _performingEntity, GetLastRegisteredPositionOfEntity(_performingEntity));
 				break;
 			/*case EntityActionEnum.Attack:
 				action = new Action();
 				action.Init(GameAssets.current.game.entityActionsData[EntityActionEnum.Attack], _performingEntity, GetCurrentSelectedEntityTile());
 				break;*/
-			case EntityActionEnum.Wait:
+			case EntityActionType.Wait:
 				action = new WaitAction();
-				action.Init(GameAssets.current.game.entityActionsData[EntityActionEnum.Wait], _performingEntity, GetLastRegisteredPositionOfEntity(_performingEntity));
+				action.Init(GameAssets.current.game.entityActionsData[EntityActionType.Wait], _performingEntity, GetLastRegisteredPositionOfEntity(_performingEntity));
 				break;
 
 		}
 
 		return action;
+	}
+
+	public bool AddAction (Entity _entity, EntityActionType _actionType )
+	{
+		AEntityAction action = null;
+		action = GetAction(_actionType, _entity);
+		return AddAction(_entity, action);
 	}
 
 	public bool AddAction ( Entity _entity, AEntityAction _action )
@@ -131,8 +138,6 @@ public class TurnManager : Singleton<TurnManager>
 	{
 		PlayerController.Instance.ClearArrows();
 
-		Debug.Log("ClearArrows");
-
 		if (_selectedEntity == null || !m_recordedActionInput.ContainsKey(_selectedEntity))
 			return;
 
@@ -154,7 +159,7 @@ public class TurnManager : Singleton<TurnManager>
 
 		//reset RemainingActionToken
 		m_remainingActionToken.Clear();
-		foreach (Entity entity in GameManager.Instance.RobotsAnchor.Robots)
+		foreach (Entity entity in GameManager.Instance.PlayerRobotsAnchor.Robots)
 		{
 			m_remainingActionToken.Add(entity, entity.Data.actionTokenAmount);
 		}
@@ -163,6 +168,8 @@ public class TurnManager : Singleton<TurnManager>
 	[Button]
 	public void EndInputPhase ()
 	{
+		BotEnnemiPlayer.Instance.InputPhase();
+
 		onEndInputPhase?.Invoke();
 
 		SerializableDictionary<Entity, Queue<RecordedAction>> recordedActionInput = new(m_recordedActionInput);
@@ -189,6 +196,8 @@ public class TurnManager : Singleton<TurnManager>
 
 			}
 		}
+
+		StartRound();
 	}
 
 	#endregion
@@ -196,7 +205,7 @@ public class TurnManager : Singleton<TurnManager>
 	#region Play phase
 
 	[Button]
-	public void StartRound ()
+	private void StartRound ()
 	{
 		Debug.Log("StartRound");
 
@@ -264,15 +273,24 @@ public class TurnManager : Singleton<TurnManager>
 			Queue<RecordedAction> returnActionToPlayThisRound = new Queue<RecordedAction>();
 			foreach (RecordedAction recordedAction in m_actionsToPlay[entity].ToArray())
 			{
-				EntityActionEnum returnedActionType = recordedAction.action.Prepare(recordedAction.entityState);
-				if (returnedActionType == recordedAction.action.type)
+				//TODO here :
+				//Entities check in new EntityUILogic.cs wheter action changes in another depending on factors checked in said script
+				//ex: MoveAction changes to ShootAction because of a Entity visible in coneRange
+				//    => cone range trigger is in EntityUILogic.cs
+
+				EntityAIPlugin.CheckActionResultInfo resultInfo = entity.AI.CheckAction(recordedAction);
+
+				if (!resultInfo.isActionChanging)
+				{
+					recordedAction.action.Prepare(recordedAction.entityState);
 					returnActionToPlayThisRound.Enqueue(recordedAction);
+				}
 				else
 				{
 					AEntityAction newAction = null;
-					newAction = GetAction(returnedActionType, entity);
+					newAction = GetAction(resultInfo.replacedActionType, entity);
 					newAction.Prepare(recordedAction.entityState);
-					returnActionToPlayThisRound.Enqueue(new RecordedAction() { action = newAction, entityState = recordedAction.entityState});
+					returnActionToPlayThisRound.Enqueue(new RecordedAction() { action = newAction, entityState = recordedAction.entityState });
 				}
 			}
 

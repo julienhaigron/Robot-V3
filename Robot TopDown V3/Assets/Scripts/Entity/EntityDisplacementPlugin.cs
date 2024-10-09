@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 
-public class EntityDisplacementPlugin : RobotPlugin
+public class EntityDisplacementPlugin : EntityPlugin
 {
 	private TileCoordinates m_coordinate;
 	public TileCoordinates Coordinates => m_coordinate;
 
 	[SerializeField] private Transform m_bottomPosition;
 
-	public void Init ( RobotAnchor.Spawn _spawn )
+	public void Init ( EntityAnchor.Spawn _spawn )
 	{
 		//MoveToTile(_spawn.coordinates.GetTile(), null);
 		Tile spawn = _spawn.coordinates.GetTile();

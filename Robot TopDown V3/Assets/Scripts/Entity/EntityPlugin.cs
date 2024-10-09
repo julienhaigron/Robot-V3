@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class RobotPlugin : MonoBehaviour
+public class EntityPlugin : MonoBehaviour
 {
     [SerializeField] protected Entity m_linkedEntity;
 

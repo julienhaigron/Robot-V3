@@ -6,11 +6,15 @@ using System;
 public class GameManager : Singleton<GameManager>
 {
 
-	[SerializeField] private RobotAnchor m_robotAnchor;
-	public RobotAnchor RobotsAnchor => m_robotAnchor;
+	[SerializeField] private EntityAnchor m_playerRobotAnchor;
+	public EntityAnchor PlayerRobotsAnchor => m_playerRobotAnchor;
+	
+	[SerializeField] private EntityAnchor m_ennemiRobotAnchor;
+	public EntityAnchor EnnemiRobotsAnchor => m_ennemiRobotAnchor;
 
 	[SerializeField] private GridData m_map;
-	[SerializeField] private List<EntityData> m_robotDatas;
+	[SerializeField] private List<EntityData> m_playerRobotDatas;
+	[SerializeField] private List<EntityData> m_ennemiRobotDatas;
 
 	private void Start ()
 	{
@@ -20,7 +24,8 @@ public class GameManager : Singleton<GameManager>
 			GridManager.Instance.GenerateGrid(10, 10);
 
 
-		m_robotAnchor.Init(m_robotDatas);
+		m_playerRobotAnchor.Init(m_playerRobotDatas);
+		m_ennemiRobotAnchor.Init(m_ennemiRobotDatas);
 
 		TurnManager.Instance.StartInputPhase();
 	}

@@ -8,7 +8,19 @@ public sealed class InGamePanel : AUIPanel
 	[SerializeField] private UIEntityActionList m_entityActionList;
 	public UIEntityActionList EntityActionList => m_entityActionList;
 
+	[SerializeField] private BaseButton m_endPhaseButton;
+
 	#region MonoBehaviour & Init
+
+	private void Awake ()
+	{
+		m_endPhaseButton.onClick += OnClickEndPhaseBtn;
+	}
+
+	private void OnDestroy ()
+	{
+		m_endPhaseButton.onClick -= OnClickEndPhaseBtn;
+	}
 
 	public void Init () //add param
 	{
@@ -61,5 +73,11 @@ public sealed class InGamePanel : AUIPanel
 	#endregion
 
 	#region Callbacks
+
+	private void OnClickEndPhaseBtn ()
+	{
+		TurnManager.Instance.EndInputPhase();
+	}
+
 	#endregion
 }

@@ -6,7 +6,7 @@ using UnityEngine;
 public class EntityActionData : ScriptableObject
 {
     public string displayName;
-    public EntityActionEnum type;
+    public EntityActionType type;
     public Sprite icon;
     [Min(0)] public int tokenCost;
     [Min(0)] public int tokenCooldown;

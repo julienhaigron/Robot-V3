@@ -127,6 +127,7 @@ GameObject:
   - component: {fileID: 8721184665882293673}
   - component: {fileID: 1047337403534908312}
   - component: {fileID: 5695719431895869441}
+  - component: {fileID: 2094051544254820781}
   m_Layer: 0
   m_Name: RobotEntity
   m_TagString: Untagged
@@ -166,6 +167,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_displacement: {fileID: 1047337403534908312}
   m_equipment: {fileID: 5695719431895869441}
+  m_ai: {fileID: 2094051544254820781}
+  m_data: {fileID: 0}
+  m_faction: 0
 --- !u!65 &8721184665882293673
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -207,6 +211,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_linkedEntity: {fileID: 4737523583837535854}
   m_weaponParent: {fileID: 3654160432149023341}
+--- !u!114 &2094051544254820781
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3995004717654774774}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 88008f6cfe594464480dbcf2861a97f4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_linkedEntity: {fileID: 4737523583837535854}
 --- !u!1 &8625445475601184213
 GameObject:
   m_ObjectHideFlags: 0

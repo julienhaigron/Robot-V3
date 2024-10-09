@@ -23,7 +23,7 @@ public class MoveToNeighborAction : AEntityAction
 			positionAtActionEnd = targetEntiy.Displacement.Coordinates.GetTile();
 	}
 
-	public override EntityActionEnum Prepare ( Entity.EntityState _state )
+	public override void Prepare ( Entity.EntityState _state )
 	{
 		performingEntity.Displacement.Coordinates.GetTile().SetEntity(null, _isThisTurn: false);
 
@@ -36,8 +36,6 @@ public class MoveToNeighborAction : AEntityAction
 				finalTargetTile = targetEntiy.Displacement.Coordinates.GetTile();
 				break;
 		}
-
-		return type;
 	}
 
 	public override void Perform ( Entity.EntityState _state )

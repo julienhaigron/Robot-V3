@@ -2,10 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum EntityActionEnum
+public enum EntityActionType
 {
     NeighborMove,
     TargetTileMove,
     Attack,
-    Wait
+    Wait,
+    RotateWeapon
 }

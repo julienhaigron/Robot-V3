@@ -31,7 +31,7 @@ Transform:
   m_Children:
   - {fileID: 6177624356992613484}
   m_Father: {fileID: 1001864918258139889}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &3169160451619648616
 MonoBehaviour:
@@ -159,7 +159,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1001864918258139889}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4980921478567790642
 GameObject:
@@ -172,7 +172,7 @@ GameObject:
   - component: {fileID: 1096936435853514918}
   - component: {fileID: 1618352944327094151}
   m_Layer: 0
-  m_Name: Robots
+  m_Name: PlayerRobots
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -249,6 +249,7 @@ Transform:
   m_Children:
   - {fileID: 2636778587408279573}
   - {fileID: 1096936435853514918}
+  - {fileID: 1656357852335485033}
   - {fileID: 2602406168588584456}
   - {fileID: 7273707021534605587}
   m_Father: {fileID: 0}
@@ -266,9 +267,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c4043acb96fa9614785a34d9bb1430e9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_robotAnchor: {fileID: 1618352944327094151}
+  m_playerRobotAnchor: {fileID: 1618352944327094151}
+  m_ennemiRobotAnchor: {fileID: 5770960734887702693}
   m_map: {fileID: 0}
-  m_robots: []
+  m_playerRobotDatas: []
+  m_ennemiRobotDatas: []
 --- !u!114 &6329207692699311254
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -416,6 +419,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8fb5f8303f4426146afd8c7ac6d779b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  arrows: []
 --- !u!114 &2601377726672517245
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -448,6 +452,56 @@ MonoBehaviour:
   m_mainParent: {fileID: 7273707021534605587}
   m_pools:
   - {fileID: 11400000, guid: 64f7846c9740e524a979a96964270b2f, type: 2}
+--- !u!1 &8942384730850137325
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1656357852335485033}
+  - component: {fileID: 5770960734887702693}
+  m_Layer: 0
+  m_Name: EnnemiRobot
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1656357852335485033
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8942384730850137325}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1001864918258139889}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5770960734887702693
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8942384730850137325}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c3c1800c74466494d86369113a96512f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_spawnCoordinates:
+  - coordinates:
+      m_x: 0
+      m_z: 0
+      m_id: 0
+    initializationState: 0
 --- !u!1001 &5962065622948263214
 PrefabInstance:
   m_ObjectHideFlags: 0
