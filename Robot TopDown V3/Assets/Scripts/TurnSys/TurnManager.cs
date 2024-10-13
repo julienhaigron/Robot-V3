@@ -59,7 +59,20 @@ public class TurnManager : Singleton<TurnManager>
 		RefreshActionDisplay(_selectedEntity);
 	}
 
-	#region Recording phase
+	public void Init ()
+	{
+		foreach (Entity enemy in GameManager.Instance.EnnemiEntityAnchor.Entities)
+		{
+			enemy.Equipment.onDeath += OnEntityDeath;
+		}
+
+		foreach (Entity ally in GameManager.Instance.PlayerEntitiesAnchor.Entities)
+		{
+			ally.Equipment.onDeath += OnEntityDeath;
+		}
+	}
+
+	#region Input phase
 
 	public Tile GetLastRegisteredPositionOfEntity ( Entity _entity )
 	{
@@ -92,15 +105,18 @@ public class TurnManager : Singleton<TurnManager>
 				action = new MoveToTargetAction();
 				action.Init(GameAssets.current.game.entityActionsData[EntityActionType.TargetTileMove], _performingEntity, GetLastRegisteredPositionOfEntity(_performingEntity));
 				break;
-			/*case EntityActionEnum.Attack:
-				action = new Action();
-				action.Init(GameAssets.current.game.entityActionsData[EntityActionEnum.Attack], _performingEntity, GetCurrentSelectedEntityTile());
-				break;*/
+			case EntityActionType.Attack:
+				action = new AttackAction();
+				action.Init(GameAssets.current.game.entityActionsData[EntityActionType.Attack], _performingEntity, GetLastRegisteredPositionOfEntity(_performingEntity));
+				break;
 			case EntityActionType.Wait:
 				action = new WaitAction();
 				action.Init(GameAssets.current.game.entityActionsData[EntityActionType.Wait], _performingEntity, GetLastRegisteredPositionOfEntity(_performingEntity));
 				break;
-
+			case EntityActionType.RotateWeapon:
+				action = new RotateWeaponAction();
+				action.Init(GameAssets.current.game.entityActionsData[EntityActionType.RotateWeapon], _performingEntity, GetLastRegisteredPositionOfEntity(_performingEntity));
+				break;
 		}
 
 		return action;
@@ -159,7 +175,12 @@ public class TurnManager : Singleton<TurnManager>
 
 		//reset RemainingActionToken
 		m_remainingActionToken.Clear();
-		foreach (Entity entity in GameManager.Instance.PlayerRobotsAnchor.Robots)
+		foreach (Entity entity in GameManager.Instance.PlayerEntitiesAnchor.Entities)
+		{
+			m_remainingActionToken.Add(entity, entity.Data.actionTokenAmount);
+		}
+
+		foreach (Entity entity in GameManager.Instance.EnnemiEntityAnchor.Entities)
 		{
 			m_remainingActionToken.Add(entity, entity.Data.actionTokenAmount);
 		}
@@ -263,7 +284,7 @@ public class TurnManager : Singleton<TurnManager>
 		currentPhase = TurnPhase.Calculating;
 		GridManager.Instance.StartNewPhase();
 
-		//1- register action (like movment in grid)
+		//1- register action (like movement in grid)
 		//   => checks at this moment if action changes in another
 		//
 		List<Entity> entities = new(m_actionsToPlay.Keys);
@@ -387,14 +408,36 @@ public class TurnManager : Singleton<TurnManager>
 
 	}
 
+	private void OnEntityDeath(Entity _entity )
+	{
+		_entity.Equipment.onDeath -= OnEntityDeath;
+
+		m_recordedActionInput.Remove(_entity);
+	}
+
 	private void EndRound ()
 	{
 		Debug.Log("EndRound");
 
+		//check if finish level condition (all enemy killed || all ally killed)
+		GameManager.Instance.LevelCompletionCheck(out bool _areAllEnemiesDead, out bool areAllPlayerEntitiesDead);
+		if (_areAllEnemiesDead || areAllPlayerEntitiesDead)
+		{
+			EndLevel(!areAllPlayerEntitiesDead);
+		}
+		else
+		{
+			StartInputPhase();
+		}
 
-		//TODO : check if finish level condition (all enemy killed || all ally killed)
+	}
 
-		StartInputPhase();
+	private void EndLevel (bool _isSuccess)
+	{
+		if (_isSuccess)
+			Debug.Log("Player Victory");
+		else
+			Debug.Log("Enemy Victory");
 	}
 
 

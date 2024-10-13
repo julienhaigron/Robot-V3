@@ -228,6 +228,7 @@ GameObject:
   - component: {fileID: 7046302440515799230}
   - component: {fileID: 2601377726672517245}
   - component: {fileID: 7124589887109012541}
+  - component: {fileID: 1994310452173458588}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -267,11 +268,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c4043acb96fa9614785a34d9bb1430e9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_playerRobotAnchor: {fileID: 1618352944327094151}
-  m_ennemiRobotAnchor: {fileID: 5770960734887702693}
-  m_map: {fileID: 0}
-  m_playerRobotDatas: []
-  m_ennemiRobotDatas: []
+  m_playerEntityAnchor: {fileID: 1618352944327094151}
+  m_ennemiEntityAnchor: {fileID: 5770960734887702693}
+  m_map: {fileID: 11400000, guid: 6f08d292abbf2bc4d8b8635617613b35, type: 2}
+  m_playerEntityDatas: []
+  m_ennemiEntityDatas: []
 --- !u!114 &6329207692699311254
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -452,6 +453,18 @@ MonoBehaviour:
   m_mainParent: {fileID: 7273707021534605587}
   m_pools:
   - {fileID: 11400000, guid: 64f7846c9740e524a979a96964270b2f, type: 2}
+--- !u!114 &1994310452173458588
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8375078075185135005}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 93d53594ce8dbd245b14fc37a3c8885e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &8942384730850137325
 GameObject:
   m_ObjectHideFlags: 0

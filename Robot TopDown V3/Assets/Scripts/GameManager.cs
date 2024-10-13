@@ -6,15 +6,15 @@ using System;
 public class GameManager : Singleton<GameManager>
 {
 
-	[SerializeField] private EntityAnchor m_playerRobotAnchor;
-	public EntityAnchor PlayerRobotsAnchor => m_playerRobotAnchor;
+	[SerializeField] private EntityAnchor m_playerEntityAnchor;
+	public EntityAnchor PlayerEntitiesAnchor => m_playerEntityAnchor;
 	
-	[SerializeField] private EntityAnchor m_ennemiRobotAnchor;
-	public EntityAnchor EnnemiRobotsAnchor => m_ennemiRobotAnchor;
+	[SerializeField] private EntityAnchor m_ennemiEntityAnchor;
+	public EntityAnchor EnnemiEntityAnchor => m_ennemiEntityAnchor;
 
 	[SerializeField] private GridData m_map;
-	[SerializeField] private List<EntityData> m_playerRobotDatas;
-	[SerializeField] private List<EntityData> m_ennemiRobotDatas;
+	[SerializeField] private List<EntityData> m_playerEntityDatas;
+	[SerializeField] private List<EntityData> m_ennemiEntityDatas;
 
 	private void Start ()
 	{
@@ -24,10 +24,28 @@ public class GameManager : Singleton<GameManager>
 			GridManager.Instance.GenerateGrid(10, 10);
 
 
-		m_playerRobotAnchor.Init(m_playerRobotDatas);
-		m_ennemiRobotAnchor.Init(m_ennemiRobotDatas);
+		m_playerEntityAnchor.Init(m_playerEntityDatas);
+		m_ennemiEntityAnchor.Init(m_ennemiEntityDatas);
 
+		TurnManager.Instance.Init();
 		TurnManager.Instance.StartInputPhase();
+	}
+
+	public void LevelCompletionCheck(out bool areAllEnemyDead, out bool areAllPlayerEntityDead )
+	{
+		areAllEnemyDead = true;
+		areAllPlayerEntityDead = true;
+		foreach(Entity enemy in m_ennemiEntityAnchor.Entities)
+		{
+			if (enemy.Equipment.IsDead == false)
+				areAllEnemyDead = false;
+		}
+
+		foreach (Entity ally in m_playerEntityAnchor.Entities)
+		{
+			if (ally.Equipment.IsDead == false)
+				areAllPlayerEntityDead = false;
+		}
 	}
 
 }

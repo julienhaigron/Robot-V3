@@ -4,22 +4,41 @@ using UnityEngine;
 
 public class EntityEquipmentPlugin : EntityPlugin
 {
+	public System.Action<Entity> onDeath;
+
     private Dictionary<string, Weapon> m_weapons = new();
 	public Dictionary<string, Weapon> Weapons => m_weapons;
 	[SerializeField] private Transform m_weaponParent;
+
+	private float m_currentHealth;
+	private float MaxHealth => m_linkedEntity.Data.maxHealth;
+
+	private bool m_isDead = false;
+	public bool IsDead => m_isDead;
 
 	private void Awake ()
 	{
 		m_linkedEntity.onSelect += OnEntitySelected;
 		m_linkedEntity.onDeselect += OnEntityDeselected;
 
-		AddWeapon(GameAssets.current.game.defaultWeapon);
+		Init();
 	}
 
 	private void OnDestroy ()
 	{
 		m_linkedEntity.onSelect -= OnEntitySelected;
 		m_linkedEntity.onDeselect -= OnEntityDeselected;
+	}
+
+	private void Init ()
+	{
+		//init weapon
+		AddWeapon(GameAssets.current.game.defaultWeapon);
+
+		//init health
+		m_currentHealth = MaxHealth;
+		m_isDead = false;
+
 	}
 
 	#region Callbacks
@@ -42,6 +61,8 @@ public class EntityEquipmentPlugin : EntityPlugin
 
 	#endregion
 
+	#region Weapon
+
 	private Weapon AddWeapon(WeaponData _data )
 	{
 		Weapon newWeapon = Instantiate(GameAssets.current.game.weapons[_data.saveKey], m_weaponParent);
@@ -52,7 +73,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 	}
 
 
-	public void AimAtTile(string _weaponID, Tile _tile )
+	public void AimAtTile(string _weaponID, Tile _tile, System.Action _onEndMovement = null )
 	{
 		//OLD : get angle and apply to cone
 		Weapon selectedWeapon = m_weapons[_weaponID];
@@ -65,7 +86,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 		//Debug.Log("Rot : " + angle);
 		selectedWeapon.transform.localRotation = Quaternion.Euler(0, angle, 0);
 
-		//new: look at tile
+		_onEndMovement?.Invoke();
 	}
 
 	public List<Tile> GetTilesInRange(string _weaponID)
@@ -102,7 +123,38 @@ public class EntityEquipmentPlugin : EntityPlugin
 		return tilesInRange;
 	}
 
-	private void OnDrawGizmos ()
+	public bool AttackRoll( Entity _targetEntity )
+	{
+		bool isAttackSuccessful = true;
+		 
+
+		//TODO
+		//isAttackSuccessful = (_weaponAccuracy * _currentMoventAccuracyRatio) - _targetEntity.evasionPercent
+		
+		return isAttackSuccessful;
+	}
+
+	#endregion
+
+	#region Heatlh
+
+	public void TakeDamage(float _amount )
+	{
+		m_currentHealth -= _amount;
+
+		if (m_currentHealth <= 0)
+			Death();
+	}
+
+	private void Death ()
+	{
+		m_isDead = true;
+		onDeath?.Invoke(m_linkedEntity);
+	}
+
+	#endregion
+
+	/*private void OnDrawGizmos ()
 	{
 		foreach(string weapongID in m_weapons.Keys)
 		{
@@ -128,5 +180,5 @@ public class EntityEquipmentPlugin : EntityPlugin
 				Gizmos.DrawRay(m_linkedEntity.Displacement.Coordinates.GetTile().transform.position, aimedPosition * selectedWeapon.Data.range);
 			}
 		}
-	}
+	}*/
 }

@@ -55,7 +55,7 @@ public class MoveToTargetAction : AEntityAction
 	{
 		int maxDistance = TurnManager.Instance.RemainingActionToken[performingEntity];
 
-		if (_tile.IsObstacle() || GridManager.Instance.GetDistance(TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntity), _tile) > maxDistance)
+		if (_tile.IsObstacle() || GridManager.Instance.GetDistanceBetween(TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntity), _tile, true) > maxDistance)
 			return false;
 
 		return true;

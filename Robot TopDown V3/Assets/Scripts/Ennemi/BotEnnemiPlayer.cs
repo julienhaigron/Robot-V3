@@ -7,7 +7,7 @@ public class BotEnnemiPlayer : Singleton<BotEnnemiPlayer>
     
     public void InputPhase ()
 	{
-		foreach(Entity entity in GameManager.Instance.EnnemiRobotsAnchor.Robots)
+		foreach(Entity entity in GameManager.Instance.EnnemiEntityAnchor.Entities)
 		{
 			DetermineEntityActions(entity);
 		}

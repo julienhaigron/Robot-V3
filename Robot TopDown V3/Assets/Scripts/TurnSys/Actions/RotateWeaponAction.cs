@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AttackAction : AEntityAction
+public class RotateWeaponAction : AEntityAction
 {
 
 	private Entity targetedEntity;
@@ -29,39 +29,34 @@ public class AttackAction : AEntityAction
 		//int dist = GridManager.Instance.GetDistanceBetween(performingEntity.Displacement.Coordinates.GetTile(), targetedEntity.Displacement.Coordinates.GetTile(), true);
 		if(targetedEntity == null)
 		{
-			base.Perform(_state);
-			EndPerform();
+			Entity target = performingEntity.AI.GetClosestEnemyInRange(out string _weaponID, true);
+			if (target != null)
+			{
+				base.Perform(_state);
+				performingEntity.Equipment.AimAtTile(_weaponID, target.Displacement.Coordinates.GetTile(), EndPerform);
+			}
+			else
+			{
+				base.Perform(_state);
+				EndPerform();
+			}
+			return;
 		}
 
 		//if enemy is in weapon range
 		bool isEnemyInWeaponRange = performingEntity.AI.IsEntityInWeaponRange(targetedEntity, out Weapon _attackingWeapon);
 		if (isEnemyInWeaponRange)
 		{
-			// => shoot
-			bool isAttackRollSuccessful = performingEntity.Equipment.AttackRoll(targetedEntity);
-			if (isAttackRollSuccessful)
-			{
-				float damageAmout = _attackingWeapon.Data.damage;
-				Debug.Log("shoot entity " + damageAmout + " damages");
-				targetedEntity.Equipment.TakeDamage(damageAmout);
-				base.Perform(_state);
-				//TODO : shoot success anim
-				EndPerform();
-			}
-			else
-			{
-				//TODO : shoot but failed anim
-				Debug.Log("shoot failed");
-				base.Perform(_state);
-				EndPerform();
-			}
+			// => do nothing
+			base.Perform(_state);
+			//TODO : shoot success anim
+			EndPerform();
 		}
 		else
 		{
-			// => find new target or wait (or move to prevvious target if in sight?)
-			Debug.Log("target not in range");
-			base.Perform(_state);
-			EndPerform();
+			// => rotate weapon
+			performingEntity.AI.GetClosestEnemyInRange(out string _weaponID, true);
+			performingEntity.Equipment.AimAtTile(_weaponID, performingEntity.Displacement.Coordinates.GetTile());
 		} 
 	}
 

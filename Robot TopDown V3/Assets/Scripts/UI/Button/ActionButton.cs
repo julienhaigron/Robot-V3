@@ -5,25 +5,13 @@ using UnityEngine.UI;
 using TMPro;
 using DG.Tweening;
 
-public class ActionButton : MonoBehaviour
+public class ActionButton : BaseButton
 {
-    [SerializeField] private Button m_button;
 	[SerializeField] private Image m_icon;
 	[SerializeField] private TextMeshProUGUI m_name;
 	[SerializeField] private TextMeshProUGUI m_tokenCost;
 
 	private EntityActionType m_actionType;
-	private bool m_isVisible = false;
-
-	private void Awake ()
-	{
-		m_button.onClick.AddListener(OnClick);
-	}
-
-	private void OnDestroy ()
-	{
-		m_button.onClick.RemoveListener(OnClick);
-	}
 
 
 	public void Init( EntityActionType _action )
@@ -53,9 +41,10 @@ public class ActionButton : MonoBehaviour
 		//refresh if is available
 	}
 
-	private void OnClick ()
+	protected override void OnClick ()
 	{
 		TurnManager.Instance.SetCurrentActionSelected(m_actionType);
+		base.OnClick();
 	}
 
 

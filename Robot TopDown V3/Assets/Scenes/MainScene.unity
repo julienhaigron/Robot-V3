@@ -38,7 +38,6 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.18028378, g: 0.22571412, b: 0.30692285, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -215,6 +214,14 @@ PrefabInstance:
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 9152403339332330190, guid: 72a8cdbae79f9a74f90a70843427bc89, type: 3}
+      propertyPath: m_ennemiEntityDatas.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9152403339332330190, guid: 72a8cdbae79f9a74f90a70843427bc89, type: 3}
+      propertyPath: m_playerEntityDatas.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 9152403339332330190, guid: 72a8cdbae79f9a74f90a70843427bc89, type: 3}
       propertyPath: m_ennemiRobotDatas.Array.data[0]
       value: 
       objectReference: {fileID: 11400000, guid: 11de9230c09867747908272f3310089f, type: 2}
@@ -226,6 +233,18 @@ PrefabInstance:
       propertyPath: m_playerRobotDatas.Array.data[1]
       value: 
       objectReference: {fileID: 11400000, guid: 11de9230c09867747908272f3310089f, type: 2}
+    - target: {fileID: 9152403339332330190, guid: 72a8cdbae79f9a74f90a70843427bc89, type: 3}
+      propertyPath: m_ennemiEntityDatas.Array.data[0]
+      value: 
+      objectReference: {fileID: 11400000, guid: 269ea4b9e1222fe42bc648cbcdf4a6a9, type: 2}
+    - target: {fileID: 9152403339332330190, guid: 72a8cdbae79f9a74f90a70843427bc89, type: 3}
+      propertyPath: m_playerEntityDatas.Array.data[0]
+      value: 
+      objectReference: {fileID: 11400000, guid: 11de9230c09867747908272f3310089f, type: 2}
+    - target: {fileID: 9152403339332330190, guid: 72a8cdbae79f9a74f90a70843427bc89, type: 3}
+      propertyPath: m_playerEntityDatas.Array.data[1]
+      value: 
+      objectReference: {fileID: 11400000, guid: d1ff8cefde9698646866f7c141843e06, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 72a8cdbae79f9a74f90a70843427bc89, type: 3}
 --- !u!1 &705507993

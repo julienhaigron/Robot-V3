@@ -50,13 +50,13 @@ public class MoveToNeighborAction : AEntityAction
 	}
 
 	public override void EndPerform ()
-	{
+	{ 
 		base.EndPerform();
 	}
 
 	public override bool TileInteractPredicate ( Tile _tile )
 	{
-		if (_tile.IsObstacle() || GridManager.Instance.GetDistance(TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntity), _tile) != 1)
+		if (_tile.IsObstacle() || GridManager.Instance.GetDistanceBetween(TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntity), _tile, true) != 1)
 			return false;
 
 		return true;

@@ -16,7 +16,7 @@ public class GameAssets : ScriptableObject
     public class Game
     {
         public Tile baseTile;
-        public Entity baseRobotEntity;
+        public Entity baseEntity;
 
         public List<GridData> maps = new();
 

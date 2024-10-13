@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class EntityAnchor : MonoBehaviour
 {
-    private List<Entity> m_robots = new();
-    public List<Entity> Robots => m_robots;
+    private List<Entity> m_entities = new();
+    public List<Entity> Entities => m_entities;
 
 	[SerializeField] private List<Spawn> m_spawnCoordinates = new();
 
@@ -40,7 +40,7 @@ public class EntityAnchor : MonoBehaviour
 	{
 		foreach(EntityData robotData in _robots)
 		{
-			SpawnRobot(robotData);
+			SpawnEntity(robotData);
 		}
 	}
 
@@ -56,10 +56,10 @@ public class EntityAnchor : MonoBehaviour
 		return new Spawn(new TileCoordinates(0, 0, 0), Spawn.InitializationState.Failure);
 	}
 
-	private void SpawnRobot ( EntityData _robotData )
+	private void SpawnEntity ( EntityData _entityData )
 	{
-		Entity robot = Instantiate(GameAssets.current.game.baseRobotEntity, transform);
-		robot.Init(_robotData, GetRandomAvailableSpawnPosition());
-		m_robots.Add(robot);
+		Entity entity = Instantiate(GameAssets.current.game.baseEntity, transform);
+		entity.Init(_entityData, GetRandomAvailableSpawnPosition());
+		m_entities.Add(entity);
 	}
 }

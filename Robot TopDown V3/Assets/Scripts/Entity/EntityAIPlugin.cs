@@ -27,7 +27,7 @@ public class EntityAIPlugin : EntityPlugin
 	public CheckActionResultInfo CheckAction ( TurnManager.RecordedAction _recordedAction )
 	{
 		CheckActionResultInfo resultInfo = new CheckActionResultInfo() { isActionChanging = false, replacedActionType = _recordedAction.action.type };
-		// 1) Do all prewarm check (enemyInRange, weaponRange, ...)
+		// 1) Do all prewarm check (enemyInSeight, weaponRange, ...)
 		DOAllPrewardCheck();
 		// 2) react depending on those factor
 
@@ -35,7 +35,7 @@ public class EntityAIPlugin : EntityPlugin
 		{
 			// if eneemy in weapon range
 			//  => shoot directly
-			m_lastEntityTargeted = GetClosestEnemyInRange(true);
+			m_lastEntityTargeted = GetClosestEnemyInRange(out string _weaponId, true);
 			resultInfo.ReplaceAction(EntityActionType.Attack);
 		}
 		else if (HasEnemyInVisionRange() && !HasEnemyWeaponInRange())
@@ -44,7 +44,7 @@ public class EntityAIPlugin : EntityPlugin
 			if (_recordedAction.entityState == Entity.EntityState.Patroling)
 			{
 				//only rotate weapon, no movement if entity is too far
-				m_lastEntityTargeted = GetClosestEnemyInRange(true);
+				m_lastEntityTargeted = GetClosestEnemyInRange(out string _weaponId, true);
 				resultInfo.ReplaceAction(isEntityTooFarForWeaponsRange ? EntityActionType.TargetTileMove : EntityActionType.RotateWeapon);
 			}
 			else if (_recordedAction.entityState == Entity.EntityState.Guarding)
@@ -52,7 +52,7 @@ public class EntityAIPlugin : EntityPlugin
 				//rotate weapon or move toward enemy if too far
 				if (!isEntityTooFarForWeaponsRange)
 				{
-					m_lastEntityTargeted = GetClosestEnemyInRange(true);
+					m_lastEntityTargeted = GetClosestEnemyInRange(out string _weaponId, true);
 					resultInfo.ReplaceAction(EntityActionType.RotateWeapon);
 				}
 			}
@@ -87,7 +87,7 @@ public class EntityAIPlugin : EntityPlugin
 
 	private List<Entity> VisionCheck ( bool _isThisTurn = true )
 	{
-		m_entitiesInRange = null;
+		m_entitiesInRange = new();
 		if (m_linkedEntity.Data.capacities.Contains(EntityCapacityAsset.EntityCapacityType.VisualSensor)
 			|| m_linkedEntity.Data.capacities.Contains(EntityCapacityAsset.EntityCapacityType.RadarSensor))
 		{
@@ -116,21 +116,44 @@ public class EntityAIPlugin : EntityPlugin
 		return m_entitiesInWeaponRange;
 	}
 
+
 	#endregion
 
 	#region Targeting
 
-	public Entity GetClosestEnemyInRange (bool _isThisTurn = true)
+	public bool IsEntityInWeaponRange(Entity _targetEntity, out Weapon _attackingWeapon )
+	{
+		foreach(string _weaponId in m_entitiesInWeaponRange.Keys)
+		{
+			foreach(Entity entity in m_entitiesInWeaponRange[_weaponId])
+			{
+				if(entity == _targetEntity)
+				{
+					_attackingWeapon = m_linkedEntity.Equipment.Weapons[_weaponId];
+					return true;
+				}
+			}
+		}
+
+		_attackingWeapon = null;
+		return false;
+	}
+
+	public Entity GetClosestEnemyInRange ( out string _weaponId, bool _isThisTurn = true )
 	{
 		GridManager.Instance.BFS(m_linkedEntity.Displacement.Coordinates.GetTile(), -1, null, _isThisTurn);
 
 		Entity closestEntity = null;
+		_weaponId = "";
 		foreach (string weaponId in m_entitiesInWeaponRange.Keys)
 		{
 			foreach (Entity entity in m_entitiesInWeaponRange[weaponId])
 			{
 				if(closestEntity == null || entity.Displacement.Coordinates.GetTile().Distance < closestEntity.Displacement.Coordinates.GetTile().Distance)
+				{
+					_weaponId = weaponId;
 					closestEntity = entity;
+				}
 			}
 		}
 
