@@ -15,4 +15,7 @@ MonoBehaviour:
   faction: 1
   actionTokenAmount: 5
   knownedActions: 000000000300000001000000
-  capacities: 
+  visibilityRange: 8
+  capacities: 00000000
+  knownedStates: 00000000
+  maxHealth: 0

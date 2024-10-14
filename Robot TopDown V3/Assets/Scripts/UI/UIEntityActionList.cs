@@ -5,11 +5,12 @@ using UnityEngine;
 public class UIEntityActionList : MonoBehaviour
 {
 	[SerializeField] private ActionButton m_baseActionButtonPrefab;
-	[SerializeField] private BaseButton m_baseStateButtonPrefab;
-	[SerializeField] private Transform m_buttonsParent;
+	[SerializeField] private StateButton m_baseStateButtonPrefab;
+	[SerializeField] private Transform m_actionButtonsParent;
+	[SerializeField] private Transform m_stateButtonsParent;
 
 	private List<ActionButton> m_actionButtons = new();
-	private List<BaseButton> m_stateButtons = new();
+	private List<StateButton> m_stateButtons = new();
 
 	private void Awake ()
 	{
@@ -32,33 +33,48 @@ public class UIEntityActionList : MonoBehaviour
 			{
 				btn.SetVisible(_isVisible: false, _isInstant: true);
 			}
+			foreach (StateButton btn in m_stateButtons)
+			{
+				btn.SetVisible(_isVisible: false, _isInstant: true);
+			}
 		}
 		else
 		{
-			int amountMissingBtn = _entity.Data.knownedActions.Count - m_actionButtons.Count;
-			for (int i = 0; i < amountMissingBtn; i++)
+			int amountMissingActionBtn = _entity.Data.knownedActions.Count - m_actionButtons.Count;
+			for (int i = 0; i < amountMissingActionBtn; i++)
 				CreateNewActionButton().SetVisible(false, true);
+
+			int amountMissingStateBtn = _entity.Data.knownedStates.Count - m_stateButtons.Count;
+			for (int i = 0; i < amountMissingStateBtn; i++)
+				CreateNewStateButton().SetVisible(false, true);
 
 			for (int i = 0; i < m_actionButtons.Count; i++)
 			{
 				m_actionButtons[i].Init(_entity.Data.knownedActions[i]);
 				m_actionButtons[i].SetVisible(_isVisible: true, _isInstant: true);
 			}
+
+			for (int i = 0; i < m_stateButtons.Count; i++)
+			{
+				m_stateButtons[i].Init(_entity.Data.knownedStates[i]);
+				m_stateButtons[i].SetVisible(_isVisible: true, _isInstant: true);
+			}
 		}
 	}
 
 	private ActionButton CreateNewActionButton ()
 	{
-		ActionButton newBtn = Instantiate(m_baseActionButtonPrefab, m_buttonsParent);
+		ActionButton newBtn = Instantiate(m_baseActionButtonPrefab, m_actionButtonsParent);
 		m_actionButtons.Add(newBtn);
 		return newBtn;
 	}
 
-	private BaseButton CreacteNewStateButton ()
+	private BaseButton CreateNewStateButton ()
 	{
-		BaseButton newButton = Instantiate(m_baseStateButtonPrefab, m_buttonsParent);
+		StateButton newButton = Instantiate(m_baseStateButtonPrefab, m_stateButtonsParent);
 		m_stateButtons.Add(newButton);
-		return 
+		newButton.onClick += OnClickStateButton;
+		return newButton;
 	}
 
 	private void OnClickStateButton ()

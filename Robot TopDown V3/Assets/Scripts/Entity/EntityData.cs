@@ -16,6 +16,7 @@ public class EntityData : ScriptableObject
 
     [Title("AI")]
     public List<EntityCapacityAsset.EntityCapacityType> capacities = new();
+    public List<Entity.EntityState> knownedStates = new();
 
     [Title("Structure")]
     public float maxHealth;

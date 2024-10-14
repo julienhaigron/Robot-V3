@@ -23,19 +23,6 @@ public class ActionButton : BaseButton
 		m_tokenCost.text = data.tokenCost.ToString();
 	}
 
-	public void SetVisible(bool _isVisible, bool _isInstant )
-	{
-		if (m_isVisible == _isVisible)
-			return;
-
-		m_isVisible = _isVisible;
-
-		if (_isInstant)
-			transform.localScale = _isVisible ? Vector3.one : Vector3.zero;
-		else
-			transform.DOScale(_isVisible ? 1f : 0f, 1f);
-	}
-
 	private void OnActionTokenUsed ()
 	{
 		//refresh if is available

@@ -27,4 +27,17 @@ public class BaseButton : MonoBehaviour
     {
         onClick?.Invoke();
     }
+
+    public virtual void SetVisible ( bool _isVisible, bool _isInstant )
+    {
+        if (m_isVisible == _isVisible)
+            return;
+
+        m_isVisible = _isVisible;
+
+        if (_isInstant)
+            transform.localScale = _isVisible ? Vector3.one : Vector3.zero;
+        else
+            transform.DOScale(_isVisible ? 1f : 0f, 1f);
+    }
 }

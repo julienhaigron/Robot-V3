@@ -34,6 +34,9 @@ public class TurnManager : Singleton<TurnManager>
 	private EntityActionType m_currentActionTypeSelected;
 	public EntityActionType CurrentActionTypeSelected => m_currentActionTypeSelected;
 
+	private Entity.EntityState m_currentStateTypeSelected;
+	public Entity.EntityState CurrentStateTypeSelected => m_currentStateTypeSelected;
+
 	public enum TurnPhase { Recording, Calculating, Playing }
 	public TurnPhase currentPhase;
 
@@ -81,6 +84,11 @@ public class TurnManager : Singleton<TurnManager>
 
 		RecordedAction lastRecordedAction = m_recordedActionInput[_entity].ToArray()[^1];
 		return lastRecordedAction.action.positionAtActionEnd;
+	}
+
+	public void SetCurrentStateSelected (Entity.EntityState _state )
+	{
+		m_currentStateTypeSelected = _state;
 	}
 
 	public void SetCurrentActionSelected ( EntityActionType _action )
