@@ -130,14 +130,14 @@ public class TurnManager : Singleton<TurnManager>
 		return action;
 	}
 
-	public bool AddAction (Entity _entity, EntityActionType _actionType )
+	public bool AddAction (Entity _entity, EntityActionType _actionType, Entity.EntityState _state )
 	{
 		AEntityAction action = null;
 		action = GetAction(_actionType, _entity);
-		return AddAction(_entity, action);
+		return AddAction(_entity, action, _state);
 	}
 
-	public bool AddAction ( Entity _entity, AEntityAction _action )
+	public bool AddAction ( Entity _entity, AEntityAction _action, Entity.EntityState _state )
 	{
 		if (m_recordedActionInput.ContainsKey(_entity) == false)
 			m_recordedActionInput.Add(_entity, new());
@@ -148,7 +148,7 @@ public class TurnManager : Singleton<TurnManager>
 		m_recordedActionInput[_entity].Enqueue(new RecordedAction
 		{
 			action = _action,
-			entityState = _entity.State
+			entityState = _state
 		});
 
 		m_remainingActionToken[_entity]--;
@@ -238,25 +238,6 @@ public class TurnManager : Singleton<TurnManager>
 	{
 		Debug.Log("StartRound");
 
-		/*//1 - calculate phase
-
-		//a)get all actions played by entities in one phase
-		SerializableDictionary<Entity, Queue<RecordedAction>> recordedActions = new(m_recordedActionInput);
-		m_actionsToPlay.Clear();
-		foreach (Entity entity in recordedActions.Keys)
-		{
-			Queue<RecordedAction> actionsPlayedThisRound = new();
-			m_actionsToPlay.Add(entity, actionsPlayedThisRound);
-			int totalCost = 0;
-			while (totalCost < 1 && recordedActions[entity].Count > 0)
-			{
-				RecordedAction recordedAction = recordedActions[entity].Dequeue();
-				m_actionsToPlay[entity].Enqueue(recordedAction);
-				totalCost += recordedAction.action.cost;
-			}
-		}
-		m_recordedActionInput = new(recordedActions);*/
-
 		StartNextPhase();
 	}
 
@@ -294,7 +275,6 @@ public class TurnManager : Singleton<TurnManager>
 
 		//1- register action (like movement in grid)
 		//   => checks at this moment if action changes in another
-		//
 		List<Entity> entities = new(m_actionsToPlay.Keys);
 
 		foreach (Entity entity in entities)
@@ -302,7 +282,6 @@ public class TurnManager : Singleton<TurnManager>
 			Queue<RecordedAction> returnActionToPlayThisRound = new Queue<RecordedAction>();
 			foreach (RecordedAction recordedAction in m_actionsToPlay[entity].ToArray())
 			{
-				//TODO here :
 				//Entities check in new EntityUILogic.cs wheter action changes in another depending on factors checked in said script
 				//ex: MoveAction changes to ShootAction because of a Entity visible in coneRange
 				//    => cone range trigger is in EntityUILogic.cs
@@ -337,12 +316,10 @@ public class TurnManager : Singleton<TurnManager>
 		//c)play this phases entities turn actions
 
 		currentPhase = TurnPhase.Playing;
-
 		m_actionsBeingDone.Clear();
-		List<Entity> playingEntities = new(m_actionsToPlay.Keys);
-		foreach (Entity entity in playingEntities)
+		foreach (Entity entity in entities)
 		{
-			if (m_actionsToPlay[entity].Count != 0)
+			if (m_actionsToPlay.ContainsKey(entity) && m_actionsToPlay[entity] != null && m_actionsToPlay[entity].Count != 0)
 			{
 				RecordedAction action = m_actionsToPlay[entity].Dequeue();
 				m_actionsBeingDone.Add(entity, action);

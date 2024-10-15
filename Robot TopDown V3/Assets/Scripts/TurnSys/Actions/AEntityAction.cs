@@ -37,7 +37,7 @@ public abstract class AEntityAction
 
     public virtual void RegisterInteraction ( Tile _tile )
 	{
-        TurnManager.Instance.AddAction(performingEntity, TurnManager.Instance.CurrentActionSelected);
+        TurnManager.Instance.AddAction(performingEntity, TurnManager.Instance.CurrentActionSelected, TurnManager.Instance.CurrentStateTypeSelected);
 
         TurnManager.Instance.RefreshActionDisplay(performingEntity);
     }

@@ -20,8 +20,6 @@ public class EntityEquipmentPlugin : EntityPlugin
 	{
 		m_linkedEntity.onSelect += OnEntitySelected;
 		m_linkedEntity.onDeselect += OnEntityDeselected;
-
-		Init();
 	}
 
 	private void OnDestroy ()
@@ -30,7 +28,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 		m_linkedEntity.onDeselect -= OnEntityDeselected;
 	}
 
-	private void Init ()
+	public override void Init ()
 	{
 		//init weapon
 		AddWeapon(GameAssets.current.game.defaultWeapon);
@@ -38,7 +36,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 		//init health
 		m_currentHealth = MaxHealth;
 		m_isDead = false;
-
+		base.Init();
 	}
 
 	#region Callbacks

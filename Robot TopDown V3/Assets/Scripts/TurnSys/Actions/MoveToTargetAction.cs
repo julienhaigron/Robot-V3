@@ -82,7 +82,7 @@ public class MoveToTargetAction : AEntityAction
 
 			action.Init(GameAssets.current.game.entityActionsData[EntityActionType.TargetTileMove], performingEntity, path[i]);
 
-			TurnManager.Instance.AddAction(performingEntity, action);
+			TurnManager.Instance.AddAction(performingEntity, action, TurnManager.Instance.CurrentStateTypeSelected);
 		}
 		TurnManager.Instance.RefreshActionDisplay(performingEntity);
 	}

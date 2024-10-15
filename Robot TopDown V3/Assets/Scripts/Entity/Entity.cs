@@ -42,7 +42,8 @@ public class Entity : MonoBehaviour
     public void Init ( EntityData _data, EntityAnchor.Spawn _spawn )
     {
         m_data = _data;
-        Displacement.Init(_spawn);
+        Displacement.SetSpawn(_spawn);
+        m_equipment.Init();
     }
 
     public void Select ()

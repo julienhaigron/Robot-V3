@@ -10,7 +10,7 @@ public class EntityDisplacementPlugin : EntityPlugin
 
 	[SerializeField] private Transform m_bottomPosition;
 
-	public void Init ( EntityAnchor.Spawn _spawn )
+	public void SetSpawn ( EntityAnchor.Spawn _spawn )
 	{
 		//MoveToTile(_spawn.coordinates.GetTile(), null);
 		Tile spawn = _spawn.coordinates.GetTile();

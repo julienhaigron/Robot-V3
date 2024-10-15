@@ -10,4 +10,9 @@ public class EntityPlugin : MonoBehaviour
 	{
 		m_linkedEntity = GetComponent<Entity>();
 	}
+
+	public virtual void Init ()
+	{
+
+	}
 }

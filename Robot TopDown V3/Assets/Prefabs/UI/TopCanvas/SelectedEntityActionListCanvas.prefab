@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 7728796830272123526}
   - component: {fileID: 8941619712667610570}
   - component: {fileID: 5764002343322222275}
-  - component: {fileID: 2059274209204975727}
   - component: {fileID: 7321416680437986020}
   m_Layer: 5
   m_Name: SelectedEntityActionListCanvas
@@ -98,18 +97,6 @@ MonoBehaviour:
   m_baseStateButtonPrefab: {fileID: 3864721630169034802, guid: d71126aa877e47e4cb42ab0f5f8f991c, type: 3}
   m_actionButtonsParent: {fileID: 8375660093708851870}
   m_stateButtonsParent: {fileID: 7920678935510612495}
---- !u!114 &2059274209204975727
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7474914942458423662}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 93d53594ce8dbd245b14fc37a3c8885e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &7321416680437986020
 MonoBehaviour:
   m_ObjectHideFlags: 0
