@@ -29,7 +29,7 @@ public class RotateWeaponAction : AEntityAction
 		//int dist = GridManager.Instance.GetDistanceBetween(performingEntity.Displacement.Coordinates.GetTile(), targetedEntity.Displacement.Coordinates.GetTile(), true);
 		if(targetedEntity == null)
 		{
-			Entity target = performingEntity.AI.GetClosestEnemyInRange(out string _weaponID, true);
+			Entity target = performingEntity.AI.GetClosestEnemyInWeaponRange(out string _weaponID, true);
 			if (target != null)
 			{
 				base.Perform(_state);
@@ -44,7 +44,8 @@ public class RotateWeaponAction : AEntityAction
 		}
 
 		//if enemy is in weapon range
-		bool isEnemyInWeaponRange = performingEntity.AI.IsEntityInWeaponRange(targetedEntity, out Weapon _attackingWeapon);
+		//bool isEnemyInWeaponRange = performingEntity.AI.IsEntityInWeaponRange(targetedEntity, out Weapon _attackingWeapon);
+		bool isEnemyInWeaponRange = performingEntity.AI.IsEntityInWeaponPossibleRange(targetedEntity, out string weaponID, true);
 		if (isEnemyInWeaponRange)
 		{
 			// => do nothing
@@ -55,8 +56,10 @@ public class RotateWeaponAction : AEntityAction
 		else
 		{
 			// => rotate weapon
-			performingEntity.AI.GetClosestEnemyInRange(out string _weaponID, true);
-			performingEntity.Equipment.AimAtTile(_weaponID, performingEntity.Displacement.Coordinates.GetTile());
+
+			//performingEntity.AI.IsEntityInWeaponPossibleRange(targetedEntity, out string _weaponID, true);
+			//doit appler end perform quand rotate end
+			performingEntity.Equipment.AimAtTile(weaponID, performingEntity.Displacement.Coordinates.GetTile(), EndPerform);
 		} 
 	}
 

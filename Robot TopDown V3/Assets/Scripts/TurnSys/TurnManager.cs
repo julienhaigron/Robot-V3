@@ -99,7 +99,7 @@ public class TurnManager : Singleton<TurnManager>
 		onActionSelected?.Invoke(m_currentEntityAction);
 	}
 
-	private AEntityAction GetAction(EntityActionType _actionType, Entity _performingEntity )
+	public AEntityAction GetAction(EntityActionType _actionType, Entity _performingEntity )
 	{
 		AEntityAction action = null;
 
@@ -295,8 +295,7 @@ public class TurnManager : Singleton<TurnManager>
 				}
 				else
 				{
-					AEntityAction newAction = null;
-					newAction = GetAction(resultInfo.replacedActionType, entity);
+					AEntityAction newAction = resultInfo.replacedAction;
 					newAction.Prepare(recordedAction.entityState);
 					returnActionToPlayThisRound.Enqueue(new RecordedAction() { action = newAction, entityState = recordedAction.entityState });
 				}

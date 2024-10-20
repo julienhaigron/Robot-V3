@@ -64,8 +64,8 @@ public class EntityEquipmentPlugin : EntityPlugin
 	private Weapon AddWeapon(WeaponData _data )
 	{
 		Weapon newWeapon = Instantiate(GameAssets.current.game.weapons[_data.saveKey], m_weaponParent);
-		m_weapons.Add(_data.saveKey, newWeapon);
 		newWeapon.Init(_data);
+		m_weapons.Add(_data.saveKey, newWeapon);
 
 		return newWeapon;
 	}
