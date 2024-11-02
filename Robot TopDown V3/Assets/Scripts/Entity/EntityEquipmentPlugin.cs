@@ -45,7 +45,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 	{
 		foreach(Weapon weapon in m_weapons.Values)
 		{
-			weapon.ActivateUnactiveCone();
+			weapon.ActivateActiveCone();
 		}
 	}
 
@@ -53,7 +53,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 	{
 		foreach (Weapon weapon in m_weapons.Values)
 		{
-			weapon.DisableAllCones();
+			weapon.ActivateUnactiveCone();
 		}
 	}
 
@@ -80,9 +80,10 @@ public class EntityEquipmentPlugin : EntityPlugin
 		Vector2Int destination = new Vector2Int((int)_tile.transform.position.x, (int)_tile.transform.position.z);
 
 		float angle = GridManager.Instance.GetAngleFrom(currentLocation, destination);
-		selectedWeapon.aimedRotation = angle;
+		//selectedWeapon.aimedRotation = angle;
 		//Debug.Log("Rot : " + angle);
-		selectedWeapon.transform.localRotation = Quaternion.Euler(0, angle, 0);
+		//selectedWeapon.transform.localRotation = Quaternion.Euler(0, angle, 0);
+		selectedWeapon.AimAtAngle(angle);
 
 		_onEndMovement?.Invoke();
 	}
@@ -93,7 +94,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 
 		Weapon selectedWeapon = m_weapons[_weaponID];
 		//shoot ray from tile to other tiles in range
-		float angle = selectedWeapon.aimedRotation;
+		float angle = selectedWeapon.AimedRotation;
 
 		int nbOfRayPerAngle = 1;
 		int totalNbOfRay = selectedWeapon.Data.visionConeRange * nbOfRayPerAngle;

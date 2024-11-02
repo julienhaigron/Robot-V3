@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class AttackAction : AEntityAction
 {
-
+	public string attackingWeaponId;
 	private Entity targetedEntity;
 
 	public override void Prepare ( Entity.EntityState _state )

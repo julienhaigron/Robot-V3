@@ -31,13 +31,14 @@ public class EntityAIPlugin : EntityPlugin
 		DOAllPrewardCheck();
 		// 2) react depending on those factor
 
-		if (HasEnemyWeaponInRange() && _recordedAction.entityState == Entity.EntityState.Patroling)
+		if (HasEnemyWeaponInRange()/* && _recordedAction.entityState == Entity.EntityState.Patroling*/)
 		{
 			// if eneemy in weapon range
 			//  => shoot directly
 			m_lastEntityTargeted = GetClosestEnemyInWeaponRange(out string _weaponId, true);
 
 			AttackAction attackAction = (TurnManager.Instance.GetAction(EntityActionType.Attack, m_linkedEntity) as AttackAction);
+			attackAction.attackingWeaponId = _weaponId;
 			resultInfo.ReplaceAction(attackAction);
 		}
 		else if (HasEnemyInVisionRange() && !HasEnemyWeaponInRange())
@@ -51,14 +52,20 @@ public class EntityAIPlugin : EntityPlugin
 				if (isEntityInRangeWeaponsRange)
 				{
 					RotateWeaponAction rotateAction = (TurnManager.Instance.GetAction(EntityActionType.RotateWeapon, m_linkedEntity) as RotateWeaponAction);
+					rotateAction.rotatingWeaponID = _weapon;
 					resultInfo.ReplaceAction(rotateAction);
 				}
 				else
 				{
+					List<Tile> pathToEnemy = GridManager.Instance.GetPath(m_linkedEntity.Displacement.Coordinates.GetTile(), closestEntity.Displacement.Coordinates.GetTile(), true);
+					if (pathToEnemy == null || pathToEnemy.Count < 2)
+						return resultInfo;
+
 					MoveToTargetAction moveToAction = (TurnManager.Instance.GetAction(EntityActionType.TargetTileMove, m_linkedEntity) as MoveToTargetAction);
 					moveToAction.mode = MoveToTargetAction.MoveActionMode.Entity;
 					moveToAction.targetEntiy = closestEntity;
-					moveToAction.Init(GameAssets.current.game.entityActionsData[EntityActionType.NeighborMove], m_linkedEntity, _recordedAction.action.supposedPositionAtActionStart)
+					moveToAction.thisActionDestination = pathToEnemy[1];
+					moveToAction.Init(GameAssets.current.game.entityActionsData[EntityActionType.NeighborMove], m_linkedEntity, _recordedAction.action.supposedPositionAtActionStart);
 					resultInfo.ReplaceAction(moveToAction);
 				}
 			}
@@ -69,6 +76,7 @@ public class EntityAIPlugin : EntityPlugin
 				{
 					m_lastEntityTargeted = closestEntity;
 					RotateWeaponAction rotateAction = (TurnManager.Instance.GetAction(EntityActionType.RotateWeapon, m_linkedEntity) as RotateWeaponAction);
+					rotateAction.rotatingWeaponID = _weapon;
 					resultInfo.ReplaceAction(rotateAction);
 				}
 				else
@@ -129,7 +137,7 @@ public class EntityAIPlugin : EntityPlugin
 			foreach (Tile tile in tilesInWeaponCone)
 			{
 				Entity entityOnTile = tile.GetEntity(_isThisTurn);
-				if (entityOnTile != null && entityOnTile.Faction == Entity.EntityFaction.Enemy)
+				if (entityOnTile != null && entityOnTile.Faction != m_linkedEntity.Faction)
 					m_entitiesInWeaponRange[weaponId].Add(entityOnTile);
 			}
 		}
@@ -204,6 +212,9 @@ public class EntityAIPlugin : EntityPlugin
 		Entity closestEntity = null;
 		foreach (Entity entity in m_entitiesInVisionRange)
 		{
+			if (entity.Faction == m_linkedEntity.Faction)
+				continue;
+
 			if (closestEntity == null || entity.Displacement.Coordinates.GetTile().Distance < closestEntity.Displacement.Coordinates.GetTile().Distance)
 			{
 				closestEntity = entity;

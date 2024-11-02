@@ -40,7 +40,7 @@ public class MoveToTargetAction : AEntityAction
 		base.Perform(_state);
 
 		//move to targetTile
-		if (finalTargetTile != null/* && finalTargetTile.GetEntity(false) == null*/)
+		if (thisActionDestination != null/* && thisActionDestination.GetEntity(false) == null*/)
 			performingEntity.Displacement.MoveToTile(thisActionDestination, EndPerform);
 		else
 			DG.Tweening.DOVirtual.DelayedCall(.5f, () => EndPerform());

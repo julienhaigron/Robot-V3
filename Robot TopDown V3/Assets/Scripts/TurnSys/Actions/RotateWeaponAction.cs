@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class RotateWeaponAction : AEntityAction
 {
-
+	public string rotatingWeaponID;
 	private Entity targetedEntity;
 
 	public override void Prepare ( Entity.EntityState _state )
@@ -43,7 +43,7 @@ public class RotateWeaponAction : AEntityAction
 			return;
 		}
 
-		//if enemy is in weapon range
+		/*//if enemy is in weapon range
 		//bool isEnemyInWeaponRange = performingEntity.AI.IsEntityInWeaponRange(targetedEntity, out Weapon _attackingWeapon);
 		bool isEnemyInWeaponRange = performingEntity.AI.IsEntityInWeaponPossibleRange(targetedEntity, out string weaponID, true);
 		if (isEnemyInWeaponRange)
@@ -54,13 +54,13 @@ public class RotateWeaponAction : AEntityAction
 			EndPerform();
 		}
 		else
-		{
+		{*/
 			// => rotate weapon
 
 			//performingEntity.AI.IsEntityInWeaponPossibleRange(targetedEntity, out string _weaponID, true);
 			//doit appler end perform quand rotate end
-			performingEntity.Equipment.AimAtTile(weaponID, performingEntity.Displacement.Coordinates.GetTile(), EndPerform);
-		} 
+			performingEntity.Equipment.AimAtTile(rotatingWeaponID, targetedEntity.Displacement.Coordinates.GetTile(), EndPerform);
+		/*} */
 	}
 
 	public override void Display ()

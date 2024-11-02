@@ -295,9 +295,9 @@ public class TurnManager : Singleton<TurnManager>
 				}
 				else
 				{
-					AEntityAction newAction = resultInfo.replacedAction;
-					newAction.Prepare(recordedAction.entityState);
-					returnActionToPlayThisRound.Enqueue(new RecordedAction() { action = newAction, entityState = recordedAction.entityState });
+					Debug.Log("Action replaced to " + resultInfo.replacedAction);
+					resultInfo.replacedAction.Prepare(recordedAction.entityState);
+					returnActionToPlayThisRound.Enqueue(new RecordedAction() { action = resultInfo.replacedAction, entityState = recordedAction.entityState });
 				}
 			}
 
