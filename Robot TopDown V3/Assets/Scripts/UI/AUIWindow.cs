@@ -6,8 +6,8 @@ using Sirenix.OdinInspector;
 
 public class AUIWindow : UICanvasParent
 {
-	public Action onWindowOpened; //for you to use freely
-	public Action onWindowClosed; //for you to use freely
+	public Action onWindowOpened;
+	public Action onWindowClosed;
 
 	[SerializeField] protected GameObject m_blockClickGO;
 	[SerializeField] protected List<MoveFadeRTV> m_RectTfmVisibilityList;
@@ -31,8 +31,6 @@ public class AUIWindow : UICanvasParent
 		set
 		{
 			m_blockClickGO.SetActive(!value);
-			//m_canvasGroup.interactable = value; we want to keep the modal interactable so we use a BlockClick Object instead
-			//m_canvasGroup.blocksRaycasts = value;
 		}
 	}
 
@@ -70,7 +68,6 @@ public class AUIWindow : UICanvasParent
 			yield return new WaitForSecondsRealtime(_delay);
 
 		OnHideStarted();
-		//SetModalVisible(false, _instant ? 0f : m_modalFadeDuration);
 		SetContainersVisible(false, _instant ? 0f : (m_overrideDurations ? m_hideDuration : null));
 
 		if (!_instant)
@@ -87,7 +84,6 @@ public class AUIWindow : UICanvasParent
 	protected virtual void OnHideFinished ()
 	{
 		onWindowClosed?.Invoke();
-		//onWindowClosed = null;
 	}
 	public virtual void ShowWindow ( float _delay, bool _instant )
 	{
@@ -108,7 +104,6 @@ public class AUIWindow : UICanvasParent
 			yield return new WaitForSecondsRealtime(_delay);
 
 		OnShowStarted();
-		//SetModalVisible(true, _instant ? 0f : m_modalFadeDuration);
 		SetContainersVisible(true, _instant ? 0f : (m_overrideDurations ? m_showDuration : null));
 
 		if (!_instant)

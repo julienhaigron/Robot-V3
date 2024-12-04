@@ -11,6 +11,7 @@ public class InputManager : MonoBehaviour
 
 	private Vector3 m_mousePosition;
 
+	private bool m_isLogConsoleOpen = false;
 
 	public void OnInteract ( InputAction.CallbackContext context )
 	{
@@ -30,6 +31,17 @@ public class InputManager : MonoBehaviour
 
 	private void Update ()
 	{
+		if (Input.GetKeyDown(KeyCode.C))
+		{
+			if (m_isLogConsoleOpen)
+				UIManager.Instance.ClosePopup<LogConsolePopup>();
+			else
+				UIManager.Instance.OpenPopup<LogConsolePopup>();
+
+			m_isLogConsoleOpen = !m_isLogConsoleOpen;
+		}
+
+
 		if (m_mousePosition != null && Input.mousePosition == m_mousePosition)
 			return;
 
@@ -43,5 +55,6 @@ public class InputManager : MonoBehaviour
 				onTileHovered?.Invoke(tile);
 			}
 		}
+
 	}
 }

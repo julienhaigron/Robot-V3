@@ -18,16 +18,16 @@ namespace Pinpin
 
 		static ToolbarStyles ()
 		{
-            pickedItemCommandButtonStyle = new GUIStyle("ToolbarButton")
-            {
-                fontSize = 12,
-                alignment = TextAnchor.MiddleCenter,
-                imagePosition = ImagePosition.ImageAbove,
-                fixedWidth = 90,
-                fixedHeight = 18,
-            };
+			pickedItemCommandButtonStyle = new GUIStyle("ToolbarButton")
+			{
+				fontSize = 12,
+				alignment = TextAnchor.MiddleCenter,
+				imagePosition = ImagePosition.ImageAbove,
+				fixedWidth = 90,
+				fixedHeight = 18,
+			};
 
-            commandButtonStyle = new GUIStyle("ToolbarButton")
+			commandButtonStyle = new GUIStyle("ToolbarButton")
 			{
 				fontSize = 12,
 				alignment = TextAnchor.MiddleCenter,
@@ -36,16 +36,16 @@ namespace Pinpin
 				fixedHeight = 18,
 			};
 
-            tinyCommandButtonStyle = new GUIStyle("ToolbarButton")
-            {
-                fontSize = 12,
-                alignment = TextAnchor.MiddleCenter,
-                imagePosition = ImagePosition.ImageAbove,
-                fixedWidth = 24,
-                fixedHeight = 18,
-            };
+			tinyCommandButtonStyle = new GUIStyle("ToolbarButton")
+			{
+				fontSize = 12,
+				alignment = TextAnchor.MiddleCenter,
+				imagePosition = ImagePosition.ImageAbove,
+				fixedWidth = 24,
+				fixedHeight = 18,
+			};
 
-            longCommandButtonStyle = new GUIStyle("ToolbarButton")
+			longCommandButtonStyle = new GUIStyle("ToolbarButton")
 			{
 				fontSize = 12,
 				alignment = TextAnchor.MiddleCenter,
@@ -95,12 +95,12 @@ namespace Pinpin
 			GUILayout.Space(ToolbarStyles.topSpace);
 			GUILayout.BeginHorizontal();
 
-            string savedObjectID = EditorPrefs.GetString("SelectedObjectID");
+			/*string savedObjectID = EditorPrefs.GetString("SelectedObjectID");
 			bool isSceneObject = EditorPrefs.GetBool("IsSceneObject");
 
 			string activeObjectName = "None";
 			Object activeObj = null;
-            if (!string.IsNullOrEmpty(savedObjectID))
+			if (!string.IsNullOrEmpty(savedObjectID))
 			{
 				if (isSceneObject)
 				{
@@ -108,49 +108,49 @@ namespace Pinpin
 					if (activeObj == null)
 					{
 						activeObj = GameObject.Find(EditorPrefs.GetString("SelectedObjectName"));
-                    }
+					}
 				}
 				else
 					activeObj = AssetDatabase.LoadAssetAtPath<Object>(savedObjectID);
 			}
-            if (activeObj != null)
-            {
-                activeObjectName = activeObj.name;
-                if (activeObjectName.Length > 10)
-                {
-                    activeObjectName = activeObjectName.Substring(0, 9) + "...";
-                }
-            }
-            Color tmp = GUI.backgroundColor;
+			if (activeObj != null)
+			{
+				activeObjectName = activeObj.name;
+				if (activeObjectName.Length > 10)
+				{
+					activeObjectName = activeObjectName.Substring(0, 9) + "...";
+				}
+			}
+			Color tmp = GUI.backgroundColor;
 			if (activeObj != null && isSceneObject)
 			{
 				GUI.backgroundColor = Color.black;
 			}
-            if (GUILayout.Button(new GUIContent(activeObjectName, "Select Pinned Object"), ToolbarStyles.pickedItemCommandButtonStyle))
-            {
+			if (GUILayout.Button(new GUIContent(activeObjectName, "Select Pinned Object"), ToolbarStyles.pickedItemCommandButtonStyle))
+			{
 				if (activeObj != null)
 				{
 					if (!isSceneObject)
 					{
 						Selection.activeObject = activeObj;
-                        EditorGUIUtility.PingObject(Selection.activeObject);
+						EditorGUIUtility.PingObject(Selection.activeObject);
 					}
 					else
 					{
 						Selection.activeObject = activeObj;
-                    }
+					}
 				}
-            }
+			}
 			GUI.backgroundColor = tmp;
-            if (GUILayout.Button(EditorGUIUtility.IconContent("d_scenepicking_pickable_hover@2x"), ToolbarStyles.tinyCommandButtonStyle))
-            {
+			if (GUILayout.Button(EditorGUIUtility.IconContent("d_scenepicking_pickable_hover@2x"), ToolbarStyles.tinyCommandButtonStyle))
+			{
 				var activeGO = Selection.activeGameObject;
 				if (activeGO != null && activeGO.IsSceneBound())
 				{
-                    EditorPrefs.SetString("SelectedObjectID", activeGO.gameObject.GetInstanceID().ToString());
-                    EditorPrefs.SetString("SelectedObjectName", activeGO.gameObject.name);
-                    EditorPrefs.SetBool("IsSceneObject", true);
-                }
+					EditorPrefs.SetString("SelectedObjectID", activeGO.gameObject.GetInstanceID().ToString());
+					EditorPrefs.SetString("SelectedObjectName", activeGO.gameObject.name);
+					EditorPrefs.SetBool("IsSceneObject", true);
+				}
 				else
 				{
 					var selectedAsset = Selection.activeObject;
@@ -160,11 +160,11 @@ namespace Pinpin
 						EditorPrefs.SetBool("IsSceneObject", false);
 					}
 				}
-            }
+			}
 
-            GUILayout.Space(16f);
+			GUILayout.Space(16f);*/
 
-            if (GUILayout.Button(new GUIContent("Assets", "Select Game Assets"), ToolbarStyles.commandButtonStyle))
+			if (GUILayout.Button(new GUIContent("Assets", "Select Game Assets"), ToolbarStyles.commandButtonStyle))
 			{
 				UnityEditor.Selection.activeObject = Resources.Load<GameAssets>("GameAssets");
 				UnityEditor.EditorGUIUtility.PingObject(UnityEditor.Selection.activeObject);
@@ -182,40 +182,18 @@ namespace Pinpin
 				UnityEditor.EditorGUIUtility.PingObject(UnityEditor.Selection.activeObject);
 			}*/
 
-			/*if (GUILayout.Button(new GUIContent("UI", "Select SafeArea"), ToolbarStyles.commandButtonStyle))
+			if (GUILayout.Button(new GUIContent("UI", "Select SafeArea"), ToolbarStyles.commandButtonStyle))
 			{
-				GameObject safeArea = null;
-
-				if (UnityEditor.SceneManagement.PrefabStageUtility.GetCurrentPrefabStage() != null) //is in prefab
-				{
-					safeArea = UnityEditor.SceneManagement.PrefabStageUtility.GetCurrentPrefabStage().FindComponentOfType<Crystal.SafeArea>().gameObject;
-				}
-				else //in Scene
-				{
-					safeArea = GameObject.Find("SafeArea");
-				}
-
-				if (safeArea != null)
-				{
-					EditorApplication.ExecuteMenuItem("Window/General/Hierarchy");
-					Selection.objects = new Object[] { safeArea };
-
-					SandolkakosDigital.EditorUtils.SceneHierarchyUtility.SetExpanded(safeArea, true);
-
-				}
-				else //no safeArea found
-				{
-					string guid = AssetDatabase.FindAssets("_UIManagerCanvas")[0];
-					string path = AssetDatabase.GUIDToAssetPath(guid);
-					UnityEditor.Selection.activeObject = AssetDatabase.LoadAssetAtPath<UI.UIManager>(path);
-					UnityEditor.EditorGUIUtility.PingObject(UnityEditor.Selection.activeObject);
-				}
-			}*/
+				string guid = AssetDatabase.FindAssets("UIManager")[0];
+				string path = AssetDatabase.GUIDToAssetPath(guid);
+				UnityEditor.Selection.activeObject = AssetDatabase.LoadAssetAtPath<UIManager>(path);
+				UnityEditor.EditorGUIUtility.PingObject(UnityEditor.Selection.activeObject);
+			}
 
 			GUILayout.EndHorizontal();
 			GUILayout.EndVertical();
 		}
-		
+
 		/*static void OnToolbarGUIRight ()
 		{
 			GUILayout.BeginVertical();

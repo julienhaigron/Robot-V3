@@ -19,12 +19,17 @@ public sealed class UIManager : SingletonPersistant<UIManager>
 	[SerializeField] private AUIPanel m_firstPanelToOpen;
 
 	private static List<AUIPanel> m_panels;
+	private static List<AUIPopup> m_popups;
 	private static List<AUITopCanvas> m_topCanvases;
+	private Queue<AUIPopup> m_succesivePopups = new Queue<AUIPopup>();
 	private float m_nextShowPanelDelay;
 	private bool m_nextShowPanelInstant;
 
 	#region Getter-Setter
 	private Dictionary<Type, AUIPanel> panelsDictionary { get; set; }
+
+	private Dictionary<Type, AUIPopup> popupsDictionary;
+	public AUIPopup activePopup { get; private set; }
 	private List<Type> previousPanels { get; set; }
 	public AUIPanel currentPanel { get; private set; }
 	public AUIPanel nextPanel { get; private set; }
@@ -38,6 +43,7 @@ public sealed class UIManager : SingletonPersistant<UIManager>
 	{
 		base.Awake();
 		m_panels = new List<AUIPanel>();
+		m_popups = new List<AUIPopup>();
 		m_topCanvases = new List<AUITopCanvas>();
 
 		AUIWindow[] windows = FindObjectsOfType<AUIWindow>(true);
@@ -49,8 +55,8 @@ public sealed class UIManager : SingletonPersistant<UIManager>
 
 			if (windows[i] is AUIPanel)
 				m_panels.Add(windows[i] as AUIPanel);
-			/*else if (windows[i] is AUIPopup)
-				m_popups.Add(windows[i] as AUIPopup);*/
+			else if (windows[i] is AUIPopup)
+				m_popups.Add(windows[i] as AUIPopup);
 
 		}
 
@@ -63,6 +69,7 @@ public sealed class UIManager : SingletonPersistant<UIManager>
 
 
 		SetupPanels();
+		SetupPopups();
 		SetupTopCanvases();
 	}
 
@@ -82,6 +89,21 @@ public sealed class UIManager : SingletonPersistant<UIManager>
 			{
 				this.panelsDictionary.Add(panel.GetType(), panel);
 				panel.gameObject.SetActive(false);
+			}
+		}
+	}
+
+	private void SetupPopups ()
+	{
+		this.popupsDictionary = new Dictionary<Type, AUIPopup>();
+
+		foreach (AUIPopup popup in m_popups)
+		{
+			if (popup != null)
+			{
+				this.popupsDictionary.Add(popup.GetType(), popup);
+				popup.SetCanvasEnable(false);
+				popup.gameObject.SetActive(false);
 			}
 		}
 	}
@@ -208,6 +230,165 @@ public sealed class UIManager : SingletonPersistant<UIManager>
 	public void RemovePanel ( AUIPanel _aUIPanel )
 	{
 		m_panels.Remove(_aUIPanel);
+	}
+
+	#endregion
+
+	#region Popup
+	public T OpenPopup<T> ( float _showDelay = 0f, bool _showInstant = false ) where T : AUIPopup
+	{
+		Type type = typeof(T);
+		return (this.OpenPopup(type, _showDelay, _showInstant) as T);
+	}
+
+	public AUIPopup OpenPopup ( AUIPopup _popup, float _delay = 0f, bool _instant = false )
+	{
+		Type type = _popup.GetType();
+		return (this.OpenPopup(type, _delay, _instant) as AUIPopup);
+	}
+
+	private AUIPopup OpenPopup ( Type _type, float _delay = 0f, bool _instant = false )
+	{
+		AUIPopup popup;
+
+		if (this.popupsDictionary.ContainsKey(_type) == false)
+			throw new Exception(this.GetType().Name + " - Do not have popup [" + _type.Name + "].");
+
+		popup = this.popupsDictionary[_type];
+
+		if (activePopup != null)
+		{
+			if (popup == activePopup)
+			{
+				Debug.LogError("Popup " + _type.Name + " already opened");
+				return null;
+			}
+			else
+			{
+				if (!m_succesivePopups.Contains(popup))
+				{
+					m_succesivePopups.Enqueue(popup);
+					return popup;
+				}
+				else
+				{
+					Debug.LogError("Popup " + _type.Name + "is already in queue");
+					return null;
+				}
+			}
+		}
+
+		popup.SetCanvasEnable(true);
+		popup.ShowWindow(_delay, _instant);
+		SetActivePopup(popup);
+		onChangeScreen?.Invoke();
+		return (popup);
+	}
+
+	public void ClosePopup<T> ( float _delay = 0f, bool _instant = false ) where T : AUIPopup
+	{
+		Type type = typeof(T);
+		this.ClosePopup(type, _delay, _instant);
+	}
+
+	private void ClosePopup ( Type _type, float _delay = 0f, bool _instant = false )
+	{
+		AUIPopup popup;
+
+		if (this.popupsDictionary.ContainsKey(_type) == false)
+			throw new Exception(this.GetType().Name + " - Do not have popup [" + _type.Name + "].");
+
+		popup = this.popupsDictionary[_type];
+		popup.Close(_delay, _instant);
+
+		if (this.activePopup != null && popup == this.activePopup)
+			this.activePopup = null;
+	}
+
+	public T GetPopup<T> () where T : AUIPopup
+	{
+		Type type = typeof(T);
+
+		if (this.popupsDictionary.ContainsKey(type) == false)
+			throw new Exception(this.GetType().Name + " - Do not have popup [" + type.Name + "].");
+		return (this.popupsDictionary[type] as T);
+	}
+
+	public void CloseActivePopup ( bool _forceClose = false )
+	{
+		if (this.activePopup == null)
+			return;
+
+
+		/*if (!_forceClose && !this.activePopup.BackInputAllowed())
+		{
+#if UNITY_EDITOR
+			if (ApplicationManager.config.debug.showUIManagerLog)
+				Debug.LogWarning("AUIManger - Current popup cannot be closed from user Input");
+#endif
+			return;
+		}*/
+
+		this.activePopup.Close(0, _forceClose);
+		this.activePopup = null;
+	}
+
+	private void SetActivePopup ( AUIPopup _popup )
+	{
+		if (!m_popups.Contains(_popup))
+			return;
+
+		if (this.activePopup == _popup)
+			return;
+
+		if (this.activePopup != null)
+			this.activePopup.Close();
+
+		this.activePopup = _popup;
+	}
+
+	public bool HaveAnActivePopup ()
+	{
+		return activePopup != null && activePopup.CanvasEnabled;
+	}
+
+	public void OnPopupClosed ( AUIPopup _popup )
+	{
+		if (this.activePopup != null && this.activePopup == _popup)
+			this.activePopup = null;
+
+		_popup.SetCanvasEnable(false);
+		if (this.currentPanel.CanvasEnabled == false)
+			this.currentPanel.SetCanvasEnable(true);
+
+		if (m_succesivePopups.Count > 0)
+		{
+			_popup = m_succesivePopups.Dequeue();
+			OpenPopup(_popup);
+		}
+		onChangeScreen?.Invoke();
+	}
+
+	/*public void OpenProcessingPopup ( string _message )
+	{
+		m_processingPopup.gameObject.SetActive(true);
+		m_processingPopup.message = _message;
+	}
+
+	public void CloseProcessingPopup ()
+	{
+		m_processingPopup.gameObject.SetActive(false);
+	}*/
+
+	public void InvokeNowOrAtPopupClose ( Action _action )
+	{
+		if (!HaveAnActivePopup())
+			_action?.Invoke();
+		else
+		{
+			_action += () => activePopup.onWindowClosed -= _action;
+			activePopup.onWindowClosed += _action;
+		}
 	}
 
 	#endregion
