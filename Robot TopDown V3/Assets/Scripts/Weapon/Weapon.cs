@@ -36,10 +36,9 @@ public class Weapon : MonoBehaviour
 
     public void AimAtAngle ( float _angle )
     {
-        Vector3 currentRot = m_activeCone.transform.localRotation.eulerAngles;
-        Vector3 newRot = new Vector3(currentRot.x, currentRot.y, _angle);
-        Quaternion rot = Quaternion.Euler(newRot);
-        m_conesParent.transform.localRotation = rot;
+        Quaternion rot = Quaternion.AngleAxis(_angle, Vector3.forward);
+        m_activeCone.transform.localRotation = rot;
+        m_unactiveCone.transform.localRotation = rot;
         m_aimedRotation = _angle;
     }
 

@@ -96,23 +96,22 @@ public class PlayerController : Singleton<PlayerController>
 
 	private void OnTileHovered ( Tile _tile )
 	{
-		if (m_selectedTile == null)
+		if (m_selectedEntity == null)
 			return;
 
 		if (_tile != m_hoveredTile)
 		{
-			GridManager.Instance.ClearTileOutile();
-			string weaponID = "default";
-			m_selectedEntity.Equipment.AimAtTile(weaponID, _tile);
-			List<Tile> tilesInRange = m_selectedEntity.Equipment.GetTilesInRange(weaponID);
+			/*GridManager.Instance.ClearTileOutile();
+			m_selectedEntity.Equipment.AimAtTile("default", _tile);
+			List<Tile> tilesInRange = m_selectedEntity.Equipment.GetTilesInRange("default");
 
 			foreach(Tile tile in tilesInRange)
 			{
 				tile.UI.EnableOutline(Color.green);
-			}
+			}*/
 
 			m_hoveredTile = _tile;
-			List<Tile> path = GridManager.Instance.GetPath(m_selectedTile, m_hoveredTile, true);
+			/*List<Tile> path = GridManager.Instance.GetPath(m_selectedTile, m_hoveredTile, true);
 
 			if (path == null)
 				return;
@@ -120,7 +119,7 @@ public class PlayerController : Singleton<PlayerController>
 			foreach (Tile tile in path)
 			{
 				tile.UI.EnableOutline(Color.blue);
-			}
+			}*/
 		}
 	}
 

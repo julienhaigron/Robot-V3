@@ -75,15 +75,12 @@ public class EntityEquipmentPlugin : EntityPlugin
 	{
 		//OLD : get angle and apply to cone
 		Weapon selectedWeapon = m_weapons[_weaponID];
-		Vector3 oldRotation = selectedWeapon.transform.localRotation.eulerAngles;
 		Vector2Int currentLocation = new Vector2Int((int) m_linkedEntity.Displacement.Coordinates.GetTile().transform.position.x, (int)m_linkedEntity.Displacement.Coordinates.GetTile().transform.position.z);
 		Vector2Int destination = new Vector2Int((int)_tile.transform.position.x, (int)_tile.transform.position.z);
 
 		float angle = GridManager.Instance.GetAngleFrom(currentLocation, destination);
-		//selectedWeapon.aimedRotation = angle;
-		//Debug.Log("Rot : " + angle);
-		//selectedWeapon.transform.localRotation = Quaternion.Euler(0, angle, 0);
 		selectedWeapon.AimAtAngle(angle);
+		Debug.Log("Rot : " + angle);
 
 		_onEndMovement?.Invoke();
 	}
