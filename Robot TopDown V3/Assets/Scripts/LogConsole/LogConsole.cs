@@ -4,11 +4,12 @@ using UnityEngine;
 
 public class LogConsole : SingletonPersistant<LogConsole>
 {
+	public static System.Action<Log> onLogAdded;
 
 	private Dictionary<LogEventType, List<Log>> m_logs = new();
 	public Dictionary<LogEventType, List<Log>> Logs => m_logs;
 
-	public enum LogEventType { InputPhase, PlayPhase }
+	public enum LogEventType { Main, InputPhase, PlayPhase }
 
 	public static void AddLog (string _message, LogEventType _eventType )
 	{
@@ -16,6 +17,10 @@ public class LogConsole : SingletonPersistant<LogConsole>
 
 		if (!Instance.Logs.ContainsKey(_eventType))
 			Instance.Logs.Add(_eventType, new());
+
+		Instance.Logs[_eventType].Add(newLog);
+
+		onLogAdded?.Invoke(newLog);
 	}
 
 	public class Log
@@ -33,7 +38,7 @@ public class LogConsole : SingletonPersistant<LogConsole>
 
 		public override string ToString ()
 		{
-			return eventType.ToString() + ": [" + recordTime.ToString("en_US") + "]" + message;
+			return eventType.ToString() + " [" + recordTime.ToString("HH:mm") + "]: " + "<color=#" + ColorUtility.ToHtmlStringRGB(GameConfig.current.meta.colorsPerType[eventType]) + ">" + message + "</color>\n";
 		}
 	}
 

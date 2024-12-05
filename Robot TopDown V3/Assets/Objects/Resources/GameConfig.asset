@@ -22,3 +22,10 @@ MonoBehaviour:
     tileInternRayCastLayer:
       serializedVersion: 2
       m_Bits: 128
+  meta:
+    colorsPerType:
+      keys: 000000000100000002000000
+      values:
+      - {r: 0.7264151, g: 0.0034264945, b: 0.0034264945, a: 1}
+      - {r: 0.4755483, g: 0.8679245, b: 0.045033824, a: 1}
+      - {r: 0.04004982, g: 0.5817078, b: 0.9433962, a: 1}

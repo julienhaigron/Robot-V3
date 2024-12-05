@@ -9,12 +9,19 @@ public partial class GameConfig : ScriptableObject
 
 	public GameSettings game = new GameSettings();
 	public Input input = new Input();
+	public Meta meta = new Meta();
 
 	[System.Serializable]
 	public partial class GameSettings
 	{
 		public float entityMovementSpeed = 1.5f;
 
+	}
+
+	[System.Serializable]
+	public class Meta
+	{
+		public SerializableDictionary<LogConsole.LogEventType, Color> colorsPerType = new();
 	}
 
 	[System.Serializable]

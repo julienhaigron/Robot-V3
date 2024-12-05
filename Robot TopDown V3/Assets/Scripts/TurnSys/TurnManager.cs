@@ -153,6 +153,7 @@ public class TurnManager : Singleton<TurnManager>
 
 		m_remainingActionToken[_entity]--;
 
+		LogConsole.AddLog("Add " + _action.type.ToString() + " action to queue.", LogConsole.LogEventType.InputPhase);
 		//Update action display on grid + UI
 		onActionAdded?.Invoke(_action);
 		return true;
@@ -180,6 +181,7 @@ public class TurnManager : Singleton<TurnManager>
 	{
 		currentPhase = TurnPhase.Recording;
 		//UIManager.Instance.OpenPanel<InGamePanel>();
+		LogConsole.AddLog("Start Input phase", LogConsole.LogEventType.Main);
 
 		//reset RemainingActionToken
 		m_remainingActionToken.Clear();
@@ -236,14 +238,14 @@ public class TurnManager : Singleton<TurnManager>
 	[Button]
 	private void StartRound ()
 	{
-		Debug.Log("StartRound");
+		LogConsole.AddLog("Start round", LogConsole.LogEventType.Main);
 
 		StartNextPhase();
 	}
 
 	private void StartNextPhase ()
 	{
-		Debug.Log("StartNextPhase");
+		LogConsole.AddLog("Start phase", LogConsole.LogEventType.Main);
 
 		//1 - calculate phase
 
@@ -295,7 +297,7 @@ public class TurnManager : Singleton<TurnManager>
 				}
 				else
 				{
-					Debug.Log("Action replaced to " + resultInfo.replacedAction);
+					LogConsole.AddLog("Action replaced to " + resultInfo.replacedAction, LogConsole.LogEventType.PlayPhase);
 					resultInfo.replacedAction.Prepare(recordedAction.entityState);
 					returnActionToPlayThisRound.Enqueue(new RecordedAction() { action = resultInfo.replacedAction, entityState = recordedAction.entityState });
 				}
@@ -401,7 +403,7 @@ public class TurnManager : Singleton<TurnManager>
 
 	private void EndRound ()
 	{
-		Debug.Log("EndRound");
+		LogConsole.AddLog("EndRound", LogConsole.LogEventType.Main);
 
 		//check if finish level condition (all enemy killed || all ally killed)
 		GameManager.Instance.LevelCompletionCheck(out bool _areAllEnemiesDead, out bool areAllPlayerEntitiesDead);
@@ -419,9 +421,9 @@ public class TurnManager : Singleton<TurnManager>
 	private void EndLevel (bool _isSuccess)
 	{
 		if (_isSuccess)
-			Debug.Log("Player Victory");
+			LogConsole.AddLog("Player victory", LogConsole.LogEventType.Main);
 		else
-			Debug.Log("Enemy Victory");
+			LogConsole.AddLog("EndRound", LogConsole.LogEventType.Main);
 	}
 
 

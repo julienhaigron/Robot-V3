@@ -80,7 +80,6 @@ public class EntityEquipmentPlugin : EntityPlugin
 
 		float angle = GridManager.Instance.GetAngleFrom(currentLocation, destination);
 		selectedWeapon.AimAtAngle(angle);
-		Debug.Log("Rot : " + angle);
 
 		_onEndMovement?.Invoke();
 	}
