@@ -61,6 +61,7 @@ MonoBehaviour:
   m_showDuration: 0.3
   m_hideDuration: 0.3
   m_console: {fileID: 5351390432117929003}
+  m_scrollRect: {fileID: 8391010474594353955}
 --- !u!223 &2929425409357238431
 Canvas:
   m_ObjectHideFlags: 0
