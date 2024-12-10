@@ -19,5 +19,5 @@ public class EntityData : ScriptableObject
     public List<Entity.EntityState> knownedStates = new();
 
     [Title("Structure")]
-    public float maxHealth;
+    public int maxHealth;
 }

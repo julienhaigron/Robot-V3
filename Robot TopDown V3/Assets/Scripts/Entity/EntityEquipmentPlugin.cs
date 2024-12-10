@@ -5,13 +5,16 @@ using UnityEngine;
 public class EntityEquipmentPlugin : EntityPlugin
 {
 	public System.Action<Entity> onDeath;
+	public System.Action<int> onHealthChangeDamage;
 
     private Dictionary<string, Weapon> m_weapons = new();
 	public Dictionary<string, Weapon> Weapons => m_weapons;
 	[SerializeField] private Transform m_weaponParent;
 
-	private float m_currentHealth;
-	private float MaxHealth => m_linkedEntity.Data.maxHealth;
+	private int m_currentHealth;
+	public int CurrentHealth => m_currentHealth;
+
+	public int MaxHealth => m_linkedEntity.Data.maxHealth;
 
 	private bool m_isDead = false;
 	public bool IsDead => m_isDead;
@@ -133,12 +136,14 @@ public class EntityEquipmentPlugin : EntityPlugin
 
 	#region Heatlh
 
-	public void TakeDamage(float _amount )
+	public void TakeDamage(int _amount )
 	{
 		m_currentHealth -= _amount;
 
 		if (m_currentHealth <= 0)
 			Death();
+
+		onHealthChangeDamage?.Invoke(_amount);
 	}
 
 	private void Death ()

@@ -41,7 +41,7 @@ public class AttackAction : AEntityAction
 			bool isAttackRollSuccessful = performingEntity.Equipment.AttackRoll(targetedEntity);
 			if (isAttackRollSuccessful)
 			{
-				float damageAmout = _attackingWeapon.Data.damage;
+				int damageAmout = _attackingWeapon.Data.damage;
 				Debug.Log("shoot entity " + damageAmout + " damages");
 				targetedEntity.Equipment.TakeDamage(damageAmout);
 				base.Perform(_state);

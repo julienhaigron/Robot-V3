@@ -18,6 +18,9 @@ public class Entity : MonoBehaviour
 
     [SerializeField] private EntityAIPlugin m_ai;
     public EntityAIPlugin AI => m_ai;
+    
+    [SerializeField] private EntityUIPlugin m_ui;
+    public EntityUIPlugin UI => m_ui;
 
     [SerializeField] private EntityData m_data;
 
@@ -43,7 +46,10 @@ public class Entity : MonoBehaviour
     {
         m_data = _data;
         Displacement.SetSpawn(_spawn);
+        
         m_equipment.Init();
+        m_ui.Init();
+        m_ai.Init();
     }
 
     public void Select ()

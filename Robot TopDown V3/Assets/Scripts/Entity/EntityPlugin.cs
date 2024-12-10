@@ -8,7 +8,10 @@ public class EntityPlugin : MonoBehaviour
 
 	private void Reset ()
 	{
-		m_linkedEntity = GetComponent<Entity>();
+		if(TryGetComponent(out Entity entity))
+		{
+			m_linkedEntity = entity;
+		}
 	}
 
 	public virtual void Init ()

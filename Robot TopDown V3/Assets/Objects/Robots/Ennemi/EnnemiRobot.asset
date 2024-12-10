@@ -18,4 +18,4 @@ MonoBehaviour:
   visibilityRange: 8
   capacities: 00000000
   knownedStates: 00000000
-  maxHealth: 0
+  maxHealth: 3

@@ -50,4 +50,9 @@ public abstract class AEntityAction
     public abstract bool CheckConflict ( AEntityAction _otherAction, bool _isCheck = true );
 
     public abstract void Display ();
+
+	public override string ToString ()
+	{
+		return performingEntity.Data.name + "," + type.ToString();
+	}
 }

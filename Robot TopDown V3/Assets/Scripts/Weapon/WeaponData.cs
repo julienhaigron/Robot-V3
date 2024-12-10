@@ -8,7 +8,7 @@ public class WeaponData : ScriptableObject
     public string saveKey;
 
     public float accuracy;
-    public float damage;
+    public int damage;
     public int range;
     public int visionConeRange;
 

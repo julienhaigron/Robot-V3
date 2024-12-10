@@ -153,7 +153,7 @@ public class TurnManager : Singleton<TurnManager>
 
 		m_remainingActionToken[_entity]--;
 
-		LogConsole.AddLog("Add " + _action.type.ToString() + " action to queue.", LogConsole.LogEventType.InputPhase);
+		LogConsole.AddLog("Add " + _action.ToString() + " action to queue.", LogConsole.LogEventType.InputPhase);
 		//Update action display on grid + UI
 		onActionAdded?.Invoke(_action);
 		return true;
@@ -292,6 +292,7 @@ public class TurnManager : Singleton<TurnManager>
 
 				if (!resultInfo.isActionChanging)
 				{
+					LogConsole.AddLog("Succesfully add " + resultInfo.replacedAction + " action to queue", LogConsole.LogEventType.PlayPhase);
 					recordedAction.action.Prepare(recordedAction.entityState);
 					returnActionToPlayThisRound.Enqueue(recordedAction);
 				}
@@ -326,6 +327,7 @@ public class TurnManager : Singleton<TurnManager>
 				m_actionsBeingDone.Add(entity, action);
 				action.action.onEndPerform += OnActionEndPerform;
 				action.action.Perform(action.entityState);
+				LogConsole.AddLog("Action performed: " + action.action.ToString(), LogConsole.LogEventType.PlayPhase);
 				//TODO : display action on cam one by one when in conflict
 			}
 		}
@@ -348,7 +350,10 @@ public class TurnManager : Singleton<TurnManager>
 					foreach (RecordedAction otherAction in otherEntityActionsPlayedThisRound.ToArray())
 					{
 						if (action.action.CheckConflict(otherAction.action))
+						{
+							LogConsole.AddLog("Conflict detected: [" + action.action.ToString() + "|" + action.action.ToString() + "]", LogConsole.LogEventType.PlayPhase);
 							conflicts.Add(new System.Tuple<RecordedAction, RecordedAction>(action, otherAction));
+						}
 					}
 				}
 			}
