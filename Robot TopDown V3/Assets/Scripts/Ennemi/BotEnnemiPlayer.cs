@@ -15,7 +15,11 @@ public class BotEnnemiPlayer : Singleton<BotEnnemiPlayer>
 
 	private void DetermineEntityActions (Entity entity)
 	{
-		TurnManager.Instance.AddAction(entity, EntityActionType.Wait, Entity.EntityState.Guarding);
+		for(int i = 0; i < entity.Data.actionTokenAmount; i++)
+		{
+			TurnManager.Instance.AddAction(entity, EntityActionType.Wait, Entity.EntityState.Guarding);
+		}
+
 	}
 
 
