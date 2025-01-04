@@ -1,6 +1,3 @@
-/// Author: Nicolas Capelier
-/// Last modified by: Nicolas Capelier
-
 using FishNet.Object;
 using System;
 using System.Collections.Generic;
@@ -18,7 +15,7 @@ namespace Seance.Networking
 		[ServerRpc(RequireOwnership = false)]
 		public void ServerCreateNetworkCallback(string callbackName, int goal)
 		{
-			if (!IsServer)
+			if (!IsServerInitialized)
 				return;
 
 			if (_networkCallbacks.ContainsKey(callbackName))
@@ -42,7 +39,7 @@ namespace Seance.Networking
 
 		public void ServerDeleteNetworkCallback(string callbackName)
 		{
-			if (!IsServer)
+			if (!IsServerInitialized)
 				return;
 
 			if (!_networkCallbacks.ContainsKey(callbackName))
@@ -54,7 +51,7 @@ namespace Seance.Networking
 		[ServerRpc(RequireOwnership = false)]
 		public void ServerClearAllNetworkCallback()
         {
-			if (!IsServer)
+			if (!IsServerInitialized)
 				return;
 
 			ObserverCallAllNetworkCallback();
@@ -70,7 +67,7 @@ namespace Seance.Networking
 		[ServerRpc(RequireOwnership = false)]
 		public void ServerIncrementNetworkCallbackProgress(string callbackName, int progress)
 		{
-			if (!IsServer)
+			if (!IsServerInitialized)
 				return;
 
 			if (!_networkCallbacks.ContainsKey(callbackName))
