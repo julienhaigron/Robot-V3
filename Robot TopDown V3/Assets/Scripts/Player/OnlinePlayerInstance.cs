@@ -1,12 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using FishNet.Connection;
-using FishNet.Object;
+/*using FishNet.Connection;
+using FishNet.Object;*/
+using Unity.Netcode;
 
-public class OnlinePlayerInstance : NetworkBehaviour
+public class OnlinePlayerInstance : NetworkBehaviour/*NetworkBehaviour*/
 {
-	public static OnlinePlayerInstance Self => GameManager.Instance.Lobby.OwnedPlayerInstance;
+	//public static OnlinePlayerInstance Self => GameManager.Instance.Lobby.OwnedPlayerInstance;
 
 	int m_connectionIndex;
 	public int ConnectionIndex { get => m_connectionIndex; set => m_connectionIndex = value; }
@@ -14,7 +15,7 @@ public class OnlinePlayerInstance : NetworkBehaviour
 
 	#region server connection
 
-	public override void OnStartClient ()
+	/*public override void OnStartClient ()
 	{
 		base.OnStartClient();
 
@@ -72,7 +73,7 @@ public class OnlinePlayerInstance : NetworkBehaviour
 		// init self player
 
 		GameManager.Instance.Lobby.ServerAddPlayerReady();
-	}
+	}*/
 
 	#endregion
 }

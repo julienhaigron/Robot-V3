@@ -17,7 +17,7 @@ public class MultiplayerPanel : AUIPanel
 
 	bool m_isHost = false;
 
-	private void Start ()
+	/*private void Start ()
 	{
 		LobbyManager.ChangeConnectionCount += OnConnectionCountChange;
 		LobbyManager.ClientSetup += SetupClient;
@@ -97,5 +97,5 @@ public class MultiplayerPanel : AUIPanel
 		m_portText.text = $"Port: {portText}";
 	}
 
-	#endregion
+	#endregion*/
 }
