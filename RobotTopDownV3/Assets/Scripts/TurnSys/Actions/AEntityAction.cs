@@ -2,8 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using Unity.Netcode;
 
-public abstract class AEntityAction
+public abstract class AEntityAction : INetworkSerializable
 {
     public Action onPerform;
     public Action<Entity> onEndPerform;
@@ -15,6 +16,18 @@ public abstract class AEntityAction
     public Tile supposedPositionAtActionStart;
     public Tile positionAtActionEnd;
     public bool isVisible;
+
+    public virtual void NetworkSerialize<T> ( BufferSerializer<T> serializer ) where T : IReaderWriter
+    {
+        serializer.SerializeValue(ref cost);
+        serializer.SerializeValue(ref cooldown);
+        serializer.SerializeValue(ref type);
+        //TODO : replace Entity and Tile to id of said objects
+        /*serializer.NetworkSerialize(ref performingEntity);
+        serializer.NetworkSerialize(ref supposedPositionAtActionStart);
+        serializer.NetworkSerialize(ref positionAtActionEnd);*/
+        serializer.SerializeValue(ref isVisible);
+    }
 
     public virtual void Init(EntityActionData _data, Entity _performingEntity, Tile _positionAtActionStart )
 	{

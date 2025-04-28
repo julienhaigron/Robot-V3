@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Sirenix.OdinInspector;
+using Unity.Netcode;
 
 //TODO :
 
@@ -40,10 +41,16 @@ public class TurnManager : Singleton<TurnManager>
 	public enum TurnPhase { Recording, Calculating, Playing }
 	public TurnPhase currentPhase;
 
-	public struct RecordedAction
+	public struct RecordedAction : INetworkSerializable
 	{
 		public AEntityAction action;
 		public Entity.EntityState entityState;
+
+		public void NetworkSerialize<T> ( BufferSerializer<T> serializer ) where T : IReaderWriter
+		{
+			action.NetworkSerialize(serializer);
+			serializer.SerializeValue(ref entityState);
+		}
 	}
 
 	public override void Awake ()

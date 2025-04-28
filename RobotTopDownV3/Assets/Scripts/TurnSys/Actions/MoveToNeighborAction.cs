@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using Unity.Netcode;
 
 public class MoveToNeighborAction : AEntityAction
 {
@@ -12,6 +13,15 @@ public class MoveToNeighborAction : AEntityAction
 	public Tile finalTargetTile;
 
 	public enum MoveActionMode { Coordinate, Entity }
+
+	public override void NetworkSerialize<T> ( BufferSerializer<T> serializer )
+	{
+		base.NetworkSerialize(serializer);
+		/*serializer.SerializeValue(ref targetEntiy);
+		serializer.SerializeValue(ref targetTile);
+		serializer.SerializeValue(ref finalTargetTile);*/
+		serializer.SerializeValue(ref mode);
+	}
 
 	public override void Init ( EntityActionData _data, Entity _performingEntity, Tile _positionAtActionStart )
 	{
