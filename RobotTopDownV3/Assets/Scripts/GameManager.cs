@@ -12,10 +12,10 @@ public class GameManager : Singleton<GameManager>
 	[SerializeField] private EntityAnchor m_ennemiEntityAnchor;
 	public EntityAnchor EnnemiEntityAnchor => m_ennemiEntityAnchor;
 
-	/*private LobbyManager m_lobby;
+	private LobbyManager m_lobby;
 	public LobbyManager Lobby => m_lobby;
 
-	private PlayerConnector m_connector;
+	/*private PlayerConnector m_connector;
 	public PlayerConnector Connector => m_connector;*/
 
 	[SerializeField] private GridData m_map;

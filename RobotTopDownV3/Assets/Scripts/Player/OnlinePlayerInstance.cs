@@ -1,19 +1,37 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-/*using FishNet.Connection;
-using FishNet.Object;*/
 using Unity.Netcode;
 
-public class OnlinePlayerInstance : NetworkBehaviour/*NetworkBehaviour*/
+public class OnlinePlayerInstance : NetworkBehaviour
 {
-	//public static OnlinePlayerInstance Self => GameManager.Instance.Lobby.OwnedPlayerInstance;
+	public static OnlinePlayerInstance Self => GameManager.Instance.Lobby.OwnedPlayerInstance;
 
 	int m_connectionIndex;
 	public int ConnectionIndex { get => m_connectionIndex; set => m_connectionIndex = value; }
 
 
 	#region server connection
+
+	public override void OnNetworkSpawn ()
+	{
+		if (!IsServer && IsOwner) //Only send an RPC to the server from the client that owns the NetworkObject of this NetworkBehaviour instance
+		{
+			ServerOnlyRpc(this, NetworkObjectId);
+		}
+	}
+
+	[Rpc(SendTo.Server)]
+	private void ServerOnlyRpc ( OnlinePlayerInstance _player, ulong _sourceNetworkObjectId )
+	{
+		ClientAndHostRpc(_player, _sourceNetworkObjectId);
+	}
+
+	[Rpc(SendTo.ClientsAndHost)]
+	private void ClientAndHostRpc( OnlinePlayerInstance _player, ulong _sourceNetworkObjectId )
+	{
+		GameManager.Instance.Lobby.AddPlayerInstance(_player);
+	}
 
 	/*public override void OnStartClient ()
 	{

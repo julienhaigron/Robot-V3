@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using Sirenix.OdinInspector;
+using Unity.Netcode;
 
-public class Tile : MonoBehaviour
+public class Tile : MonoBehaviour, INetworkSerializable
 {
 	public static float outerRadius = 1f;
 	public static float innerRadius = outerRadius * 0.866025404f;
@@ -29,6 +30,18 @@ public class Tile : MonoBehaviour
 	public struct TileContent
 	{
 		public Entity entity;
+	}
+
+	public virtual void NetworkSerialize<T> ( BufferSerializer<T> serializer ) where T : IReaderWriter
+	{
+		if (serializer.IsReader)
+		{
+
+		}
+		else
+		{
+
+		}
 	}
 
 	#region Pathfinding params
