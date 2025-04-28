@@ -13,7 +13,7 @@ public class OnlinePlayerInstance : NetworkBehaviour
 
 	#region server connection
 
-	public override void OnNetworkSpawn ()
+	/*public override void OnNetworkSpawn ()
 	{
 		if (!IsServer && IsOwner) //Only send an RPC to the server from the client that owns the NetworkObject of this NetworkBehaviour instance
 		{
@@ -31,7 +31,7 @@ public class OnlinePlayerInstance : NetworkBehaviour
 	private void ClientAndHostRpc( OnlinePlayerInstance _player, ulong _sourceNetworkObjectId )
 	{
 		GameManager.Instance.Lobby.AddPlayerInstance(_player);
-	}
+	}*/
 
 	/*public override void OnStartClient ()
 	{
