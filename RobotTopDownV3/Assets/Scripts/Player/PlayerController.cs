@@ -37,7 +37,7 @@ public class PlayerController : Singleton<PlayerController>
 		//Event => Select // unselect entity
 		if(_tile.GetEntity(true) != null && !_tile.canInteract)
 		{
-			if (_tile.GetEntity(true).Data.faction == Entity.EntityFaction.Ally) 
+			if (_tile.GetEntity(true).IsOwn()) 
 			{ 
 				if(m_selectedEntity == _tile.GetEntity(true))
 				{

@@ -37,27 +37,24 @@ public class GameManager : Singleton<GameManager>
 			GridManager.Instance.GenerateGrid(10, 10);
 
 		if(m_currentGameMode == GameMode.Offline)
-		{
-			m_playersEntityAnchor[0].Init(m_playerEntityDatas, 0);
-			m_playersEntityAnchor[1].Init(m_ennemiEntityDatas, 1);
-			
-			TurnManager.Instance.Init();
-			TurnManager.Instance.StartInputPhase();
-		}
-		else if(m_currentGameMode == GameMode.Online)
-		{
-			//has to wait for player to identify has player one or two
-			// => then they data will be set to anchors and game will bo started
-			m_playersEntityAnchor[0].Init(m_playerEntityDatas, 0);
-			m_playersEntityAnchor[1].Init(m_ennemiEntityDatas, 1);
-		}
+			StartGame();
 
 	}
 
-	public void StartGame (List<EntityData> _playerOneSquad, List<EntityData> _playerTwoSquad)
+	public void StartGame ()
 	{
-		m_playersEntityAnchor[0].Init(_playerOneSquad, 0);
-		m_playersEntityAnchor[1].Init(_playerTwoSquad, 1);
+		if (m_currentGameMode == GameMode.Offline)
+		{
+			m_playersEntityAnchor[0].Init(m_playerEntityDatas, 0);
+			m_playersEntityAnchor[1].Init(m_ennemiEntityDatas, 1);
+		}
+		else if (m_currentGameMode == GameMode.Online)
+		{
+			//TODO send player info if online
+			m_playersEntityAnchor[0].Init(m_playerOneEntityDatas, 0);
+			m_playersEntityAnchor[1].Init(m_playerTwoEntityDatas, 1);
+			return;
+		}
 
 		TurnManager.Instance.Init();
 		TurnManager.Instance.StartInputPhase();

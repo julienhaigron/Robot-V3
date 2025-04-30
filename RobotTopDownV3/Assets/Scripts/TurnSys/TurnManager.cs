@@ -197,6 +197,9 @@ public class TurnManager : Singleton<TurnManager>
 				m_remainingActionToken.Add(entity.ID, entity.Data.actionTokenAmount);
 			}
 		}
+
+		if (GameManager.Instance.CurrentGameMode == GameManager.GameMode.Online && GameManager.Instance.Lobby.IsServer)
+			NetworkTaskOrchestrator.Instance.LaunchClientTask("InputPhase", EndInputPhase);
 	}
 
 	[Button]
@@ -229,7 +232,14 @@ public class TurnManager : Singleton<TurnManager>
 			}
 		}
 
-		StartRound();
+		if(GameManager.Instance.CurrentGameMode == GameManager.GameMode.Offline)
+			StartRound();
+		else
+		{
+			//send actions to server and wait for all players
+			//if all player ready then start Round
+			here
+		}
 	}
 
 	#endregion
@@ -237,7 +247,7 @@ public class TurnManager : Singleton<TurnManager>
 	#region Play phase
 
 	[Button]
-	private void StartRound ()
+	public void StartRound ()
 	{
 		LogConsole.AddLog("Start round", LogConsole.LogEventType.Main);
 

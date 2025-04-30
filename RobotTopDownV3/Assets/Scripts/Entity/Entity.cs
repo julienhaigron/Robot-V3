@@ -55,6 +55,16 @@ public class Entity : MonoBehaviour
         m_ai.Init();
     }
 
+    public bool IsOwn ()
+	{
+        if (m_data.faction == EntityFaction.Ally && GameManager.Instance.CurrentGameMode == GameManager.GameMode.Offline)
+            return true;
+        else if (GameManager.Instance.CurrentGameMode == GameManager.GameMode.Online && GameManager.Instance.PlayersEntityAnchor[OnlinePlayerInstance.Self.connectionIndex.Value].Entities.Contains(this))
+            return true;
+        else
+            return false;
+	}
+
     public void Select ()
 	{
         onSelect?.Invoke();

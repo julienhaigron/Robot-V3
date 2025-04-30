@@ -7,13 +7,17 @@ public class OnlinePlayerInstance : NetworkBehaviour
 {
 	public static OnlinePlayerInstance Self => GameManager.Instance.Lobby.OwnedPlayerInstance;
 
+	public NetworkVariable<int> connectionIndex; //host = 0 , other = 1
 
 	#region server connection
 
 	public override void OnNetworkSpawn ()
 	{
+		connectionIndex.Value = IsHost ? 0 : 1;
 		GameManager.Instance.Lobby.AddPlayerInstance(this, IsOwner);
 	}
+
+
 
 	/*[Rpc(SendTo.Server)]
 	private void ServerOnlyRpc ( OnlinePlayerInstance _player, ulong _sourceNetworkObjectId )
@@ -31,13 +35,18 @@ public class OnlinePlayerInstance : NetworkBehaviour
 
 	#region Turn sys
 
-	public void SendActionsToClients ( int _senderPlayerID, TurnManager.RecordedAction[] recordedActions )
+	[ServerRpc(RequireOwnership = false)]
+	public void SendActionsToServerRPC ( int _senderPlayerID, TurnManager.RecordedAction[] recordedActions )
 	{
-		SendActionsToServerRPC(_senderPlayerID, recordedActions);
+		Debug.Log("Received actions from player " + _senderPlayerID);
+		foreach (TurnManager.RecordedAction action in recordedActions) 
+		{
+			TurnManager.Instance.AddAction(_senderPlayerID, action.action, action.entityState);
+		}
 	}
 
-	[Rpc(SendTo.Server)]
-	private void SendActionsToServerRPC ( int _senderPlayerID, TurnManager.RecordedAction[] recordedActions )
+	[ServerRpc(RequireOwnership = false)]
+	public void EndInputPhaseRPC ( int _senderPlayerID, TurnManager.RecordedAction[] recordedActions )
 	{
 		Debug.Log("Received actions from player " + _senderPlayerID);
 		foreach (TurnManager.RecordedAction action in recordedActions) 

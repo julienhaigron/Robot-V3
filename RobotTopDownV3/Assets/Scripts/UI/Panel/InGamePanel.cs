@@ -76,7 +76,13 @@ public sealed class InGamePanel : AUIPanel
 
 	private void OnClickEndPhaseBtn ()
 	{
-		TurnManager.Instance.EndInputPhase();
+		if (GameManager.Instance.CurrentGameMode == GameManager.GameMode.Offline)
+			TurnManager.Instance.EndInputPhase();
+		else if (GameManager.Instance.CurrentGameMode == GameManager.GameMode.Online)
+		{
+			OnlinePlayerInstance.Self.EndInputPhaseRPC(OnlinePlayerInstance.Self.connectionIndex.Value, TurnManager.Instance.RecordedActions[OnlinePlayerInstance.Self.connectionIndex.Value].ToArray());
+			NetworkTaskOrchestrator.Instance.NotifyTaskEndToServerRPC("InputPhase");
+		}
 	}
 
 	#endregion
