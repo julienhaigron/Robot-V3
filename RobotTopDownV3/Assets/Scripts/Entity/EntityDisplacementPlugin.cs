@@ -19,12 +19,13 @@ public class EntityDisplacementPlugin : EntityPlugin
 		m_coordinate.SetCoordinate(spawn.coordinates.X, spawn.coordinates.Z, spawn.coordinates.ID);
 	}
 
-	public void MoveToTile( Tile _tile , System.Action onMovementDoneAction)
+	public void MoveToTile( int _tileID , System.Action onMovementDoneAction)
 	{
 		m_coordinate.GetTile().SetEntity(null, _isThisTurn: true);
+		Tile tile = GridManager.Instance.Tiles[_tileID];
 
-		transform.DOMove(_tile.transform.position - m_bottomPosition.localPosition, GameConfig.current.game.entityMovementSpeed).SetEase(Ease.OutExpo).OnComplete(() => onMovementDoneAction?.Invoke());
-		_tile.SetEntity(m_linkedEntity, _isThisTurn: true);
-		m_coordinate.SetCoordinate(_tile.coordinates.X, _tile.coordinates.Z, _tile.coordinates.ID);
+		transform.DOMove(tile.transform.position - m_bottomPosition.localPosition, GameConfig.current.game.entityMovementSpeed).SetEase(Ease.OutExpo).OnComplete(() => onMovementDoneAction?.Invoke());
+		tile.SetEntity(m_linkedEntity, _isThisTurn: true);
+		m_coordinate.SetCoordinate(tile.coordinates.X, tile.coordinates.Z, tile.coordinates.ID);
 	}
 }

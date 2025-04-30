@@ -2,15 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using Sirenix.OdinInspector;
 
 public class GameManager : Singleton<GameManager>
 {
-
-	[SerializeField] private EntityAnchor m_playerEntityAnchor;
-	public EntityAnchor PlayerEntitiesAnchor => m_playerEntityAnchor;
-	
-	[SerializeField] private EntityAnchor m_ennemiEntityAnchor;
-	public EntityAnchor EnnemiEntityAnchor => m_ennemiEntityAnchor;
+	[SerializeField] private EntityAnchor[] m_playersEntityAnchor;
+	public EntityAnchor[] PlayersEntityAnchor => m_playersEntityAnchor;
 
 	private LobbyManager m_lobby;
 	public LobbyManager Lobby => m_lobby;
@@ -18,9 +15,19 @@ public class GameManager : Singleton<GameManager>
 	/*private PlayerConnector m_connector;
 	public PlayerConnector Connector => m_connector;*/
 
+	public enum GameMode { Offline, Online}
+	private GameMode m_currentGameMode;
+	public GameMode CurrentGameMode => m_currentGameMode;
+
+	[Title("Offline")]
 	[SerializeField] private GridData m_map;
 	[SerializeField] private List<EntityData> m_playerEntityDatas;
 	[SerializeField] private List<EntityData> m_ennemiEntityDatas;
+
+	[Title("Online")]
+	[SerializeField] private GridData m_onlineMap;
+	[SerializeField] private List<EntityData> m_playerOneEntityDatas;
+	[SerializeField] private List<EntityData> m_playerTwoEntityDatas;
 
 	private void Start ()
 	{
@@ -29,28 +36,61 @@ public class GameManager : Singleton<GameManager>
 		else
 			GridManager.Instance.GenerateGrid(10, 10);
 
+		if(m_currentGameMode == GameMode.Offline)
+		{
+			m_playersEntityAnchor[0].Init(m_playerEntityDatas, 0);
+			m_playersEntityAnchor[1].Init(m_ennemiEntityDatas, 1);
+			
+			TurnManager.Instance.Init();
+			TurnManager.Instance.StartInputPhase();
+		}
+		else if(m_currentGameMode == GameMode.Online)
+		{
+			//has to wait for player to identify has player one or two
+			// => then they data will be set to anchors and game will bo started
+			m_playersEntityAnchor[0].Init(m_playerEntityDatas, 0);
+			m_playersEntityAnchor[1].Init(m_ennemiEntityDatas, 1);
+		}
 
-		m_playerEntityAnchor.Init(m_playerEntityDatas);
-		m_ennemiEntityAnchor.Init(m_ennemiEntityDatas);
+	}
+
+	public void StartGame (List<EntityData> _playerOneSquad, List<EntityData> _playerTwoSquad)
+	{
+		m_playersEntityAnchor[0].Init(_playerOneSquad, 0);
+		m_playersEntityAnchor[1].Init(_playerTwoSquad, 1);
 
 		TurnManager.Instance.Init();
 		TurnManager.Instance.StartInputPhase();
 	}
 
-	public void LevelCompletionCheck(out bool areAllEnemyDead, out bool areAllPlayerEntityDead )
+	public Entity GetEntityFromID (int _entityID)
 	{
-		areAllEnemyDead = true;
-		areAllPlayerEntityDead = true;
-		foreach(Entity enemy in m_ennemiEntityAnchor.Entities)
+		foreach(EntityAnchor anchor in m_playersEntityAnchor)
 		{
-			if (enemy.Equipment.IsDead == false)
-				areAllEnemyDead = false;
+			foreach (Entity entity in anchor.Entities)
+			{
+				if (entity.ID == _entityID)
+					return entity;
+			}
 		}
 
-		foreach (Entity ally in m_playerEntityAnchor.Entities)
+		return null;
+	}
+
+	public void LevelCompletionCheck(out bool _isPlayerOneDead, out bool _isPlayerTwoDead )
+	{
+		_isPlayerOneDead = true;
+		_isPlayerTwoDead = true;
+		foreach(Entity enemy in m_playersEntityAnchor[0].Entities)
+		{
+			if (enemy.Equipment.IsDead == false)
+				_isPlayerOneDead = false;
+		}
+
+		foreach (Entity ally in m_playersEntityAnchor[1].Entities)
 		{
 			if (ally.Equipment.IsDead == false)
-				areAllPlayerEntityDead = false;
+				_isPlayerTwoDead = false;
 		}
 	}
 

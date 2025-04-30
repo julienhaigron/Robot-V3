@@ -49,9 +49,9 @@ public class GridManager : Singleton<GridManager>
 			m_tiles[i].SetGroundType(groundType);
 
 			if (groundType == TileGroundType.PlayerSpawn)
-				GameManager.Instance.PlayerEntitiesAnchor.AddSpawn(m_tiles[i].coordinates);
+				GameManager.Instance.PlayersEntityAnchor[0].AddSpawn(m_tiles[i].coordinates);
 			else if(groundType == TileGroundType.EnemySpawn)
-				GameManager.Instance.EnnemiEntityAnchor.AddSpawn(m_tiles[i].coordinates);
+				GameManager.Instance.PlayersEntityAnchor[0].AddSpawn(m_tiles[i].coordinates);
 		}
 	}
 

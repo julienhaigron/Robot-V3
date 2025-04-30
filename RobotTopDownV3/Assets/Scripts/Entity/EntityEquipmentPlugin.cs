@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class EntityEquipmentPlugin : EntityPlugin
 {
-	public System.Action<Entity> onDeath;
+	public System.Action<int> onDeath;
 	public System.Action<int> onHealthChangeDamage;
 
     private Dictionary<string, Weapon> m_weapons = new();
@@ -149,7 +149,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 	private void Death ()
 	{
 		m_isDead = true;
-		onDeath?.Invoke(m_linkedEntity);
+		onDeath?.Invoke(m_linkedEntity.ID);
 	}
 
 	#endregion

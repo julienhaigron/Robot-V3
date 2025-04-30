@@ -5,12 +5,14 @@ using Unity.Netcode;
 
 public class LobbyManager : NetworkBehaviour
 {
-	public Dictionary<int, OnlinePlayerInstance> Players = new();
+	public Dictionary<ulong, OnlinePlayerInstance> Players = new();
     public OnlinePlayerInstance OwnedPlayerInstance;
 
-    public void AddPlayerInstance ( OnlinePlayerInstance _player )
+    public void AddPlayerInstance ( OnlinePlayerInstance _player, bool _isOwn )
 	{
-		Players.Add(_player.ConnectionIndex, _player);
+		Players.Add(_player.NetworkObjectId, _player);
+		if (_isOwn)
+			OwnedPlayerInstance = _player;
 	}
 
 }

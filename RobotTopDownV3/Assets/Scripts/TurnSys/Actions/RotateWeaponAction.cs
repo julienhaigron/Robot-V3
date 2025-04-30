@@ -1,16 +1,24 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Unity.Netcode;
 
 public class RotateWeaponAction : AEntityAction
 {
 	public string rotatingWeaponID;
-	private Entity targetedEntity;
+	private int targetedEntityID;
+
+	public override void NetworkSerialize<T> ( BufferSerializer<T> serializer )
+	{
+		base.NetworkSerialize(serializer);
+		serializer.SerializeValue(ref rotatingWeaponID);
+		serializer.SerializeValue(ref targetedEntityID);
+	}
 
 	public override void Prepare ( Entity.EntityState _state )
 	{
-		if (performingEntity.AI.TargetedEntity != null)
-			targetedEntity = performingEntity.AI.TargetedEntity;
+		if (GameManager.Instance.GetEntityFromID(performingEntityID).AI.TargetedEntity != null)
+			targetedEntityID = GameManager.Instance.GetEntityFromID(performingEntityID).AI.TargetedEntity.ID;
 		else
 		{
 			//TODO : handle this situation
@@ -27,13 +35,13 @@ public class RotateWeaponAction : AEntityAction
 	public override void Perform ( Entity.EntityState _state )
 	{
 		//int dist = GridManager.Instance.GetDistanceBetween(performingEntity.Displacement.Coordinates.GetTile(), targetedEntity.Displacement.Coordinates.GetTile(), true);
-		if(targetedEntity == null)
+		if(targetedEntityID == -1)
 		{
-			Entity target = performingEntity.AI.GetClosestEnemyInWeaponRange(out string _weaponID, true);
+			Entity target = GameManager.Instance.GetEntityFromID(performingEntityID).AI.GetClosestEnemyInWeaponRange(out string _weaponID, true);
 			if (target != null)
 			{
 				base.Perform(_state);
-				performingEntity.Equipment.AimAtTile(_weaponID, target.Displacement.Coordinates.GetTile(), EndPerform);
+				GameManager.Instance.GetEntityFromID(performingEntityID).Equipment.AimAtTile(_weaponID, target.Displacement.Coordinates.GetTile(), EndPerform);
 			}
 			else
 			{
@@ -55,11 +63,11 @@ public class RotateWeaponAction : AEntityAction
 		}
 		else
 		{*/
-			// => rotate weapon
+		// => rotate weapon
 
-			//performingEntity.AI.IsEntityInWeaponPossibleRange(targetedEntity, out string _weaponID, true);
-			//doit appler end perform quand rotate end
-			performingEntity.Equipment.AimAtTile(rotatingWeaponID, targetedEntity.Displacement.Coordinates.GetTile(), EndPerform);
+		//performingEntity.AI.IsEntityInWeaponPossibleRange(targetedEntity, out string _weaponID, true);
+		//doit appler end perform quand rotate end
+		GameManager.Instance.GetEntityFromID(performingEntityID).Equipment.AimAtTile(rotatingWeaponID, GameManager.Instance.GetEntityFromID((int)targetedEntityID).Displacement.Coordinates.GetTile(), EndPerform);
 		/*} */
 	}
 

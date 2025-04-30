@@ -5,7 +5,7 @@ using System;
 
 public class PlayerController : Singleton<PlayerController>
 {
-	public static Action<Entity> onEntitySelected;
+	public static Action<int?> onEntitySelected;
 
 	private Tile m_selectedTile;
 	private Tile m_hoveredTile;
@@ -43,13 +43,13 @@ public class PlayerController : Singleton<PlayerController>
 				{
 					m_selectedEntity.Deselect();
 					m_selectedEntity = null;
-					onEntitySelected?.Invoke(m_selectedEntity);
+					onEntitySelected?.Invoke(null);
 					return;
 				}
 				else if(m_selectedEntity == null)
 				{
 					m_selectedEntity = _tile.GetEntity(true);
-					onEntitySelected?.Invoke(m_selectedEntity);
+					onEntitySelected?.Invoke(m_selectedEntity == null ? null : m_selectedEntity.ID);
 
 					if(m_selectedEntity != null)
 						m_selectedEntity.Select();

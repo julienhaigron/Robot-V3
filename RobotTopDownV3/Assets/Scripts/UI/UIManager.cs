@@ -46,7 +46,7 @@ public sealed class UIManager : SingletonPersistant<UIManager>
 		m_popups = new List<AUIPopup>();
 		m_topCanvases = new List<AUITopCanvas>();
 
-		AUIWindow[] windows = FindObjectsOfType<AUIWindow>(true);
+		AUIWindow[] windows = FindObjectsByType<AUIWindow>(FindObjectsInactive.Include, FindObjectsSortMode.None);
 		for (int i = 0; i < windows.Length; i++)
 		{
 			windows[i].OnLoad();
@@ -60,7 +60,7 @@ public sealed class UIManager : SingletonPersistant<UIManager>
 
 		}
 
-		m_topCanvases.AddRange(FindObjectsOfType<AUITopCanvas>(true));
+		m_topCanvases.AddRange(FindObjectsByType<AUITopCanvas>(FindObjectsInactive.Include, FindObjectsSortMode.None));
 
 		for (int i = 0; i < m_topCanvases.Count; i++)
 		{

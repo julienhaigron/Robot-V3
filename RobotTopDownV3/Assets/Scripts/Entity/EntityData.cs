@@ -11,12 +11,12 @@ public class EntityData : ScriptableObject
 
     [Title("Action")]
     public int actionTokenAmount = 8;
-    public List<EntityActionType> knownedActions = new();
+    public EntityActionType[] knownedActions;
     [Min(0)] public int visibilityRange = 8;
 
     [Title("AI")]
-    public List<EntityCapacityAsset.EntityCapacityType> capacities = new();
-    public List<Entity.EntityState> knownedStates = new();
+    public EntityCapacityAsset.EntityCapacityType[] capacities;
+    public Entity.EntityState[] knownedStates;
 
     [Title("Structure")]
     public int maxHealth;

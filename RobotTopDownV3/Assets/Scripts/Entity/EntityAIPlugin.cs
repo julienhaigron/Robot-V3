@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class EntityAIPlugin : EntityPlugin
 {
@@ -37,7 +38,7 @@ public class EntityAIPlugin : EntityPlugin
 			//  => shoot directly
 			m_lastEntityTargeted = GetClosestEnemyInWeaponRange(out string _weaponId, true);
 
-			AttackAction attackAction = (TurnManager.Instance.GetAction(EntityActionType.Attack, m_linkedEntity) as AttackAction);
+			AttackAction attackAction = (TurnManager.Instance.GetAction(EntityActionType.Attack, m_linkedEntity.ID) as AttackAction);
 			attackAction.attackingWeaponId = _weaponId;
 			resultInfo.ReplaceAction(attackAction);
 		}
@@ -51,7 +52,7 @@ public class EntityAIPlugin : EntityPlugin
 				m_lastEntityTargeted = closestEntity;
 				if (isEntityInRangeWeaponsRange)
 				{
-					RotateWeaponAction rotateAction = (TurnManager.Instance.GetAction(EntityActionType.RotateWeapon, m_linkedEntity) as RotateWeaponAction);
+					RotateWeaponAction rotateAction = (TurnManager.Instance.GetAction(EntityActionType.RotateWeapon, m_linkedEntity.ID) as RotateWeaponAction);
 					rotateAction.rotatingWeaponID = _weapon;
 					resultInfo.ReplaceAction(rotateAction);
 				}
@@ -61,11 +62,11 @@ public class EntityAIPlugin : EntityPlugin
 					if (pathToEnemy == null || pathToEnemy.Count < 2)
 						return resultInfo;
 
-					MoveToTargetAction moveToAction = (TurnManager.Instance.GetAction(EntityActionType.TargetTileMove, m_linkedEntity) as MoveToTargetAction);
+					MoveToTargetAction moveToAction = (TurnManager.Instance.GetAction(EntityActionType.TargetTileMove, m_linkedEntity.ID) as MoveToTargetAction);
 					moveToAction.mode = MoveToTargetAction.MoveActionMode.Entity;
-					moveToAction.targetEntiy = closestEntity;
-					moveToAction.thisActionDestination = pathToEnemy[1];
-					moveToAction.Init(GameAssets.current.game.entityActionsData[EntityActionType.NeighborMove], m_linkedEntity, _recordedAction.action.supposedPositionAtActionStart);
+					moveToAction.targetEntiyID = closestEntity.ID;
+					moveToAction.thisActionDestinationID = pathToEnemy[1].coordinates.ID;
+					moveToAction.Init(GameAssets.current.game.entityActionsData[EntityActionType.NeighborMove], m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID);
 					resultInfo.ReplaceAction(moveToAction);
 				}
 			}
@@ -75,7 +76,7 @@ public class EntityAIPlugin : EntityPlugin
 				if (isEntityInRangeWeaponsRange)
 				{
 					m_lastEntityTargeted = closestEntity;
-					RotateWeaponAction rotateAction = (TurnManager.Instance.GetAction(EntityActionType.RotateWeapon, m_linkedEntity) as RotateWeaponAction);
+					RotateWeaponAction rotateAction = (TurnManager.Instance.GetAction(EntityActionType.RotateWeapon, m_linkedEntity.ID) as RotateWeaponAction);
 					rotateAction.rotatingWeaponID = _weapon;
 					resultInfo.ReplaceAction(rotateAction);
 				}

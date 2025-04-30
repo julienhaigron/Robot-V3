@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3559449811127293173}
   - component: {fileID: 7579687694698398360}
-  - component: {fileID: 1799272358232279112}
+  - component: {fileID: 5453414757821242471}
   m_Layer: 0
   m_Name: OnlinePlayer
   m_TagString: Untagged
@@ -59,7 +59,7 @@ MonoBehaviour:
   AutoObjectParentSync: 1
   SyncOwnerTransformWhenParented: 1
   AllowOwnerToParent: 0
---- !u!114 &1799272358232279112
+--- !u!114 &5453414757821242471
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -68,12 +68,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 3238872612190963845}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dfd41d096e9485f4d8536470ed21a4e8, type: 3}
+  m_Script: {fileID: 11500000, guid: 16d50b43657c91b499818d486a85c277, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
-  Position:
-    m_InternalValue: {x: 0, y: 0, z: 0}
 --- !u!1 &6963922943212089003
 GameObject:
   m_ObjectHideFlags: 0

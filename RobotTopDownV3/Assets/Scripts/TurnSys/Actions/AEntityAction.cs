@@ -7,36 +7,33 @@ using Unity.Netcode;
 public abstract class AEntityAction : INetworkSerializable
 {
     public Action onPerform;
-    public Action<Entity> onEndPerform;
+    public Action<int> onEndPerform;
 
     public int cost;
     public int cooldown;
     public EntityActionType type;
-    public Entity performingEntity;
-    public Tile supposedPositionAtActionStart;
-    public Tile positionAtActionEnd;
-    public bool isVisible;
+    public int performingEntityID; //entity
+    public int supposedPositionAtActionStartID; //tile
+    public int positionAtActionEndID; //tile
 
     public virtual void NetworkSerialize<T> ( BufferSerializer<T> serializer ) where T : IReaderWriter
     {
         serializer.SerializeValue(ref cost);
         serializer.SerializeValue(ref cooldown);
         serializer.SerializeValue(ref type);
-        //TODO : replace Entity and Tile to id of said objects
-        /*serializer.NetworkSerialize(ref performingEntity);
-        serializer.NetworkSerialize(ref supposedPositionAtActionStart);
-        serializer.NetworkSerialize(ref positionAtActionEnd);*/
-        serializer.SerializeValue(ref isVisible);
+        serializer.SerializeValue(ref performingEntityID);
+		serializer.SerializeValue(ref supposedPositionAtActionStartID);
+		serializer.SerializeValue(ref positionAtActionEndID);
     }
 
-    public virtual void Init(EntityActionData _data, Entity _performingEntity, Tile _positionAtActionStart )
+    public virtual void Init(EntityActionData _data, int _performingEntityID, int _positionAtActionStartID )
 	{
         cost = _data.tokenCost;
         cooldown = _data.tokenCooldown;
         type = _data.type;
-        performingEntity = _performingEntity;
-        supposedPositionAtActionStart = _positionAtActionStart;
-        positionAtActionEnd = _positionAtActionStart;
+        performingEntityID = _performingEntityID;
+        supposedPositionAtActionStartID = _positionAtActionStartID;
+        positionAtActionEndID = _positionAtActionStartID;
     }
 
     public abstract void Prepare ( Entity.EntityState _state );
@@ -50,14 +47,14 @@ public abstract class AEntityAction : INetworkSerializable
 
     public virtual void RegisterInteraction ( Tile _tile )
 	{
-        TurnManager.Instance.AddAction(performingEntity, TurnManager.Instance.CurrentActionSelected, TurnManager.Instance.CurrentStateTypeSelected);
+        TurnManager.Instance.AddAction(performingEntityID, TurnManager.Instance.CurrentActionSelected, TurnManager.Instance.CurrentStateTypeSelected);
 
-        TurnManager.Instance.RefreshActionDisplay(performingEntity);
+        TurnManager.Instance.RefreshActionDisplay(performingEntityID);
     }
 
     public virtual void EndPerform ()
     {
-        onEndPerform?.Invoke(performingEntity);
+        onEndPerform?.Invoke(performingEntityID);
     }
 
     public abstract bool CheckConflict ( AEntityAction _otherAction, bool _isCheck = true );
@@ -66,6 +63,6 @@ public abstract class AEntityAction : INetworkSerializable
 
 	public override string ToString ()
 	{
-		return performingEntity.Data.name + "," + type.ToString();
+		return GameManager.Instance.GetEntityFromID(performingEntityID).Data.name + "," + type.ToString();
 	}
 }

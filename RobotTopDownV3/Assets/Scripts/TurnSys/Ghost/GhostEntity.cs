@@ -18,11 +18,11 @@ public class GhostEntity : MonoBehaviour
 
 	public bool DisplayAction(int _actionPos )
 	{
-		if (TurnManager.Instance.RecordedActions == null || !TurnManager.Instance.RecordedActions.ContainsKey(m_linkedEntity) || TurnManager.Instance.RecordedActions[m_linkedEntity].Count <= _actionPos)
+		if (TurnManager.Instance.RecordedActions == null || !TurnManager.Instance.RecordedActions.ContainsKey(m_linkedEntity.ID) || TurnManager.Instance.RecordedActions[m_linkedEntity.ID].Count <= _actionPos)
 			return false;
 
-		TurnManager.RecordedAction displayedAction = TurnManager.Instance.RecordedActions[m_linkedEntity].ToArray()[_actionPos];
-		transform.position = displayedAction.action.supposedPositionAtActionStart.transform.position - new Vector3(0, -.5f, 0); //ground offset
+		TurnManager.RecordedAction displayedAction = TurnManager.Instance.RecordedActions[m_linkedEntity.ID].ToArray()[_actionPos];
+		transform.position = GridManager.Instance.Tiles[displayedAction.action.supposedPositionAtActionStartID].transform.position - new Vector3(0, -.5f, 0); //ground offset
 
 		//put ghost at tile he would be at beginning of action
 		//draw green arrow if movement to tile

@@ -2,12 +2,25 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BotEnnemiPlayer : Singleton<BotEnnemiPlayer>
+public class BotEnnemiPlayer : MonoBehaviour
 {
-    
-    public void InputPhase ()
+
+	private void Awake ()
 	{
-		foreach(Entity entity in GameManager.Instance.EnnemiEntityAnchor.Entities)
+		TurnManager.onEndInputPhase += InputPhase;
+	}
+
+	private void OnDestroy ()
+	{
+		TurnManager.onEndInputPhase -= InputPhase;
+	}
+
+	public void InputPhase ()
+	{
+		if (GameManager.Instance.CurrentGameMode != GameManager.GameMode.Offline)
+			return;
+
+		foreach(Entity entity in GameManager.Instance.PlayersEntityAnchor[1].Entities)
 		{
 			DetermineEntityActions(entity);
 		}
@@ -17,7 +30,7 @@ public class BotEnnemiPlayer : Singleton<BotEnnemiPlayer>
 	{
 		for(int i = 0; i < entity.Data.actionTokenAmount; i++)
 		{
-			TurnManager.Instance.AddAction(entity, EntityActionType.Wait, Entity.EntityState.Guarding);
+			TurnManager.Instance.AddAction(entity.ID, EntityActionType.Wait, Entity.EntityState.Guarding);
 		}
 
 	}

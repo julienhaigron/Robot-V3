@@ -15,7 +15,7 @@ public class MultiplayerPanel : AUIPanel
 	[SerializeField] TextMeshProUGUI m_portText;
 	[SerializeField] GameObject m_menuScene;
 
-	bool m_isHost = false;
+	//bool m_isHost = false;
 
 	/*private void Start ()
 	{
