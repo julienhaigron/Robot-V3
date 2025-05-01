@@ -10,19 +10,56 @@ public class LobbyManager : NetworkBehaviour
 
 	[SerializeField] private int nbOfPlayer = 2;
 
+    private HashSet<ulong> connectedClients = new();
+
+    public override void OnNetworkSpawn ()
+    {
+        if (IsServer)
+        {
+            NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnected;
+
+            // Si le host est aussi un joueur (ce qui est souvent le cas)
+            connectedClients.Add(NetworkManager.Singleton.LocalClientId);
+
+            TryStartGame();
+        }
+    }
+
+    private void OnClientConnected ( ulong clientId )
+    {
+        connectedClients.Add(clientId);
+        Debug.Log($"[Server] Client connecté: {clientId}");
+
+        TryStartGame();
+    }
+
     public void AddPlayerInstance ( OnlinePlayerInstance _player, bool _isOwn )
-	{
-		Players.Add(_player.connectionIndex.Value, _player);
-		if (_isOwn)
-			OwnedPlayerInstance = _player;
+    {
+        Players[_player.connectionIndex] = _player;
+        if (_isOwn)
+            OwnedPlayerInstance = _player;
+    }
 
-		if (IsServer && Players.Count == nbOfPlayer)
-			StartClientsGameRPC();
-	}
+    private void TryStartGame ()
+    {
+        if (connectedClients.Count >= nbOfPlayer)
+        {
+            LogConsole.AddLog("[Server] Tous les clients sont connectés. Lancement de la partie dans 1 seconde...", LogConsole.LogEventType.Main);
+            StartCoroutine(DelayedStart());
+        }
+    }
 
-	[ClientRpc(RequireOwnership = false)]
-	private void StartClientsGameRPC ()
+    private IEnumerator DelayedStart ()
+    {
+        yield return new WaitForSeconds(1f); // TODO : loading screen later
+
+        StartClientsGameClientRPC();
+    }
+
+    [ClientRpc(RequireOwnership = false)]
+	private void StartClientsGameClientRPC ()
 	{
+		LogConsole.AddLog("Start OnlineGame", LogConsole.LogEventType.Main);
 		GameManager.Instance.StartGame();
 	}
 

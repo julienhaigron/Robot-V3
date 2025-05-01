@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public sealed class InGamePanel : AUIPanel
 {
@@ -80,8 +81,13 @@ public sealed class InGamePanel : AUIPanel
 			TurnManager.Instance.EndInputPhase();
 		else if (GameManager.Instance.CurrentGameMode == GameManager.GameMode.Online)
 		{
-			OnlinePlayerInstance.Self.EndInputPhaseRPC(OnlinePlayerInstance.Self.connectionIndex.Value, TurnManager.Instance.RecordedActions[OnlinePlayerInstance.Self.connectionIndex.Value].ToArray());
-			NetworkTaskOrchestrator.Instance.NotifyTaskEndToServerRPC("InputPhase");
+			TurnManager.RecordedAction[][] actionsToPlay = new TurnManager.RecordedAction[TurnManager.Instance.ActionsToPlay.Count][];
+			int[] entitiesIDs = TurnManager.Instance.ActionsToPlay.Keys.ToArray();
+			for (int i = 0; i < TurnManager.Instance.ActionsToPlay.Keys.Count; i++)
+			{
+				actionsToPlay[i] = TurnManager.Instance.ActionsToPlay[entitiesIDs[i]].ToArray();
+			}
+			OnlinePlayerInstance.Self.EndInputPhaseServerRPC(OnlinePlayerInstance.Self.OwnerClientId, entitiesIDs, actionsToPlay);
 		}
 	}
 

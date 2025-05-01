@@ -2,13 +2,42 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
+using System.Linq;
+
 public class NetworkedTurnSystem : NetworkBehaviour
 {
-	[SerializeField] private SerializableDictionary<Entity, Queue<TurnManager.RecordedAction>> m_recordedActionInput = new();
-	public SerializableDictionary<Entity, Queue<TurnManager.RecordedAction>> RecordedActions => m_recordedActionInput;
+    [SerializeField] private TurnManager m_turnManager;
+
+    [ClientRpc(RequireOwnership = false)]
+    public void StartPlayPhaseClientRPC ( int[] _entitiesIDs, TurnManager.RecordedAction[][] playersRecordedActions )
+    {
+        for(int i = 0; i < _entitiesIDs.Length; i++)
+		{
+            Queue<TurnManager.RecordedAction> actionQueue = new Queue<TurnManager.RecordedAction>();
+            foreach (TurnManager.RecordedAction action in playersRecordedActions[i])
+                actionQueue.Enqueue(action);
+            m_turnManager.ActionsToPlay.Add(_entitiesIDs[i], actionQueue);
+		}
+        m_turnManager.PlayThisPhaseActions();
+    }
+
+    [ClientRpc(RequireOwnership = false)]
+    public void EndRoundClientRPC ( bool _isPlayerOneDead, bool _isPlayerTwoDead )
+	{
+        if (_isPlayerOneDead || _isPlayerTwoDead)
+        {
+            m_turnManager.EndLevel(!_isPlayerOneDead);
+        }
+        else
+        {
+            m_turnManager.StartInputPhase();
+        }
+    }
 
 
-    // Fonction pour envoyer une liste d'actions au serveur
+
+	#region Old
+	/*// Fonction pour envoyer une liste d'actions au serveur
     public void SendActionsToServer ( TurnManager.RecordedAction[] recordedActions )
     {
         if (IsServer)
@@ -56,6 +85,7 @@ public class NetworkedTurnSystem : NetworkBehaviour
         // Implémenter ici la logique spécifique pour traiter l'action de type MoveToNeighborAction
         Debug.Log("Traitement du déplacement pour l'entité : " + GameManager.Instance.GetEntityFromID(action.performingEntityID).Data.name);
         // Vous pouvez utiliser `entityState` pour ajuster l'état de l'entité
-    }
+    }*/
+	#endregion
 
 }

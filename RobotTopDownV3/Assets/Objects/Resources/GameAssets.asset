@@ -14,9 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   game:
     baseTile: {fileID: 1296925374456379223, guid: de323a5a1d0a9594f928198e7ec5f84c, type: 3}
-    baseEntity: {fileID: 4737523583837535854, guid: facf97aac763a09489a27b119520aaff, type: 3}
     maps:
     - {fileID: 11400000, guid: 6f08d292abbf2bc4d8b8635617613b35, type: 2}
+    entityPrefabs:
+    - {fileID: 4673310249167116355, guid: 206cf16509b1846479a1f553fd6add2d, type: 3}
+    - {fileID: 4673310249167116355, guid: 831df868960bcef478dc0020299a32ff, type: 3}
     defaultWeapon: {fileID: 11400000, guid: dc7d2dbc3edd72d4f9025dff20a7cbaa, type: 2}
     weapons:
       keys:

@@ -16,9 +16,9 @@ public class GameAssets : ScriptableObject
     public class Game
     {
         public Tile baseTile;
-        public Entity baseEntity;
 
         public List<GridData> maps = new();
+        public List<Entity> entityPrefabs = new();
 
         public WeaponData defaultWeapon;
         public SerializableDictionary<string, Weapon> weapons = new SerializableDictionary<string, Weapon>();

@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: PlayerRobot 1
   m_EditorClassIdentifier: 
   faction: 0
+  prefabId: 1
   actionTokenAmount: 5
   knownedActions: 000000000300000001000000
   visibilityRange: 8

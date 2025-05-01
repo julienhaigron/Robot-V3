@@ -59,7 +59,7 @@ public class Entity : MonoBehaviour
 	{
         if (m_data.faction == EntityFaction.Ally && GameManager.Instance.CurrentGameMode == GameManager.GameMode.Offline)
             return true;
-        else if (GameManager.Instance.CurrentGameMode == GameManager.GameMode.Online && GameManager.Instance.PlayersEntityAnchor[OnlinePlayerInstance.Self.connectionIndex.Value].Entities.Contains(this))
+        else if (GameManager.Instance.CurrentGameMode == GameManager.GameMode.Online && GameManager.Instance.PlayersEntityAnchor[OnlinePlayerInstance.Self.connectionIndex].Entities.Contains(this))
             return true;
         else
             return false;

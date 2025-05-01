@@ -59,7 +59,7 @@ public class EntityAnchor : MonoBehaviour
 
 	private void SpawnEntity ( EntityData _entityData, int _entityID )
 	{
-		Entity entity = Instantiate(GameAssets.current.game.baseEntity, transform);
+		Entity entity = Instantiate(GameAssets.current.game.entityPrefabs[_entityData.prefabId], transform);
 		entity.Init(_entityData, GetRandomAvailableSpawnPosition(), _entityID);
 		m_entities.Add(entity);
 	}

@@ -9,6 +9,8 @@ public class EntityData : ScriptableObject
 {
     public Entity.EntityFaction faction;
 
+    public int prefabId = 0;
+
     [Title("Action")]
     public int actionTokenAmount = 8;
     public EntityActionType[] knownedActions;

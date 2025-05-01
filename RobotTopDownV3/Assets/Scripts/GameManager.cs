@@ -9,14 +9,14 @@ public class GameManager : Singleton<GameManager>
 	[SerializeField] private EntityAnchor[] m_playersEntityAnchor;
 	public EntityAnchor[] PlayersEntityAnchor => m_playersEntityAnchor;
 
-	private LobbyManager m_lobby;
+	[SerializeField] private LobbyManager m_lobby;
 	public LobbyManager Lobby => m_lobby;
 
 	/*private PlayerConnector m_connector;
 	public PlayerConnector Connector => m_connector;*/
 
 	public enum GameMode { Offline, Online}
-	private GameMode m_currentGameMode;
+	[SerializeField] private GameMode m_currentGameMode;
 	public GameMode CurrentGameMode => m_currentGameMode;
 
 	[Title("Offline")]

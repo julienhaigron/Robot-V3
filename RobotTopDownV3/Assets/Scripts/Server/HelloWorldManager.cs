@@ -5,6 +5,9 @@ public class HelloWorldManager : MonoBehaviour
 {
 	void OnGUI ()
 	{
+		if (NetworkManager.Singleton == null)
+			return;
+
 		GUILayout.BeginArea(new Rect(10, 10, 300, 300));
 		if (!NetworkManager.Singleton.IsClient && !NetworkManager.Singleton.IsServer)
 		{

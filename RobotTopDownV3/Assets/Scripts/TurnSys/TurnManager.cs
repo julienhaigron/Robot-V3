@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Sirenix.OdinInspector;
 using Unity.Netcode;
+using System.Linq;
 
 //TODO :
 
@@ -21,9 +22,12 @@ public class TurnManager : Singleton<TurnManager>
 	public static System.Action<AEntityAction> onActionSelected;
 	public static System.Action onEndInputPhase;
 
+	[SerializeField] private NetworkedTurnSystem m_networkedTurnSystem;
+
 	[SerializeField] private SerializableDictionary<int, Queue<RecordedAction>> m_recordedActionInput = new(); //all actions this turn
 	public SerializableDictionary<int, Queue<RecordedAction>> RecordedActions => m_recordedActionInput;
 	[SerializeField] private SerializableDictionary<int, Queue<RecordedAction>> m_actionsToPlay = new(); //this phase action
+	public SerializableDictionary<int, Queue<RecordedAction>> ActionsToPlay => m_actionsToPlay;
 	private SerializableDictionary<int, RecordedAction> m_actionsBeingDone = new(); //current actions running
 	private SerializableDictionary<int, int> m_remainingActionToken = new();
 	public SerializableDictionary<int, int> RemainingActionToken => m_remainingActionToken;
@@ -232,14 +236,14 @@ public class TurnManager : Singleton<TurnManager>
 			}
 		}
 
-		if(GameManager.Instance.CurrentGameMode == GameManager.GameMode.Offline)
+		//if(GameManager.Instance.CurrentGameMode == GameManager.GameMode.Offline)
 			StartRound();
-		else
+		/*else
 		{
 			//send actions to server and wait for all players
 			//if all player ready then start Round
 			here
-		}
+		}*/
 	}
 
 	#endregion
@@ -329,9 +333,30 @@ public class TurnManager : Singleton<TurnManager>
 		//c)play this phases entities turn actions
 
 		//TODO : Network here 3 (bellow)
+		//make a pause here, send actions to all clients
+		//AND only after that is done, start perform actions
+		//and wait for all actions to be performed and server signaled by every clients
+		//then server do EndRound 
+		if(GameManager.Instance.CurrentGameMode == GameManager.GameMode.Offline)
+			PlayThisPhaseActions();
+		else if(GameManager.Instance.CurrentGameMode == GameManager.GameMode.Online)
+		{
+			NetworkTaskOrchestrator.Instance.LaunchClientTask("PlayPhase", EndPhase);
+			RecordedAction[][] actionsToPlay = new RecordedAction[m_actionsToPlay.Count][];
+			int[] entitiesIDs = m_actionsToPlay.Keys.ToArray();
+			for(int i = 0; i< m_actionsToPlay.Keys.Count; i++)
+			{
+				actionsToPlay[i] = m_actionsToPlay[entitiesIDs[i]].ToArray();
+			}
+			m_networkedTurnSystem.StartPlayPhaseClientRPC(entitiesIDs, actionsToPlay);
+		}
+	}
 
+	public void PlayThisPhaseActions ()
+	{
 		currentPhase = TurnPhase.Playing;
 		m_actionsBeingDone.Clear();
+		List<int> entityIDs = new(m_actionsToPlay.Keys);
 		foreach (int entityID in entityIDs)
 		{
 			if (m_actionsToPlay.ContainsKey(entityID) && m_actionsToPlay[entityID] != null && m_actionsToPlay[entityID].Count != 0)
@@ -403,13 +428,23 @@ public class TurnManager : Singleton<TurnManager>
 			m_actionsBeingDone.Remove(_performingEntityID);
 			if (m_actionsBeingDone.Keys.Count == 0)
 			{
-				if (m_recordedActionInput.Keys.Count == 0)
-					EndRound(); //end turn
-				else
-					StartNextPhase(); //end this phase
+				if (GameManager.Instance.CurrentGameMode == GameManager.GameMode.Offline)
+				{
+					EndPhase();
+				}
+				else if (GameManager.Instance.CurrentGameMode == GameManager.GameMode.Online)
+					NetworkTaskOrchestrator.Instance.NotifyClientEndedTaskFromServer("PlayPhase", m_networkedTurnSystem.OwnerClientId);
 			}
 		}
 
+	}
+
+	private void EndPhase ()
+	{
+		if (m_recordedActionInput.Keys.Count == 0)
+			EndRound(); //end turn
+		else
+			StartNextPhase(); //end this phase
 	}
 
 	private void OnEntityDeath(int _entityID )
@@ -425,18 +460,36 @@ public class TurnManager : Singleton<TurnManager>
 
 		//check if finish level condition (all enemy killed || all ally killed)
 		GameManager.Instance.LevelCompletionCheck(out bool _isPlayerOneDead, out bool _isPlayerTwoDead);
-		if (_isPlayerOneDead || _isPlayerTwoDead)
+		if(GameManager.Instance.CurrentGameMode == GameManager.GameMode.Offline)
 		{
-			EndLevel(!_isPlayerOneDead);
+			if (_isPlayerOneDead || _isPlayerTwoDead)
+			{
+				EndLevel(!_isPlayerOneDead);
+			}
+			else
+			{
+				StartInputPhase();
+			}
 		}
-		else
+		else if(GameManager.Instance.CurrentGameMode == GameManager.GameMode.Online)
 		{
-			StartInputPhase();
+			if (m_networkedTurnSystem.IsServer && !m_networkedTurnSystem.IsHost)
+			{
+				if (_isPlayerOneDead || _isPlayerTwoDead)
+				{
+					EndLevel(!_isPlayerOneDead && OnlinePlayerInstance.Self.IsHost);
+				}
+				else
+				{
+					StartInputPhase();
+				}
+			}
+			m_networkedTurnSystem.EndRoundClientRPC( _isPlayerOneDead, _isPlayerTwoDead);
 		}
 
 	}
 
-	private void EndLevel (bool _isSuccess)
+	public void EndLevel (bool _isSuccess)
 	{
 		if (_isSuccess)
 			LogConsole.AddLog("Player victory", LogConsole.LogEventType.Main);

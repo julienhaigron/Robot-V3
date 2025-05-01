@@ -71,13 +71,13 @@ public class NetworkTaskOrchestrator : NetworkBehaviour
 
     //call this when implementing
     [ServerRpc(RequireOwnership = false)]
-    public void NotifyTaskEndToServerRPC ( string requestId, ServerRpcParams rpcParams = default )
+    public void NotifyTaskEndToServerRPC ( string _requestId, ServerRpcParams _rpcParams = default )
     {
-        ulong clientId = rpcParams.Receive.SenderClientId;
+        ulong clientId = _rpcParams.Receive.SenderClientId;
 
-        if (!activeTasks.TryGetValue(requestId, out var task))
+        if (!activeTasks.TryGetValue(_requestId, out var task))
         {
-            Debug.LogWarning($"[Server] Tâche inconnue ou déjà terminée: {requestId}");
+            Debug.LogWarning($"[Server] Tâche inconnue ou déjà terminée: {_requestId}");
             return;
         }
 
@@ -89,7 +89,28 @@ public class NetworkTaskOrchestrator : NetworkBehaviour
             {
                 //Debug.Log($"[Server] Tous les clients ont terminé la tâche '{requestId}'");
                 task.OnAllClientsResponded?.Invoke();
-                activeTasks.Remove(requestId);
+                activeTasks.Remove(_requestId);
+            }
+        }
+    }
+
+    public void NotifyClientEndedTaskFromServer ( string _requestId, ulong _clientID)
+    {
+        if (!activeTasks.TryGetValue(_requestId, out var task))
+        {
+            Debug.LogWarning($"[Server] Tâche inconnue ou déjà terminée: {_requestId}");
+            return;
+        }
+
+        if (task.PendingClients.Remove(_clientID))
+        {
+            //Debug.Log($"[Server] Réponse reçue de {clientId} pour '{requestId}'. Clients restants: {task.PendingClients.Count}");
+
+            if (task.PendingClients.Count == 0)
+            {
+                //Debug.Log($"[Server] Tous les clients ont terminé la tâche '{requestId}'");
+                task.OnAllClientsResponded?.Invoke();
+                activeTasks.Remove(_requestId);
             }
         }
     }
