@@ -304,6 +304,7 @@ GameObject:
   - component: {fileID: 1106909109}
   - component: {fileID: 1106909110}
   - component: {fileID: 1106909112}
+  - component: {fileID: 1106909113}
   m_Layer: 0
   m_Name: NetworkedGameManager
   m_TagString: Untagged
@@ -380,6 +381,19 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   OwnedPlayerInstance: {fileID: 0}
   nbOfPlayer: 2
+--- !u!114 &1106909113
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1106909108}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 98f425d3cf9268a44a31a0120894a481, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
 --- !u!1001 &2034904380
 PrefabInstance:
   m_ObjectHideFlags: 0

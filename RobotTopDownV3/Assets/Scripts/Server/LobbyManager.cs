@@ -59,7 +59,6 @@ public class LobbyManager : NetworkBehaviour
     [ClientRpc(RequireOwnership = false)]
 	private void StartClientsGameClientRPC ()
 	{
-		LogConsole.AddLog("Start OnlineGame", LogConsole.LogEventType.Main);
 		GameManager.Instance.StartGame();
 	}
 

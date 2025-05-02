@@ -52,8 +52,40 @@ public class TurnManager : Singleton<TurnManager>
 
 		public void NetworkSerialize<T> ( BufferSerializer<T> serializer ) where T : IReaderWriter
 		{
-			action.NetworkSerialize(serializer);
+			EntityActionType type = EntityActionType.NeighborMove;
+			if (!serializer.IsReader)
+			{
+				type = action.type;
+			}
+			serializer.SerializeValue(ref type);
+
+			if (serializer.IsReader)
+			{
+				action = type switch
+				{
+					EntityActionType.NeighborMove => new MoveToNeighborAction(),
+					EntityActionType.TargetTileMove => new MoveToTargetAction(),
+					EntityActionType.Attack => new AttackAction(),
+					EntityActionType.Wait => new WaitAction(),
+					EntityActionType.RotateWeapon => new RotateWeaponAction(),
+					_ => null
+				};
+			}
+
+			action?.NetworkSerialize(serializer); // Safe
 			serializer.SerializeValue(ref entityState);
+		}
+	}
+
+	public struct RecordedEntityActionsContainer : INetworkSerializable
+	{
+		public int entityId;
+		public RecordedAction[] actions;
+
+		public void NetworkSerialize<T> ( BufferSerializer<T> serializer ) where T : IReaderWriter
+		{
+			serializer.SerializeValue(ref entityId);
+			serializer.SerializeValue(ref actions);
 		}
 	}
 
@@ -342,13 +374,17 @@ public class TurnManager : Singleton<TurnManager>
 		else if(GameManager.Instance.CurrentGameMode == GameManager.GameMode.Online)
 		{
 			NetworkTaskOrchestrator.Instance.LaunchClientTask("PlayPhase", EndPhase);
-			RecordedAction[][] actionsToPlay = new RecordedAction[m_actionsToPlay.Count][];
-			int[] entitiesIDs = m_actionsToPlay.Keys.ToArray();
-			for(int i = 0; i< m_actionsToPlay.Keys.Count; i++)
+			List<RecordedEntityActionsContainer> actionsToSend = new();
+
+			foreach (var kvp in m_actionsToPlay)
 			{
-				actionsToPlay[i] = m_actionsToPlay[entitiesIDs[i]].ToArray();
+				actionsToSend.Add(new RecordedEntityActionsContainer
+				{
+					entityId = kvp.Key,
+					actions = kvp.Value.ToArray()
+				});
 			}
-			m_networkedTurnSystem.StartPlayPhaseClientRPC(entitiesIDs, actionsToPlay);
+			m_networkedTurnSystem.StartPlayPhaseClientRPC(actionsToSend.ToArray());
 		}
 	}
 
@@ -433,7 +469,7 @@ public class TurnManager : Singleton<TurnManager>
 					EndPhase();
 				}
 				else if (GameManager.Instance.CurrentGameMode == GameManager.GameMode.Online)
-					NetworkTaskOrchestrator.Instance.NotifyClientEndedTaskFromServer("PlayPhase", m_networkedTurnSystem.OwnerClientId);
+					NetworkTaskOrchestrator.Instance.NotifyTaskEndToServerRPC("PlayPhase");
 			}
 		}
 

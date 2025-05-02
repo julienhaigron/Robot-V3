@@ -170,9 +170,12 @@ public class EntityAIPlugin : EntityPlugin
 
 	public bool IsEntityInWeaponPossibleRange ( Entity _entity, out string _weapon, bool _isThisTurn = true )
 	{
+		_weapon = "";
+		if (_entity == null)
+			return false;
+
 		GridManager.Instance.BFS(m_linkedEntity.Displacement.Coordinates.GetTile(), -1, _entity.Displacement.Coordinates.GetTile(), _isThisTurn);
 
-		_weapon = "";
 		foreach (string weaponId in m_linkedEntity.Equipment.Weapons.Keys)
 		{
 			if (m_linkedEntity.Equipment.Weapons[weaponId].Data.range >= _entity.Displacement.Coordinates.GetTile().Distance)

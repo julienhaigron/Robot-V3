@@ -45,15 +45,16 @@ public class GameManager : Singleton<GameManager>
 	{
 		if (m_currentGameMode == GameMode.Offline)
 		{
+			LogConsole.AddLog("Start OfflineGame", LogConsole.LogEventType.Main);
 			m_playersEntityAnchor[0].Init(m_playerEntityDatas, 0);
 			m_playersEntityAnchor[1].Init(m_ennemiEntityDatas, 1);
 		}
 		else if (m_currentGameMode == GameMode.Online)
 		{
+			LogConsole.AddLog("Start OnlineGame", LogConsole.LogEventType.Main);
 			//TODO send player info if online
 			m_playersEntityAnchor[0].Init(m_playerOneEntityDatas, 0);
 			m_playersEntityAnchor[1].Init(m_playerTwoEntityDatas, 1);
-			return;
 		}
 
 		TurnManager.Instance.Init();

@@ -19,14 +19,17 @@ public class OnlinePlayerInstance : NetworkBehaviour
 	}
 
     [ServerRpc(RequireOwnership = false)]
-    public void EndInputPhaseServerRPC ( ulong _senderPlayerID, int[] _entitiesIDs, TurnManager.RecordedAction[][] playersRecordedActions )
+    public void EndInputPhaseServerRPC ( ulong _senderPlayerID, TurnManager.RecordedEntityActionsContainer[] _entitiesRecordedActions )
     {
-        for (int i = 0; i < _entitiesIDs.Length; i++)
+        if (Self.OwnerClientId != _senderPlayerID)
         {
-            Queue<TurnManager.RecordedAction> actionQueue = new Queue<TurnManager.RecordedAction>();
-            foreach (TurnManager.RecordedAction action in playersRecordedActions[i])
-                actionQueue.Enqueue(action);
-            TurnManager.Instance.ActionsToPlay.Add(_entitiesIDs[i], actionQueue);
+            for (int i = 0; i < _entitiesRecordedActions.Length; i++)
+            {
+                Queue<TurnManager.RecordedAction> actionQueue = new Queue<TurnManager.RecordedAction>();
+                foreach (TurnManager.RecordedAction action in _entitiesRecordedActions[i].actions)
+                    actionQueue.Enqueue(action);
+                TurnManager.Instance.RecordedActions.Add(_entitiesRecordedActions[i].entityId, actionQueue);
+            }
         }
 
         NetworkTaskOrchestrator.Instance.NotifyClientEndedTaskFromServer("InputPhase", _senderPlayerID);

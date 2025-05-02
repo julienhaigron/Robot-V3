@@ -6,33 +6,36 @@ using System.Linq;
 
 public class NetworkedTurnSystem : NetworkBehaviour
 {
-    [SerializeField] private TurnManager m_turnManager;
+	[SerializeField] private TurnManager m_turnManager;
 
-    [ClientRpc(RequireOwnership = false)]
-    public void StartPlayPhaseClientRPC ( int[] _entitiesIDs, TurnManager.RecordedAction[][] playersRecordedActions )
-    {
-        for(int i = 0; i < _entitiesIDs.Length; i++)
-		{
-            Queue<TurnManager.RecordedAction> actionQueue = new Queue<TurnManager.RecordedAction>();
-            foreach (TurnManager.RecordedAction action in playersRecordedActions[i])
-                actionQueue.Enqueue(action);
-            m_turnManager.ActionsToPlay.Add(_entitiesIDs[i], actionQueue);
-		}
-        m_turnManager.PlayThisPhaseActions();
-    }
-
-    [ClientRpc(RequireOwnership = false)]
-    public void EndRoundClientRPC ( bool _isPlayerOneDead, bool _isPlayerTwoDead )
+	[ClientRpc(RequireOwnership = false)]
+	public void StartPlayPhaseClientRPC ( TurnManager.RecordedEntityActionsContainer[] _entitiesRecordedActions )
 	{
-        if (_isPlayerOneDead || _isPlayerTwoDead)
-        {
-            m_turnManager.EndLevel(!_isPlayerOneDead);
-        }
-        else
-        {
-            m_turnManager.StartInputPhase();
-        }
-    }
+		for (int i = 0; i < _entitiesRecordedActions.Length; i++)
+		{
+            if (m_turnManager.ActionsToPlay.ContainsKey(_entitiesRecordedActions[i].entityId)) continue;
+
+			Queue<TurnManager.RecordedAction> actionQueue = new Queue<TurnManager.RecordedAction>();
+			foreach (TurnManager.RecordedAction action in _entitiesRecordedActions[i].actions)
+				actionQueue.Enqueue(action);
+			m_turnManager.ActionsToPlay.Add(_entitiesRecordedActions[i].entityId, actionQueue);
+		}
+
+		m_turnManager.PlayThisPhaseActions();
+	}
+
+	[ClientRpc(RequireOwnership = false)]
+	public void EndRoundClientRPC ( bool _isPlayerOneDead, bool _isPlayerTwoDead )
+	{
+		if (_isPlayerOneDead || _isPlayerTwoDead)
+		{
+			m_turnManager.EndLevel(!_isPlayerOneDead);
+		}
+		else
+		{
+			m_turnManager.StartInputPhase();
+		}
+	}
 
 
 

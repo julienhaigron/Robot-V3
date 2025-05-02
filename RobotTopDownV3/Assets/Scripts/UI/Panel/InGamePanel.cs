@@ -81,13 +81,23 @@ public sealed class InGamePanel : AUIPanel
 			TurnManager.Instance.EndInputPhase();
 		else if (GameManager.Instance.CurrentGameMode == GameManager.GameMode.Online)
 		{
-			TurnManager.RecordedAction[][] actionsToPlay = new TurnManager.RecordedAction[TurnManager.Instance.ActionsToPlay.Count][];
-			int[] entitiesIDs = TurnManager.Instance.ActionsToPlay.Keys.ToArray();
-			for (int i = 0; i < TurnManager.Instance.ActionsToPlay.Keys.Count; i++)
+			List<TurnManager.RecordedEntityActionsContainer> actionsToSend = new();
+
+			foreach (var kvp in TurnManager.Instance.RecordedActions)
 			{
-				actionsToPlay[i] = TurnManager.Instance.ActionsToPlay[entitiesIDs[i]].ToArray();
+				actionsToSend.Add(new TurnManager.RecordedEntityActionsContainer
+				{
+					entityId = kvp.Key,
+					actions = kvp.Value.ToArray()
+				});
 			}
-			OnlinePlayerInstance.Self.EndInputPhaseServerRPC(OnlinePlayerInstance.Self.OwnerClientId, entitiesIDs, actionsToPlay);
+			/*TurnManager.RecordedAction[][] actionsToPlay = new TurnManager.RecordedAction[TurnManager.Instance.RecordedActions.Count][];
+			int[] entitiesIDs = TurnManager.Instance.RecordedActions.Keys.ToArray();
+			for (int i = 0; i < TurnManager.Instance.RecordedActions.Keys.Count; i++)
+			{
+				actionsToPlay[i] = TurnManager.Instance.RecordedActions[entitiesIDs[i]].ToArray();
+			}*/
+			OnlinePlayerInstance.Self.EndInputPhaseServerRPC(OnlinePlayerInstance.Self.OwnerClientId, actionsToSend.ToArray());
 		}
 	}
 
