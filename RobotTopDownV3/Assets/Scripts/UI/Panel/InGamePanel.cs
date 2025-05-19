@@ -77,6 +77,8 @@ public sealed class InGamePanel : AUIPanel
 
 	private void OnClickEndPhaseBtn ()
 	{
+		TurnManager.onEndInputPhase?.Invoke();
+
 		if (GameManager.Instance.CurrentGameMode == GameManager.GameMode.Offline)
 			TurnManager.Instance.EndInputPhase();
 		else if (GameManager.Instance.CurrentGameMode == GameManager.GameMode.Online)
@@ -91,12 +93,7 @@ public sealed class InGamePanel : AUIPanel
 					actions = kvp.Value.ToArray()
 				});
 			}
-			/*TurnManager.RecordedAction[][] actionsToPlay = new TurnManager.RecordedAction[TurnManager.Instance.RecordedActions.Count][];
-			int[] entitiesIDs = TurnManager.Instance.RecordedActions.Keys.ToArray();
-			for (int i = 0; i < TurnManager.Instance.RecordedActions.Keys.Count; i++)
-			{
-				actionsToPlay[i] = TurnManager.Instance.RecordedActions[entitiesIDs[i]].ToArray();
-			}*/
+
 			OnlinePlayerInstance.Self.EndInputPhaseServerRPC(OnlinePlayerInstance.Self.OwnerClientId, actionsToSend.ToArray());
 		}
 	}

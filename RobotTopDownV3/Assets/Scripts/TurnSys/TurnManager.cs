@@ -241,8 +241,6 @@ public class TurnManager : Singleton<TurnManager>
 	[Button]
 	public void EndInputPhase ()
 	{
-		onEndInputPhase?.Invoke();
-
 		SerializableDictionary<int, Queue<RecordedAction>> recordedActionInput = new(m_recordedActionInput);
 		m_recordedActionInput.Clear();
 		foreach (int entityID in recordedActionInput.Keys)
