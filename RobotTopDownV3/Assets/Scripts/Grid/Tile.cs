@@ -5,7 +5,7 @@ using System;
 using Sirenix.OdinInspector;
 using Unity.Netcode;
 
-public class Tile : MonoBehaviour, INetworkSerializable
+public class Tile : MonoBehaviour
 {
 	public static float outerRadius = 1f;
 	public static float innerRadius = outerRadius * 0.866025404f;
@@ -13,6 +13,8 @@ public class Tile : MonoBehaviour, INetworkSerializable
 	[Title("Depedencies")]
 	[SerializeField] private TileUIPlugin m_ui;
 	public TileUIPlugin UI => m_ui;
+
+	[SerializeField] private GameObject m_fow;
 
 	public TileCoordinates coordinates;
 	[SerializeField, ReadOnly] Tile[] m_neighbors;
@@ -32,7 +34,7 @@ public class Tile : MonoBehaviour, INetworkSerializable
 		public Entity entity;
 	}
 
-	public virtual void NetworkSerialize<T> ( BufferSerializer<T> serializer ) where T : IReaderWriter
+	/*public virtual void NetworkSerialize<T> ( BufferSerializer<T> serializer ) where T : IReaderWriter
 	{
 		if (serializer.IsReader)
 		{
@@ -42,7 +44,7 @@ public class Tile : MonoBehaviour, INetworkSerializable
 		{
 
 		}
-	}
+	}*/
 
 	#region Pathfinding params
 	private int m_distance;
@@ -84,6 +86,7 @@ public class Tile : MonoBehaviour, INetworkSerializable
 	{
 		m_ui.SetPosition(_x, _y);
 		m_groundType = _groundType;
+		SetFOWVisibility(false, false);
 	}
 
 	public void SetGroundType (TileGroundType _groundType)
@@ -117,6 +120,11 @@ public class Tile : MonoBehaviour, INetworkSerializable
 			return false;
 
 		return true;
+	}
+
+	public void SetFOWVisibility(bool _isVisible , bool _isInstant)
+	{
+		m_fow.SetActive(_isVisible);
 	}
 
 	#endregion

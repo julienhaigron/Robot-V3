@@ -15,6 +15,11 @@ public class GridManager : Singleton<GridManager>
 	private int m_width;
 	public int Width => m_width;
 
+	private struct PlayerVisionRangeInfo
+	{
+		public Dictionary<Entity, List<Tile>> entitiesVisionRange;
+	}
+	private Dictionary<int, PlayerVisionRangeInfo> m_entitiesVisions = new();
 
 	#region Editor
 #if UNITY_EDITOR
@@ -43,7 +48,10 @@ public class GridManager : Singleton<GridManager>
 	{
 		GenerateGrid(_data.height, _data.width);
 
-		for(int i = 0; i < m_tiles.Length; i++)
+		m_entitiesVisions.Add(0, new());
+		m_entitiesVisions.Add(1, new());
+
+		for (int i = 0; i < m_tiles.Length; i++)
 		{
 			TileGroundType groundType = _data.tiles[i].groundType;
 			m_tiles[i].SetGroundType(groundType);
@@ -199,6 +207,53 @@ public class GridManager : Singleton<GridManager>
 		return entitiesInRange;
 	}
 
+	public List<Tile> GetTilesInRange(Tile _from, int _maxDist, bool _isThisTurn )
+	{
+		List<Tile> tilesInRange = new();
+
+		for (int i = 0; i < m_tiles.Length; i++)
+		{
+			m_tiles[i].Distance = int.MaxValue;
+			//m_tiles[i].UI.ResetOutline();
+		}
+
+		Queue<Tile> frontier = new Queue<Tile>();
+		_from.Distance = 0;
+		frontier.Enqueue(_from);
+
+		while (frontier.Count > 0)
+		{
+			Tile current = frontier.Dequeue();
+			for (int i = 0; i < 6; i++)
+			{
+				//yield return new WaitForSeconds(1 / 60f);
+				Tile neighbor = current.GetNeighbor((HexDirection)i);
+
+				if (neighbor == null || neighbor.Distance != int.MaxValue)
+				{
+					continue;
+				}
+
+				//max distance
+				if (current.Distance + 1 > _maxDist)
+				{
+					continue;
+				}
+
+				//obstacle
+				if (neighbor.CanSeeThrough())
+				{
+					tilesInRange.Add(neighbor);
+				}
+
+				neighbor.Distance = current.Distance + 1;
+				frontier.Enqueue(neighbor);
+			}
+		}
+
+		return tilesInRange;
+	}
+
 	public void ClearTileOutile ()
 	{
 		for (int i = 0; i < m_tiles.Length; i++)
@@ -293,6 +348,62 @@ public class GridManager : Singleton<GridManager>
 		for(int i = 0; i < m_tiles.Length; i++)
 		{
 			m_tiles[i].NewPhase();
+		}
+	}
+
+	#endregion
+
+	#region FOW
+
+	public void OnNewEntity(Entity _entity )
+	{
+		List<Tile> tileInEntityRange = GetTilesInRange(_entity.Displacement.Coordinates.GetTile(), _entity.Data.visibilityRange, true);
+
+		foreach (Tile tile in tileInEntityRange)
+		{
+			tile.SetFOWVisibility(true, true);
+		}
+
+		m_entitiesVisions[_entity.PlayerOwnerID].entitiesVisionRange.Add(_entity, tileInEntityRange);
+	}
+
+	public void OnEntityDeath(Entity _entity )
+	{
+		/*if (!_entity.IsOwn())
+			return;*/
+
+		foreach(Tile tile in m_entitiesVisions[_entity.PlayerOwnerID].entitiesVisionRange[_entity])
+		{
+			bool isAnotherEntityVisionRange = false;
+			foreach(Entity otherEntities in m_entitiesVisions[_entity.PlayerOwnerID].entitiesVisionRange.Keys)
+			{
+				foreach(Tile otherTile in m_entitiesVisions[_entity.PlayerOwnerID].entitiesVisionRange[otherEntities])
+				{
+					if (tile == otherTile)
+					{
+						isAnotherEntityVisionRange = false;
+						break;
+					}
+				}
+
+				if (isAnotherEntityVisionRange)
+					break;
+			}
+
+			if (!isAnotherEntityVisionRange)
+				tile.SetFOWVisibility(false, false);
+		}
+
+		m_entitiesVisions[_entity.PlayerOwnerID].entitiesVisionRange.Remove(_entity);
+	}
+
+	public void OnEntityMovement(Entity _entity )
+	{
+		List<Tile> previousTilesInRange = new(m_entitiesVisions[_entity.PlayerOwnerID].entitiesVisionRange[_entity]);
+
+		foreach(Tile tile in GetTilesInRange(_entity.Displacement.Coordinates.GetTile(), _entity.Data.visibilityRange, true))
+		{
+			tile
 		}
 	}
 

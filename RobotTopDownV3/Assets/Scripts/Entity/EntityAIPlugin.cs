@@ -120,8 +120,6 @@ public class EntityAIPlugin : EntityPlugin
 		if (m_linkedEntity.Data.capacities.Contains(EntityCapacityAsset.EntityCapacityType.VisualSensor)
 			|| m_linkedEntity.Data.capacities.Contains(EntityCapacityAsset.EntityCapacityType.RadarSensor))
 		{
-			//m_entitiesInRange
-
 			m_entitiesInVisionRange = GridManager.Instance.GetEntitiesInRange(m_linkedEntity.Displacement.Coordinates.GetTile(), m_linkedEntity.Data.visibilityRange, _isThisTurn);
 		}
 

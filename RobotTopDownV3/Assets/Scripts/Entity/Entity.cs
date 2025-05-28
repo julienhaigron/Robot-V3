@@ -31,6 +31,7 @@ public class Entity : MonoBehaviour
     public EntityFaction Faction => m_data.faction;
 
     public int ID;
+    public int PlayerOwnerID;
 
     public enum EntityState 
     {
@@ -44,9 +45,10 @@ public class Entity : MonoBehaviour
         Enemy
 	}
 
-    public void Init ( EntityData _data, EntityAnchor.Spawn _spawn, int _id )
+    public void Init ( EntityData _data, EntityAnchor.Spawn _spawn, int _id, int _playerID )
     {
         ID = _id;
+        PlayerOwnerID = _playerID;
         m_data = _data;
         Displacement.SetSpawn(_spawn);
         
