@@ -254,6 +254,84 @@ public class GridManager : Singleton<GridManager>
 		return tilesInRange;
 	}
 
+	public List<Tile> GetTilesInVisionRange(Tile _from, int _maxDist, bool _isThisTurn )
+	{
+		List<Tile> tilesInRange = new();
+
+		for (int i = 0; i < m_tiles.Length; i++)
+		{
+			m_tiles[i].Distance = int.MaxValue;
+			//m_tiles[i].UI.ResetOutline();
+		}
+
+		Queue<Tile> frontier = new Queue<Tile>();
+		_from.Distance = 0;
+		frontier.Enqueue(_from);
+
+		while (frontier.Count > 0)
+		{
+			Tile current = frontier.Dequeue();
+			for (int i = 0; i < 6; i++)
+			{
+				//yield return new WaitForSeconds(1 / 60f);
+				Tile neighbor = current.GetNeighbor((HexDirection)i);
+
+				if (neighbor == null || neighbor.Distance != int.MaxValue)
+				{
+					continue;
+				}
+
+				//max distance
+				if (current.Distance + 1 > _maxDist)
+				{
+					continue;
+				}
+
+				//obstacle
+				if (neighbor.CanSeeThrough() && IsVisionLineClear(_from, neighbor, _isThisTurn))
+				{
+					tilesInRange.Add(neighbor);
+				}
+
+				neighbor.Distance = current.Distance + 1;
+				frontier.Enqueue(neighbor);
+			}
+		}
+
+		return tilesInRange;
+	}
+
+	public bool IsVisionLineClear(Tile _from, Tile _to, bool _isThisTurn )
+	{
+		List<Tile> tilesInLine = new();
+
+		int nbOfRayPer = 3;
+		float distBetweenRay = 1f;
+		float distance = Vector3.Distance(_from.transform.position, _to.transform.position);
+		Vector3 direction = (_to.transform.position - _from.transform.position).normalized;
+		Vector3 perp = Vector3.Cross(direction, Vector3.up).normalized;
+		for (int i = 0; i < nbOfRayPer; i++)
+		{
+			Vector3 from = _from.transform.position + perp * ( i - 1);
+			RaycastHit[] hits = Physics.RaycastAll(from, direction, distance, GameConfig.current.input.tileInternRayCastLayer);
+			foreach (RaycastHit hitInfo in hits)
+			{
+				if (hitInfo.transform.TryGetComponent(out Tile tile) && !tilesInLine.Contains(tile))
+				{
+					tilesInLine.Add(tile);
+				}
+			}
+		}
+
+		foreach(Tile tile in tilesInLine)
+		{
+			if (!tile.CanSeeThrough())
+				return false;
+		}
+
+		return true;
+	}
+
 	public void ClearTileOutile ()
 	{
 		for (int i = 0; i < m_tiles.Length; i++)
@@ -357,7 +435,7 @@ public class GridManager : Singleton<GridManager>
 
 	public void OnNewEntity(Entity _entity )
 	{
-		List<Tile> tileInEntityRange = GetTilesInRange(_entity.Displacement.Coordinates.GetTile(), _entity.Data.visibilityRange, true);
+		List<Tile> tileInEntityRange = GetTilesInVisionRange(_entity.Displacement.Coordinates.GetTile(), _entity.Data.visibilityRange, true);
 
 		foreach (Tile tile in tileInEntityRange)
 		{
@@ -401,9 +479,33 @@ public class GridManager : Singleton<GridManager>
 	{
 		List<Tile> previousTilesInRange = new(m_entitiesVisions[_entity.PlayerOwnerID].entitiesVisionRange[_entity]);
 
-		foreach(Tile tile in GetTilesInRange(_entity.Displacement.Coordinates.GetTile(), _entity.Data.visibilityRange, true))
+		foreach(Tile tile in GetTilesInVisionRange(_entity.Displacement.Coordinates.GetTile(), _entity.Data.visibilityRange, true))
 		{
-			tile
+			if (!previousTilesInRange.Contains(tile))
+			{
+				bool isInAnotherEntityVisionRange = false;
+				foreach(Entity entity in m_entitiesVisions[_entity.PlayerOwnerID].entitiesVisionRange.Keys)
+				{
+					if (entity == _entity) continue;
+
+					if (m_entitiesVisions[_entity.PlayerOwnerID].entitiesVisionRange[entity].Contains(tile))
+						isInAnotherEntityVisionRange = true;
+				}
+
+				tile.UI.SetActiveFOW(isInAnotherEntityVisionRange);
+			}
+		}
+
+		foreach(Tile previousTile in previousTilesInRange)
+		{
+			bool isInAnotherEntityVisionRange = false;
+			foreach (Entity entity in m_entitiesVisions[_entity.PlayerOwnerID].entitiesVisionRange.Keys)
+			{
+				if (m_entitiesVisions[_entity.PlayerOwnerID].entitiesVisionRange[entity].Contains(previousTile))
+					isInAnotherEntityVisionRange = true;
+			}
+
+			previousTile.UI.SetActiveFOW(isInAnotherEntityVisionRange);
 		}
 	}
 

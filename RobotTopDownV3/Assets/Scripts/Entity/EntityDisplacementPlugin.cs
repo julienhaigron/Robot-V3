@@ -5,6 +5,7 @@ using DG.Tweening;
 
 public class EntityDisplacementPlugin : EntityPlugin
 {
+	public static System.Action<Entity> onAnyEntityMovement;
 	private TileCoordinates m_coordinate;
 	public TileCoordinates Coordinates => m_coordinate;
 
@@ -27,5 +28,8 @@ public class EntityDisplacementPlugin : EntityPlugin
 		transform.DOMove(tile.transform.position - m_bottomPosition.localPosition, GameConfig.current.game.entityMovementSpeed).SetEase(Ease.OutExpo).OnComplete(() => onMovementDoneAction?.Invoke());
 		tile.SetEntity(m_linkedEntity, _isThisTurn: true);
 		m_coordinate.SetCoordinate(tile.coordinates.X, tile.coordinates.Z, tile.coordinates.ID);
+
+		//refresh fow
+		onAnyEntityMovement?.Invoke(m_linkedEntity);
 	}
 }

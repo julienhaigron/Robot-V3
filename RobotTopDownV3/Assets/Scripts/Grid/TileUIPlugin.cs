@@ -12,6 +12,7 @@ public class TileUIPlugin : MonoBehaviour
     [SerializeField] private TextMeshProUGUI m_positionDisplay;
 	[SerializeField] private Image m_outline;
 	[SerializeField] private MeshRenderer m_groundMeshRendered;
+	[SerializeField] private GameObject m_fow;
 
 	#region base
 	public void SetPosition(int _x, int _y )
@@ -45,6 +46,15 @@ public class TileUIPlugin : MonoBehaviour
 		m_outline.color = color;
 		m_outline.enabled = true;
 	}
+	#endregion
+
+	#region FOW
+
+	public void SetActiveFOW (bool _isActive = false)
+	{
+		m_fow.SetActive(_isActive);
+	}
+
 	#endregion
 
 	public void SetAsInteractable(AEntityAction _correspondingAction )
