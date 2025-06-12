@@ -34,11 +34,13 @@ public class GridManager : Singleton<GridManager>
 	{
 		base.Awake();
 		InputManager.onTileSelected += OnTileSelected;
+		EntityDisplacementPlugin.onAnyEntityMovement += OnEntityMovement;
 	}
 
 	private void OnDestroy ()
 	{
 		InputManager.onTileSelected -= OnTileSelected;
+		EntityDisplacementPlugin.onAnyEntityMovement -= OnEntityMovement;
 	}
 
 	#region Creation
@@ -312,7 +314,7 @@ public class GridManager : Singleton<GridManager>
 		Vector3 perp = Vector3.Cross(direction, Vector3.up).normalized;
 		for (int i = 0; i < nbOfRayPer; i++)
 		{
-			Vector3 from = _from.transform.position + perp * ( i - 1);
+			Vector3 from = _from.transform.position + perp * (( i - 1) * distBetweenRay);
 			RaycastHit[] hits = Physics.RaycastAll(from, direction, distance, GameConfig.current.input.tileInternRayCastLayer);
 			foreach (RaycastHit hitInfo in hits)
 			{
@@ -439,7 +441,7 @@ public class GridManager : Singleton<GridManager>
 
 		foreach (Tile tile in tileInEntityRange)
 		{
-			tile.SetFOWVisibility(true, true);
+			tile.UI.SetActiveFOW(true, true);
 		}
 
 		m_entitiesVisions[_entity.PlayerOwnerID].entitiesVisionRange.Add(_entity, tileInEntityRange);
@@ -452,24 +454,18 @@ public class GridManager : Singleton<GridManager>
 
 		foreach(Tile tile in m_entitiesVisions[_entity.PlayerOwnerID].entitiesVisionRange[_entity])
 		{
-			bool isAnotherEntityVisionRange = false;
+			bool isInAnotherEntityVisionRange = false;
 			foreach(Entity otherEntities in m_entitiesVisions[_entity.PlayerOwnerID].entitiesVisionRange.Keys)
 			{
-				foreach(Tile otherTile in m_entitiesVisions[_entity.PlayerOwnerID].entitiesVisionRange[otherEntities])
+				if (m_entitiesVisions[_entity.PlayerOwnerID].entitiesVisionRange[otherEntities].Contains(tile))
 				{
-					if (tile == otherTile)
-					{
-						isAnotherEntityVisionRange = false;
-						break;
-					}
-				}
-
-				if (isAnotherEntityVisionRange)
+					isInAnotherEntityVisionRange = true;
 					break;
+				}
 			}
 
-			if (!isAnotherEntityVisionRange)
-				tile.SetFOWVisibility(false, false);
+			if (!isInAnotherEntityVisionRange)
+				tile.UI.SetActiveFOW(false, false);
 		}
 
 		m_entitiesVisions[_entity.PlayerOwnerID].entitiesVisionRange.Remove(_entity);
@@ -492,7 +488,8 @@ public class GridManager : Singleton<GridManager>
 						isInAnotherEntityVisionRange = true;
 				}
 
-				tile.UI.SetActiveFOW(isInAnotherEntityVisionRange);
+				if(!isInAnotherEntityVisionRange)
+					tile.UI.SetActiveFOW(true, false);
 			}
 		}
 
@@ -505,7 +502,8 @@ public class GridManager : Singleton<GridManager>
 					isInAnotherEntityVisionRange = true;
 			}
 
-			previousTile.UI.SetActiveFOW(isInAnotherEntityVisionRange);
+			if(!isInAnotherEntityVisionRange)
+				previousTile.UI.SetActiveFOW(false, false);
 		}
 	}
 

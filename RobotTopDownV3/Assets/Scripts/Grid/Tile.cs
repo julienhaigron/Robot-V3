@@ -86,7 +86,7 @@ public class Tile : MonoBehaviour
 	{
 		m_ui.SetPosition(_x, _y);
 		m_groundType = _groundType;
-		SetFOWVisibility(false, false);
+		//SetFOWVisibility(false, false);
 	}
 
 	public void SetGroundType (TileGroundType _groundType)
@@ -122,10 +122,10 @@ public class Tile : MonoBehaviour
 		return true;
 	}
 
-	public void SetFOWVisibility(bool _isVisible , bool _isInstant)
+	/*public void SetFOWVisibility(bool _isVisible , bool _isInstant)
 	{
 		m_fow.SetActive(_isVisible);
-	}
+	}*/
 
 	#endregion
 

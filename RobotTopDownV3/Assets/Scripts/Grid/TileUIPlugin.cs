@@ -50,7 +50,7 @@ public class TileUIPlugin : MonoBehaviour
 
 	#region FOW
 
-	public void SetActiveFOW (bool _isActive = false)
+	public void SetActiveFOW (bool _isActive = false, bool _isInstant = false)
 	{
 		m_fow.SetActive(_isActive);
 	}
