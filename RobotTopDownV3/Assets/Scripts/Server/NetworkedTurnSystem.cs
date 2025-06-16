@@ -13,12 +13,14 @@ public class NetworkedTurnSystem : NetworkBehaviour
 	{
 		for (int i = 0; i < _entitiesRecordedActions.Length; i++)
 		{
-            if (m_turnManager.ActionsToPlay.ContainsKey(_entitiesRecordedActions[i].entityId)) continue;
-
 			Queue<TurnManager.RecordedAction> actionQueue = new Queue<TurnManager.RecordedAction>();
 			foreach (TurnManager.RecordedAction action in _entitiesRecordedActions[i].actions)
 				actionQueue.Enqueue(action);
-			m_turnManager.ActionsToPlay.Add(_entitiesRecordedActions[i].entityId, actionQueue);
+
+            if (m_turnManager.ActionsToPlay.ContainsKey(_entitiesRecordedActions[i].entityId))
+                m_turnManager.ActionsToPlay[_entitiesRecordedActions[i].entityId] = actionQueue;
+            else
+			    m_turnManager.ActionsToPlay.Add(_entitiesRecordedActions[i].entityId, actionQueue);
 		}
 
 		m_turnManager.PlayThisPhaseActions();

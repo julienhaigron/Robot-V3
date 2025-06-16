@@ -18,6 +18,11 @@ public class GridManager : Singleton<GridManager>
 	private struct PlayerVisionRangeInfo
 	{
 		public Dictionary<Entity, List<Tile>> entitiesVisionRange;
+
+		public PlayerVisionRangeInfo ( Dictionary<Entity, List<Tile>> _entitiesVisionRange = null)
+		{
+			entitiesVisionRange = _entitiesVisionRange;
+		}
 	}
 	private Dictionary<int, PlayerVisionRangeInfo> m_entitiesVisions = new();
 
@@ -35,12 +40,16 @@ public class GridManager : Singleton<GridManager>
 		base.Awake();
 		InputManager.onTileSelected += OnTileSelected;
 		EntityDisplacementPlugin.onAnyEntityMovement += OnEntityMovement;
+		EntityDisplacementPlugin.onAnyEntitySpawn += OnNewEntity;
+		EntityEquipmentPlugin.onAnyEntityDeath += OnEntityDeath;
 	}
 
 	private void OnDestroy ()
 	{
 		InputManager.onTileSelected -= OnTileSelected;
 		EntityDisplacementPlugin.onAnyEntityMovement -= OnEntityMovement;
+		EntityDisplacementPlugin.onAnyEntitySpawn -= OnNewEntity;
+		EntityEquipmentPlugin.onAnyEntityDeath -= OnEntityDeath;
 	}
 
 	#region Creation
@@ -50,8 +59,8 @@ public class GridManager : Singleton<GridManager>
 	{
 		GenerateGrid(_data.height, _data.width);
 
-		m_entitiesVisions.Add(0, new());
-		m_entitiesVisions.Add(1, new());
+		m_entitiesVisions.Add(0, new(new Dictionary<Entity, List<Tile>>()));
+		m_entitiesVisions.Add(1, new(new Dictionary<Entity, List<Tile>>()));
 
 		for (int i = 0; i < m_tiles.Length; i++)
 		{
@@ -290,7 +299,7 @@ public class GridManager : Singleton<GridManager>
 				}
 
 				//obstacle
-				if (neighbor.CanSeeThrough() && IsVisionLineClear(_from, neighbor, _isThisTurn))
+				if (IsVisionLineClear(_from, neighbor, _isThisTurn))
 				{
 					tilesInRange.Add(neighbor);
 				}
@@ -308,7 +317,7 @@ public class GridManager : Singleton<GridManager>
 		List<Tile> tilesInLine = new();
 
 		int nbOfRayPer = 3;
-		float distBetweenRay = 1f;
+		float distBetweenRay = .2f;
 		float distance = Vector3.Distance(_from.transform.position, _to.transform.position);
 		Vector3 direction = (_to.transform.position - _from.transform.position).normalized;
 		Vector3 perp = Vector3.Cross(direction, Vector3.up).normalized;
@@ -327,7 +336,7 @@ public class GridManager : Singleton<GridManager>
 
 		foreach(Tile tile in tilesInLine)
 		{
-			if (!tile.CanSeeThrough())
+			if (tile != _to && !tile.CanSeeThrough())
 				return false;
 		}
 
@@ -437,11 +446,14 @@ public class GridManager : Singleton<GridManager>
 
 	public void OnNewEntity(Entity _entity )
 	{
+		if (!_entity.IsOwn())
+			return;
+
 		List<Tile> tileInEntityRange = GetTilesInVisionRange(_entity.Displacement.Coordinates.GetTile(), _entity.Data.visibilityRange, true);
 
 		foreach (Tile tile in tileInEntityRange)
 		{
-			tile.UI.SetActiveFOW(true, true);
+			tile.UI.SetActiveFOW(false, true);
 		}
 
 		m_entitiesVisions[_entity.PlayerOwnerID].entitiesVisionRange.Add(_entity, tileInEntityRange);
@@ -449,10 +461,10 @@ public class GridManager : Singleton<GridManager>
 
 	public void OnEntityDeath(Entity _entity )
 	{
-		/*if (!_entity.IsOwn())
-			return;*/
+		if (!_entity.IsOwn())
+			return;
 
-		foreach(Tile tile in m_entitiesVisions[_entity.PlayerOwnerID].entitiesVisionRange[_entity])
+		foreach (Tile tile in m_entitiesVisions[_entity.PlayerOwnerID].entitiesVisionRange[_entity])
 		{
 			bool isInAnotherEntityVisionRange = false;
 			foreach(Entity otherEntities in m_entitiesVisions[_entity.PlayerOwnerID].entitiesVisionRange.Keys)
@@ -473,6 +485,9 @@ public class GridManager : Singleton<GridManager>
 
 	public void OnEntityMovement(Entity _entity )
 	{
+		if (!_entity.IsOwn())
+			return;
+
 		List<Tile> previousTilesInRange = new(m_entitiesVisions[_entity.PlayerOwnerID].entitiesVisionRange[_entity]);
 
 		foreach(Tile tile in GetTilesInVisionRange(_entity.Displacement.Coordinates.GetTile(), _entity.Data.visibilityRange, true))

@@ -226,6 +226,7 @@ public class TurnManager : Singleton<TurnManager>
 
 		//reset RemainingActionToken
 		m_remainingActionToken.Clear();
+		m_recordedActionInput.Clear();
 		foreach (EntityAnchor anchor in GameManager.Instance.PlayersEntityAnchor)
 		{
 			foreach (Entity entity in anchor.Entities)
@@ -462,12 +463,17 @@ public class TurnManager : Singleton<TurnManager>
 			m_actionsBeingDone.Remove(_performingEntityID);
 			if (m_actionsBeingDone.Keys.Count == 0)
 			{
+				m_actionsToPlay.Clear();
+
 				if (GameManager.Instance.CurrentGameMode == GameManager.GameMode.Offline)
 				{
 					EndPhase();
 				}
 				else if (GameManager.Instance.CurrentGameMode == GameManager.GameMode.Online)
+				{
+					LogConsole.AddLog("Client ended phase", LogConsole.LogEventType.PlayPhase);
 					NetworkTaskOrchestrator.Instance.NotifyTaskEndToServerRPC("PlayPhase");
+				}
 			}
 		}
 
@@ -475,6 +481,7 @@ public class TurnManager : Singleton<TurnManager>
 
 	private void EndPhase ()
 	{
+		LogConsole.AddLog("Server ended phase", LogConsole.LogEventType.PlayPhase);
 		if (m_recordedActionInput.Keys.Count == 0)
 			EndRound(); //end turn
 		else

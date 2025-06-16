@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class EntityEquipmentPlugin : EntityPlugin
 {
+	public static System.Action<Entity> onAnyEntityDeath;
 	public System.Action<int> onDeath;
 	public System.Action<int> onHealthChangeDamage;
 
@@ -150,6 +151,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 	{
 		m_isDead = true;
 		onDeath?.Invoke(m_linkedEntity.ID);
+		onAnyEntityDeath?.Invoke(m_linkedEntity);
 	}
 
 	#endregion

@@ -6,6 +6,8 @@ using DG.Tweening;
 public class EntityDisplacementPlugin : EntityPlugin
 {
 	public static System.Action<Entity> onAnyEntityMovement;
+	public static System.Action<Entity> onAnyEntitySpawn;
+
 	private TileCoordinates m_coordinate;
 	public TileCoordinates Coordinates => m_coordinate;
 
@@ -18,6 +20,8 @@ public class EntityDisplacementPlugin : EntityPlugin
 		transform.position = spawn.transform.position - m_bottomPosition.localPosition;
 		spawn.SetEntity(m_linkedEntity, _isThisTurn: true);
 		m_coordinate.SetCoordinate(spawn.coordinates.X, spawn.coordinates.Z, spawn.coordinates.ID);
+
+		onAnyEntitySpawn.Invoke(m_linkedEntity);
 	}
 
 	public void MoveToTile( int _tileID , System.Action onMovementDoneAction)

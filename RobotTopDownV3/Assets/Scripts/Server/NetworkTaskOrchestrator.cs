@@ -88,8 +88,8 @@ public class NetworkTaskOrchestrator : NetworkBehaviour
             if (task.PendingClients.Count == 0)
             {
                 //Debug.Log($"[Server] Tous les clients ont terminé la tâche '{requestId}'");
-                task.OnAllClientsResponded?.Invoke();
                 activeTasks.Remove(_requestId);
+                task.OnAllClientsResponded?.Invoke();
             }
         }
     }
@@ -109,8 +109,8 @@ public class NetworkTaskOrchestrator : NetworkBehaviour
             if (task.PendingClients.Count == 0)
             {
                 //Debug.Log($"[Server] Tous les clients ont terminé la tâche '{requestId}'");
-                task.OnAllClientsResponded?.Invoke();
                 activeTasks.Remove(_requestId);
+                task.OnAllClientsResponded?.Invoke();
             }
         }
     }

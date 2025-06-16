@@ -53,6 +53,12 @@ public class LobbyManager : NetworkBehaviour
     {
         yield return new WaitForSeconds(1f); // TODO : loading screen later
 
+        StartClientsGameServerRPC();
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void StartClientsGameServerRPC ()
+    {
         StartClientsGameClientRPC();
     }
 
