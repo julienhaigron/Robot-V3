@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: TargetTileMoveAction
   m_EditorClassIdentifier: 
   displayName: Target Tile Move
-  type: 0
+  type: 1
   icon: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
   tokenCost: 1
   tokenCooldown: 1

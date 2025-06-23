@@ -488,11 +488,13 @@ public class GridManager : Singleton<GridManager>
 		if (!_entity.IsOwn())
 			return;
 
-		List<Tile> previousTilesInRange = new(m_entitiesVisions[_entity.PlayerOwnerID].entitiesVisionRange[_entity]);
+		List<Tile> previousTilesInRangeList = new(m_entitiesVisions[_entity.PlayerOwnerID].entitiesVisionRange[_entity]);
+		List<Tile> newTilesInRangeList = GetTilesInVisionRange(_entity.Displacement.Coordinates.GetTile(), _entity.Data.visibilityRange, true);
+		m_entitiesVisions[_entity.PlayerOwnerID].entitiesVisionRange[_entity] = new(newTilesInRangeList);
 
-		foreach(Tile tile in GetTilesInVisionRange(_entity.Displacement.Coordinates.GetTile(), _entity.Data.visibilityRange, true))
+		foreach (Tile tile in newTilesInRangeList)
 		{
-			if (!previousTilesInRange.Contains(tile))
+			if (!previousTilesInRangeList.Contains(tile))
 			{
 				bool isInAnotherEntityVisionRange = false;
 				foreach(Entity entity in m_entitiesVisions[_entity.PlayerOwnerID].entitiesVisionRange.Keys)
@@ -508,7 +510,7 @@ public class GridManager : Singleton<GridManager>
 			}
 		}
 
-		foreach(Tile previousTile in previousTilesInRange)
+		foreach(Tile previousTile in previousTilesInRangeList)
 		{
 			bool isInAnotherEntityVisionRange = false;
 			foreach (Entity entity in m_entitiesVisions[_entity.PlayerOwnerID].entitiesVisionRange.Keys)

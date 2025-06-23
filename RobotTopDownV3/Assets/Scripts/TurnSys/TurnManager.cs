@@ -47,32 +47,31 @@ public class TurnManager : Singleton<TurnManager>
 
 	public struct RecordedAction : INetworkSerializable
 	{
+		public EntityActionType type;
+		public int performingEntityID;
 		public AEntityAction action;
 		public Entity.EntityState entityState;
 
 		public void NetworkSerialize<T> ( BufferSerializer<T> serializer ) where T : IReaderWriter
 		{
-			EntityActionType type = EntityActionType.NeighborMove;
-			if (!serializer.IsReader)
-			{
-				type = action.type;
-			}
 			serializer.SerializeValue(ref type);
+			serializer.SerializeValue(ref performingEntityID);
 
-			if (serializer.IsReader)
+			if (serializer.IsWriter)
 			{
-				action = type switch
+				action.NetworkSerialize(serializer);
+			}
+			else
+			{
+				action = Instance.GetAction(type, performingEntityID);
+
+				if(action == null)
 				{
-					EntityActionType.NeighborMove => new MoveToNeighborAction(),
-					EntityActionType.TargetTileMove => new MoveToTargetAction(),
-					EntityActionType.Attack => new AttackAction(),
-					EntityActionType.Wait => new WaitAction(),
-					EntityActionType.RotateWeapon => new RotateWeaponAction(),
-					_ => null
-				};
+					Debug.LogError("ERROR : action is null when " + (serializer.IsWriter ? "writing" : "reading") + " with type " + type);
+				}
+				action.NetworkSerialize(serializer);
 			}
 
-			action?.NetworkSerialize(serializer); // Safe
 			serializer.SerializeValue(ref entityState);
 		}
 	}
@@ -188,6 +187,8 @@ public class TurnManager : Singleton<TurnManager>
 
 		m_recordedActionInput[_entityID].Enqueue(new RecordedAction
 		{
+			type = _action.type,
+			performingEntityID = _entityID,
 			action = _action,
 			entityState = _state
 		});
@@ -258,6 +259,8 @@ public class TurnManager : Singleton<TurnManager>
 					{
 						m_recordedActionInput[entityID].Enqueue(new RecordedAction
 						{
+							type = EntityActionType.Wait,
+							performingEntityID = entityID,
 							action = new WaitAction(),
 							entityState = record.entityState
 						});
@@ -346,7 +349,7 @@ public class TurnManager : Singleton<TurnManager>
 				{
 					LogConsole.AddLog("Action replaced to " + resultInfo.replacedAction, LogConsole.LogEventType.PlayPhase);
 					resultInfo.replacedAction.Prepare(recordedAction.entityState);
-					returnActionToPlayThisRound.Enqueue(new RecordedAction() { action = resultInfo.replacedAction, entityState = recordedAction.entityState });
+					returnActionToPlayThisRound.Enqueue(new RecordedAction() { type = resultInfo.replacedAction.type, performingEntityID = resultInfo.replacedAction.performingEntityID, action = resultInfo.replacedAction, entityState = recordedAction.entityState });
 				}
 			}
 

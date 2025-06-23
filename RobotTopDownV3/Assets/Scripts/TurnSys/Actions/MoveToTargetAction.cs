@@ -81,8 +81,8 @@ public class MoveToTargetAction : AEntityAction
 		for (int i = 0; i < path.Count-1; i++)
 		{
 			MoveToTargetAction action = new MoveToTargetAction();
-			if (i == 0)
-				action = this;
+			/*if (i == 0)
+				action = this;*/
 			
 			if (mode == MoveActionMode.Coordinate)
 				action.targetTileID = _tile.coordinates.ID;
