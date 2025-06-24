@@ -268,6 +268,7 @@ public class GridManager : Singleton<GridManager>
 	public List<Tile> GetTilesInVisionRange(Tile _from, int _maxDist, bool _isThisTurn )
 	{
 		List<Tile> tilesInRange = new();
+		tilesInRange.Add(_from);
 
 		for (int i = 0; i < m_tiles.Length; i++)
 		{
@@ -502,11 +503,14 @@ public class GridManager : Singleton<GridManager>
 					if (entity == _entity) continue;
 
 					if (m_entitiesVisions[_entity.PlayerOwnerID].entitiesVisionRange[entity].Contains(tile))
+					{
 						isInAnotherEntityVisionRange = true;
+						break;
+					}
 				}
 
 				if(!isInAnotherEntityVisionRange)
-					tile.UI.SetActiveFOW(true, false);
+					tile.UI.SetActiveFOW(false, false);
 			}
 		}
 
@@ -516,11 +520,14 @@ public class GridManager : Singleton<GridManager>
 			foreach (Entity entity in m_entitiesVisions[_entity.PlayerOwnerID].entitiesVisionRange.Keys)
 			{
 				if (m_entitiesVisions[_entity.PlayerOwnerID].entitiesVisionRange[entity].Contains(previousTile))
+				{
 					isInAnotherEntityVisionRange = true;
+					break;
+				}
 			}
 
 			if(!isInAnotherEntityVisionRange)
-				previousTile.UI.SetActiveFOW(false, false);
+				previousTile.UI.SetActiveFOW(true, false);
 		}
 	}
 
