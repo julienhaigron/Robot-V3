@@ -45,11 +45,16 @@ public class RotateWeaponAction : AEntityAction
 			}
 			else
 			{
+				//no close entity found
 				base.Perform(_state);
 				EndPerform();
 			}
-			return;
 		}
+		else
+		{
+			GameManager.Instance.GetEntityFromID(performingEntityID).Equipment.AimAtTile(rotatingWeaponID, GameManager.Instance.GetEntityFromID((int)targetedEntityID).Displacement.Coordinates.GetTile(), EndPerform);
+		}
+
 
 		/*//if enemy is in weapon range
 		//bool isEnemyInWeaponRange = performingEntity.AI.IsEntityInWeaponRange(targetedEntity, out Weapon _attackingWeapon);
@@ -67,7 +72,6 @@ public class RotateWeaponAction : AEntityAction
 
 		//performingEntity.AI.IsEntityInWeaponPossibleRange(targetedEntity, out string _weaponID, true);
 		//doit appler end perform quand rotate end
-		GameManager.Instance.GetEntityFromID(performingEntityID).Equipment.AimAtTile(rotatingWeaponID, GameManager.Instance.GetEntityFromID((int)targetedEntityID).Displacement.Coordinates.GetTile(), EndPerform);
 		/*} */
 	}
 

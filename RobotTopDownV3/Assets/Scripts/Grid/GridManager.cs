@@ -174,6 +174,20 @@ public class GridManager : Singleton<GridManager>
 	{
 		List<Entity> entitiesInRange = new();
 
+		List<Tile> tilesInRange = GetTilesInVisionRange(_from, _maxDist, _isThisTurn);
+		foreach(Tile tile in tilesInRange)
+		{
+			Entity entity = tile.GetEntity(_isThisTurn);
+			if (entity != null)
+				entitiesInRange.Add(entity);
+		}
+
+		return entitiesInRange;
+	}
+	/*public List<Entity> GetEntitiesInRange(Tile _from, int _maxDist, bool _isThisTurn )
+	{
+		List<Entity> entitiesInRange = new();
+
 		for (int i = 0; i < m_tiles.Length; i++)
 		{
 			m_tiles[i].Distance = int.MaxValue;
@@ -216,7 +230,7 @@ public class GridManager : Singleton<GridManager>
 
 
 		return entitiesInRange;
-	}
+	}*/
 
 	public List<Tile> GetTilesInRange(Tile _from, int _maxDist, bool _isThisTurn )
 	{

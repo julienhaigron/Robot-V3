@@ -75,8 +75,9 @@ public class MoveToTargetAction : AEntityAction
 	public override void RegisterInteraction ( Tile _tile )
 	{
 		//register all action for destination (calcuate dist, and add X actions in TurnSys (X = distance))
+		Tile from = GridManager.Instance.Tiles[TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntityID)];
+		List<Tile> path = GridManager.Instance.GetPath(from, _tile, true);
 
-		List<Tile> path = GridManager.Instance.GetPath(GameManager.Instance.GetEntityFromID(performingEntityID).Displacement.Coordinates.GetTile(), _tile, true);
 		path.Reverse();
 		for (int i = 0; i < path.Count-1; i++)
 		{

@@ -24,7 +24,8 @@ public class Tile : MonoBehaviour
 	private TileGroundType m_groundType;
 	public TileGroundType GroundType => m_groundType;
 
-	public bool canInteract = false;
+	private bool m_canInteract = false;
+	public bool CanInteract => m_canInteract;
 
 	//Content on tile
 	public TileContent currentContent;
@@ -33,18 +34,6 @@ public class Tile : MonoBehaviour
 	{
 		public Entity entity;
 	}
-
-	/*public virtual void NetworkSerialize<T> ( BufferSerializer<T> serializer ) where T : IReaderWriter
-	{
-		if (serializer.IsReader)
-		{
-
-		}
-		else
-		{
-
-		}
-	}*/
 
 	#region Pathfinding params
 	private int m_distance;
@@ -72,12 +61,16 @@ public class Tile : MonoBehaviour
 	{
 		TurnManager.onActionAdded += OnActionAdded;
 		TurnManager.onActionSelected += OnActionSelected;
+		TurnManager.onEndInputPhase += OnEndInputPhase;
+		PlayerController.onEntitySelected += OnEntitySelected;
 	}
 
 	private void OnDestroy ()
 	{
 		TurnManager.onActionAdded -= OnActionAdded;
 		TurnManager.onActionSelected -= OnActionSelected;
+		TurnManager.onEndInputPhase -= OnEndInputPhase;
+		PlayerController.onEntitySelected -= OnEntitySelected;
 	}
 
 	#region Grid sys
@@ -132,20 +125,29 @@ public class Tile : MonoBehaviour
 
 	#region Turn sys
 
+	private void OnEntitySelected(int? _entityID )
+	{
+		UI.ResetOutline();
+		m_canInteract = false;
+	}
+
 	private void OnActionSelected (AEntityAction _action)
 	{
-		if (_action.TileInteractPredicate(this))
-		{
-			//show tile can interact
-			canInteract = true;
-			UI.SetAsInteractable(_action);
-		}
+		bool canInteract = _action.TileInteractPredicate(this);
+		m_canInteract = canInteract;
+		UI.SetAsInteractable(m_canInteract , GameAssets.current.game.entityActionsData[_action.type].tileOutlineColor);
 	}
 
 	private void OnActionAdded (AEntityAction _action)
 	{
 		UI.ResetOutline();
-		canInteract = false;
+		m_canInteract = false;
+	}
+
+	private void OnEndInputPhase ()
+	{
+		UI.ResetOutline();
+		m_canInteract = false;
 	}
 
 	public void NewPhase ()

@@ -19,14 +19,14 @@ public class PlayerController : Singleton<PlayerController>
 	{
 		InputManager.onTileSelected += OnTileSelected;
 		InputManager.onTileHovered += OnTileHovered;
-		TurnManager.onEndInputPhase += ClearArrows;
+		TurnManager.onEndInputPhase += OnEndInputPhase;
 	}
 
 	private void OnDestroy ()
 	{
 		InputManager.onTileSelected-= OnTileSelected;
 		InputManager.onTileHovered -= OnTileHovered;
-		TurnManager.onEndInputPhase -= ClearArrows;
+		TurnManager.onEndInputPhase -= OnEndInputPhase;
 	}
 
 	private void OnTileSelected ( Tile _tile )
@@ -35,7 +35,7 @@ public class PlayerController : Singleton<PlayerController>
 			return;
 
 		//Event => Select // unselect entity
-		if(_tile.GetEntity(true) != null && !_tile.canInteract)
+		if(_tile.GetEntity(true) != null && !_tile.CanInteract)
 		{
 			if (_tile.GetEntity(true).IsOwn()) 
 			{ 
@@ -64,7 +64,7 @@ public class PlayerController : Singleton<PlayerController>
 		{
 			//if(_tile.canInteract)
 			//  => add new action of current selected action type to queue
-			if (_tile.canInteract)
+			if (_tile.CanInteract)
 			{
 				//TODO : give info to action before adding it
 				TurnManager.Instance.CurrentActionSelected.RegisterInteraction(_tile);
@@ -121,6 +121,12 @@ public class PlayerController : Singleton<PlayerController>
 				tile.UI.EnableOutline(Color.blue);
 			}*/
 		}
+	}
+
+	private void OnEndInputPhase ()
+	{
+		m_selectedEntity = null;
+		ClearArrows();
 	}
 
 	public void ClearArrows ()

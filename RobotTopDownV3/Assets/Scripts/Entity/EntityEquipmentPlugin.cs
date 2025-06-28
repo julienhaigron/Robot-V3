@@ -83,9 +83,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 		Vector2Int destination = new Vector2Int((int)_tile.transform.position.x, (int)_tile.transform.position.z);
 
 		float angle = GridManager.Instance.GetAngleFrom(currentLocation, destination);
-		selectedWeapon.AimAtAngle(angle);
-
-		_onEndMovement?.Invoke();
+		selectedWeapon.AimAtAngle(angle, false, _onEndMovement);
 	}
 
 	public List<Tile> GetTilesInRange(string _weaponID)

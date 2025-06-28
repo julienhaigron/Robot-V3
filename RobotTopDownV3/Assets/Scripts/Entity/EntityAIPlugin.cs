@@ -29,7 +29,7 @@ public class EntityAIPlugin : EntityPlugin
 	{
 		CheckActionResultInfo resultInfo = new CheckActionResultInfo() { isActionChanging = false, replacedAction = _recordedAction.action };
 		// 1) Do all prewarm check (enemyInSeight, weaponRange, ...)
-		DOAllPrewardCheck();
+		DOAllPrewarmCheck();
 		// 2) react depending on those factor
 
 		if (HasEnemyWeaponInRange()/* && _recordedAction.entityState == Entity.EntityState.Patroling*/)
@@ -90,7 +90,7 @@ public class EntityAIPlugin : EntityPlugin
 		return resultInfo;
 	}
 
-	public void DOAllPrewardCheck ()
+	public void DOAllPrewarmCheck ()
 	{
 		VisionCheck();
 		WeaponCheck();
@@ -111,7 +111,12 @@ public class EntityAIPlugin : EntityPlugin
 
 	private bool HasEnemyInVisionRange ()
 	{
-		return m_entitiesInVisionRange.Count > 0;
+		foreach(Entity entity in m_entitiesInVisionRange)
+		{
+			if (entity.Faction != m_linkedEntity.Faction)
+				return true;
+		}
+		return false;
 	}
 
 	private List<Entity> VisionCheck ( bool _isThisTurn = true )
