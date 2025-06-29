@@ -6,7 +6,7 @@ using Unity.Netcode;
 public class AttackAction : AEntityAction
 {
 	public string attackingWeaponId;
-	private int targetedEntityID = -1;
+	public int targetedEntityID = -1;
 
 	public override void NetworkSerialize<T> ( BufferSerializer<T> serializer )
 	{
@@ -17,9 +17,9 @@ public class AttackAction : AEntityAction
 
 	public override void Prepare ( Entity.EntityState _state )
 	{
-		if (GameManager.Instance.GetEntityFromID(performingEntityID).AI.TargetedEntity != null)
+		if (targetedEntityID == -1 && GameManager.Instance.GetEntityFromID(performingEntityID).AI.TargetedEntity != null)
 			targetedEntityID = GameManager.Instance.GetEntityFromID(performingEntityID).AI.TargetedEntity.ID;
-		else
+		else if(targetedEntityID == -1)
 		{
 			//TODO : handle this situation
 			Debug.Log("ERROR : no available target");
@@ -85,6 +85,6 @@ public class AttackAction : AEntityAction
 		//TODO : select only visible enemies
 
 		Entity entity = _tile.GetEntity(true);
-		return entity != null && entity.Data.faction == Entity.EntityFaction.Enemy;
+		return entity != null && !entity.IsAlliedTo(GameManager.Instance.GetEntityFromID(performingEntityID).PlayerOwnerID);
 	}
 }

@@ -37,7 +37,8 @@ public class PlayerController : Singleton<PlayerController>
 		//Event => Select // unselect entity
 		if(_tile.GetEntity(true) != null && !_tile.CanInteract)
 		{
-			if (_tile.GetEntity(true).IsOwn()) 
+			int playerId = GameManager.Instance.CurrentGameMode == GameManager.GameMode.Offline ? 0 : OnlinePlayerInstance.Self.connectionIndex;
+			if (_tile.GetEntity(true).IsAlliedTo(playerId)) 
 			{ 
 				if(m_selectedEntity == _tile.GetEntity(true))
 				{

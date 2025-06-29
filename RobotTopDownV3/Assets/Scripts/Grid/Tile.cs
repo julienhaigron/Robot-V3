@@ -62,6 +62,7 @@ public class Tile : MonoBehaviour
 		TurnManager.onActionAdded += OnActionAdded;
 		TurnManager.onActionSelected += OnActionSelected;
 		TurnManager.onEndInputPhase += OnEndInputPhase;
+		TurnManager.onStartInputPhase += OnStartInputPhase;
 		PlayerController.onEntitySelected += OnEntitySelected;
 	}
 
@@ -70,6 +71,7 @@ public class Tile : MonoBehaviour
 		TurnManager.onActionAdded -= OnActionAdded;
 		TurnManager.onActionSelected -= OnActionSelected;
 		TurnManager.onEndInputPhase -= OnEndInputPhase;
+		TurnManager.onStartInputPhase -= OnStartInputPhase;
 		PlayerController.onEntitySelected -= OnEntitySelected;
 	}
 
@@ -141,6 +143,11 @@ public class Tile : MonoBehaviour
 	private void OnActionAdded (AEntityAction _action)
 	{
 		UI.ResetOutline();
+		m_canInteract = false;
+	}
+
+	private void OnStartInputPhase ()
+	{
 		m_canInteract = false;
 	}
 

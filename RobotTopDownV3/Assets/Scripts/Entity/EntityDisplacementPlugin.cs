@@ -26,7 +26,8 @@ public class EntityDisplacementPlugin : EntityPlugin
 
 	public void MoveToTile( int _tileID , System.Action onMovementDoneAction)
 	{
-		m_coordinate.GetTile().SetEntity(null, _isThisTurn: true);
+		if(m_coordinate.GetTile().GetEntity(true) == m_linkedEntity)
+			m_coordinate.GetTile().SetEntity(null, _isThisTurn: true);
 		Tile tile = GridManager.Instance.Tiles[_tileID];
 
 		transform.DOMove(tile.transform.position - m_bottomPosition.localPosition, GameConfig.current.game.entityMovementSpeed).SetEase(Ease.OutExpo).OnComplete(() => onMovementDoneAction?.Invoke());

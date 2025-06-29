@@ -6,7 +6,7 @@ using Unity.Netcode;
 public class RotateWeaponAction : AEntityAction
 {
 	public string rotatingWeaponID;
-	private int targetedEntityID;
+	public int targetedEntityID = -1;
 
 	public override void NetworkSerialize<T> ( BufferSerializer<T> serializer )
 	{
@@ -15,11 +15,19 @@ public class RotateWeaponAction : AEntityAction
 		serializer.SerializeValue(ref targetedEntityID);
 	}
 
+	public override void RegisterInteraction ( Tile _tile )
+	{
+		if(targetedEntityID == -1 && GameManager.Instance.GetEntityFromID(performingEntityID).AI.TargetedEntity != null)
+			targetedEntityID = GameManager.Instance.GetEntityFromID(performingEntityID).AI.TargetedEntity.ID;
+
+		base.RegisterInteraction(_tile);
+	}
+
 	public override void Prepare ( Entity.EntityState _state )
 	{
-		if (GameManager.Instance.GetEntityFromID(performingEntityID).AI.TargetedEntity != null)
+		if (targetedEntityID == -1 && GameManager.Instance.GetEntityFromID(performingEntityID).AI.TargetedEntity != null)
 			targetedEntityID = GameManager.Instance.GetEntityFromID(performingEntityID).AI.TargetedEntity.ID;
-		else
+		else if(targetedEntityID == -1)
 		{
 			//TODO : handle this situation
 			Debug.Log("ERROR : no available target");
@@ -85,6 +93,6 @@ public class RotateWeaponAction : AEntityAction
 		//TODO : select only visible enemies
 
 		Entity entity = _tile.GetEntity(true);
-		return entity != null && entity.Data.faction == Entity.EntityFaction.Enemy;
+		return entity != null && !entity.IsAlliedTo(GameManager.Instance.GetEntityFromID(performingEntityID).PlayerOwnerID);
 	}
 }

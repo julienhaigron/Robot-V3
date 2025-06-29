@@ -57,11 +57,11 @@ public class Entity : MonoBehaviour
         m_ai.Init();
     }
 
-    public bool IsOwn ()
+    public bool IsAlliedTo (int _playerOwnerId)
 	{
         if (m_data.faction == EntityFaction.Ally && GameManager.Instance.CurrentGameMode == GameManager.GameMode.Offline)
             return true;
-        else if (GameManager.Instance.CurrentGameMode == GameManager.GameMode.Online && GameManager.Instance.PlayersEntityAnchor[OnlinePlayerInstance.Self.connectionIndex].Entities.Contains(this))
+        else if (GameManager.Instance.CurrentGameMode == GameManager.GameMode.Online && PlayerOwnerID == _playerOwnerId)
             return true;
         else
             return false;

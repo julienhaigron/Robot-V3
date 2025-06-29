@@ -461,7 +461,8 @@ public class GridManager : Singleton<GridManager>
 
 	public void OnNewEntity(Entity _entity )
 	{
-		if (!_entity.IsOwn())
+		int playerId = GameManager.Instance.CurrentGameMode == GameManager.GameMode.Offline ? 0 : OnlinePlayerInstance.Self.connectionIndex;
+		if (!_entity.IsAlliedTo(playerId))
 			return;
 
 		List<Tile> tileInEntityRange = GetTilesInVisionRange(_entity.Displacement.Coordinates.GetTile(), _entity.Data.visibilityRange, true);
@@ -476,7 +477,8 @@ public class GridManager : Singleton<GridManager>
 
 	public void OnEntityDeath(Entity _entity )
 	{
-		if (!_entity.IsOwn())
+		int playerId = GameManager.Instance.CurrentGameMode == GameManager.GameMode.Offline ? 0 : OnlinePlayerInstance.Self.connectionIndex;
+		if (!_entity.IsAlliedTo(playerId))
 			return;
 
 		foreach (Tile tile in m_entitiesVisions[_entity.PlayerOwnerID].entitiesVisionRange[_entity])
@@ -500,7 +502,8 @@ public class GridManager : Singleton<GridManager>
 
 	public void OnEntityMovement(Entity _entity )
 	{
-		if (!_entity.IsOwn())
+		int playerId = GameManager.Instance.CurrentGameMode == GameManager.GameMode.Offline ? 0 : OnlinePlayerInstance.Self.connectionIndex;
+		if (!_entity.IsAlliedTo(playerId))
 			return;
 
 		List<Tile> previousTilesInRangeList = new(m_entitiesVisions[_entity.PlayerOwnerID].entitiesVisionRange[_entity]);

@@ -20,6 +20,7 @@ public class TurnManager : Singleton<TurnManager>
 {
 	public static System.Action<AEntityAction> onActionAdded;
 	public static System.Action<AEntityAction> onActionSelected;
+	public static System.Action onStartInputPhase;
 	public static System.Action onEndInputPhase;
 
 	[SerializeField] private NetworkedTurnSystem m_networkedTurnSystem;
@@ -235,6 +236,8 @@ public class TurnManager : Singleton<TurnManager>
 				m_remainingActionToken.Add(entity.ID, entity.Data.actionTokenAmount);
 			}
 		}
+
+		onStartInputPhase?.Invoke();
 
 		if (GameManager.Instance.CurrentGameMode == GameManager.GameMode.Online && GameManager.Instance.Lobby.IsServer)
 			NetworkTaskOrchestrator.Instance.LaunchClientTask("InputPhase", EndInputPhase);
