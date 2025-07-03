@@ -388,6 +388,8 @@ public class TurnManager : Singleton<TurnManager>
 					entityId = kvp.Key,
 					actions = kvp.Value.ToArray()
 				});
+				foreach(RecordedAction recordedAction in kvp.Value.ToArray())
+					LogConsole.AddLog("Action sent: " + recordedAction.action.ToString(), LogConsole.LogEventType.InputPhase);
 			}
 			m_networkedTurnSystem.StartPlayPhaseClientRPC(actionsToSend.ToArray());
 		}
@@ -405,10 +407,14 @@ public class TurnManager : Singleton<TurnManager>
 				RecordedAction action = m_actionsToPlay[entityID].Dequeue();
 				m_actionsBeingDone.Add(entityID, action);
 				action.action.onEndPerform += OnActionEndPerform;
-				action.action.Perform(action.entityState);
-				LogConsole.AddLog("Action performed: " + action.action.ToString(), LogConsole.LogEventType.PlayPhase);
 				//TODO : display action on cam one by one when in conflict
 			}
+		}
+
+		foreach(RecordedAction recordedAction in m_actionsBeingDone.Values.ToArray())
+		{
+			LogConsole.AddLog("Action performed: " + recordedAction.action.ToString(), LogConsole.LogEventType.PlayPhase);
+			recordedAction.action.Perform(recordedAction.entityState);
 		}
 	}
 

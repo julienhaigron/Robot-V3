@@ -15,7 +15,10 @@ public class NetworkedTurnSystem : NetworkBehaviour
 		{
 			Queue<TurnManager.RecordedAction> actionQueue = new Queue<TurnManager.RecordedAction>();
 			foreach (TurnManager.RecordedAction action in _entitiesRecordedActions[i].actions)
+			{
 				actionQueue.Enqueue(action);
+                LogConsole.AddLog("Action received: " + action.action.ToString(), LogConsole.LogEventType.InputPhase);
+            }
 
             if (m_turnManager.ActionsToPlay.ContainsKey(_entitiesRecordedActions[i].entityId))
                 m_turnManager.ActionsToPlay[_entitiesRecordedActions[i].entityId] = actionQueue;

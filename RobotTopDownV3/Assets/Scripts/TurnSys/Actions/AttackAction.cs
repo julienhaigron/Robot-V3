@@ -34,8 +34,9 @@ public class AttackAction : AEntityAction
 
 	public override void Perform ( Entity.EntityState _state )
 	{
+		GameManager.Instance.GetEntityFromID(performingEntityID).AI.DOAllPrewarmCheck();
 		//int dist = GridManager.Instance.GetDistanceBetween(performingEntity.Displacement.Coordinates.GetTile(), targetedEntity.Displacement.Coordinates.GetTile(), true);
-		if(targetedEntityID == -1)
+		if (targetedEntityID == -1)
 		{
 			base.Perform(_state);
 			EndPerform();
@@ -45,6 +46,15 @@ public class AttackAction : AEntityAction
 		Entity performingEntity = GameManager.Instance.GetEntityFromID(performingEntityID);
 		Entity targetEntity = GameManager.Instance.GetEntityFromID((int)targetedEntityID);
 		bool isEnemyInWeaponRange = performingEntity.AI.IsEntityInWeaponRange(targetEntity, out Weapon _attackingWeapon);
+		//List<Tile> tilesInWeaponRange = performingEntity.Equipment.GetTilesInRange(attackingWeaponId);
+		//Debug.Log("performing entity = " + performingEntity + " ; targetEntity = " + targetEntity );
+		/*foreach(Tile tile in tilesInWeaponRange)
+		{
+			string entityThisTurn = tile.GetEntity(true) ? tile.GetEntity(true).ToString() : "null";
+			string entitNextTurn = tile.GetEntity(false) ? tile.GetEntity(false).ToString() : "null";
+			Debug.Log(tile.coordinates.ToString() + " ; entity this turn = " + entityThisTurn + " ; entity next turn = " + entitNextTurn);
+		}*/
+
 		if (isEnemyInWeaponRange)
 		{
 			// => shoot
@@ -52,7 +62,7 @@ public class AttackAction : AEntityAction
 			if (isAttackRollSuccessful)
 			{
 				int damageAmout = _attackingWeapon.Data.damage;
-				Debug.Log("shoot entity " + damageAmout + " damages");
+				//Debug.Log("shoot entity " + damageAmout + " damages");
 				targetEntity.Equipment.TakeDamage(damageAmout);
 				base.Perform(_state);
 				//TODO : shoot success anim
@@ -61,7 +71,7 @@ public class AttackAction : AEntityAction
 			else
 			{
 				//TODO : shoot but failed anim
-				Debug.Log("shoot failed");
+				//Debug.Log("shoot failed");
 				base.Perform(_state);
 				EndPerform();
 			}
@@ -69,7 +79,7 @@ public class AttackAction : AEntityAction
 		else
 		{
 			// => find new target or wait (or move to prevvious target if in sight?)
-			Debug.Log("target not in range");
+			//Debug.Log("target not in range");
 			base.Perform(_state);
 			EndPerform();
 		} 
