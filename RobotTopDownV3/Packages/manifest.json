@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "com.community.netcode.networkdiscovery": "https://github.com/ViRGIS-Team/UnityTransportDiscovery.git",
     "com.marijnzwemmer.unity-toolbar-extender": "file:C:/Users/julie/Desktop/unity-toolbar-extender-master",
     "com.unity.ai.navigation": "2.0.5",
     "com.unity.collab-proxy": "2.6.0",

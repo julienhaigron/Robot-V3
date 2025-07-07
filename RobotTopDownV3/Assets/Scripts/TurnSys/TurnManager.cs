@@ -545,9 +545,9 @@ public class TurnManager : Singleton<TurnManager>
 	public void EndLevel (bool _isSuccess)
 	{
 		if (_isSuccess)
-			LogConsole.AddLog("Player victory", LogConsole.LogEventType.Main);
+			LogConsole.AddLog("Victory", LogConsole.LogEventType.Main);
 		else
-			LogConsole.AddLog("EndRound", LogConsole.LogEventType.Main);
+			LogConsole.AddLog("Defeat", LogConsole.LogEventType.Main);
 	}
 
 

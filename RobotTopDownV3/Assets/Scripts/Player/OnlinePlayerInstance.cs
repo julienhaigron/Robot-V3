@@ -9,6 +9,19 @@ public class OnlinePlayerInstance : NetworkBehaviour
 
 	public int connectionIndex; //host = 0 , other = 1
 
+    public PlayerSettingsInfo infos;
+
+	public class PlayerSettingsInfo : INetworkSerializable
+	{
+		EntitySavedData[] entities;
+		
+		public void NetworkSerialize<T> ( BufferSerializer<T> serializer ) where T : IReaderWriter
+		{
+			serializer.SerializeValue(ref entities);
+		}
+	}
+
+
 	#region server connection
 
 	public override void OnNetworkSpawn ()
@@ -17,6 +30,14 @@ public class OnlinePlayerInstance : NetworkBehaviour
 
 		GameManager.Instance.Lobby.AddPlayerInstance(this, IsOwner);
 	}
+
+	[ClientRpc(RequireOwnership = false)]
+	public void SendPlayerInfosClientRPC(int _connectionIndex, PlayerSettingsInfo _infos )
+	{
+		GameManager.Instance.Lobby.Players[_connectionIndex].infos = _infos;
+		LogConsole.AddLog("Player infos sent", LogConsole.LogEventType.PreGame);
+	}
+
 
     [ServerRpc(RequireOwnership = false)]
     public void EndInputPhaseServerRPC ( ulong _senderPlayerID, TurnManager.RecordedEntityActionsContainer[] _entitiesRecordedActions )

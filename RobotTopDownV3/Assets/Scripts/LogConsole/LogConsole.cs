@@ -9,7 +9,7 @@ public class LogConsole : SingletonPersistant<LogConsole>
 	private Dictionary<LogEventType, List<Log>> m_logs = new();
 	public Dictionary<LogEventType, List<Log>> Logs => m_logs;
 
-	public enum LogEventType { Main, InputPhase, PlayPhase }
+	public enum LogEventType { PreGame, Main, InputPhase, PlayPhase }
 
 	public static void AddLog (string _message, LogEventType _eventType )
 	{

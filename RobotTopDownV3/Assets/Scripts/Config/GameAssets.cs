@@ -11,6 +11,7 @@ public class GameAssets : ScriptableObject
 
     public Game game;
     public Material material;
+    public UI ui;
 
     [System.Serializable]
     public class Game
@@ -35,5 +36,11 @@ public class GameAssets : ScriptableObject
         [Title("Tile")]
         public SerializableDictionary<TileGroundType, UnityEngine.Material> tileGroundMaterials = new();
 	}
+
+    [System.Serializable]
+    public class UI
+	{
+        public LobbyDisplay baseLobbyDisplay;
+    }
 
 }
