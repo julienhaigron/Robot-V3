@@ -1,13 +1,13 @@
 {
   "dependencies": {
     "com.community.netcode.networkdiscovery": {
-      "version": "https://github.com/ViRGIS-Team/UnityTransportDiscovery.git",
+      "version": "1.1.2",
       "depth": 0,
-      "source": "git",
+      "source": "registry",
       "dependencies": {
         "com.unity.netcode.gameobjects": "1.7.0"
       },
-      "hash": "562797633bca13c378eb29e5f9533f14555a40e9"
+      "url": "https://package.openupm.com"
     },
     "com.marijnzwemmer.unity-toolbar-extender": {
       "version": "file:C:/Users/julie/Desktop/unity-toolbar-extender-master",
@@ -139,7 +139,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.netcode.gameobjects": {
-      "version": "2.3.2",
+      "version": "2.4.3",
       "depth": 0,
       "source": "registry",
       "dependencies": {
