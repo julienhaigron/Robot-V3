@@ -29,6 +29,6 @@ public class GameModeSelectionpanel : AUIPanel
 
 	private void OnClickMultiModeBtn ()
 	{
-
+		UIManager.Instance.OpenPanel<LobbySelectionPanel>();
 	}
 }

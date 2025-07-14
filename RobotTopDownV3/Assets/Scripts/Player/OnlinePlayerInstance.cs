@@ -27,6 +27,7 @@ public class OnlinePlayerInstance : NetworkBehaviour
 	public override void OnNetworkSpawn ()
 	{
 		connectionIndex = (IsOwner == IsHost) ? 0 : 1;
+		Debug.Log("player added :" + connectionIndex);
 
 		GameManager.Instance.Lobby.AddPlayerInstance(this, IsOwner);
 	}

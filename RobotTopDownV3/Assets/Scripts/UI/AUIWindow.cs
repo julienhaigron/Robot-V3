@@ -84,6 +84,7 @@ public class AUIWindow : UICanvasParent
 	protected virtual void OnHideFinished ()
 	{
 		onWindowClosed?.Invoke();
+		gameObject.SetActive(false);
 	}
 	public virtual void ShowWindow ( float _delay, bool _instant )
 	{

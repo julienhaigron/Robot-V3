@@ -2,16 +2,23 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using System.Net;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
+using Unity.Netcode.Community.Discovery;
+using System;
+using System.Net.NetworkInformation;
+using System.Net.Sockets;
 
 public class LobbySelectionPanel : AUIPanel
 {
     [SerializeField] private BaseButton m_createLobbyBtn;
     [SerializeField] private BaseButton m_openLobbySettingsBtn;
     [SerializeField] private Transform m_lobbyListContainer;
+    [SerializeField] private GameObject m_noLobbiesFoundMessage;
 
     private readonly List<LobbyDisplay> m_lobbies = new();
+    Dictionary<IPEndPoint, DiscoveryResponseData> discoveredServers = new();
     private Coroutine m_updateCR;
 
     private void Awake ()
@@ -24,9 +31,9 @@ public class LobbySelectionPanel : AUIPanel
     {
         base.OnShowFinished();
 
-        // Start discovery as client
-        NetworkedGameManager.Instance.LobbyService.onServerDiscovered += OnServerDiscovered;
-        NetworkedGameManager.Instance.LobbyService.StartAsClient();
+        // Écoute des réponses
+        NetworkedGameManager.Instance.LobbyService.onLobbyDiscovered += OnServerDiscovered;
+        NetworkedGameManager.Instance.LobbyService.StartClient();
 
         if (m_updateCR != null)
             StopCoroutine(m_updateCR);
@@ -40,8 +47,8 @@ public class LobbySelectionPanel : AUIPanel
         if (m_updateCR != null)
             StopCoroutine(m_updateCR);
 
-        NetworkedGameManager.Instance.LobbyService.onServerDiscovered -= OnServerDiscovered;
-        NetworkedGameManager.Instance.LobbyService.Stop();
+        NetworkedGameManager.Instance.LobbyService.onLobbyDiscovered -= OnServerDiscovered;
+        NetworkedGameManager.Instance.LobbyService.StopDiscovery();
         ClearLobbies();
     }
 
@@ -49,22 +56,55 @@ public class LobbySelectionPanel : AUIPanel
     {
         while (true)
         {
-            NetworkedGameManager.Instance.LobbyService.SendDiscoveryRequest(); // resend broadcast
+            discoveredServers.Clear();
+            NetworkedGameManager.Instance.LobbyService.ClientBroadcast(new DiscoveryBroadcastData());
             yield return new WaitForSeconds(5f);
         }
     }
 
     private void OnClickCreateLobby ()
     {
-        string lobbyName = UIManager.Instance.GetPopup<LobbySettingsPopup>().LobbyName;
-        ushort port = UIManager.Instance.GetPopup<LobbySettingsPopup>().Port;
-        NetworkedGameManager.Instance.Transport.SetConnectionData("0.0.0.0", port);
-        NetworkedGameManager.Instance.LobbyService.StartAsServer(lobbyName);
-
+        ushort port = 0;
+        try
+        {
+            IPGlobalProperties properties = IPGlobalProperties.GetIPGlobalProperties();
+            IPEndPoint[] UDPendpoints = properties.GetActiveUdpListeners();
+            for (int i = 0; i < 10; i++)
+            {
+                port = (ushort)(7770 + i);
+                if (Array.Find<IPEndPoint>(UDPendpoints, ep =>
+                {
+                    return ep.Port == port;
+                }) == null) break;
+            }
+        }
+        catch (NotImplementedException)
+        {
+            for (int i = 0; i < 10; i++)
+            {
+                try
+                {
+                    port = (ushort)(7770 + i);
+                    UdpClient m_Client = new UdpClient(port);
+                    m_Client.Dispose();
+                }
+                catch (Exception e)
+                {
+                    // do nothing - assuming this is a port clash
+                    continue;
+                }
+                // if we get here - it worked
+                break;
+            }
+        }
+        UnityTransport transport = (UnityTransport)NetworkManager.Singleton.NetworkConfig.NetworkTransport;
+        transport.SetConnectionData("0.0.0.0", port);
         NetworkManager.Singleton.StartHost();
+        NetworkedGameManager.Instance.LobbyService.StartServer();
 
-        // Optionnel : cacher le panel ou charger la scène du lobby
-        Debug.Log("Lobby créé !");
+        if (m_updateCR != null)
+            StopCoroutine(m_updateCR);
+        UIManager.Instance.OpenPanel<InGamePanel>();
     }
 
     private void OnClickOpenLobbySettings ()
@@ -72,28 +112,59 @@ public class LobbySelectionPanel : AUIPanel
         UIManager.Instance.OpenPopup<LobbySettingsPopup>();
     }
 
-    private void OnServerDiscovered ( LobbyDiscoveryService.DiscoveredServer server )
+    private void OnServerDiscovered ( IPEndPoint sender, DiscoveryResponseData response )
     {
-        // Ignore duplicatas
-        if (m_lobbies.Any(l => l.Matches(server.EndPoint)))
+        discoveredServers[sender] = response;
+
+        /*UnityTransport transport = (UnityTransport)NetworkManager.Singleton.NetworkConfig.NetworkTransport;
+        transport.SetConnectionData(discoveredServer.Key.Address.ToString(), discoveredServer.Value.Port);
+        NetworkManager.Singleton.StartClient();*/
+
+        LobbyDisplay newDisplay = Instantiate(GameAssets.current.ui.baseLobbyDisplay, m_lobbyListContainer);
+        newDisplay.Setup(response.ServerName, () =>
+        {
+            Debug.Log($"[Lobby] Connexion à {response.ServerName}...");
+            UnityTransport transport = (UnityTransport)NetworkManager.Singleton.NetworkConfig.NetworkTransport;
+            transport.SetConnectionData(sender.Address.ToString(), response.Port);
+            NetworkManager.Singleton.StartClient();
+            UIManager.Instance.OpenPanel<InGamePanel>();
+        }, sender);
+        m_lobbies.Add(newDisplay);
+
+        if (m_noLobbiesFoundMessage != null)
+            m_noLobbiesFoundMessage.SetActive(false);
+        /*if (m_lobbies.Any(l => l.Matches(server.EndPoint)))
             return;
 
-        var newDisplay = Instantiate(GameAssets.current.ui.baseLobbyDisplay, m_lobbyListContainer);
+        Debug.Log($"[Lobby] Détecté : {server.GameName} @ {server.EndPoint}");
+
+        LobbyDisplay newDisplay = Instantiate(GameAssets.current.ui.baseLobbyDisplay, m_lobbyListContainer);
         newDisplay.Setup(server.GameName, () =>
         {
-            Debug.Log($"Rejoindre {server.GameName}");
+            Debug.Log($"[Lobby] Connexion à {server.GameName}...");
+            if (NetworkManager.Singleton.IsListening)
+                NetworkManager.Singleton.Shutdown();
+
             NetworkedGameManager.Instance.LobbyService.JoinDiscoveredServer(server);
+            UIManager.Instance.OpenPanel<InGamePanel>();
         }, server.EndPoint);
 
         m_lobbies.Add(newDisplay);
+
+        // Masque le message "Aucune partie trouvée"
+        if (m_noLobbiesFoundMessage != null)
+            m_noLobbiesFoundMessage.SetActive(false);*/
     }
 
     private void ClearLobbies ()
     {
-        foreach (var display in m_lobbies)
+        foreach (LobbyDisplay display in m_lobbies)
         {
             Destroy(display.gameObject);
         }
         m_lobbies.Clear();
+
+        if (m_noLobbiesFoundMessage != null)
+            m_noLobbiesFoundMessage.SetActive(true);
     }
 }

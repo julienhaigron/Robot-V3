@@ -1,98 +1,64 @@
 using System;
 using System.Net;
+using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
 using Unity.Netcode.Community.Discovery;
+using UnityEngine.Events;
 
-public class LobbyDiscoveryService : NetworkDiscovery<LobbyDiscoveryService.DiscoveryBroadcast, LobbyDiscoveryService.DiscoveryAnswer>
+public class LobbyDiscoveryService : NetworkDiscovery<DiscoveryBroadcastData, DiscoveryResponseData>
 {
-    private string gameName = "Ma Partie LAN";
+    public Action<IPEndPoint, DiscoveryResponseData> onLobbyDiscovered;
 
-    public struct DiscoveredServer
+    [SerializeField]
+    [Tooltip("If true NetworkDiscovery will make the server visible and answer to client broadcasts as soon as netcode starts running as server.")]
+    bool m_StartWithServer = true;
+
+    public string ServerName = "EnterName";
+
+    private bool m_HasStartedWithServer = false;
+
+
+    public void Update ()
     {
-        public IPEndPoint EndPoint;
-        public string GameName;
-    }
-
-    public event Action<DiscoveredServer> onServerDiscovered;
-
-    [Serializable]
-    public class DiscoveryBroadcast : INetworkSerializable
-    {
-        public void NetworkSerialize<T> ( BufferSerializer<T> serializer ) where T : IReaderWriter { }
-    }
-
-    [Serializable]
-    public class DiscoveryAnswer : INetworkSerializable
-    {
-        public string gameName;
-
-        public void NetworkSerialize<T> ( BufferSerializer<T> serializer ) where T : IReaderWriter
+        if (m_StartWithServer && m_HasStartedWithServer == false && IsRunning == false)
         {
-            serializer.SerializeValue(ref gameName);
+            if (NetworkManager.Singleton.IsServer)
+            {
+                StartServer();
+                m_HasStartedWithServer = true;
+            }
         }
     }
 
-    /// <summary>
-    /// Lance en mode serveur (répond aux broadcasts)
-    /// </summary>
-    public void StartAsServer ( string customGameName = null )
+    protected override bool ProcessBroadcast ( IPEndPoint sender, DiscoveryBroadcastData broadCast, out DiscoveryResponseData response )
     {
-        if (!string.IsNullOrEmpty(customGameName))
-            gameName = customGameName;
-
-        StartServer();
-    }
-
-    /// <summary>
-    /// Lance en mode client (envoie les broadcasts)
-    /// </summary>
-    public void StartAsClient ()
-    {
-        StartClient();
-        SendDiscoveryRequest();
-    }
-
-    /// <summary>
-    /// Réinitialise le composant (client ou serveur)
-    /// </summary>
-    public void Stop ()
-    {
-        StopDiscovery();
-    }
-
-    public void SendDiscoveryRequest ()
-    {
-        if (IsClient)
+        response = new DiscoveryResponseData()
         {
-            ClientBroadcast(new DiscoveryBroadcast());
-        }
+            ServerName = ServerName,
+            Port = ((UnityTransport)NetworkManager.Singleton.NetworkConfig.NetworkTransport).ConnectionData.Port,
+        };
+        return true;
     }
 
-    protected override bool ProcessBroadcast ( IPEndPoint sender, DiscoveryBroadcast broadcast, out DiscoveryAnswer response )
+    protected override void ResponseReceived ( IPEndPoint sender, DiscoveryResponseData response )
     {
-        response = new DiscoveryAnswer { gameName = gameName };
-        return true; // on répond toujours avec le nom de la partie
+        onLobbyDiscovered.Invoke(sender, response);
     }
 
-    protected override void ResponseReceived ( IPEndPoint sender, DiscoveryAnswer response )
+    public override void StartClient ()
     {
-        onServerDiscovered?.Invoke(new DiscoveredServer
-        {
-            EndPoint = sender,
-            GameName = response.gameName
-        });
+        base.StartClient();
     }
 
-    public void JoinDiscoveredServer ( DiscoveredServer server )
+    public override void StartServer ()
     {
-        NetworkedGameManager.Instance.Transport.SetConnectionData(server.EndPoint.Address.ToString(), (ushort)server.EndPoint.Port);
-        NetworkManager.Singleton.StartClient();
+        base.StartServer();
     }
 
-    private void OnDestroy ()
+    public override void StopDiscovery ()
     {
-        Stop();
+        base.StopDiscovery();
     }
 }

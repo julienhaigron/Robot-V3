@@ -157,6 +157,7 @@ public sealed class UIManager : SingletonPersistant<UIManager>
 			//wait for the end of close to show next
 			if (!_additive && !_closePreviousInstant && !_closeAndOpenSimultaneous)
 			{
+				currentPanel.SetCanvasEnable(false);
 				//the next Panel will be activated OnPanelClosed
 				/*this.currentPanel.OnCloseAnimationFinishedAction += () =>
 				{
