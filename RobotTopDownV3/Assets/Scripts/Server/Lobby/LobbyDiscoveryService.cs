@@ -46,19 +46,4 @@ public class LobbyDiscoveryService : NetworkDiscovery<DiscoveryBroadcastData, Di
     {
         onLobbyDiscovered.Invoke(sender, response);
     }
-
-    public override void StartClient ()
-    {
-        base.StartClient();
-    }
-
-    public override void StartServer ()
-    {
-        base.StartServer();
-    }
-
-    public override void StopDiscovery ()
-    {
-        base.StopDiscovery();
-    }
 }

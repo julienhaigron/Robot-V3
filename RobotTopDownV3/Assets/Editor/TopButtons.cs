@@ -176,11 +176,11 @@ namespace Pinpin
 				UnityEditor.EditorGUIUtility.PingObject(UnityEditor.Selection.activeObject);
 			}
 
-			/*if (GUILayout.Button(new GUIContent("Datas", "Select Game Data"), ToolbarStyles.commandButtonStyle))
+			if (GUILayout.Button(new GUIContent("Datas", "Select Game Data"), ToolbarStyles.commandButtonStyle))
 			{
 				UnityEditor.Selection.activeObject = Resources.Load<GameDatas>("GameDatas");
 				UnityEditor.EditorGUIUtility.PingObject(UnityEditor.Selection.activeObject);
-			}*/
+			}
 
 			if (GUILayout.Button(new GUIContent("UI", "Select SafeArea"), ToolbarStyles.commandButtonStyle))
 			{

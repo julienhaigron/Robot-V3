@@ -27,24 +27,23 @@ public class EntityData : ScriptableObject
 
 public class EntitySavedData : INetworkSerializable
 {
-    public Entity.EntityFaction faction;
-    public int prefabId = 0;
-    public int actionTokenAmount = 8;
-    public EntityActionType[] knownedActions; 
-    public int visibilityRange = 8;
-    public EntityCapacityAsset.EntityCapacityType[] capacities;
-    public Entity.EntityState[] knownedStates;
-    public int maxHealth;
+    public string chassisID;
+    public string brainID;
+    public StringContainer[] armsIds;
 
     public void NetworkSerialize<T> ( BufferSerializer<T> serializer ) where T : IReaderWriter
     {
-        serializer.SerializeValue(ref faction);
-        serializer.SerializeValue(ref prefabId);
-        serializer.SerializeValue(ref actionTokenAmount);
-        serializer.SerializeValue(ref knownedActions);
-        serializer.SerializeValue(ref visibilityRange);
-        serializer.SerializeValue(ref capacities);
-        serializer.SerializeValue(ref knownedStates);
-        serializer.SerializeValue(ref maxHealth);
+        serializer.SerializeValue(ref chassisID);
+        serializer.SerializeValue(ref armsIds);
+    }
+}
+
+public class StringContainer : INetworkSerializable
+{
+    public string value;
+
+    public void NetworkSerialize<T> ( BufferSerializer<T> serializer ) where T : IReaderWriter
+    {
+        serializer.SerializeValue(ref value);
     }
 }

@@ -116,10 +116,6 @@ public class LobbySelectionPanel : AUIPanel
     {
         discoveredServers[sender] = response;
 
-        /*UnityTransport transport = (UnityTransport)NetworkManager.Singleton.NetworkConfig.NetworkTransport;
-        transport.SetConnectionData(discoveredServer.Key.Address.ToString(), discoveredServer.Value.Port);
-        NetworkManager.Singleton.StartClient();*/
-
         LobbyDisplay newDisplay = Instantiate(GameAssets.current.ui.baseLobbyDisplay, m_lobbyListContainer);
         newDisplay.Setup(response.ServerName, () =>
         {
@@ -133,27 +129,6 @@ public class LobbySelectionPanel : AUIPanel
 
         if (m_noLobbiesFoundMessage != null)
             m_noLobbiesFoundMessage.SetActive(false);
-        /*if (m_lobbies.Any(l => l.Matches(server.EndPoint)))
-            return;
-
-        Debug.Log($"[Lobby] Détecté : {server.GameName} @ {server.EndPoint}");
-
-        LobbyDisplay newDisplay = Instantiate(GameAssets.current.ui.baseLobbyDisplay, m_lobbyListContainer);
-        newDisplay.Setup(server.GameName, () =>
-        {
-            Debug.Log($"[Lobby] Connexion à {server.GameName}...");
-            if (NetworkManager.Singleton.IsListening)
-                NetworkManager.Singleton.Shutdown();
-
-            NetworkedGameManager.Instance.LobbyService.JoinDiscoveredServer(server);
-            UIManager.Instance.OpenPanel<InGamePanel>();
-        }, server.EndPoint);
-
-        m_lobbies.Add(newDisplay);
-
-        // Masque le message "Aucune partie trouvée"
-        if (m_noLobbiesFoundMessage != null)
-            m_noLobbiesFoundMessage.SetActive(false);*/
     }
 
     private void ClearLobbies ()

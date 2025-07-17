@@ -10,6 +10,7 @@ public partial class GameConfig : ScriptableObject
 	public GameSettings game = new GameSettings();
 	public Input input = new Input();
 	public Meta meta = new Meta();
+	public DatasConfigs datas = new DatasConfigs();
 
 	[System.Serializable]
 	public partial class GameSettings
@@ -25,11 +26,21 @@ public partial class GameConfig : ScriptableObject
 	}
 
 	[System.Serializable]
+	public partial class DatasConfigs
+	{
+		public bool editorLoadDatasFromGamedatasFile = true;
+	}
+
+	[System.Serializable]
 	public class Input
 	{
 		public float interactionRayCastLength = 100f;
 		public LayerMask interactionRayCastLayer;
 		public LayerMask tileInternRayCastLayer;
 
+	}
+
+	public void Initialize ()
+	{
 	}
 }

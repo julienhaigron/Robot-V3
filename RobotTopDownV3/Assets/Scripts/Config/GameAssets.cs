@@ -13,6 +13,8 @@ public class GameAssets : ScriptableObject
     public Material material;
     public UI ui;
 
+    public Dictionary<string, EntityEquipmentData> equipments = new Dictionary<string, EntityEquipmentData>();
+
     [System.Serializable]
     public class Game
     {
@@ -23,6 +25,7 @@ public class GameAssets : ScriptableObject
 
         public WeaponData defaultWeapon;
         public SerializableDictionary<string, Weapon> weapons = new SerializableDictionary<string, Weapon>();
+        public List<EntityEquipmentData> equipmentDatas = new();
 
         public SerializableDictionary<EntityActionType, EntityActionData> entityActionsData = new SerializableDictionary<EntityActionType, EntityActionData>();
 
@@ -43,4 +46,14 @@ public class GameAssets : ScriptableObject
         public LobbyDisplay baseLobbyDisplay;
     }
 
+
+	public void Initialize ()
+	{
+        equipments.Clear();
+        foreach (EntityEquipmentData item in game.equipmentDatas)
+        {
+            equipments.Add(item.ID, item);
+        }
+
+    }
 }
