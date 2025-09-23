@@ -12,13 +12,6 @@ public class GameManager : Singleton<GameManager>
 	[SerializeField] private LobbyManager m_lobby;
 	public LobbyManager Lobby => m_lobby;
 
-	/*private PlayerConnector m_connector;
-	public PlayerConnector Connector => m_connector;*/
-
-	public enum GameMode { Offline, Online}
-	[SerializeField] private GameMode m_currentGameMode;
-	public GameMode CurrentGameMode => m_currentGameMode;
-
 	[Title("Offline")]
 	[SerializeField] private GridData m_map;
 	[SerializeField] private List<EntityData> m_playerEntityDatas;
@@ -28,6 +21,11 @@ public class GameManager : Singleton<GameManager>
 	[SerializeField] private GridData m_onlineMap;
 	[SerializeField] private List<EntityData> m_playerOneEntityDatas;
 	[SerializeField] private List<EntityData> m_playerTwoEntityDatas;
+	public enum GameMode { Offline, Online }
+
+	private GameMode m_currentGameMode;
+	public GameMode CurrentGameMode { get { return m_currentGameMode; } set { m_currentGameMode = value; } }
+	public bool IsOnline => m_currentGameMode == GameMode.Online;
 
 	private void Start ()
 	{
@@ -36,9 +34,14 @@ public class GameManager : Singleton<GameManager>
 		else
 			GridManager.Instance.GenerateGrid(10, 10);
 
-		if(m_currentGameMode == GameMode.Offline)
-			StartGame();
+		/*if(m_currentGameMode == GameMode.Offline)
+			StartGame();*/
+	}
 
+	public void SetupLevel(LevelData _level )
+	{
+		m_map = _level.map;
+		m_playerTwoEntityDatas = _level.enemies;
 	}
 
 	public void StartGame ()

@@ -9,13 +9,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 981045e478386cb49abf7ac83a4ac935, type: 3}
-  m_Name: GameDatas
+  m_Script: {fileID: 11500000, guid: 002c72a537f2c0749b9ca39080ef9b55, type: 3}
+  m_Name: Level 1
   m_EditorClassIdentifier: 
-  preventSave: 0
-  app:
-    hapticEnabled: 1
-    musicVolume: 1
-    sfxVolume: 1
-  player:
-    equipmentInventory: []
+  icon: {fileID: 0}
+  title: Level 1
+  map: {fileID: 11400000, guid: 6f08d292abbf2bc4d8b8635617613b35, type: 2}
+  enemies:
+  - {fileID: 11400000, guid: 269ea4b9e1222fe42bc648cbcdf4a6a9, type: 2}

@@ -461,7 +461,7 @@ public class GridManager : Singleton<GridManager>
 
 	public void OnNewEntity(Entity _entity )
 	{
-		int playerId = GameManager.Instance.CurrentGameMode == GameManager.GameMode.Offline ? 0 : OnlinePlayerInstance.Self.connectionIndex;
+		int playerId = !GameManager.Instance.IsOnline ? 0 : OnlinePlayerInstance.Self.connectionIndex;
 		if (!_entity.IsAlliedTo(playerId))
 			return;
 
@@ -477,7 +477,7 @@ public class GridManager : Singleton<GridManager>
 
 	public void OnEntityDeath(Entity _entity )
 	{
-		int playerId = GameManager.Instance.CurrentGameMode == GameManager.GameMode.Offline ? 0 : OnlinePlayerInstance.Self.connectionIndex;
+		int playerId = !GameManager.Instance.IsOnline ? 0 : OnlinePlayerInstance.Self.connectionIndex;
 		if (!_entity.IsAlliedTo(playerId))
 			return;
 
@@ -502,7 +502,7 @@ public class GridManager : Singleton<GridManager>
 
 	public void OnEntityMovement(Entity _entity )
 	{
-		int playerId = GameManager.Instance.CurrentGameMode == GameManager.GameMode.Offline ? 0 : OnlinePlayerInstance.Self.connectionIndex;
+		int playerId = !GameManager.Instance.IsOnline ? 0 : OnlinePlayerInstance.Self.connectionIndex;
 		if (!_entity.IsAlliedTo(playerId))
 			return;
 

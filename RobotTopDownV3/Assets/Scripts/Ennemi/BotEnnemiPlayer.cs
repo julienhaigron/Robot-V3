@@ -17,7 +17,7 @@ public class BotEnnemiPlayer : MonoBehaviour
 
 	public void InputPhase ()
 	{
-		if (GameManager.Instance.CurrentGameMode != GameManager.GameMode.Offline)
+		if (!GameManager.Instance.IsOnline)
 			return;
 
 		foreach(Entity entity in GameManager.Instance.PlayersEntityAnchor[1].Entities)

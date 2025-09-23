@@ -24,11 +24,13 @@ public class GameModeSelectionpanel : AUIPanel
 
 	private void OnClickSoloModeBtn ()
 	{
+		GameManager.Instance.CurrentGameMode = GameManager.GameMode.Offline;
 		UIManager.Instance.OpenPanel<SoloCampainPanel>();
 	}
 
 	private void OnClickMultiModeBtn ()
 	{
+		GameManager.Instance.CurrentGameMode = GameManager.GameMode.Online;
 		UIManager.Instance.OpenPanel<LobbySelectionPanel>();
 	}
 }

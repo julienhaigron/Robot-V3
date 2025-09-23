@@ -277,6 +277,7 @@ MonoBehaviour:
   m_playersEntityAnchor:
   - {fileID: 1618352944327094151}
   - {fileID: 5770960734887702693}
+  m_lobby: {fileID: 0}
   m_currentGameMode: 1
   m_map: {fileID: 11400000, guid: 6f08d292abbf2bc4d8b8635617613b35, type: 2}
   m_playerEntityDatas:
@@ -303,6 +304,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_gameAssets: {fileID: 11400000, guid: 7630443fdfbd3ae43980db85f8104018, type: 2}
   m_gameConfig: {fileID: 11400000, guid: bc0bdc77b6fc5cf4093202b69a8956be, type: 2}
+  m_gameDatas: {fileID: 0}
 --- !u!114 &4856106718111207569
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -436,6 +438,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8fb5f8303f4426146afd8c7ac6d779b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerCamera: {fileID: 4593530489708470118}
+  moveSpeed: 15
+  xLimits: {x: -10, y: 10}
+  zLimits: {x: -10, y: 10}
   arrows: []
 --- !u!114 &2601377726672517245
 MonoBehaviour:

@@ -2,10 +2,20 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using Sirenix.OdinInspector;
 
 public class PlayerController : Singleton<PlayerController>
 {
 	public static Action<int?> onEntitySelected;
+
+	[Title("Camera Settings")]
+	[SerializeField] private Camera playerCamera;
+	[SerializeField] private float moveSpeed = 5f;
+
+	[Header("Camera Limits")]
+	[SerializeField] private Vector2 xLimits = new Vector2(-10f, 10f);
+	[SerializeField] private Vector2 zLimits = new Vector2(-10f, 10f);
+
 
 	private Tile m_selectedTile;
 	private Tile m_hoveredTile;
@@ -29,6 +39,34 @@ public class PlayerController : Singleton<PlayerController>
 		TurnManager.onEndInputPhase -= OnEndInputPhase;
 	}
 
+	private void Update ()
+	{
+		HandleCameraMovement();
+	}
+
+	private void HandleCameraMovement ()
+	{
+		// Récupère les inputs (ZQSD)
+		float moveX = 0f;
+		float moveZ = 0f;
+
+		if (Input.GetKey(KeyCode.W)) moveZ += 1f;
+		if (Input.GetKey(KeyCode.S)) moveZ -= 1f;
+		if (Input.GetKey(KeyCode.A)) moveX -= 1f;
+		if (Input.GetKey(KeyCode.D)) moveX += 1f;
+
+		Vector3 move = new Vector3(moveX, 0, moveZ).normalized * moveSpeed * Time.deltaTime;
+
+		// Nouvelle position candidate
+		Vector3 targetPos = playerCamera.transform.position + move;
+
+		// Clamp dans les limites
+		targetPos.x = Mathf.Clamp(targetPos.x, xLimits.x, xLimits.y);
+		targetPos.z = Mathf.Clamp(targetPos.z, zLimits.x, zLimits.y);
+
+		playerCamera.transform.position = targetPos;
+	}
+
 	private void OnTileSelected ( Tile _tile )
 	{
 		if (TurnManager.Instance.currentPhase != TurnManager.TurnPhase.Recording)
@@ -37,7 +75,7 @@ public class PlayerController : Singleton<PlayerController>
 		//Event => Select // unselect entity
 		if(_tile.GetEntity(true) != null && !_tile.CanInteract)
 		{
-			int playerId = GameManager.Instance.CurrentGameMode == GameManager.GameMode.Offline ? 0 : OnlinePlayerInstance.Self.connectionIndex;
+			int playerId = !GameManager.Instance.IsOnline ? 0 : OnlinePlayerInstance.Self.connectionIndex;
 			if (_tile.GetEntity(true).IsAlliedTo(playerId)) 
 			{ 
 				if(m_selectedEntity == _tile.GetEntity(true))

@@ -15,6 +15,7 @@ public class GameDatas : ScriptableObject
 {
 	public static GameDatas current => ApplicationManager.datas;
 	private static string m_defaultSaveFile = "product.sav";
+	public static string defaultSaveFile => m_defaultSaveFile;
 
 	public static Action onBeforeSave;
 	public static Action onAfterSave;
@@ -285,6 +286,35 @@ public class GameDatas : ScriptableObject
 	}
 
 	#endregion
+
+#if UNITY_EDITOR
+	public static string GetEmptyDatas ()
+	{
+		GameDatas gameDatas = ScriptableObject.CreateInstance<GameDatas>();
+		gameDatas.name = "GameDatas";
+		string datas = DatasToJson(gameDatas);
+		DestroyImmediate(gameDatas);
+		return datas;
+	}
+
+	public static void Clear ()
+	{
+		bool prevSave = current.preventSave;
+		string savePath = defaultSaveFile;
+		if (!savePath.StartsWith(Application.persistentDataPath))
+		{
+			savePath = Application.persistentDataPath + "/" + savePath;
+		}
+		if (File.Exists(savePath))
+		{
+			File.Delete(savePath);
+		}
+
+		OverrideFromJson(current, GetEmptyDatas());
+		current.preventSave = prevSave;
+		EditorUtility.SetDirty(current);
+	}
+#endif
 
 	public void Initialize ()
 	{

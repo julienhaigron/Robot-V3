@@ -79,9 +79,9 @@ public sealed class InGamePanel : AUIPanel
 	{
 		TurnManager.onEndInputPhase?.Invoke();
 
-		if (GameManager.Instance.CurrentGameMode == GameManager.GameMode.Offline)
+		if (!GameManager.Instance.IsOnline)
 			TurnManager.Instance.EndInputPhase();
-		else if (GameManager.Instance.CurrentGameMode == GameManager.GameMode.Online)
+		else
 		{
 			List<TurnManager.RecordedEntityActionsContainer> actionsToSend = new();
 

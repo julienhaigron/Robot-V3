@@ -239,7 +239,7 @@ public class TurnManager : Singleton<TurnManager>
 
 		onStartInputPhase?.Invoke();
 
-		if (GameManager.Instance.CurrentGameMode == GameManager.GameMode.Online && GameManager.Instance.Lobby.IsServer)
+		if (GameManager.Instance.IsOnline && GameManager.Instance.Lobby.IsServer)
 			NetworkTaskOrchestrator.Instance.LaunchClientTask("InputPhase", EndInputPhase);
 	}
 
@@ -273,8 +273,8 @@ public class TurnManager : Singleton<TurnManager>
 			}
 		}
 
-		//if(GameManager.Instance.CurrentGameMode == GameManager.GameMode.Offline)
-			StartRound();
+		//if( !GameManager.Instance.IsOnline)
+		StartRound();
 		/*else
 		{
 			//send actions to server and wait for all players
@@ -369,14 +369,13 @@ public class TurnManager : Singleton<TurnManager>
 
 		//c)play this phases entities turn actions
 
-		//TODO : Network here 3 (bellow)
 		//make a pause here, send actions to all clients
 		//AND only after that is done, start perform actions
 		//and wait for all actions to be performed and server signaled by every clients
-		//then server do EndRound 
-		if(GameManager.Instance.CurrentGameMode == GameManager.GameMode.Offline)
+		//then server do EndPhase 
+		if (!GameManager.Instance.IsOnline)
 			PlayThisPhaseActions();
-		else if(GameManager.Instance.CurrentGameMode == GameManager.GameMode.Online)
+		else if (GameManager.Instance.IsOnline)
 		{
 			NetworkTaskOrchestrator.Instance.LaunchClientTask("PlayPhase", EndPhase);
 			List<RecordedEntityActionsContainer> actionsToSend = new();
@@ -477,11 +476,11 @@ public class TurnManager : Singleton<TurnManager>
 			{
 				m_actionsToPlay.Clear();
 
-				if (GameManager.Instance.CurrentGameMode == GameManager.GameMode.Offline)
+				if (!GameManager.Instance.IsOnline)
 				{
 					EndPhase();
 				}
-				else if (GameManager.Instance.CurrentGameMode == GameManager.GameMode.Online)
+				else
 				{
 					LogConsole.AddLog("Client ended phase", LogConsole.LogEventType.PlayPhase);
 					NetworkTaskOrchestrator.Instance.NotifyTaskEndToServerRPC("PlayPhase");
@@ -513,7 +512,7 @@ public class TurnManager : Singleton<TurnManager>
 
 		//check if finish level condition (all enemy killed || all ally killed)
 		GameManager.Instance.LevelCompletionCheck(out bool _isPlayerOneDead, out bool _isPlayerTwoDead);
-		if(GameManager.Instance.CurrentGameMode == GameManager.GameMode.Offline)
+		if(!GameManager.Instance.IsOnline)
 		{
 			if (_isPlayerOneDead || _isPlayerTwoDead)
 			{
@@ -524,7 +523,7 @@ public class TurnManager : Singleton<TurnManager>
 				StartInputPhase();
 			}
 		}
-		else if(GameManager.Instance.CurrentGameMode == GameManager.GameMode.Online)
+		else
 		{
 			if (m_networkedTurnSystem.IsServer && !m_networkedTurnSystem.IsHost)
 			{

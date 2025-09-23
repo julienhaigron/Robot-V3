@@ -59,9 +59,9 @@ public class Entity : MonoBehaviour
 
     public bool IsAlliedTo (int _playerOwnerId)
 	{
-        if (m_data.faction == EntityFaction.Ally && GameManager.Instance.CurrentGameMode == GameManager.GameMode.Offline)
+        if (m_data.faction == EntityFaction.Ally && !GameManager.Instance.IsOnline)
             return true;
-        else if (GameManager.Instance.CurrentGameMode == GameManager.GameMode.Online && PlayerOwnerID == _playerOwnerId)
+        else if (GameManager.Instance.IsOnline && PlayerOwnerID == _playerOwnerId)
             return true;
         else
             return false;

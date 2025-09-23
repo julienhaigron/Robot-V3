@@ -82,7 +82,7 @@ namespace Pinpin
 		static TopButtons ()
 		{
 			ToolbarExtender.LeftToolbarGUI.Add(OnToolbarGUILeft);
-			//ToolbarExtender.RightToolbarGUI.Add(OnToolbarGUIRight);
+			ToolbarExtender.RightToolbarGUI.Add(OnToolbarGUIRight);
 		}
 
 		static void OnToolbarGUILeft ()
@@ -194,7 +194,7 @@ namespace Pinpin
 			GUILayout.EndVertical();
 		}
 
-		/*static void OnToolbarGUIRight ()
+		static void OnToolbarGUIRight ()
 		{
 			GUILayout.BeginVertical();
 			GUILayout.Space(ToolbarStyles.topSpace);
@@ -220,16 +220,16 @@ namespace Pinpin
 
 			GUI.enabled = true;
 
-			GUILayout.Space(25);
+			/*GUILayout.Space(25);
 			if (GUILayout.Button(new GUIContent("Game Toolbox", "Open Game Toolbox window"), ToolbarStyles.veryLongCommandButtonStyle))
 			{
 				EditorWindow.GetWindow<GameToolboxWindow>("Game Toolbox");
-			}
+			}*/
 
 			GUILayout.FlexibleSpace();
 
 			GUILayout.EndHorizontal();
 			GUILayout.EndVertical();
-		}*/
+		}
 	}
 }
