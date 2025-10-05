@@ -5,8 +5,8 @@ using Sirenix.OdinInspector;
 using Unity.Netcode;
 
 
-[CreateAssetMenu(fileName = "EntityData", menuName = "ScriptableObject/EntityData", order = 1)]
-public class EntityData : ScriptableObject
+[CreateAssetMenu(fileName = "FrameData", menuName = "ScriptableObject/FrameData", order = 1)]
+public class FrameEquipmentData : EntityEquipmentData
 {
     public Entity.EntityFaction faction;
 
@@ -23,17 +23,21 @@ public class EntityData : ScriptableObject
 
     [Title("Structure")]
     public int maxHealth;
+    public int armSlotAvailable = 2;
 }
 
 public class EntitySavedData : INetworkSerializable
 {
+    public string name;
     public string chassisID;
     public string brainID;
     public StringContainer[] armsIds;
 
     public void NetworkSerialize<T> ( BufferSerializer<T> serializer ) where T : IReaderWriter
     {
+        serializer.SerializeValue(ref name);
         serializer.SerializeValue(ref chassisID);
+        serializer.SerializeValue(ref brainID);
         serializer.SerializeValue(ref armsIds);
     }
 }

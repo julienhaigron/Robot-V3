@@ -53,6 +53,7 @@ public class GameDatas : ScriptableObject
 	[System.Serializable]
 	public partial class Player
 	{
+		public List<string> knownedFrames = new();
 		public List<EntitySavedData> units = new();
 		public List<Equipment> equipmentInventory = new ();
 

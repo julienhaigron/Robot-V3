@@ -9,13 +9,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fc8df56b521c00d438b05733a592a56d, type: 3}
+  m_Script: {fileID: 11500000, guid: e340e03f272314442a53b80f2350e240, type: 3}
   m_Name: PlayerRobot 1
   m_EditorClassIdentifier: 
+  ID: Player2
+  type: 0
+  icon: {fileID: 0}
   faction: 0
-  prefabId: 1
-  actionTokenAmount: 5
-  knownedActions: 000000000300000001000000
+  prefabId: 0
+  actionTokenAmount: 8
+  knownedActions: 000000000200000004000000010000000300000000000000
   visibilityRange: 8
   capacities: 00000000
   knownedStates: 0000000001000000

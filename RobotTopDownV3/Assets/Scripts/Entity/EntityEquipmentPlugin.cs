@@ -65,11 +65,11 @@ public class EntityEquipmentPlugin : EntityPlugin
 
 	#region Weapon
 
-	private Weapon AddWeapon(WeaponData _data )
+	private Weapon AddWeapon(WeaponEquipmentData _data )
 	{
-		Weapon newWeapon = Instantiate(GameAssets.current.game.weapons[_data.saveKey], m_weaponParent);
+		Weapon newWeapon = Instantiate(GameAssets.current.game.weapons[_data.ID], m_weaponParent);
 		newWeapon.Init(_data);
-		m_weapons.Add(_data.saveKey, newWeapon);
+		m_weapons.Add(_data.ID, newWeapon);
 
 		return newWeapon;
 	}

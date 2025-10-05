@@ -16,21 +16,29 @@ MonoBehaviour:
     baseTile: {fileID: 1296925374456379223, guid: de323a5a1d0a9594f928198e7ec5f84c, type: 3}
     maps:
     - {fileID: 11400000, guid: 6f08d292abbf2bc4d8b8635617613b35, type: 2}
-    entityPrefabs:
-    - {fileID: 4673310249167116355, guid: 206cf16509b1846479a1f553fd6add2d, type: 3}
-    - {fileID: 4673310249167116355, guid: 831df868960bcef478dc0020299a32ff, type: 3}
     levels:
     - {fileID: 11400000, guid: b42abe5b22535cf40beab03ef8f2d66f, type: 2}
     - {fileID: 11400000, guid: 8a6954d87f761a44d91a6e04577b276b, type: 2}
     - {fileID: 11400000, guid: 949f97dacb028be43823f17b50a53791, type: 2}
     - {fileID: 11400000, guid: 197186d81997d9b47a9bf17799354160, type: 2}
+    entityPrefabs:
+    - {fileID: 4673310249167116355, guid: 206cf16509b1846479a1f553fd6add2d, type: 3}
+    - {fileID: 4673310249167116355, guid: 831df868960bcef478dc0020299a32ff, type: 3}
+    frames:
+    - {fileID: 11400000, guid: 11de9230c09867747908272f3310089f, type: 2}
+    - {fileID: 11400000, guid: d1ff8cefde9698646866f7c141843e06, type: 2}
+    - {fileID: 11400000, guid: 269ea4b9e1222fe42bc648cbcdf4a6a9, type: 2}
     defaultWeapon: {fileID: 11400000, guid: dc7d2dbc3edd72d4f9025dff20a7cbaa, type: 2}
     weapons:
       keys:
       - default
       values:
       - {fileID: 2993856260627974788, guid: c42db52ce80b83f4f9a7387a30cccf87, type: 3}
-    equipmentDatas: []
+    equipmentDatas:
+    - {fileID: 11400000, guid: d1ff8cefde9698646866f7c141843e06, type: 2}
+    - {fileID: 11400000, guid: 269ea4b9e1222fe42bc648cbcdf4a6a9, type: 2}
+    - {fileID: 11400000, guid: 11de9230c09867747908272f3310089f, type: 2}
+    - {fileID: 11400000, guid: dc7d2dbc3edd72d4f9025dff20a7cbaa, type: 2}
     entityActionsData:
       keys: 0000000003000000010000000200000004000000
       values:

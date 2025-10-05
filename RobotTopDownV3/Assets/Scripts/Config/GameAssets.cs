@@ -21,11 +21,13 @@ public class GameAssets : ScriptableObject
         public Tile baseTile;
 
         public List<GridData> maps = new();
-        public List<Entity> entityPrefabs = new();
-
         public List<LevelData> levels = new();
 
-        public WeaponData defaultWeapon;
+        [Title("Entity")]
+        public List<Entity> entityPrefabs = new();
+        public List<FrameEquipmentData> frames = new();
+
+        public WeaponEquipmentData defaultWeapon;
         public SerializableDictionary<string, Weapon> weapons = new SerializableDictionary<string, Weapon>();
         public List<EntityEquipmentData> equipmentDatas = new();
 

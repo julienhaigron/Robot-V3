@@ -14,13 +14,13 @@ public class GameManager : Singleton<GameManager>
 
 	[Title("Offline")]
 	[SerializeField] private GridData m_map;
-	[SerializeField] private List<EntityData> m_playerEntityDatas;
-	[SerializeField] private List<EntityData> m_ennemiEntityDatas;
+	[SerializeField] private List<FrameEquipmentData> m_playerEntityDatas;
+	[SerializeField] private List<FrameEquipmentData> m_ennemiEntityDatas;
 
 	[Title("Online")]
 	[SerializeField] private GridData m_onlineMap;
-	[SerializeField] private List<EntityData> m_playerOneEntityDatas;
-	[SerializeField] private List<EntityData> m_playerTwoEntityDatas;
+	[SerializeField] private List<FrameEquipmentData> m_playerOneEntityDatas;
+	[SerializeField] private List<FrameEquipmentData> m_playerTwoEntityDatas;
 	public enum GameMode { Offline, Online }
 
 	private GameMode m_currentGameMode;
@@ -36,6 +36,11 @@ public class GameManager : Singleton<GameManager>
 
 		/*if(m_currentGameMode == GameMode.Offline)
 			StartGame();*/
+	}
+
+	public void SetPlayerUnit(List<FrameEquipmentData> _playerUnits )
+	{
+
 	}
 
 	public void SetupLevel(LevelData _level )

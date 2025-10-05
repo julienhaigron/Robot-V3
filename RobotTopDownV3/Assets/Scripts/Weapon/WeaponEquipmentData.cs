@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "WeaponData", menuName = "ScriptableObject/WeaponData", order = 1)]
-public class WeaponData : ScriptableObject
+public class WeaponEquipmentData : EntityEquipmentData
 {
-    public string saveKey;
-
     public float accuracy;
     public int damage;
     public int range;

@@ -7,8 +7,8 @@ using System;
 public class Weapon : MonoBehaviour
 {
 
-	private WeaponData m_data;
-	public WeaponData Data => m_data;
+	private WeaponEquipmentData m_data;
+	public WeaponEquipmentData Data => m_data;
 
 	[SerializeField] private GameObject m_conesParent;
 	[SerializeField] private GameObject m_activeCone;
@@ -17,7 +17,7 @@ public class Weapon : MonoBehaviour
 	private float m_aimedRotation = 0;
 	public float AimedRotation => m_aimedRotation;
 
-	public void Init ( WeaponData _data )
+	public void Init ( WeaponEquipmentData _data )
 	{
 		m_data = _data;
 

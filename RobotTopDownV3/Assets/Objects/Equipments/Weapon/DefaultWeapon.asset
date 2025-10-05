@@ -12,7 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 377ca2099ac4b6147bf777f681302f03, type: 3}
   m_Name: DefaultWeapon
   m_EditorClassIdentifier: 
-  saveKey: default
+  ID: default
+  type: 0
+  icon: {fileID: 0}
   accuracy: 0.5
   damage: 1
   range: 5

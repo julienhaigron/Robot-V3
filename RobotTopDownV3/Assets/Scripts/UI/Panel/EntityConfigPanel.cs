@@ -15,7 +15,7 @@ public class EntityConfigPanel : AUIPanel
 	{
 		m_currentEntity = _data;
 
-		EntityChassisData chassisData = GameAssets.current.equipments[_data.chassisID] as EntityChassisData;
+		FrameEquipmentData chassisData = GameAssets.current.equipments[_data.chassisID] as FrameEquipmentData;
 
 		m_chassisDisplay.Init(chassisData);
 		m_brain.Init(GameAssets.current.equipments[_data.brainID]);

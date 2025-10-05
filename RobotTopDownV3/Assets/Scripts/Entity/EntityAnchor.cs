@@ -36,10 +36,10 @@ public class EntityAnchor : MonoBehaviour
 		m_spawnCoordinates.Add(newSpawn);
 	}
 
-	public void Init (List<EntityData> _robots, int _playerID)
+	public void Init (List<FrameEquipmentData> _robots, int _playerID)
 	{
 		int unitCount = 0;
-		foreach(EntityData robotData in _robots)
+		foreach(FrameEquipmentData robotData in _robots)
 		{
 			SpawnEntity(robotData, (100 * _playerID) + unitCount++, _playerID); //0 - 99 id slots for units per player
 		}
@@ -57,7 +57,7 @@ public class EntityAnchor : MonoBehaviour
 		return new Spawn(new TileCoordinates(0, 0, 0), Spawn.InitializationState.Failure);
 	}
 
-	private void SpawnEntity ( EntityData _entityData, int _entityID, int _playerID)
+	private void SpawnEntity ( FrameEquipmentData _entityData, int _entityID, int _playerID)
 	{
 		Entity entity = Instantiate(GameAssets.current.game.entityPrefabs[_entityData.prefabId], transform);
 		m_entities.Add(entity);

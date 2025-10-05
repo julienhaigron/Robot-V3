@@ -6,6 +6,7 @@ using Sirenix.OdinInspector;
 public class SoloCampainPanel : AUIPanel
 {
 	[SerializeField] private BaseButton m_changeSquadBtn;
+	[SerializeField] private BaseButton m_openShopBtn;
     [SerializeField] private LevelButton m_levelBtnPrefab;
     [SerializeField] private Transform m_levelBtnsParent;
 
@@ -14,11 +15,17 @@ public class SoloCampainPanel : AUIPanel
 	private void Awake ()
 	{
 		m_changeSquadBtn.onClick += OnClickChangeSquadBtn;
+		m_openShopBtn.onClick += OnClickOpenShopBtn;
 	}
 
 	private void OnClickChangeSquadBtn ()
 	{
 		UIManager.Instance.OpenPanel<SquadConfigPanel>();
+	}
+	
+	private void OnClickOpenShopBtn ()
+	{
+		UIManager.Instance.OpenPanel<ShopPanel>();
 	}
 
 #if UNITY_EDITOR
