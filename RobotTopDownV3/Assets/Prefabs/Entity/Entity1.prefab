@@ -43,7 +43,7 @@ GameObject:
   - component: {fileID: 4562610388173317332}
   - component: {fileID: 8068481098795121024}
   m_Layer: 0
-  m_Name: Visual
+  m_Name: Skin
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -63,7 +63,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7743820743129172472}
-  m_Father: {fileID: 2312820547138274590}
+  m_Father: {fileID: 3748587738414805172}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &4562610388173317332
 MeshFilter:
@@ -177,13 +177,13 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
-    - targetCorrespondingSourceObject: {fileID: 2413142668327609139, guid: facf97aac763a09489a27b119520aaff, type: 3}
-      insertIndex: 0
+    - targetCorrespondingSourceObject: {fileID: 3846169601763104409, guid: facf97aac763a09489a27b119520aaff, type: 3}
+      insertIndex: -1
       addedObject: {fileID: 3410763607291300458}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: facf97aac763a09489a27b119520aaff, type: 3}
---- !u!4 &2312820547138274590 stripped
+--- !u!4 &3748587738414805172 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 2413142668327609139, guid: facf97aac763a09489a27b119520aaff, type: 3}
+  m_CorrespondingSourceObject: {fileID: 3846169601763104409, guid: facf97aac763a09489a27b119520aaff, type: 3}
   m_PrefabInstance: {fileID: 100766324068165165}
   m_PrefabAsset: {fileID: 0}

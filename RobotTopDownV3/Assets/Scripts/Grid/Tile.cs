@@ -25,6 +25,9 @@ public class Tile : MonoBehaviour
 	private bool m_canInteract = false;
 	public bool CanInteract => m_canInteract;
 
+	private bool m_isVisible = false;
+	public bool IsVisible => m_isVisible;
+
 	//Content on tile
 	public TileContent currentContent;
 	public TileContent nextTurnActionContent;
@@ -179,4 +182,13 @@ public class Tile : MonoBehaviour
 
 
 	#endregion
+
+	public void SetActiveFOW (bool _isActive = false, bool _isInstant = false )
+	{
+		m_isVisible = _isActive;
+		m_ui.SetActiveFOW(_isActive, _isInstant);
+
+		if(currentContent.entity != null)
+			currentContent.entity.SetVisibility(!_isActive);
+	}
 }

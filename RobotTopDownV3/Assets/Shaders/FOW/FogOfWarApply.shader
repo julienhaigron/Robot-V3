@@ -1,9 +1,12 @@
-Shader "Custom/FogOfWar_Apply_Final"
+Shader "Custom/FogOfWar_Apply_Stylized"
 {
     Properties
     {
         _FogMask("Fog Mask", 2D) = "white" {}
         _FogColor("Fog Color", Color) = (0,0,0,0.6)
+        _EdgeSoftness("Edge Softness", Range(0,1)) = 0.2
+        _NoiseTex("Noise Texture", 2D) = "white" {}
+        _NoiseScale("Noise Scale", Float) = 5.0
     }
         SubShader
         {
@@ -20,7 +23,10 @@ Shader "Custom/FogOfWar_Apply_Final"
                 #include "UnityCG.cginc"
 
                 sampler2D _FogMask;
+                sampler2D _NoiseTex;
                 fixed4 _FogColor;
+                float _EdgeSoftness;
+                float _NoiseScale;
 
                 struct appdata
                 {
@@ -31,7 +37,7 @@ Shader "Custom/FogOfWar_Apply_Final"
                 struct v2f
                 {
                     float4 pos : SV_POSITION;
-                    float2 uv  : TEXCOORD0;
+                    float2 uv : TEXCOORD0;
                 };
 
                 v2f vert(appdata v)
@@ -47,11 +53,18 @@ Shader "Custom/FogOfWar_Apply_Final"
                     // Lis la valeur du mask
                     fixed mask = tex2D(_FogMask, i.uv).r;
 
-                // Inversion : maintenant 0 = visible, 1 = brouillard
+                // Inversion : 0 = visible, 1 = fog
                 mask = 1.0 - mask;
 
+                // Lis le bruit pour donner du volume
+                fixed noise = tex2D(_NoiseTex, i.uv * _NoiseScale).r;
+
+                // Bords doux
+                mask = smoothstep(0.0, _EdgeSoftness, mask - noise * 0.1);
+
+                // Applique la couleur du fog
                 fixed4 fog = _FogColor;
-                fog.a *= mask;   // alpha contrôlé par le mask inversé
+                fog.a *= mask;
 
                 return fog;
             }

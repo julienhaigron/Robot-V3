@@ -10,6 +10,8 @@ public class Entity : MonoBehaviour
     public Action onDeselect;
 
     [Title("Depedencies")]
+    [SerializeField] private GameObject m_skinParent;
+
     [SerializeField] private EntityDisplacementPlugin m_displacement;
     public EntityDisplacementPlugin Displacement => m_displacement;
 
@@ -75,6 +77,12 @@ public class Entity : MonoBehaviour
     public void Deselect ()
     {
         onDeselect?.Invoke();
+    }
+
+    public void SetVisibility(bool _isVisible )
+	{
+        m_ui.gameObject.SetActive(_isVisible);
+        m_skinParent.SetActive(_isVisible);
     }
 
 }

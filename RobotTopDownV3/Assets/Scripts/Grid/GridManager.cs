@@ -484,13 +484,18 @@ public class GridManager : Singleton<GridManager>
 	{
 		int playerId = !GameManager.Instance.IsOnline ? 0 : OnlinePlayerInstance.Self.connectionIndex;
 		if (!_entity.IsAlliedTo(playerId))
+		{
+			_entity.SetVisibility(false);
 			return;
+		}
 
-		List<Tile> tileInEntityRange = GetTilesInVisionRange(_entity.Displacement.Coordinates.GetTile(), _entity.Data.FrameData.visibilityRange, true);
+		Tile from = _entity.Displacement.Coordinates.GetTile();
+		from.SetActiveFOW(false, true);
+		List<Tile> tileInEntityRange = GetTilesInVisionRange(from, _entity.Data.FrameData.visibilityRange, true);
 
 		foreach (Tile tile in tileInEntityRange)
 		{
-			tile.UI.SetActiveFOW(false, true);
+			tile.SetActiveFOW(false, true);
 		}
 
 		m_entitiesVisions[_entity.PlayerOwnerID].entitiesVisionRange.Add(_entity, tileInEntityRange);
@@ -517,7 +522,7 @@ public class GridManager : Singleton<GridManager>
 			}
 
 			if (!isInAnotherEntityVisionRange)
-				tile.UI.SetActiveFOW(false, false);
+				tile.SetActiveFOW(false, false);
 		}
 
 		m_entitiesVisions[_entity.PlayerOwnerID].entitiesVisionRange.Remove(_entity);
@@ -529,7 +534,10 @@ public class GridManager : Singleton<GridManager>
 	{
 		int playerId = !GameManager.Instance.IsOnline ? 0 : OnlinePlayerInstance.Self.connectionIndex;
 		if (!_entity.IsAlliedTo(playerId))
+		{
+			_entity.SetVisibility(_entity.Displacement.Coordinates.GetTile().IsVisible);
 			return;
+		}
 
 		List<Tile> previousTilesInRangeList = new(m_entitiesVisions[_entity.PlayerOwnerID].entitiesVisionRange[_entity]);
 		List<Tile> newTilesInRangeList = GetTilesInVisionRange(_entity.Displacement.Coordinates.GetTile(), _entity.Data.FrameData.visibilityRange, true);
@@ -552,7 +560,7 @@ public class GridManager : Singleton<GridManager>
 				}
 
 				if(!isInAnotherEntityVisionRange)
-					tile.UI.SetActiveFOW(false, false);
+					tile.SetActiveFOW(false, false);
 			}
 		}
 
@@ -569,7 +577,7 @@ public class GridManager : Singleton<GridManager>
 			}
 
 			if(!isInAnotherEntityVisionRange)
-				previousTile.UI.SetActiveFOW(true, false);
+				previousTile.SetActiveFOW(true, false);
 		}
 
 		//m_fowRenderer.material.SetTexture("_FogTex", fogTexture);

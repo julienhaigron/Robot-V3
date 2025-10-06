@@ -27,7 +27,7 @@ Material:
     m_Floats:
     - _Threshold: 0.2
     m_Colors:
-    - _Color: {r: 0, g: 0, b: 0, a: 0.87058824}
+    - _Color: {r: 0.009433985, g: 0.009433985, b: 0.009433985, a: 0.80784315}
     - _FogColor: {r: 0, g: 0, b: 0, a: 0.78039217}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
