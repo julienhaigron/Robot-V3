@@ -128,10 +128,10 @@ public class EntityAIPlugin : EntityPlugin
 	private List<Entity> VisionCheck ( bool _isThisTurn = true )
 	{
 		m_entitiesInVisionRange = new();
-		if (m_linkedEntity.Data.capacities.Contains(EntityCapacityAsset.EntityCapacityType.VisualSensor)
-			|| m_linkedEntity.Data.capacities.Contains(EntityCapacityAsset.EntityCapacityType.RadarSensor))
+		if (m_linkedEntity.Data.FrameData.capacities.Contains(EntityCapacityAsset.EntityCapacityType.VisualSensor)
+			|| m_linkedEntity.Data.FrameData.capacities.Contains(EntityCapacityAsset.EntityCapacityType.RadarSensor))
 		{
-			m_entitiesInVisionRange = GridManager.Instance.GetEntitiesInRange(m_linkedEntity.Displacement.Coordinates.GetTile(), m_linkedEntity.Data.visibilityRange, _isThisTurn);
+			m_entitiesInVisionRange = GridManager.Instance.GetEntitiesInRange(m_linkedEntity.Displacement.Coordinates.GetTile(), m_linkedEntity.Data.FrameData.visibilityRange, _isThisTurn);
 		}
 
 		return m_entitiesInVisionRange;

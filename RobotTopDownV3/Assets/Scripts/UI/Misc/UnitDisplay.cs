@@ -12,7 +12,7 @@ public class UnitDisplay : MonoBehaviour
     public void Init ( EntitySavedData _unitData )
     {
         m_title.text = _unitData.name;
-        m_iconImg.sprite = GameAssets.current.equipments[_unitData.chassisID].icon;
+        m_iconImg.sprite = GameAssets.current.equipments[_unitData.frameID].icon;
 		for (int i = 0; i < _unitData.armsIds.Length; i++)
 		{
             m_armsImgs[i].sprite = GameAssets.current.equipments[_unitData.armsIds[i].value].icon;

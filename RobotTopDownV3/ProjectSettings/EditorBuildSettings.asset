@@ -11,5 +11,8 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/TutoNetworking.unity
     guid: ea8e3193106c3fb47a2ccea1fd1f0978
+  - enabled: 1
+    path: Assets/Scenes/TestLD.unity
+    guid: f92c38e0ac1f62f4abc729159516dc5f
   m_configObjects: {}
   m_UseUCBPForAssetBundles: 0

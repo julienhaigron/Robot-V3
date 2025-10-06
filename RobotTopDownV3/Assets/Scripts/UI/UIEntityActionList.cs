@@ -40,23 +40,23 @@ public class UIEntityActionList : MonoBehaviour
 		else
 		{
 			Entity selectedEntity = GameManager.Instance.GetEntityFromID((int)_entityID);
-			int amountMissingActionBtn = selectedEntity.Data.knownedActions.Length - m_actionButtons.Count;
+			int amountMissingActionBtn = selectedEntity.Data.FrameData.knownedActions.Length - m_actionButtons.Count;
 			for (int i = 0; i < amountMissingActionBtn; i++)
 				CreateNewActionButton().SetVisible(false, true);
 
-			int amountMissingStateBtn = selectedEntity.Data.knownedStates.Length - m_stateButtons.Count;
+			int amountMissingStateBtn = selectedEntity.Data.FrameData.knownedStates.Length - m_stateButtons.Count;
 			for (int i = 0; i < amountMissingStateBtn; i++)
 				CreateNewStateButton().SetVisible(false, true);
 
 			for (int i = 0; i < m_actionButtons.Count; i++)
 			{
-				m_actionButtons[i].Init(selectedEntity.Data.knownedActions[i]);
+				m_actionButtons[i].Init(selectedEntity.Data.FrameData.knownedActions[i]);
 				m_actionButtons[i].SetVisible(_isVisible: true, _isInstant: true);
 			}
 
 			for (int i = 0; i < m_stateButtons.Count; i++)
 			{
-				m_stateButtons[i].Init(selectedEntity.Data.knownedStates[i]);
+				m_stateButtons[i].Init(selectedEntity.Data.FrameData.knownedStates[i]);
 				m_stateButtons[i].SetVisible(_isVisible: true, _isInstant: true);
 			}
 		}

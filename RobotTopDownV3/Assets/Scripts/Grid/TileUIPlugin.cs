@@ -52,6 +52,8 @@ public class TileUIPlugin : MonoBehaviour
 
 	public void SetActiveFOW (bool _isActive = false, bool _isInstant = false)
 	{
+		/*GridManager.Instance.fogTexture.SetPixel(m_linkedTile.coordinates.X, m_linkedTile.coordinates.Z, _isActive ? Color.black : Color.white);
+		GridManager.Instance.fogTexture.Apply();*/
 		m_fow.SetActive(_isActive);
 	}
 

@@ -13,7 +13,7 @@ public class GameAssets : ScriptableObject
     public Material material;
     public UI ui;
 
-    public Dictionary<string, EntityEquipmentData> equipments = new Dictionary<string, EntityEquipmentData>();
+    public SerializableDictionary<string, EntityEquipmentData> equipments = new SerializableDictionary<string, EntityEquipmentData>();
 
     [System.Serializable]
     public class Game
@@ -24,7 +24,7 @@ public class GameAssets : ScriptableObject
         public List<LevelData> levels = new();
 
         [Title("Entity")]
-        public List<Entity> entityPrefabs = new();
+        public SerializableDictionary<string, Entity> entityPrefabPerFrameDictionary = new();
         public List<FrameEquipmentData> frames = new();
 
         public WeaponEquipmentData defaultWeapon;

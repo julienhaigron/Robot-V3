@@ -12,15 +12,17 @@ public class GameManager : Singleton<GameManager>
 	[SerializeField] private LobbyManager m_lobby;
 	public LobbyManager Lobby => m_lobby;
 
+	[SerializeField] private LoadingElement m_mainLoadingElement;
+
 	[Title("Offline")]
 	[SerializeField] private GridData m_map;
-	[SerializeField] private List<FrameEquipmentData> m_playerEntityDatas;
-	[SerializeField] private List<FrameEquipmentData> m_ennemiEntityDatas;
+	[SerializeField] private List<EntitySavedData> m_playerEntityDatas;
+	[SerializeField] private List<EntitySavedData> m_ennemiEntityDatas;
 
 	[Title("Online")]
 	[SerializeField] private GridData m_onlineMap;
-	[SerializeField] private List<FrameEquipmentData> m_playerOneEntityDatas;
-	[SerializeField] private List<FrameEquipmentData> m_playerTwoEntityDatas;
+	[SerializeField] private List<EntitySavedData> m_playerOneEntityDatas;
+	[SerializeField] private List<EntitySavedData> m_playerTwoEntityDatas;
 	public enum GameMode { Offline, Online }
 
 	private GameMode m_currentGameMode;
@@ -29,6 +31,7 @@ public class GameManager : Singleton<GameManager>
 
 	private void Start ()
 	{
+		m_mainLoadingElement.Load();
 		if (m_map != null)
 			GridManager.Instance.LoadGrid(m_map);
 		else

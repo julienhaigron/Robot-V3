@@ -26,22 +26,26 @@ public class FrameEquipmentData : EntityEquipmentData
     public int armSlotAvailable = 2;
 }
 
+[System.Serializable]
 public class EntitySavedData : INetworkSerializable
 {
     public string name;
-    public string chassisID;
+    public string frameID;
     public string brainID;
     public StringContainer[] armsIds;
+
+    public FrameEquipmentData FrameData => GameAssets.current.equipments[frameID] as FrameEquipmentData;
 
     public void NetworkSerialize<T> ( BufferSerializer<T> serializer ) where T : IReaderWriter
     {
         serializer.SerializeValue(ref name);
-        serializer.SerializeValue(ref chassisID);
+        serializer.SerializeValue(ref frameID);
         serializer.SerializeValue(ref brainID);
         serializer.SerializeValue(ref armsIds);
     }
 }
 
+[System.Serializable]
 public class StringContainer : INetworkSerializable
 {
     public string value;

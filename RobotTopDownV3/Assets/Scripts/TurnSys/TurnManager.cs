@@ -233,7 +233,7 @@ public class TurnManager : Singleton<TurnManager>
 		{
 			foreach (Entity entity in anchor.Entities)
 			{
-				m_remainingActionToken.Add(entity.ID, entity.Data.actionTokenAmount);
+				m_remainingActionToken.Add(entity.ID, entity.Data.FrameData.actionTokenAmount);
 			}
 		}
 

@@ -1,0 +1,10 @@
+fileFormatVersion: 2
+guid: e94e43dd4ce6c76489daa9bc90eac99d
+ShaderImporter:
+  externalObjects: {}
+  defaultTextures:
+  - _FogTex: {fileID: 2800000, guid: cc5181dcca662f8419914965daefd856, type: 3}
+  nonModifiableTextures: []
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

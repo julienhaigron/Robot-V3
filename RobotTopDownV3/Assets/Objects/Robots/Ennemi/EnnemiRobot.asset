@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e340e03f272314442a53b80f2350e240, type: 3}
   m_Name: EnnemiRobot
   m_EditorClassIdentifier: 
-  ID: Enemi1
+  ID: enemi1
   type: 0
   icon: {fileID: 0}
   faction: 1
@@ -23,3 +23,4 @@ MonoBehaviour:
   capacities: 00000000
   knownedStates: 00000000
   maxHealth: 5
+  armSlotAvailable: 2

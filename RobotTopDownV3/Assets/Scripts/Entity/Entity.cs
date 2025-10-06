@@ -22,13 +22,13 @@ public class Entity : MonoBehaviour
     [SerializeField] private EntityUIPlugin m_ui;
     public EntityUIPlugin UI => m_ui;
 
-    [SerializeField] private FrameEquipmentData m_data;
+    [SerializeField] private EntitySavedData m_data;
 
-    public FrameEquipmentData Data => m_data;
+    public EntitySavedData Data => m_data;
 
     private EntityState m_state;
     public EntityState State => m_state;
-    public EntityFaction Faction => m_data.faction;
+    public EntityFaction Faction => m_data.FrameData.faction;
 
     public int ID;
     public int PlayerOwnerID;
@@ -45,7 +45,7 @@ public class Entity : MonoBehaviour
         Enemy
 	}
 
-    public void Init ( FrameEquipmentData _data, EntityAnchor.Spawn _spawn, int _id, int _playerID )
+    public void Init ( EntitySavedData _data, EntityAnchor.Spawn _spawn, int _id, int _playerID )
     {
         ID = _id;
         PlayerOwnerID = _playerID;
@@ -59,7 +59,7 @@ public class Entity : MonoBehaviour
 
     public bool IsAlliedTo (int _playerOwnerId)
 	{
-        if (!GameManager.Instance.IsOnline && m_data.faction == EntityFaction.Ally)
+        if (!GameManager.Instance.IsOnline && m_data.FrameData.faction == EntityFaction.Ally)
             return true;
         else if (GameManager.Instance.IsOnline && PlayerOwnerID == _playerOwnerId)
             return true;

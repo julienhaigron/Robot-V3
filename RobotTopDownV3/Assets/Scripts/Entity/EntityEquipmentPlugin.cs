@@ -15,7 +15,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 	private int m_currentHealth;
 	public int CurrentHealth => m_currentHealth;
 
-	public int MaxHealth => m_linkedEntity.Data.maxHealth;
+	public int MaxHealth => m_linkedEntity.Data.FrameData.maxHealth;
 
 	private bool m_isDead = false;
 	public bool IsDead => m_isDead;

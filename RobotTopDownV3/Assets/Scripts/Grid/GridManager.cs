@@ -15,6 +15,9 @@ public class GridManager : Singleton<GridManager>
 	private int m_width;
 	public int Width => m_width;
 
+	/*public Texture2D fogTexture;
+	[SerializeField] private MeshRenderer m_fowRenderer;*/
+
 	private struct PlayerVisionRangeInfo
 	{
 		public Dictionary<Entity, List<Tile>> entitiesVisionRange;
@@ -91,6 +94,8 @@ public class GridManager : Singleton<GridManager>
 				CreateTile(x, z, i++);
 			}
 		}
+
+		//InitFOW();
 	}
 
 	private void CreateTile ( int _x, int _z, int _i )
@@ -459,13 +464,29 @@ public class GridManager : Singleton<GridManager>
 
 	#region FOW
 
+	/*public void InitFOW ( )
+	{
+		fogTexture = new Texture2D(m_width, m_height, TextureFormat.RGBA32, false);
+		fogTexture.filterMode = FilterMode.Point;
+
+		// Tout noir = full fog
+		Color[] colors = new Color[m_width * m_height];
+		for (int i = 0; i < colors.Length; i++)
+			colors[i] = Color.black;
+
+		fogTexture.SetPixels(colors);
+		fogTexture.Apply();
+		//Shader.SetGlobalTexture("_FogTex", fogTexture);
+		m_fowRenderer.material.SetTexture("_FogTex", fogTexture);
+	}*/
+
 	public void OnNewEntity(Entity _entity )
 	{
 		int playerId = !GameManager.Instance.IsOnline ? 0 : OnlinePlayerInstance.Self.connectionIndex;
 		if (!_entity.IsAlliedTo(playerId))
 			return;
 
-		List<Tile> tileInEntityRange = GetTilesInVisionRange(_entity.Displacement.Coordinates.GetTile(), _entity.Data.visibilityRange, true);
+		List<Tile> tileInEntityRange = GetTilesInVisionRange(_entity.Displacement.Coordinates.GetTile(), _entity.Data.FrameData.visibilityRange, true);
 
 		foreach (Tile tile in tileInEntityRange)
 		{
@@ -473,6 +494,8 @@ public class GridManager : Singleton<GridManager>
 		}
 
 		m_entitiesVisions[_entity.PlayerOwnerID].entitiesVisionRange.Add(_entity, tileInEntityRange);
+
+		//m_fowRenderer.material.SetTexture("_FogTex", fogTexture);
 	}
 
 	public void OnEntityDeath(Entity _entity )
@@ -498,6 +521,8 @@ public class GridManager : Singleton<GridManager>
 		}
 
 		m_entitiesVisions[_entity.PlayerOwnerID].entitiesVisionRange.Remove(_entity);
+
+		//m_fowRenderer.material.SetTexture("_FogTex", fogTexture);
 	}
 
 	public void OnEntityMovement(Entity _entity )
@@ -507,7 +532,7 @@ public class GridManager : Singleton<GridManager>
 			return;
 
 		List<Tile> previousTilesInRangeList = new(m_entitiesVisions[_entity.PlayerOwnerID].entitiesVisionRange[_entity]);
-		List<Tile> newTilesInRangeList = GetTilesInVisionRange(_entity.Displacement.Coordinates.GetTile(), _entity.Data.visibilityRange, true);
+		List<Tile> newTilesInRangeList = GetTilesInVisionRange(_entity.Displacement.Coordinates.GetTile(), _entity.Data.FrameData.visibilityRange, true);
 		m_entitiesVisions[_entity.PlayerOwnerID].entitiesVisionRange[_entity] = new(newTilesInRangeList);
 
 		foreach (Tile tile in newTilesInRangeList)
@@ -546,6 +571,8 @@ public class GridManager : Singleton<GridManager>
 			if(!isInAnotherEntityVisionRange)
 				previousTile.UI.SetActiveFOW(true, false);
 		}
+
+		//m_fowRenderer.material.SetTexture("_FogTex", fogTexture);
 	}
 
 	#endregion

@@ -189,10 +189,46 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2451109015589657171, guid: 72a8cdbae79f9a74f90a70843427bc89, type: 3}
+      propertyPath: m_Layer
+      value: 10
+      objectReference: {fileID: 0}
     - target: {fileID: 2601377726672517245, guid: 72a8cdbae79f9a74f90a70843427bc89, type: 3}
       propertyPath: m_networkedTurnSystem
       value: 
       objectReference: {fileID: 223974230}
+    - target: {fileID: 6025034781710556206, guid: 72a8cdbae79f9a74f90a70843427bc89, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 6025034781710556206, guid: 72a8cdbae79f9a74f90a70843427bc89, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 6025034781710556206, guid: 72a8cdbae79f9a74f90a70843427bc89, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 6025034781710556206, guid: 72a8cdbae79f9a74f90a70843427bc89, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 3.68
+      objectReference: {fileID: 0}
+    - target: {fileID: 6025034781710556206, guid: 72a8cdbae79f9a74f90a70843427bc89, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.27
+      objectReference: {fileID: 0}
+    - target: {fileID: 6025034781710556206, guid: 72a8cdbae79f9a74f90a70843427bc89, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 2.9
+      objectReference: {fileID: 0}
+    - target: {fileID: 7046302440515799230, guid: 72a8cdbae79f9a74f90a70843427bc89, type: 3}
+      propertyPath: playerCamera
+      value: 
+      objectReference: {fileID: 1745271215}
+    - target: {fileID: 7558403354613806224, guid: 72a8cdbae79f9a74f90a70843427bc89, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8375078075185135005, guid: 72a8cdbae79f9a74f90a70843427bc89, type: 3}
       propertyPath: m_Name
       value: GameManager
@@ -210,24 +246,8 @@ PrefabInstance:
       value: Enemi
       objectReference: {fileID: 0}
     - target: {fileID: 9152403339332330190, guid: 72a8cdbae79f9a74f90a70843427bc89, type: 3}
-      propertyPath: m_playerEntityDatas.Array.data[0].name
-      value: Unit 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 9152403339332330190, guid: 72a8cdbae79f9a74f90a70843427bc89, type: 3}
-      propertyPath: m_playerEntityDatas.Array.data[1].name
-      value: Unit 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 9152403339332330190, guid: 72a8cdbae79f9a74f90a70843427bc89, type: 3}
       propertyPath: m_ennemiEntityDatas.Array.data[0].frameID
       value: enemi1
-      objectReference: {fileID: 0}
-    - target: {fileID: 9152403339332330190, guid: 72a8cdbae79f9a74f90a70843427bc89, type: 3}
-      propertyPath: m_playerEntityDatas.Array.data[0].frameID
-      value: player1
-      objectReference: {fileID: 0}
-    - target: {fileID: 9152403339332330190, guid: 72a8cdbae79f9a74f90a70843427bc89, type: 3}
-      propertyPath: m_playerEntityDatas.Array.data[1].frameID
-      value: player2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -491,6 +511,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 61d1b9fb46e97474cbaa52967bedcd98, type: 3}
+--- !u!1 &1745271215 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 529478190741356514, guid: 72a8cdbae79f9a74f90a70843427bc89, type: 3}
+  m_PrefabInstance: {fileID: 545270024}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &2034904380
 PrefabInstance:
   m_ObjectHideFlags: 0

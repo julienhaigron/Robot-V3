@@ -9,7 +9,7 @@ public class PlayerController : Singleton<PlayerController>
 	public static Action<int?> onEntitySelected;
 
 	[Title("Camera Settings")]
-	[SerializeField] private Camera playerCamera;
+	[SerializeField] private GameObject playerCamera;
 	[SerializeField] private float moveSpeed = 5f;
 
 	[Header("Camera Limits")]
