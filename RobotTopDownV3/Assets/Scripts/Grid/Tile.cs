@@ -14,8 +14,6 @@ public class Tile : MonoBehaviour
 	[SerializeField] private TileUIPlugin m_ui;
 	public TileUIPlugin UI => m_ui;
 
-	[SerializeField] private GameObject m_fow;
-
 	public TileCoordinates coordinates;
 	[SerializeField, ReadOnly] Tile[] m_neighbors;
 	public Tile[] Neighbors => m_neighbors;

@@ -263,7 +263,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_ui: {fileID: 2079859369203581924}
-  m_fow: {fileID: 1573483873864581390}
   coordinates:
     m_x: 0
     m_z: 0

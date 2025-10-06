@@ -1,4 +1,4 @@
-Shader "Custom/FogOfWar_Apply"
+Shader "Custom/FogOfWar_Apply_Final"
 {
     Properties
     {
@@ -44,12 +44,18 @@ Shader "Custom/FogOfWar_Apply"
 
                 fixed4 frag(v2f i) : SV_Target
                 {
+                    // Lis la valeur du mask
                     fixed mask = tex2D(_FogMask, i.uv).r;
-                    fixed4 fog = _FogColor;
-                    fog.a *= mask;   // masque contrôle la densité
-                    return fog;
-                }
-                ENDCG
+
+                // Inversion : maintenant 0 = visible, 1 = brouillard
+                mask = 1.0 - mask;
+
+                fixed4 fog = _FogColor;
+                fog.a *= mask;   // alpha contrôlé par le mask inversé
+
+                return fog;
             }
+            ENDCG
+        }
         }
 }
