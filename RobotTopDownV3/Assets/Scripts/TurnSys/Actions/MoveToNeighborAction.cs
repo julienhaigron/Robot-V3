@@ -56,7 +56,7 @@ public class MoveToNeighborAction : AEntityAction
 		if (finalTargetTileID != -1/* && finalTargetTile.GetEntity(false) == null*/)
 			GameManager.Instance.GetEntityFromID(performingEntityID).Displacement.MoveToTile((int)finalTargetTileID, EndPerform);
 		else
-			DG.Tweening.DOVirtual.DelayedCall(.5f, () => EndPerform());
+			DG.Tweening.DOVirtual.DelayedCall(GameConfig.current.game.actionDuration, () => EndPerform());
 	}
 
 	public override void EndPerform ()

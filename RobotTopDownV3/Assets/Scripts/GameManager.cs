@@ -6,6 +6,8 @@ using Sirenix.OdinInspector;
 
 public class GameManager : Singleton<GameManager>
 {
+	[SerializeField] private Canvas m_fogCanvas;
+
 	[SerializeField] private EntityAnchor[] m_playersEntityAnchor;
 	public EntityAnchor[] PlayersEntityAnchor => m_playersEntityAnchor;
 
@@ -31,6 +33,7 @@ public class GameManager : Singleton<GameManager>
 
 	private void Start ()
 	{
+		m_fogCanvas.gameObject.SetActive(false);
 		m_mainLoadingElement.Load();
 		if (m_map != null)
 			GridManager.Instance.LoadGrid(m_map);
@@ -68,6 +71,7 @@ public class GameManager : Singleton<GameManager>
 			m_playersEntityAnchor[1].Init(m_playerTwoEntityDatas, 1);
 		}
 
+		m_fogCanvas.gameObject.SetActive(true);
 		TurnManager.Instance.Init();
 		TurnManager.Instance.StartInputPhase();
 	}
@@ -101,6 +105,11 @@ public class GameManager : Singleton<GameManager>
 			if (ally.Equipment.IsDead == false)
 				_isPlayerTwoDead = false;
 		}
+	}
+
+	public void EndGame ()
+	{
+		m_fogCanvas.gameObject.SetActive(false);
 	}
 
 }

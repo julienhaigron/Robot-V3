@@ -27,7 +27,7 @@ public class TileUIPlugin : MonoBehaviour
 
 	public void UpdateGroundMaterial ()
 	{
-		m_groundMeshRendered.material = GameAssets.current.material.tileGroundMaterials[m_linkedTile.GroundType];
+		m_groundMeshRendered.material = GameAssets.current.ui.tileGroundMaterials[m_linkedTile.GroundType];
 	}
 
 	public void ResetOutline ()

@@ -21,7 +21,10 @@ public class Weapon : MonoBehaviour
 	{
 		m_data = _data;
 
-		ActivateUnactiveCone();
+		transform.localScale = _data.range * Vector3.one;
+		//ActivateUnactiveCone();
+		m_activeCone.SetActive(false);
+		m_unactiveCone.SetActive(false);
 	}
 
 	public void ActivateActiveCone ()

@@ -40,6 +40,7 @@ public abstract class AEntityAction : INetworkSerializable
 
     public virtual void Perform (Entity.EntityState _state)
 	{
+        GameManager.Instance.GetEntityFromID(performingEntityID).StartPerformAction(this);
         onPerform?.Invoke();
     }
 
@@ -54,6 +55,7 @@ public abstract class AEntityAction : INetworkSerializable
 
     public virtual void EndPerform ()
     {
+        GameManager.Instance.GetEntityFromID(performingEntityID).EndPerformAction();
         onEndPerform?.Invoke(performingEntityID);
     }
 

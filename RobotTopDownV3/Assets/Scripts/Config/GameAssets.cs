@@ -10,7 +10,6 @@ public class GameAssets : ScriptableObject
 
 
     public Game game;
-    public Material material;
     public UI ui;
 
     public SerializableDictionary<string, EntityEquipmentData> equipments = new SerializableDictionary<string, EntityEquipmentData>();
@@ -38,16 +37,16 @@ public class GameAssets : ScriptableObject
     }
 
     [System.Serializable]
-    public class Material
-	{
-        [Title("Tile")]
-        public SerializableDictionary<TileGroundType, UnityEngine.Material> tileGroundMaterials = new();
-	}
-
-    [System.Serializable]
     public class UI
 	{
         public LobbyDisplay baseLobbyDisplay;
+        [Title("Flying Number")]
+        public Material flyingDamageFontAsset;
+        public Material flyingDamageCritFontAsset;
+        public Sprite critIcon;
+
+        [Title("Tile")]
+        public SerializableDictionary<TileGroundType, Material> tileGroundMaterials = new();
     }
 
 

@@ -408,7 +408,7 @@ public class GridManager : Singleton<GridManager>
 				}
 
 				//obstacle
-				if (neighbor.IsObstacle() ||(neighbor.GetEntity(_isThisTurn) != null && neighbor != _to))
+				if (neighbor.IsObstacle() || (neighbor.GetEntity(_isThisTurn) != null && neighbor != _to))
 				{
 					continue;
 				}

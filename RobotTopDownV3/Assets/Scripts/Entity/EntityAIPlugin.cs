@@ -5,7 +5,6 @@ using System.Linq;
 
 public class EntityAIPlugin : EntityPlugin
 {
-	//triggers
 
 	private List<Entity> m_entitiesInVisionRange = new();
 	private Dictionary<string, List<Entity>> m_entitiesInWeaponRange = new();

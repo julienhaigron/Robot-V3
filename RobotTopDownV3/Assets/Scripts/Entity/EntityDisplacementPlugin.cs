@@ -30,7 +30,10 @@ public class EntityDisplacementPlugin : EntityPlugin
 			m_coordinate.GetTile().SetEntity(null, _isThisTurn: true);
 		Tile tile = GridManager.Instance.Tiles[_tileID];
 
-		transform.DOMove(tile.transform.position - m_bottomPosition.localPosition, GameConfig.current.game.entityMovementSpeed).SetEase(Ease.OutExpo).OnComplete(() => onMovementDoneAction?.Invoke());
+		//TODO : cleaner rotation here
+		m_linkedEntity.SkinParent.transform.LookAt(tile.transform, Vector3.up);
+
+		transform.DOMove(tile.transform.position - m_bottomPosition.localPosition, GameConfig.current.game.actionDuration).SetEase(Ease.Linear).OnComplete(() => onMovementDoneAction?.Invoke());
 		tile.SetEntity(m_linkedEntity, _isThisTurn: true);
 		m_coordinate.SetCoordinate(tile.coordinates.X, tile.coordinates.Z, tile.coordinates.ID);
 

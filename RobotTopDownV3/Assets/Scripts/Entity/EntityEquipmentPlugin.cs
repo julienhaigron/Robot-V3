@@ -6,7 +6,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 {
 	public static System.Action<Entity> onAnyEntityDeath;
 	public System.Action<int> onDeath;
-	public System.Action<int> onHealthChangeDamage;
+	public System.Action<TakeDamageCallback> onHealthChangeDamage;
 
     private Dictionary<string, Weapon> m_weapons = new();
 	public Dictionary<string, Weapon> Weapons => m_weapons;
@@ -65,6 +65,16 @@ public class EntityEquipmentPlugin : EntityPlugin
 
 	#region Weapon
 
+	public struct TakeDamageCallback
+	{
+		public Entity entityAttacker;
+		public Entity entityTargeted;
+		public int damage;
+		public bool critical;
+		public Vector3 hitPos;
+		public Vector3 hitNormal;
+	}
+
 	private Weapon AddWeapon(WeaponEquipmentData _data )
 	{
 		Weapon newWeapon = Instantiate(GameAssets.current.game.weapons[_data.ID], m_weaponParent);
@@ -107,7 +117,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 
 			float radians = rayAngle * Mathf.Deg2Rad;
 			Vector3 aimedPosition = new Vector3(Mathf.Sin(radians), 0, Mathf.Cos(radians));
-			RaycastHit[] hits = Physics.RaycastAll(m_linkedEntity.Displacement.Coordinates.GetTile().transform.position, aimedPosition * selectedWeapon.Data.range, selectedWeapon.Data.range, GameConfig.current.input.tileInternRayCastLayer);
+			RaycastHit[] hits = Physics.RaycastAll(m_linkedEntity.Displacement.Coordinates.GetTile().transform.position, aimedPosition * selectedWeapon.Data.range, selectedWeapon.Data.range * (2*Tile.innerRadius), GameConfig.current.input.tileInternRayCastLayer);
 			foreach(RaycastHit hitInfo in hits)
 			{
 				if (hitInfo.transform.TryGetComponent(out Tile tile) && !tilesInRange.Contains(tile))
@@ -135,14 +145,14 @@ public class EntityEquipmentPlugin : EntityPlugin
 
 	#region Heatlh
 
-	public void TakeDamage(int _amount )
+	public void TakeDamage( TakeDamageCallback _damageInfo )
 	{
-		m_currentHealth -= _amount;
+		m_currentHealth -= _damageInfo.damage;
 
 		if (m_currentHealth <= 0)
 			Death();
 
-		onHealthChangeDamage?.Invoke(_amount);
+		onHealthChangeDamage?.Invoke(_damageInfo);
 	}
 
 	private void Death ()

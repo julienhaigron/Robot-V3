@@ -617,6 +617,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c4043acb96fa9614785a34d9bb1430e9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_fogCanvas: {fileID: 2227984840768774739}
   m_playersEntityAnchor:
   - {fileID: 1618352944327094151}
   - {fileID: 5770960734887702693}

@@ -54,7 +54,7 @@ public class MoveToTargetAction : AEntityAction
 		if (thisActionDestinationID != -1/* && thisActionDestination.GetEntity(false) == null*/)
 			GameManager.Instance.GetEntityFromID(performingEntityID).Displacement.MoveToTile((int)thisActionDestinationID, EndPerform);
 		else
-			DG.Tweening.DOVirtual.DelayedCall(.5f, () => EndPerform());
+			DG.Tweening.DOVirtual.DelayedCall(GameConfig.current.game.actionDuration, () => EndPerform());
 	}
 
 	public override void EndPerform ()

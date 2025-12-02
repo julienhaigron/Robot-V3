@@ -15,8 +15,7 @@ public partial class GameConfig : ScriptableObject
 	[System.Serializable]
 	public partial class GameSettings
 	{
-		public float entityMovementSpeed = 1.5f;
-
+		public float actionDuration = 1f;
 	}
 
 	[System.Serializable]

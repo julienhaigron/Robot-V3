@@ -38,6 +38,7 @@ public class AttackAction : AEntityAction
 		//int dist = GridManager.Instance.GetDistanceBetween(performingEntity.Displacement.Coordinates.GetTile(), targetedEntity.Displacement.Coordinates.GetTile(), true);
 		if (targetedEntityID == -1)
 		{
+			//TODO : add no target feedback
 			base.Perform(_state);
 			EndPerform();
 		}
@@ -61,19 +62,19 @@ public class AttackAction : AEntityAction
 			bool isAttackRollSuccessful = performingEntity.Equipment.AttackRoll(targetEntity);
 			if (isAttackRollSuccessful)
 			{
-				int damageAmout = _attackingWeapon.Data.damage;
+				int damageAmount = _attackingWeapon.Data.damage;
 				//Debug.Log("shoot entity " + damageAmout + " damages");
-				targetEntity.Equipment.TakeDamage(damageAmout);
+				targetEntity.Equipment.TakeDamage(new EntityEquipmentPlugin.TakeDamageCallback() { damage = damageAmount });
 				base.Perform(_state);
 				//TODO : shoot success anim
-				EndPerform();
+				DG.Tweening.DOVirtual.DelayedCall(GameConfig.current.game.actionDuration, () => EndPerform());
 			}
 			else
 			{
 				//TODO : shoot but failed anim
 				//Debug.Log("shoot failed");
 				base.Perform(_state);
-				EndPerform();
+				DG.Tweening.DOVirtual.DelayedCall(GameConfig.current.game.actionDuration, () => EndPerform());
 			}
 		}
 		else
@@ -81,7 +82,7 @@ public class AttackAction : AEntityAction
 			// => find new target or wait (or move to prevvious target if in sight?)
 			//Debug.Log("target not in range");
 			base.Perform(_state);
-			EndPerform();
+			DG.Tweening.DOVirtual.DelayedCall(GameConfig.current.game.actionDuration, () => EndPerform());
 		} 
 	}
 

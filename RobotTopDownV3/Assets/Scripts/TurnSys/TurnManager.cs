@@ -5,8 +5,6 @@ using Sirenix.OdinInspector;
 using Unity.Netcode;
 using System.Linq;
 
-//TODO :
-
 //1) record robots action in order for a single turn
 
 //2) calculate conflict
@@ -547,6 +545,8 @@ public class TurnManager : Singleton<TurnManager>
 			LogConsole.AddLog("Victory", LogConsole.LogEventType.Main);
 		else
 			LogConsole.AddLog("Defeat", LogConsole.LogEventType.Main);
+
+		GameManager.Instance.EndGame();
 	}
 
 

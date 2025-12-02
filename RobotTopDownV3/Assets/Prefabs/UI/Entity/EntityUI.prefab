@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 7619725450302791475}
   - component: {fileID: 9053511511557045532}
   - component: {fileID: 2809014431662650166}
+  - component: {fileID: 3004094288854354076}
   m_Layer: 0
   m_Name: EntityUI
   m_TagString: Untagged
@@ -25,6 +26,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1377923743943899518}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -32,7 +34,6 @@ Transform:
   m_Children:
   - {fileID: 115519403616067004}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &9053511511557045532
 MonoBehaviour:
@@ -48,6 +49,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_linkedEntity: {fileID: 0}
   m_healthBar: {fileID: 3003170526368560073}
+  m_flyingNumberManagerDamage: {fileID: 3004094288854354076}
 --- !u!114 &2809014431662650166
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -62,6 +64,54 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_updateAtRuntime: 1
   m_updateOnEnable: 0
+--- !u!114 &3004094288854354076
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1377923743943899518}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a225337eb0ba744a889a5cd8f13016b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  config:
+    addPlusPrefixIfPositive: 0
+    prefix: '-'
+    suffix: 
+    useEngineeringNotation: 0
+    stringFormat: 
+    fontAsset: {fileID: 0}
+    rndXMinMaxOffset: {x: 0, y: 0}
+    rndYMinMaxOffset: {x: 0, y: 0}
+    rndMinMaxAngle: {x: 0, y: 0}
+    ignoreTimeScale: 1
+    showDuration: 0.3
+    hiddenOffset: {x: 0, y: -10}
+    showEase: 6
+    forceTextBurstUpdateOnShow: 0
+    idleDuration: 0.5
+    hideDuration: 0.3
+    hideOffset: {x: 0, y: 0}
+    hideEase: 6
+    mergeVisibleNumbers: 0
+    forceTextBurstUpdateOnMerge: 0
+    hideLastWhenSpawningNew: 0
+    yAddedOffsetOnOverLap: 0.2
+    yOffsetOnOverLapMax: 10
+    textColor: {r: 0.8679245, g: 0.020469915, b: 0.020469915, a: 1}
+    defaultColorAnimation: 0
+    useAnimationCustomColor: 0
+    customColorAnimation: {r: 1, g: 0, b: 0, a: 1}
+  m_UIflyingNumberPrefab: {fileID: 0}
+  m_flyingNumberPrefab: {fileID: 6976196489625512688, guid: fefcc39bb4bd34448a673e2c1984f2de, type: 3}
+  m_poolBufferedSize: 5
+  m_flyingNumberParent: {fileID: 7619725450302791475}
+  m_flyingNumberList: []
+  m_testValue: 1
+  m_testBlink: 0
+  m_playPS: 0
 --- !u!1 &1419959073876240701
 GameObject:
   m_ObjectHideFlags: 0
@@ -93,7 +143,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 115519403616067004}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -117,6 +166,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -205,15 +257,17 @@ MonoBehaviour:
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0
-  m_enableWordWrapping: 1
+  m_TextWrappingMode: 1
   m_wordWrappingRatios: 0.4
   m_overflowMode: 0
   m_linkedTextComponent: {fileID: 0}
   parentLinkedComponent: {fileID: 0}
   m_enableKerning: 1
+  m_ActiveFontFeatures: 6e72656b
   m_enableExtraPadding: 0
   checkPaddingRequired: 0
   m_isRichText: 1
+  m_EmojiFallbackSupport: 1
   m_parseCtrlCharacters: 1
   m_isOrthographic: 0
   m_isCullingEnabled: 0
@@ -259,6 +313,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4322438468933672348}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 2, y: 2, z: 2}
@@ -266,7 +321,6 @@ Transform:
   m_Children:
   - {fileID: 7272896251547942204}
   m_Father: {fileID: 7619725450302791475}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &4149939331305928364
 SpriteRenderer:
@@ -285,6 +339,9 @@ SpriteRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 0
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:

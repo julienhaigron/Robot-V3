@@ -29,8 +29,8 @@ Material:
         m_Offset: {x: 0, y: 0}
     - _NoiseTex:
         m_Texture: {fileID: 2800000, guid: b5223f8f218dbbb46b3625033179948b, type: 3}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
+        m_Scale: {x: 1, y: 28.99}
+        m_Offset: {x: 0, y: 9.13}
     m_Ints: []
     m_Floats:
     - _EdgeSoftness: 0.32

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: GameConfig
   m_EditorClassIdentifier: 
   game:
-    entityMovementSpeed: 1.5
+    actionDuration: 1
   input:
     interactionRayCastLength: 100
     interactionRayCastLayer:
@@ -30,3 +30,5 @@ MonoBehaviour:
       - {r: 0.4755483, g: 0.8679245, b: 0.045033824, a: 1}
       - {r: 0, g: 0.38887525, b: 0.6509434, a: 1}
       - {r: 1, g: 0.10208976, b: 0, a: 1}
+  datas:
+    editorLoadDatasFromGamedatasFile: 1

@@ -8,9 +8,12 @@ public class Entity : MonoBehaviour
 {
     public Action onSelect;
     public Action onDeselect;
+    public Action<AEntityAction> onStartPerformAction;
+    public Action onEndPerformAction;
 
     [Title("Depedencies")]
     [SerializeField] private GameObject m_skinParent;
+    public GameObject SkinParent => m_skinParent;
 
     [SerializeField] private EntityDisplacementPlugin m_displacement;
     public EntityDisplacementPlugin Displacement => m_displacement;
@@ -20,6 +23,7 @@ public class Entity : MonoBehaviour
 
     [SerializeField] private EntityAIPlugin m_ai;
     public EntityAIPlugin AI => m_ai;
+    [SerializeField] private EntitySkinPlugin m_skin;
     
     [SerializeField] private EntityUIPlugin m_ui;
     public EntityUIPlugin UI => m_ui;
@@ -57,7 +61,18 @@ public class Entity : MonoBehaviour
         m_equipment.Init();
         m_ui.Init();
         m_ai.Init();
+        m_skin.Init();
     }
+
+    public void StartPerformAction ( AEntityAction _action)
+	{
+        onStartPerformAction?.Invoke(_action);
+    }
+    
+    public void EndPerformAction ( )
+	{
+        onEndPerformAction?.Invoke();
+	}
 
     public bool IsAlliedTo (int _playerOwnerId)
 	{

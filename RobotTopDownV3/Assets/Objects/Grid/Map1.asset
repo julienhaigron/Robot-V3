@@ -52,21 +52,21 @@ MonoBehaviour:
   - groundType: 0
   - groundType: 1
   - groundType: 1
+  - groundType: 1
   - groundType: 0
   - groundType: 0
   - groundType: 0
   - groundType: 0
-  - groundType: 0
-  - groundType: 0
-  - groundType: 0
-  - groundType: 0
-  - groundType: 0
+  - groundType: 1
   - groundType: 0
   - groundType: 0
   - groundType: 0
   - groundType: 0
   - groundType: 0
   - groundType: 1
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
   - groundType: 1
   - groundType: 1
   - groundType: 1

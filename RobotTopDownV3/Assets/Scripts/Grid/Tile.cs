@@ -104,7 +104,7 @@ public class Tile : MonoBehaviour
 
 	public bool IsObstacle ()
 	{
-		if (m_groundType != TileGroundType.Empty)
+		if (m_groundType == TileGroundType.Wall)
 			return true;
 
 		return false;

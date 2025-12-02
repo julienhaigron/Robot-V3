@@ -27,6 +27,9 @@ public class FogOfWarRenderer : MonoBehaviour
     void LateUpdate ()
     {
         // On rend les meshes de fog dans le mask
+        if (fogCamera.targetTexture == null)
+            return;
+
         fogCamera.RenderWithShader(Shader.Find("Custom/FogOfWar_Mask"), "");
     }
 }
