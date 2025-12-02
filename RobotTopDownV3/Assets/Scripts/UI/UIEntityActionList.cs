@@ -73,13 +73,7 @@ public class UIEntityActionList : MonoBehaviour
 	{
 		StateButton newButton = Instantiate(m_baseStateButtonPrefab, m_stateButtonsParent);
 		m_stateButtons.Add(newButton);
-		newButton.onClick += OnClickStateButton;
 		return newButton;
-	}
-
-	private void OnClickStateButton ()
-	{
-
 	}
 
 	public void HideButtons ()

@@ -31,6 +31,22 @@ public class GameManager : Singleton<GameManager>
 	public GameMode CurrentGameMode { get { return m_currentGameMode; } set { m_currentGameMode = value; } }
 	public bool IsOnline => m_currentGameMode == GameMode.Online;
 
+	private int m_playerNumber = 0;
+	public int PlayerID
+	{
+		get
+		{
+			if (m_currentGameMode == GameMode.Offline)
+				return 0;
+			else
+				return m_playerNumber;
+		}
+		set
+		{
+			m_playerNumber = value;
+		}
+	}
+
 	private void Start ()
 	{
 		m_fogCanvas.gameObject.SetActive(false);
@@ -74,6 +90,12 @@ public class GameManager : Singleton<GameManager>
 		m_fogCanvas.gameObject.SetActive(true);
 		TurnManager.Instance.Init();
 		TurnManager.Instance.StartInputPhase();
+	}
+
+	public bool GetEntityFromID(out Entity _entity, int _entityID )
+	{
+		_entity = GetEntityFromID(_entityID);
+		return _entity != null;
 	}
 
 	public Entity GetEntityFromID (int _entityID)

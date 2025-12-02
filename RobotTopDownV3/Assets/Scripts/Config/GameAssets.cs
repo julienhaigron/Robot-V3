@@ -40,6 +40,7 @@ public class GameAssets : ScriptableObject
     public class UI
 	{
         public LobbyDisplay baseLobbyDisplay;
+        public EntityActionDisplay baseEntityActionDisplay;
         [Title("Flying Number")]
         public Material flyingDamageFontAsset;
         public Material flyingDamageCritFontAsset;

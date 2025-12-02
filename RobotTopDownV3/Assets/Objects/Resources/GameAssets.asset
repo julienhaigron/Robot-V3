@@ -56,6 +56,7 @@ MonoBehaviour:
     arrowPoolData: {fileID: 11400000, guid: 64f7846c9740e524a979a96964270b2f, type: 2}
   ui:
     baseLobbyDisplay: {fileID: 2566041125526859700, guid: cc5b4c04e157c914381ced09bd279f76, type: 3}
+    baseEntityActionDisplay: {fileID: 1776869416438720975, guid: 43cde6fde6a65d04c81939ddc6df829d, type: 3}
     flyingDamageFontAsset: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
     flyingDamageCritFontAsset: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
     critIcon: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}

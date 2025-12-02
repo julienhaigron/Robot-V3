@@ -16,7 +16,8 @@ using System.Linq;
 
 public class TurnManager : Singleton<TurnManager>
 {
-	public static System.Action<AEntityAction> onActionAdded;
+	public static System.Action<RecordedAction> onActionAdded;
+	public static System.Action<RecordedAction> onActionRemoved;
 	public static System.Action<AEntityAction> onActionSelected;
 	public static System.Action onStartInputPhase;
 	public static System.Action onEndInputPhase;
@@ -184,20 +185,29 @@ public class TurnManager : Singleton<TurnManager>
 		if (m_remainingActionToken[_entityID] <= 0)
 			return false;
 
-		m_recordedActionInput[_entityID].Enqueue(new RecordedAction
+		RecordedAction recordedAction = new RecordedAction
 		{
 			type = _action.type,
 			performingEntityID = _entityID,
 			action = _action,
 			entityState = _state
-		});
+		};
+		m_recordedActionInput[_entityID].Enqueue(recordedAction);
 
-		m_remainingActionToken[_entityID]--;
+		m_remainingActionToken[_entityID]-= GameAssets.current.game.entityActionsData[_action.type].tokenCost;
 
 		LogConsole.AddLog("Add " + _action.ToString() + " action to queue.", LogConsole.LogEventType.InputPhase);
 		//Update action display on grid + UI
-		onActionAdded?.Invoke(_action);
+		onActionAdded?.Invoke(recordedAction);
 		return true;
+	}
+
+	public void RemoveAction ( RecordedAction _removedRecordedAction )
+	{
+		List<RecordedAction> actionQueue = m_recordedActionInput[_removedRecordedAction.performingEntityID].ToList();
+		actionQueue.Remove(_removedRecordedAction);
+		m_recordedActionInput[_removedRecordedAction.performingEntityID] = new Queue<RecordedAction>(actionQueue);
+		onActionRemoved?.Invoke(_removedRecordedAction);
 	}
 
 	public void RefreshActionDisplay (int? _selectedEntityID)

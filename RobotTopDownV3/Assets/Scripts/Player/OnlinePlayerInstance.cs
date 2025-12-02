@@ -28,6 +28,7 @@ public class OnlinePlayerInstance : NetworkBehaviour
 	{
 		connectionIndex = (IsOwner == IsHost) ? 0 : 1;
 
+		GameManager.Instance.PlayerID = connectionIndex;
 		GameManager.Instance.Lobby.AddPlayerInstance(this, IsOwner);
 	}
 

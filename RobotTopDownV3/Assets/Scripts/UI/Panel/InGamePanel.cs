@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using TMPro;
 
 public sealed class InGamePanel : AUIPanel
 {
@@ -10,16 +11,21 @@ public sealed class InGamePanel : AUIPanel
 	public UIEntityActionList EntityActionList => m_entityActionList;
 
 	[SerializeField] private BaseButton m_endPhaseButton;
+	[SerializeField] private TextMeshProUGUI m_phaseTitleTmp;
 
 	#region MonoBehaviour & Init
 
 	private void Awake ()
 	{
+		TurnManager.onStartInputPhase += OnStartInputPhase;
+		TurnManager.onEndInputPhase += OnEndInputPhase;
 		m_endPhaseButton.onClick += OnClickEndPhaseBtn;
 	}
 
 	private void OnDestroy ()
 	{
+		TurnManager.onStartInputPhase = OnStartInputPhase;
+		TurnManager.onEndInputPhase = OnEndInputPhase;
 		m_endPhaseButton.onClick -= OnClickEndPhaseBtn;
 	}
 
@@ -74,6 +80,16 @@ public sealed class InGamePanel : AUIPanel
 	#endregion
 
 	#region Callbacks
+
+	private void OnStartInputPhase ()
+	{
+		m_phaseTitleTmp.text = "Input Phase";
+	}
+	
+	private void OnEndInputPhase ()
+	{
+		m_phaseTitleTmp.text = "Play Phase";
+	}
 
 	private void OnClickEndPhaseBtn ()
 	{
