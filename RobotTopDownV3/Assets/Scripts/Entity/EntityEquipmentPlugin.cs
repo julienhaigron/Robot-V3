@@ -89,8 +89,8 @@ public class EntityEquipmentPlugin : EntityPlugin
 	{
 		//OLD : get angle and apply to cone
 		Weapon selectedWeapon = m_weapons[_weaponID];
-		Vector2Int currentLocation = new Vector2Int((int) m_linkedEntity.Displacement.Coordinates.GetTile().transform.position.x, (int)m_linkedEntity.Displacement.Coordinates.GetTile().transform.position.z);
-		Vector2Int destination = new Vector2Int((int)_tile.transform.position.x, (int)_tile.transform.position.z);
+		Vector2 currentLocation = new Vector2( m_linkedEntity.Displacement.Coordinates.GetTile().transform.position.x, m_linkedEntity.Displacement.Coordinates.GetTile().transform.position.z);
+		Vector2 destination = new Vector2(_tile.transform.position.x, _tile.transform.position.z);
 
 		float angle = GridManager.Instance.GetAngleFrom(currentLocation, destination);
 		selectedWeapon.AimAtAngle(angle, false, _onEndMovement);

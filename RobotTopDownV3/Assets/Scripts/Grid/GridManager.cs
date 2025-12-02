@@ -419,16 +419,16 @@ public class GridManager : Singleton<GridManager>
 		}
 	}
 
-	public float GetAngleFrom ( Vector2Int origin, Vector2Int destination )
+	public float GetAngleFrom ( Vector2 origin, Vector2 destination )
 	{
 		/*int deltaX = origin.x - destination.x;
 		int deltaY = origin.y - destination.y;
 		return Mathf.Atan2(deltaY, deltaX) * 180f / Mathf.PI;*/
-		int x1 = origin.x + 1 - origin.x; //Vector 1 - x
-		int y1 = origin.y - origin.y; //Vector 1 - y
+		float x1 = origin.x + 1 - origin.x; //Vector 1 - x
+		float y1 = origin.y - origin.y; //Vector 1 - y
 
-		int x2 = destination.x - origin.x; //Vector 2 - x
-		int y2 = destination.y - origin.y; //Vector 2 - y
+		float x2 = destination.x - origin.x; //Vector 2 - x
+		float y2 = destination.y - origin.y; //Vector 2 - y
 
 		float angle = Mathf.Atan2(y1, x1) - Mathf.Atan2(y2, x2);
 		angle = angle * 360 / (2 * Mathf.PI);
