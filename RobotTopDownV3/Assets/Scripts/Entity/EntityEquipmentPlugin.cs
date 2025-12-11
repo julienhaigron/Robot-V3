@@ -35,7 +35,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 	public override void Init ()
 	{
 		//init weapon
-		AddWeapon(GameAssets.current.game.defaultWeapon);
+		AddWeapon(GameAssets.current.game.defaultWeapon, m_linkedEntity.Displacement.Spawn.isFirstSide);
 
 		//init health
 		m_currentHealth = MaxHealth;
@@ -75,10 +75,10 @@ public class EntityEquipmentPlugin : EntityPlugin
 		public Vector3 hitNormal;
 	}
 
-	private Weapon AddWeapon(WeaponEquipmentData _data )
+	private Weapon AddWeapon(WeaponEquipmentData _data, bool _isFirstSide)
 	{
 		Weapon newWeapon = Instantiate(GameAssets.current.game.weapons[_data.ID], m_weaponParent);
-		newWeapon.Init(_data);
+		newWeapon.Init(_data, _isFirstSide);
 		m_weapons.Add(_data.ID, newWeapon);
 
 		return newWeapon;
@@ -94,9 +94,11 @@ public class EntityEquipmentPlugin : EntityPlugin
 
 		float angle = GridManager.Instance.GetAngleFrom(currentLocation, destination);
 		selectedWeapon.AimAtAngle(angle, false, _onEndMovement);
+
+		m_linkedEntity.Displacement.Rotate(_tile, false);
 	}
 
-	public List<Tile> GetTilesInRange(string _weaponID)
+	public List<Tile> GetTilesInRange(string _weaponID, bool _isThisTurn = false)
 	{
 		List<Tile> tilesInRange = new();
 
@@ -120,7 +122,8 @@ public class EntityEquipmentPlugin : EntityPlugin
 			RaycastHit[] hits = Physics.RaycastAll(m_linkedEntity.Displacement.Coordinates.GetTile().transform.position, aimedPosition * selectedWeapon.Data.range, selectedWeapon.Data.range * (2*Tile.innerRadius), GameConfig.current.input.tileInternRayCastLayer);
 			foreach(RaycastHit hitInfo in hits)
 			{
-				if (hitInfo.transform.TryGetComponent(out Tile tile) && !tilesInRange.Contains(tile))
+				if (hitInfo.transform.TryGetComponent(out Tile tile) && !tilesInRange.Contains(tile)
+					&& GridManager.Instance.IsVisionLineClear(m_linkedEntity.Displacement.Coordinates.GetTile(), tile, _isThisTurn))
 				{
 					tilesInRange.Add(tile);
 				}

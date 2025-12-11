@@ -14,25 +14,28 @@ public class EntityAnchor : MonoBehaviour
 	{
 		public enum InitializationState { Success, Failure}
 
-		public Spawn(TileCoordinates _coordinates)
+		public Spawn(TileCoordinates _coordinates, bool _isFirstSide )
 		{
+			isFirstSide = _isFirstSide;
 			coordinates = _coordinates;
 			initializationState = InitializationState.Success;
 		}
 
-		public Spawn(TileCoordinates _coordinates, InitializationState _state )
+		public Spawn(TileCoordinates _coordinates, InitializationState _state, bool _isFirstSide )
 		{
+			isFirstSide = _isFirstSide;
 			coordinates = _coordinates;
 			initializationState = _state;
 		}
 
+		public bool isFirstSide;
 		public TileCoordinates coordinates;
 		public InitializationState initializationState;
 	}
 
-	public void AddSpawn( TileCoordinates _coordinates )
+	public void AddSpawn( TileCoordinates _coordinates, bool _isFirstSide )
 	{
-		Spawn newSpawn = new Spawn(_coordinates);
+		Spawn newSpawn = new Spawn(_coordinates, _isFirstSide);
 		m_spawnCoordinates.Add(newSpawn);
 	}
 
@@ -54,7 +57,7 @@ public class EntityAnchor : MonoBehaviour
 				return spawn;
 		}
 
-		return new Spawn(new TileCoordinates(0, 0, 0), Spawn.InitializationState.Failure);
+		return new Spawn(new TileCoordinates(0, 0, 0), Spawn.InitializationState.Failure, true);
 	}
 
 	private void SpawnEntity ( EntitySavedData _entityData, int _entityID, int _playerID)

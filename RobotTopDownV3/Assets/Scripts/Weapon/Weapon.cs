@@ -17,14 +17,14 @@ public class Weapon : MonoBehaviour
 	private float m_aimedRotation = 0;
 	public float AimedRotation => m_aimedRotation;
 
-	public void Init ( WeaponEquipmentData _data )
+	public void Init ( WeaponEquipmentData _data, bool _isFirstSide )
 	{
 		m_data = _data;
 
+		AimAtAngle(_isFirstSide ? 90 : -90f, true, null);
+
 		transform.localScale = _data.range * Vector3.one;
-		//ActivateUnactiveCone();
-		m_activeCone.SetActive(false);
-		m_unactiveCone.SetActive(false);
+		DisableAllCones();
 	}
 
 	public void ActivateActiveCone ()

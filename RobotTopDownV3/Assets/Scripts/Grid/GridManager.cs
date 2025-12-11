@@ -71,9 +71,9 @@ public class GridManager : Singleton<GridManager>
 			m_tiles[i].SetGroundType(groundType);
 
 			if (groundType == TileGroundType.PlayerSpawn)
-				GameManager.Instance.PlayersEntityAnchor[0].AddSpawn(m_tiles[i].coordinates);
+				GameManager.Instance.PlayersEntityAnchor[0].AddSpawn(m_tiles[i].coordinates, true);
 			else if(groundType == TileGroundType.EnemySpawn)
-				GameManager.Instance.PlayersEntityAnchor[1].AddSpawn(m_tiles[i].coordinates);
+				GameManager.Instance.PlayersEntityAnchor[1].AddSpawn(m_tiles[i].coordinates, false);
 		}
 	}
 
@@ -183,7 +183,7 @@ public class GridManager : Singleton<GridManager>
 		foreach(Tile tile in tilesInRange)
 		{
 			Entity entity = tile.GetEntity(_isThisTurn);
-			if (entity != null)
+			if (entity != null && !entitiesInRange.Contains(entity))
 				entitiesInRange.Add(entity);
 		}
 
