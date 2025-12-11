@@ -14,7 +14,7 @@ public class FrameEquipmentData : EntityEquipmentData
 
     [Title("Action")]
     public int actionTokenAmount = 8;
-    public EntityActionType[] knownedActions;
+    public EntityActionEnumID[] knownedActions;
     [Min(0)] public int visibilityRange = 8;
 
     [Title("AI")]

@@ -18,4 +18,6 @@ MonoBehaviour:
     musicVolume: 1
     sfxVolume: 1
   player:
+    knownedFrames: []
+    units: []
     equipmentInventory: []

@@ -36,8 +36,8 @@ public class TurnManager : Singleton<TurnManager>
 
 	private AEntityAction m_currentEntityAction;
 	public AEntityAction CurrentActionSelected => m_currentEntityAction;
-	private EntityActionType m_currentActionTypeSelected;
-	public EntityActionType CurrentActionTypeSelected => m_currentActionTypeSelected;
+	private EntityActionEnumID m_currentActionTypeSelected;
+	public EntityActionEnumID CurrentActionTypeSelected => m_currentActionTypeSelected;
 
 	private Entity.EntityState m_currentStateTypeSelected;
 	public Entity.EntityState CurrentStateTypeSelected => m_currentStateTypeSelected;
@@ -47,7 +47,7 @@ public class TurnManager : Singleton<TurnManager>
 
 	public struct RecordedAction : INetworkSerializable
 	{
-		public EntityActionType type;
+		public EntityActionEnumID type;
 		public int performingEntityID;
 		public AEntityAction action;
 		public Entity.EntityState entityState;
@@ -131,7 +131,7 @@ public class TurnManager : Singleton<TurnManager>
 		m_currentStateTypeSelected = _state;
 	}
 
-	public void SetCurrentActionSelected ( EntityActionType _action )
+	public void SetCurrentActionSelected ( EntityActionEnumID _action )
 	{
 		m_currentActionTypeSelected = _action;
 		m_currentEntityAction = GetAction(_action, PlayerController.Instance.SelectedEntity.ID);
@@ -139,38 +139,38 @@ public class TurnManager : Singleton<TurnManager>
 		onActionSelected?.Invoke(m_currentEntityAction);
 	}
 
-	public AEntityAction GetAction(EntityActionType _actionType, int _performingEntityID )
+	public AEntityAction GetAction(EntityActionEnumID _actionType, int _performingEntityID )
 	{
 		AEntityAction action = null;
 
 		switch (_actionType)
 		{
-			case EntityActionType.NeighborMove:
+			case EntityActionEnumID.NeighborMove:
 				action = new MoveToNeighborAction();
-				action.Init(GameAssets.current.game.entityActionsData[EntityActionType.NeighborMove], _performingEntityID, GetLastRegisteredPositionOfEntity(_performingEntityID));
+				action.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.NeighborMove], _performingEntityID, GetLastRegisteredPositionOfEntity(_performingEntityID));
 				break;
-			case EntityActionType.TargetTileMove:
+			case EntityActionEnumID.TargetTileMove:
 				action = new MoveToTargetAction();
-				action.Init(GameAssets.current.game.entityActionsData[EntityActionType.TargetTileMove], _performingEntityID, GetLastRegisteredPositionOfEntity(_performingEntityID));
+				action.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.TargetTileMove], _performingEntityID, GetLastRegisteredPositionOfEntity(_performingEntityID));
 				break;
-			case EntityActionType.Attack:
+			case EntityActionEnumID.Attack:
 				action = new AttackAction();
-				action.Init(GameAssets.current.game.entityActionsData[EntityActionType.Attack], _performingEntityID, GetLastRegisteredPositionOfEntity(_performingEntityID));
+				action.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.Attack], _performingEntityID, GetLastRegisteredPositionOfEntity(_performingEntityID));
 				break;
-			case EntityActionType.Wait:
+			case EntityActionEnumID.Wait:
 				action = new WaitAction();
-				action.Init(GameAssets.current.game.entityActionsData[EntityActionType.Wait], _performingEntityID, GetLastRegisteredPositionOfEntity(_performingEntityID));
+				action.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.Wait], _performingEntityID, GetLastRegisteredPositionOfEntity(_performingEntityID));
 				break;
-			case EntityActionType.RotateWeapon:
+			case EntityActionEnumID.RotateWeapon:
 				action = new RotateWeaponAction();
-				action.Init(GameAssets.current.game.entityActionsData[EntityActionType.RotateWeapon], _performingEntityID, GetLastRegisteredPositionOfEntity(_performingEntityID));
+				action.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.RotateWeapon], _performingEntityID, GetLastRegisteredPositionOfEntity(_performingEntityID));
 				break;
 		}
 
 		return action;
 	}
 
-	public bool AddAction (int _entityID, EntityActionType _actionType, Entity.EntityState _state )
+	public bool AddAction (int _entityID, EntityActionEnumID _actionType, Entity.EntityState _state )
 	{
 		AEntityAction action = null;
 		action = GetAction(_actionType, _entityID);
@@ -187,14 +187,14 @@ public class TurnManager : Singleton<TurnManager>
 
 		RecordedAction recordedAction = new RecordedAction
 		{
-			type = _action.type,
+			type = _action.enumID,
 			performingEntityID = _entityID,
 			action = _action,
 			entityState = _state
 		};
 		m_recordedActionInput[_entityID].Enqueue(recordedAction);
 
-		m_remainingActionToken[_entityID]-= GameAssets.current.game.entityActionsData[_action.type].tokenCost;
+		m_remainingActionToken[_entityID]-= GameAssets.current.game.entityActionsData[_action.enumID].tokenCost;
 
 		LogConsole.AddLog("Add " + _action.ToString() + " action to queue.", LogConsole.LogEventType.InputPhase);
 		//Update action display on grid + UI
@@ -270,7 +270,7 @@ public class TurnManager : Singleton<TurnManager>
 					{
 						m_recordedActionInput[entityID].Enqueue(new RecordedAction
 						{
-							type = EntityActionType.Wait,
+							type = EntityActionEnumID.Wait,
 							performingEntityID = entityID,
 							action = new WaitAction(),
 							entityState = record.entityState
@@ -360,7 +360,7 @@ public class TurnManager : Singleton<TurnManager>
 				{
 					LogConsole.AddLog("Action replaced to " + resultInfo.replacedAction, LogConsole.LogEventType.PlayPhase);
 					resultInfo.replacedAction.Prepare(recordedAction.entityState);
-					returnActionToPlayThisRound.Enqueue(new RecordedAction() { type = resultInfo.replacedAction.type, performingEntityID = resultInfo.replacedAction.performingEntityID, action = resultInfo.replacedAction, entityState = recordedAction.entityState });
+					returnActionToPlayThisRound.Enqueue(new RecordedAction() { type = resultInfo.replacedAction.enumID, performingEntityID = resultInfo.replacedAction.performingEntityID, action = resultInfo.replacedAction, entityState = recordedAction.entityState });
 				}
 			}
 

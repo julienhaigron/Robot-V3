@@ -11,7 +11,7 @@ public abstract class AEntityAction : INetworkSerializable
 
     public int cost;
     public int cooldown;
-    public EntityActionType type;
+    public EntityActionEnumID enumID;
     public int performingEntityID; //entity
     public int supposedPositionAtActionStartID; //tile
     public int positionAtActionEndID; //tile
@@ -20,7 +20,7 @@ public abstract class AEntityAction : INetworkSerializable
     {
         serializer.SerializeValue(ref cost);
         serializer.SerializeValue(ref cooldown);
-        serializer.SerializeValue(ref type);
+        serializer.SerializeValue(ref enumID);
         serializer.SerializeValue(ref performingEntityID);
 		serializer.SerializeValue(ref supposedPositionAtActionStartID);
 		serializer.SerializeValue(ref positionAtActionEndID);
@@ -30,7 +30,7 @@ public abstract class AEntityAction : INetworkSerializable
 	{
         cost = _data.tokenCost;
         cooldown = _data.tokenCooldown;
-        type = _data.type;
+        enumID = _data.type;
         performingEntityID = _performingEntityID;
         supposedPositionAtActionStartID = _positionAtActionStartID;
         positionAtActionEndID = _positionAtActionStartID;
@@ -65,6 +65,6 @@ public abstract class AEntityAction : INetworkSerializable
 
 	public override string ToString ()
 	{
-		return GameManager.Instance.GetEntityFromID(performingEntityID).Data.name + "," + type.ToString();
+		return GameManager.Instance.GetEntityFromID(performingEntityID).Data.name + "," + enumID.ToString();
 	}
 }

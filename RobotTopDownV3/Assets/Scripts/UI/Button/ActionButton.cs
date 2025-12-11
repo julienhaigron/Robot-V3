@@ -11,10 +11,10 @@ public class ActionButton : BaseButton
 	[SerializeField] private TextMeshProUGUI m_name;
 	[SerializeField] private TextMeshProUGUI m_tokenCost;
 
-	private EntityActionType m_actionType;
+	private EntityActionEnumID m_actionType;
 
 
-	public void Init( EntityActionType _action )
+	public void Init( EntityActionEnumID _action )
 	{
 		m_actionType = _action;
 		EntityActionData data = GameAssets.current.game.entityActionsData[_action];

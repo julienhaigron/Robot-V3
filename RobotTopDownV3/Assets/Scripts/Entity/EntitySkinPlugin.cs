@@ -7,7 +7,7 @@ public class EntitySkinPlugin : EntityPlugin
 {
 	[SerializeField] private Animator m_animator;
 
-	[SerializeField] private SerializableDictionary<EntityActionType, string> m_animationKeyPerActionDictionary;
+	[SerializeField] private SerializableDictionary<EntityActionEnumID, string> m_animationKeyPerActionDictionary;
 
 
 	public override void Init ()
@@ -21,8 +21,8 @@ public class EntitySkinPlugin : EntityPlugin
 	public void OnStartActionPerform (AEntityAction _action)
 	{
 		m_animator.speed = 1;
-		if (m_animationKeyPerActionDictionary.ContainsKey(_action.type))
-			m_animator.SetTrigger(m_animationKeyPerActionDictionary[_action.type]);
+		if (m_animationKeyPerActionDictionary.ContainsKey(_action.enumID))
+			m_animator.SetTrigger(m_animationKeyPerActionDictionary[_action.enumID]);
 	}
 
 	public void OnEndActionPerform ()

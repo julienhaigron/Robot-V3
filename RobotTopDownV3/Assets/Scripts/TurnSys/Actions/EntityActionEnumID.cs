@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public enum EntityActionType
+public enum EntityActionEnumID
 {
     NeighborMove,
     TargetTileMove,

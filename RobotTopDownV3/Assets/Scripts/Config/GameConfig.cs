@@ -34,6 +34,7 @@ public partial class GameConfig : ScriptableObject
 	public class Input
 	{
 		public float interactionRayCastLength = 100f;
+		public LayerMask uiLayer;
 		public LayerMask interactionRayCastLayer;
 		public LayerMask tileInternRayCastLayer;
 

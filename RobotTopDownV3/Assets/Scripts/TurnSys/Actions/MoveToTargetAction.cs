@@ -92,7 +92,7 @@ public class MoveToTargetAction : AEntityAction
 			action.thisActionDestinationID = path[i + 1].coordinates.ID;
 			action.mode = mode;
 
-			action.Init(GameAssets.current.game.entityActionsData[EntityActionType.TargetTileMove], performingEntityID, path[i].coordinates.ID);
+			action.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.TargetTileMove], performingEntityID, path[i].coordinates.ID);
 
 			TurnManager.Instance.AddAction(performingEntityID, action, TurnManager.Instance.CurrentStateTypeSelected);
 		}

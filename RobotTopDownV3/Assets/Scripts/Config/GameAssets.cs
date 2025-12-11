@@ -30,7 +30,7 @@ public class GameAssets : ScriptableObject
         public SerializableDictionary<string, Weapon> weapons = new SerializableDictionary<string, Weapon>();
         public List<EntityEquipmentData> equipmentDatas = new();
 
-        public SerializableDictionary<EntityActionType, EntityActionData> entityActionsData = new SerializableDictionary<EntityActionType, EntityActionData>();
+        public SerializableDictionary<EntityActionEnumID, EntityActionData> entityActionsData = new SerializableDictionary<EntityActionEnumID, EntityActionData>();
 
         [Title("Pools")]
         public PoolData arrowPoolData;

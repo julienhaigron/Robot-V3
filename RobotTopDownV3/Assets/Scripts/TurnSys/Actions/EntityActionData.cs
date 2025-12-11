@@ -6,7 +6,7 @@ using UnityEngine;
 public class EntityActionData : ScriptableObject
 {
     public string displayName;
-    public EntityActionType type;
+    public EntityActionEnumID type;
     public Sprite icon;
     public Color tileOutlineColor = Color.green;
     [Min(0)] public int tokenCost;

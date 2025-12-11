@@ -138,7 +138,7 @@ public class Tile : MonoBehaviour
 	{
 		bool canInteract = _action.TileInteractPredicate(this);
 		m_canInteract = canInteract;
-		UI.SetAsInteractable(m_canInteract , GameAssets.current.game.entityActionsData[_action.type].tileOutlineColor);
+		UI.SetAsInteractable(m_canInteract , GameAssets.current.game.entityActionsData[_action.enumID].tileOutlineColor);
 	}
 
 	private void OnActionAdded (TurnManager.RecordedAction _recordedAction)

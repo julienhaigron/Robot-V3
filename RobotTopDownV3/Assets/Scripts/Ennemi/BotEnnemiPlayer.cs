@@ -30,7 +30,7 @@ public class BotEnnemiPlayer : MonoBehaviour
 	{
 		for(int i = 0; i < entity.Data.FrameData.actionTokenAmount; i++)
 		{
-			TurnManager.Instance.AddAction(entity.ID, EntityActionType.Wait, Entity.EntityState.Guarding);
+			TurnManager.Instance.AddAction(entity.ID, EntityActionEnumID.Wait, Entity.EntityState.Guarding);
 		}
 
 	}

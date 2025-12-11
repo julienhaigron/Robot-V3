@@ -22,6 +22,9 @@ public class InputManager : MonoBehaviour
 
 		if (Physics.Raycast(ray, out RaycastHit hitInfo, GameConfig.current.input.interactionRayCastLength, GameConfig.current.input.interactionRayCastLayer))
 		{
+			if (hitInfo.transform.gameObject.layer == GameConfig.current.input.uiLayer.value)
+				return;
+
 			if (hitInfo.transform.parent.TryGetComponent(out Tile tile))
 			{
 				onTileSelected?.Invoke(tile);
