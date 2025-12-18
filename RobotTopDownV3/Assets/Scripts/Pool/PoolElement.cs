@@ -17,7 +17,7 @@ public class PoolElement : MonoBehaviour
 
 	private Coroutine m_discardCR;
 
-	public void Init ( PoolData _pool )
+	public virtual void Init ( PoolData _pool )
 	{
 		m_pool = _pool;
 	}

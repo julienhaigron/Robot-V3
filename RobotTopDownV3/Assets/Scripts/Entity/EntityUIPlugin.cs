@@ -18,9 +18,9 @@ public class EntityUIPlugin : EntityPlugin
 		m_linkedEntity.Equipment.onHealthChangeDamage -= OnTakeDamage;
 	}
 
-	public override void Init ()
+	public override void Init ( EntitySavedData _entityData )
 	{
-		base.Init();
+		base.Init(_entityData);
 
 		m_healthBar.SetHealth(m_linkedEntity.Equipment.CurrentHealth, m_linkedEntity.Equipment.MaxHealth);
 	}

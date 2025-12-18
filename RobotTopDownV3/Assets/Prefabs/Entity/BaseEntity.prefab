@@ -113,7 +113,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_linkedEntity: {fileID: 4737523583837535854}
-  m_weaponParent: {fileID: 3654160432149023341}
+  m_weaponConesParent: {fileID: 3654160432149023341}
 --- !u!114 &2094051544254820781
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -140,7 +140,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_linkedEntity: {fileID: 4737523583837535854}
+  m_center: {fileID: 0}
   m_animator: {fileID: 0}
+  m_humanoidEntityIK: {fileID: 0}
   m_animationKeyPerActionDictionary:
     keys: 000000000100000002000000
     values:

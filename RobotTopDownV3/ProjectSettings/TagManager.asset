@@ -16,8 +16,8 @@ TagManager:
   - TileSelector
   - FOW
   - FogOverlay
-  - 
-  - 
+  - Projectile
+  - Wall
   - 
   - 
   - 

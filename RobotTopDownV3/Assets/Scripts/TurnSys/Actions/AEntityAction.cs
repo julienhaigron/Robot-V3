@@ -40,8 +40,12 @@ public abstract class AEntityAction : INetworkSerializable
 
     public virtual void Perform (Entity.EntityState _state)
 	{
-        GameManager.Instance.GetEntityFromID(performingEntityID).StartPerformAction(this);
         onPerform?.Invoke();
+    }
+
+    public virtual void OnStartPerform ( Entity.EntityState _state )
+    {
+        GameManager.Instance.GetEntityFromID(performingEntityID).StartPerformAction(this);
     }
 
     public abstract bool TileInteractPredicate ( Tile _tile );

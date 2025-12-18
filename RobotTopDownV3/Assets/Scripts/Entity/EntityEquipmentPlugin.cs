@@ -10,7 +10,9 @@ public class EntityEquipmentPlugin : EntityPlugin
 
     private Dictionary<string, Weapon> m_weapons = new();
 	public Dictionary<string, Weapon> Weapons => m_weapons;
-	[SerializeField] private Transform m_weaponParent;
+	[SerializeField] private Transform m_weaponConesParent;
+
+	private Dictionary<string, WeaponCone> m_weaponConeDictionary = new();
 
 	private int m_currentHealth;
 	public int CurrentHealth => m_currentHealth;
@@ -32,32 +34,38 @@ public class EntityEquipmentPlugin : EntityPlugin
 		m_linkedEntity.onDeselect -= OnEntityDeselected;
 	}
 
-	public override void Init ()
+	public override void Init ( EntitySavedData _entityData )
 	{
 		//init weapon
-		AddWeapon(GameAssets.current.game.defaultWeapon, m_linkedEntity.Displacement.Spawn.isFirstSide);
+		if(_entityData.armsIds != null && _entityData.armsIds.Length > 0)
+		{
+			foreach(StringContainer stringContainer in _entityData.armsIds)
+			{
+				AddWeapon(GameAssets.current.equipments[stringContainer.value] as WeaponEquipmentData, m_linkedEntity.Displacement.Spawn.isFirstSide);
+			}
+		}
 
 		//init health
 		m_currentHealth = MaxHealth;
 		m_isDead = false;
-		base.Init();
+		base.Init(_entityData);
 	}
 
 	#region Callbacks
 
 	private void OnEntitySelected ()
 	{
-		foreach(Weapon weapon in m_weapons.Values)
+		foreach(WeaponCone weaponCone in m_weaponConeDictionary.Values)
 		{
-			weapon.ActivateActiveCone();
+			weaponCone.ActivateActiveCone();
 		}
 	}
 
 	private void OnEntityDeselected ()
 	{
-		foreach (Weapon weapon in m_weapons.Values)
+		foreach (WeaponCone weaponCone in m_weaponConeDictionary.Values)
 		{
-			weapon.ActivateUnactiveCone();
+			weaponCone.ActivateUnactiveCone();
 		}
 	}
 
@@ -77,9 +85,13 @@ public class EntityEquipmentPlugin : EntityPlugin
 
 	private Weapon AddWeapon(WeaponEquipmentData _data, bool _isFirstSide)
 	{
-		Weapon newWeapon = Instantiate(GameAssets.current.game.weapons[_data.ID], m_weaponParent);
-		newWeapon.Init(_data, _isFirstSide);
+		Weapon newWeapon = Instantiate(GameAssets.current.game.weapons[_data.ID], m_linkedEntity.Skin.IK.handGrabSocket);
+		newWeapon.Init(m_linkedEntity, _data, _isFirstSide);
 		m_weapons.Add(_data.ID, newWeapon);
+
+		WeaponCone weaponCone = Instantiate(GameAssets.current.game.weaponCone, m_weaponConesParent);
+		m_weaponConeDictionary.Add(_data.ID, weaponCone);
+		weaponCone.Init(m_linkedEntity, _data, m_linkedEntity.Displacement.Spawn.isFirstSide);
 
 		return newWeapon;
 	}
@@ -88,12 +100,12 @@ public class EntityEquipmentPlugin : EntityPlugin
 	public void AimAtTile(string _weaponID, Tile _tile, System.Action _onEndMovement = null )
 	{
 		//OLD : get angle and apply to cone
-		Weapon selectedWeapon = m_weapons[_weaponID];
+		WeaponCone selectedWeaponCone = m_weaponConeDictionary[_weaponID];
 		Vector2 currentLocation = new Vector2( m_linkedEntity.Displacement.Coordinates.GetTile().transform.position.x, m_linkedEntity.Displacement.Coordinates.GetTile().transform.position.z);
 		Vector2 destination = new Vector2(_tile.transform.position.x, _tile.transform.position.z);
 
 		float angle = GridManager.Instance.GetAngleFrom(currentLocation, destination);
-		selectedWeapon.AimAtAngle(angle, false, _onEndMovement);
+		selectedWeaponCone.AimAtAngle(angle, false, _onEndMovement);
 
 		m_linkedEntity.Displacement.Rotate(_tile, false);
 	}
@@ -102,7 +114,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 	{
 		List<Tile> tilesInRange = new();
 
-		Weapon selectedWeapon = m_weapons[_weaponID];
+		WeaponCone selectedWeapon = m_weaponConeDictionary[_weaponID];
 		//shoot ray from tile to other tiles in range
 		float angle = selectedWeapon.AimedRotation;
 

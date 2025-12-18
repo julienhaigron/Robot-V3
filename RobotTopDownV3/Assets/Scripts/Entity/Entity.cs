@@ -24,6 +24,7 @@ public class Entity : MonoBehaviour
     [SerializeField] private EntityAIPlugin m_ai;
     public EntityAIPlugin AI => m_ai;
     [SerializeField] private EntitySkinPlugin m_skin;
+    public EntitySkinPlugin Skin => m_skin;
     
     [SerializeField] private EntityUIPlugin m_ui;
     public EntityUIPlugin UI => m_ui;
@@ -58,10 +59,10 @@ public class Entity : MonoBehaviour
         m_data = _data;
         Displacement.SetSpawn(_spawn);
         
-        m_equipment.Init();
-        m_ui.Init();
-        m_ai.Init();
-        m_skin.Init();
+        m_equipment.Init(_data);
+        m_ui.Init(_data);
+        m_ai.Init(_data);
+        m_skin.Init(_data);
     }
 
     public void StartPerformAction ( AEntityAction _action)

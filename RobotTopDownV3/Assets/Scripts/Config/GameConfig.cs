@@ -35,8 +35,10 @@ public partial class GameConfig : ScriptableObject
 	{
 		public float interactionRayCastLength = 100f;
 		public LayerMask uiLayer;
+		public LayerMask entityLayer;
 		public LayerMask interactionRayCastLayer;
 		public LayerMask tileInternRayCastLayer;
+		public LayerMask bulletInteractionLayerMask;
 
 	}
 

@@ -14,7 +14,7 @@ public class EntityPlugin : MonoBehaviour
 		}
 	}
 
-	public virtual void Init ()
+	public virtual void Init ( EntitySavedData _entityData )
 	{
 
 	}

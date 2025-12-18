@@ -10,4 +10,8 @@ public class WeaponEquipmentData : EntityEquipmentData
     public int range;
     public int visionConeRange;
 
+    //animation
+    public string attackAnimationSuccessId;
+    public string attackAnimationFailureId;
+    public bool isTwoHanded = false;
 }

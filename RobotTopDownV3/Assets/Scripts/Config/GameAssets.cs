@@ -26,7 +26,7 @@ public class GameAssets : ScriptableObject
         public SerializableDictionary<string, Entity> entityPrefabPerFrameDictionary = new();
         public List<FrameEquipmentData> frames = new();
 
-        public WeaponEquipmentData defaultWeapon;
+        public WeaponCone weaponCone;
         public SerializableDictionary<string, Weapon> weapons = new SerializableDictionary<string, Weapon>();
         public List<EntityEquipmentData> equipmentDatas = new();
 

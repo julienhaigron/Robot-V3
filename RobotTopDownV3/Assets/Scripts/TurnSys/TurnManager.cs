@@ -421,6 +421,7 @@ public class TurnManager : Singleton<TurnManager>
 		foreach(RecordedAction recordedAction in m_actionsBeingDone.Values.ToArray())
 		{
 			LogConsole.AddLog("Action performed: " + recordedAction.action.ToString(), LogConsole.LogEventType.PlayPhase);
+			recordedAction.action.OnStartPerform(recordedAction.entityState);
 			recordedAction.action.Perform(recordedAction.entityState);
 		}
 	}
@@ -474,6 +475,7 @@ public class TurnManager : Singleton<TurnManager>
 			RecordedAction action = m_actionsToPlay[_performingEntityID].Dequeue();
 			m_actionsBeingDone[_performingEntityID] = action;
 			action.action.onEndPerform += OnActionEndPerform;
+			action.action.OnStartPerform(action.entityState);
 			action.action.Perform(action.entityState);
 		}
 		else

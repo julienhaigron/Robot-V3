@@ -7,18 +7,32 @@ public class AttackAction : AEntityAction
 {
 	public string attackingWeaponId;
 	public int targetedEntityID = -1;
+	public bool isAttackSuccessfull = false;
 
 	public override void NetworkSerialize<T> ( BufferSerializer<T> serializer )
 	{
 		base.NetworkSerialize(serializer);
 		serializer.SerializeValue(ref attackingWeaponId);
 		serializer.SerializeValue(ref targetedEntityID);
+		serializer.SerializeValue(ref isAttackSuccessfull);
 	}
 
 	public override void Prepare ( Entity.EntityState _state )
 	{
-		if (targetedEntityID == -1 && GameManager.Instance.GetEntityFromID(performingEntityID).AI.TargetedEntity != null)
-			targetedEntityID = GameManager.Instance.GetEntityFromID(performingEntityID).AI.TargetedEntity.ID;
+		if(targetedEntityID != -1)
+		{
+			Entity performingEntity = GameManager.Instance.GetEntityFromID(performingEntityID);
+			targetedEntityID = performingEntity.AI.TargetedEntity.ID;
+			Entity targetEntity = GameManager.Instance.GetEntityFromID((int)targetedEntityID);
+			isAttackSuccessfull = performingEntity.Equipment.AttackRoll(targetEntity);
+		}
+		else if (targetedEntityID == -1 && GameManager.Instance.GetEntityFromID(performingEntityID).AI.TargetedEntity != null)
+		{
+			Entity performingEntity = GameManager.Instance.GetEntityFromID(performingEntityID);
+			targetedEntityID = performingEntity.AI.TargetedEntity.ID;
+			Entity targetEntity = GameManager.Instance.GetEntityFromID((int)targetedEntityID);
+			isAttackSuccessfull = performingEntity.Equipment.AttackRoll(targetEntity);
+		}
 		else if(targetedEntityID == -1)
 		{
 			//TODO : handle this situation
@@ -35,7 +49,6 @@ public class AttackAction : AEntityAction
 	public override void Perform ( Entity.EntityState _state )
 	{
 		GameManager.Instance.GetEntityFromID(performingEntityID).AI.DOAllPrewarmCheck();
-		//int dist = GridManager.Instance.GetDistanceBetween(performingEntity.Displacement.Coordinates.GetTile(), targetedEntity.Displacement.Coordinates.GetTile(), true);
 		if (targetedEntityID == -1)
 		{
 			//TODO : add no target feedback
@@ -47,42 +60,18 @@ public class AttackAction : AEntityAction
 		Entity performingEntity = GameManager.Instance.GetEntityFromID(performingEntityID);
 		Entity targetEntity = GameManager.Instance.GetEntityFromID((int)targetedEntityID);
 		bool isEnemyInWeaponRange = performingEntity.AI.IsEntityInWeaponRange(targetEntity, out Weapon _attackingWeapon);
-		//List<Tile> tilesInWeaponRange = performingEntity.Equipment.GetTilesInRange(attackingWeaponId);
-		//Debug.Log("performing entity = " + performingEntity + " ; targetEntity = " + targetEntity );
-		/*foreach(Tile tile in tilesInWeaponRange)
-		{
-			string entityThisTurn = tile.GetEntity(true) ? tile.GetEntity(true).ToString() : "null";
-			string entitNextTurn = tile.GetEntity(false) ? tile.GetEntity(false).ToString() : "null";
-			Debug.Log(tile.coordinates.ToString() + " ; entity this turn = " + entityThisTurn + " ; entity next turn = " + entitNextTurn);
-		}*/
 
 		if (isEnemyInWeaponRange)
 		{
-			// => shoot
-			bool isAttackRollSuccessful = performingEntity.Equipment.AttackRoll(targetEntity);
-			if (isAttackRollSuccessful)
-			{
-				int damageAmount = _attackingWeapon.Data.damage;
-				//Debug.Log("shoot entity " + damageAmout + " damages");
-				targetEntity.Equipment.TakeDamage(new EntityEquipmentPlugin.TakeDamageCallback() { damage = damageAmount });
-				base.Perform(_state);
-				//TODO : shoot success anim
-				DG.Tweening.DOVirtual.DelayedCall(GameConfig.current.game.actionDuration, () => EndPerform());
-			}
-			else
-			{
-				//TODO : shoot but failed anim
-				//Debug.Log("shoot failed");
-				base.Perform(_state);
-				DG.Tweening.DOVirtual.DelayedCall(GameConfig.current.game.actionDuration, () => EndPerform());
-			}
+			_attackingWeapon.PerformAttack(this, isAttackSuccessfull, EndPerform);
 		}
 		else
 		{
-			// => find new target or wait (or move to prevvious target if in sight?)
+			// => find new target or wait (or move to previous target if in sight?)
 			//Debug.Log("target not in range");
+			//DG.Tweening.DOVirtual.DelayedCall(GameConfig.current.game.actionDuration, () => EndPerform());
 			base.Perform(_state);
-			DG.Tweening.DOVirtual.DelayedCall(GameConfig.current.game.actionDuration, () => EndPerform());
+			EndPerform();
 		} 
 	}
 

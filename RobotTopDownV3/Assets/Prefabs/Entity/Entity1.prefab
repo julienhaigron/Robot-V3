@@ -88,9 +88,17 @@ PrefabInstance:
       value: Entity1
       objectReference: {fileID: 0}
     - target: {fileID: 4353477765861233231, guid: facf97aac763a09489a27b119520aaff, type: 3}
+      propertyPath: m_center
+      value: 
+      objectReference: {fileID: 1893741427878243431}
+    - target: {fileID: 4353477765861233231, guid: facf97aac763a09489a27b119520aaff, type: 3}
       propertyPath: m_animator
       value: 
       objectReference: {fileID: 3972841971231541499}
+    - target: {fileID: 4353477765861233231, guid: facf97aac763a09489a27b119520aaff, type: 3}
+      propertyPath: m_humanoidEntityIK
+      value: 
+      objectReference: {fileID: 8861741417107084591}
     - target: {fileID: 7705599389999574710, guid: facf97aac763a09489a27b119520aaff, type: 3}
       propertyPath: m_LocalPosition.y
       value: 2
@@ -173,8 +181,24 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4506659229259603316, guid: ac4ecca4beafa8c4095d9ddd73abdca9, type: 3}
   m_PrefabInstance: {fileID: 2761663593128625815}
   m_PrefabAsset: {fileID: 0}
+--- !u!4 &1893741427878243431 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4329240913303841520, guid: ac4ecca4beafa8c4095d9ddd73abdca9, type: 3}
+  m_PrefabInstance: {fileID: 2761663593128625815}
+  m_PrefabAsset: {fileID: 0}
 --- !u!95 &3972841971231541499 stripped
 Animator:
   m_CorrespondingSourceObject: {fileID: 1256848300326997612, guid: ac4ecca4beafa8c4095d9ddd73abdca9, type: 3}
   m_PrefabInstance: {fileID: 2761663593128625815}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &8861741417107084591 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6676688401435415480, guid: ac4ecca4beafa8c4095d9ddd73abdca9, type: 3}
+  m_PrefabInstance: {fileID: 2761663593128625815}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 527443afbf0514243b736c9d7cf87d31, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

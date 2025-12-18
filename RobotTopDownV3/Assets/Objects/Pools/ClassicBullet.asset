@@ -9,16 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 377ca2099ac4b6147bf777f681302f03, type: 3}
-  m_Name: DefaultWeapon
+  m_Script: {fileID: 11500000, guid: 0d02b80ed8cd5c24fba1eb98ab380ef5, type: 3}
+  m_Name: ClassicBullet
   m_EditorClassIdentifier: 
-  ID: defaultweapon
-  type: 1
-  icon: {fileID: 0}
-  accuracy: 0.5
-  damage: 1
-  range: 5
-  visionConeRange: 30
-  attackAnimationSuccessId: 
-  attackAnimationFailureId: 
-  isTwoHanded: 0
+  baseElement: {fileID: 9190299420879906313, guid: c7d6464d10ea55b4682c300f5b5713f0, type: 3}
+  size: 15

@@ -7,58 +7,50 @@ using System;
 public class Weapon : MonoBehaviour
 {
 
-	private WeaponEquipmentData m_data;
+	protected WeaponEquipmentData m_data;
 	public WeaponEquipmentData Data => m_data;
 
-	[SerializeField] private GameObject m_conesParent;
-	[SerializeField] private GameObject m_activeCone;
-	[SerializeField] private GameObject m_unactiveCone;
+	[SerializeField] protected List<ParticleSystem> m_onPerformPS;
 
-	private float m_aimedRotation = 0;
-	public float AimedRotation => m_aimedRotation;
+	protected Entity m_user;
 
-	public void Init ( WeaponEquipmentData _data, bool _isFirstSide )
+	public virtual void Init ( Entity _user, WeaponEquipmentData _data, bool _isFirstSide )
 	{
+		m_user = _user;
 		m_data = _data;
-
-		AimAtAngle(_isFirstSide ? 90 : -90f, true, null);
-
-		transform.localScale = _data.range * Vector3.one;
-		DisableAllCones();
 	}
 
-	public void ActivateActiveCone ()
+	public virtual void PerformAttack ( AttackAction _attackAction, bool _isSuccess, Action _onPerformEnd )
 	{
-		m_activeCone.SetActive(true);
-		m_unactiveCone.SetActive(false);
-	}
+		//TODO:
+		//if success => show attack reaching target
+		//else => show attack failing to reach target
 
-	public void ActivateUnactiveCone ()
-	{
-		m_activeCone.SetActive(false);
-		m_unactiveCone.SetActive(true);
-	}
-
-	public void AimAtAngle ( float _angle, bool _isInstant, Action _onComplete )
-	{
-		Quaternion rot = Quaternion.AngleAxis(_angle, Vector3.forward);
-		m_aimedRotation = _angle;
-		if (_isInstant)
+		Entity performingEntity = GameManager.Instance.GetEntityFromID(_attackAction.performingEntityID);
+		Entity targetEntity = GameManager.Instance.GetEntityFromID((int)_attackAction.targetedEntityID);
+		if (_isSuccess)
 		{
-			m_activeCone.transform.localRotation = rot;
-			m_unactiveCone.transform.localRotation = rot;
-			_onComplete?.Invoke();
+			//apply damage
+			int damageAmount = m_data.damage;
+			targetEntity.Equipment.TakeDamage(new EntityEquipmentPlugin.TakeDamageCallback() { damage = damageAmount });
+			performingEntity.Skin.OverrideAnimation(m_data.attackAnimationSuccessId);
+
+			//if is bullet weapon :
+			//1) instantiate X bullet at weapon muzzle
+			//2) _isSuccess ? send bullet towards target : (send bullet next to target || target to evade animation)
+
+			foreach(ParticleSystem ps in m_onPerformPS)
+			{
+				ps.Play();
+			}
+
+			DOVirtual.DelayedCall(GameConfig.current.game.actionDuration, () => _onPerformEnd?.Invoke());
 		}
 		else
 		{
-			m_activeCone.transform.DOLocalRotateQuaternion(rot, 1.5f);
-			m_unactiveCone.transform.DOLocalRotateQuaternion(rot, 1.5f).OnComplete(() => _onComplete?.Invoke());
+			//show failure
+			performingEntity.Skin.OverrideAnimation(m_data.attackAnimationFailureId);
+			DOVirtual.DelayedCall(GameConfig.current.game.actionDuration, () => _onPerformEnd?.Invoke());
 		}
-	}
-
-	public void DisableAllCones ()
-	{
-		m_activeCone.SetActive(false);
-		m_unactiveCone.SetActive(false);
 	}
 }

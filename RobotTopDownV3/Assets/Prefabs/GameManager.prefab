@@ -835,6 +835,7 @@ MonoBehaviour:
   m_mainParent: {fileID: 7273707021534605587}
   m_pools:
   - {fileID: 11400000, guid: 64f7846c9740e524a979a96964270b2f, type: 2}
+  - {fileID: 11400000, guid: ff58337ff0d4bd14daa837f022953107, type: 2}
 --- !u!114 &1994310452173458588
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -950,7 +951,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_spawnCoordinates:
-  - coordinates:
+  - isFirstSide: 0
+    coordinates:
       m_x: 0
       m_z: 0
       m_id: 0
