@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using Sirenix.OdinInspector;
+using UnityEngine.SceneManagement;
 
-public class GameManager : Singleton<GameManager>
+public class GameManager : SingletonPersistant<GameManager>
 {
 	[SerializeField] private Canvas m_fogCanvas;
 
@@ -49,15 +50,30 @@ public class GameManager : Singleton<GameManager>
 
 	private void Start ()
 	{
+		SceneManager.sceneLoaded += OnSceneLoaded;
+
 		m_fogCanvas.gameObject.SetActive(false);
 		m_mainLoadingElement.Load();
-		if (m_map != null)
-			GridManager.Instance.LoadGrid(m_map);
-		else
-			GridManager.Instance.GenerateGrid(10, 10);
 
-		/*if(m_currentGameMode == GameMode.Offline)
-			StartGame();*/
+#if UNITY_EDITOR
+		if (m_map != null)
+		{
+			StartGame();
+		}
+#endif
+	}
+
+	private void OnSceneLoaded (Scene _scene, LoadSceneMode _mode)
+	{
+		StartGame();
+	}
+
+	public void SetupLevel(LevelData _level )
+	{
+		m_map = _level.map;
+		m_playerTwoEntityDatas = _level.enemies;
+
+		SceneManager.LoadSceneAsync(_level.map.name);
 	}
 
 	public void SetPlayerUnit(List<FrameEquipmentData> _playerUnits )
@@ -65,14 +81,11 @@ public class GameManager : Singleton<GameManager>
 
 	}
 
-	public void SetupLevel(LevelData _level )
-	{
-		m_map = _level.map;
-		m_playerTwoEntityDatas = _level.enemies;
-	}
-
 	public void StartGame ()
 	{
+		GridManager.Instance.LoadGrid(m_map);
+		UIManager.Instance.OpenPanel<InGamePanel>();
+
 		if (m_currentGameMode == GameMode.Offline)
 		{
 			LogConsole.AddLog("Start OfflineGame", LogConsole.LogEventType.Main);

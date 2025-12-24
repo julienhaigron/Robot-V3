@@ -144,11 +144,10 @@ MonoBehaviour:
   m_animator: {fileID: 0}
   m_humanoidEntityIK: {fileID: 0}
   m_animationKeyPerActionDictionary:
-    keys: 000000000100000002000000
+    keys: 0000000001000000
     values:
     - OnWalk
     - OnRun
-    - OnWalk
 --- !u!1 &6395917073196368840
 GameObject:
   m_ObjectHideFlags: 0

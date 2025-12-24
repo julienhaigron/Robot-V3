@@ -7,12 +7,12 @@ using System.Linq;
 
 public class GridManager : Singleton<GridManager>
 {
-	private Tile[] m_tiles;
+	[SerializeField, HideInInspector] private Tile[] m_tiles;
 	public Tile[] Tiles => m_tiles;
 
-	private int m_height;
+	[SerializeField] private int m_height;
 	public int Height => m_height;
-	private int m_width;
+	[SerializeField] private int m_width;
 	public int Width => m_width;
 
 	/*public Texture2D fogTexture;
@@ -22,7 +22,7 @@ public class GridManager : Singleton<GridManager>
 	{
 		public Dictionary<Entity, List<Tile>> entitiesVisionRange;
 
-		public PlayerVisionRangeInfo ( Dictionary<Entity, List<Tile>> _entitiesVisionRange = null)
+		public PlayerVisionRangeInfo ( Dictionary<Entity, List<Tile>> _entitiesVisionRange = null )
 		{
 			entitiesVisionRange = _entitiesVisionRange;
 		}
@@ -32,8 +32,9 @@ public class GridManager : Singleton<GridManager>
 	#region Editor
 #if UNITY_EDITOR
 
-	[HideInInspector] public bool isGroundBrushSelected = false;
-	[HideInInspector] public TileGroundType currentGroundBrushSelected;
+	public bool isGroundBrushSelected = false;
+	public TileGroundType currentGroundBrushSelected;
+	public GridData gridData;
 
 #endif
 	#endregion
@@ -41,7 +42,7 @@ public class GridManager : Singleton<GridManager>
 	public override void Awake ()
 	{
 		base.Awake();
-		InputManager.onTileSelected += OnTileSelected;
+		//InputManager.onTileSelected += OnTileSelected;
 		EntityDisplacementPlugin.onAnyEntityMovement += OnEntityMovement;
 		EntityDisplacementPlugin.onAnyEntitySpawn += OnNewEntity;
 		EntityEquipmentPlugin.onAnyEntityDeath += OnEntityDeath;
@@ -49,7 +50,7 @@ public class GridManager : Singleton<GridManager>
 
 	private void OnDestroy ()
 	{
-		InputManager.onTileSelected -= OnTileSelected;
+		//InputManager.onTileSelected -= OnTileSelected;
 		EntityDisplacementPlugin.onAnyEntityMovement -= OnEntityMovement;
 		EntityDisplacementPlugin.onAnyEntitySpawn -= OnNewEntity;
 		EntityEquipmentPlugin.onAnyEntityDeath -= OnEntityDeath;
@@ -57,27 +58,33 @@ public class GridManager : Singleton<GridManager>
 
 	#region Creation
 
-	[Button("LoadGrid")]
-	public void LoadGrid ( GridData _data )
+	public void LoadGrid ( GridData _data, bool _isEditorMode = false )
 	{
-		GenerateGrid(_data.height, _data.width);
+		//GenerateGrid(_data.height, _data.width);
 
+		m_entitiesVisions.Clear();
 		m_entitiesVisions.Add(0, new(new Dictionary<Entity, List<Tile>>()));
 		m_entitiesVisions.Add(1, new(new Dictionary<Entity, List<Tile>>()));
 
 		for (int i = 0; i < m_tiles.Length; i++)
 		{
 			TileGroundType groundType = _data.tiles[i].groundType;
-			m_tiles[i].SetGroundType(groundType);
 
-			if (groundType == TileGroundType.PlayerSpawn)
-				GameManager.Instance.PlayersEntityAnchor[0].AddSpawn(m_tiles[i].coordinates, true);
-			else if(groundType == TileGroundType.EnemySpawn)
-				GameManager.Instance.PlayersEntityAnchor[1].AddSpawn(m_tiles[i].coordinates, false);
+			if (_isEditorMode)
+				m_tiles[i].SetGroundType(groundType);
+			else
+			{
+				m_tiles[i].SetActiveFOW(true, true);
+
+				if (groundType == TileGroundType.PlayerSpawn)
+					GameManager.Instance.PlayersEntityAnchor[0].AddSpawn(m_tiles[i].coordinates, true);
+				else if (groundType == TileGroundType.EnemySpawn)
+					GameManager.Instance.PlayersEntityAnchor[1].AddSpawn(m_tiles[i].coordinates, false);
+			}
+
 		}
 	}
 
-	[Button("GenerateGrid")]
 	public void GenerateGrid ( int _height, int _width )
 	{
 		m_tiles = new Tile[_height * _width];
@@ -95,6 +102,7 @@ public class GridManager : Singleton<GridManager>
 			}
 		}
 
+		UnityEditor.EditorUtility.SetDirty(this);
 		//InitFOW();
 	}
 
@@ -113,6 +121,10 @@ public class GridManager : Singleton<GridManager>
 		newTile.Init(_x, _z);
 		newTile.coordinates = TileCoordinates.FromOffsetCoordinates(_x, _z, _i);
 
+		/*#if UNITY_EDITOR
+				if (!Application.isPlaying)
+					return;
+		#endif*/
 		if (_x > 0)
 		{
 			newTile.SetNeighbor(HexDirection.W, m_tiles[_i - 1]);
@@ -136,13 +148,15 @@ public class GridManager : Singleton<GridManager>
 				}
 			}
 		}
+
+		UnityEditor.EditorUtility.SetDirty(newTile);
 	}
 
 	#endregion
 
 	#region Utils
 
-	public List<Tile> GetPath ( Tile _from, Tile _to , bool _isThisTurn)
+	public List<Tile> GetPath ( Tile _from, Tile _to, bool _isThisTurn )
 	{
 		BFS(_from, _to: _to, _isThisTurn: _isThisTurn);
 
@@ -155,7 +169,7 @@ public class GridManager : Singleton<GridManager>
 		search.Enqueue(_to);
 
 		int currentDistance = _to.Distance;
-		while(search.Count > 0)
+		while (search.Count > 0)
 		{
 			Tile current = search.Dequeue();
 			for (int i = 0; i < 6; i++)
@@ -175,12 +189,12 @@ public class GridManager : Singleton<GridManager>
 		return path;
 	}
 
-	public List<Entity> GetEntitiesInRange(Tile _from, int _maxDist, bool _isThisTurn )
+	public List<Entity> GetEntitiesInRange ( Tile _from, int _maxDist, bool _isThisTurn )
 	{
 		List<Entity> entitiesInRange = new();
 
 		List<Tile> tilesInRange = GetTilesInVisionRange(_from, _maxDist, _isThisTurn);
-		foreach(Tile tile in tilesInRange)
+		foreach (Tile tile in tilesInRange)
 		{
 			Entity entity = tile.GetEntity(_isThisTurn);
 			if (entity != null && !entitiesInRange.Contains(entity))
@@ -237,7 +251,7 @@ public class GridManager : Singleton<GridManager>
 		return entitiesInRange;
 	}*/
 
-	public List<Tile> GetTilesInRange(Tile _from, int _maxDist, bool _isThisTurn )
+	public List<Tile> GetTilesInRange ( Tile _from, int _maxDist, bool _isThisTurn )
 	{
 		List<Tile> tilesInRange = new();
 
@@ -284,7 +298,7 @@ public class GridManager : Singleton<GridManager>
 		return tilesInRange;
 	}
 
-	public List<Tile> GetTilesInVisionRange(Tile _from, int _maxDist, bool _isThisTurn )
+	public List<Tile> GetTilesInVisionRange ( Tile _from, int _maxDist, bool _isThisTurn )
 	{
 		List<Tile> tilesInRange = new();
 		tilesInRange.Add(_from);
@@ -332,7 +346,7 @@ public class GridManager : Singleton<GridManager>
 		return tilesInRange;
 	}
 
-	public bool IsVisionLineClear(Tile _from, Tile _to, bool _isThisTurn )
+	public bool IsVisionLineClear ( Tile _from, Tile _to, bool _isThisTurn )
 	{
 		List<Tile> tilesInLine = new();
 
@@ -343,7 +357,7 @@ public class GridManager : Singleton<GridManager>
 		Vector3 perp = Vector3.Cross(direction, Vector3.up).normalized;
 		for (int i = 0; i < nbOfRayPer; i++)
 		{
-			Vector3 from = _from.transform.position + perp * (( i - 1) * distBetweenRay);
+			Vector3 from = _from.transform.position + perp * ((i - 1) * distBetweenRay);
 			RaycastHit[] hits = Physics.RaycastAll(from, direction, distance, GameConfig.current.input.tileInternRayCastLayer);
 			foreach (RaycastHit hitInfo in hits)
 			{
@@ -354,7 +368,7 @@ public class GridManager : Singleton<GridManager>
 			}
 		}
 
-		foreach(Tile tile in tilesInLine)
+		foreach (Tile tile in tilesInLine)
 		{
 			if (tile != _to && !tile.CanSeeThrough())
 				return false;
@@ -371,7 +385,7 @@ public class GridManager : Singleton<GridManager>
 		}
 	}
 
-	public void BFS ( Tile cell , int _maxDistance = -1, Tile _to = null, bool _isThisTurn = false)
+	public void BFS ( Tile cell, int _maxDistance = -1, Tile _to = null, bool _isThisTurn = false )
 	{
 		for (int i = 0; i < m_tiles.Length; i++)
 		{
@@ -402,7 +416,7 @@ public class GridManager : Singleton<GridManager>
 				}
 
 				//max distance
-				if(_maxDistance != -1 && current.Distance + 1 > _maxDistance)
+				if (_maxDistance != -1 && current.Distance + 1 > _maxDistance)
 				{
 					continue;
 				}
@@ -441,7 +455,7 @@ public class GridManager : Singleton<GridManager>
 		return angle;
 	}
 
-	public int GetDistanceBetween(Tile _from, Tile _to, bool _isThisTurn = false )
+	public int GetDistanceBetween ( Tile _from, Tile _to, bool _isThisTurn = false )
 	{
 		BFS(_from, _to: _to, _isThisTurn: _isThisTurn);
 
@@ -454,7 +468,7 @@ public class GridManager : Singleton<GridManager>
 
 	public void StartNewPhase ()
 	{
-		for(int i = 0; i < m_tiles.Length; i++)
+		for (int i = 0; i < m_tiles.Length; i++)
 		{
 			m_tiles[i].NewPhase();
 		}
@@ -480,7 +494,7 @@ public class GridManager : Singleton<GridManager>
 		m_fowRenderer.material.SetTexture("_FogTex", fogTexture);
 	}*/
 
-	public void OnNewEntity(Entity _entity )
+	public void OnNewEntity ( Entity _entity )
 	{
 		int playerId = !GameManager.Instance.IsOnline ? 0 : OnlinePlayerInstance.Self.connectionIndex;
 		if (!_entity.IsAlliedTo(playerId))
@@ -503,7 +517,7 @@ public class GridManager : Singleton<GridManager>
 		//m_fowRenderer.material.SetTexture("_FogTex", fogTexture);
 	}
 
-	public void OnEntityDeath(Entity _entity )
+	public void OnEntityDeath ( Entity _entity )
 	{
 		int playerId = !GameManager.Instance.IsOnline ? 0 : OnlinePlayerInstance.Self.connectionIndex;
 		if (!_entity.IsAlliedTo(playerId))
@@ -512,7 +526,7 @@ public class GridManager : Singleton<GridManager>
 		foreach (Tile tile in m_entitiesVisions[_entity.PlayerOwnerID].entitiesVisionRange[_entity])
 		{
 			bool isInAnotherEntityVisionRange = false;
-			foreach(Entity otherEntities in m_entitiesVisions[_entity.PlayerOwnerID].entitiesVisionRange.Keys)
+			foreach (Entity otherEntities in m_entitiesVisions[_entity.PlayerOwnerID].entitiesVisionRange.Keys)
 			{
 				if (m_entitiesVisions[_entity.PlayerOwnerID].entitiesVisionRange[otherEntities].Contains(tile))
 				{
@@ -530,7 +544,7 @@ public class GridManager : Singleton<GridManager>
 		//m_fowRenderer.material.SetTexture("_FogTex", fogTexture);
 	}
 
-	public void OnEntityMovement(Entity _entity )
+	public void OnEntityMovement ( Entity _entity )
 	{
 		int playerId = !GameManager.Instance.IsOnline ? 0 : OnlinePlayerInstance.Self.connectionIndex;
 		if (!_entity.IsAlliedTo(playerId))
@@ -548,7 +562,7 @@ public class GridManager : Singleton<GridManager>
 			if (!previousTilesInRangeList.Contains(tile))
 			{
 				bool isInAnotherEntityVisionRange = false;
-				foreach(Entity entity in m_entitiesVisions[_entity.PlayerOwnerID].entitiesVisionRange.Keys)
+				foreach (Entity entity in m_entitiesVisions[_entity.PlayerOwnerID].entitiesVisionRange.Keys)
 				{
 					if (entity == _entity) continue;
 
@@ -559,12 +573,12 @@ public class GridManager : Singleton<GridManager>
 					}
 				}
 
-				if(!isInAnotherEntityVisionRange)
+				if (!isInAnotherEntityVisionRange)
 					tile.SetActiveFOW(false, false);
 			}
 		}
 
-		foreach(Tile previousTile in previousTilesInRangeList)
+		foreach (Tile previousTile in previousTilesInRangeList)
 		{
 			bool isInAnotherEntityVisionRange = false;
 			foreach (Entity entity in m_entitiesVisions[_entity.PlayerOwnerID].entitiesVisionRange.Keys)
@@ -576,7 +590,7 @@ public class GridManager : Singleton<GridManager>
 				}
 			}
 
-			if(!isInAnotherEntityVisionRange)
+			if (!isInAnotherEntityVisionRange)
 				previousTile.SetActiveFOW(true, false);
 		}
 
@@ -585,7 +599,8 @@ public class GridManager : Singleton<GridManager>
 
 	#endregion
 
-	#region Editor Callbacks
+	/*#region Editor Callbacks
+
 
 	private void OnTileSelected ( Tile _tile )
 	{
@@ -601,7 +616,7 @@ public class GridManager : Singleton<GridManager>
 
 	}
 
-	#endregion
+	#endregion*/
 
 }
 
@@ -644,7 +659,7 @@ public struct TileCoordinates
 		m_id = id;
 	}
 
-	public void SetCoordinate(int x, int z, int id )
+	public void SetCoordinate ( int x, int z, int id )
 	{
 		m_x = x;
 		m_z = z;
@@ -712,7 +727,7 @@ public struct TileCoordinates
 		return new TileCoordinates(iX, iZ);
 	}*/
 
-	public Entity IsOccupied (bool _isThisTurn)
+	public Entity IsOccupied ( bool _isThisTurn )
 	{
 		return GetTile().GetEntity(_isThisTurn: _isThisTurn);
 	}

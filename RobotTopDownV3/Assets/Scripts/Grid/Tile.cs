@@ -19,7 +19,7 @@ public class Tile : MonoBehaviour
 	public Tile[] Neighbors => m_neighbors;
 
 	//ground
-	private TileGroundType m_groundType;
+	[SerializeField, ReadOnly] private TileGroundType m_groundType;
 	public TileGroundType GroundType => m_groundType;
 
 	private bool m_canInteract = false;
@@ -27,6 +27,9 @@ public class Tile : MonoBehaviour
 
 	private bool m_isVisible = false;
 	public bool IsVisible => m_isVisible;
+
+	[SerializeField] private Wall m_wall;
+	public Wall Wall => m_wall;
 
 	//Content on tile
 	public TileContent currentContent;
@@ -53,10 +56,10 @@ public class Tile : MonoBehaviour
 
 	#endregion
 
-	private void Awake ()
+	/*private void Awake ()
 	{
 		m_neighbors = new Tile[6];
-	}
+	}*/
 
 	private void Start ()
 	{
@@ -80,15 +83,28 @@ public class Tile : MonoBehaviour
 
 	public void Init(int _x, int _y, TileGroundType _groundType = TileGroundType.Empty)
 	{
+		m_neighbors = new Tile[6];
+
 		m_ui.SetPosition(_x, _y);
-		m_groundType = _groundType;
-		//SetFOWVisibility(false, false);
+		SetGroundType(_groundType);
+		SetActiveFOW(false, true);
 	}
 
 	public void SetGroundType (TileGroundType _groundType)
 	{
 		m_groundType = _groundType;
 		m_ui.UpdateGroundMaterial();
+
+		if(TryGetComponent(out Wall wall))
+		{
+			if(_groundType != TileGroundType.Wall)
+				Destroy(wall);
+		}
+		else
+		{
+			if (_groundType == TileGroundType.Wall)
+				gameObject.AddComponent<Wall>();
+		}
 	}
 
 	public Tile GetNeighbor ( HexDirection _direction )
@@ -117,11 +133,6 @@ public class Tile : MonoBehaviour
 
 		return true;
 	}
-
-	/*public void SetFOWVisibility(bool _isVisible , bool _isInstant)
-	{
-		m_fow.SetActive(_isVisible);
-	}*/
 
 	#endregion
 

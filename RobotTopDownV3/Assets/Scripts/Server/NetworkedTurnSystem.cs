@@ -6,7 +6,6 @@ using System.Linq;
 
 public class NetworkedTurnSystem : NetworkBehaviour
 {
-	[SerializeField] private TurnManager m_turnManager;
 
 	[ClientRpc(RequireOwnership = false)]
 	public void StartPlayPhaseClientRPC ( TurnManager.RecordedEntityActionsContainer[] _entitiesRecordedActions )
@@ -20,13 +19,13 @@ public class NetworkedTurnSystem : NetworkBehaviour
                 LogConsole.AddLog("Action received: " + action.action.ToString(), LogConsole.LogEventType.InputPhase);
             }
 
-            if (m_turnManager.ActionsToPlay.ContainsKey(_entitiesRecordedActions[i].entityId))
-                m_turnManager.ActionsToPlay[_entitiesRecordedActions[i].entityId] = actionQueue;
+            if (TurnManager.Instance.ActionsToPlay.ContainsKey(_entitiesRecordedActions[i].entityId))
+                TurnManager.Instance.ActionsToPlay[_entitiesRecordedActions[i].entityId] = actionQueue;
             else
-			    m_turnManager.ActionsToPlay.Add(_entitiesRecordedActions[i].entityId, actionQueue);
+                TurnManager.Instance.ActionsToPlay.Add(_entitiesRecordedActions[i].entityId, actionQueue);
 		}
 
-		m_turnManager.PlayThisPhaseActions();
+        TurnManager.Instance.PlayThisPhaseActions();
 	}
 
 	[ClientRpc(RequireOwnership = false)]
@@ -34,11 +33,11 @@ public class NetworkedTurnSystem : NetworkBehaviour
 	{
 		if (_isPlayerOneDead || _isPlayerTwoDead)
 		{
-			m_turnManager.EndLevel(!_isPlayerOneDead);
+            TurnManager.Instance.EndLevel(!_isPlayerOneDead);
 		}
 		else
 		{
-			m_turnManager.StartInputPhase();
+            TurnManager.Instance.StartInputPhase();
 		}
 	}
 

@@ -12,10 +12,50 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 37ef5237e0304794c954eedd6aca2264, type: 3}
   m_Name: Map1
   m_EditorClassIdentifier: 
-  width: 10
-  height: 10
+  width: 20
+  height: 20
   tiles:
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
   - groundType: 3
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
   - groundType: 3
   - groundType: 0
   - groundType: 0
@@ -28,11 +68,7 @@ MonoBehaviour:
   - groundType: 0
   - groundType: 0
   - groundType: 0
-  - groundType: 1
-  - groundType: 1
-  - groundType: 1
   - groundType: 0
-  - groundType: 1
   - groundType: 0
   - groundType: 0
   - groundType: 0
@@ -45,34 +81,273 @@ MonoBehaviour:
   - groundType: 0
   - groundType: 1
   - groundType: 0
-  - groundType: 0
-  - groundType: 0
-  - groundType: 1
-  - groundType: 1
-  - groundType: 0
-  - groundType: 1
-  - groundType: 1
-  - groundType: 1
-  - groundType: 0
-  - groundType: 0
-  - groundType: 0
-  - groundType: 0
-  - groundType: 1
-  - groundType: 0
-  - groundType: 0
-  - groundType: 0
-  - groundType: 0
-  - groundType: 0
-  - groundType: 1
-  - groundType: 0
-  - groundType: 0
-  - groundType: 0
   - groundType: 1
   - groundType: 1
   - groundType: 1
   - groundType: 1
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 1
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 1
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 1
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 1
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 1
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 1
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
   - groundType: 1
   - groundType: 1
+  - groundType: 1
+  - groundType: 1
+  - groundType: 1
+  - groundType: 1
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
   - groundType: 0
   - groundType: 0
   - groundType: 0
@@ -102,7 +377,32 @@ MonoBehaviour:
   - groundType: 0
   - groundType: 0
   - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
   - groundType: 4
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
+  - groundType: 0
   - groundType: 0
   - groundType: 0
   - groundType: 0

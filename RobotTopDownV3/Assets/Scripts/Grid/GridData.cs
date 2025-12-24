@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Sirenix.OdinInspector;
+using System.Linq;
 
 [CreateAssetMenu(fileName = "GridData", menuName = "ScriptableObject/GridData", order = 1)]
 public class GridData : ScriptableObject
@@ -20,4 +22,26 @@ public class GridData : ScriptableObject
 		}
 	}
 
+	//[Button]
+	public void ResizeTileList ()
+	{
+		if(tiles.Length < width * height)
+		{
+			List<TileData> list = tiles.ToList();
+			for(int i = tiles.Length; i < width * height; i++)
+			{
+				list.Add(new TileData(TileGroundType.Empty));
+			}
+			tiles = list.ToArray();
+		}
+		else if (tiles.Length > width * height)
+		{
+			List<TileData> list = tiles.ToList();
+			for (int i = tiles.Length; i > width * height; i--)
+			{
+				list.RemoveAt(list.Count - 1);
+			}
+			tiles = list.ToArray();
+		}
+	}
 }

@@ -5,7 +5,17 @@ using UnityEngine;
 public class Singleton<T> : MonoBehaviour where T : Singleton<T>
 {
     private static T instance;
-    public static T Instance { get { return instance; } }
+    public static T Instance 
+    { 
+        get 
+        {
+#if UNITY_EDITOR
+            if(!Application.isPlaying)
+                return FindAnyObjectByType<T>();
+#endif
+                return instance; 
+        } 
+    }
 
     public virtual void Awake ()
     {

@@ -16,15 +16,33 @@ public class GridEditorWindows : EditorWindow
 
 	private void OnGUI ()
 	{
-		if (!EditorApplication.isPlaying)
+		/*if (!EditorApplication.isPlaying)
 		{
 			EditorGUILayout.HelpBox("Press PLAY to use the Grid Editor", MessageType.Info);
 			return;
-		}
+		}*/ 
 
 
 		Grid();
+
+		/*if (Input.GetKeyDown(KeyCode.Mouse0) *//*&& GridManager.Instance.isGroundBrushSelected*//*)
+		{
+			GridManager.Instance.isGroundBrushSelected = !GridManager.Instance.isGroundBrushSelected;
+
+			//Ray ray = CameraManager.Instance.Camera.ScreenPointToRay(Input.mousePosition);
+;			Ray ray = HandleUtility.GUIPointToWorldRay(Event.current.mousePosition);
+
+			if (Physics.Raycast(ray, out RaycastHit hitInfo, GameConfig.current.input.interactionRayCastLength, GameConfig.current.input.interactionRayCastLayer))
+			{
+				if (hitInfo.transform.parent.TryGetComponent(out Tile tile))
+				{
+					tile.SetGroundType(GridManager.Instance.currentGroundBrushSelected);
+					EditorUtility.SetDirty(this);
+				}
+			}
+		}*/
 	}
+
 
 	private void Grid ()
 	{
@@ -35,6 +53,11 @@ public class GridEditorWindows : EditorWindow
 
 		m_data = (GridData)EditorGUILayout.ObjectField("Data: ", m_data, typeof(GridData), true);
 
+		if (GUILayout.Button("Load Grid", group))
+		{
+			GridManager.Instance.LoadGrid(m_data, true);
+		}
+		
 		if (GUILayout.Button("Save Grid", group))
 		{
 			SaveGrid();

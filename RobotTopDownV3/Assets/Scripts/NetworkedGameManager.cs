@@ -3,7 +3,7 @@ using System.Linq;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
 
-public class NetworkedGameManager : Singleton<NetworkedGameManager>
+public class NetworkedGameManager : SingletonPersistant<NetworkedGameManager>
 {
     [SerializeField] private NetworkedTurnSystem m_networkedTurnSystem;
     public NetworkedTurnSystem NetworkedTurnSystem => m_networkedTurnSystem;

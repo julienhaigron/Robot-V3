@@ -21,8 +21,6 @@ public class LevelButton : BaseButton
 	protected override void OnClick ()
 	{
 		GameManager.Instance.SetupLevel(m_level);
-		UIManager.Instance.OpenPanel<InGamePanel>();
-		GameManager.Instance.StartGame();
 		base.OnClick();
 	}
 
