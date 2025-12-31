@@ -71,7 +71,14 @@ public class GridManager : Singleton<GridManager>
 			TileGroundType groundType = _data.tiles[i].groundType;
 
 			if (_isEditorMode)
+			{
 				m_tiles[i].SetGroundType(groundType);
+				if(groundType == TileGroundType.Wall)
+				{
+					m_tiles[i].Wall.SetWallType(_data.tiles[i].wallType);
+					m_tiles[i].Wall.Rotate(_data.tiles[i].orientation);
+				}
+			}
 			else
 			{
 				m_tiles[i].SetActiveFOW(true, true);
@@ -116,6 +123,7 @@ public class GridManager : Singleton<GridManager>
 		Tile newTile = Instantiate(GameAssets.current.game.baseTile);
 		m_tiles[_i] = newTile;
 
+		newTile.gameObject.name = "Tile " + _x + "." + _z;
 		newTile.transform.SetParent(transform, false);
 		newTile.transform.localPosition = position;
 		newTile.Init(_x, _z);
@@ -350,7 +358,11 @@ public class GridManager : Singleton<GridManager>
 	{
 		List<Tile> tilesInLine = new();
 
-		int nbOfRayPer = 3;
+		//Soltion to test:
+		//1) from one point (FromTileCenter), several ray as a rectangle, validate vision if at least one ray can see without interuption
+		//2) from two point (from left and right feets suposing an entity would be looking toward target tile
+
+		/*int nbOfRayPer = 3;
 		float distBetweenRay = .2f;
 		float distance = Vector3.Distance(_from.transform.position, _to.transform.position);
 		Vector3 direction = (_to.transform.position - _from.transform.position).normalized;
@@ -374,7 +386,25 @@ public class GridManager : Singleton<GridManager>
 				return false;
 		}
 
-		return true;
+		return true;*/
+
+		int rayAmount = 7;
+		float distBetweenRay = Tile.innerRadius / (float)rayAmount;
+		Vector3 ab = (_to.transform.position - _from.transform.position).normalized;
+		Vector3 perp = Vector3.Cross(ab, Vector3.up).normalized;
+		for (int i = 0; i < rayAmount; i++)
+		{
+			float offset = (i - (rayAmount - 1) * 0.5f) * distBetweenRay;
+			Vector3 rayOrigin = _from.transform.position + perp * offset;
+
+			Vector3 direction = (_to.transform.position - rayOrigin).normalized;
+			float distance = Vector3.Distance(rayOrigin, _to.transform.position);
+			RaycastHit[] hits = Physics.RaycastAll(rayOrigin, direction, distance, GameConfig.current.input.wallRayCastLayer);
+			if (hits == null || hits.Length == 0)
+				return true;
+		}
+
+		return false;
 	}
 
 	public void ClearTileOutile ()

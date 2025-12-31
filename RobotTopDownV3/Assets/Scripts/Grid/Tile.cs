@@ -28,6 +28,9 @@ public class Tile : MonoBehaviour
 	private bool m_isVisible = false;
 	public bool IsVisible => m_isVisible;
 
+	[SerializeField] private Transform m_wallPartsParent;
+	public Transform WallPartsParent => m_wallPartsParent;
+
 	[SerializeField] private Wall m_wall;
 	public Wall Wall => m_wall;
 
@@ -95,16 +98,30 @@ public class Tile : MonoBehaviour
 		m_groundType = _groundType;
 		m_ui.UpdateGroundMaterial();
 
-		if(TryGetComponent(out Wall wall))
+		if(m_wall != null)
 		{
 			if(_groundType != TileGroundType.Wall)
-				Destroy(wall);
+			{
+				foreach(GameObject wallPart in m_wall.WallParts)
+					DestroyImmediate(wallPart);
+
+				DestroyImmediate(m_wall);
+				m_wall = null;
+			}
 		}
 		else
 		{
 			if (_groundType == TileGroundType.Wall)
-				gameObject.AddComponent<Wall>();
+			{
+				m_wall = gameObject.AddComponent<Wall>();
+				m_wall.LinkWithTile(this);
+				m_wall.SetWallType(Wall.WallType.VerticalStrait);
+			}
 		}
+
+#if UNITY_EDITOR
+		UnityEditor.EditorUtility.SetDirty(this);
+#endif
 	}
 
 	public Tile GetNeighbor ( HexDirection _direction )

@@ -18,6 +18,7 @@ public class GameAssets : ScriptableObject
     public class Game
     {
         public Tile baseTile;
+        public SerializableDictionary<Wall.WallType, GameObject> baseWallVisualPerType = new();
 
         public List<GridData> maps = new();
         public List<LevelData> levels = new();

@@ -12,6 +12,13 @@ public class GridEditor : Editor
 		DrawDefaultInspector();
 		GridManager gridManager = (GridManager)target;
 
+		//TODO
+		//=> add security validation bubble before calling fncts bellow
+		// in order not to lose info by accident
+
+		// => add toggle select tiles only
+		//display selected tile info?
+
 		if (GUILayout.Button("GenerateGrid"))
 		{
 			gridManager.GenerateGrid(gridManager.Height, gridManager.Width);
@@ -29,6 +36,11 @@ public class GridEditor : Editor
 			for (int i = 0; i < gridManager.Tiles.Length; i++)
 			{
 				GridData.TileData tileData = new GridData.TileData(gridManager.Tiles[i].GroundType);
+				if(gridManager.Tiles[i].GroundType == TileGroundType.Wall)
+				{
+					tileData.wallType = gridManager.Tiles[i].Wall.Type;
+					tileData.orientation = gridManager.Tiles[i].Wall.Orientation;
+				}
 				gridManager.gridData.tiles[i] = tileData;
 			}
 

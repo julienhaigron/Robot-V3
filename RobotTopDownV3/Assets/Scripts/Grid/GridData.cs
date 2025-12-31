@@ -16,6 +16,9 @@ public class GridData : ScriptableObject
 	{
 		public TileGroundType groundType;
 
+		public Wall.WallType wallType;
+		public int orientation; //between 0-5
+
 		public TileData(TileGroundType _groundType )
 		{
 			groundType = _groundType;

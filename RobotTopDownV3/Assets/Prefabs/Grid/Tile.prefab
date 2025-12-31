@@ -138,6 +138,37 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!1 &256676102922077403
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5911334067788484364}
+  m_Layer: 7
+  m_Name: WallPartsParent
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5911334067788484364
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 256676102922077403}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5029537534596105412}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &581693143688230367
 GameObject:
   m_ObjectHideFlags: 0
@@ -247,6 +278,7 @@ Transform:
   m_Children:
   - {fileID: 3729983180282368035}
   - {fileID: 8909306549304803189}
+  - {fileID: 5911334067788484364}
   - {fileID: 8839976835526636815}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -268,6 +300,9 @@ MonoBehaviour:
     m_z: 0
     m_id: 0
   m_neighbors: []
+  m_groundType: 0
+  m_wallPartsParent: {fileID: 5911334067788484364}
+  m_wall: {fileID: 0}
 --- !u!114 &2079859369203581924
 MonoBehaviour:
   m_ObjectHideFlags: 0
