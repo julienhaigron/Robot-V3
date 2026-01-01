@@ -362,32 +362,6 @@ public class GridManager : Singleton<GridManager>
 		//1) from one point (FromTileCenter), several ray as a rectangle, validate vision if at least one ray can see without interuption
 		//2) from two point (from left and right feets suposing an entity would be looking toward target tile
 
-		/*int nbOfRayPer = 3;
-		float distBetweenRay = .2f;
-		float distance = Vector3.Distance(_from.transform.position, _to.transform.position);
-		Vector3 direction = (_to.transform.position - _from.transform.position).normalized;
-		Vector3 perp = Vector3.Cross(direction, Vector3.up).normalized;
-		for (int i = 0; i < nbOfRayPer; i++)
-		{
-			Vector3 from = _from.transform.position + perp * ((i - 1) * distBetweenRay);
-			RaycastHit[] hits = Physics.RaycastAll(from, direction, distance, GameConfig.current.input.tileInternRayCastLayer);
-			foreach (RaycastHit hitInfo in hits)
-			{
-				if (hitInfo.transform.TryGetComponent(out Tile tile) && !tilesInLine.Contains(tile))
-				{
-					tilesInLine.Add(tile);
-				}
-			}
-		}
-
-		foreach (Tile tile in tilesInLine)
-		{
-			if (tile != _to && !tile.CanSeeThrough())
-				return false;
-		}
-
-		return true;*/
-
 		int rayAmount = 7;
 		float distBetweenRay = Tile.innerRadius / (float)rayAmount;
 		Vector3 ab = (_to.transform.position - _from.transform.position).normalized;
@@ -400,7 +374,7 @@ public class GridManager : Singleton<GridManager>
 			Vector3 direction = (_to.transform.position - rayOrigin).normalized;
 			float distance = Vector3.Distance(rayOrigin, _to.transform.position);
 			RaycastHit[] hits = Physics.RaycastAll(rayOrigin, direction, distance, GameConfig.current.input.wallRayCastLayer);
-			if (hits == null || hits.Length == 0)
+			if (hits == null || hits.Length == 0 || (hits != null && hits.Length == 1 && hits[0].collider.transform.parent.parent.TryGetComponent(out Tile tile ) && tile == _to))
 				return true;
 		}
 
