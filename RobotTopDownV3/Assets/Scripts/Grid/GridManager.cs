@@ -356,8 +356,6 @@ public class GridManager : Singleton<GridManager>
 
 	public bool IsVisionLineClear ( Tile _from, Tile _to, bool _isThisTurn )
 	{
-		List<Tile> tilesInLine = new();
-
 		//Soltion to test:
 		//1) from one point (FromTileCenter), several ray as a rectangle, validate vision if at least one ray can see without interuption
 		//2) from two point (from left and right feets suposing an entity would be looking toward target tile
@@ -374,8 +372,18 @@ public class GridManager : Singleton<GridManager>
 			Vector3 direction = (_to.transform.position - rayOrigin).normalized;
 			float distance = Vector3.Distance(rayOrigin, _to.transform.position);
 			RaycastHit[] hits = Physics.RaycastAll(rayOrigin, direction, distance, GameConfig.current.input.wallRayCastLayer);
-			if (hits == null || hits.Length == 0 || (hits != null && hits.Length == 1 && hits[0].collider.transform.parent.parent.TryGetComponent(out Tile tile ) && tile == _to))
+			if ( hits == null || hits.Length == 0 )/*|| (hits != null && hits.Length == 1 && hits[0].collider.transform.parent.parent.TryGetComponent(out Tile tile ) && tile == _to)*/
 				return true;
+			else
+			{
+				foreach(RaycastHit hit in hits)
+				{
+					if (hit.collider.transform.parent.parent.TryGetComponent(out Tile tile) && tile != _to)
+						return false;
+				}
+
+				return true;
+			}
 		}
 
 		return false;
