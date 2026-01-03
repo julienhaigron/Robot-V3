@@ -7,7 +7,9 @@ public class AttackAction : AEntityAction
 {
 	public string attackingWeaponId;
 	public int targetedEntityID = -1;
+	public Entity TargetEntity => GameManager.Instance.GetEntityFromID(targetedEntityID);
 	public bool isAttackSuccessfull = false;
+	public bool[] areEffectsSuccess;
 
 	public override void NetworkSerialize<T> ( BufferSerializer<T> serializer )
 	{
@@ -15,23 +17,31 @@ public class AttackAction : AEntityAction
 		serializer.SerializeValue(ref attackingWeaponId);
 		serializer.SerializeValue(ref targetedEntityID);
 		serializer.SerializeValue(ref isAttackSuccessfull);
+		serializer.SerializeValue(ref areEffectsSuccess);
 	}
 
+	//todo :
+	//better attack roll
+	// => add vision angle calculus to it
+	// => add PFC system
+	// => add entity state (stunned, burning, frozen, whtvr)
+	// => add damage channels
+
 	public override void Prepare ( Entity.EntityState _state )
-	{
-		if(targetedEntityID != -1)
+	{		
+		if(targetedEntityID != -1 || (targetedEntityID == -1 && PerformingEntity.AI.TargetedEntity != null))
 		{
-			Entity performingEntity = GameManager.Instance.GetEntityFromID(performingEntityID);
-			targetedEntityID = performingEntity.AI.TargetedEntity.ID;
-			Entity targetEntity = GameManager.Instance.GetEntityFromID((int)targetedEntityID);
-			isAttackSuccessfull = performingEntity.Equipment.AttackRoll(targetEntity);
-		}
-		else if (targetedEntityID == -1 && GameManager.Instance.GetEntityFromID(performingEntityID).AI.TargetedEntity != null)
-		{
-			Entity performingEntity = GameManager.Instance.GetEntityFromID(performingEntityID);
-			targetedEntityID = performingEntity.AI.TargetedEntity.ID;
-			Entity targetEntity = GameManager.Instance.GetEntityFromID((int)targetedEntityID);
-			isAttackSuccessfull = performingEntity.Equipment.AttackRoll(targetEntity);
+			targetedEntityID = PerformingEntity.AI.TargetedEntity.ID;
+			isAttackSuccessfull = PerformingEntity.Equipment.AttackRoll(TargetEntity);
+
+			if (isAttackSuccessfull)
+			{
+				areEffectsSuccess = new bool[effectsIds.Length];
+				for (int i = 0; i < effectsIds.Length; i++)
+				{
+					areEffectsSuccess[i] = PerformingEntity.Equipment.EffectRoll(TargetEntity, GameAssets.current.game.entityEffects[(AEntityEffect.EntityEffectEnumID)effectsIds[i]]);
+				}
+			}
 		}
 		else if(targetedEntityID == -1)
 		{
@@ -48,7 +58,7 @@ public class AttackAction : AEntityAction
 
 	public override void Perform ( Entity.EntityState _state )
 	{
-		GameManager.Instance.GetEntityFromID(performingEntityID).AI.DOAllPrewarmCheck();
+		PerformingEntity.AI.DOAllPrewarmCheck();
 		if (targetedEntityID == -1)
 		{
 			//TODO : add no target feedback
@@ -57,12 +67,11 @@ public class AttackAction : AEntityAction
 		}
 
 		//if enemy is in weapon range
-		Entity performingEntity = GameManager.Instance.GetEntityFromID(performingEntityID);
-		Entity targetEntity = GameManager.Instance.GetEntityFromID((int)targetedEntityID);
-		bool isEnemyInWeaponRange = performingEntity.AI.IsEntityInWeaponRange(targetEntity, out Weapon _attackingWeapon);
+		bool isEnemyInWeaponRange = PerformingEntity.AI.IsEntityInWeaponRange(TargetEntity, out Weapon _attackingWeapon);
 
 		if (isEnemyInWeaponRange)
 		{
+			base.Perform(_state);
 			_attackingWeapon.PerformAttack(this, isAttackSuccessfull, EndPerform);
 		}
 		else
@@ -85,6 +94,6 @@ public class AttackAction : AEntityAction
 		//TODO : select only visible enemies
 
 		Entity entity = _tile.GetEntity(true);
-		return entity != null && !entity.IsAlliedTo(GameManager.Instance.GetEntityFromID(performingEntityID).PlayerOwnerID);
+		return entity != null && !entity.IsAlliedTo(PerformingEntity.PlayerOwnerID);
 	}
 }

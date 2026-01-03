@@ -11,4 +11,5 @@ public class EntityActionData : ScriptableObject
     public Color tileOutlineColor = Color.green;
     [Min(0)] public int tokenCost;
     [Min(0)] public int tokenCooldown;
+    public AEntityEffect[] appliableEffects;
 }

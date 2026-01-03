@@ -9,5 +9,7 @@ public enum EntityActionEnumID
     TargetTileMove,
     Attack,
     Wait,
-    RotateWeapon
+    RotateWeapon,
+    ActivateShield,
+    RotateShield
 }

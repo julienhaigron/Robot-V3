@@ -148,11 +148,20 @@ public class EntityEquipmentPlugin : EntityPlugin
 	public bool AttackRoll( Entity _targetEntity )
 	{
 		bool isAttackSuccessful = true;
-		 
-
+		
 		//TODO
 		//isAttackSuccessful = (_weaponAccuracy * _currentMoventAccuracyRatio) - _targetEntity.evasionPercent
 		
+		return isAttackSuccessful;
+	}
+
+	public bool EffectRoll(Entity _entity, AEntityEffect _effect )
+	{
+		bool isAttackSuccessful = Random.Range(0, 100) > _effect.hitProbability;
+
+		//TODO
+		//take possible build buff into acount
+
 		return isAttackSuccessful;
 	}
 

@@ -35,6 +35,11 @@ public class Entity : MonoBehaviour
 
     private EntityState m_state;
     public EntityState State => m_state;
+
+    private List<AEntityEffect> m_effects;
+    public List<AEntityEffect> Effects => m_effects;
+    private Dictionary<AEntityEffect, int> m_remainingDurationToActiveEffects = new();
+
     public EntityFaction Faction => m_data.FrameData.faction;
 
     public int ID;
@@ -64,6 +69,20 @@ public class Entity : MonoBehaviour
         m_ai.Init(_data);
         m_skin.Init(_data);
     }
+
+    public void OnPhaseStart ()
+	{
+        foreach(AEntityEffect effect in m_effects)
+		{
+            if (--m_remainingDurationToActiveEffects[effect] <= 0)
+			{
+                m_effects.Remove(effect);
+                m_remainingDurationToActiveEffects.Remove(effect);
+			}
+
+            effect.ApplyEffect(this);
+		}
+	}
 
     public void StartPerformAction ( AEntityAction _action)
 	{
@@ -99,6 +118,12 @@ public class Entity : MonoBehaviour
 	{
         m_ui.gameObject.SetActive(_isVisible);
         m_skinParent.SetActive(_isVisible);
+    }
+
+    public void AddEffect(AEntityEffect _effect )
+	{
+        m_effects.Add(_effect);
+        m_remainingDurationToActiveEffects.Add(_effect, _effect.duration);
     }
 
 }

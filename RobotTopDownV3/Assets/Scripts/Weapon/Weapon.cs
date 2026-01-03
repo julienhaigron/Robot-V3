@@ -27,13 +27,20 @@ public class Weapon : MonoBehaviour
 		//else => show attack failing to reach target
 
 		Entity performingEntity = GameManager.Instance.GetEntityFromID(_attackAction.performingEntityID);
-		Entity targetEntity = GameManager.Instance.GetEntityFromID((int)_attackAction.targetedEntityID);
+		Entity targetEntity = GameManager.Instance.GetEntityFromID(_attackAction.targetedEntityID);
 		if (_isSuccess)
 		{
 			//apply damage
 			int damageAmount = m_data.damage;
 			targetEntity.Equipment.TakeDamage(new EntityEquipmentPlugin.TakeDamageCallback() { damage = damageAmount });
 			performingEntity.Skin.OverrideAnimation(m_data.attackAnimationSuccessId);
+
+			//aplly effects here
+			for (int i = 0; i < _attackAction.areEffectsSuccess.Length; i++)
+			{
+				if (_attackAction.areEffectsSuccess[i])
+					GameAssets.current.game.entityEffects[(AEntityEffect.EntityEffectEnumID)_attackAction.effectsIds[i]].ApplyEffect(targetEntity);
+			}
 
 			//if is bullet weapon :
 			//1) instantiate X bullet at weapon muzzle

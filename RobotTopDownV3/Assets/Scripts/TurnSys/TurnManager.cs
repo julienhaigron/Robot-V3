@@ -409,6 +409,8 @@ public class TurnManager : Singleton<TurnManager>
 		List<int> entityIDs = new(m_actionsToPlay.Keys);
 		foreach (int entityID in entityIDs)
 		{
+			GameManager.Instance.GetEntityFromID(entityID).OnPhaseStart();
+
 			if (m_actionsToPlay.ContainsKey(entityID) && m_actionsToPlay[entityID] != null && m_actionsToPlay[entityID].Count != 0)
 			{
 				RecordedAction action = m_actionsToPlay[entityID].Dequeue();
@@ -473,6 +475,7 @@ public class TurnManager : Singleton<TurnManager>
 		{
 			//performing entity still has actions this phase to do
 			RecordedAction action = m_actionsToPlay[_performingEntityID].Dequeue();
+			LogConsole.AddLog("Action performed: " + action.action.ToString(), LogConsole.LogEventType.PlayPhase);
 			m_actionsBeingDone[_performingEntityID] = action;
 			action.action.onEndPerform += OnActionEndPerform;
 			action.action.OnStartPerform(action.entityState);

@@ -15,5 +15,7 @@ MonoBehaviour:
   displayName: Attack
   type: 2
   icon: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
+  tileOutlineColor: {r: 0, g: 1, b: 0, a: 1}
   tokenCost: 1
   tokenCooldown: 1
+  appliableEffects: []

@@ -372,7 +372,7 @@ public class GridManager : Singleton<GridManager>
 			Vector3 direction = (_to.transform.position - rayOrigin).normalized;
 			float distance = Vector3.Distance(rayOrigin, _to.transform.position);
 			RaycastHit[] hits = Physics.RaycastAll(rayOrigin, direction, distance, GameConfig.current.input.wallRayCastLayer);
-			if ( hits == null || hits.Length == 0 )/*|| (hits != null && hits.Length == 1 && hits[0].collider.transform.parent.parent.TryGetComponent(out Tile tile ) && tile == _to)*/
+			if ( hits == null || hits.Length == 0 )
 				return true;
 			else
 			{

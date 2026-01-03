@@ -32,6 +32,7 @@ public class GameAssets : ScriptableObject
         public List<EntityEquipmentData> equipmentDatas = new();
 
         public SerializableDictionary<EntityActionEnumID, EntityActionData> entityActionsData = new SerializableDictionary<EntityActionEnumID, EntityActionData>();
+        public SerializableDictionary<AEntityEffect.EntityEffectEnumID, AEntityEffect> entityEffects = new SerializableDictionary<AEntityEffect.EntityEffectEnumID, AEntityEffect>();
 
         [Title("Pools")]
         public PoolData arrowPoolData;

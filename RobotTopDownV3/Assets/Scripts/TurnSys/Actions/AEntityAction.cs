@@ -13,8 +13,10 @@ public abstract class AEntityAction : INetworkSerializable
     public int cooldown;
     public EntityActionEnumID enumID;
     public int performingEntityID; //entity
+    public Entity PerformingEntity => GameManager.Instance.GetEntityFromID(performingEntityID);
     public int supposedPositionAtActionStartID; //tile
     public int positionAtActionEndID; //tile
+    public int[] effectsIds;
 
     public virtual void NetworkSerialize<T> ( BufferSerializer<T> serializer ) where T : IReaderWriter
     {
@@ -24,6 +26,7 @@ public abstract class AEntityAction : INetworkSerializable
         serializer.SerializeValue(ref performingEntityID);
 		serializer.SerializeValue(ref supposedPositionAtActionStartID);
 		serializer.SerializeValue(ref positionAtActionEndID);
+		serializer.SerializeValue(ref effectsIds);
     }
 
     public virtual void Init(EntityActionData _data, int _performingEntityID, int _positionAtActionStartID )
@@ -34,6 +37,12 @@ public abstract class AEntityAction : INetworkSerializable
         performingEntityID = _performingEntityID;
         supposedPositionAtActionStartID = _positionAtActionStartID;
         positionAtActionEndID = _positionAtActionStartID;
+
+        effectsIds = new int[_data.appliableEffects.Length];
+		for (int i = 0; i < _data.appliableEffects.Length; i++)
+		{
+            effectsIds[i] = (int)_data.appliableEffects[i].enumId;
+        }
     }
 
     public abstract void Prepare ( Entity.EntityState _state );
@@ -45,7 +54,7 @@ public abstract class AEntityAction : INetworkSerializable
 
     public virtual void OnStartPerform ( Entity.EntityState _state )
     {
-        GameManager.Instance.GetEntityFromID(performingEntityID).StartPerformAction(this);
+        PerformingEntity.StartPerformAction(this);
     }
 
     public abstract bool TileInteractPredicate ( Tile _tile );
@@ -59,7 +68,7 @@ public abstract class AEntityAction : INetworkSerializable
 
     public virtual void EndPerform ()
     {
-        GameManager.Instance.GetEntityFromID(performingEntityID).EndPerformAction();
+        PerformingEntity.EndPerformAction();
         onEndPerform?.Invoke(performingEntityID);
     }
 
@@ -69,6 +78,6 @@ public abstract class AEntityAction : INetworkSerializable
 
 	public override string ToString ()
 	{
-		return GameManager.Instance.GetEntityFromID(performingEntityID).Data.name + "," + enumID.ToString();
+		return PerformingEntity.Data.name + "," + enumID.ToString();
 	}
 }
