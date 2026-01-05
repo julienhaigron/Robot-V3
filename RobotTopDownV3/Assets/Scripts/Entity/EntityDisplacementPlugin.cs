@@ -8,10 +8,13 @@ public class EntityDisplacementPlugin : EntityPlugin
 	public static System.Action<Entity> onAnyEntityMovement;
 	public static System.Action<Entity> onAnyEntitySpawn;
 
+	[SerializeField] private Transform m_bottomPosition;
+
 	private TileCoordinates m_coordinate;
 	public TileCoordinates Coordinates => m_coordinate;
 
-	[SerializeField] private Transform m_bottomPosition;
+	private int m_currentOrientation;
+	public int CurrentOrientation => m_currentOrientation;
 
 	private EntityAnchor.Spawn m_spawn;
 	public EntityAnchor.Spawn Spawn => m_spawn;
@@ -22,8 +25,11 @@ public class EntityDisplacementPlugin : EntityPlugin
 		Tile spawn = _spawn.coordinates.GetTile();
 		transform.position = spawn.transform.position - m_bottomPosition.localPosition;
 
+		//Rotate((new int[3] { 3, 4, 5 }).RandomElement(), true);
 		if (!_spawn.isFirstSide)
-			Rotate(180f, true);
+			Rotate(4, true);
+		else
+			Rotate(1, true);
 
 		spawn.SetEntity(m_linkedEntity, _isThisTurn: true);
 		m_coordinate.SetCoordinate(spawn.coordinates.X, spawn.coordinates.Z, spawn.coordinates.ID);
@@ -46,14 +52,27 @@ public class EntityDisplacementPlugin : EntityPlugin
 		onAnyEntityMovement?.Invoke(m_linkedEntity);
 	}
 
-	public void Rotate(Tile _towards, bool _isInstant )
+	public void Rotate(int _orientation, bool _isInstant )
 	{
-		//TODO : cleaner rotation here
-		m_linkedEntity.SkinParent.transform.LookAt(_towards.transform, Vector3.up);
+		m_currentOrientation = _orientation;
+		float angle = 30f + _orientation * 60f;
+		if (_isInstant)
+			m_linkedEntity.SkinParent.transform.localRotation = Quaternion.Euler(0, angle, 0);
+		else
+			m_linkedEntity.SkinParent.transform.DOLocalRotateQuaternion(Quaternion.Euler(0, angle, 0), GameConfig.current.game.entityRotationDuration);
 	}
 
-	public void Rotate(float _direction, bool _isInstant )
+	public void Rotate(Tile _towards, bool _isInstant )
+	{
+		int closestOrientationToTile = GridManager.Instance.GetClosestOrientation(m_coordinate.GetTile(), _towards);
+		Rotate(closestOrientationToTile, _isInstant);
+
+		//TODO : cleaner rotation here
+		//m_linkedEntity.SkinParent.transform.LookAt(_towards.transform, Vector3.up);
+	}
+
+	/*public void Rotate(float _direction, bool _isInstant )
 	{
 		m_linkedEntity.SkinParent.transform.localRotation = Quaternion.Euler(0, _direction, 0);
-	}
+	}*/
 }

@@ -29,6 +29,17 @@ public class GridManager : Singleton<GridManager>
 	}
 	private Dictionary<int, PlayerVisionRangeInfo> m_entitiesVisions = new();
 
+	private static readonly Vector2Int[] HexDirectionOffsets =
+	{
+		new Vector2Int( 0,  1), // 0
+		new Vector2Int( 1,  0), // 1
+		new Vector2Int( 1, -1), // 2
+
+		new Vector2Int( 0, -1), // 3
+		new Vector2Int(-1,  0), // 4
+		new Vector2Int(-1,  1), // 5
+	};
+
 	#region Editor
 #if UNITY_EDITOR
 
@@ -73,7 +84,7 @@ public class GridManager : Singleton<GridManager>
 			if (_isEditorMode)
 			{
 				m_tiles[i].SetGroundType(groundType);
-				if(groundType == TileGroundType.Wall)
+				if (groundType == TileGroundType.Wall)
 				{
 					m_tiles[i].Wall.SetWallType(_data.tiles[i].wallType);
 					m_tiles[i].Wall.Rotate(_data.tiles[i].orientation);
@@ -163,6 +174,38 @@ public class GridManager : Singleton<GridManager>
 	#endregion
 
 	#region Utils
+
+	public Tile GetTile(int _x, int _z )
+	{
+		if (_x < 0 || _x >= m_width || _z < 0 || _z >= m_height)
+			return null;
+
+		int index = _z * m_width + _x;
+		return m_tiles[index];
+	}
+
+	public bool TryGetTile ( int _x, int _z, out Tile tile )
+	{
+		tile = null;
+
+		if (_x < 0 || _x >= m_width || _z < 0 || _z >= m_height)
+			return false;
+
+		tile = m_tiles[_z * m_width + _x];
+		return true;
+	}
+
+	public Tile GetTileAtOrientation ( Tile _from, int _orientation )
+	{
+		/*Vector2Int offset = HexDirectionOffsets[_orientation];
+
+		int x = _from.coordinates.X + offset.x;
+		int z = _from.coordinates.Z + offset.y;
+
+		return GetTile(x, z);*/
+
+		return _from.Neighbors[_orientation];
+	}
 
 	public List<Tile> GetPath ( Tile _from, Tile _to, bool _isThisTurn )
 	{
@@ -372,11 +415,11 @@ public class GridManager : Singleton<GridManager>
 			Vector3 direction = (_to.transform.position - rayOrigin).normalized;
 			float distance = Vector3.Distance(rayOrigin, _to.transform.position);
 			RaycastHit[] hits = Physics.RaycastAll(rayOrigin, direction, distance, GameConfig.current.input.wallRayCastLayer);
-			if ( hits == null || hits.Length == 0 )
+			if (hits == null || hits.Length == 0)
 				return true;
 			else
 			{
-				foreach(RaycastHit hit in hits)
+				foreach (RaycastHit hit in hits)
 				{
 					if (hit.collider.transform.parent.parent.TryGetComponent(out Tile tile) && tile != _to)
 						return false;
@@ -387,6 +430,54 @@ public class GridManager : Singleton<GridManager>
 		}
 
 		return false;
+	}
+
+	public bool IsThereCoverBeween ( Entity _attacker, Entity _target )
+	{
+		// Orientation depuis l’attaquant vers la cible
+		int attackOrientation = GetClosestOrientation(_attacker.Displacement.Coordinates.GetTile(), _target.Displacement.Coordinates.GetTile());
+
+		// Tile potentielle de couvert
+		Tile potentialCover = GetTileAtOrientation(_attacker.Displacement.Coordinates.GetTile(), attackOrientation);
+
+		return potentialCover != null && potentialCover.GroundType == TileGroundType.Cover;
+	}
+
+	public Tile.TileDirectionType GetHitTileSide ( Entity _from, Entity _to )
+	{
+		int hitOrientation = GetClosestOrientation(_to.Displacement.Coordinates.GetTile(), _from.Displacement.Coordinates.GetTile());
+		int targetOrientation = _to.Displacement.CurrentOrientation;
+		int delta = (hitOrientation - targetOrientation + 6) % 6;
+
+		switch (delta)
+		{
+			case 0:
+				return Tile.TileDirectionType.Front;
+
+			case 1:
+			case 5:
+				return Tile.TileDirectionType.ForwardSide;
+
+			case 2:
+			case 4:
+				return Tile.TileDirectionType.BackSide;
+
+			case 3:
+				return Tile.TileDirectionType.Back;
+
+			default:
+				// Ne devrait jamais arriver
+				return Tile.TileDirectionType.Front;
+		}
+	}
+
+	public int GetClosestOrientation ( Tile _from, Tile _to )
+	{
+		Vector2 origin = new Vector2(_from.transform.position.x, _from.transform.position.z);
+		Vector2 destination = new Vector2(_to.transform.position.x, _to.transform.position.z);
+		float angle = GetAngleFrom(origin, destination);
+
+		return (int)((angle - 30f) / 60f);
 	}
 
 	public void ClearTileOutile ()
@@ -757,7 +848,8 @@ public enum TileGroundType
 	Wall,
 	Door,
 	PlayerSpawn,
-	EnemySpawn
+	EnemySpawn,
+	Cover
 }
 
 public static class HexDirectionExtensions

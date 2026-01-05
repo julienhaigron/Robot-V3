@@ -17,6 +17,8 @@ public abstract class AEntityAction : INetworkSerializable
     public int supposedPositionAtActionStartID; //tile
     public int positionAtActionEndID; //tile
     public int[] effectsIds;
+    public EntityActionData Data => GameAssets.current.game.entityActionsData[enumID];
+
 
     public virtual void NetworkSerialize<T> ( BufferSerializer<T> serializer ) where T : IReaderWriter
     {
@@ -33,7 +35,7 @@ public abstract class AEntityAction : INetworkSerializable
 	{
         cost = _data.tokenCost;
         cooldown = _data.tokenCooldown;
-        enumID = _data.type;
+        enumID = _data.typeID;
         performingEntityID = _performingEntityID;
         supposedPositionAtActionStartID = _positionAtActionStartID;
         positionAtActionEndID = _positionAtActionStartID;

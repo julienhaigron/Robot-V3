@@ -42,6 +42,14 @@ public class Tile : MonoBehaviour
 		public Entity entity;
 	}
 
+	public enum TileDirectionType
+	{
+		Front,
+		ForwardSide,
+		BackSide,
+		Back
+	}
+
 	#region Pathfinding params
 	private int m_distance;
 	public int Distance

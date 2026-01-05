@@ -6,10 +6,21 @@ using UnityEngine;
 public class EntityActionData : ScriptableObject
 {
     public string displayName;
-    public EntityActionEnumID type;
+    public EntityActionEnumID typeID;
     public Sprite icon;
     public Color tileOutlineColor = Color.green;
     [Min(0)] public int tokenCost;
     [Min(0)] public int tokenCooldown;
     public AEntityEffect[] appliableEffects;
+
+    public enum ActionType
+	{
+        DistanceAttack,
+        MeleeAttack,
+        Movement,
+        Rotation,
+        Special
+	}
+    public ActionType type;
+
 }

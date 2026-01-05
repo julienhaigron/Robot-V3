@@ -42,6 +42,9 @@ public class Entity : MonoBehaviour
 
     public EntityFaction Faction => m_data.FrameData.faction;
 
+    private EntityActionData m_lastActionPerformed;
+    public EntityActionData LastActionPerformedData => m_lastActionPerformed == null ? GameConfig.current.game.defaultStartAction : m_lastActionPerformed;
+
     public int ID;
     public int PlayerOwnerID;
 
@@ -86,6 +89,9 @@ public class Entity : MonoBehaviour
 
     public void StartPerformAction ( AEntityAction _action)
 	{
+        if(m_lastActionPerformed.type != EntityActionData.ActionType.Rotation)
+            m_lastActionPerformed = _action.Data;
+
         onStartPerformAction?.Invoke(_action);
     }
     

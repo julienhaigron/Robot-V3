@@ -72,7 +72,6 @@ MonoBehaviour:
       values:
       - {fileID: 11400000, guid: 089f5b6503687a44ca2eb812dcd04d46, type: 2}
       - {fileID: 11400000, guid: 7af3cbb2fb9300d4c8a9b333e8a5b7a4, type: 2}
-    effects: []
     arrowPoolData: {fileID: 11400000, guid: 64f7846c9740e524a979a96964270b2f, type: 2}
   ui:
     baseLobbyDisplay: {fileID: 2566041125526859700, guid: cc5b4c04e157c914381ced09bd279f76, type: 3}
@@ -81,13 +80,14 @@ MonoBehaviour:
     flyingDamageCritFontAsset: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
     critIcon: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
     tileGroundMaterials:
-      keys: 0000000001000000020000000300000004000000
+      keys: 000000000100000002000000030000000400000005000000
       values:
       - {fileID: 2100000, guid: 1a73847705538ca408ca82d46b2a6c03, type: 2}
       - {fileID: 2100000, guid: 0b6a1d286fb392946b3aff8e369309ae, type: 2}
       - {fileID: 2100000, guid: a2df0a1e7e61b8347bb61d432ed08714, type: 2}
       - {fileID: 2100000, guid: 5a74236f5abc9fc46989ccb45e89d5ca, type: 2}
       - {fileID: 2100000, guid: 2c14c5a2e53fe36408684304ef27fbdb, type: 2}
+      - {fileID: 2100000, guid: c65f36483b36c4e4caba44a8049333c6, type: 2}
   equipments:
     keys:
     - player2

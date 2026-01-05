@@ -15,7 +15,14 @@ public partial class GameConfig : ScriptableObject
 	[System.Serializable]
 	public partial class GameSettings
 	{
+		public EntityActionData defaultStartAction;
 		public float actionDuration = 1f;
+		public float entityRotationDuration = .5f;
+
+		public SerializableDictionary<Tile.TileDirectionType, int> entityFlankRatio = new();
+		public int entityMovementEvasionBonus = 2;
+		public int entityCoverBonus = 2;
+		public SerializableDictionary<WeaponEquipmentData.DistanceType, float> distanceTypeSpreadEvaluation;
 	}
 
 	[System.Serializable]

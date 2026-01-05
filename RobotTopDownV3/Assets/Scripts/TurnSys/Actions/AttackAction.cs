@@ -32,7 +32,7 @@ public class AttackAction : AEntityAction
 		if(targetedEntityID != -1 || (targetedEntityID == -1 && PerformingEntity.AI.TargetedEntity != null))
 		{
 			targetedEntityID = PerformingEntity.AI.TargetedEntity.ID;
-			isAttackSuccessfull = PerformingEntity.Equipment.AttackRoll(TargetEntity);
+			isAttackSuccessfull = PerformingEntity.Equipment.AttackRoll(this);
 
 			if (isAttackSuccessfull)
 			{

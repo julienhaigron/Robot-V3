@@ -145,14 +145,48 @@ public class EntityEquipmentPlugin : EntityPlugin
 		return tilesInRange;
 	}
 
-	public bool AttackRoll( Entity _targetEntity )
+	public bool AttackRoll ( AttackAction _attackAction )
 	{
-		bool isAttackSuccessful = true;
-		
-		//TODO
-		//isAttackSuccessful = (_weaponAccuracy * _currentMoventAccuracyRatio) - _targetEntity.evasionPercent
-		
-		return isAttackSuccessful;
+		//OLD : isAttackSuccessful = (usedWeapon.accuracy * _currentMoventAccuracyRatio) - targetEntity.evasionPercent
+		//
+		//bool isAttackSuccessful = true;
+
+		Entity targetEntity = _attackAction.TargetEntity;
+		WeaponEquipmentData usedWeapon = m_weapons[_attackAction.attackingWeaponId].Data;
+
+		//target evasion score = movement ratio + evasion ratio + cover ratio + distance ratio
+		int targetMovementRatio = targetEntity.LastActionPerformedData.type == EntityActionData.ActionType.Movement ? GameConfig.current.game.entityMovementEvasionBonus : 0;
+		int evationRatio = targetEntity.Data.FrameData.evasion;
+		int coverRatio = GridManager.Instance.IsThereCoverBeween(_attackAction.PerformingEntity, targetEntity) ? GameConfig.current.game.entityCoverBonus : 0;
+		int distanceRatio = m_weapons[_attackAction.attackingWeaponId].Data.distanceAccuracyBonus[GetWeaponDistanceTypeFrom(targetEntity, usedWeapon)];
+
+		int targetEvasionScore = targetMovementRatio + evationRatio + coverRatio + distanceRatio;
+
+		//user hit score = flank bonus + accuracy + weapon accuracy + 1d6 roll
+		int flankBonus = GameConfig.current.game.entityFlankRatio[GridManager.Instance.GetHitTileSide(m_linkedEntity, targetEntity)];
+		int weaponAccuracy = usedWeapon.accuracy;
+		int accuracy = m_linkedEntity.Data.BrainData.accuracy;
+		int userHitScore = flankBonus + weaponAccuracy + accuracy + Random.Range(1, 7);
+		bool isAttackSuccessful = targetEvasionScore < userHitScore;
+		LogConsole.AddLog("Attack Roll " + (isAttackSuccessful ? "[SUCESS]" : "[FAILURE]") + " : targetEvasionScore = " + targetEvasionScore + " and userHitScore = " + userHitScore, LogConsole.LogEventType.PlayPhase);
+
+		return targetEvasionScore < userHitScore;
+	}
+
+	public WeaponEquipmentData.DistanceType GetWeaponDistanceTypeFrom(Entity _target, WeaponEquipmentData _weaponData )
+	{
+		float actualDistanceFromTarget = Vector3.Distance(m_linkedEntity.transform.position, _target.transform.position) / (Tile.outerRadius*2f);
+		float distanceRelativeToWeaponRangePercentage = actualDistanceFromTarget / (float)_weaponData.range;
+
+		float currentTotal = 0;
+		for(int i = 0; i < GameConfig.current.game.distanceTypeSpreadEvaluation.Keys.Count; i++)
+		{
+			if(distanceRelativeToWeaponRangePercentage < currentTotal + GameConfig.current.game.distanceTypeSpreadEvaluation[(WeaponEquipmentData.DistanceType)i])
+				return (WeaponEquipmentData.DistanceType)i;
+
+			currentTotal += GameConfig.current.game.distanceTypeSpreadEvaluation[(WeaponEquipmentData.DistanceType)i];
+		}
+		return WeaponEquipmentData.DistanceType.Long;
 	}
 
 	public bool EffectRoll(Entity _entity, AEntityEffect _effect )

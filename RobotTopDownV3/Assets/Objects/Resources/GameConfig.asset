@@ -13,7 +13,19 @@ MonoBehaviour:
   m_Name: GameConfig
   m_EditorClassIdentifier: 
   game:
+    defaultStartAction: {fileID: 11400000, guid: 61635f88cdfa6ab44b50dbc9c3aa34e0, type: 2}
     actionDuration: 1
+    entityFlankRatio:
+      keys: 00000000010000000200000003000000
+      values: 00000000010000000200000004000000
+    entityMovementEvasionBonus: 2
+    entityCoverBonus: 2
+    distanceTypeSpreadEvaluation:
+      keys: 000000000100000002000000
+      values:
+      - 0.33
+      - 0.33
+      - 0.33
   input:
     interactionRayCastLength: 100
     uiLayer:

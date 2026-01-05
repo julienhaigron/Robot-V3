@@ -24,6 +24,13 @@ public class FrameEquipmentData : EntityEquipmentData
     [Title("Structure")]
     public int maxHealth;
     public int armSlotAvailable = 2;
+    public int evasion = 2;
+}
+
+[CreateAssetMenu(fileName = "BrainData", menuName = "ScriptableObject/BrainData", order = 1)]
+public class BrainEquipmentData : EntityEquipmentData
+{
+    public int accuracy = 5;
 }
 
 [System.Serializable]
@@ -35,6 +42,7 @@ public class EntitySavedData : INetworkSerializable
     public StringContainer[] armsIds;
 
     public FrameEquipmentData FrameData => GameAssets.current.equipments[frameID] as FrameEquipmentData;
+    public BrainEquipmentData BrainData => GameAssets.current.equipments[brainID] as BrainEquipmentData;
 
     public void NetworkSerialize<T> ( BufferSerializer<T> serializer ) where T : IReaderWriter
     {
