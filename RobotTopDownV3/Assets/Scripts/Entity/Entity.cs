@@ -36,7 +36,7 @@ public class Entity : MonoBehaviour
     private EntityState m_state;
     public EntityState State => m_state;
 
-    private List<AEntityEffect> m_effects;
+    private List<AEntityEffect> m_effects = new();
     public List<AEntityEffect> Effects => m_effects;
     private Dictionary<AEntityEffect, int> m_remainingDurationToActiveEffects = new();
 
@@ -89,7 +89,7 @@ public class Entity : MonoBehaviour
 
     public void StartPerformAction ( AEntityAction _action)
 	{
-        if(m_lastActionPerformed.type != EntityActionData.ActionType.Rotation)
+        if(_action.Data.type != EntityActionData.ActionType.Rotation)
             m_lastActionPerformed = _action.Data;
 
         onStartPerformAction?.Invoke(_action);
