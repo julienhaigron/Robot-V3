@@ -24,6 +24,7 @@ MonoBehaviour:
       - {fileID: 365438557547955023, guid: cb44724e40cef3f4dba5afa535043c9d, type: 3}
     maps:
     - {fileID: 11400000, guid: 6f08d292abbf2bc4d8b8635617613b35, type: 2}
+    - {fileID: 11400000, guid: 55ec503584887cb4aa7dd66763e4d7a7, type: 2}
     levels:
     - {fileID: 11400000, guid: b42abe5b22535cf40beab03ef8f2d66f, type: 2}
     - {fileID: 11400000, guid: 8a6954d87f761a44d91a6e04577b276b, type: 2}
