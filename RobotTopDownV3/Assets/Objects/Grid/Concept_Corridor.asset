@@ -2776,8 +2776,8 @@ MonoBehaviour:
     wallType: 0
     orientation: 0
   - groundType: 1
-    wallType: 2
-    orientation: 0
+    wallType: 6
+    orientation: 3
   - groundType: 1
     wallType: 1
     orientation: 0
