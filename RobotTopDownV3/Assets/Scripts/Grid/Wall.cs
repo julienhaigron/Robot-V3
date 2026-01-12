@@ -89,6 +89,7 @@ public class Wall : MonoBehaviour
 			Vector3 localPosition = tfm.localPosition;
 			tfm.parent = m_linkedTile.WallPartsParent;
 			tfm.localPosition = localPosition;
+			tfm.gameObject.AddComponent<WallSelector>().Link(this);
 			m_wallParts.Add(tfm.gameObject);
 		}
 		DestroyImmediate(wallPrefab);
@@ -120,7 +121,44 @@ public class Wall : MonoBehaviour
 		Rotate(--m_orientation % 6);
 	}
 
+
 #if UNITY_EDITOR
+
+	public void DisplayHandles ()
+	{
+		GUIStyle style = new();
+		style.fontStyle = FontStyle.Bold;
+		float size = .3f;
+		float pickSize = size;
+
+		Handles.SphereHandleCap(0, transform.position, Quaternion.identity, size * .6f, EventType.Repaint);
+
+		Handles.color = Color.red;
+		if (Handles.Button(transform.position + Vector3.back + Vector3.left, Quaternion.identity, size, pickSize, Utils.MinusHandleCap))
+		{
+			//Undo.RecordObject(path, "Add circulatory path node");
+			RotateLeft();
+			//EditorUtility.SetDirty(wall);
+		}
+
+		Handles.color = Color.green;
+		if (Handles.Button(transform.position + Vector3.back + Vector3.right, Quaternion.identity, size, pickSize, Utils.PlusHandleCap))
+		{
+			//Undo.RecordObject(path, "Add circulatory path node");
+			RotateRight();
+			//EditorUtility.SetDirty(wall);
+		}
+
+		Handles.color = Color.blue;
+		if (Handles.Button(transform.position + Vector3.back, Quaternion.identity, size, pickSize, Utils.LinkHandleCap))
+		{
+			//Undo.RecordObject(path, "Add circulatory path node");
+			WallType nextWallType = (WallType)((int)++Type % (int)WallType.Total);
+			SetWallType(nextWallType);
+			//EditorUtility.SetDirty(wall);
+		}
+	}
+
 	[CustomEditor(typeof(Wall))]
 	class WallEditor : Editor
 	{
@@ -136,120 +174,7 @@ public class Wall : MonoBehaviour
 		{
 			Wall wall = (Wall)target;
 
-			GUIStyle style = new();
-			style.fontStyle = FontStyle.Bold;
-			float size = .3f;
-			float pickSize = size;
-
-			Handles.SphereHandleCap(0, wall.transform.position, Quaternion.identity, size * .6f, EventType.Repaint);
-
-			Handles.color = Color.red;
-			if (Handles.Button(wall.transform.position + Vector3.back + Vector3.left, Quaternion.identity, size, pickSize, Utils.MinusHandleCap))
-			{
-				//Undo.RecordObject(path, "Add circulatory path node");
-				wall.RotateLeft();
-				//EditorUtility.SetDirty(wall);
-			}
-
-			Handles.color = Color.green;
-			if (Handles.Button(wall.transform.position + Vector3.back + Vector3.right, Quaternion.identity, size, pickSize, Utils.PlusHandleCap))
-			{
-				//Undo.RecordObject(path, "Add circulatory path node");
-				wall.RotateRight();
-				//EditorUtility.SetDirty(wall);
-			}
-			
-			Handles.color = Color.blue;
-			if (Handles.Button(wall.transform.position + Vector3.back, Quaternion.identity, size, pickSize, Utils.LinkHandleCap))
-			{
-				//Undo.RecordObject(path, "Add circulatory path node");
-				WallType nextWallType = (WallType)((int)++wall.Type % (int)WallType.Total);
-				wall.SetWallType(nextWallType);
-				//EditorUtility.SetDirty(wall);
-			}
-
-			/*if (path.IsEmpty)
-			{
-				Handles.color = Color.green;
-				Handles.Label(Vector3.right * .3f, "Click to create path", style);
-				if (Handles.Button(path.transform.position, Quaternion.identity, size, pickSize, Handles.SphereHandleCap))
-				{
-					selectedNode = path.AddNode(path.transform.position, selectedNode);
-				}
-
-				return;
-			}*/
-
-			//Handles.color = path.PathColor;
-			/*for (int i = 0; i < path.Nodes.Count; i++)
-			{
-				PathNode node = path.Nodes[i];
-
-				if (path.Nodes.Count > i + 1)
-					Handles.DrawDottedLine(node.AbsolutePosition + path.transform.position, path.Nodes[i + 1].AbsolutePosition + path.transform.position, 10f);
-
-				if (selectedNode == node)
-					continue;
-
-				if (Handles.Button(node.AbsolutePosition + path.transform.position, Quaternion.identity, size * 2f, pickSize, Handles.SphereHandleCap))
-				{
-					selectedNode = node;
-				}
-			}
-
-			if (selectedNode == null)
-				return;*/
-
-			//Vector3 selectedNodeWorldPos = selectedNode.AbsolutePosition + path.transform.position;
-
-			//Handles.color = path.PathColor;
-			/*Handles.SphereHandleCap(0, selectedNodeWorldPos, Quaternion.identity, size * .6f, EventType.Repaint);
-
-			//move node
-			EditorGUI.BeginChangeCheck();
-			Vector3 newTargetPosition = Handles.PositionHandle(selectedNodeWorldPos, Quaternion.identity);
-			if (EditorGUI.EndChangeCheck())
-			{
-				//Undo.RecordObject(path, "Move node from circulatory path");
-				selectedNode.AbsolutePosition = newTargetPosition - path.transform.position;
-				EditorUtility.SetDirty(path);
-			}
-
-			//add node
-			Handles.color = Color.green;
-			if (Handles.Button(selectedNodeWorldPos + Vector3.back + Vector3.right, Quaternion.identity, size, pickSize, ObjectsExtensions.PlusHandleCap))
-			{
-				//Undo.RecordObject(path, "Add circulatory path node");
-				selectedNode = path.AddNode(selectedNode.AbsolutePosition + Vector3.right, selectedNode);
-				EditorUtility.SetDirty(path);
-			}
-
-			//remove node
-			Handles.color = Color.red;
-			if (Handles.Button(selectedNodeWorldPos + Vector3.back + Vector3.left, Quaternion.identity, size, pickSize, ObjectsExtensions.MinusHandleCap))
-			{
-				//Undo.RecordObject(path, "Add circulatory path node");
-				path.RemoveNode(selectedNode);
-
-				if (path.Nodes.Count > 0)
-					selectedNode = path.Nodes.Last();
-				else
-					selectedNode = null;
-
-				EditorUtility.SetDirty(path);
-			}
-
-			//Handles.color = path.PathColor;
-			EditorGUI.BeginChangeCheck();
-			Vector3 newTargetRange = Handles.Slider(selectedNodeWorldPos + (Vector3.left * selectedNode.radius) + new Vector3(-.2f, 0f, 0f), Vector3.left, size, Handles.ConeHandleCap, 1f);
-			newTargetRange -= new Vector3(-.2f, 0f, 0f);
-			if (EditorGUI.EndChangeCheck())
-			{
-				//Undo.RecordObject(selectedNode, "Change node radius");
-				selectedNode.radius = Mathf.Clamp(-(newTargetRange - selectedNodeWorldPos).x, 0f, Mathf.Infinity);
-			}
-
-			Handles.CircleHandleCap(0, selectedNodeWorldPos, Quaternion.LookRotation(Vector3.up), selectedNode.radius, EventType.Repaint);*/
+			wall.DisplayHandles();
 		}
 	}
 #endif
