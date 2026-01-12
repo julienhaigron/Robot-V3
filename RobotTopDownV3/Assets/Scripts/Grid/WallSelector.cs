@@ -14,11 +14,6 @@ public class WallSelector : MonoBehaviour
 		m_linkedWall = _wall;
 	}
 
-	protected virtual void OnSceneGUI ()
-	{
-		m_linkedWall.DisplayHandles();
-	}
-
 #if UNITY_EDITOR
 
 

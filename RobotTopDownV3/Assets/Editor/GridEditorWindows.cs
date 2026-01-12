@@ -14,15 +14,18 @@ public class GridEditorWindows : EditorWindow
 		GetWindow<GridEditorWindows>("Grid Editor");
 	}
 
+	/*private void OnInspectorUpdate ()
+	{
+
+	}*/
+
 	private void OnGUI ()
 	{
 		/*if (!EditorApplication.isPlaying)
 		{
 			EditorGUILayout.HelpBox("Press PLAY to use the Grid Editor", MessageType.Info);
 			return;
-		}*/ 
-
-
+		}*/
 		Grid();
 
 		/*if (Input.GetKeyDown(KeyCode.Mouse0) *//*&& GridManager.Instance.isGroundBrushSelected*//*)

@@ -5,6 +5,11 @@ using Sirenix.OdinInspector;
 using System;
 using System.Linq;
 
+
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+
 public class GridManager : Singleton<GridManager>
 {
 	[SerializeField, HideInInspector] private Tile[] m_tiles;
@@ -701,25 +706,6 @@ public class GridManager : Singleton<GridManager>
 	}
 
 	#endregion
-
-	/*#region Editor Callbacks
-
-
-	private void OnTileSelected ( Tile _tile )
-	{
-
-#if UNITY_EDITOR
-		if (isGroundBrushSelected)
-		{
-			_tile.SetGroundType(currentGroundBrushSelected);
-			return;
-		}
-
-#endif
-
-	}
-
-	#endregion*/
 
 }
 

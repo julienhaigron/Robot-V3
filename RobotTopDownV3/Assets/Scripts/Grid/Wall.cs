@@ -67,7 +67,7 @@ public class Wall : MonoBehaviour
 
 	public void SetWallType(WallType _type )
 	{
-		m_orientation = 0;
+		Rotate(0);
 		m_type = _type;
 
 		foreach(GameObject go in m_wallParts)
@@ -136,26 +136,32 @@ public class Wall : MonoBehaviour
 		Handles.color = Color.red;
 		if (Handles.Button(transform.position + Vector3.back + Vector3.left, Quaternion.identity, size, pickSize, Utils.MinusHandleCap))
 		{
-			//Undo.RecordObject(path, "Add circulatory path node");
 			RotateLeft();
-			//EditorUtility.SetDirty(wall);
 		}
 
 		Handles.color = Color.green;
 		if (Handles.Button(transform.position + Vector3.back + Vector3.right, Quaternion.identity, size, pickSize, Utils.PlusHandleCap))
 		{
-			//Undo.RecordObject(path, "Add circulatory path node");
 			RotateRight();
-			//EditorUtility.SetDirty(wall);
 		}
 
 		Handles.color = Color.blue;
 		if (Handles.Button(transform.position + Vector3.back, Quaternion.identity, size, pickSize, Utils.LinkHandleCap))
 		{
-			//Undo.RecordObject(path, "Add circulatory path node");
 			WallType nextWallType = (WallType)((int)++Type % (int)WallType.Total);
 			SetWallType(nextWallType);
-			//EditorUtility.SetDirty(wall);
+		}
+	}
+
+	public void HandleInputs ()
+	{
+		if (Input.GetKeyDown(KeyCode.R))
+			RotateRight();
+
+		if (Input.GetKeyDown(KeyCode.T))
+		{
+			WallType nextWallType = (WallType)((int)++Type % (int)WallType.Total);
+			SetWallType(nextWallType);
 		}
 	}
 

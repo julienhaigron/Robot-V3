@@ -7,6 +7,9 @@ using Sirenix.OdinInspector;
 [CustomEditor(typeof(GridManager))]
 public class GridEditor : Editor
 {
+
+	private bool m_hasReleaseKey = false;
+
 	public override void OnInspectorGUI ()
 	{
 		DrawDefaultInspector();
@@ -52,10 +55,12 @@ public class GridEditor : Editor
 	{
 		// remember to toggle gizmos in scene
 		// and to deactivate interaction to GameManger prefab in scene
+		if (!GridManager.Instance.isGroundBrushSelected)
+			return;
 
 		Event e = Event.current;
 
-		if (GridManager.Instance.isGroundBrushSelected && e.type == EventType.MouseDown && e.keyCode == KeyCode.Mouse0)
+		if (e.type == EventType.MouseDown && e.keyCode == KeyCode.Mouse0)
 		{
 			Ray ray = HandleUtility.GUIPointToWorldRay(Event.current.mousePosition);
 
@@ -65,6 +70,43 @@ public class GridEditor : Editor
 				{
 					tile.SetGroundType(GridManager.Instance.currentGroundBrushSelected);
 					EditorUtility.SetDirty(this);
+				}
+			}
+		}
+
+		if (!m_hasReleaseKey && e.type == EventType.KeyDown)
+			return;
+		else if (e.type == EventType.KeyUp)
+		{
+			m_hasReleaseKey = true;
+			return;
+		}
+		else if (m_hasReleaseKey && e.type == EventType.KeyDown)
+			m_hasReleaseKey = false;
+
+		if (e.type == EventType.KeyDown && e.keyCode == KeyCode.R)
+		{
+			Ray ray = HandleUtility.GUIPointToWorldRay(Event.current.mousePosition);
+
+			if (Physics.Raycast(ray, out RaycastHit hitInfo, GameConfig.current.input.interactionRayCastLength, GameConfig.current.input.interactionRayCastLayer))
+			{
+				if (hitInfo.transform.parent.TryGetComponent(out Tile tile))
+				{
+					tile.Wall.RotateRight();
+				}
+			}
+		}
+
+		if (e.type == EventType.KeyDown && e.keyCode == KeyCode.T)
+		{
+			Ray ray = HandleUtility.GUIPointToWorldRay(Event.current.mousePosition);
+
+			if (Physics.Raycast(ray, out RaycastHit hitInfo, GameConfig.current.input.interactionRayCastLength, GameConfig.current.input.interactionRayCastLayer))
+			{
+				if (hitInfo.transform.parent.TryGetComponent(out Tile tile))
+				{
+					Wall.WallType nextWallType = (Wall.WallType)((int)++tile.Wall.Type % (int)Wall.WallType.Total);
+					tile.Wall.SetWallType(nextWallType);
 				}
 			}
 		}
