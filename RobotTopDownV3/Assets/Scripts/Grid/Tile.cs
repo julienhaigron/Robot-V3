@@ -32,7 +32,7 @@ public class Tile : MonoBehaviour
 	public Transform WallPartsParent => m_wallPartsParent;
 
 	[SerializeField] private Wall m_wall;
-	public Wall Wall => m_wall;
+	public Wall Wall { get { return m_wall; } set { m_wall = value; } }
 
 	//Content on tile
 	public TileContent currentContent;
@@ -112,6 +112,7 @@ public class Tile : MonoBehaviour
 			{
 				foreach(GameObject wallPart in m_wall.WallParts)
 					DestroyImmediate(wallPart);
+				m_wall.WallParts.Clear();
 
 				DestroyImmediate(m_wall);
 				m_wall = null;

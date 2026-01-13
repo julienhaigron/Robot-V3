@@ -707,6 +707,36 @@ public class GridManager : Singleton<GridManager>
 
 	#endregion
 
+
+#if UNITY_EDITOR
+	[Button]
+	public void FixTiles ()
+	{
+		foreach(Tile tile in m_tiles)
+		{
+			if(tile.GroundType != TileGroundType.Wall)
+			{
+				Wall wall = tile.GetComponent<Wall>();
+				if(wall != null)
+				{
+					foreach(GameObject part in wall.WallParts)
+					{
+						DestroyImmediate(part);
+					}
+
+					wall.WallParts.Clear();
+					DestroyImmediate(wall);
+				}
+
+				tile.Wall = null;
+			}
+
+			EditorUtility.SetDirty(tile);
+		}
+	}
+
+#endif
+
 }
 
 [System.Serializable]

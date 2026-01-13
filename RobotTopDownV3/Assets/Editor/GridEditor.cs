@@ -50,6 +50,10 @@ public class GridEditor : Editor
 
 			EditorUtility.SetDirty(gridManager.gridData);
 		}
+		if (GUILayout.Button("Fix Grid"))
+		{
+			GridManager.Instance.FixTiles();
+		}
 	}
 
 	/*private void OnSceneGUI ()
@@ -117,10 +121,11 @@ public class GridEditor : Editor
 [EditorTool("Grid Tool")]
 public class GridTool : EditorTool
 {
-	private bool m_hasReleaseKey = true;
+	private Tile m_lastPaintedTile;
+	private bool m_isPainting;
 
 	public override GUIContent toolbarIcon => new GUIContent(
-		EditorGUIUtility.IconContent("d_EditCollider").image,
+		EditorGUIUtility.IconContent("LightProbeProxyVolume Gizmo").image,
 		"Grid Tool"
 	);
 
@@ -131,71 +136,89 @@ public class GridTool : EditorTool
 
 		Event e = Event.current;
 
-		if (e.type == EventType.MouseDown && e.keyCode == KeyCode.Mouse0)
-		{
-			Ray ray = HandleUtility.GUIPointToWorldRay(Event.current.mousePosition);
-
-			if (Physics.Raycast(ray, out RaycastHit hitInfo, GameConfig.current.input.interactionRayCastLength, GameConfig.current.input.interactionRayCastLayer))
-			{
-				if (hitInfo.transform.parent.TryGetComponent(out Tile tile))
-				{
-					tile.SetGroundType(GridManager.Instance.currentGroundBrushSelected);
-					EditorUtility.SetDirty(this);
-				}
-			}
-		}
-
-		if (!m_hasReleaseKey && e.type == EventType.KeyDown)
-			return;
-		else if (e.type == EventType.KeyUp)
-		{
-			m_hasReleaseKey = true;
-			return;
-		}
-		else if (m_hasReleaseKey && e.type == EventType.KeyDown)
-			m_hasReleaseKey = false;
-
-		if (e.type == EventType.KeyDown && e.keyCode == KeyCode.Alpha1)
-		{
-			Ray ray = HandleUtility.GUIPointToWorldRay(Event.current.mousePosition);
-
-			if (Physics.Raycast(ray, out RaycastHit hitInfo, GameConfig.current.input.interactionRayCastLength, GameConfig.current.input.interactionRayCastLayer))
-			{
-				if (hitInfo.transform.parent.TryGetComponent(out Tile tile))
-				{
-					tile.Wall.RotateRight();
-				}
-			}
-		}
-
-		if (e.type == EventType.KeyDown && e.keyCode == KeyCode.Alpha2)
-		{
-			Ray ray = HandleUtility.GUIPointToWorldRay(Event.current.mousePosition);
-
-			if (Physics.Raycast(ray, out RaycastHit hitInfo, GameConfig.current.input.interactionRayCastLength, GameConfig.current.input.interactionRayCastLayer))
-			{
-				if (hitInfo.transform.parent.TryGetComponent(out Tile tile))
-				{
-					Wall.WallType nextWallType = (Wall.WallType)((int)++tile.Wall.Type % (int)Wall.WallType.Total);
-					tile.Wall.SetWallType(nextWallType);
-				}
-			}
-		}
-		/*Event e = Event.current;
+		// Bloque les tools Unity par défaut
+		HandleUtility.AddDefaultControl(GUIUtility.GetControlID(FocusType.Passive));
 
 		if (e.type == EventType.MouseDown && e.button == 0)
 		{
-			Ray ray = HandleUtility.GUIPointToWorldRay(e.mousePosition);
-
-			if (Physics.Raycast(ray, out var hit))
-			{
-				Selection.activeGameObject = hit.collider.gameObject;
-				e.Use();
-			}
+			m_isPainting = true;
+			PaintAtMouse(e.mousePosition);
+			e.Use();
 		}
 
-		// Exemple de gizmo
-		Handles.color = Color.cyan;
-		Handles.DrawWireDisc(Vector3.zero, Vector3.up, 5f);*/
+		if (e.type == EventType.MouseDrag && e.button == 0 && m_isPainting)
+		{
+			PaintAtMouse(e.mousePosition);
+			e.Use();
+		}
+
+		if (e.type == EventType.MouseUp && e.button == 0)
+		{
+			m_isPainting = false;
+			m_lastPaintedTile = null;
+			e.Use();
+		}
+
+		if (e.type == EventType.MouseMove && m_isPainting)
+			PaintAtMouse(e.mousePosition);
+
+		HandleShortcuts(e);
+	}
+
+	private void PaintAtMouse ( Vector2 mousePosition )
+	{
+		Ray ray = HandleUtility.GUIPointToWorldRay(mousePosition);
+
+		if (!Physics.Raycast(
+			ray,
+			out RaycastHit hit,
+			GameConfig.current.input.interactionRayCastLength,
+			GameConfig.current.input.interactionRayCastLayer))
+			return;
+
+		if (!hit.transform.parent.TryGetComponent(out Tile tile))
+			return;
+
+		// Empêche de repeindre la même tile en boucle
+		if (tile == m_lastPaintedTile)
+			return;
+
+		Undo.RecordObject(tile, "Paint Tile");
+		tile.SetGroundType(GridManager.Instance.currentGroundBrushSelected);
+		EditorUtility.SetDirty(tile);
+
+		m_lastPaintedTile = tile;
+	}
+
+	private void HandleShortcuts ( Event e )
+	{
+		if (e.type != EventType.KeyDown)
+			return;
+
+		Ray ray = HandleUtility.GUIPointToWorldRay(e.mousePosition);
+
+		if (!Physics.Raycast(ray, out RaycastHit hit,
+			GameConfig.current.input.interactionRayCastLength,
+			GameConfig.current.input.interactionRayCastLayer))
+			return;
+
+		if (!hit.transform.parent.TryGetComponent(out Tile tile) || tile.Wall == null)
+			return;
+
+		if (e.keyCode == KeyCode.R)
+		{
+			Undo.RecordObject(tile.Wall, "Rotate Wall");
+			tile.Wall.RotateRight();
+			e.Use();
+		}
+
+		if (e.keyCode == KeyCode.T)
+		{
+			Undo.RecordObject(tile.Wall, "Change Wall Type");
+			Wall.WallType next =
+				(Wall.WallType)(((int)tile.Wall.Type + 1) % (int)Wall.WallType.Total);
+			tile.Wall.SetWallType(next);
+			e.Use();
+		}
 	}
 }

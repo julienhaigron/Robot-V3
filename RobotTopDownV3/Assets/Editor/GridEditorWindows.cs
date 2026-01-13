@@ -65,6 +65,11 @@ public class GridEditorWindows : EditorWindow
 		{
 			SaveGrid();
 		}
+		
+		if (GUILayout.Button("Fix Grid", group))
+		{
+			GridManager.Instance.FixTiles();
+		}
 		EditorGUILayout.EndHorizontal();
 
 		GridManager.Instance.isGroundBrushSelected = EditorGUILayout.Toggle("IsGroundBrushSelected: ", GridManager.Instance.isGroundBrushSelected, group);
