@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Sirenix.OdinInspector;
 
 [CreateAssetMenu(fileName = "GameConfig", menuName = "ScriptableObject/GameConfig")]
 public partial class GameConfig : ScriptableObject
@@ -15,9 +16,18 @@ public partial class GameConfig : ScriptableObject
 	[System.Serializable]
 	public partial class GameSettings
 	{
+		[Title("Actions")]
 		public EntityActionData defaultStartAction;
 		public float actionDuration = 1f;
 		public float entityRotationDuration = .5f;
+
+		[Title("Camera")]
+		public float cameraMovementSpeed = 15f;
+		public float cameraRotationDuration = .5f;
+		public float cameraRotationStep = 90f;
+		public Vector2 cameraMovementBoundsOffset = new Vector2(7f, 1.75f);
+		public float cameraZoomSpeed;
+		public Vector2 cameraZoomBounds;
 
 		public SerializableDictionary<Tile.TileDirectionType, int> entityFlankRatio = new();
 		public int entityMovementEvasionBonus = 2;
