@@ -13,8 +13,10 @@ public class PlayerController : Singleton<PlayerController>
 	[SerializeField] private float moveSpeed = 5f;
 
 	[Header("Camera Limits")]
-	[SerializeField] private Vector2 xLimits = new Vector2(-10f, 10f);
-	[SerializeField] private Vector2 zLimits = new Vector2(-10f, 10f);
+	private Vector2 xLimits => new Vector2(0, GridManager.Instance.gridData.width * Tile.innerRadius * 2f);
+	private Vector2 zLimits => new Vector2(0, GridManager.Instance.gridData.height * 1.5f);
+	//[SerializeField] private Vector2 xLimits = new Vector2(-10f, 10f);
+	//[SerializeField] private Vector2 zLimits = new Vector2(-10f, 10f);
 
 
 	private Tile m_selectedTile;
