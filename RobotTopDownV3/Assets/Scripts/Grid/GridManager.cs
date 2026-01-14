@@ -445,7 +445,7 @@ public class GridManager : Singleton<GridManager>
 		// Tile potentielle de couvert
 		Tile potentialCover = GetTileAtOrientation(_attacker.Displacement.Coordinates.GetTile(), attackOrientation);
 
-		return potentialCover != null && potentialCover.GroundType == TileGroundType.Cover;
+		return potentialCover != null && potentialCover.GroundType == TileGroundType.Void;
 	}
 
 	public Tile.TileDirectionType GetHitTileSide ( Entity _from, Entity _to )
@@ -481,6 +481,9 @@ public class GridManager : Singleton<GridManager>
 		Vector2 origin = new Vector2(_from.transform.position.x, _from.transform.position.z);
 		Vector2 destination = new Vector2(_to.transform.position.x, _to.transform.position.z);
 		float angle = GetAngleFrom(origin, destination);
+		angle = angle + 90f;
+		if (angle > 360)
+			angle = -360f;
 
 		return (int)((angle - 30f) / 60f);
 	}
@@ -717,13 +720,16 @@ public class GridManager : Singleton<GridManager>
 			if(tile.GroundType != TileGroundType.Wall)
 			{
 				Wall wall = tile.GetComponent<Wall>();
+
+				if(tile.WallPartsParent.childCount > 0)
+				{
+					for(int i = tile.WallPartsParent.childCount-1; i >= 0; i--)
+					{
+						DestroyImmediate(tile.WallPartsParent.GetChild(i).gameObject);
+					}
+				}
 				if(wall != null)
 				{
-					foreach(GameObject part in wall.WallParts)
-					{
-						DestroyImmediate(part);
-					}
-
 					wall.WallParts.Clear();
 					DestroyImmediate(wall);
 				}
@@ -865,7 +871,7 @@ public enum TileGroundType
 	Door,
 	PlayerSpawn,
 	EnemySpawn,
-	Cover
+	Void
 }
 
 public static class HexDirectionExtensions

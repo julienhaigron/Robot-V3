@@ -92,6 +92,7 @@ public class Tile : MonoBehaviour
 
 	#region Grid sys
 
+#if UNITY_EDITOR
 	public void Init(int _x, int _y, TileGroundType _groundType = TileGroundType.Empty)
 	{
 		m_neighbors = new Tile[6];
@@ -103,6 +104,8 @@ public class Tile : MonoBehaviour
 
 	public void SetGroundType (TileGroundType _groundType)
 	{
+		UnityEditor.Undo.RecordObject(this, "Paint Tile");
+		//UnityEditor.Undo.RecordObject(m_wall, "Paint Tile");
 		m_groundType = _groundType;
 		m_ui.UpdateGroundMaterial();
 
@@ -122,16 +125,16 @@ public class Tile : MonoBehaviour
 		{
 			if (_groundType == TileGroundType.Wall)
 			{
-				m_wall = gameObject.AddComponent<Wall>();
+				m_wall = UnityEditor.Undo.AddComponent<Wall>(gameObject);
+				//m_wall = gameObject.AddComponent<Wall>();
 				m_wall.LinkWithTile(this);
 				m_wall.SetWallType(Wall.WallType.VerticalStrait);
 			}
 		}
 
-#if UNITY_EDITOR
 		UnityEditor.EditorUtility.SetDirty(this);
-#endif
 	}
+#endif
 
 	public Tile GetNeighbor ( HexDirection _direction )
 	{

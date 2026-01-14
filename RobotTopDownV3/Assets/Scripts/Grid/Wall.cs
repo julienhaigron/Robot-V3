@@ -65,9 +65,12 @@ public class Wall : MonoBehaviour
 		
 	}
 
+#if UNITY_EDITOR
 	public void SetWallType(WallType _type )
 	{
 		Rotate(0);
+		Undo.RecordObject(this, "Rotate Wall");
+		Undo.RecordObject(m_linkedTile, "Rotate Wall");
 		m_type = _type;
 
 		foreach(GameObject go in m_wallParts)
@@ -81,7 +84,6 @@ public class Wall : MonoBehaviour
 			Debug.LogError("Missing value in GameAssets.current.game.baseWallVisualPerType");
 			return;
 		}
-
 		GameObject wallPrefab = Instantiate(GameAssets.current.game.baseWallVisualPerType[_type]);
 		for (int i = wallPrefab.transform.childCount - 1; i >= 0; i--)
 		{
@@ -89,7 +91,8 @@ public class Wall : MonoBehaviour
 			Vector3 localPosition = tfm.localPosition;
 			tfm.parent = m_linkedTile.WallPartsParent;
 			tfm.localPosition = localPosition;
-			tfm.gameObject.AddComponent<WallSelector>().Link(this);
+			Undo.AddComponent<WallSelector>(tfm.gameObject).Link(this);
+			//tfm.gameObject.AddComponent<WallSelector>().Link(this);
 			m_wallParts.Add(tfm.gameObject);
 		}
 		DestroyImmediate(wallPrefab);
@@ -101,6 +104,9 @@ public class Wall : MonoBehaviour
 	[Button]
 	public void Rotate(int _newRotation )
 	{
+		Undo.RecordObject(this, "Rotate Wall");
+		Undo.RecordObject(m_linkedTile, "Rotate Wall");
+
 		m_orientation = _newRotation;
 		float yRotation = 60f * _newRotation;
 		m_linkedTile.WallPartsParent.localRotation = Quaternion.Euler(0, yRotation, 0);
@@ -120,9 +126,6 @@ public class Wall : MonoBehaviour
 	{
 		Rotate(--m_orientation % 6);
 	}
-
-
-#if UNITY_EDITOR
 
 	public void DisplayHandles ()
 	{
