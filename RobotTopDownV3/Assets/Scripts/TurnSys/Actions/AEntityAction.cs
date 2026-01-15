@@ -76,7 +76,9 @@ public abstract class AEntityAction : INetworkSerializable
 
     public abstract bool CheckConflict ( AEntityAction _otherAction, bool _isCheck = true );
 
-    public abstract void Display ();
+    public abstract void Display ( Entity.EntityState _state );
+
+    public abstract void GhostDisplay ( Entity.EntityState _state );
 
 	public override string ToString ()
 	{

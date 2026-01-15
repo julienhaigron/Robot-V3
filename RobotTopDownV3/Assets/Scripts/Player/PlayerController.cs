@@ -46,7 +46,8 @@ public class PlayerController : Singleton<PlayerController>
 	private Entity m_selectedEntity;
 	public Entity SelectedEntity => m_selectedEntity;
 
-	public List<Arrow> arrows = new();
+	public List<ActionDisplayOnTile> arrows = new();
+	public List<ActionDisplayOnTile> tempArrows = new();
 
 	private void Start ()
 	{
@@ -92,7 +93,6 @@ public class PlayerController : Singleton<PlayerController>
 		if (Input.GetKey(KeyCode.A)) moveX -= 1f;
 		if (Input.GetKey(KeyCode.D)) moveX += 1f;
 
-		//Vector3 move = new Vector3(moveX, 0, moveZ).normalized * GameConfig.current.game.cameraMovementSpeed * Time.fixedDeltaTime;
 		Vector3 move = (forward.normalized * moveZ + right.normalized * moveX)
 			* GameConfig.current.game.cameraMovementSpeed
 			* Time.fixedDeltaTime;
@@ -135,22 +135,11 @@ public class PlayerController : Singleton<PlayerController>
 			return;
 
 		float zoomMovement = -(scroll * GameConfig.current.game.cameraZoomSpeed);
-		//currentZoomDistance -= scroll * GameConfig.current.game.cameraZoomSpeed;
 
 		m_currentZoomDistance += zoomMovement;
 		m_currentZoomDistance = Mathf.Clamp(m_currentZoomDistance,  GameConfig.current.game.cameraZoomBounds.x, GameConfig.current.game.cameraZoomBounds.y);
 
 		playerCamera.transform.position = new Vector3(playerCamera.transform.position.x, m_currentZoomDistance, playerCamera.transform.position.z);
-		//currentZoomDistance = Mathf.Clamp(currentZoomDistance, GameConfig.current.game.cameraZoomBounds.x, GameConfig.current.game.cameraZoomBounds.y);
-
-		/*//Vector3 direction = (playerCamera.transform.position - zoomPivot.position).normalized;
-		Vector3 targetPosition = zoomPivot.position + direction * currentZoomDistance;
-
-		playerCamera.transform.position = Vector3.Lerp(
-			playerCamera.transform.position,
-			targetPosition,
-			10f * Time.fixedDeltaTime
-		);*/
 	}
 
 	private void OnTileSelected ( Tile _tile )
@@ -226,6 +215,22 @@ public class PlayerController : Singleton<PlayerController>
 
 		if (_tile != m_hoveredTile)
 		{
+
+			ClearGhostActionOnTileDisplay();
+
+			//TODO : display movement towards tile
+			if (TurnManager.Instance.currentPhase == TurnManager.TurnPhase.Recording 
+				&& (TurnManager.Instance.CurrentActionTypeSelected == EntityActionEnumID.NeighborMove || TurnManager.Instance.CurrentActionTypeSelected == EntityActionEnumID.TargetTileMove)
+				&& TurnManager.Instance.CurrentActionSelected.TileInteractPredicate(_tile))
+			{
+				TurnManager.Instance.CurrentActionSelected.positionAtActionEndID = _tile.coordinates.ID;
+				TurnManager.Instance.CurrentActionSelected.GhostDisplay(TurnManager.Instance.CurrentStateTypeSelected);
+			}
+
+
+
+
+
 			/*GridManager.Instance.ClearTileOutile();
 			m_selectedEntity.Equipment.AimAtTile("default", _tile);
 			List<Tile> tilesInRange = m_selectedEntity.Equipment.GetTilesInRange("default");
@@ -251,15 +256,25 @@ public class PlayerController : Singleton<PlayerController>
 	private void OnEndInputPhase ()
 	{
 		m_selectedEntity = null;
-		ClearArrows();
+		ClearActionOnTileDisplay();
+		ClearGhostActionOnTileDisplay();
 	}
 
-	public void ClearArrows ()
+	public void ClearActionOnTileDisplay ()
 	{
-		foreach (Arrow arrow in arrows)
+		foreach (ActionDisplayOnTile arrow in arrows)
 		{
 			arrow.Discard();
 		}
 		arrows.Clear();
+	}
+
+	public void ClearGhostActionOnTileDisplay ()
+	{
+		foreach (ActionDisplayOnTile arrow in tempArrows)
+		{
+			arrow.Discard();
+		}
+		tempArrows.Clear();
 	}
 }

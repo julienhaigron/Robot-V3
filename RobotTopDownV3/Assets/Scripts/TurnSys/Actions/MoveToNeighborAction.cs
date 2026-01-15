@@ -66,7 +66,7 @@ public class MoveToNeighborAction : AEntityAction
 
 	public override bool TileInteractPredicate ( Tile _tile )
 	{
-		if (_tile.IsObstacle() || GridManager.Instance.GetDistanceBetween(GridManager.Instance.Tiles[TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntityID)], _tile, true) != 1)
+		if (_tile.GetEntity(true) != null || _tile.IsObstacle() || GridManager.Instance.GetDistanceBetween(GridManager.Instance.Tiles[TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntityID)], _tile, true) != 1)
 			return false;
 
 		return true;
@@ -180,15 +180,29 @@ public class MoveToNeighborAction : AEntityAction
 		finalTargetTileID = pathToTile[^2].coordinates.ID;
 	}
 
-	public override void Display ()
+	public override void Display ( Entity.EntityState _state )
 	{
-		Arrow arrow = ObjectsPooling.GetElement(GameAssets.current.game.arrowPoolData) as Arrow;
+		ActionDisplayOnTile arrow = ObjectsPooling.GetElement(GameAssets.current.game.arrowPoolData) as ActionDisplayOnTile;
 		Vector3 startPos = GridManager.Instance.Tiles[supposedPositionAtActionStartID].transform.position;
 		Vector3 destination = GridManager.Instance.Tiles[positionAtActionEndID].transform.position;
 		Vector3 position = Vector3.Lerp(startPos, destination, .5f);
+		arrow.SetMaterial(GameAssets.current.ui.entityStateMaterials[_state]);
 		arrow.transform.position = position;
 		arrow.transform.LookAt(GridManager.Instance.Tiles[positionAtActionEndID].transform);
 
 		PlayerController.Instance.arrows.Add(arrow);
+	}
+
+	public override void GhostDisplay ( Entity.EntityState _state )
+	{
+		ActionDisplayOnTile arrow = ObjectsPooling.GetElement(GameAssets.current.game.arrowPoolData) as ActionDisplayOnTile;
+		Vector3 startPos = GridManager.Instance.Tiles[supposedPositionAtActionStartID].transform.position;
+		Vector3 destination = GridManager.Instance.Tiles[positionAtActionEndID].transform.position;
+		Vector3 position = Vector3.Lerp(startPos, destination, .5f);
+		arrow.SetMaterial(GameAssets.current.ui.entityStateMaterials[_state]);
+		arrow.transform.position = position;
+		arrow.transform.LookAt(GridManager.Instance.Tiles[positionAtActionEndID].transform);
+
+		PlayerController.Instance.tempArrows.Add(arrow);
 	}
 }

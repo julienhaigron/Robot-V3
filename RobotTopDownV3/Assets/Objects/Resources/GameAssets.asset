@@ -91,6 +91,12 @@ MonoBehaviour:
       - {fileID: 2100000, guid: 5a74236f5abc9fc46989ccb45e89d5ca, type: 2}
       - {fileID: 2100000, guid: 2c14c5a2e53fe36408684304ef27fbdb, type: 2}
       - {fileID: 2100000, guid: c65f36483b36c4e4caba44a8049333c6, type: 2}
+    entityStateMaterials:
+      keys: 000000000100000002000000
+      values:
+      - {fileID: 2100000, guid: 01d969979321bef449ffd88218909815, type: 2}
+      - {fileID: 2100000, guid: a8bc155b222905340a53cac2ac3db7a0, type: 2}
+      - {fileID: 2100000, guid: 2e3db9c21b741184e9a00525552b876e, type: 2}
   equipments:
     keys:
     - player2

@@ -50,6 +50,8 @@ public class GameAssets : ScriptableObject
 
         [Title("Tile")]
         public SerializableDictionary<TileGroundType, Material> tileGroundMaterials = new();
+        [Title("Actions")]
+        public SerializableDictionary<Entity.EntityState, Material> entityStateMaterials = new();
     }
 
 

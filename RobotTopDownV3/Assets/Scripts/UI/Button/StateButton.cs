@@ -16,6 +16,7 @@ public class StateButton : BaseButton
 	{
 		m_state = _state;
 		m_name.text = _state.ToString();
+		m_icon.material = GameAssets.current.ui.entityStateMaterials[_state];
 	}
 
 	protected override void OnClick ()

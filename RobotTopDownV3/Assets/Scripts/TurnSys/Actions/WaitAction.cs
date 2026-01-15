@@ -38,10 +38,15 @@ public class WaitAction : AEntityAction
 
 	}
 
-	public override void Display ()
+	public override void Display ( Entity.EntityState _state )
 	{
 		
 	}
 
-	
+	public override void GhostDisplay ( Entity.EntityState _state )
+	{
+
+	}
+
+
 }

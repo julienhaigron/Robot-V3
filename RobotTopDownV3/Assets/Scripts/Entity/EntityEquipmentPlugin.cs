@@ -55,7 +55,9 @@ public class EntityEquipmentPlugin : EntityPlugin
 
 	private void OnEntitySelected ()
 	{
-		foreach(WeaponCone weaponCone in m_weaponConeDictionary.Values)
+		TurnManager.Instance.SetCurrentActionSelected(EntityActionEnumID.TargetTileMove);
+
+		foreach (WeaponCone weaponCone in m_weaponConeDictionary.Values)
 		{
 			weaponCone.ActivateActiveCone();
 		}

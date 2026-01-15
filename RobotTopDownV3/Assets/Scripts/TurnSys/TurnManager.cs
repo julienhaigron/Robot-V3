@@ -212,18 +212,21 @@ public class TurnManager : Singleton<TurnManager>
 
 	public void RefreshActionDisplay (int? _selectedEntityID)
 	{
-		PlayerController.Instance.ClearArrows();
+		PlayerController.Instance.ClearActionOnTileDisplay();
+		PlayerController.Instance.ClearGhostActionOnTileDisplay();
 
-		if (_selectedEntityID == null || !m_recordedActionInput.ContainsKey((int)_selectedEntityID))
+		if (!_selectedEntityID.HasValue || !m_recordedActionInput.ContainsKey((int)_selectedEntityID))
 			return;
 
+		if(m_remainingActionToken[_selectedEntityID.Value] >= GameAssets.current.game.entityActionsData[m_currentActionTypeSelected].tokenCost)
+			SetCurrentActionSelected(m_currentActionTypeSelected);
 		//1) pop ghost if no ghost
 		//else: refresh ghost position
 
 		//2) display all selected entity actions
 		foreach (RecordedAction recordedAction in m_recordedActionInput[(int)_selectedEntityID].ToArray())
 		{
-			recordedAction.action.Display();
+			recordedAction.action.Display(recordedAction.entityState);
 		}
 	}
 

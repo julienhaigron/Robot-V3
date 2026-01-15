@@ -66,7 +66,7 @@ public class MoveToTargetAction : AEntityAction
 	{
 		int maxDistance = TurnManager.Instance.RemainingActionToken[performingEntityID];
 
-		if (_tile.IsObstacle() || GridManager.Instance.GetDistanceBetween(GridManager.Instance.Tiles[TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntityID)], _tile, true) > maxDistance)
+		if (_tile.GetEntity(true) != null || _tile.IsObstacle() || GridManager.Instance.GetDistanceBetween(GridManager.Instance.Tiles[TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntityID)], _tile, true) > maxDistance)
 			return false;
 
 		return true;
@@ -201,15 +201,36 @@ public class MoveToTargetAction : AEntityAction
 		positionAtActionEndID = pathToTile[1].coordinates.ID;
 	}
 
-	public override void Display ()
+	public override void Display ( Entity.EntityState _state )
 	{
-		Arrow arrow = ObjectsPooling.GetElement(GameAssets.current.game.arrowPoolData) as Arrow;
+		ActionDisplayOnTile arrow = ObjectsPooling.GetElement(GameAssets.current.game.arrowPoolData) as ActionDisplayOnTile;
 		Vector3 startPos = GridManager.Instance.Tiles[supposedPositionAtActionStartID].transform.position;
 		Vector3 destination = GridManager.Instance.Tiles[(int)thisActionDestinationID].transform.position;
 		Vector3 position = Vector3.Lerp(startPos, destination, .5f);
+		arrow.SetMaterial(GameAssets.current.ui.entityStateMaterials[_state]);
 		arrow.transform.position = position;
 		arrow.transform.LookAt(GridManager.Instance.Tiles[(int)thisActionDestinationID].transform);
 
 		PlayerController.Instance.arrows.Add(arrow);
+	}
+
+	public override void GhostDisplay ( Entity.EntityState _state )
+	{
+		Tile from = GridManager.Instance.Tiles[(int)TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntityID)];
+		List<Tile> pathToTile = GridManager.Instance.GetPath(from, GridManager.Instance.Tiles[(int)positionAtActionEndID], _isThisTurn: false);
+		pathToTile.Reverse();
+
+		for(int i = 0; i < pathToTile.Count - 1; i++)
+		{
+			ActionDisplayOnTile arrow = ObjectsPooling.GetElement(GameAssets.current.game.arrowPoolData) as ActionDisplayOnTile;
+			Vector3 startPos = pathToTile[i].transform.position;
+			Vector3 destination = pathToTile[i+1].transform.position;
+			Vector3 position = Vector3.Lerp(startPos, destination, .5f);
+			arrow.SetMaterial(GameAssets.current.ui.entityStateMaterials[_state]);
+			arrow.transform.position = position;
+			arrow.transform.LookAt(pathToTile[i + 1].transform);
+
+			PlayerController.Instance.tempArrows.Add(arrow);
+		}
 	}
 }

@@ -84,7 +84,7 @@ public class AttackAction : AEntityAction
 		} 
 	}
 
-	public override void Display ()
+	public override void Display ( Entity.EntityState _state )
 	{
 		//TODO ?
 	}
@@ -95,5 +95,10 @@ public class AttackAction : AEntityAction
 
 		Entity entity = _tile.GetEntity(true);
 		return entity != null && !entity.IsAlliedTo(PerformingEntity.PlayerOwnerID);
+	}
+
+	public override void GhostDisplay ( Entity.EntityState _state )
+	{
+
 	}
 }

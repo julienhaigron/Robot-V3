@@ -83,9 +83,14 @@ public class RotateWeaponAction : AEntityAction
 		/*} */
 	}
 
-	public override void Display ()
+	public override void Display ( Entity.EntityState _state )
 	{
 		//TODO ?
+	}
+
+	public override void GhostDisplay ( Entity.EntityState _state )
+	{
+
 	}
 
 	public override bool TileInteractPredicate ( Tile _tile )
