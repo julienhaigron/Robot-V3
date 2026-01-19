@@ -49,6 +49,9 @@ public class GridEditorWindows : EditorWindow
 
 	private void Grid ()
 	{
+		if (GridManager.Instance == null)
+			return;
+
 		GUILayoutOption group = GUILayout.Height(30f);
 
 		StartBox("Grid");

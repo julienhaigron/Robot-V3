@@ -131,7 +131,7 @@ public class GridTool : EditorTool
 
 	public override void OnToolGUI ( EditorWindow window )
 	{
-		if (!GridManager.Instance.isGroundBrushSelected)
+		if (GridManager.Instance == null || !GridManager.Instance.isGroundBrushSelected)
 			return;
 
 		Event e = Event.current;
