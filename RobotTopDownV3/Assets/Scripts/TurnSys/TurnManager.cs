@@ -245,10 +245,8 @@ public class TurnManager : Singleton<TurnManager>
 
 		if(m_remainingActionToken[_selectedEntityID.Value] >= GameAssets.current.game.entityActionsData[m_currentActionTypeSelected].tokenCost)
 			SetCurrentActionSelected(m_currentActionTypeSelected);
-		//1) pop ghost if no ghost
-		//else: refresh ghost position
 
-		//2) display all selected entity actions
+		// display all selected entity actions
 		foreach (RecordedAction recordedAction in m_recordedActionInput[(int)_selectedEntityID].ToArray())
 		{
 			recordedAction.action.Display(recordedAction);

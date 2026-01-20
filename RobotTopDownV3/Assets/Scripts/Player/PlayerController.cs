@@ -183,8 +183,8 @@ public class PlayerController : Singleton<PlayerController>
 					m_selectedEntity.Deselect();
 					onEntitySelected?.Invoke(null);
 					m_selectedEntity = _tile.GetEntity(true);
-					m_selectedEntity.Select();
 					onEntitySelected?.Invoke(m_selectedEntity.ID);
+					m_selectedEntity.Select();
 
 					return;
 				}
@@ -207,7 +207,7 @@ public class PlayerController : Singleton<PlayerController>
 		if (TurnManager.Instance.currentPhase != TurnManager.TurnPhase.Recording)
 			return;
 
-		if (m_selectedEntity != null)
+		if (m_selectedEntity != null && m_actionDisplays.ContainsKey(m_selectedEntity.ID) && m_actionDisplays[m_selectedEntity.ID].Count > 0)
 		{
 			int playerId = !GameManager.Instance.IsOnline ? 0 : OnlinePlayerInstance.Self.connectionIndex;
 			//ally entity

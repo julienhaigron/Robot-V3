@@ -226,7 +226,7 @@ public class MoveToTargetAction : AEntityAction
 			Vector3 startPos = pathToTile[i].transform.position;
 			Vector3 destination = pathToTile[i+1].transform.position;
 			Vector3 position = Vector3.Lerp(startPos, destination, .5f);
-			arrow.SetMaterial(GameAssets.current.ui.entityStateMaterials[_state]);
+			arrow.SetMaterial(GameAssets.current.ui.ghostEntityStateMaterials[_state]);
 			arrow.transform.position = position;
 			arrow.transform.LookAt(pathToTile[i + 1].transform);
 

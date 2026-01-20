@@ -19,6 +19,8 @@ public class ActionDisplayOnTile : PoolElement
     public void SetMaterial(Material _mat)
 	{
 		foreach(MeshRenderer rd in m_renderers)
+		{
 			rd.material = _mat;
+		}
 	}
 }

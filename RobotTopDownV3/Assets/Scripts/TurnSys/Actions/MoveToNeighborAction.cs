@@ -199,7 +199,7 @@ public class MoveToNeighborAction : AEntityAction
 		Vector3 startPos = GridManager.Instance.Tiles[supposedPositionAtActionStartID].transform.position;
 		Vector3 destination = GridManager.Instance.Tiles[positionAtActionEndID].transform.position;
 		Vector3 position = Vector3.Lerp(startPos, destination, .5f);
-		arrow.SetMaterial(GameAssets.current.ui.entityStateMaterials[_state]);
+		arrow.SetMaterial(GameAssets.current.ui.ghostEntityStateMaterials[_state]);
 		arrow.transform.position = position;
 		arrow.transform.LookAt(GridManager.Instance.Tiles[positionAtActionEndID].transform);
 
