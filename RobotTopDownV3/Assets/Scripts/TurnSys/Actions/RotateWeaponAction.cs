@@ -83,7 +83,7 @@ public class RotateWeaponAction : AEntityAction
 		/*} */
 	}
 
-	public override void Display ( Entity.EntityState _state )
+	public override void Display ( TurnManager.RecordedAction _recordedAction )
 	{
 		//TODO ?
 	}

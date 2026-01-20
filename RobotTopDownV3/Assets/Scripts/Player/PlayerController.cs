@@ -4,6 +4,7 @@ using UnityEngine;
 using System;
 using Sirenix.OdinInspector;
 using DG.Tweening;
+using System.Linq;
 
 public class PlayerController : Singleton<PlayerController>
 {
@@ -30,7 +31,7 @@ public class PlayerController : Singleton<PlayerController>
 			if (GridManager.Instance == null)
 				return Vector2.zero;
 
-			return new Vector2 (0, GridManager.Instance.gridData.height * 1.5f);
+			return new Vector2(0, GridManager.Instance.gridData.height * 1.5f);
 		}
 	}
 
@@ -46,12 +47,18 @@ public class PlayerController : Singleton<PlayerController>
 	private Entity m_selectedEntity;
 	public Entity SelectedEntity => m_selectedEntity;
 
-	public List<ActionDisplayOnTile> arrows = new();
-	public List<ActionDisplayOnTile> tempArrows = new();
+
+	//public List<ActionDisplayOnTile> arrows = new();
+	private SerializableDictionary<int, List<ActionDisplayOnTile>> m_actionDisplays = new();
+	//public SerializableDictionary<int, List<ActionDisplayOnTile>> ActionDisplays => m_actionDisplays;
+	//public List<ActionDisplayOnTile> tempArrows = new();
+	private SerializableDictionary<int, List<ActionDisplayOnTile>> m_tempActionDisplays = new();
+	//public SerializableDictionary<int, List<ActionDisplayOnTile>> TempActionDisplays => m_tempActionDisplays;
 
 	private void Start ()
 	{
-		InputManager.onTileSelected += OnTileSelected;
+		InputManager.onTileleftClick += OnTileLeftClick;
+		InputManager.onTileRightClick += OnTileRightClick;
 		InputManager.onTileHovered += OnTileHovered;
 		TurnManager.onEndInputPhase += OnEndInputPhase;
 
@@ -61,7 +68,8 @@ public class PlayerController : Singleton<PlayerController>
 
 	private void OnDestroy ()
 	{
-		InputManager.onTileSelected -= OnTileSelected;
+		InputManager.onTileleftClick -= OnTileLeftClick;
+		InputManager.onTileRightClick -= OnTileRightClick;
 		InputManager.onTileHovered -= OnTileHovered;
 		TurnManager.onEndInputPhase -= OnEndInputPhase;
 
@@ -137,12 +145,12 @@ public class PlayerController : Singleton<PlayerController>
 		float zoomMovement = -(scroll * GameConfig.current.game.cameraZoomSpeed);
 
 		m_currentZoomDistance += zoomMovement;
-		m_currentZoomDistance = Mathf.Clamp(m_currentZoomDistance,  GameConfig.current.game.cameraZoomBounds.x, GameConfig.current.game.cameraZoomBounds.y);
+		m_currentZoomDistance = Mathf.Clamp(m_currentZoomDistance, GameConfig.current.game.cameraZoomBounds.x, GameConfig.current.game.cameraZoomBounds.y);
 
 		playerCamera.transform.position = new Vector3(playerCamera.transform.position.x, m_currentZoomDistance, playerCamera.transform.position.z);
 	}
 
-	private void OnTileSelected ( Tile _tile )
+	private void OnTileLeftClick ( Tile _tile )
 	{
 		if (TurnManager.Instance.currentPhase != TurnManager.TurnPhase.Recording)
 			return;
@@ -151,6 +159,7 @@ public class PlayerController : Singleton<PlayerController>
 		if (_tile.GetEntity(true) != null && !_tile.CanInteract)
 		{
 			int playerId = !GameManager.Instance.IsOnline ? 0 : OnlinePlayerInstance.Self.connectionIndex;
+			//ally entity
 			if (_tile.GetEntity(true).IsAlliedTo(playerId))
 			{
 				if (m_selectedEntity == _tile.GetEntity(true))
@@ -169,6 +178,16 @@ public class PlayerController : Singleton<PlayerController>
 						m_selectedEntity.Select();
 					return;
 				}
+				else
+				{
+					m_selectedEntity.Deselect();
+					onEntitySelected?.Invoke(null);
+					m_selectedEntity = _tile.GetEntity(true);
+					m_selectedEntity.Select();
+					onEntitySelected?.Invoke(m_selectedEntity.ID);
+
+					return;
+				}
 			}
 
 		}
@@ -176,36 +195,46 @@ public class PlayerController : Singleton<PlayerController>
 		//validate action
 		if (m_selectedEntity != null)
 		{
-			//if(_tile.canInteract)
-			//  => add new action of current selected action type to queue
 			if (_tile.CanInteract)
 			{
-				//TODO : give info to action before adding it
 				TurnManager.Instance.CurrentActionSelected.RegisterInteraction(_tile);
 			}
 		}
+	}
 
-		/*if(m_selectedTile != null && m_selectedTile != _tile)
+	private void OnTileRightClick ( Tile _tile )
+	{
+		if (TurnManager.Instance.currentPhase != TurnManager.TurnPhase.Recording)
+			return;
+
+		if (m_selectedEntity != null)
 		{
-			m_selectedEntity.Displacement.MoveToTile(_tile, null);
-			m_selectedEntity = null;
-			m_selectedTile = null;
-			GridManager.Instance.ClearTileOutile();
+			int playerId = !GameManager.Instance.IsOnline ? 0 : OnlinePlayerInstance.Self.connectionIndex;
+			//ally entity
+			if (m_selectedEntity.IsAlliedTo(playerId))
+			{
+				//remove action interaction
+				List<ActionDisplayOnTile> actionsOnTile = new();
+				foreach (ActionDisplayOnTile display in m_actionDisplays[m_selectedEntity.ID])
+				{
+					if (display.OriginTile == _tile)
+						actionsOnTile.Add(display);
+				}
+				actionsOnTile.Reverse();
+
+				foreach (ActionDisplayOnTile display in actionsOnTile)
+				{
+					List<TurnManager.RecordedAction> actionQueue = TurnManager.Instance.RecordedActions[m_selectedEntity.ID].ToList();
+					for (int i = 0; i < actionQueue.Count; i++)
+					{
+						if (actionQueue[i].action == display.RecordedAction.action)
+						{
+							TurnManager.Instance.RemoveActionFrom(actionQueue[i], i);
+						}
+					}
+				}
+			}
 		}
-		else if (m_selectedTile != _tile && _tile.GetEntity(true) != null && _tile.GetEntity(true) == m_selectedEntity)
-		{
-			m_selectedEntity.Deselect();
-			m_selectedEntity = null;
-			m_selectedTile = null;
-			GridManager.Instance.ClearTileOutile();
-		}
-		else if (m_selectedTile != _tile && _tile.GetEntity(true) != null)
-		{
-			m_selectedTile = _tile;
-			m_selectedEntity = _tile.GetEntity(true);
-			m_selectedEntity.Select();
-			GridManager.Instance.BFS(_tile);
-		}*/
 	}
 
 	private void OnTileHovered ( Tile _tile )
@@ -218,8 +247,7 @@ public class PlayerController : Singleton<PlayerController>
 
 			ClearGhostActionOnTileDisplay();
 
-			//TODO : display movement towards tile
-			if (TurnManager.Instance.currentPhase == TurnManager.TurnPhase.Recording 
+			if (TurnManager.Instance.currentPhase == TurnManager.TurnPhase.Recording
 				&& (TurnManager.Instance.CurrentActionTypeSelected == EntityActionEnumID.NeighborMove || TurnManager.Instance.CurrentActionTypeSelected == EntityActionEnumID.TargetTileMove)
 				&& TurnManager.Instance.CurrentActionSelected.TileInteractPredicate(_tile))
 			{
@@ -227,29 +255,7 @@ public class PlayerController : Singleton<PlayerController>
 				TurnManager.Instance.CurrentActionSelected.GhostDisplay(TurnManager.Instance.CurrentStateTypeSelected);
 			}
 
-
-
-
-
-			/*GridManager.Instance.ClearTileOutile();
-			m_selectedEntity.Equipment.AimAtTile("default", _tile);
-			List<Tile> tilesInRange = m_selectedEntity.Equipment.GetTilesInRange("default");
-
-			foreach(Tile tile in tilesInRange)
-			{
-				tile.UI.EnableOutline(Color.green);
-			}*/
-
 			m_hoveredTile = _tile;
-			/*List<Tile> path = GridManager.Instance.GetPath(m_selectedTile, m_hoveredTile, true);
-
-			if (path == null)
-				return;
-
-			foreach (Tile tile in path)
-			{
-				tile.UI.EnableOutline(Color.blue);
-			}*/
 		}
 	}
 
@@ -260,21 +266,43 @@ public class PlayerController : Singleton<PlayerController>
 		ClearGhostActionOnTileDisplay();
 	}
 
+	public void AddActionDisplay ( ActionDisplayOnTile _display, int _performingEntityID, bool _isTemp )
+	{
+		if (_isTemp)
+		{
+			if (!m_tempActionDisplays.ContainsKey(_performingEntityID))
+				m_tempActionDisplays.Add(_performingEntityID, new());
+			m_tempActionDisplays[_performingEntityID].Add(_display);
+		}
+		else
+		{
+			if (!m_actionDisplays.ContainsKey(_performingEntityID))
+				m_actionDisplays.Add(_performingEntityID, new());
+			m_actionDisplays[_performingEntityID].Add(_display);
+		}
+	}
+
 	public void ClearActionOnTileDisplay ()
 	{
-		foreach (ActionDisplayOnTile arrow in arrows)
+		foreach (int entityID in m_actionDisplays.Keys)
 		{
-			arrow.Discard();
+			foreach (ActionDisplayOnTile display in m_actionDisplays[entityID])
+			{
+				display.Discard();
+			}
+			m_actionDisplays[entityID].Clear();
 		}
-		arrows.Clear();
 	}
 
 	public void ClearGhostActionOnTileDisplay ()
 	{
-		foreach (ActionDisplayOnTile arrow in tempArrows)
+		foreach (int entityID in m_tempActionDisplays.Keys)
 		{
-			arrow.Discard();
+			foreach (ActionDisplayOnTile display in m_tempActionDisplays[entityID])
+			{
+				display.Discard();
+			}
+			m_tempActionDisplays[entityID].Clear();
 		}
-		tempArrows.Clear();
 	}
 }

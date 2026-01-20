@@ -6,7 +6,8 @@ using System;
 
 public class InputManager : MonoBehaviour
 {
-	public static Action<Tile> onTileSelected;
+	public static Action<Tile> onTileleftClick;
+	public static Action<Tile> onTileRightClick;
 	public static Action<Tile> onTileHovered;
 
 	private Vector3 m_mousePosition;
@@ -27,7 +28,10 @@ public class InputManager : MonoBehaviour
 
 			if (hitInfo.transform.parent.TryGetComponent(out Tile tile))
 			{
-				onTileSelected?.Invoke(tile);
+				if (string.Equals(context.control.name, "leftButton"))
+					onTileleftClick?.Invoke(tile);
+				else if (string.Equals(context.control.name , "rightButton"))
+					onTileRightClick?.Invoke(tile);
 			}
 		}
 	}

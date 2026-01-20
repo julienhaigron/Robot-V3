@@ -6,6 +6,7 @@ public class EntityActionQueueDisplay : MonoBehaviour
 {
 	[SerializeField] private Transform m_actionDisplayParent;
 	[SerializeField] private GameObject m_scrollView;
+	[SerializeField] private CounterDisplay m_actionTokenDisplay;
 
 	private List<EntityActionDisplay> m_displays = new();
 	private int? m_currentEntitySelected;
@@ -16,6 +17,8 @@ public class EntityActionQueueDisplay : MonoBehaviour
 		TurnManager.onActionAdded += OnActionAdded;
 		TurnManager.onActionRemoved += OnActionRemoved;
 		TurnManager.onEndInputPhase += OnEndInputPhase;
+
+		RefreshQueue(null);
 	}
 
 	private void OnDestroy ()
@@ -54,21 +57,22 @@ public class EntityActionQueueDisplay : MonoBehaviour
 
 	private void OnActionRemoved ( TurnManager.RecordedAction _removedRecordedAction )
 	{
-		foreach(EntityActionDisplay display in m_displays)
+		RefreshQueue(_removedRecordedAction.performingEntityID);
+		/*foreach(EntityActionDisplay display in m_displays)
 		{
 			if(display.RecordedAction.action == _removedRecordedAction.action)
 			{
 				display.Hide(false);
 				return;
 			}
-		}
+		}*/
 	}
 
 	private void RefreshQueue ( int? _entityID )
 	{
 		if (_entityID != null && GameManager.Instance.GetEntityFromID(out Entity entity, _entityID.Value) && entity.IsAlliedTo(GameManager.Instance.PlayerID))
 		{
-			m_scrollView.SetActive(true);
+			gameObject.SetActive(true);
 
 			int count = 0;
 			if (TurnManager.Instance.RecordedActions.ContainsKey(_entityID.Value))
@@ -87,11 +91,14 @@ public class EntityActionQueueDisplay : MonoBehaviour
 			{
 				m_displays[i].Hide(true);
 			}
+
+			m_actionTokenDisplay.UpdateValue(TurnManager.Instance.RemainingActionToken[_entityID.Value]
+				, _suffix: "/" + GameManager.Instance.GetEntityFromID(_entityID.Value).Data.FrameData.actionTokenAmount);
 		}
 		else
 		{
 			//hide stuff
-			m_scrollView.SetActive(false);
+			gameObject.SetActive(false);
 		}
 	}
 

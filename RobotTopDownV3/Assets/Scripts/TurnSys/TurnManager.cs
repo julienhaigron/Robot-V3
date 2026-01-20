@@ -119,7 +119,8 @@ public class TurnManager : Singleton<TurnManager>
 
 	public int GetLastRegisteredPositionOfEntity ( int _entityID )
 	{
-		if (m_recordedActionInput.ContainsKey(_entityID) == false)
+		if (m_recordedActionInput.ContainsKey(_entityID) == false 
+			|| m_recordedActionInput[_entityID] == null || m_recordedActionInput[_entityID].Count == 0)
 			return GameManager.Instance.GetEntityFromID(_entityID).Displacement.Coordinates.ID;
 
 		RecordedAction lastRecordedAction = m_recordedActionInput[_entityID].ToArray()[^1];
@@ -202,12 +203,36 @@ public class TurnManager : Singleton<TurnManager>
 		return true;
 	}
 
+	public void RemoveActionFrom ( RecordedAction _actionToStartRemoveFrom, int _recordedActionPositionInQueue )
+	{
+		if (!m_recordedActionInput.ContainsKey(_actionToStartRemoveFrom.performingEntityID) 
+			|| m_recordedActionInput[_actionToStartRemoveFrom.performingEntityID].Count <= _recordedActionPositionInQueue)
+			return;
+
+		List<RecordedAction> actionQueue = m_recordedActionInput[_actionToStartRemoveFrom.performingEntityID].ToList();
+		for(int i = actionQueue.Count - 1; i >= _recordedActionPositionInQueue; i--)
+		{
+			m_remainingActionToken[_actionToStartRemoveFrom.performingEntityID] += actionQueue[i].action.Data.tokenCost;
+			actionQueue.RemoveAt(i);
+		}
+		//actionQueue.RemoveRange(_recordedActionPositionInQueue, actionQueue.Count - _recordedActionPositionInQueue);
+		m_recordedActionInput[_actionToStartRemoveFrom.performingEntityID] = new Queue<RecordedAction>(actionQueue);
+		onActionRemoved?.Invoke(_actionToStartRemoveFrom);
+
+		RefreshActionDisplay(_actionToStartRemoveFrom.performingEntityID);
+	}
+
 	public void RemoveAction ( RecordedAction _removedRecordedAction )
 	{
+		if (!m_recordedActionInput.ContainsKey(_removedRecordedAction.performingEntityID))
+			return;
+
 		List<RecordedAction> actionQueue = m_recordedActionInput[_removedRecordedAction.performingEntityID].ToList();
 		actionQueue.Remove(_removedRecordedAction);
 		m_recordedActionInput[_removedRecordedAction.performingEntityID] = new Queue<RecordedAction>(actionQueue);
 		onActionRemoved?.Invoke(_removedRecordedAction);
+
+		RefreshActionDisplay(_removedRecordedAction.performingEntityID);
 	}
 
 	public void RefreshActionDisplay (int? _selectedEntityID)
@@ -226,7 +251,7 @@ public class TurnManager : Singleton<TurnManager>
 		//2) display all selected entity actions
 		foreach (RecordedAction recordedAction in m_recordedActionInput[(int)_selectedEntityID].ToArray())
 		{
-			recordedAction.action.Display(recordedAction.entityState);
+			recordedAction.action.Display(recordedAction);
 		}
 	}
 

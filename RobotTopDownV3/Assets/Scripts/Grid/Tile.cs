@@ -75,6 +75,7 @@ public class Tile : MonoBehaviour
 	private void Start ()
 	{
 		TurnManager.onActionAdded += OnActionAdded;
+		TurnManager.onActionRemoved += OnActionRemoved;
 		TurnManager.onActionSelected += OnActionSelected;
 		TurnManager.onEndInputPhase += OnEndInputPhase;
 		TurnManager.onStartInputPhase += OnStartInputPhase;
@@ -84,6 +85,7 @@ public class Tile : MonoBehaviour
 	private void OnDestroy ()
 	{
 		TurnManager.onActionAdded -= OnActionAdded;
+		TurnManager.onActionRemoved -= OnActionRemoved;
 		TurnManager.onActionSelected -= OnActionSelected;
 		TurnManager.onEndInputPhase -= OnEndInputPhase;
 		TurnManager.onStartInputPhase -= OnStartInputPhase;
@@ -182,6 +184,12 @@ public class Tile : MonoBehaviour
 	}
 
 	private void OnActionAdded (TurnManager.RecordedAction _recordedAction)
+	{
+		UI.ResetOutline();
+		m_canInteract = false;
+	}
+
+	private void OnActionRemoved ( TurnManager.RecordedAction _recordedAction )
 	{
 		UI.ResetOutline();
 		m_canInteract = false;

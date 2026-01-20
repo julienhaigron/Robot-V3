@@ -180,17 +180,17 @@ public class MoveToNeighborAction : AEntityAction
 		finalTargetTileID = pathToTile[^2].coordinates.ID;
 	}
 
-	public override void Display ( Entity.EntityState _state )
+	public override void Display ( TurnManager.RecordedAction _recordedAction )
 	{
 		ActionDisplayOnTile arrow = ObjectsPooling.GetElement(GameAssets.current.game.arrowPoolData) as ActionDisplayOnTile;
 		Vector3 startPos = GridManager.Instance.Tiles[supposedPositionAtActionStartID].transform.position;
 		Vector3 destination = GridManager.Instance.Tiles[positionAtActionEndID].transform.position;
 		Vector3 position = Vector3.Lerp(startPos, destination, .5f);
-		arrow.SetMaterial(GameAssets.current.ui.entityStateMaterials[_state]);
+		arrow.Init(_recordedAction);
 		arrow.transform.position = position;
 		arrow.transform.LookAt(GridManager.Instance.Tiles[positionAtActionEndID].transform);
 
-		PlayerController.Instance.arrows.Add(arrow);
+		PlayerController.Instance.AddActionDisplay(arrow, performingEntityID, false);
 	}
 
 	public override void GhostDisplay ( Entity.EntityState _state )
@@ -203,6 +203,6 @@ public class MoveToNeighborAction : AEntityAction
 		arrow.transform.position = position;
 		arrow.transform.LookAt(GridManager.Instance.Tiles[positionAtActionEndID].transform);
 
-		PlayerController.Instance.tempArrows.Add(arrow);
+		PlayerController.Instance.AddActionDisplay(arrow, performingEntityID, true);
 	}
 }
