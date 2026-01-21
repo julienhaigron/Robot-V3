@@ -97,6 +97,12 @@ MonoBehaviour:
       - {fileID: 2100000, guid: 01d969979321bef449ffd88218909815, type: 2}
       - {fileID: 2100000, guid: a8bc155b222905340a53cac2ac3db7a0, type: 2}
       - {fileID: 2100000, guid: 2e3db9c21b741184e9a00525552b876e, type: 2}
+    entityStateColors:
+      keys: 000000000100000002000000
+      values:
+      - {r: 0.15566039, g: 0.37778977, b: 1, a: 1}
+      - {r: 1, g: 0, b: 0, a: 1}
+      - {r: 1, g: 0.57371694, b: 0.06132078, a: 1}
     ghostEntityStateMaterials:
       keys: 000000000100000002000000
       values:
@@ -109,8 +115,12 @@ MonoBehaviour:
     - enemi1
     - player1
     - defaultweapon
+    - ak
+    - pistol
     values:
     - {fileID: 11400000, guid: d1ff8cefde9698646866f7c141843e06, type: 2}
     - {fileID: 11400000, guid: 269ea4b9e1222fe42bc648cbcdf4a6a9, type: 2}
     - {fileID: 11400000, guid: 11de9230c09867747908272f3310089f, type: 2}
     - {fileID: 11400000, guid: dc7d2dbc3edd72d4f9025dff20a7cbaa, type: 2}
+    - {fileID: 11400000, guid: 3820ae6eea1419c4fb586677667c12aa, type: 2}
+    - {fileID: 11400000, guid: 88252aa38fb340c469720857dae6ae3b, type: 2}

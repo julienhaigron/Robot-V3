@@ -13,7 +13,10 @@ MonoBehaviour:
   m_Name: WaitAction
   m_EditorClassIdentifier: 
   displayName: Wait
-  type: 3
+  typeID: 3
   icon: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
+  tileOutlineColor: {r: 0, g: 1, b: 0, a: 1}
   tokenCost: 1
   tokenCooldown: 1
+  appliableEffects: []
+  type: 4

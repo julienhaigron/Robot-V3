@@ -13,7 +13,10 @@ MonoBehaviour:
   m_Name: TargetTileMoveAction
   m_EditorClassIdentifier: 
   displayName: Target Tile Move
-  type: 1
+  typeID: 1
   icon: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
+  tileOutlineColor: {r: 0, g: 1, b: 0, a: 1}
   tokenCost: 1
   tokenCooldown: 1
+  appliableEffects: []
+  type: 2
