@@ -65,7 +65,7 @@ public class TurnManager : Singleton<TurnManager>
 			{
 				action = Instance.GetAction(type, performingEntityID);
 
-				if(action == null)
+				if (action == null)
 				{
 					Debug.LogError("ERROR : action is null when " + (serializer.IsWriter ? "writing" : "reading") + " with type " + type);
 				}
@@ -106,7 +106,7 @@ public class TurnManager : Singleton<TurnManager>
 
 	public void Init ()
 	{
-		foreach(EntityAnchor anchor in GameManager.Instance.PlayersEntityAnchor)
+		foreach (EntityAnchor anchor in GameManager.Instance.PlayersEntityAnchor)
 		{
 			foreach (Entity entity in anchor.Entities)
 			{
@@ -119,7 +119,7 @@ public class TurnManager : Singleton<TurnManager>
 
 	public int GetLastRegisteredPositionOfEntity ( int _entityID )
 	{
-		if (m_recordedActionInput.ContainsKey(_entityID) == false 
+		if (m_recordedActionInput.ContainsKey(_entityID) == false
 			|| m_recordedActionInput[_entityID] == null || m_recordedActionInput[_entityID].Count == 0)
 			return GameManager.Instance.GetEntityFromID(_entityID).Displacement.Coordinates.ID;
 
@@ -127,7 +127,7 @@ public class TurnManager : Singleton<TurnManager>
 		return lastRecordedAction.action.positionAtActionEndID;
 	}
 
-	public void SetCurrentStateSelected (Entity.EntityState _state )
+	public void SetCurrentStateSelected ( Entity.EntityState _state )
 	{
 		m_currentStateTypeSelected = _state;
 	}
@@ -140,7 +140,7 @@ public class TurnManager : Singleton<TurnManager>
 		onActionSelected?.Invoke(m_currentEntityAction);
 	}
 
-	public AEntityAction GetAction(EntityActionEnumID _actionType, int _performingEntityID )
+	public AEntityAction GetAction ( EntityActionEnumID _actionType, int _performingEntityID )
 	{
 		AEntityAction action = null;
 
@@ -171,7 +171,7 @@ public class TurnManager : Singleton<TurnManager>
 		return action;
 	}
 
-	public bool AddAction (int _entityID, EntityActionEnumID _actionType, Entity.EntityState _state )
+	public bool AddAction ( int _entityID, EntityActionEnumID _actionType, Entity.EntityState _state )
 	{
 		AEntityAction action = null;
 		action = GetAction(_actionType, _entityID);
@@ -195,7 +195,7 @@ public class TurnManager : Singleton<TurnManager>
 		};
 		m_recordedActionInput[_entityID].Enqueue(recordedAction);
 
-		m_remainingActionToken[_entityID]-= GameAssets.current.game.entityActionsData[_action.enumID].tokenCost;
+		m_remainingActionToken[_entityID] -= GameAssets.current.game.entityActionsData[_action.enumID].tokenCost;
 
 		LogConsole.AddLog("Add " + _action.ToString() + " action to queue.", LogConsole.LogEventType.InputPhase);
 		//Update action display on grid + UI
@@ -205,12 +205,12 @@ public class TurnManager : Singleton<TurnManager>
 
 	public void RemoveActionFrom ( RecordedAction _actionToStartRemoveFrom, int _recordedActionPositionInQueue )
 	{
-		if (!m_recordedActionInput.ContainsKey(_actionToStartRemoveFrom.performingEntityID) 
+		if (!m_recordedActionInput.ContainsKey(_actionToStartRemoveFrom.performingEntityID)
 			|| m_recordedActionInput[_actionToStartRemoveFrom.performingEntityID].Count <= _recordedActionPositionInQueue)
 			return;
 
 		List<RecordedAction> actionQueue = m_recordedActionInput[_actionToStartRemoveFrom.performingEntityID].ToList();
-		for(int i = actionQueue.Count - 1; i >= _recordedActionPositionInQueue; i--)
+		for (int i = actionQueue.Count - 1; i >= _recordedActionPositionInQueue; i--)
 		{
 			m_remainingActionToken[_actionToStartRemoveFrom.performingEntityID] += actionQueue[i].action.Data.tokenCost;
 			actionQueue.RemoveAt(i);
@@ -235,21 +235,25 @@ public class TurnManager : Singleton<TurnManager>
 		RefreshActionDisplay(_removedRecordedAction.performingEntityID);
 	}
 
-	public void RefreshActionDisplay (int? _selectedEntityID)
+	public void RefreshActionDisplay ( int? _selectedEntityID )
 	{
 		PlayerController.Instance.ClearActionOnTileDisplay();
 		PlayerController.Instance.ClearGhostActionOnTileDisplay();
 
-		if (!_selectedEntityID.HasValue || !m_recordedActionInput.ContainsKey((int)_selectedEntityID))
-			return;
+		/*if (!_selectedEntityID.HasValue || !m_recordedActionInput.ContainsKey((int)_selectedEntityID))
+			return;*/
 
-		if(m_remainingActionToken[_selectedEntityID.Value] >= GameAssets.current.game.entityActionsData[m_currentActionTypeSelected].tokenCost)
+		if (_selectedEntityID.HasValue && m_recordedActionInput.ContainsKey((int)_selectedEntityID) 
+			&& m_remainingActionToken[_selectedEntityID.Value] >= GameAssets.current.game.entityActionsData[m_currentActionTypeSelected].tokenCost)
 			SetCurrentActionSelected(m_currentActionTypeSelected);
 
 		// display all selected entity actions
-		foreach (RecordedAction recordedAction in m_recordedActionInput[(int)_selectedEntityID].ToArray())
+		foreach (int entityID in m_recordedActionInput.Keys)
 		{
-			recordedAction.action.Display(recordedAction);
+			foreach (RecordedAction recordedAction in m_recordedActionInput[entityID].ToArray())
+			{
+				recordedAction.action.Display(recordedAction);
+			}
 		}
 	}
 
@@ -421,7 +425,7 @@ public class TurnManager : Singleton<TurnManager>
 					entityId = kvp.Key,
 					actions = kvp.Value.ToArray()
 				});
-				foreach(RecordedAction recordedAction in kvp.Value.ToArray())
+				foreach (RecordedAction recordedAction in kvp.Value.ToArray())
 					LogConsole.AddLog("Action sent: " + recordedAction.action.ToString(), LogConsole.LogEventType.InputPhase);
 			}
 			m_networkedTurnSystem.StartPlayPhaseClientRPC(actionsToSend.ToArray());
@@ -446,7 +450,7 @@ public class TurnManager : Singleton<TurnManager>
 			}
 		}
 
-		foreach(RecordedAction recordedAction in m_actionsBeingDone.Values.ToArray())
+		foreach (RecordedAction recordedAction in m_actionsBeingDone.Values.ToArray())
 		{
 			LogConsole.AddLog("Action performed: " + recordedAction.action.ToString(), LogConsole.LogEventType.PlayPhase);
 			recordedAction.action.OnStartPerform(recordedAction.entityState);
@@ -538,7 +542,7 @@ public class TurnManager : Singleton<TurnManager>
 			StartNextPhase(); //end this phase
 	}
 
-	private void OnEntityDeath(int _entityID )
+	private void OnEntityDeath ( int _entityID )
 	{
 		GameManager.Instance.GetEntityFromID(_entityID).Equipment.onDeath -= OnEntityDeath;
 
@@ -551,7 +555,7 @@ public class TurnManager : Singleton<TurnManager>
 
 		//check if finish level condition (all enemy killed || all ally killed)
 		GameManager.Instance.LevelCompletionCheck(out bool _isPlayerOneDead, out bool _isPlayerTwoDead);
-		if(!GameManager.Instance.IsOnline)
+		if (!GameManager.Instance.IsOnline)
 		{
 			if (_isPlayerOneDead || _isPlayerTwoDead)
 			{
@@ -575,12 +579,12 @@ public class TurnManager : Singleton<TurnManager>
 					StartInputPhase();
 				}
 			}
-			m_networkedTurnSystem.EndRoundClientRPC( _isPlayerOneDead, _isPlayerTwoDead);
+			m_networkedTurnSystem.EndRoundClientRPC(_isPlayerOneDead, _isPlayerTwoDead);
 		}
 
 	}
 
-	public void EndLevel (bool _isSuccess)
+	public void EndLevel ( bool _isSuccess )
 	{
 		if (_isSuccess)
 			LogConsole.AddLog("Victory", LogConsole.LogEventType.Main);
