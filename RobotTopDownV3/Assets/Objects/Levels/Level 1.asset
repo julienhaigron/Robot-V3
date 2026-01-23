@@ -14,6 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   icon: {fileID: 0}
   title: Level 1
-  map: {fileID: 11400000, guid: 6f08d292abbf2bc4d8b8635617613b35, type: 2}
+  map: {fileID: 11400000, guid: 96bdcbe1a80e5c04bb71dc4c4aed43a9, type: 2}
   enemies:
-  - {fileID: 11400000, guid: 269ea4b9e1222fe42bc648cbcdf4a6a9, type: 2}
+  - name: 
+    frameID: 
+    brainID: 
+    armsIds: []

@@ -149,26 +149,22 @@ public class EntityEquipmentPlugin : EntityPlugin
 
 	public bool AttackRoll ( AttackAction _attackAction )
 	{
-		//OLD : isAttackSuccessful = (usedWeapon.accuracy * _currentMoventAccuracyRatio) - targetEntity.evasionPercent
-		//
-		//bool isAttackSuccessful = true;
-
 		Entity targetEntity = _attackAction.TargetEntity;
 		WeaponEquipmentData usedWeapon = m_weapons[_attackAction.attackingWeaponId].Data;
 
-		//target evasion score = movement ratio + evasion ratio + cover ratio + distance ratio
-		int targetMovementRatio = targetEntity.LastActionPerformedData.type == EntityActionData.ActionType.Movement ? GameConfig.current.game.entityMovementEvasionBonus : 0;
+		int targetCamo = targetEntity.Data.FrameData.camo;
 		int evationRatio = targetEntity.Data.FrameData.evasion;
 		int coverRatio = GridManager.Instance.IsThereCoverBeween(_attackAction.PerformingEntity, targetEntity) ? GameConfig.current.game.entityCoverBonus : 0;
 		int distanceRatio = m_weapons[_attackAction.attackingWeaponId].Data.distanceAccuracyBonus[GetWeaponDistanceTypeFrom(targetEntity, usedWeapon)];
 
-		int targetEvasionScore = targetMovementRatio + evationRatio + coverRatio + distanceRatio;
+		int targetEvasionScore = targetCamo + evationRatio + coverRatio + distanceRatio;
 
-		//user hit score = flank bonus + accuracy + weapon accuracy + 1d6 roll
+		int userPerception = m_linkedEntity.Data.BrainData.perception;
+		int userAim = _attackAction.Data.type == EntityActionData.ActionType.DistanceAttack ? m_linkedEntity.Data.BrainData.accuracy : m_linkedEntity.Data.BrainData.agility;
 		int flankBonus = GameConfig.current.game.entityFlankRatio[GridManager.Instance.GetHitTileSide(m_linkedEntity, targetEntity)];
-		int weaponAccuracy = usedWeapon.accuracy;
-		int accuracy = m_linkedEntity.Data.BrainData.accuracy;
-		int userHitScore = flankBonus + weaponAccuracy + accuracy + Random.Range(1, 7);
+		int modAction = m_linkedEntity.LastActionPerformedData.previousActionAttackModificator;
+
+		int userHitScore = userPerception + userAim + flankBonus + modAction;
 		bool isAttackSuccessful = targetEvasionScore < userHitScore;
 		LogConsole.AddLog("Attack Roll " + (isAttackSuccessful ? "[SUCESS]" : "[FAILURE]") + " : targetEvasionScore = " + targetEvasionScore + " and userHitScore = " + userHitScore, LogConsole.LogEventType.PlayPhase);
 

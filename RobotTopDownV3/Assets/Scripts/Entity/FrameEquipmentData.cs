@@ -25,12 +25,15 @@ public class FrameEquipmentData : EntityEquipmentData
     public int maxHealth;
     public int armSlotAvailable = 2;
     public int evasion = 2;
+    public int camo = 2;
 }
 
 [CreateAssetMenu(fileName = "BrainData", menuName = "ScriptableObject/BrainData", order = 1)]
 public class BrainEquipmentData : EntityEquipmentData
 {
     public int accuracy = 5;
+    public int agility = 5;
+    public int perception = 5;
 }
 
 [System.Serializable]

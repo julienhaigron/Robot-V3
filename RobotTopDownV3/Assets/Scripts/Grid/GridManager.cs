@@ -48,7 +48,7 @@ public class GridManager : Singleton<GridManager>
 	#region Editor
 #if UNITY_EDITOR
 
-	public bool isGroundBrushSelected = false;
+	//public bool isGroundBrushSelected = false;
 	public TileGroundType currentGroundBrushSelected;
 	public GridData gridData;
 

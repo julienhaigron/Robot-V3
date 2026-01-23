@@ -9,7 +9,7 @@ using UnityEditor.EditorTools;
 public class GridEditor : Editor
 {
 
-	private bool m_hasReleaseKey = false;
+	//private bool m_hasReleaseKey = false;
 
 	public override void OnInspectorGUI ()
 	{
@@ -131,7 +131,7 @@ public class GridTool : EditorTool
 
 	public override void OnToolGUI ( EditorWindow window )
 	{
-		if (GridManager.Instance == null || !GridManager.Instance.isGroundBrushSelected)
+		if (GridManager.Instance == null /*|| !GridManager.Instance.isGroundBrushSelected*/)
 			return;
 
 		Event e = Event.current;

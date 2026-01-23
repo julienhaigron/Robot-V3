@@ -75,10 +75,9 @@ public class GridEditorWindows : EditorWindow
 		}
 		EditorGUILayout.EndHorizontal();
 
-		GridManager.Instance.isGroundBrushSelected = EditorGUILayout.Toggle("IsGroundBrushSelected: ", GridManager.Instance.isGroundBrushSelected, group);
-
-		if(GridManager.Instance.isGroundBrushSelected)
-			GridManager.Instance.currentGroundBrushSelected = (TileGroundType)EditorGUILayout.EnumPopup("Current ground brush: ", GridManager.Instance.currentGroundBrushSelected);
+		//GridManager.Instance.isGroundBrushSelected = EditorGUILayout.Toggle("IsGroundBrushSelected: ", GridManager.Instance.isGroundBrushSelected, group);
+		//if(GridManager.Instance.isGroundBrushSelected)
+		GridManager.Instance.currentGroundBrushSelected = (TileGroundType)EditorGUILayout.EnumPopup("Current ground brush: ", GridManager.Instance.currentGroundBrushSelected);
 
 		EndBox();
 	}
