@@ -68,7 +68,7 @@ public class EntityDisplacementPlugin : EntityPlugin
 
 	public void Rotate(int _orientation, bool _isInstant )
 	{
-		if (_orientation == m_currentOrientation && !_isInstant)
+		if (_orientation == m_currentOrientation /*&& !_isInstant*/)
 			return;
 
 		m_currentOrientation = _orientation;
