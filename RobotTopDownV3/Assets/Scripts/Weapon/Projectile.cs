@@ -60,10 +60,16 @@ public class Projectile : PoolElement
 		}*/
 	}
 
-	public virtual void OnCollideWithOther ( int _collidedLayer )
+	public virtual void OnCollideWithOther ( int _collidedLayer, Collider _other )
 	{
 		//spawn bullet impact
 		//GameAssets.current.effects.punchLightFx.Get(transform.position).transform.localScale = Vector3.one * .5f;
+  if(_collidedLayer == GameConfig.current.ui.wallLayerMask)
+  {
+    //get wall
+    _other.GetComponent<WallLink>().Wall.TakeDamage(m_projectileData.damage);
+  }
+
 	}
 
 	public virtual void SetProjectileData ( ProjectileData _projectileData )
