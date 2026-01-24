@@ -67,7 +67,7 @@ public class Projectile : PoolElement
   if(_collidedLayer == GameConfig.current.ui.wallLayerMask)
   {
     //get wall
-    _other.GetComponent<WallLink>().Wall.TakeDamage(m_projectileData.damage);
+    _other.GetComponent<WallSelector>().LinkedWall.TakeDamage(m_projectileData.damage);
   }
 
 	}
