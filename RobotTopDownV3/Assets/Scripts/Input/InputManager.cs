@@ -2,7 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.UI;
 using System;
+using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 public class InputManager : MonoBehaviour
 {
@@ -14,23 +17,46 @@ public class InputManager : MonoBehaviour
 
 	private bool m_isLogConsoleOpen = false;
 
+	public static bool IsPointerOverBlockingUI ()
+	{
+		if (EventSystem.current == null)
+			return false;
+
+		PointerEventData data = new PointerEventData(EventSystem.current);
+		data.position = Mouse.current.position.ReadValue();
+
+		List<RaycastResult> results = new List<RaycastResult>();
+		EventSystem.current.RaycastAll(data, results);
+
+		foreach (var r in results)
+		{
+			var graphic = r.gameObject.GetComponent<Graphic>();
+			if (graphic != null && graphic.raycastTarget)
+				return true;
+		}
+
+		return false;
+	}
+
+
 	public void OnInteract ( InputAction.CallbackContext context )
 	{
 		if (context.started == false)
+			return;
+
+		if (IsPointerOverBlockingUI())
 			return;
 
 		Ray ray = CameraManager.Instance.Camera.ScreenPointToRay(Input.mousePosition);
 
 		if (Physics.Raycast(ray, out RaycastHit hitInfo, GameConfig.current.input.interactionRayCastLength, GameConfig.current.input.interactionRayCastLayer))
 		{
-			if (hitInfo.transform.gameObject.layer == GameConfig.current.input.uiLayer.value)
-				return;
 
 			if (hitInfo.transform.parent.TryGetComponent(out Tile tile))
 			{
 				if (string.Equals(context.control.name, "leftButton"))
 					onTileleftClick?.Invoke(tile);
-				else if (string.Equals(context.control.name , "rightButton"))
+				else if (string.Equals(context.control.name, "rightButton"))
 					onTileRightClick?.Invoke(tile);
 			}
 		}

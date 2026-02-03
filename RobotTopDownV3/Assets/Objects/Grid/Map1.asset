@@ -329,7 +329,7 @@ MonoBehaviour:
     orientation: 0
   - groundType: 1
     wallType: 0
-    orientation: 3
+    orientation: 0
   - groundType: 0
     wallType: 0
     orientation: 0
