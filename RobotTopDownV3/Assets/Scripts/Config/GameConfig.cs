@@ -11,6 +11,7 @@ public partial class GameConfig : ScriptableObject
 	public GameSettings game = new GameSettings();
 	public Input input = new Input();
 	public Meta meta = new Meta();
+	public UI ui = new UI();
 	public DatasConfigs datas = new DatasConfigs();
 
 	[System.Serializable]
@@ -29,9 +30,9 @@ public partial class GameConfig : ScriptableObject
 		public float cameraZoomSpeed;
 		public Vector2 cameraZoomBounds;
 
-		public SerializableDictionary<Tile.TileDirectionType, int> entityFlankRatio = new();
-		public int entityMovementEvasionBonus = 2;
-		public int entityCoverBonus = 2;
+		public SerializableDictionary<Tile.TileDirectionType, float> entityFlankRatio = new();
+		public float entityMovementEvasionBonus = 2;
+		public float entityCoverBonus = 2;
 		public SerializableDictionary<WeaponEquipmentData.DistanceType, float> distanceTypeSpreadEvaluation;
 	}
 
@@ -39,6 +40,12 @@ public partial class GameConfig : ScriptableObject
 	public class Meta
 	{
 		public SerializableDictionary<LogConsole.LogEventType, Color> colorsPerType = new();
+	}
+	
+	[System.Serializable]
+	public class UI
+	{
+		public LayerMask wallLayerMask;
 	}
 
 	[System.Serializable]

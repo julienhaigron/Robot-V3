@@ -22,6 +22,15 @@ public class EntityEquipmentPlugin : EntityPlugin
 	private bool m_isDead = false;
 	public bool IsDead => m_isDead;
 
+	private float m_generalDamageBuff = 1f;
+	public float GeneralDamageBuff => m_generalDamageBuff;
+
+	private SerializableDictionary<WeaponEquipmentData.DamageType, float> m_applyedDamageTypeBuffs = new();
+	public SerializableDictionary<WeaponEquipmentData.DamageType, float> ApplyedDamageTypeBuffs => m_applyedDamageTypeBuffs;
+	
+	private SerializableDictionary<WeaponEquipmentData.DamageCategory, float> m_applyedDamageCategoryBuffs = new();
+	public SerializableDictionary<WeaponEquipmentData.DamageCategory, float> ApplyedDamageCategoryBuffs => m_applyedDamageCategoryBuffs;
+
 	private void Awake ()
 	{
 		m_linkedEntity.onSelect += OnEntitySelected;
@@ -79,7 +88,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 	{
 		public Entity entityAttacker;
 		public Entity entityTargeted;
-		public int damage;
+		public Dictionary<WeaponEquipmentData.DamageType, int> damages;
 		public bool critical;
 		public Vector3 hitPos;
 		public Vector3 hitNormal;
@@ -152,23 +161,32 @@ public class EntityEquipmentPlugin : EntityPlugin
 		Entity targetEntity = _attackAction.TargetEntity;
 		WeaponEquipmentData usedWeapon = m_weapons[_attackAction.attackingWeaponId].Data;
 
-		int targetCamo = targetEntity.Data.FrameData.camo;
-		int evationRatio = targetEntity.Data.FrameData.evasion;
-		int coverRatio = GridManager.Instance.IsThereCoverBeween(_attackAction.PerformingEntity, targetEntity) ? GameConfig.current.game.entityCoverBonus : 0;
-		int distanceRatio = m_weapons[_attackAction.attackingWeaponId].Data.distanceAccuracyBonus[GetWeaponDistanceTypeFrom(targetEntity, usedWeapon)];
+		float targetCamo = targetEntity.Data.FrameData.camo;
+		float evationRatio = targetEntity.Data.FrameData.evasion;
+		float coverRatio = GridManager.Instance.IsThereCoverBeween(_attackAction.PerformingEntity, targetEntity) ? GameConfig.current.game.entityCoverBonus : 0;
+		float distanceRatio = m_weapons[_attackAction.attackingWeaponId].Data.distanceAccuracyBonus[GetWeaponDistanceTypeFrom(targetEntity, usedWeapon)];
+		float targetEvasionScore = targetCamo + evationRatio + coverRatio + distanceRatio;
 
-		int targetEvasionScore = targetCamo + evationRatio + coverRatio + distanceRatio;
+		float userPerception = m_linkedEntity.Data.BrainData.perception;
+		float userAim = _attackAction.Data.type == EntityActionData.ActionType.DistanceAttack ? m_linkedEntity.Data.BrainData.accuracy : m_linkedEntity.Data.BrainData.agility;
+		float flankBonus = GameConfig.current.game.entityFlankRatio[GridManager.Instance.GetHitTileSide(m_linkedEntity, targetEntity)];
+		float modAction = m_linkedEntity.LastActionPerformedData.previousActionAttackModificator;
+		float userHitScore = userPerception + userAim + flankBonus + modAction;
 
-		int userPerception = m_linkedEntity.Data.BrainData.perception;
-		int userAim = _attackAction.Data.type == EntityActionData.ActionType.DistanceAttack ? m_linkedEntity.Data.BrainData.accuracy : m_linkedEntity.Data.BrainData.agility;
-		int flankBonus = GameConfig.current.game.entityFlankRatio[GridManager.Instance.GetHitTileSide(m_linkedEntity, targetEntity)];
-		int modAction = m_linkedEntity.LastActionPerformedData.previousActionAttackModificator;
-
-		int userHitScore = userPerception + userAim + flankBonus + modAction;
-		bool isAttackSuccessful = targetEvasionScore < userHitScore;
-		LogConsole.AddLog("Attack Roll " + (isAttackSuccessful ? "[SUCESS]" : "[FAILURE]") + " : targetEvasionScore = " + targetEvasionScore + " and userHitScore = " + userHitScore, LogConsole.LogEventType.PlayPhase);
-
-		return targetEvasionScore < userHitScore;
+		float finalScore = userHitScore - targetEvasionScore;
+		
+		if (finalScore >= 1)
+		{
+			LogConsole.AddLog("Attack Roll [AUTOMATIC SUCESS] : targetEvasionScore = " + targetEvasionScore + " and userHitScore = " + userHitScore, LogConsole.LogEventType.PlayPhase);
+			return true;
+		}
+		else
+		{
+			float roll = Random.Range(0f, 1f);
+			bool isAttackSuccessful = roll + finalScore > 1;
+			LogConsole.AddLog("Attack Roll " + (isAttackSuccessful ? "[SUCESS]" : "[FAILURE]") + " : targetEvasionScore = " + targetEvasionScore + ", roll = " + roll + " and userHitScore = " + userHitScore, LogConsole.LogEventType.PlayPhase);
+			return roll + finalScore > 1;
+		}
 	}
 
 	public WeaponEquipmentData.DistanceType GetWeaponDistanceTypeFrom(Entity _target, WeaponEquipmentData _weaponData )
@@ -201,9 +219,17 @@ public class EntityEquipmentPlugin : EntityPlugin
 
 	#region Heatlh
 
+	public void AddDamageBuff( WeaponEquipmentData.DamageType _type, int _amount )
+	{
+		m_applyedDamageTypeBuffs.Add(_type, _amount);
+	}
+
 	public void TakeDamage( TakeDamageCallback _damageInfo )
 	{
-		m_currentHealth -= _damageInfo.damage;
+		foreach(KeyValuePair<WeaponEquipmentData.DamageType, int> pair in _damageInfo.damages)
+		{
+			m_currentHealth -= pair.Value;
+		}
 
 		if (m_currentHealth <= 0)
 			Death();

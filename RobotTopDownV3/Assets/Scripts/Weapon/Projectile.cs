@@ -38,7 +38,7 @@ public class Projectile : PoolElement
 
 		if (_other.gameObject.layer != GameConfig.current.input.entityLayer.value)
 		{
-			OnCollideWithOther(_other.gameObject.layer);
+			OnCollideWithOther(_other.gameObject.layer, _other);
 			return;
 		}
 
@@ -64,11 +64,14 @@ public class Projectile : PoolElement
 	{
 		//spawn bullet impact
 		//GameAssets.current.effects.punchLightFx.Get(transform.position).transform.localScale = Vector3.one * .5f;
-  if(_collidedLayer == GameConfig.current.ui.wallLayerMask)
-  {
-    //get wall
-    _other.GetComponent<WallSelector>().LinkedWall.TakeDamage(m_projectileData.damage);
-  }
+		if(_collidedLayer == GameConfig.current.ui.wallLayerMask)
+		{
+			//TODO : not flat damage
+			Dictionary<WeaponEquipmentData.DamageType, int> damages = new();
+			damages.Add(WeaponEquipmentData.DamageType.Contendant, 1);
+
+			_other.GetComponent<WallSelector>().LinkedWall.TakeDamage(damages);
+		}
 
 	}
 
@@ -112,6 +115,6 @@ public struct ProjectileData
 {
 	public Entity owner;
 	public Vector2 speed;
-	//public Dictionary<DamageChannel, DamageValues> damage;
+	public WeaponEquipmentData weapon;
 	//public float gravityMultiplier;
 }

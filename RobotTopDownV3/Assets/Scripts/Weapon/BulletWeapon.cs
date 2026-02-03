@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 
@@ -31,10 +32,10 @@ public class BulletWeapon : Weapon
 
 		m_bulletData = new()
 		{
-			//damage = Damages,
 			//gravityMultiplier = gravityMultiplier,
 			owner = _user,
 			speed = Vector2.right * m_speed,
+			weapon = _data
 		};
 
 		m_timeBetweenBulletsWFS = new WaitForSeconds(m_timeBetweenEachBullet);
@@ -51,8 +52,13 @@ public class BulletWeapon : Weapon
 		if (_isSuccess)
 		{
 			//apply damage
-			int damageAmount = m_data.damage;
-			targetEntity.Equipment.TakeDamage(new EntityEquipmentPlugin.TakeDamageCallback() { damage = damageAmount });
+			Dictionary<WeaponEquipmentData.DamageType, int> damages = new Dictionary<WeaponEquipmentData.DamageType, int>();
+			for (int i = 0; i < _attackAction.damageTypes.Length; i++)
+			{
+				damages.Add((WeaponEquipmentData.DamageType)_attackAction.damageTypes[i], _attackAction.damages[i]);
+			}
+			//int damageAmount = m_data.damage;
+			targetEntity.Equipment.TakeDamage(new EntityEquipmentPlugin.TakeDamageCallback() { damages = damages });
 
 			performingEntity.Skin.VisualyAimAt(_attackAction.attackingWeaponId, targetPosition);
 		}

@@ -24,16 +24,16 @@ public class FrameEquipmentData : EntityEquipmentData
     [Title("Structure")]
     public int maxHealth;
     public int armSlotAvailable = 2;
-    public int evasion = 2;
-    public int camo = 2;
+    public float evasion = 2;
+    public float camo = 2;
 }
 
 [CreateAssetMenu(fileName = "BrainData", menuName = "ScriptableObject/BrainData", order = 1)]
 public class BrainEquipmentData : EntityEquipmentData
 {
-    public int accuracy = 5;
-    public int agility = 5;
-    public int perception = 5;
+    public float accuracy = 5;
+    public float agility = 5;
+    public float perception = 5;
 }
 
 [System.Serializable]
@@ -54,6 +54,12 @@ public class EntitySavedData : INetworkSerializable
         serializer.SerializeValue(ref brainID);
         serializer.SerializeValue(ref armsIds);
     }
+
+    public float GetStaticDamageBonus ()
+	{
+        //TODO
+        return 1;
+	}
 }
 
 [System.Serializable]

@@ -53,9 +53,12 @@ public class Wall : MonoBehaviour
 		m_linkedTile = m_tile;
 	}
 
-	public void TakeDamage(int _amount )
+	public void TakeDamage(Dictionary<WeaponEquipmentData.DamageType, int> _damages )
 	{
-		m_health -= _amount;
+		foreach(KeyValuePair<WeaponEquipmentData.DamageType, int> pair in _damages)
+		{
+			m_health -= pair.Value;
+		}
 		if (m_health <= 0)
 			Destroy();
 	}

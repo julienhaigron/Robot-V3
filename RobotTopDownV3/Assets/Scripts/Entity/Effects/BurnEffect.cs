@@ -1,4 +1,6 @@
 using UnityEngine;
+using System.Collections;
+using System.Collections.Generic;
 
 [CreateAssetMenu(fileName = "BurnEffect", menuName = "ScriptableObject/Effect/BurnEffect")]
 public class BurnEffect : AEntityEffect
@@ -9,6 +11,9 @@ public class BurnEffect : AEntityEffect
 	{
 		base.ApplyEffect(_entity);
 
-		_entity.Equipment.TakeDamage(new EntityEquipmentPlugin.TakeDamageCallback() { damage = damageAmount, entityTargeted = _entity });
+		Dictionary<WeaponEquipmentData.DamageType, int> damage = new();
+		damage.Add(WeaponEquipmentData.DamageType.Feu, damageAmount);
+
+		_entity.Equipment.TakeDamage(new EntityEquipmentPlugin.TakeDamageCallback() { damages = damage, entityTargeted = _entity });
 	}
 }

@@ -31,8 +31,12 @@ public class Weapon : MonoBehaviour
 		if (_isSuccess)
 		{
 			//apply damage
-			int damageAmount = m_data.damage;
-			targetEntity.Equipment.TakeDamage(new EntityEquipmentPlugin.TakeDamageCallback() { damage = damageAmount });
+			Dictionary<WeaponEquipmentData.DamageType, int> damages = new Dictionary<WeaponEquipmentData.DamageType, int>();
+			for(int i = 0; i < _attackAction.damageTypes.Length; i++)
+			{
+				damages.Add((WeaponEquipmentData.DamageType)_attackAction.damageTypes[i], _attackAction.damages[i]);
+			}
+			targetEntity.Equipment.TakeDamage(new EntityEquipmentPlugin.TakeDamageCallback() { damages = damages });
 			performingEntity.Skin.OverrideAnimation(m_data.attackAnimationSuccessId);
 
 			//aplly effects here
@@ -60,4 +64,20 @@ public class Weapon : MonoBehaviour
 			DOVirtual.DelayedCall(GameConfig.current.game.actionDuration, () => _onPerformEnd?.Invoke());
 		}
 	}
+
+	public virtual Dictionary<WeaponEquipmentData.DamageType, int> GetDamages (Entity _user, Entity _target)
+	{
+		Dictionary<WeaponEquipmentData.DamageType, int> damages = new();
+		float flankBonus = GameConfig.current.game.entityFlankRatio[GridManager.Instance.GetHitTileSide(_user, _target)];
+
+		foreach (KeyValuePair<WeaponEquipmentData.DamageType, int> pair in Data.baseDamages)
+		{
+			float damage = ((float)pair.Value * (_user.Equipment.ApplyedDamageTypeBuffs.ContainsKey(pair.Key) ? _user.Equipment.ApplyedDamageTypeBuffs[pair.Key] : 1)
+					* (_user.Equipment.ApplyedDamageCategoryBuffs.ContainsKey(Data.damageCategory) ? _user.Equipment.ApplyedDamageCategoryBuffs[Data.damageCategory] : 1))
+				* _user.Equipment.GeneralDamageBuff * _user.Data.GetStaticDamageBonus() * flankBonus;
+			damages.Add(pair.Key, (int)damage);
+		}
+
+		return damages;
+	} 
 }

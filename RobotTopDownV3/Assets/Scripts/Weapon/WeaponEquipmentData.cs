@@ -6,7 +6,8 @@ using UnityEngine;
 public class WeaponEquipmentData : EntityEquipmentData
 {
     public int accuracy;
-    public int damage;
+    public SerializableDictionary<DamageType, int> baseDamages;
+    public DamageCategory damageCategory;
     public int range;
     public int visionConeRange;
     public enum DistanceType
@@ -21,5 +22,24 @@ public class WeaponEquipmentData : EntityEquipmentData
     public string attackAnimationSuccessId;
     public string attackAnimationFailureId;
     public bool isTwoHanded = false;
+
+    public enum DamageType
+	{
+        Tranchant,
+        Perforant,
+        Contendant,
+        Laser,
+        Plasma,
+        Feu,
+        Radiation,
+        Electrique,
+        Magnetique
+	}
+
+    public enum DamageCategory
+	{
+        Physic,
+        Elemental
+	}
 
 }
