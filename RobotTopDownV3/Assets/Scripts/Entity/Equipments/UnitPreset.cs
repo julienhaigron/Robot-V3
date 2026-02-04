@@ -7,12 +7,36 @@ using Sirenix.OdinInspector;
 public class UnitPreset : ScriptableObject
 {
     public string displayName;
+    [OnValueChanged("@RefreshTotalEnergyCostRemaining()")]
     public FrameEquipmentData frame;
+    [OnValueChanged("@RefreshTotalEnergyCostRemaining()")]
     public ReactorEquipmentData reactor;
+    [OnValueChanged("@RefreshTotalEnergyCostRemaining()")]
     public BrainEquipmentData brain;
+    [OnValueChanged("@RefreshTotalEnergyCostRemaining()")]
     public WeaponEquipmentData[] arms;
+    [OnValueChanged("@RefreshTotalEnergyCostRemaining()")]
     public EntityEquipmentData[] auxiliary;
+    [OnValueChanged("@RefreshTotalEnergyCostRemaining()")]
     public ChipsetEquipmentData[] chipsets;
+
+    [ReadOnly, SerializeField]
+    private int m_totalEnergyCostRemaining;
+    public int TotalEnergyCostRemaining => m_totalEnergyCostRemaining;
+
+    [Button]
+    private void RefreshTotalEnergyCostRemaining ()
+	{
+        m_totalEnergyCostRemaining = reactor.energyProduced;
+        m_totalEnergyCostRemaining -= frame.energyCost;
+        m_totalEnergyCostRemaining -= brain.energyCost;
+        foreach (EntityEquipmentData equipment in arms)
+            m_totalEnergyCostRemaining -= equipment.energyCost;
+        foreach (EntityEquipmentData equipment in auxiliary)
+            m_totalEnergyCostRemaining -= equipment.energyCost;
+        foreach (EntityEquipmentData equipment in chipsets)
+            m_totalEnergyCostRemaining -= equipment.energyCost;
+    }
 
     public EntitySavedData GetSavedData ()
 	{

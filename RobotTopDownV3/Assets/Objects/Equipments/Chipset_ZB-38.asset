@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Chipset_ZB-38
   m_EditorClassIdentifier: 
   icon: {fileID: 0}
-  energyCost: 0
+  energyCost: 15
   statBonuses:
   - type: 18
     value: 0.3
