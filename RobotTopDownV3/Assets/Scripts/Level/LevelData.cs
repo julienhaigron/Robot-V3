@@ -9,5 +9,5 @@ public class LevelData : ScriptableObject
     public string title;
 
     public GridData map;
-    public List<EntitySavedData> enemies;
+    public UnitPreset[] enemies;
 }

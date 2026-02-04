@@ -83,7 +83,7 @@ public partial class ApplicationManager : SingletonPersistant<ApplicationManager
 	IEnumerator LoadCoroutine ()
 	{
 		config.Initialize();
-		assets.Initialize();
+		//assets.Initialize();
 
 #if UNITY_EDITOR
 		if (m_gameDatas.preventSave)

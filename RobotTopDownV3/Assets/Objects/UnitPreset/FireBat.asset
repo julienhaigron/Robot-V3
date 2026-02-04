@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f0bd4350348c78f4e89080417667cc11, type: 3}
+  m_Name: FireBat
+  m_EditorClassIdentifier: 
+  displayName: Fire Bat
+  frame: {fileID: 11400000, guid: c4fc98459ea1c6f409c0f37294d3eb79, type: 2}
+  reactor: {fileID: 11400000, guid: 72eb56ac0197e1144a3cd4bd0c3819ea, type: 2}
+  brain: {fileID: 11400000, guid: 573535521dc3abb4a822374062aed86b, type: 2}
+  arms:
+  - {fileID: 11400000, guid: 4fafc18289220b34e814bd02c23c59ad, type: 2}
+  - {fileID: 11400000, guid: 092f78630a84b294eaead47e6587f5b4, type: 2}
+  auxiliary:
+  - {fileID: 11400000, guid: 80c151b23c81a824eb52ac271f7ddb56, type: 2}
+  - {fileID: 11400000, guid: ebdfa3c8fc2e36647b90d0a3d19624b6, type: 2}
+  - {fileID: 11400000, guid: 28da51fc5fc9f6f44895bc8c77a683ff, type: 2}
+  chipsets:
+  - {fileID: 11400000, guid: 413afd951faf0e544b2cd83d0ce95a1d, type: 2}

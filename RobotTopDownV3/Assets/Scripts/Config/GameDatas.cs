@@ -59,10 +59,10 @@ public class GameDatas : ScriptableObject
 
 		public Equipment AddEquipmentToInventory ( EntityEquipmentData _data )
 		{
-			if (_data == null || string.IsNullOrEmpty(_data.ID))
+			if (_data == null || string.IsNullOrEmpty(_data.name))
 				return null;
 
-			Equipment equipment = new(_data.ID);
+			Equipment equipment = new(_data.name);
 
 			return equipment;
 		}

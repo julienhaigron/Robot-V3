@@ -16,4 +16,4 @@ MonoBehaviour:
   title: Level 4
   map: {fileID: 11400000, guid: 6f08d292abbf2bc4d8b8635617613b35, type: 2}
   enemies:
-  - {fileID: 11400000, guid: 269ea4b9e1222fe42bc648cbcdf4a6a9, type: 2}
+  - {fileID: 11400000, guid: 3e4f3c47b4ebef348a686bbfcf7f8550, type: 2}

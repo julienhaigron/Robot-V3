@@ -19,5 +19,18 @@ MonoBehaviour:
     sfxVolume: 1
   player:
     knownedFrames: []
-    units: []
+    units:
+    - name: Fire Bat
+      frameID: Frame_A-7
+      reactorID: Reactor_B-99
+      brainID: Brain_Z-1
+      armsIds:
+      - value: Weapon_FlameThrowerXV-68
+      - value: Weapon_ShieldGeneratorD-3
+      auxiliarIds:
+      - value: Armor_CD1
+      - value: Armor_CD2
+      - value: Occultor_SF-5
+      chipsetsIds:
+      - value: Chipset_ZB-38
     equipmentInventory: []

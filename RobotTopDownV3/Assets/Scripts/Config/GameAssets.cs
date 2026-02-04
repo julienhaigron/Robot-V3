@@ -24,12 +24,9 @@ public class GameAssets : ScriptableObject
         public List<LevelData> levels = new();
 
         [Title("Entity")]
-        public SerializableDictionary<string, Entity> entityPrefabPerFrameDictionary = new();
         public List<FrameEquipmentData> frames = new();
 
         public WeaponCone weaponCone;
-        public SerializableDictionary<string, Weapon> weapons = new SerializableDictionary<string, Weapon>();
-        public List<EntityEquipmentData> equipmentDatas = new();
 
         public SerializableDictionary<EntityActionEnumID, EntityActionData> entityActionsData = new SerializableDictionary<EntityActionEnumID, EntityActionData>();
         public SerializableDictionary<AEntityEffect.EntityEffectEnumID, AEntityEffect> entityEffects = new SerializableDictionary<AEntityEffect.EntityEffectEnumID, AEntityEffect>();
@@ -56,14 +53,25 @@ public class GameAssets : ScriptableObject
         public SerializableDictionary<Entity.EntityState, Material> ghostEntityStateMaterials = new();
     }
 
-
-	public void Initialize ()
+#if UNITY_EDITOR
+    [Button]
+	public void ReloadEquipments ()
 	{
-        equipments.Clear();
-        foreach (EntityEquipmentData item in game.equipmentDatas)
+        string[] guids = UnityEditor.AssetDatabase.FindAssets("t:EntityEquipmentData");
+        List<EntityEquipmentData> fetchedEquipments = new();
+        foreach (string guid in guids)
         {
-            equipments.Add(item.ID, item);
+            string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
+            var asset = UnityEditor.AssetDatabase.LoadAssetAtPath<EntityEquipmentData>(path);
+            if (asset != null)
+                fetchedEquipments.Add(asset);
         }
 
+        foreach (EntityEquipmentData eq in fetchedEquipments)
+        {
+            if (!equipments.ContainsKey(eq.name))
+                equipments.Add(eq.name, eq);
+        }
     }
+#endif
 }

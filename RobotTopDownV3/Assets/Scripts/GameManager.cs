@@ -18,9 +18,9 @@ public class GameManager : SingletonPersistant<GameManager>
 	[SerializeField] private LoadingElement m_mainLoadingElement;
 
 	[Title("Offline")]
-	[SerializeField] private GridData m_map;
-	[SerializeField] private List<EntitySavedData> m_playerEntityDatas;
-	[SerializeField] private List<EntitySavedData> m_ennemiEntityDatas;
+	[SerializeField] private LevelData m_currentLevel;
+	/*[SerializeField] private List<EntitySavedData> m_playerEntityDatas;
+	[SerializeField] private List<EntitySavedData> m_ennemiEntityDatas;*/
 
 	[Title("Online")]
 	[SerializeField] private GridData m_onlineMap;
@@ -56,7 +56,7 @@ public class GameManager : SingletonPersistant<GameManager>
 		m_mainLoadingElement.Load();
 
 #if UNITY_EDITOR
-		if (m_map != null)
+		if (m_currentLevel != null)
 		{
 			StartGame();
 		}
@@ -70,27 +70,31 @@ public class GameManager : SingletonPersistant<GameManager>
 
 	public void SetupLevel(LevelData _level )
 	{
-		m_map = _level.map;
-		m_playerTwoEntityDatas = _level.enemies;
+		m_currentLevel = _level;
+		m_playerTwoEntityDatas = new();
+		foreach(UnitPreset ennemi in _level.enemies)
+		{
+			m_playerTwoEntityDatas.Add(ennemi.GetSavedData());
+		}
 
 		SceneManager.LoadSceneAsync(_level.map.name);
 	}
 
-	public void SetPlayerUnit(List<FrameEquipmentData> _playerUnits )
-	{
-
-	}
-
 	public void StartGame ()
 	{
-		GridManager.Instance.LoadGrid(m_map);
+		GridManager.Instance.LoadGrid(m_currentLevel.map);
 		UIManager.Instance.OpenPanel<InGamePanel>();
 
 		if (m_currentGameMode == GameMode.Offline)
 		{
 			LogConsole.AddLog("Start OfflineGame", LogConsole.LogEventType.Main);
-			m_playersEntityAnchor[0].Init(m_playerEntityDatas, 0);
-			m_playersEntityAnchor[1].Init(m_ennemiEntityDatas, 1);
+			m_playersEntityAnchor[0].Init(GameDatas.current.player.units, 0);
+			List<EntitySavedData> ennemies = new();
+			foreach (UnitPreset ennemi in m_currentLevel.enemies)
+			{
+				ennemies.Add(ennemi.GetSavedData());
+			}
+			m_playersEntityAnchor[1].Init(ennemies, 1);
 		}
 		else if (m_currentGameMode == GameMode.Online)
 		{

@@ -32,15 +32,6 @@ MonoBehaviour:
     - {fileID: 11400000, guid: 8a6954d87f761a44d91a6e04577b276b, type: 2}
     - {fileID: 11400000, guid: 949f97dacb028be43823f17b50a53791, type: 2}
     - {fileID: 11400000, guid: 197186d81997d9b47a9bf17799354160, type: 2}
-    entityPrefabPerFrameDictionary:
-      keys:
-      - player1
-      - player2
-      - enemi1
-      values:
-      - {fileID: 4673310249167116355, guid: 206cf16509b1846479a1f553fd6add2d, type: 3}
-      - {fileID: 4673310249167116355, guid: 206cf16509b1846479a1f553fd6add2d, type: 3}
-      - {fileID: 4673310249167116355, guid: 831df868960bcef478dc0020299a32ff, type: 3}
     frames:
     - {fileID: 11400000, guid: 11de9230c09867747908272f3310089f, type: 2}
     - {fileID: 11400000, guid: d1ff8cefde9698646866f7c141843e06, type: 2}
@@ -48,20 +39,15 @@ MonoBehaviour:
     weaponCone: {fileID: 868673094015138981, guid: 8693abc4f151cbc4b94435d3e63342fb, type: 3}
     weapons:
       keys:
-      - default
-      - pistol
-      - ak
+      - Default
+      - Pistol
+      - AK
+      - Weapon_FlameThrowerXV-68
       values:
       - {fileID: 2993856260627974788, guid: c42db52ce80b83f4f9a7387a30cccf87, type: 3}
       - {fileID: 3050370552699964755, guid: dd0a64f5756259b41a3f0a0816904467, type: 3}
       - {fileID: 7856189691443182411, guid: 3c486e26f7821614791b716f5411b97f, type: 3}
-    equipmentDatas:
-    - {fileID: 11400000, guid: d1ff8cefde9698646866f7c141843e06, type: 2}
-    - {fileID: 11400000, guid: 269ea4b9e1222fe42bc648cbcdf4a6a9, type: 2}
-    - {fileID: 11400000, guid: 11de9230c09867747908272f3310089f, type: 2}
-    - {fileID: 11400000, guid: dc7d2dbc3edd72d4f9025dff20a7cbaa, type: 2}
-    - {fileID: 11400000, guid: 3820ae6eea1419c4fb586677667c12aa, type: 2}
-    - {fileID: 11400000, guid: 88252aa38fb340c469720857dae6ae3b, type: 2}
+      - {fileID: 7856189691443182411, guid: 3c486e26f7821614791b716f5411b97f, type: 3}
     entityActionsData:
       keys: 0000000003000000010000000200000004000000
       values:
@@ -111,16 +97,34 @@ MonoBehaviour:
       - {fileID: 2100000, guid: 75966bde5e759e8459a8eda2d59676f2, type: 2}
   equipments:
     keys:
-    - player2
-    - enemi1
-    - player1
-    - defaultweapon
-    - ak
-    - pistol
+    - Armor_CD1
+    - Armor_CD2
+    - Brain_Z-1
+    - Chipset_ZB-38
+    - Frame_A-7
+    - Occultor_SF-5
+    - Reactor_B-99
+    - Weapon_FlameThrowerXV-68
+    - Weapon_ShieldGeneratorD-3
+    - AK
+    - DefaultWeapon
+    - Pistol
+    - EnnemiRobot
+    - PlayerRobot 1
+    - PlayerRobot
     values:
-    - {fileID: 11400000, guid: d1ff8cefde9698646866f7c141843e06, type: 2}
-    - {fileID: 11400000, guid: 269ea4b9e1222fe42bc648cbcdf4a6a9, type: 2}
-    - {fileID: 11400000, guid: 11de9230c09867747908272f3310089f, type: 2}
-    - {fileID: 11400000, guid: dc7d2dbc3edd72d4f9025dff20a7cbaa, type: 2}
+    - {fileID: 11400000, guid: 80c151b23c81a824eb52ac271f7ddb56, type: 2}
+    - {fileID: 11400000, guid: ebdfa3c8fc2e36647b90d0a3d19624b6, type: 2}
+    - {fileID: 11400000, guid: 573535521dc3abb4a822374062aed86b, type: 2}
+    - {fileID: 11400000, guid: 413afd951faf0e544b2cd83d0ce95a1d, type: 2}
+    - {fileID: 11400000, guid: c4fc98459ea1c6f409c0f37294d3eb79, type: 2}
+    - {fileID: 11400000, guid: 28da51fc5fc9f6f44895bc8c77a683ff, type: 2}
+    - {fileID: 11400000, guid: 72eb56ac0197e1144a3cd4bd0c3819ea, type: 2}
+    - {fileID: 11400000, guid: 4fafc18289220b34e814bd02c23c59ad, type: 2}
+    - {fileID: 11400000, guid: 092f78630a84b294eaead47e6587f5b4, type: 2}
     - {fileID: 11400000, guid: 3820ae6eea1419c4fb586677667c12aa, type: 2}
+    - {fileID: 11400000, guid: dc7d2dbc3edd72d4f9025dff20a7cbaa, type: 2}
     - {fileID: 11400000, guid: 88252aa38fb340c469720857dae6ae3b, type: 2}
+    - {fileID: 11400000, guid: 269ea4b9e1222fe42bc648cbcdf4a6a9, type: 2}
+    - {fileID: 11400000, guid: d1ff8cefde9698646866f7c141843e06, type: 2}
+    - {fileID: 11400000, guid: 11de9230c09867747908272f3310089f, type: 2}

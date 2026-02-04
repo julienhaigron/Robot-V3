@@ -96,12 +96,12 @@ public class EntityEquipmentPlugin : EntityPlugin
 
 	private Weapon AddWeapon(WeaponEquipmentData _data, bool _isFirstSide)
 	{
-		Weapon newWeapon = Instantiate(GameAssets.current.game.weapons[_data.ID], m_linkedEntity.Skin.IK.handGrabSocket);
+		Weapon newWeapon = Instantiate(_data.prefab, m_linkedEntity.Skin.IK.handGrabSocket);
 		newWeapon.Init(m_linkedEntity, _data, _isFirstSide);
-		m_weapons.Add(_data.ID, newWeapon);
+		m_weapons.Add(_data.name, newWeapon);
 
 		WeaponCone weaponCone = Instantiate(GameAssets.current.game.weaponCone, m_weaponConesParent);
-		m_weaponConeDictionary.Add(_data.ID, weaponCone);
+		m_weaponConeDictionary.Add(_data.name, weaponCone);
 		weaponCone.Init(m_linkedEntity, _data, m_linkedEntity.Displacement.Spawn.isFirstSide);
 
 		return newWeapon;
@@ -161,14 +161,14 @@ public class EntityEquipmentPlugin : EntityPlugin
 		Entity targetEntity = _attackAction.TargetEntity;
 		WeaponEquipmentData usedWeapon = m_weapons[_attackAction.attackingWeaponId].Data;
 
-		float targetCamo = targetEntity.Data.FrameData.camo;
-		float evationRatio = targetEntity.Data.FrameData.evasion;
+		float targetCamo = targetEntity.Data.GetStaticStealthBonus(true);
+		float evationRatio = _attackAction.Data.type == EntityActionData.ActionType.DistanceAttack ? targetEntity.Data.BrainData.distanceEvasion : targetEntity.Data.BrainData.meleeEvasion;
 		float coverRatio = GridManager.Instance.IsThereCoverBeween(_attackAction.PerformingEntity, targetEntity) ? GameConfig.current.game.entityCoverBonus : 0;
 		float distanceRatio = m_weapons[_attackAction.attackingWeaponId].Data.distanceAccuracyBonus[GetWeaponDistanceTypeFrom(targetEntity, usedWeapon)];
 		float targetEvasionScore = targetCamo + evationRatio + coverRatio + distanceRatio;
 
-		float userPerception = m_linkedEntity.Data.BrainData.perception;
-		float userAim = _attackAction.Data.type == EntityActionData.ActionType.DistanceAttack ? m_linkedEntity.Data.BrainData.accuracy : m_linkedEntity.Data.BrainData.agility;
+		float userPerception = m_linkedEntity.Data.GetStaticPerceptionBonus(true);
+		float userAim = _attackAction.Data.type == EntityActionData.ActionType.DistanceAttack ? m_linkedEntity.Data.BrainData.distanceAccuracy : m_linkedEntity.Data.BrainData.agility;
 		float flankBonus = GameConfig.current.game.entityFlankRatio[GridManager.Instance.GetHitTileSide(m_linkedEntity, targetEntity)];
 		float modAction = m_linkedEntity.LastActionPerformedData.previousActionAttackModificator;
 		float userHitScore = userPerception + userAim + flankBonus + modAction;

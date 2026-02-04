@@ -9,11 +9,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 002c72a537f2c0749b9ca39080ef9b55, type: 3}
-  m_Name: Level 3
+  m_Script: {fileID: 11500000, guid: 4eb1c374dfb5c8d42891de9c422c2eb2, type: 3}
+  m_Name: Occultor_SF-5
   m_EditorClassIdentifier: 
   icon: {fileID: 0}
-  title: Level 3
-  map: {fileID: 11400000, guid: 6f08d292abbf2bc4d8b8635617613b35, type: 2}
-  enemies:
-  - {fileID: 11400000, guid: 3e4f3c47b4ebef348a686bbfcf7f8550, type: 2}
+  energyCost: 20
+  soundCamo: 0.3
+  visualCamo: 0.2
+  statBonuses:
+  - type: 12
+    value: 0.15
+  - type: 13
+    value: 0.155
+  - type: 6
+    value: 0.2
