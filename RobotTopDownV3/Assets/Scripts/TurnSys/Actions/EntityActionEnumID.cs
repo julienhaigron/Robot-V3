@@ -11,5 +11,10 @@ public enum EntityActionEnumID
     Wait,
     RotateWeapon,
     ActivateShield,
-    RotateShield
+    RotateShield,
+    FlameThrowerShot,
+    ShieldD3,
+    Walk
+
+    //always add new values at the end
 }

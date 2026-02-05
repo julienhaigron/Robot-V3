@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a743e40aeafc0445b10e59cec8dfa98, type: 3}
+  m_Name: FlameThrowerShot
+  m_EditorClassIdentifier: 
+  displayName: Flame Thrower Shot
+  typeID: 7
+  icon: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
+  tileOutlineColor: {r: 1, g: 0, b: 0, a: 1}
+  tokenCost: 1
+  tokenPreparationDuration: 0
+  tokenCooldown: 1
+  tokenDuration: 1
+  appliableEffects:
+  - {fileID: 11400000, guid: 7af3cbb2fb9300d4c8a9b333e8a5b7a4, type: 2}
+  previousActionAttackModificator: 2
+  type: 0
+  subType: 1
+  targetType: 1
+  minDistance: 0
+  maxDistance: 5
+  minTargetAmount: 1
+  maxTargetAmount: 1
+  isAoe: 1
+  aoeType: 2
+  circleRadius: 5
+  rayDiameter: 1
+  coneSpread: 5

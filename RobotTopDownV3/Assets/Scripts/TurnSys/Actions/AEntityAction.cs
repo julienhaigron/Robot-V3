@@ -35,7 +35,7 @@ public abstract class AEntityAction : INetworkSerializable
 	{
         cost = _data.tokenCost;
         cooldown = _data.tokenCooldown;
-        enumID = _data.typeID;
+        enumID = _data.enumID;
         performingEntityID = _performingEntityID;
         supposedPositionAtActionStartID = _positionAtActionStartID;
         positionAtActionEndID = _positionAtActionStartID;

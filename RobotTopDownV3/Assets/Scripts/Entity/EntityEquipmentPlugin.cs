@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class EntityEquipmentPlugin : EntityPlugin
 {
@@ -17,7 +18,8 @@ public class EntityEquipmentPlugin : EntityPlugin
 	private int m_currentHealth;
 	public int CurrentHealth => m_currentHealth;
 
-	public int MaxHealth => m_linkedEntity.Data.FrameData.maxHealth;
+	private int m_maxHealth;
+	public int MaxHealth => m_maxHealth;
 
 	private bool m_isDead = false;
 	public bool IsDead => m_isDead;
@@ -28,19 +30,31 @@ public class EntityEquipmentPlugin : EntityPlugin
 	private SerializableDictionary<WeaponEquipmentData.DamageType, float> m_applyedDamageTypeBuffs = new();
 	public SerializableDictionary<WeaponEquipmentData.DamageType, float> ApplyedDamageTypeBuffs => m_applyedDamageTypeBuffs;
 	
+	private SerializableDictionary<WeaponEquipmentData.DamageType, float> m_applyedDamageTypeResitance = new();
+	public SerializableDictionary<WeaponEquipmentData.DamageType, float> ApplyedDamageTypeResistance => m_applyedDamageTypeResitance;
+	
 	private SerializableDictionary<WeaponEquipmentData.DamageCategory, float> m_applyedDamageCategoryBuffs = new();
 	public SerializableDictionary<WeaponEquipmentData.DamageCategory, float> ApplyedDamageCategoryBuffs => m_applyedDamageCategoryBuffs;
+
+
+	private SerializableDictionary<EntityActionEnumID, int> m_actionsInCooldown = new();
+	public SerializableDictionary<EntityActionEnumID, int> ActionInCooldown => m_actionsInCooldown;
+
 
 	private void Awake ()
 	{
 		m_linkedEntity.onSelect += OnEntitySelected;
 		m_linkedEntity.onDeselect += OnEntityDeselected;
+		m_linkedEntity.onStartPerformAction += OnActionPerformed;
+		m_linkedEntity.onNewPhaseBegin += OnNewPhaseStart;
 	}
 
 	private void OnDestroy ()
 	{
 		m_linkedEntity.onSelect -= OnEntitySelected;
 		m_linkedEntity.onDeselect -= OnEntityDeselected;
+		m_linkedEntity.onStartPerformAction -= OnActionPerformed;
+		m_linkedEntity.onNewPhaseBegin -= OnNewPhaseStart;
 	}
 
 	public override void Init ( EntitySavedData _entityData )
@@ -55,8 +69,21 @@ public class EntityEquipmentPlugin : EntityPlugin
 		}
 
 		//init health
-		m_currentHealth = MaxHealth;
+		m_maxHealth = m_linkedEntity.Data.GetMaxHealth();
+		m_currentHealth = m_maxHealth;
 		m_isDead = false;
+
+		//resistance
+		m_applyedDamageTypeResitance.Add(WeaponEquipmentData.DamageType.Tranchant, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.StatBonus.StatType.SlashResitance));
+		m_applyedDamageTypeResitance.Add(WeaponEquipmentData.DamageType.Contendant, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.StatBonus.StatType.BludgeoningResitance));
+		m_applyedDamageTypeResitance.Add(WeaponEquipmentData.DamageType.Perforant, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.StatBonus.StatType.PiercingResitance));
+		m_applyedDamageTypeResitance.Add(WeaponEquipmentData.DamageType.Electrique, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.StatBonus.StatType.ElectricResitance));
+		m_applyedDamageTypeResitance.Add(WeaponEquipmentData.DamageType.Feu, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.StatBonus.StatType.FireResitance));
+		m_applyedDamageTypeResitance.Add(WeaponEquipmentData.DamageType.Laser, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.StatBonus.StatType.LaserResitance));
+		m_applyedDamageTypeResitance.Add(WeaponEquipmentData.DamageType.Magnetique, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.StatBonus.StatType.MagneticResitance));
+		m_applyedDamageTypeResitance.Add(WeaponEquipmentData.DamageType.Plasma, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.StatBonus.StatType.PlasmaResitance));
+		m_applyedDamageTypeResitance.Add(WeaponEquipmentData.DamageType.Radiation, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.StatBonus.StatType.RadiationResitance));
+
 		base.Init(_entityData);
 	}
 
@@ -78,6 +105,23 @@ public class EntityEquipmentPlugin : EntityPlugin
 		{
 			weaponCone.ActivateUnactiveCone();
 		}
+	}
+
+	private void OnNewPhaseStart()
+	{
+		foreach(EntityActionEnumID action in m_actionsInCooldown.Keys.ToList())
+		{
+			m_actionsInCooldown[action]--;
+			if (m_actionsInCooldown[action] <= 0)
+				m_actionsInCooldown.Remove(action);
+		}
+	}
+
+	private void OnActionPerformed (AEntityAction _actionPerformed)
+	{
+		EntityActionData actionData = GameAssets.current.game.entityActionsData[_actionPerformed.enumID];
+		if (actionData.tokenCooldown > 0)
+			m_actionsInCooldown.Add(_actionPerformed.enumID, actionData.tokenCooldown);
 	}
 
 	#endregion
@@ -228,7 +272,8 @@ public class EntityEquipmentPlugin : EntityPlugin
 	{
 		foreach(KeyValuePair<WeaponEquipmentData.DamageType, int> pair in _damageInfo.damages)
 		{
-			m_currentHealth -= pair.Value;
+			float resistance = m_applyedDamageTypeResitance.ContainsKey(pair.Key) ? m_applyedDamageTypeResitance[pair.Key] : 0;
+			m_currentHealth -= pair.Value - Mathf.RoundToInt(((float)pair.Value * resistance));
 		}
 
 		if (m_currentHealth <= 0)

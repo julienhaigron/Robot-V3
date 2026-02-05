@@ -14,8 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: RTD::BrainEquipmentData
   icon: {fileID: 0}
   energyCost: 10
+  knownedActions: 
   chipsetSlotAvailable: 2
   agility: 0.15
   distanceAccuracy: 0.5
   distanceEvasion: 0.25
   meleeEvasion: 0.25
+  capacities: 0000000001000000
+  knownedStates: 0000000001000000

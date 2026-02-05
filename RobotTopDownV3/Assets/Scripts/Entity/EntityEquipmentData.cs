@@ -7,6 +7,8 @@ public class EntityEquipmentData : ScriptableObject
     public Sprite icon;
     [BoxGroup(GroupID ="Stat")]
     public int energyCost;
+    [BoxGroup(GroupID ="Actions")]
+    public EntityActionEnumID[] knownedActions;
 
     //public enum EquipmentType { Frame, Arm, Leg, Brain, Occultor, Reactor, Chipset, Armor }
 

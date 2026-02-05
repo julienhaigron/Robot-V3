@@ -14,14 +14,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   icon: {fileID: 0}
   energyCost: 10
+  knownedActions: 09000000
   faction: 0
   prefab: {fileID: 4673310249167116355, guid: 206cf16509b1846479a1f553fd6add2d, type: 3}
   actionTokenAmount: 8
-  knownedActions: 
   visibilityRange: 8
-  capacities: 
-  knownedStates: 
   maxHealth: 50
   armSlotAvailable: 2
   auxiliarSlotAvailable: 3
-  hpBonus: 0.3
+  statBonuses:
+  - type: 3
+    value: 0.3

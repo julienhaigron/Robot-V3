@@ -10,6 +10,7 @@ public class Entity : MonoBehaviour
     public Action onDeselect;
     public Action<AEntityAction> onStartPerformAction;
     public Action onEndPerformAction;
+    public Action onNewPhaseBegin;
 
     [Title("Depedencies")]
     [SerializeField] private GameObject m_skinParent;
@@ -32,6 +33,9 @@ public class Entity : MonoBehaviour
     [SerializeField] private EntitySavedData m_data;
 
     public EntitySavedData Data => m_data;
+
+    private List<EntityActionEnumID> m_knownedActions = new();
+    public List<EntityActionEnumID> KnownedActions => m_knownedActions;
 
     private EntityState m_state;
     public EntityState State => m_state;
@@ -60,6 +64,16 @@ public class Entity : MonoBehaviour
         Enemy
 	}
 
+	private void Awake ()
+	{
+        TurnManager.onNewPhaseStart += OnPhaseStart;
+    }
+
+    private void OnDestroy ()
+    {
+        TurnManager.onNewPhaseStart -= OnPhaseStart;
+    }
+
     public void Init ( EntitySavedData _data, EntityAnchor.Spawn _spawn, int _id, int _playerID )
     {
         ID = _id;
@@ -71,11 +85,15 @@ public class Entity : MonoBehaviour
         m_ui.Init(_data);
         m_ai.Init(_data);
         m_skin.Init(_data);
+
+        m_knownedActions = _data.GetActions();
     }
 
-    public void OnPhaseStart ()
+    private void OnPhaseStart ()
 	{
-        foreach(AEntityEffect effect in m_effects)
+        onNewPhaseBegin?.Invoke();
+
+        foreach (AEntityEffect effect in m_effects)
 		{
             if (--m_remainingDurationToActiveEffects[effect] <= 0)
 			{

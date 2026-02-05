@@ -16,4 +16,9 @@ public class BrainEquipmentData : EntityEquipmentData
     public float distanceEvasion = .25f;
     [BoxGroup(GroupID = "Stat")]
     public float meleeEvasion = .25f;
+
+    [BoxGroup(GroupID = "AI")]
+    public EntityCapacityAsset.EntityCapacityType[] capacities;
+    [BoxGroup(GroupID = "AI")]
+    public Entity.EntityState[] knownedStates;
 }

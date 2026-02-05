@@ -21,6 +21,7 @@ public class TurnManager : Singleton<TurnManager>
 	public static System.Action<AEntityAction> onActionSelected;
 	public static System.Action onStartInputPhase;
 	public static System.Action onEndInputPhase;
+	public static System.Action onNewPhaseStart;
 
 	[SerializeField] private NetworkedTurnSystem m_networkedTurnSystem;
 
@@ -63,7 +64,7 @@ public class TurnManager : Singleton<TurnManager>
 			}
 			else
 			{
-				action = Instance.GetAction(type, performingEntityID);
+				action = Instance.GetAction(GameAssets.current.game.entityActionsData[type], performingEntityID);
 
 				if (action == null)
 				{
@@ -135,16 +136,22 @@ public class TurnManager : Singleton<TurnManager>
 	public void SetCurrentActionSelected ( EntityActionEnumID _action )
 	{
 		m_currentActionTypeSelected = _action;
-		m_currentEntityAction = GetAction(_action, PlayerController.Instance.SelectedEntity.ID);
+		m_currentEntityAction = GetAction(GameAssets.current.game.entityActionsData[_action], PlayerController.Instance.SelectedEntity.ID);
 
 		onActionSelected?.Invoke(m_currentEntityAction);
 	}
 
 	public AEntityAction GetAction ( EntityActionEnumID _actionType, int _performingEntityID )
 	{
+		return GetAction(GameAssets.current.game.entityActionsData[_actionType], _performingEntityID);
+	}
+
+	public AEntityAction GetAction ( EntityActionData _actionData, int _performingEntityID )
+	{
 		AEntityAction action = null;
 
-		switch (_actionType)
+		//for base actions
+		switch (_actionData.enumID)
 		{
 			case EntityActionEnumID.NeighborMove:
 				action = new MoveToNeighborAction();
@@ -168,13 +175,37 @@ public class TurnManager : Singleton<TurnManager>
 				break;
 		}
 
+		if(action == null)
+		{
+			switch (_actionData.type)
+			{
+				case EntityActionData.ActionType.DistanceAttack:
+				case EntityActionData.ActionType.MeleeAttack:
+					action = new AttackAction();
+					action.Init(GameAssets.current.game.entityActionsData[_actionData.enumID], _performingEntityID, GetLastRegisteredPositionOfEntity(_performingEntityID));
+					break;
+				case EntityActionData.ActionType.Movement:
+					action = new MoveToTargetAction();
+					action.Init(GameAssets.current.game.entityActionsData[_actionData.enumID], _performingEntityID, GetLastRegisteredPositionOfEntity(_performingEntityID));
+					break;
+				case EntityActionData.ActionType.Special:
+					action = new SpecialAction();
+					action.Init(GameAssets.current.game.entityActionsData[_actionData.enumID], _performingEntityID, GetLastRegisteredPositionOfEntity(_performingEntityID));
+					break;
+				case EntityActionData.ActionType.Rotation:
+					action = new RotateWeaponAction();
+					action.Init(GameAssets.current.game.entityActionsData[_actionData.enumID], _performingEntityID, GetLastRegisteredPositionOfEntity(_performingEntityID));
+					break;
+			}
+		}
+
 		return action;
 	}
 
 	public bool AddAction ( int _entityID, EntityActionEnumID _actionType, Entity.EntityState _state )
 	{
 		AEntityAction action = null;
-		action = GetAction(_actionType, _entityID);
+		action = GetAction(GameAssets.current.game.entityActionsData[_actionType], _entityID);
 		return AddAction(_entityID, action, _state);
 	}
 
@@ -434,12 +465,13 @@ public class TurnManager : Singleton<TurnManager>
 
 	public void PlayThisPhaseActions ()
 	{
+		onNewPhaseStart?.Invoke();
 		currentPhase = TurnPhase.Playing;
 		m_actionsBeingDone.Clear();
 		List<int> entityIDs = new(m_actionsToPlay.Keys);
 		foreach (int entityID in entityIDs)
 		{
-			GameManager.Instance.GetEntityFromID(entityID).OnPhaseStart();
+			//GameManager.Instance.GetEntityFromID(entityID).OnPhaseStart();
 
 			if (m_actionsToPlay.ContainsKey(entityID) && m_actionsToPlay[entityID] != null && m_actionsToPlay[entityID].Count != 0)
 			{

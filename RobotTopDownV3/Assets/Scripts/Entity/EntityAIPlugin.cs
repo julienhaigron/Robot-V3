@@ -30,6 +30,7 @@ public class EntityAIPlugin : EntityPlugin
 		// 1) Do all prewarm check (enemyInSeight, weaponRange, ...)
 		DOAllPrewarmCheck();
 		// 2) react depending on those factor
+		EntityActionData availableAttackAction = GetAvailableAttackAction();
 
 		if (HasEnemyWeaponInRange()/* && _recordedAction.entityState == Entity.EntityState.Patroling*/)
 		{
@@ -37,10 +38,10 @@ public class EntityAIPlugin : EntityPlugin
 			//  => shoot directly
 			m_lastEntityTargeted = GetClosestEnemyInWeaponRange(out string _weaponId, true);
 
-			AttackAction attackAction = (TurnManager.Instance.GetAction(EntityActionEnumID.Attack, m_linkedEntity.ID) as AttackAction);
+			AttackAction attackAction = (TurnManager.Instance.GetAction(availableAttackAction, m_linkedEntity.ID) as AttackAction);
 			attackAction.attackingWeaponId = _weaponId;
 			attackAction.targetedEntityID = m_lastEntityTargeted.ID;
-			attackAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.Attack], m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID);
+			attackAction.Init(GameAssets.current.game.entityActionsData[availableAttackAction.enumID], m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID);
 			resultInfo.ReplaceAction(attackAction);
 		}
 		else if (HasEnemyInVisionRange() && !HasEnemyWeaponInRange())
@@ -65,11 +66,13 @@ public class EntityAIPlugin : EntityPlugin
 					if (pathToEnemy == null || pathToEnemy.Count < 2)
 						return resultInfo;
 
-					MoveToTargetAction moveToAction = (TurnManager.Instance.GetAction(EntityActionEnumID.TargetTileMove, m_linkedEntity.ID) as MoveToTargetAction);
+					EntityActionData movementAction = GetMovementAction();
+
+					MoveToTargetAction moveToAction = (TurnManager.Instance.GetAction(movementAction.enumID, m_linkedEntity.ID) as MoveToTargetAction);
 					moveToAction.mode = MoveToTargetAction.MoveActionMode.Entity;
 					moveToAction.targetEntiyID = closestEntity.ID;
 					moveToAction.thisActionDestinationID = pathToEnemy[1].coordinates.ID;
-					moveToAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.NeighborMove], m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID);
+					moveToAction.Init(GameAssets.current.game.entityActionsData[movementAction.enumID], m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID);
 					resultInfo.ReplaceAction(moveToAction);
 				}
 			}
@@ -101,6 +104,31 @@ public class EntityAIPlugin : EntityPlugin
 		WeaponCheck();
 	}
 
+	private EntityActionData GetAvailableAttackAction ()
+	{
+		foreach (EntityActionEnumID action in m_linkedEntity.KnownedActions)
+		{
+			if ((GameAssets.current.game.entityActionsData[action].type == EntityActionData.ActionType.DistanceAttack
+				|| GameAssets.current.game.entityActionsData[action].type == EntityActionData.ActionType.MeleeAttack
+				) && !m_linkedEntity.Equipment.ActionInCooldown.ContainsKey(action))
+				
+				return GameAssets.current.game.entityActionsData[action];
+		}
+
+		return null;
+	}
+
+	private EntityActionData GetMovementAction ()
+	{
+		foreach(EntityActionEnumID action in m_linkedEntity.KnownedActions)
+		{
+			if (GameAssets.current.game.entityActionsData[action].type == EntityActionData.ActionType.Movement)
+				return GameAssets.current.game.entityActionsData[action];
+		}
+
+		return null;
+	}
+
 	#region Vision
 
 	private bool HasEnemyWeaponInRange ()
@@ -127,8 +155,8 @@ public class EntityAIPlugin : EntityPlugin
 	private List<Entity> VisionCheck ( bool _isThisTurn = true )
 	{
 		m_entitiesInVisionRange = new();
-		if (m_linkedEntity.Data.FrameData.capacities.Contains(EntityCapacityAsset.EntityCapacityType.VisualSensor)
-			|| m_linkedEntity.Data.FrameData.capacities.Contains(EntityCapacityAsset.EntityCapacityType.RadarSensor))
+		if (m_linkedEntity.Data.BrainData.capacities.Contains(EntityCapacityAsset.EntityCapacityType.VisualSensor)
+			|| m_linkedEntity.Data.BrainData.capacities.Contains(EntityCapacityAsset.EntityCapacityType.RadarSensor))
 		{
 			m_entitiesInVisionRange = GridManager.Instance.GetEntitiesInRange(m_linkedEntity.Displacement.Coordinates.GetTile(), m_linkedEntity.Data.FrameData.visibilityRange, _isThisTurn);
 		}

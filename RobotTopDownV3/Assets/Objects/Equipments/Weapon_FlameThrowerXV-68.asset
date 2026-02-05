@@ -14,13 +14,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   icon: {fileID: 0}
   energyCost: 30
+  knownedActions: 07000000
   prefab: {fileID: 7856189691443182411, guid: 3c486e26f7821614791b716f5411b97f, type: 3}
   baseDamages:
     keys: 05000000
     values: 05000000
   damageCategory: 1
-  range: 6
-  visionConeRange: 6
+  range: 5
+  visionConeRange: 5
   distanceAccuracyBonus:
     keys: 000000000100000002000000
     values:
@@ -29,4 +30,4 @@ MonoBehaviour:
     - 0.2
   attackAnimationSuccessId: 
   attackAnimationFailureId: 
-  isTwoHanded: 0
+  isTwoHanded: 1

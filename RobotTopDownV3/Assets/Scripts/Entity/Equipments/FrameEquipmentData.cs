@@ -8,141 +8,242 @@ using Unity.Netcode;
 [CreateAssetMenu(fileName = "FrameData", menuName = "ScriptableObject/Equipment/FrameData", order = 1)]
 public class FrameEquipmentData : EntityEquipmentData
 {
-    public Entity.EntityFaction faction;
+	public Entity.EntityFaction faction;
 
-    public Entity prefab;
+	public Entity prefab;
 
-    [Title("Action")]
-    public int actionTokenAmount = 8;
-    public EntityActionEnumID[] knownedActions;
-    [Min(0)] public int visibilityRange = 8;
+	[Title("Action")] //TODO : figureout where to put those
+	public int actionTokenAmount = 8;
+	[Min(0)] public int visibilityRange = 8;
 
-    [Title("AI")]
-    public EntityCapacityAsset.EntityCapacityType[] capacities;
-    public Entity.EntityState[] knownedStates;
+	[BoxGroup(GroupID = "Stat")]
+	public int maxHealth;
+	[BoxGroup(GroupID = "Stat")]
+	public int armSlotAvailable = 2;
+	[BoxGroup(GroupID = "Stat")]
+	public int auxiliarSlotAvailable = 2;
+	[BoxGroup(GroupID = "Stat")]
+	public StatBonus[] statBonuses;
 
-    [BoxGroup(GroupID = "Stat")]
-    public int maxHealth;
-    [BoxGroup(GroupID = "Stat")]
-    public int armSlotAvailable = 2;
-    [BoxGroup(GroupID = "Stat")]
-    public int auxiliarSlotAvailable = 2;
-    [BoxGroup(GroupID = "Stat")]
-    public float hpBonus = .3f; //is this stat variable?
-    /*public float evasion = 2;
+	//public float hpBonus = .3f; //is this stat variable?
+	/*public float evasion = 2;
     public float camo = 2;*/
 }
 
 [System.Serializable]
 public class EntitySavedData : INetworkSerializable
 {
-    public string name;
-    public string frameID;
-    public string reactorID;
-    public string brainID;
-    public StringContainer[] armsIds;
-    public StringContainer[] auxiliarIds;
-    public StringContainer[] chipsetsIds;
+	public string name;
+	public string frameID;
+	public string reactorID;
+	public string brainID;
+	public StringContainer[] armsIds;
+	public StringContainer[] auxiliarIds;
+	public StringContainer[] chipsetsIds;
 
-    public FrameEquipmentData FrameData => GameAssets.current.equipments[frameID] as FrameEquipmentData;
-    public ReactorEquipmentData ReactorData => GameAssets.current.equipments[reactorID] as ReactorEquipmentData;
-    public BrainEquipmentData BrainData => GameAssets.current.equipments[brainID] as BrainEquipmentData;
+	public FrameEquipmentData FrameData => GameAssets.current.equipments[frameID] as FrameEquipmentData;
+	public ReactorEquipmentData ReactorData => GameAssets.current.equipments[reactorID] as ReactorEquipmentData;
+	public BrainEquipmentData BrainData => GameAssets.current.equipments[brainID] as BrainEquipmentData;
 
-    public void NetworkSerialize<T> ( BufferSerializer<T> serializer ) where T : IReaderWriter
-    {
-        serializer.SerializeValue(ref name);
-        serializer.SerializeValue(ref frameID);
-        serializer.SerializeValue(ref reactorID);
-        serializer.SerializeValue(ref brainID);
-        serializer.SerializeValue(ref armsIds);
-        serializer.SerializeValue(ref auxiliarIds);
-        serializer.SerializeValue(ref chipsetsIds);
-    }
-
-    public float GetStaticDamageBonus ()
+	public void NetworkSerialize<T> ( BufferSerializer<T> serializer ) where T : IReaderWriter
 	{
-        //TODO
-        return 1;
+		serializer.SerializeValue(ref name);
+		serializer.SerializeValue(ref frameID);
+		serializer.SerializeValue(ref reactorID);
+		serializer.SerializeValue(ref brainID);
+		serializer.SerializeValue(ref armsIds);
+		serializer.SerializeValue(ref auxiliarIds);
+		serializer.SerializeValue(ref chipsetsIds);
 	}
 
-    public float GetStaticPerceptionBonus (bool _isVisual)
-    {
-        float result = 0;
-        foreach (StringContainer container in auxiliarIds)
-        {
-            if (GameAssets.current.equipments[container.value] is OccultorEquipmentData occultor)
-            {
-                foreach (EntityEquipmentData.StatBonus statBonus in occultor.statBonuses)
-                {
-                    if (statBonus.type == EntityEquipmentData.StatBonus.StatType.VisualPerception && _isVisual)
-                        result += statBonus.value;
-                    else if (statBonus.type == EntityEquipmentData.StatBonus.StatType.SoundPerception && !_isVisual)
-                        result += statBonus.value;
-                }
-            }
-        }
-        foreach (StringContainer container in chipsetsIds)
-        {
-            if (GameAssets.current.equipments[container.value] is ChipsetEquipmentData chipset)
-            {
-                foreach (EntityEquipmentData.StatBonus statBonus in chipset.statBonuses)
-                {
-                    if (statBonus.type == EntityEquipmentData.StatBonus.StatType.VisualPerception && _isVisual)
-                        result += statBonus.value;
-                    else if (statBonus.type == EntityEquipmentData.StatBonus.StatType.SoundPerception && !_isVisual)
-                        result += statBonus.value;
-                }
-            }
-        }
-        return result;
-    }
-
-    public float GetStaticStealthBonus (bool _isVisual)
+	public float GetStatBonusFromAll ( EntityEquipmentData.StatBonus.StatType _stat)
 	{
-        float result = 0;
-        foreach(StringContainer container in auxiliarIds)
+		return GetStatBonusFrom(_stat, true, true, true, true);
+	}
+
+	public float GetStatBonusFrom ( EntityEquipmentData.StatBonus.StatType _stat, bool _frame = false/*, bool _brain = false*/, bool _arms = false, bool _auxiliar = false, bool _chipsets = false )
+	{
+		float totalBonus = 0;
+		if (_frame && GameAssets.current.equipments[frameID] is FrameEquipmentData frame)
 		{
-            if(GameAssets.current.equipments[container.value] is OccultorEquipmentData occultor )
+			foreach (EntityEquipmentData.StatBonus statBonus in frame.statBonuses)
 			{
-                if (_isVisual)
-                    result += occultor.visualCamo;
-                else
-                    result += occultor.soundCamo;
-
-                foreach (EntityEquipmentData.StatBonus statBonus in occultor.statBonuses)
-                {
-                    if (statBonus.type == EntityEquipmentData.StatBonus.StatType.VisualCamo && _isVisual)
-                        result += statBonus.value;
-                    else if (statBonus.type == EntityEquipmentData.StatBonus.StatType.SoundCamo && !_isVisual)
-                        result += statBonus.value;
-                }
-            }
-        }
-        foreach (StringContainer container in chipsetsIds)
+				if (statBonus.type == _stat)
+					totalBonus += statBonus.value;
+			}
+		}
+		/*if (_frame && GameAssets.current.equipments[frameID] is BrainEquipmentData brain)
         {
-            if (GameAssets.current.equipments[container.value] is ChipsetEquipmentData chipset)
+            foreach (EntityEquipmentData.StatBonus statBonus in brain.statBonuses)
             {
-                foreach(EntityEquipmentData.StatBonus statBonus in chipset.statBonuses)
-				{
-                    if(statBonus.type == EntityEquipmentData.StatBonus.StatType.VisualCamo && _isVisual)
-                        result += statBonus.value;
-                    else if(statBonus.type == EntityEquipmentData.StatBonus.StatType.SoundCamo && !_isVisual)
-                        result += statBonus.value;
-				}
+                if (statBonus.type == _stat)
+                    totalBonus += statBonus.value;
             }
-        }
-        return result;
+        }*/
+		if (_auxiliar)
+		{
+			foreach (StringContainer container in auxiliarIds)
+			{
+				if (GameAssets.current.equipments[container.value] is OccultorEquipmentData occultor)
+				{
+					foreach (EntityEquipmentData.StatBonus statBonus in occultor.statBonuses)
+					{
+						if (statBonus.type == _stat)
+							totalBonus += statBonus.value;
+					}
+				}
+				else if (GameAssets.current.equipments[container.value] is ArmorEquipmentData armor)
+				{
+					foreach (EntityEquipmentData.StatBonus statBonus in armor.statBonuses)
+					{
+						if (statBonus.type == _stat)
+							totalBonus += statBonus.value;
+					}
+				}
+			}
+		}
+		if (_chipsets)
+		{
+			foreach (StringContainer container in chipsetsIds)
+			{
+				if (GameAssets.current.equipments[container.value] is ChipsetEquipmentData chipset)
+				{
+					foreach (EntityEquipmentData.StatBonus statBonus in chipset.statBonuses)
+					{
+						if (statBonus.type == _stat)
+							totalBonus += statBonus.value;
+					}
+				}
+			}
+		}
 
-    }
+		return totalBonus;
+	}
+
+	public List<EntityActionEnumID> GetActions ()
+	{
+		List<EntityActionEnumID> actions = new();
+		actions.AddRange(FrameData.knownedActions);
+		actions.AddRange(ReactorData.knownedActions);
+		actions.AddRange(BrainData.knownedActions);
+
+		foreach (StringContainer container in armsIds)
+		{
+			if (GameAssets.current.equipments[container.value] is EntityEquipmentData equipment)
+			{
+				actions.AddRange(equipment.knownedActions);
+			}
+		}
+		foreach (StringContainer container in auxiliarIds)
+		{
+			if (GameAssets.current.equipments[container.value] is EntityEquipmentData equipment)
+			{
+				actions.AddRange(equipment.knownedActions);
+			}
+		}
+		foreach (StringContainer container in chipsetsIds)
+		{
+			if (GameAssets.current.equipments[container.value] is EntityEquipmentData equipment)
+			{
+				actions.AddRange(equipment.knownedActions);
+			}
+		}
+
+		return actions;
+	}
+
+	public int GetMaxHealth ()
+	{
+		float bonus = 1 + GetStatBonusFrom(EntityEquipmentData.StatBonus.StatType.Hp);
+		float maxHealth = FrameData.maxHealth;
+
+		return Mathf.RoundToInt(maxHealth * bonus);
+	}
+
+	public float GetStaticDamageBonus ()
+	{
+		//TODO
+		return 1;
+	}
+
+	public float GetStaticPerceptionBonus ( bool _isVisual )
+	{
+		float result = 0;
+		foreach (StringContainer container in auxiliarIds)
+		{
+			if (GameAssets.current.equipments[container.value] is OccultorEquipmentData occultor)
+			{
+				foreach (EntityEquipmentData.StatBonus statBonus in occultor.statBonuses)
+				{
+					if (statBonus.type == EntityEquipmentData.StatBonus.StatType.VisualPerception && _isVisual)
+						result += statBonus.value;
+					else if (statBonus.type == EntityEquipmentData.StatBonus.StatType.SoundPerception && !_isVisual)
+						result += statBonus.value;
+				}
+			}
+		}
+		foreach (StringContainer container in chipsetsIds)
+		{
+			if (GameAssets.current.equipments[container.value] is ChipsetEquipmentData chipset)
+			{
+				foreach (EntityEquipmentData.StatBonus statBonus in chipset.statBonuses)
+				{
+					if (statBonus.type == EntityEquipmentData.StatBonus.StatType.VisualPerception && _isVisual)
+						result += statBonus.value;
+					else if (statBonus.type == EntityEquipmentData.StatBonus.StatType.SoundPerception && !_isVisual)
+						result += statBonus.value;
+				}
+			}
+		}
+		return result;
+	}
+
+	public float GetStaticStealthBonus ( bool _isVisual )
+	{
+		float result = 0;
+		foreach (StringContainer container in auxiliarIds)
+		{
+			if (GameAssets.current.equipments[container.value] is OccultorEquipmentData occultor)
+			{
+				if (_isVisual)
+					result += occultor.visualCamo;
+				else
+					result += occultor.soundCamo;
+
+				foreach (EntityEquipmentData.StatBonus statBonus in occultor.statBonuses)
+				{
+					if (statBonus.type == EntityEquipmentData.StatBonus.StatType.VisualCamo && _isVisual)
+						result += statBonus.value;
+					else if (statBonus.type == EntityEquipmentData.StatBonus.StatType.SoundCamo && !_isVisual)
+						result += statBonus.value;
+				}
+			}
+		}
+		foreach (StringContainer container in chipsetsIds)
+		{
+			if (GameAssets.current.equipments[container.value] is ChipsetEquipmentData chipset)
+			{
+				foreach (EntityEquipmentData.StatBonus statBonus in chipset.statBonuses)
+				{
+					if (statBonus.type == EntityEquipmentData.StatBonus.StatType.VisualCamo && _isVisual)
+						result += statBonus.value;
+					else if (statBonus.type == EntityEquipmentData.StatBonus.StatType.SoundCamo && !_isVisual)
+						result += statBonus.value;
+				}
+			}
+		}
+		return result;
+
+	}
 }
 
 [System.Serializable]
 public class StringContainer : INetworkSerializable
 {
-    public string value;
+	public string value;
 
-    public void NetworkSerialize<T> ( BufferSerializer<T> serializer ) where T : IReaderWriter
-    {
-        serializer.SerializeValue(ref value);
-    }
+	public void NetworkSerialize<T> ( BufferSerializer<T> serializer ) where T : IReaderWriter
+	{
+		serializer.SerializeValue(ref value);
+	}
 }
