@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Walk
   m_EditorClassIdentifier: 
   displayName: Walk
-  typeID: 9
+  enumID: 9
   icon: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
   tileOutlineColor: {r: 0.34384358, g: 1, b: 0, a: 1}
   tokenCost: 1

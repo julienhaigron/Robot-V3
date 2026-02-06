@@ -13,10 +13,24 @@ MonoBehaviour:
   m_Name: RotateWeaponAction
   m_EditorClassIdentifier: 
   displayName: RotateWeapon
-  typeID: 4
+  enumID: 4
   icon: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
   tileOutlineColor: {r: 0, g: 1, b: 0, a: 1}
   tokenCost: 0
+  tokenPreparationDuration: 0
   tokenCooldown: 1
-  appliableEffects: []
+  tokenDuration: 0
+  previousActionAttackModificator: 2
   type: 4
+  subType: 0
+  targetType: 1
+  minDistance: 0
+  maxDistance: 0
+  minTargetAmount: 1
+  maxTargetAmount: 1
+  isAoe: 0
+  aoeType: 0
+  circleRadius: 1
+  rayDiameter: 1
+  coneSpread: 1
+  appliableEffects: []
