@@ -43,6 +43,9 @@ public class MoveToTargetAction : AEntityAction
 
 	public override void Prepare ( Entity.EntityState _state )
 	{
+		//check here if can do movement and where to exactly
+		RefreshDestinatedTile();
+
 		GameManager.Instance.GetEntityFromID(performingEntityID).Displacement.Coordinates.GetTile().SetEntity(null, _isThisTurn: false);
 	}
 

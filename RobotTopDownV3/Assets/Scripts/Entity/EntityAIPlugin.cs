@@ -62,7 +62,7 @@ public class EntityAIPlugin : EntityPlugin
 				}
 				else
 				{
-					List<Tile> pathToEnemy = GridManager.Instance.GetPath(m_linkedEntity.Displacement.Coordinates.GetTile(), closestEntity.Displacement.Coordinates.GetTile(), true);
+					List<Tile> pathToEnemy = GridManager.Instance.GetPath(closestEntity.Displacement.Coordinates.GetTile(), m_linkedEntity.Displacement.Coordinates.GetTile(), true);
 					if (pathToEnemy == null || pathToEnemy.Count < 2)
 						return resultInfo;
 
@@ -73,7 +73,7 @@ public class EntityAIPlugin : EntityPlugin
 					MoveToTargetAction moveToAction = (TurnManager.Instance.GetAction(movementAction.enumID, m_linkedEntity.ID) as MoveToTargetAction);
 					moveToAction.mode = MoveToTargetAction.MoveActionMode.Entity;
 					moveToAction.targetEntiyID = closestEntity.ID;
-					moveToAction.thisActionDestinationID = pathToEnemy[^2].coordinates.ID;
+					moveToAction.thisActionDestinationID = pathToEnemy[1].coordinates.ID;
 					moveToAction.Init(GameAssets.current.game.entityActionsData[movementAction.enumID], m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID);
 					resultInfo.ReplaceAction(moveToAction);
 				}

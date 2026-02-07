@@ -20,7 +20,7 @@ MonoBehaviour:
   tokenPreparationDuration: 0
   tokenCooldown: 1
   tokenDuration: 0
-  previousActionAttackModificator: 2
+  previousActionAttackModificator: 0
   type: 2
   subType: 0
   targetType: 1

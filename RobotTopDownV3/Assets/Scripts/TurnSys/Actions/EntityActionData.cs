@@ -17,7 +17,7 @@ public class EntityActionData : ScriptableObject
     [Min(0)] public int tokenDuration;
 
     [Title("Stats")]
-    public int previousActionAttackModificator = 2;
+    public float previousActionAttackModificator = 0;
 
     public enum ActionType
 	{
