@@ -24,7 +24,11 @@ MonoBehaviour:
     cameraZoomBounds: {x: 5, y: 10.5}
     entityFlankRatio:
       keys: 00000000010000000200000003000000
-      values: 00000000010000000200000004000000
+      values:
+      - 0
+      - 0.1
+      - 0.2
+      - 0.4
     entityMovementEvasionBonus: 2
     entityCoverBonus: 2
     distanceTypeSpreadEvaluation:
@@ -61,5 +65,9 @@ MonoBehaviour:
       - {r: 0.4755483, g: 0.8679245, b: 0.045033824, a: 1}
       - {r: 0, g: 0.38887525, b: 0.6509434, a: 1}
       - {r: 1, g: 0.10208976, b: 0, a: 1}
+  ui:
+    wallLayerMask:
+      serializedVersion: 2
+      m_Bits: 0
   datas:
     editorLoadDatasFromGamedatasFile: 1

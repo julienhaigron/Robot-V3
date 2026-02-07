@@ -32,7 +32,7 @@ public class EntityAIPlugin : EntityPlugin
 		// 2) react depending on those factor
 		EntityActionData availableAttackAction = GetAvailableAttackAction();
 
-		if (HasEnemyWeaponInRange()/* && _recordedAction.entityState == Entity.EntityState.Patroling*/)
+		if (HasEnemyWeaponInRange() && availableAttackAction != null /* && _recordedAction.entityState == Entity.EntityState.Patroling*/)
 		{
 			// if eneemy in weapon range
 			//  => shoot directly
@@ -68,10 +68,12 @@ public class EntityAIPlugin : EntityPlugin
 
 					EntityActionData movementAction = GetMovementAction();
 
+					//problem here
+
 					MoveToTargetAction moveToAction = (TurnManager.Instance.GetAction(movementAction.enumID, m_linkedEntity.ID) as MoveToTargetAction);
 					moveToAction.mode = MoveToTargetAction.MoveActionMode.Entity;
 					moveToAction.targetEntiyID = closestEntity.ID;
-					moveToAction.thisActionDestinationID = pathToEnemy[1].coordinates.ID;
+					moveToAction.thisActionDestinationID = pathToEnemy[^2].coordinates.ID;
 					moveToAction.Init(GameAssets.current.game.entityActionsData[movementAction.enumID], m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID);
 					resultInfo.ReplaceAction(moveToAction);
 				}
@@ -146,7 +148,7 @@ public class EntityAIPlugin : EntityPlugin
 	{
 		foreach(Entity entity in m_entitiesInVisionRange)
 		{
-			if (!entity.IsAlliedTo(m_linkedEntity.PlayerOwnerID))
+			if (!entity.IsAlliedTo(m_linkedEntity.OwnerID))
 				return true;
 		}
 		return false;
@@ -174,7 +176,7 @@ public class EntityAIPlugin : EntityPlugin
 			foreach (Tile tile in tilesInWeaponCone)
 			{
 				Entity entityOnTile = tile.GetEntity(_isThisTurn);
-				if (entityOnTile != null && !entityOnTile.IsAlliedTo(m_linkedEntity.PlayerOwnerID))
+				if (entityOnTile != null && !entityOnTile.IsAlliedTo(m_linkedEntity.OwnerID))
 					m_entitiesInWeaponRange[weaponId].Add(entityOnTile);
 			}
 		}
@@ -234,7 +236,7 @@ public class EntityAIPlugin : EntityPlugin
 		{
 			foreach (Entity entity in m_entitiesInWeaponRange[weaponId])
 			{
-				if (entity.IsAlliedTo(m_linkedEntity.PlayerOwnerID)) continue;
+				if (entity.IsAlliedTo(m_linkedEntity.OwnerID)) continue;
 
 				if (closestEntity == null || entity.Displacement.Coordinates.GetTile().Distance < closestEntity.Displacement.Coordinates.GetTile().Distance)
 				{
@@ -254,7 +256,7 @@ public class EntityAIPlugin : EntityPlugin
 		Entity closestEntity = null;
 		foreach (Entity entity in m_entitiesInVisionRange)
 		{
-			if (entity.IsAlliedTo(m_linkedEntity.PlayerOwnerID))
+			if (entity.IsAlliedTo(m_linkedEntity.OwnerID))
 				continue;
 
 			if (closestEntity == null || entity.Displacement.Coordinates.GetTile().Distance < closestEntity.Displacement.Coordinates.GetTile().Distance)

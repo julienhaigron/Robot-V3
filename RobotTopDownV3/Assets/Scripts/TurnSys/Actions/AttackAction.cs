@@ -110,7 +110,7 @@ public class AttackAction : AEntityAction
 		//TODO : select only visible enemies
 
 		Entity entity = _tile.GetEntity(true);
-		return entity != null && !entity.IsAlliedTo(PerformingEntity.PlayerOwnerID);
+		return entity != null && !entity.IsAlliedTo(PerformingEntity.OwnerID);
 	}
 
 	public override void GhostDisplay ( Entity.EntityState _state )

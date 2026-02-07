@@ -21,7 +21,7 @@ MonoBehaviour:
     values: 05000000
   damageCategory: 1
   range: 5
-  visionConeRange: 5
+  visionConeRange: 30
   distanceAccuracyBonus:
     keys: 000000000100000002000000
     values:

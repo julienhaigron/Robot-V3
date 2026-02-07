@@ -35,6 +35,7 @@ public class PlayerController : Singleton<PlayerController>
 		}
 	}
 
+	private int PlayerID => !GameManager.Instance.IsOnline ? 0 : OnlinePlayerInstance.Self.connectionIndex;
 
 	private Tween m_cameraRotationTween;
 	private Tile m_selectedTile;
@@ -158,9 +159,8 @@ public class PlayerController : Singleton<PlayerController>
 		//Event => Select // unselect entity
 		if (_tile.GetEntity(true) != null && !_tile.CanInteract)
 		{
-			int playerId = !GameManager.Instance.IsOnline ? 0 : OnlinePlayerInstance.Self.connectionIndex;
 			//ally entity
-			if (_tile.GetEntity(true).IsAlliedTo(playerId))
+			if (_tile.GetEntity(true).IsAlliedTo(PlayerID))
 			{
 				if (m_selectedEntity == _tile.GetEntity(true))
 				{
@@ -209,9 +209,8 @@ public class PlayerController : Singleton<PlayerController>
 
 		if (m_selectedEntity != null && m_actionDisplays.ContainsKey(m_selectedEntity.ID) && m_actionDisplays[m_selectedEntity.ID].Count > 0)
 		{
-			int playerId = !GameManager.Instance.IsOnline ? 0 : OnlinePlayerInstance.Self.connectionIndex;
 			//ally entity
-			if (m_selectedEntity.IsAlliedTo(playerId))
+			if (m_selectedEntity.IsAlliedTo(PlayerID))
 			{
 				//remove action interaction
 				List<ActionDisplayOnTile> actionsOnTile = new();

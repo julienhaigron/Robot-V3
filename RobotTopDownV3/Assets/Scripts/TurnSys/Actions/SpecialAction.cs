@@ -60,6 +60,6 @@ public class SpecialAction : AEntityAction
 		//TODO : select only visible enemies
 
 		Entity entity = _tile.GetEntity(true);
-		return entity != null && !entity.IsAlliedTo(GameManager.Instance.GetEntityFromID(performingEntityID).PlayerOwnerID);
+		return entity != null && !entity.IsAlliedTo(GameManager.Instance.GetEntityFromID(performingEntityID).OwnerID);
 	}
 }

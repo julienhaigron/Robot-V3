@@ -44,13 +44,19 @@ public class Entity : MonoBehaviour
     public List<AEntityEffect> Effects => m_effects;
     private Dictionary<AEntityEffect, int> m_remainingDurationToActiveEffects = new();
 
-    public EntityFaction Faction => m_data.FrameData.faction;
+    private int m_ownerID;
+    public int OwnerID => m_ownerID;
+    //public EntityFaction Faction => m_data.FrameData.faction;
+
+    [BoxGroup("Fix Stats")]
+    
+
 
     private EntityActionData m_lastActionPerformed;
     public EntityActionData LastActionPerformedData => m_lastActionPerformed == null ? GameConfig.current.game.defaultStartAction : m_lastActionPerformed;
 
     public int ID;
-    public int PlayerOwnerID;
+    //public int PlayerOwnerID;
 
     public enum EntityState 
     {
@@ -60,8 +66,8 @@ public class Entity : MonoBehaviour
     }
     public enum EntityFaction
 	{
-        Ally,
-        Enemy
+        Scout,
+        Psy
 	}
 
 	private void Awake ()
@@ -77,7 +83,7 @@ public class Entity : MonoBehaviour
     public void Init ( EntitySavedData _data, EntityAnchor.Spawn _spawn, int _id, int _playerID )
     {
         ID = _id;
-        PlayerOwnerID = _playerID;
+        m_ownerID = _playerID;
         m_data = _data;
         Displacement.SetSpawn(_spawn);
         
@@ -120,12 +126,13 @@ public class Entity : MonoBehaviour
 
     public bool IsAlliedTo (int _playerOwnerId)
 	{
-        if (!GameManager.Instance.IsOnline && m_data.FrameData.faction == EntityFaction.Ally)
+        return m_ownerID == _playerOwnerId;
+        /*if (!GameManager.Instance.IsOnline && m_data.FrameData.faction == EntityFaction.Scout)
             return true;
-        else if (GameManager.Instance.IsOnline && PlayerOwnerID == _playerOwnerId)
+        else if (GameManager.Instance.IsOnline && m_ownerID == _playerOwnerId)
             return true;
         else
-            return false;
+            return false;*/
 	}
 
     public void Select ()

@@ -481,9 +481,11 @@ public class GridManager : Singleton<GridManager>
 		Vector2 origin = new Vector2(_from.transform.position.x, _from.transform.position.z);
 		Vector2 destination = new Vector2(_to.transform.position.x, _to.transform.position.z);
 		float angle = GetAngleFrom(origin, destination);
-		angle = angle + 90f;
+		angle += 90f;
 		if (angle > 360)
-			angle = -360f;
+			angle -= 360f;
+		if (angle < 0)
+			angle += 360f;
 
 		return (int)((angle - 30f) / 60f);
 	}
@@ -623,7 +625,7 @@ public class GridManager : Singleton<GridManager>
 			tile.SetActiveFOW(false, true);
 		}
 
-		m_entitiesVisions[_entity.PlayerOwnerID].entitiesVisionRange.Add(_entity, tileInEntityRange);
+		m_entitiesVisions[_entity.OwnerID].entitiesVisionRange.Add(_entity, tileInEntityRange);
 
 		//m_fowRenderer.material.SetTexture("_FogTex", fogTexture);
 	}
@@ -634,12 +636,12 @@ public class GridManager : Singleton<GridManager>
 		if (!_entity.IsAlliedTo(playerId))
 			return;
 
-		foreach (Tile tile in m_entitiesVisions[_entity.PlayerOwnerID].entitiesVisionRange[_entity])
+		foreach (Tile tile in m_entitiesVisions[_entity.OwnerID].entitiesVisionRange[_entity])
 		{
 			bool isInAnotherEntityVisionRange = false;
-			foreach (Entity otherEntities in m_entitiesVisions[_entity.PlayerOwnerID].entitiesVisionRange.Keys)
+			foreach (Entity otherEntities in m_entitiesVisions[_entity.OwnerID].entitiesVisionRange.Keys)
 			{
-				if (m_entitiesVisions[_entity.PlayerOwnerID].entitiesVisionRange[otherEntities].Contains(tile))
+				if (m_entitiesVisions[_entity.OwnerID].entitiesVisionRange[otherEntities].Contains(tile))
 				{
 					isInAnotherEntityVisionRange = true;
 					break;
@@ -650,7 +652,7 @@ public class GridManager : Singleton<GridManager>
 				tile.SetActiveFOW(false, false);
 		}
 
-		m_entitiesVisions[_entity.PlayerOwnerID].entitiesVisionRange.Remove(_entity);
+		m_entitiesVisions[_entity.OwnerID].entitiesVisionRange.Remove(_entity);
 
 		//m_fowRenderer.material.SetTexture("_FogTex", fogTexture);
 	}
@@ -664,20 +666,20 @@ public class GridManager : Singleton<GridManager>
 			return;
 		}
 
-		List<Tile> previousTilesInRangeList = new(m_entitiesVisions[_entity.PlayerOwnerID].entitiesVisionRange[_entity]);
+		List<Tile> previousTilesInRangeList = new(m_entitiesVisions[_entity.OwnerID].entitiesVisionRange[_entity]);
 		List<Tile> newTilesInRangeList = GetTilesInVisionRange(_entity.Displacement.Coordinates.GetTile(), _entity.Data.FrameData.visibilityRange, true);
-		m_entitiesVisions[_entity.PlayerOwnerID].entitiesVisionRange[_entity] = new(newTilesInRangeList);
+		m_entitiesVisions[_entity.OwnerID].entitiesVisionRange[_entity] = new(newTilesInRangeList);
 
 		foreach (Tile tile in newTilesInRangeList)
 		{
 			if (!previousTilesInRangeList.Contains(tile))
 			{
 				bool isInAnotherEntityVisionRange = false;
-				foreach (Entity entity in m_entitiesVisions[_entity.PlayerOwnerID].entitiesVisionRange.Keys)
+				foreach (Entity entity in m_entitiesVisions[_entity.OwnerID].entitiesVisionRange.Keys)
 				{
 					if (entity == _entity) continue;
 
-					if (m_entitiesVisions[_entity.PlayerOwnerID].entitiesVisionRange[entity].Contains(tile))
+					if (m_entitiesVisions[_entity.OwnerID].entitiesVisionRange[entity].Contains(tile))
 					{
 						isInAnotherEntityVisionRange = true;
 						break;
@@ -692,9 +694,9 @@ public class GridManager : Singleton<GridManager>
 		foreach (Tile previousTile in previousTilesInRangeList)
 		{
 			bool isInAnotherEntityVisionRange = false;
-			foreach (Entity entity in m_entitiesVisions[_entity.PlayerOwnerID].entitiesVisionRange.Keys)
+			foreach (Entity entity in m_entitiesVisions[_entity.OwnerID].entitiesVisionRange.Keys)
 			{
-				if (m_entitiesVisions[_entity.PlayerOwnerID].entitiesVisionRange[entity].Contains(previousTile))
+				if (m_entitiesVisions[_entity.OwnerID].entitiesVisionRange[entity].Contains(previousTile))
 				{
 					isInAnotherEntityVisionRange = true;
 					break;
