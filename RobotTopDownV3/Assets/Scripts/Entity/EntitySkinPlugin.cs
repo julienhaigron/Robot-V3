@@ -12,7 +12,7 @@ public class EntitySkinPlugin : EntityPlugin
 	[SerializeField] private HumanoidEntityIK m_humanoidEntityIK;
 	public HumanoidEntityIK IK => m_humanoidEntityIK;
 
-	[SerializeField] private SerializableDictionary<EntityActionEnumID, string> m_animationKeyPerActionDictionary;
+	[SerializeField] private SerializableDictionary<EntityActionData.ActionType, string> m_animationKeyPerActionDictionary;
 
 
 	public override void Init ( EntitySavedData _entityData )
@@ -26,8 +26,9 @@ public class EntitySkinPlugin : EntityPlugin
 	public void OnStartActionPerform (AEntityAction _action)
 	{
 		m_animator.speed = 1;
-		if (m_animationKeyPerActionDictionary.ContainsKey(_action.enumID))
-			m_animator.SetTrigger(m_animationKeyPerActionDictionary[_action.enumID]);
+		EntityActionData.ActionType type = GameAssets.current.game.entityActionsData[_action.enumID].type;
+		if (m_animationKeyPerActionDictionary.ContainsKey(type))
+			m_animator.SetTrigger(m_animationKeyPerActionDictionary[type]);
 	}
 
 	public void OverrideAnimation(string _animationID )
