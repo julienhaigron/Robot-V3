@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using Sirenix.OdinInspector;
 
 public class EntityEquipmentPlugin : EntityPlugin
 {
@@ -24,8 +25,16 @@ public class EntityEquipmentPlugin : EntityPlugin
 	private bool m_isDead = false;
 	public bool IsDead => m_isDead;
 
-	private float m_generalDamageBuff = 1f;
+	private SerializableDictionary<EntityActionEnumID, int> m_actionsInCooldown = new();
+	public SerializableDictionary<EntityActionEnumID, int> ActionInCooldown => m_actionsInCooldown;
+
+	//TODO : load all variables bellow through Init()
+	[Title("Stats")]
+	private float m_generalDamageBuff = 0f;
 	public float GeneralDamageBuff => m_generalDamageBuff;
+
+	private float m_generalDamageResistance = 0f;
+	public float GeneralDamageResistance => m_generalDamageResistance;
 
 	private SerializableDictionary<WeaponEquipmentData.DamageType, float> m_applyedDamageTypeBuffs = new();
 	public SerializableDictionary<WeaponEquipmentData.DamageType, float> ApplyedDamageTypeBuffs => m_applyedDamageTypeBuffs;
@@ -36,9 +45,8 @@ public class EntityEquipmentPlugin : EntityPlugin
 	private SerializableDictionary<WeaponEquipmentData.DamageCategory, float> m_applyedDamageCategoryBuffs = new();
 	public SerializableDictionary<WeaponEquipmentData.DamageCategory, float> ApplyedDamageCategoryBuffs => m_applyedDamageCategoryBuffs;
 
-
-	private SerializableDictionary<EntityActionEnumID, int> m_actionsInCooldown = new();
-	public SerializableDictionary<EntityActionEnumID, int> ActionInCooldown => m_actionsInCooldown;
+	private SerializableDictionary<WeaponEquipmentData.DamageCategory, float> m_applyedDamageCategoryResitance = new();
+	public SerializableDictionary<WeaponEquipmentData.DamageCategory, float> ApplyedDamageTypeCategoryResitance => m_applyedDamageCategoryResitance;
 
 
 	private void Awake ()
@@ -74,6 +82,18 @@ public class EntityEquipmentPlugin : EntityPlugin
 		m_isDead = false;
 
 		//resistance
+		m_generalDamageBuff = m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.StatBonus.StatType.GeneralDamageBonus);
+		m_applyedDamageTypeBuffs.Add(WeaponEquipmentData.DamageType.Tranchant, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.StatBonus.StatType.SlashDamageBonus));
+		m_applyedDamageTypeBuffs.Add(WeaponEquipmentData.DamageType.Contendant, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.StatBonus.StatType.BludgeoningDamageBonus));
+		m_applyedDamageTypeBuffs.Add(WeaponEquipmentData.DamageType.Perforant, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.StatBonus.StatType.PiercingDamageBonus));
+		m_applyedDamageTypeBuffs.Add(WeaponEquipmentData.DamageType.Electrique, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.StatBonus.StatType.ElectricDamageBonus));
+		m_applyedDamageTypeBuffs.Add(WeaponEquipmentData.DamageType.Feu, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.StatBonus.StatType.FireDamageBonus));
+		m_applyedDamageTypeBuffs.Add(WeaponEquipmentData.DamageType.Laser, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.StatBonus.StatType.LaserDamageBonus));
+		m_applyedDamageTypeBuffs.Add(WeaponEquipmentData.DamageType.Magnetique, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.StatBonus.StatType.MagneticDamageBonus));
+		m_applyedDamageTypeBuffs.Add(WeaponEquipmentData.DamageType.Plasma, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.StatBonus.StatType.PlasmaDamageBonus));
+		m_applyedDamageTypeBuffs.Add(WeaponEquipmentData.DamageType.Radiation, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.StatBonus.StatType.RadiationDamageBonus));
+
+		m_generalDamageResistance = m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.StatBonus.StatType.GeneralDamageResistance);
 		m_applyedDamageTypeResitance.Add(WeaponEquipmentData.DamageType.Tranchant, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.StatBonus.StatType.SlashResitance));
 		m_applyedDamageTypeResitance.Add(WeaponEquipmentData.DamageType.Contendant, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.StatBonus.StatType.BludgeoningResitance));
 		m_applyedDamageTypeResitance.Add(WeaponEquipmentData.DamageType.Perforant, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.StatBonus.StatType.PiercingResitance));
@@ -83,6 +103,12 @@ public class EntityEquipmentPlugin : EntityPlugin
 		m_applyedDamageTypeResitance.Add(WeaponEquipmentData.DamageType.Magnetique, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.StatBonus.StatType.MagneticResitance));
 		m_applyedDamageTypeResitance.Add(WeaponEquipmentData.DamageType.Plasma, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.StatBonus.StatType.PlasmaResitance));
 		m_applyedDamageTypeResitance.Add(WeaponEquipmentData.DamageType.Radiation, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.StatBonus.StatType.RadiationResitance));
+
+		m_applyedDamageCategoryBuffs.Add(WeaponEquipmentData.DamageCategory.Physic, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.StatBonus.StatType.PhysicalDamageBonus));
+		m_applyedDamageCategoryBuffs.Add(WeaponEquipmentData.DamageCategory.Elemental, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.StatBonus.StatType.ElementalDamageBonus));
+
+		m_applyedDamageCategoryResitance.Add(WeaponEquipmentData.DamageCategory.Physic, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.StatBonus.StatType.PhysicalDamageResistance));
+		m_applyedDamageCategoryResitance.Add(WeaponEquipmentData.DamageCategory.Elemental, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.StatBonus.StatType.ElementalDamageResistance));
 
 		base.Init(_entityData);
 	}
@@ -227,9 +253,10 @@ public class EntityEquipmentPlugin : EntityPlugin
 		else
 		{
 			float roll = Random.Range(0f, 1f);
-			bool isAttackSuccessful = roll + finalScore > 1;
+			bool isAttackSuccessful = finalScore >= roll;
+			//bool isAttackSuccessful = roll + finalScore > 1;
 			LogConsole.AddLog("Attack Roll " + (isAttackSuccessful ? "[SUCESS]" : "[FAILURE]") + " : targetEvasionScore = " + targetEvasionScore + ", roll = " + roll + " and userHitScore = " + userHitScore, LogConsole.LogEventType.PlayPhase);
-			return roll + finalScore > 1;
+			return isAttackSuccessful;
 		}
 	}
 
@@ -272,8 +299,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 	{
 		foreach(KeyValuePair<WeaponEquipmentData.DamageType, int> pair in _damageInfo.damages)
 		{
-			float resistance = m_applyedDamageTypeResitance.ContainsKey(pair.Key) ? m_applyedDamageTypeResitance[pair.Key] : 0;
-			m_currentHealth -= pair.Value - Mathf.RoundToInt(((float)pair.Value * resistance));
+			m_currentHealth -= pair.Value;
 		}
 
 		if (m_currentHealth <= 0)

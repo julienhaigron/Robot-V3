@@ -39,7 +39,28 @@ public class EntityEquipmentData : ScriptableObject
             StatusDurationReduction,
             StatusChance,
             StatusAppliedDurationRaise,
-		}
+            FlankBonus,
+            GeneralDamageBonus,
+            GeneralDamageResistance,
+
+            FireDamageBonus,
+            ElectricDamageBonus,
+            LaserDamageBonus,
+            MagneticDamageBonus,
+            PlasmaDamageBonus,
+            RadiationDamageBonus,
+            FlankDamageBonus,
+            StatusDamageBonus,
+            SlashDamageBonus,
+            PiercingDamageBonus,
+            BludgeoningDamageBonus,
+
+            PhysicalDamageBonus,
+            ElementalDamageBonus,
+
+            PhysicalDamageResistance,
+            ElementalDamageResistance
+        }
 
         public StatType type;
         public float value;

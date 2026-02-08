@@ -68,13 +68,28 @@ public class Weapon : MonoBehaviour
 	public virtual Dictionary<WeaponEquipmentData.DamageType, int> GetDamages (Entity _user, Entity _target)
 	{
 		Dictionary<WeaponEquipmentData.DamageType, int> damages = new();
-		float flankBonus = GameConfig.current.game.entityFlankRatio[GridManager.Instance.GetHitTileSide(_user, _target)];
+		float flankMod = GameConfig.current.game.entityFlankRatio[GridManager.Instance.GetHitTileSide(_user, _target)];
 
 		foreach (KeyValuePair<WeaponEquipmentData.DamageType, int> pair in Data.baseDamages)
 		{
-			float damage = ((float)pair.Value * (_user.Equipment.ApplyedDamageTypeBuffs.ContainsKey(pair.Key) ? _user.Equipment.ApplyedDamageTypeBuffs[pair.Key] : 1)
+			/*float damage = ((float)pair.Value * (_user.Equipment.ApplyedDamageTypeBuffs.ContainsKey(pair.Key) ? _user.Equipment.ApplyedDamageTypeBuffs[pair.Key] : 1)
 					* (_user.Equipment.ApplyedDamageCategoryBuffs.ContainsKey(Data.damageCategory) ? _user.Equipment.ApplyedDamageCategoryBuffs[Data.damageCategory] : 1))
 				* _user.Equipment.GeneralDamageBuff * _user.Data.GetStaticDamageBonus() * flankBonus;
+			damages.Add(pair.Key, (int)damage);*/
+
+			float damage = /*((float)pair.Value +*/ ( (float)pair.Value * 
+				(
+					/* buff damage type*/ (_user.Equipment.ApplyedDamageTypeBuffs.ContainsKey(pair.Key) ? _user.Equipment.ApplyedDamageTypeBuffs[pair.Key] : 0f)
+					- /* enemy res to damage type*/(_target.Equipment.ApplyedDamageTypeResistance.ContainsKey(pair.Key) ? _target.Equipment.ApplyedDamageTypeResistance[pair.Key] : 0)
+					+ /* buff sub damage type*/(_user.Equipment.ApplyedDamageCategoryBuffs.ContainsKey(GameConfig.current.game.damageCateforyPerDamageType[pair.Key]) ? _user.Equipment.ApplyedDamageCategoryBuffs[GameConfig.current.game.damageCateforyPerDamageType[pair.Key]] : 0)
+					- /* enemy res to sub damage type*/(_target.Equipment.ApplyedDamageTypeCategoryResitance.ContainsKey(GameConfig.current.game.damageCateforyPerDamageType[pair.Key]) ? _target.Equipment.ApplyedDamageTypeCategoryResitance[GameConfig.current.game.damageCateforyPerDamageType[pair.Key]] : 0)
+					+ /* buff any damage */ _user.Equipment.GeneralDamageBuff
+					- /* enemy res to any damage*/ _user.Equipment.GeneralDamageResistance
+					+ /* mod flank*/ flankMod
+					+ /* buff flank*/ _user.Data.GetStatBonusFromAll(EntityEquipmentData.StatBonus.StatType.FlankBonus)
+					- /* enemy res to  flank*/_target.Data.GetStatBonusFromAll(EntityEquipmentData.StatBonus.StatType.FlankResistance)/*)*/
+					)
+				);
 			damages.Add(pair.Key, (int)damage);
 		}
 

@@ -30,10 +30,12 @@ public partial class GameConfig : ScriptableObject
 		public float cameraZoomSpeed;
 		public Vector2 cameraZoomBounds;
 
+		[Title("Entity")]
 		public SerializableDictionary<Tile.TileDirectionType, float> entityFlankRatio = new();
 		public float entityMovementEvasionBonus = 2;
 		public float entityCoverBonus = 2;
 		public SerializableDictionary<WeaponEquipmentData.DistanceType, float> distanceTypeSpreadEvaluation;
+		public SerializableDictionary<WeaponEquipmentData.DamageType, WeaponEquipmentData.DamageCategory> damageCateforyPerDamageType;
 	}
 
 	[System.Serializable]

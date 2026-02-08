@@ -160,12 +160,6 @@ public class EntitySavedData : INetworkSerializable
 		return Mathf.RoundToInt(maxHealth * bonus);
 	}
 
-	public float GetStaticDamageBonus ()
-	{
-		//TODO
-		return 1;
-	}
-
 	public float GetStaticPerceptionBonus ( bool _isVisual )
 	{
 		float result = 0;
