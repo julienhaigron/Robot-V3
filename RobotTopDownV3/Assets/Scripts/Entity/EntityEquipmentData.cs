@@ -59,7 +59,9 @@ public class EntityEquipmentData : ScriptableObject
             ElementalDamageBonus,
 
             PhysicalDamageResistance,
-            ElementalDamageResistance
+            ElementalDamageResistance,
+
+            FinalDamageBonus
         }
 
         public StatType type;

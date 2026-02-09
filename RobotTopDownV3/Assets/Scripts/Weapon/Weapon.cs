@@ -75,25 +75,33 @@ public class Weapon : MonoBehaviour
 		{
 			if(!_actionData.usedDamageChannels.Contains(pair.Key))
 				continue;
-			/*float damage = ((float)pair.Value * (_user.Equipment.ApplyedDamageTypeBuffs.ContainsKey(pair.Key) ? _user.Equipment.ApplyedDamageTypeBuffs[pair.Key] : 1)
-					* (_user.Equipment.ApplyedDamageCategoryBuffs.ContainsKey(Data.damageCategory) ? _user.Equipment.ApplyedDamageCategoryBuffs[Data.damageCategory] : 1))
-				* _user.Equipment.GeneralDamageBuff * _user.Data.GetStaticDamageBonus() * flankBonus;
-			damages.Add(pair.Key, (int)damage);*/
 
-			float damage = ((float)pair.Value + ( (float)pair.Value * 
+			float damage = ( (float)pair.Value * 
 				(
-					/* buff damage type*/ (_user.Equipment.ApplyedDamageTypeBuffs.ContainsKey(pair.Key) ? _user.Equipment.ApplyedDamageTypeBuffs[pair.Key] : 0f)
-					- /* enemy res to damage type*/(_target.Equipment.ApplyedDamageTypeResistance.ContainsKey(pair.Key) ? _target.Equipment.ApplyedDamageTypeResistance[pair.Key] : 0)
-					+ /* buff sub damage type*/(_user.Equipment.ApplyedDamageCategoryBuffs.ContainsKey(GameConfig.current.game.damageCateforyPerDamageType[pair.Key]) ? _user.Equipment.ApplyedDamageCategoryBuffs[GameConfig.current.game.damageCateforyPerDamageType[pair.Key]] : 0)
-					- /* enemy res to sub damage type*/(_target.Equipment.ApplyedDamageTypeCategoryResitance.ContainsKey(GameConfig.current.game.damageCateforyPerDamageType[pair.Key]) ? _target.Equipment.ApplyedDamageTypeCategoryResitance[GameConfig.current.game.damageCateforyPerDamageType[pair.Key]] : 0)
-					+ /* buff any damage */ _user.Equipment.GeneralDamageBuff
-					- /* enemy res to any damage*/ _user.Equipment.GeneralDamageResistance
-					+ /* mod flank*/ flankMod
-					+ /* buff flank*/ _user.Data.GetStatBonusFromAll(EntityEquipmentData.StatBonus.StatType.FlankBonus)
-					- /* enemy res to  flank*/_target.Data.GetStatBonusFromAll(EntityEquipmentData.StatBonus.StatType.FlankResistance))
-					)
+					1 + Mathf.Max((_user.Equipment.ApplyedDamageTypeBuffs.ContainsKey(pair.Key) ? _user.Equipment.ApplyedDamageTypeBuffs[pair.Key] : 0f)
+					- (_target.Equipment.ApplyedDamageTypeResistance.ContainsKey(pair.Key) ? _target.Equipment.ApplyedDamageTypeResistance[pair.Key] : 0), -1f)
+				)
+				*
+				(
+					1 + Mathf.Max((_user.Equipment.ApplyedDamageCategoryBuffs.ContainsKey(GameConfig.current.game.damageCateforyPerDamageType[pair.Key]) ? _user.Equipment.ApplyedDamageCategoryBuffs[GameConfig.current.game.damageCateforyPerDamageType[pair.Key]] : 0)
+					- (_target.Equipment.ApplyedDamageTypeCategoryResitance.ContainsKey(GameConfig.current.game.damageCateforyPerDamageType[pair.Key]) ? _target.Equipment.ApplyedDamageTypeCategoryResitance[GameConfig.current.game.damageCateforyPerDamageType[pair.Key]] : 0), -1f)
+				)
+				*
+				(	1 + Mathf.Max(_user.Equipment.GeneralDamageBuff
+					-  _user.Equipment.GeneralDamageResistance, -1f)
+				)
+				*
+				(
+					1 + Mathf.Max( flankMod
+					+ _user.Data.GetStatBonusFromAll(EntityEquipmentData.StatBonus.StatType.FlankBonus)
+					- _target.Data.GetStatBonusFromAll(EntityEquipmentData.StatBonus.StatType.FlankResistance), -1f)
+				)
+				*
+				(
+					1 + Mathf.Max(_user.Data.GetStatBonusFromAll(EntityEquipmentData.StatBonus.StatType.FinalDamageBonus), -1f)
+				)
 				);
-			damages.Add(pair.Key, (int)damage);
+			damages.Add(pair.Key, Mathf.RoundToInt(damage));
 		}
 
 		return damages;
