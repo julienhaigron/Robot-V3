@@ -230,16 +230,17 @@ public class EntityEquipmentPlugin : EntityPlugin
 	{
 		Entity targetEntity = _attackAction.TargetEntity;
 		WeaponEquipmentData usedWeapon = m_weapons[_attackAction.attackingWeaponId].Data;
+		bool doesWinPFC = _attackAction.pfcResult == (int)EntityActionData.PFCResultType.FirstWins;
 
 		float targetCamo = targetEntity.Data.GetStaticStealthBonus(true);
 		float evationRatio = _attackAction.Data.type == EntityActionData.ActionType.DistanceAttack ? targetEntity.Data.BrainData.distanceEvasion : targetEntity.Data.BrainData.meleeEvasion;
-		float coverRatio = GridManager.Instance.IsThereCoverBeween(_attackAction.PerformingEntity, targetEntity) ? GameConfig.current.game.entityCoverBonus : 0;
-		float distanceRatio = m_weapons[_attackAction.attackingWeaponId].Data.distanceAccuracyBonus[GetWeaponDistanceTypeFrom(targetEntity, usedWeapon)];
+		float coverRatio = GridManager.Instance.IsThereCoverBeween(_attackAction.PerformingEntity, targetEntity, doesWinPFC) ? GameConfig.current.game.entityCoverBonus : 0;
+		float distanceRatio = m_weapons[_attackAction.attackingWeaponId].Data.distanceAccuracyBonus[GetWeaponDistanceTypeFrom(targetEntity, usedWeapon, doesWinPFC)];
 		float targetEvasionScore = targetCamo + evationRatio + coverRatio + distanceRatio;
 
 		float userPerception = m_linkedEntity.Data.GetStaticPerceptionBonus(true);
 		float userAim = _attackAction.Data.type == EntityActionData.ActionType.DistanceAttack ? m_linkedEntity.Data.BrainData.distanceAccuracy : m_linkedEntity.Data.BrainData.agility;
-		float flankBonus = GameConfig.current.game.entityFlankRatio[GridManager.Instance.GetHitTileSide(m_linkedEntity, targetEntity)];
+		float flankBonus = GameConfig.current.game.entityFlankRatio[GridManager.Instance.GetHitTileSide(m_linkedEntity, targetEntity, doesWinPFC)];
 		float modAction = m_linkedEntity.LastActionPerformedData.previousActionAttackModificator;
 		float userHitScore = userPerception + userAim + flankBonus + modAction;
 
@@ -260,9 +261,11 @@ public class EntityEquipmentPlugin : EntityPlugin
 		}
 	}
 
-	public WeaponEquipmentData.DistanceType GetWeaponDistanceTypeFrom(Entity _target, WeaponEquipmentData _weaponData )
+	public WeaponEquipmentData.DistanceType GetWeaponDistanceTypeFrom(Entity _target, WeaponEquipmentData _weaponData, bool _didAttackerWinPFC )
 	{
-		float actualDistanceFromTarget = Vector3.Distance(m_linkedEntity.transform.position, _target.transform.position) / (Tile.outerRadius*2f);
+		int attackerPosition = _didAttackerWinPFC ? TurnManager.Instance.GetPositionOfEntityAtEndOfRound(_target.ID) : TurnManager.Instance.GetPositionOfEntityAtEndOfRound(_target.ID);
+		int defenderPosition = !_didAttackerWinPFC ? TurnManager.Instance.GetPositionOfEntityAtEndOfRound(_target.ID) : TurnManager.Instance.GetPositionOfEntityAtEndOfRound(_target.ID);
+		float actualDistanceFromTarget = Vector3.Distance(GridManager.Instance.Tiles[attackerPosition].transform.position, GridManager.Instance.Tiles[defenderPosition].transform.position) / (Tile.outerRadius*2f);
 		float distanceRelativeToWeaponRangePercentage = actualDistanceFromTarget / (float)_weaponData.range;
 
 		float currentTotal = 0;

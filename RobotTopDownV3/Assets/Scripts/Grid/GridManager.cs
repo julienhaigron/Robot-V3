@@ -437,20 +437,24 @@ public class GridManager : Singleton<GridManager>
 		return false;
 	}
 
-	public bool IsThereCoverBeween ( Entity _attacker, Entity _target )
+	public bool IsThereCoverBeween ( Entity _attacker, Entity _target, bool _didAttackerWinPFC)
 	{
 		// Orientation depuis l’attaquant vers la cible
-		int attackOrientation = GetClosestOrientation(_attacker.Displacement.Coordinates.GetTile(), _target.Displacement.Coordinates.GetTile());
+		int attackerPosition = _didAttackerWinPFC ? TurnManager.Instance.GetPositionOfEntityAtEndOfRound(_attacker.ID) : TurnManager.Instance.GetPositionOfEntityAtEndOfRound(_attacker.ID);
+		int defenderPosition = !_didAttackerWinPFC ? TurnManager.Instance.GetPositionOfEntityAtEndOfRound(_target.ID) : TurnManager.Instance.GetPositionOfEntityAtEndOfRound(_target.ID);
+		int attackOrientation = GetClosestOrientation(m_tiles[attackerPosition], m_tiles[defenderPosition]);
 
 		// Tile potentielle de couvert
-		Tile potentialCover = GetTileAtOrientation(_attacker.Displacement.Coordinates.GetTile(), attackOrientation);
+		Tile potentialCover = GetTileAtOrientation(m_tiles[attackerPosition], attackOrientation);
 
 		return potentialCover != null && potentialCover.GroundType == TileGroundType.Void;
 	}
 
-	public Tile.TileDirectionType GetHitTileSide ( Entity _from, Entity _to )
+	public Tile.TileDirectionType GetHitTileSide ( Entity _from, Entity _to, bool _didAttackerWinPFC )
 	{
-		int hitOrientation = GetClosestOrientation(_to.Displacement.Coordinates.GetTile(), _from.Displacement.Coordinates.GetTile());
+		int attackerPosition = _didAttackerWinPFC ? TurnManager.Instance.GetPositionOfEntityAtEndOfRound(_from.ID) : TurnManager.Instance.GetPositionOfEntityAtEndOfRound(_from.ID);
+		int defenderPosition = !_didAttackerWinPFC ? TurnManager.Instance.GetPositionOfEntityAtEndOfRound(_to.ID) : TurnManager.Instance.GetPositionOfEntityAtEndOfRound(_to.ID);
+		int hitOrientation = GetClosestOrientation(m_tiles[attackerPosition], m_tiles[defenderPosition]);
 		int targetOrientation = _to.Displacement.CurrentOrientation;
 		int delta = (hitOrientation - targetOrientation + 6) % 6;
 

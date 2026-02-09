@@ -28,7 +28,7 @@ public class BotEnnemiPlayer : MonoBehaviour
 
 	private void DetermineEntityActions (Entity entity)
 	{
-		for(int i = 0; i < entity.Data.FrameData.actionTokenAmount; i++)
+		for(int i = 0; i < GameConfig.current.game.actionTokenPerRound; i++)
 		{
 			TurnManager.Instance.AddAction(entity.ID, EntityActionEnumID.Wait, Entity.EntityState.Guarding);
 		}

@@ -93,7 +93,7 @@ public class EntityActionQueueDisplay : MonoBehaviour
 			}
 
 			m_actionTokenDisplay.UpdateValue(TurnManager.Instance.RemainingActionToken[_entityID.Value]
-				, _suffix: "/" + GameManager.Instance.GetEntityFromID(_entityID.Value).Data.FrameData.actionTokenAmount);
+				, _suffix: "/" + GameConfig.current.game.actionTokenPerRound);
 		}
 		else
 		{

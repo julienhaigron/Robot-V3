@@ -1,9 +1,20 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Unity.Netcode;
 
 public class WaitAction : AEntityAction
 {
+	public bool isLinkedToAction = false;
+	public int linkedActionID = -1; //EntityActionEnumID
+
+	public override void NetworkSerialize<T> ( BufferSerializer<T> serializer )
+	{
+		base.NetworkSerialize(serializer);
+		serializer.SerializeValue(ref isLinkedToAction);
+		serializer.SerializeValue(ref linkedActionID);
+	}
+
 	public override bool TileInteractPredicate ( Tile _tile )
 	{
 		return _tile == PlayerController.Instance.SelectedEntity.Displacement.Coordinates.GetTile();
@@ -29,7 +40,7 @@ public class WaitAction : AEntityAction
 	{
 		base.Perform(_state);
 
-		EndPerform();
+		DG.Tweening.DOVirtual.DelayedCall(GameConfig.current.game.actionDuration, () => EndPerform());
 	}
 
 	public override void EndPerform ()

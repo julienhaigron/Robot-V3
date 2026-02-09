@@ -128,6 +128,40 @@ public class TurnManager : Singleton<TurnManager>
 		return lastRecordedAction.action.positionAtActionEndID;
 	}
 
+	public int GetPositionOfEntityAtEndOfRound (int _entityID )
+	{
+		if (currentPhase != TurnPhase.Playing)
+			return -1;
+
+		if (m_actionsToPlay.ContainsKey(_entityID) == false
+			|| m_actionsToPlay[_entityID] == null || m_actionsToPlay[_entityID].Count == 0)
+		{
+			if (m_actionsBeingDone.ContainsKey(_entityID))
+				return m_actionsBeingDone[_entityID].action.positionAtActionEndID;
+			else
+				return GameManager.Instance.GetEntityFromID(_entityID).Displacement.Coordinates.ID;
+		}
+		else
+			return m_actionsToPlay[_entityID].ToList()[^1].action.positionAtActionEndID;
+	}
+	
+	public int GetPositionOfEntityAtStartOfRound (int _entityID )
+	{
+		if (currentPhase != TurnPhase.Playing)
+			return -1;
+
+		if (m_actionsToPlay.ContainsKey(_entityID) == false
+			|| m_actionsToPlay[_entityID] == null || m_actionsToPlay[_entityID].Count == 0)
+		{
+			if (m_actionsBeingDone.ContainsKey(_entityID))
+				return m_actionsBeingDone[_entityID].action.supposedPositionAtActionStartID;
+			else
+				return GameManager.Instance.GetEntityFromID(_entityID).Displacement.Coordinates.ID;
+		}
+		else
+			return m_actionsToPlay[_entityID].ToList()[0].action.supposedPositionAtActionStartID;
+	}
+
 	public void SetCurrentStateSelected ( Entity.EntityState _state )
 	{
 		m_currentStateTypeSelected = _state;
@@ -217,6 +251,26 @@ public class TurnManager : Singleton<TurnManager>
 		if (m_remainingActionToken[_entityID] <= 0)
 			return false;
 
+		if (_action.Data.tokenPreparationDuration > 1)
+		{
+			//add wait tile for each actions in queue
+			for (int i = 0; i < _action.Data.tokenPreparationDuration - 1; i++)
+			{
+				WaitAction preparationWaitAction = new WaitAction();
+				preparationWaitAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.Wait], _entityID, _action.supposedPositionAtActionStartID);
+				preparationWaitAction.linkedActionID = (int)_action.enumID;
+
+				m_recordedActionInput[_entityID].Enqueue(new RecordedAction
+				{
+					type = EntityActionEnumID.Wait,
+					performingEntityID = _entityID,
+					action = preparationWaitAction,
+					entityState = _state
+				});
+
+			}
+		}
+
 		RecordedAction recordedAction = new RecordedAction
 		{
 			type = _action.enumID,
@@ -225,6 +279,26 @@ public class TurnManager : Singleton<TurnManager>
 			entityState = _state
 		};
 		m_recordedActionInput[_entityID].Enqueue(recordedAction);
+
+		if (_action.Data.tokenDuration > 1)
+		{
+			//add wait tile for each actions in queue
+			for (int i = 0; i < _action.Data.tokenDuration - 1; i++)
+			{
+				WaitAction extraDurationWaitAction = new WaitAction();
+				extraDurationWaitAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.Wait], _entityID, _action.supposedPositionAtActionStartID);
+				extraDurationWaitAction.linkedActionID = (int)_action.enumID;
+
+				m_recordedActionInput[_entityID].Enqueue(new RecordedAction
+				{
+					type = EntityActionEnumID.Wait,
+					performingEntityID = _entityID,
+					action = extraDurationWaitAction,
+					entityState = _state
+				});
+			}
+		}
+
 
 		m_remainingActionToken[_entityID] -= GameAssets.current.game.entityActionsData[_action.enumID].tokenCost;
 
@@ -302,7 +376,7 @@ public class TurnManager : Singleton<TurnManager>
 		{
 			foreach (Entity entity in anchor.Entities)
 			{
-				m_remainingActionToken.Add(entity.ID, entity.Data.FrameData.actionTokenAmount);
+				m_remainingActionToken.Add(entity.ID, GameConfig.current.game.actionTokenPerRound);
 			}
 		}
 
@@ -315,7 +389,7 @@ public class TurnManager : Singleton<TurnManager>
 	[Button]
 	public void EndInputPhase ()
 	{
-		SerializableDictionary<int, Queue<RecordedAction>> recordedActionInput = new(m_recordedActionInput);
+		/*SerializableDictionary<int, Queue<RecordedAction>> recordedActionInput = new(m_recordedActionInput);
 		m_recordedActionInput.Clear();
 		foreach (int entityID in recordedActionInput.Keys)
 		{
@@ -340,7 +414,7 @@ public class TurnManager : Singleton<TurnManager>
 				}
 
 			}
-		}
+		}*/
 
 		//if( !GameManager.Instance.IsOnline)
 		StartRound();
@@ -382,7 +456,7 @@ public class TurnManager : Singleton<TurnManager>
 			{
 				RecordedAction recordedAction = recordedActions[entityID].Dequeue();
 				m_actionsToPlay[entityID].Enqueue(recordedAction);
-				totalCost += recordedAction.action.cost;
+				totalCost += recordedAction.action.Data.tokenCost;
 			}
 
 			if (m_recordedActionInput[entityID].Count == 0)

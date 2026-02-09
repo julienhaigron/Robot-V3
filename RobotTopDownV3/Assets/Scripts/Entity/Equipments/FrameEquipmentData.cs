@@ -12,8 +12,7 @@ public class FrameEquipmentData : EntityEquipmentData
 
 	public Entity prefab;
 
-	[Title("Action")] //TODO : figureout where to put those
-	public int actionTokenAmount = 8;
+	[Title("Action")]
 	[Min(0)] public int visibilityRange = 8;
 
 	[BoxGroup(GroupID = "Stat")]

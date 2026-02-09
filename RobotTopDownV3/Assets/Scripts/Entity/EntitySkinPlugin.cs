@@ -26,9 +26,10 @@ public class EntitySkinPlugin : EntityPlugin
 	public void OnStartActionPerform (AEntityAction _action)
 	{
 		m_animator.speed = 1;
-		EntityActionData.ActionType type = GameAssets.current.game.entityActionsData[_action.enumID].type;
-		if (m_animationKeyPerActionDictionary.ContainsKey(type))
-			m_animator.SetTrigger(m_animationKeyPerActionDictionary[type]);
+		if (_action is WaitAction waitAction && waitAction.linkedActionID != -1)
+			m_animator.SetTrigger(GameAssets.current.game.entityActionsData[(EntityActionEnumID)waitAction.linkedActionID].preparationAnimationKey);
+		else if (m_animationKeyPerActionDictionary.ContainsKey(_action.Data.type))
+			m_animator.SetTrigger(m_animationKeyPerActionDictionary[_action.Data.type]);
 	}
 
 	public void OverrideAnimation(string _animationID )

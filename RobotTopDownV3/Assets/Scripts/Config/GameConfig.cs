@@ -21,6 +21,7 @@ public partial class GameConfig : ScriptableObject
 		public EntityActionData defaultStartAction;
 		public float actionDuration = 1f;
 		public float entityRotationDuration = .5f;
+		public int actionTokenPerRound = 10;
 
 		[Title("Camera")]
 		public float cameraMovementSpeed = 15f;

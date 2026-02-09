@@ -12,6 +12,7 @@ public class AttackAction : AEntityAction
 	public bool[] areEffectsSuccess;
 	public int[] damages;
 	public short[] damageTypes;
+	public int pfcResult = (int)EntityActionData.PFCResultType.Failure;
 
 	public override void NetworkSerialize<T> ( BufferSerializer<T> serializer )
 	{
@@ -22,6 +23,7 @@ public class AttackAction : AEntityAction
 		serializer.SerializeValue(ref areEffectsSuccess);
 		serializer.SerializeValue(ref damages);
 		serializer.SerializeValue(ref damageTypes);
+		serializer.SerializeValue(ref pfcResult);
 	}
 
 	//todo :
@@ -46,7 +48,8 @@ public class AttackAction : AEntityAction
 					areEffectsSuccess[i] = PerformingEntity.Equipment.EffectRoll(TargetEntity, GameAssets.current.game.entityEffects[(AEntityEffect.EntityEffectEnumID)effectsIds[i]]);
 				}
 
-				Dictionary<WeaponEquipmentData.DamageType, int> damagesDealt = PerformingEntity.Equipment.Weapons[attackingWeaponId].GetDamages(PerformingEntity, TargetEntity, Data);
+				Dictionary<WeaponEquipmentData.DamageType, int> damagesDealt = 
+					PerformingEntity.Equipment.Weapons[attackingWeaponId].GetDamages(PerformingEntity, TargetEntity, Data, (EntityActionData.PFCResultType)pfcResult);
 
 				List<int> tmpDamages = new();
 				List<short> tmpDamageTypes = new();
@@ -68,6 +71,7 @@ public class AttackAction : AEntityAction
 
 	public override bool CheckConflict ( AEntityAction _otherAction, bool _isCheck = true )
 	{
+		pfcResult = (int)EntityActionData.PFC(Data ,_otherAction.Data);
 		//no conflict ?
 		return false;
 	}

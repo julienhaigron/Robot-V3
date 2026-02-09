@@ -9,8 +9,6 @@ public abstract class AEntityAction : INetworkSerializable
     public Action onPerform;
     public Action<int> onEndPerform;
 
-    public int cost;
-    public int cooldown;
     public EntityActionEnumID enumID;
     public int performingEntityID; //entity
     public Entity PerformingEntity => GameManager.Instance.GetEntityFromID(performingEntityID);
@@ -22,8 +20,6 @@ public abstract class AEntityAction : INetworkSerializable
 
     public virtual void NetworkSerialize<T> ( BufferSerializer<T> serializer ) where T : IReaderWriter
     {
-        serializer.SerializeValue(ref cost);
-        serializer.SerializeValue(ref cooldown);
         serializer.SerializeValue(ref enumID);
         serializer.SerializeValue(ref performingEntityID);
 		serializer.SerializeValue(ref supposedPositionAtActionStartID);
@@ -33,8 +29,6 @@ public abstract class AEntityAction : INetworkSerializable
 
     public virtual void Init(EntityActionData _data, int _performingEntityID, int _positionAtActionStartID )
 	{
-        cost = _data.tokenCost;
-        cooldown = _data.tokenCooldown;
         enumID = _data.enumID;
         performingEntityID = _performingEntityID;
         supposedPositionAtActionStartID = _positionAtActionStartID;

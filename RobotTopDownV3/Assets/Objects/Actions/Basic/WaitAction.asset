@@ -19,7 +19,7 @@ MonoBehaviour:
   tokenCost: 1
   tokenPreparationDuration: 0
   tokenCooldown: 1
-  tokenDuration: 0
+  tokenDuration: 1
   previousActionAttackModificator: 0
   type: 4
   subType: 0
@@ -33,4 +33,5 @@ MonoBehaviour:
   circleRadius: 1
   rayDiameter: 1
   coneSpread: 1
+  usedDamageChannels: 
   appliableEffects: []

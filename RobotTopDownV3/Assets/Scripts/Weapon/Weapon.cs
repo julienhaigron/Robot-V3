@@ -66,10 +66,11 @@ public class Weapon : MonoBehaviour
 		}
 	}
 
-	public virtual Dictionary<WeaponEquipmentData.DamageType, int> GetDamages (Entity _user, Entity _target, EntityActionData _actionData)
+	public virtual Dictionary<WeaponEquipmentData.DamageType, int> GetDamages (Entity _user, Entity _target, EntityActionData _actionData, EntityActionData.PFCResultType _pfcResultType)
 	{
 		Dictionary<WeaponEquipmentData.DamageType, int> damages = new();
-		float flankMod = GameConfig.current.game.entityFlankRatio[GridManager.Instance.GetHitTileSide(_user, _target)];
+		bool didWinPFC = _pfcResultType == EntityActionData.PFCResultType.FirstWins;
+		float flankMod = GameConfig.current.game.entityFlankRatio[GridManager.Instance.GetHitTileSide(_user, _target, didWinPFC)];
 
 		foreach (KeyValuePair<WeaponEquipmentData.DamageType, int> pair in Data.baseDamages)
 		{
