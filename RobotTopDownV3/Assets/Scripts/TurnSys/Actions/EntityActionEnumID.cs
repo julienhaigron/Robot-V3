@@ -14,7 +14,8 @@ public enum EntityActionEnumID
     RotateShield,
     FlameThrowerShot,
     ShieldD3,
-    Walk
+    Walk,
+    BluntShot
 
     //always add new values at the end
 }

@@ -73,5 +73,7 @@ public class EntityActionData : ScriptableObject
     [ShowIf("@isAoe && aoeType == AOEType.Cone"), Min(1)]
     public int coneSpread = 1;
 
+    public WeaponEquipmentData.DamageType[] usedDamageChannels;
+
     public AEntityEffect[] appliableEffects;
 }

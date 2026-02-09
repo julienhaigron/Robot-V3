@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 using System;
+using System.Linq;
 
 public class Weapon : MonoBehaviour
 {
@@ -65,19 +66,21 @@ public class Weapon : MonoBehaviour
 		}
 	}
 
-	public virtual Dictionary<WeaponEquipmentData.DamageType, int> GetDamages (Entity _user, Entity _target)
+	public virtual Dictionary<WeaponEquipmentData.DamageType, int> GetDamages (Entity _user, Entity _target, EntityActionData _actionData)
 	{
 		Dictionary<WeaponEquipmentData.DamageType, int> damages = new();
 		float flankMod = GameConfig.current.game.entityFlankRatio[GridManager.Instance.GetHitTileSide(_user, _target)];
 
 		foreach (KeyValuePair<WeaponEquipmentData.DamageType, int> pair in Data.baseDamages)
 		{
+			if(!_actionData.usedDamageChannels.Contains(pair.Key))
+				continue;
 			/*float damage = ((float)pair.Value * (_user.Equipment.ApplyedDamageTypeBuffs.ContainsKey(pair.Key) ? _user.Equipment.ApplyedDamageTypeBuffs[pair.Key] : 1)
 					* (_user.Equipment.ApplyedDamageCategoryBuffs.ContainsKey(Data.damageCategory) ? _user.Equipment.ApplyedDamageCategoryBuffs[Data.damageCategory] : 1))
 				* _user.Equipment.GeneralDamageBuff * _user.Data.GetStaticDamageBonus() * flankBonus;
 			damages.Add(pair.Key, (int)damage);*/
 
-			float damage = /*((float)pair.Value +*/ ( (float)pair.Value * 
+			float damage = ((float)pair.Value + ( (float)pair.Value * 
 				(
 					/* buff damage type*/ (_user.Equipment.ApplyedDamageTypeBuffs.ContainsKey(pair.Key) ? _user.Equipment.ApplyedDamageTypeBuffs[pair.Key] : 0f)
 					- /* enemy res to damage type*/(_target.Equipment.ApplyedDamageTypeResistance.ContainsKey(pair.Key) ? _target.Equipment.ApplyedDamageTypeResistance[pair.Key] : 0)
@@ -87,7 +90,7 @@ public class Weapon : MonoBehaviour
 					- /* enemy res to any damage*/ _user.Equipment.GeneralDamageResistance
 					+ /* mod flank*/ flankMod
 					+ /* buff flank*/ _user.Data.GetStatBonusFromAll(EntityEquipmentData.StatBonus.StatType.FlankBonus)
-					- /* enemy res to  flank*/_target.Data.GetStatBonusFromAll(EntityEquipmentData.StatBonus.StatType.FlankResistance)/*)*/
+					- /* enemy res to  flank*/_target.Data.GetStatBonusFromAll(EntityEquipmentData.StatBonus.StatType.FlankResistance))
 					)
 				);
 			damages.Add(pair.Key, (int)damage);

@@ -46,7 +46,7 @@ public class AttackAction : AEntityAction
 					areEffectsSuccess[i] = PerformingEntity.Equipment.EffectRoll(TargetEntity, GameAssets.current.game.entityEffects[(AEntityEffect.EntityEffectEnumID)effectsIds[i]]);
 				}
 
-				Dictionary<WeaponEquipmentData.DamageType, int> damagesDealt = PerformingEntity.Equipment.Weapons[attackingWeaponId].GetDamages(PerformingEntity, TargetEntity);
+				Dictionary<WeaponEquipmentData.DamageType, int> damagesDealt = PerformingEntity.Equipment.Weapons[attackingWeaponId].GetDamages(PerformingEntity, TargetEntity, Data);
 
 				List<int> tmpDamages = new();
 				List<short> tmpDamageTypes = new();

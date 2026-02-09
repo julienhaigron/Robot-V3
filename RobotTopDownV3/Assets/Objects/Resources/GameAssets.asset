@@ -38,7 +38,7 @@ MonoBehaviour:
     - {fileID: 11400000, guid: 269ea4b9e1222fe42bc648cbcdf4a6a9, type: 2}
     weaponCone: {fileID: 868673094015138981, guid: 8693abc4f151cbc4b94435d3e63342fb, type: 3}
     entityActionsData:
-      keys: 0000000003000000010000000200000004000000070000000800000009000000
+      keys: 00000000030000000100000002000000040000000700000008000000090000000a000000
       values:
       - {fileID: 11400000, guid: 0df61fa55d03a8e46990aef684fa54e3, type: 2}
       - {fileID: 11400000, guid: 61635f88cdfa6ab44b50dbc9c3aa34e0, type: 2}
@@ -48,6 +48,7 @@ MonoBehaviour:
       - {fileID: 11400000, guid: 97716a138b46f1843be7d1f09d93395f, type: 2}
       - {fileID: 11400000, guid: 0125e936ed76e3a49b32a7f9128dc39b, type: 2}
       - {fileID: 11400000, guid: cfda01507904d8e4e85cd5842c89a98b, type: 2}
+      - {fileID: 11400000, guid: cf30a25d466305f47b70b403c671f86e, type: 2}
     entityEffects:
       keys: 0000000001000000
       values:

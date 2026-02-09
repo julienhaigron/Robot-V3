@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2a743e40aeafc0445b10e59cec8dfa98, type: 3}
-  m_Name: FlameThrowerShot
+  m_Name: BluntShot
   m_EditorClassIdentifier: 
-  displayName: Flame Thrower Shot
-  enumID: 7
+  displayName: BluntShot
+  enumID: 10
   icon: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
   tileOutlineColor: {r: 1, g: 0, b: 0, a: 1}
   tokenCost: 1
@@ -33,6 +33,6 @@ MonoBehaviour:
   circleRadius: 5
   rayDiameter: 1
   coneSpread: 5
-  usedDamageChannels: 05000000
+  usedDamageChannels: 01000000
   appliableEffects:
   - {fileID: 11400000, guid: 7af3cbb2fb9300d4c8a9b333e8a5b7a4, type: 2}
