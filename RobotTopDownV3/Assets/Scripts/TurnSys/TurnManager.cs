@@ -221,9 +221,9 @@ public class TurnManager : Singleton<TurnManager>
 				action = new WaitAction();
 				action.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.Wait], _performingEntityID, GetLastRegisteredPositionOfEntity(_performingEntityID));
 				break;
-			case EntityActionEnumID.RotateWeapon:
-				action = new RotateWeaponAction();
-				action.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.RotateWeapon], _performingEntityID, GetLastRegisteredPositionOfEntity(_performingEntityID));
+			case EntityActionEnumID.RotateEntity:
+				action = new RotateEntityAction();
+				action.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.RotateEntity], _performingEntityID, GetLastRegisteredPositionOfEntity(_performingEntityID));
 				break;
 		}
 
@@ -245,7 +245,7 @@ public class TurnManager : Singleton<TurnManager>
 					action.Init(GameAssets.current.game.entityActionsData[_actionData.enumID], _performingEntityID, GetLastRegisteredPositionOfEntity(_performingEntityID));
 					break;
 				case EntityActionData.ActionType.Rotation:
-					action = new RotateWeaponAction();
+					action = new RotateEntityAction();
 					action.Init(GameAssets.current.game.entityActionsData[_actionData.enumID], _performingEntityID, GetLastRegisteredPositionOfEntity(_performingEntityID));
 					break;
 			}
@@ -275,15 +275,17 @@ public class TurnManager : Singleton<TurnManager>
 			for (int i = 0; i < _action.Data.tokenPreparationDuration - 1; i++)
 			{
 				WaitAction preparationWaitAction = new WaitAction();
-				preparationWaitAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.Wait], _entityID, _action.supposedPositionAtActionStartID);
 				preparationWaitAction.linkedActionID = (int)_action.enumID;
+				preparationWaitAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.Wait], _entityID, _action.supposedPositionAtActionStartID);
 
 				m_recordedActionInput[_entityID].Enqueue(new RecordedAction
 				{
 					type = EntityActionEnumID.Wait,
 					performingEntityID = _entityID,
 					action = preparationWaitAction,
-					entityState = _state
+					entityState = _state,
+					freeAction = new WaitAction(),
+					freeActionType = EntityActionEnumID.Wait
 				});
 
 			}
@@ -294,7 +296,9 @@ public class TurnManager : Singleton<TurnManager>
 			type = _action.enumID,
 			performingEntityID = _entityID,
 			action = _action,
-			entityState = _state
+			entityState = _state,
+			freeAction = new WaitAction(), //default is wait action
+			freeActionType = EntityActionEnumID.Wait
 		};
 		m_recordedActionInput[_entityID].Enqueue(recordedAction);
 
@@ -304,15 +308,17 @@ public class TurnManager : Singleton<TurnManager>
 			for (int i = 0; i < _action.Data.tokenDuration - 1; i++)
 			{
 				WaitAction extraDurationWaitAction = new WaitAction();
-				extraDurationWaitAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.Wait], _entityID, _action.supposedPositionAtActionStartID);
 				extraDurationWaitAction.linkedActionID = (int)_action.enumID;
+				extraDurationWaitAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.Wait], _entityID, _action.supposedPositionAtActionStartID);
 
 				m_recordedActionInput[_entityID].Enqueue(new RecordedAction
 				{
 					type = EntityActionEnumID.Wait,
 					performingEntityID = _entityID,
 					action = extraDurationWaitAction,
-					entityState = _state
+					entityState = _state,
+					freeAction = new WaitAction(),
+					freeActionType = EntityActionEnumID.Wait
 				});
 			}
 		}
@@ -513,7 +519,8 @@ public class TurnManager : Singleton<TurnManager>
 				{
 					LogConsole.AddLog("Action replaced to " + resultInfo.replacedAction, LogConsole.LogEventType.PlayPhase);
 					resultInfo.replacedAction.Prepare(recordedAction.entityState);
-					returnActionToPlayThisRound.Enqueue(new RecordedAction() { type = resultInfo.replacedAction.enumID, performingEntityID = resultInfo.replacedAction.performingEntityID, action = resultInfo.replacedAction, entityState = recordedAction.entityState });
+					returnActionToPlayThisRound.Enqueue(new RecordedAction() { type = resultInfo.replacedAction.enumID, performingEntityID = resultInfo.replacedAction.performingEntityID, action = resultInfo.replacedAction, entityState = recordedAction.entityState
+						, freeAction = resultInfo.replacedFreeAction, freeActionType = resultInfo.replacedFreeAction == null ? EntityActionEnumID.Wait : resultInfo.replacedFreeAction.enumID });
 				}
 			}
 
@@ -569,7 +576,18 @@ public class TurnManager : Singleton<TurnManager>
 			{
 				RecordedAction action = m_actionsToPlay[entityID].Dequeue();
 				m_actionsBeingDone.Add(entityID, action);
-				action.action.onEndPerform += OnActionEndPerform;
+				if(action.freeActionType != EntityActionEnumID.Wait)
+				{
+					action.action.onEndPerform += (performingEntity) => 
+					{
+						action.freeAction.onEndPerform += OnActionEndPerform;
+						action.freeAction.OnStartPerform(action.entityState);
+						action.freeAction.Perform(action.entityState);
+					};
+					
+				}
+				else
+					action.action.onEndPerform += OnActionEndPerform;
 				//TODO : display action on cam one by one when in conflict
 			}
 		}
@@ -631,9 +649,18 @@ public class TurnManager : Singleton<TurnManager>
 			RecordedAction action = m_actionsToPlay[_performingEntityID].Dequeue();
 			LogConsole.AddLog("Action performed: " + action.action.ToString(), LogConsole.LogEventType.PlayPhase);
 			m_actionsBeingDone[_performingEntityID] = action;
-			action.action.onEndPerform += OnActionEndPerform;
-			action.action.OnStartPerform(action.entityState);
-			action.action.Perform(action.entityState);
+			if (action.freeActionType != EntityActionEnumID.Wait)
+			{
+				action.action.onEndPerform += ( performingEntity ) =>
+				{
+					action.freeAction.onEndPerform += OnActionEndPerform;
+					action.freeAction.OnStartPerform(action.entityState);
+					action.freeAction.Perform(action.entityState);
+				};
+
+			}
+			else
+				action.action.onEndPerform += OnActionEndPerform;
 		}
 		else
 		{

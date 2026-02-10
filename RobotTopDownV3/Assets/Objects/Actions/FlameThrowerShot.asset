@@ -16,10 +16,11 @@ MonoBehaviour:
   enumID: 7
   icon: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
   tileOutlineColor: {r: 1, g: 0, b: 0, a: 1}
-  tokenCost: 1
   tokenPreparationDuration: 0
   tokenCooldown: 1
   tokenDuration: 1
+  preparationAnimationKey: 
+  afterPerformAnimationKey: 
   previousActionAttackModificator: 0
   type: 0
   subType: 1
@@ -32,7 +33,7 @@ MonoBehaviour:
   aoeType: 2
   circleRadius: 5
   rayDiameter: 1
-  coneSpread: 5
+  coneSpread: 60
   usedDamageChannels: 05000000
   appliableEffects:
   - {fileID: 11400000, guid: 7af3cbb2fb9300d4c8a9b333e8a5b7a4, type: 2}

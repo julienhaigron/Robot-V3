@@ -9,7 +9,7 @@ public enum EntityActionEnumID
     TargetTileMove,
     Attack,
     Wait,
-    RotateWeapon,
+    RotateEntity,
     ActivateShield,
     RotateShield,
     FlameThrowerShot,

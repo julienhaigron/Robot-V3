@@ -197,7 +197,8 @@ public class EntityEquipmentPlugin : EntityPlugin
 
 		WeaponCone selectedWeapon = m_weaponConeDictionary[_weaponID];
 		//shoot ray from tile to other tiles in range
-		float angle = selectedWeapon.AimedRotation;
+		//float angle = selectedWeapon.AimedRotation;
+		float angle = GridManager.Instance.FromOrientationToAngle(m_linkedEntity.Displacement.CurrentOrientation);
 
 		int nbOfRayPerAngle = 1;
 		int totalNbOfRay = selectedWeapon.Data.visionConeRange * nbOfRayPerAngle;

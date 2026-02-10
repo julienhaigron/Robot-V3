@@ -491,6 +491,20 @@ public class GridManager : Singleton<GridManager>
 		return (int)((angle - 30f) / 60f);
 	}
 
+	public float FromOrientationToAngle( int _orientation )
+	{
+		float angle = (_orientation * 60f) + 60f;
+
+		angle -= 90f;
+
+		if (angle < 0f)
+			angle += 360f;
+		if (angle >= 360f)
+			angle -= 360f;
+
+		return angle;
+	}
+
 	public void ClearTileOutile ()
 	{
 		for (int i = 0; i < m_tiles.Length; i++)

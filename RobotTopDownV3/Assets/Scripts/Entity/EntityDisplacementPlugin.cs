@@ -66,10 +66,13 @@ public class EntityDisplacementPlugin : EntityPlugin
 		onAnyEntityMovement?.Invoke(m_linkedEntity);
 	}
 
-	public void Rotate(int _orientation, bool _isInstant )
+	public void Rotate ( int _orientation, bool _isInstant, System.Action _onEndPerform = null )
 	{
 		if (_orientation == m_currentOrientation /*&& !_isInstant*/)
+		{
+			_onEndPerform?.Invoke();
 			return;
+		}
 
 		m_currentOrientation = _orientation;
 
@@ -78,14 +81,18 @@ public class EntityDisplacementPlugin : EntityPlugin
 
 		float angle = 30f + _orientation * 60f;
 		if (_isInstant)
+		{
 			m_linkedEntity.SkinParent.transform.localRotation = Quaternion.Euler(0, angle, 0);
+			_onEndPerform?.Invoke();
+		}
 		else
-			m_rotationTween = m_linkedEntity.SkinParent.transform.DOLocalRotateQuaternion(Quaternion.Euler(0, angle, 0), GameConfig.current.game.entityRotationDuration);
+			m_rotationTween = m_linkedEntity.SkinParent.transform.DOLocalRotateQuaternion(Quaternion.Euler(0, angle, 0), GameConfig.current.game.entityRotationDuration)
+				.OnComplete(action: ()=> { _onEndPerform?.Invoke(); });
 	}
 
-	public void Rotate(Tile _towards, bool _isInstant )
+	public void Rotate(Tile _towards, bool _isInstant, System.Action _onEndPerform = null )
 	{
 		int closestOrientationToTile = GridManager.Instance.GetClosestOrientation(m_coordinate.GetTile(), _towards);
-		Rotate(closestOrientationToTile, _isInstant);
+		Rotate(closestOrientationToTile, _isInstant, _onEndPerform);
 	}
 }
