@@ -420,9 +420,7 @@ public class GridManager : Singleton<GridManager>
 			Vector3 direction = (_to.transform.position - rayOrigin).normalized;
 			float distance = Vector3.Distance(rayOrigin, _to.transform.position);
 			RaycastHit[] hits = Physics.RaycastAll(rayOrigin, direction, distance, GameConfig.current.input.wallRayCastLayer);
-			if (hits == null || hits.Length == 0)
-				return true;
-			else
+			if (hits != null)
 			{
 				foreach (RaycastHit hit in hits)
 				{
@@ -430,11 +428,10 @@ public class GridManager : Singleton<GridManager>
 						return false;
 				}
 
-				return true;
 			}
 		}
 
-		return false;
+		return true;
 	}
 
 	public bool IsThereCoverBeween ( Entity _attacker, Entity _target, bool _didAttackerWinPFC)

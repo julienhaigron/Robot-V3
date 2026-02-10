@@ -51,6 +51,8 @@ public class TurnManager : Singleton<TurnManager>
 		public EntityActionEnumID type;
 		public int performingEntityID;
 		public AEntityAction action;
+		public EntityActionEnumID freeActionType;
+		public AEntityAction freeAction;
 		public Entity.EntityState entityState;
 
 		public void NetworkSerialize<T> ( BufferSerializer<T> serializer ) where T : IReaderWriter
@@ -71,6 +73,22 @@ public class TurnManager : Singleton<TurnManager>
 					Debug.LogError("ERROR : action is null when " + (serializer.IsWriter ? "writing" : "reading") + " with type " + type);
 				}
 				action.NetworkSerialize(serializer);
+			}
+			
+			serializer.SerializeValue(ref freeActionType);
+			if (serializer.IsWriter)
+			{
+				freeAction.NetworkSerialize(serializer);
+			}
+			else
+			{
+				freeAction = Instance.GetAction(GameAssets.current.game.entityActionsData[freeActionType], performingEntityID);
+
+				if (freeAction == null)
+				{
+					Debug.LogError("ERROR : freeAction is null when " + (serializer.IsWriter ? "writing" : "reading") + " with type " + type);
+				}
+				freeAction.NetworkSerialize(serializer);
 			}
 
 			serializer.SerializeValue(ref entityState);
@@ -130,7 +148,7 @@ public class TurnManager : Singleton<TurnManager>
 
 	public int GetPositionOfEntityAtEndOfRound (int _entityID )
 	{
-		if (currentPhase != TurnPhase.Playing)
+		if (currentPhase != TurnPhase.Calculating)
 			return -1;
 
 		if (m_actionsToPlay.ContainsKey(_entityID) == false
@@ -147,7 +165,7 @@ public class TurnManager : Singleton<TurnManager>
 	
 	public int GetPositionOfEntityAtStartOfRound (int _entityID )
 	{
-		if (currentPhase != TurnPhase.Playing)
+		if (currentPhase != TurnPhase.Calculating)
 			return -1;
 
 		if (m_actionsToPlay.ContainsKey(_entityID) == false
