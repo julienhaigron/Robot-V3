@@ -34,8 +34,8 @@ public class AttackAction : AEntityAction
 	// => add damage channels
 
 	public override void Prepare ( Entity.EntityState _state )
-	{		
-		if(targetedEntityID != -1 || (targetedEntityID == -1 && PerformingEntity.AI.TargetedEntity != null))
+	{
+		if (targetedEntityID != -1 || (targetedEntityID == -1 && PerformingEntity.AI.TargetedEntity != null))
 		{
 			targetedEntityID = PerformingEntity.AI.TargetedEntity.ID;
 			isAttackSuccessfull = PerformingEntity.Equipment.AttackRoll(this);
@@ -48,12 +48,12 @@ public class AttackAction : AEntityAction
 					areEffectsSuccess[i] = PerformingEntity.Equipment.EffectRoll(TargetEntity, GameAssets.current.game.entityEffects[(AEntityEffect.EntityEffectEnumID)effectsIds[i]]);
 				}
 
-				Dictionary<WeaponEquipmentData.DamageType, int> damagesDealt = 
+				Dictionary<WeaponEquipmentData.DamageType, int> damagesDealt =
 					PerformingEntity.Equipment.Weapons[attackingWeaponId].GetDamages(PerformingEntity, TargetEntity, Data, (EntityActionData.PFCResultType)pfcResult);
 
 				List<int> tmpDamages = new();
 				List<short> tmpDamageTypes = new();
-				foreach(KeyValuePair<WeaponEquipmentData.DamageType, int> pair in damagesDealt)
+				foreach (KeyValuePair<WeaponEquipmentData.DamageType, int> pair in damagesDealt)
 				{
 					tmpDamages.Add(pair.Value);
 					tmpDamageTypes.Add((short)pair.Key);
@@ -62,7 +62,7 @@ public class AttackAction : AEntityAction
 				damageTypes = tmpDamageTypes.ToArray();
 			}
 		}
-		else if(targetedEntityID == -1)
+		else if (targetedEntityID == -1)
 		{
 			//TODO : handle this situation
 			Debug.Log("ERROR : no available target");
@@ -71,7 +71,7 @@ public class AttackAction : AEntityAction
 
 	public override bool CheckConflict ( AEntityAction _otherAction, bool _isCheck = true )
 	{
-		pfcResult = (int)EntityActionData.PFC(Data ,_otherAction.Data);
+		pfcResult = (int)EntityActionData.PFC(Data, _otherAction.Data);
 		//no conflict ?
 		return false;
 	}
@@ -88,11 +88,23 @@ public class AttackAction : AEntityAction
 
 		//if enemy is in weapon range
 		bool isEnemyInWeaponRange = PerformingEntity.AI.IsEntityInWeaponRange(TargetEntity, out Weapon _attackingWeapon);
+		List<Tile> tilesInWeaponRange = PerformingEntity.Equipment.GetTilesInRange(_attackingWeapon.Data.name, true);
 
 		if (isEnemyInWeaponRange)
 		{
 			base.Perform(_state);
-			_attackingWeapon.PerformAttack(this, isAttackSuccessfull, EndPerform);
+			foreach (Tile tile in tilesInWeaponRange)
+			{
+				tile.UI.SetOutlineColor(Color.red);
+			}
+			_attackingWeapon.PerformAttack(this, isAttackSuccessfull, () =>
+			{
+				foreach (Tile tile in tilesInWeaponRange)
+				{
+					tile.UI.ResetOutline();
+				}
+				EndPerform();
+			});
 		}
 		else
 		{
@@ -101,7 +113,7 @@ public class AttackAction : AEntityAction
 			//DG.Tweening.DOVirtual.DelayedCall(GameConfig.current.game.actionDuration, () => EndPerform());
 			base.Perform(_state);
 			EndPerform();
-		} 
+		}
 	}
 
 	public override void Display ( TurnManager.RecordedAction _recordedAction )

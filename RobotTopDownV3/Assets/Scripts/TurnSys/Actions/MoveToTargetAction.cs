@@ -52,17 +52,39 @@ public class MoveToTargetAction : AEntityAction
 	public override void Perform ( Entity.EntityState _state )
 	{
 		base.Perform(_state);
+		List<Tile> tilesInRange = new();
+		foreach (Weapon weapon in PerformingEntity.Equipment.Weapons.Values)
+			tilesInRange.AddRange(PerformingEntity.Equipment.GetTilesInRange(weapon.Data.name, true));
+		
+		foreach (Tile tile in tilesInRange)
+		{
+			tile.UI.SetOutlineColor(Color.blue);
+		}
 
 		//move to targetTile
 		if (thisActionDestinationID != -1/* && thisActionDestination.GetEntity(false) == null*/)
-			GameManager.Instance.GetEntityFromID(performingEntityID).Displacement.MoveToTile((int)thisActionDestinationID, EndPerform);
-		else
-			DG.Tweening.DOVirtual.DelayedCall(GameConfig.current.game.actionDuration, () => EndPerform());
-	}
+		{
+			GameManager.Instance.GetEntityFromID(performingEntityID).Displacement.MoveToTile((int)thisActionDestinationID, () =>
+			{
+				foreach (Tile tile in tilesInRange)
+				{
+					tile.UI.ResetOutline();
+				}
+				EndPerform();
+			});
 
-	public override void EndPerform ()
-	{
-		base.EndPerform();
+		}
+		else
+		{
+			DG.Tweening.DOVirtual.DelayedCall(GameConfig.current.game.actionDuration, () => 
+			{
+				foreach (Tile tile in tilesInRange)
+				{
+					tile.UI.ResetOutline();
+				}
+				EndPerform();
+			});
+		}
 	}
 
 	public override bool TileInteractPredicate ( Tile _tile )
@@ -82,12 +104,12 @@ public class MoveToTargetAction : AEntityAction
 		List<Tile> path = GridManager.Instance.GetPath(from, _tile, true);
 
 		path.Reverse();
-		for (int i = 0; i < path.Count-1; i++)
+		for (int i = 0; i < path.Count - 1; i++)
 		{
 			MoveToTargetAction action = new MoveToTargetAction();
 			/*if (i == 0)
 				action = this;*/
-			
+
 			if (mode == MoveActionMode.Coordinate)
 				action.targetTileID = _tile.coordinates.ID;
 			else if (mode == MoveActionMode.Entity)
@@ -223,11 +245,11 @@ public class MoveToTargetAction : AEntityAction
 		List<Tile> pathToTile = GridManager.Instance.GetPath(from, GridManager.Instance.Tiles[(int)positionAtActionEndID], _isThisTurn: false);
 		pathToTile.Reverse();
 
-		for(int i = 0; i < pathToTile.Count - 1; i++)
+		for (int i = 0; i < pathToTile.Count - 1; i++)
 		{
 			ActionDisplayOnTile arrow = ObjectsPooling.GetElement(GameAssets.current.game.arrowPoolData) as ActionDisplayOnTile;
 			Vector3 startPos = pathToTile[i].transform.position;
-			Vector3 destination = pathToTile[i+1].transform.position;
+			Vector3 destination = pathToTile[i + 1].transform.position;
 			Vector3 position = Vector3.Lerp(startPos, destination, .5f);
 			arrow.SetMaterial(GameAssets.current.ui.ghostEntityStateMaterials[_state]);
 			arrow.transform.position = position;

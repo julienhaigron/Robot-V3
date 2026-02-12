@@ -48,12 +48,14 @@ public class EntityDisplacementPlugin : EntityPlugin
 		onAnyEntitySpawn.Invoke(m_linkedEntity);
 	}
 
-	public void MoveToTile( int _tileID , System.Action onMovementDoneAction)
+	public void MoveToTile( int _tileID,  System.Action onMovementDoneAction)
 	{
 		if(m_coordinate.GetTile().GetEntity(true) == m_linkedEntity)
 			m_coordinate.GetTile().SetEntity(null, _isThisTurn: true);
 		Tile tile = GridManager.Instance.Tiles[_tileID];
-		Rotate(tile, false);
+
+		if(m_linkedEntity.AI.TargetedEntity == null)
+			Rotate(tile, false);
 
 		if (m_movementTween.IsActive())
 			m_movementTween.Kill();

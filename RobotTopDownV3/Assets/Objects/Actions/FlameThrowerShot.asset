@@ -29,7 +29,7 @@ MonoBehaviour:
   maxDistance: 5
   minTargetAmount: 1
   maxTargetAmount: 1
-  isAoe: 1
+  isAoe: 0
   aoeType: 2
   circleRadius: 5
   rayDiameter: 1

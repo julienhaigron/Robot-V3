@@ -493,14 +493,16 @@ public class GridManager : Singleton<GridManager>
 
 	public float FromOrientationToAngle( int _orientation )
 	{
-		float angle = (_orientation * 60f) + 60f;
-
+		float angle = 30f + _orientation * 60f;
 		angle -= 90f;
+		//float angle = (_orientation * 60f) + 60f;
+
+		/*angle -= 90f;
 
 		if (angle < 0f)
 			angle += 360f;
 		if (angle >= 360f)
-			angle -= 360f;
+			angle -= 360f;*/
 
 		return angle;
 	}

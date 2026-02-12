@@ -6,6 +6,9 @@ public class LogConsole : SingletonPersistant<LogConsole>
 {
 	public static System.Action<Log> onLogAdded;
 
+	private List<Log> m_allLogs = new();
+	public List<Log> AllLogs => m_allLogs;
+
 	private Dictionary<LogEventType, List<Log>> m_logs = new();
 	public Dictionary<LogEventType, List<Log>> Logs => m_logs;
 
@@ -19,6 +22,7 @@ public class LogConsole : SingletonPersistant<LogConsole>
 			Instance.Logs.Add(_eventType, new());
 
 		Instance.Logs[_eventType].Add(newLog);
+		Instance.AllLogs.Add(newLog);
 
 		onLogAdded?.Invoke(newLog);
 	}

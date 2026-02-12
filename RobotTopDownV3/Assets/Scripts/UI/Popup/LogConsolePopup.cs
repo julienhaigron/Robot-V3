@@ -24,6 +24,11 @@ public class LogConsolePopup : AUIPopup
 	{
 		base.OnShowFinished();
 		m_scrollRect.verticalScrollbar.value = 0f;
+
+		foreach(LogConsole.Log log in LogConsole.Instance.AllLogs)
+		{
+			m_console.text += log.ToString();
+		}
 	}
 
 	private void OnLogAdded ( LogConsole.Log _newLog )

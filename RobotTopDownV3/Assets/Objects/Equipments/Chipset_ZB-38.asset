@@ -14,10 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   icon: {fileID: 0}
   energyCost: 15
+  knownedActions: 
   statBonuses:
   - type: 18
     value: 0.3
   - type: 19
     value: 5
   - type: 4
-    value: 0.3
+    value: 0.6
