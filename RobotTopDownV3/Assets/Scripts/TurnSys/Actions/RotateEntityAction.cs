@@ -42,7 +42,7 @@ public class RotateEntityAction : AEntityAction
 		}
 		else
 		{
-			PerformingEntity.Displacement.Rotate(targetedOrientationID, false, EndPerform);
+			PerformingEntity.Displacement.Rotate(targetedOrientationID, GameConfig.current.game.entityRotationDuration, EndPerform);
 		}
 
 	}

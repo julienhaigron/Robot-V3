@@ -42,7 +42,7 @@ public class Projectile : PoolElement
 			return;
 		}
 
-		_other.TryGetComponent(out Entity entity);
+		_other.transform.parent.parent.TryGetComponent(out Entity entity);
 
 		if (entity != null)
 			OnCollideWithEntity(entity);

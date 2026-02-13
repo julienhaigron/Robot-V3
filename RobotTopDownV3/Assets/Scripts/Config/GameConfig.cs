@@ -66,7 +66,6 @@ public partial class GameConfig : ScriptableObject
 		public LayerMask interactionRayCastLayer;
 		public LayerMask tileInternRayCastLayer;
 		public LayerMask wallRayCastLayer;
-		public LayerMask bulletInteractionLayerMask;
 
 	}
 

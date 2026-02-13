@@ -52,7 +52,7 @@ MonoBehaviour:
   m_isDiscardedAfterTime: 1
   m_discardAfter: 20
   m_rb: {fileID: 5478765675733972146}
-  m_trail: {fileID: 0}
+  m_trail: {fileID: 3295257863744513318}
 --- !u!54 &5478765675733972146
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -4990,7 +4990,7 @@ TrailRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 4a5928da7aefa42428506acbc37c42ae, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -5011,7 +5011,7 @@ TrailRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Time: 0.1
+  m_Time: 0.36
   m_PreviewTimeScale: 1
   m_Parameters:
     serializedVersion: 3
@@ -5042,7 +5042,7 @@ TrailRenderer:
       m_RotationOrder: 4
     colorGradient:
       serializedVersion: 2
-      key0: {r: 0.9622642, g: 0.7333754, b: 0.44028127, a: 1}
+      key0: {r: 0.94716984, g: 0.56763, b: 0.07684578, a: 1}
       key1: {r: 0.9339623, g: 0.49200356, b: 0, a: 0}
       key2: {r: 0, g: 0, b: 0, a: 0}
       key3: {r: 0, g: 0, b: 0, a: 0}

@@ -178,7 +178,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 	}
 
 
-	public void AimAtTile(string _weaponID, Tile _tile, System.Action _onEndMovement = null )
+	/*public void AimAtTile(string _weaponID, Tile _tile, System.Action _onEndMovement = null )
 	{
 		//OLD : get angle and apply to cone
 		WeaponCone selectedWeaponCone = m_weaponConeDictionary[_weaponID];
@@ -189,7 +189,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 		selectedWeaponCone.AimAtAngle(angle, false, _onEndMovement);
 
 		m_linkedEntity.Displacement.Rotate(_tile, false);
-	}
+	}*/
 
 	public List<Tile> GetTilesInRange(string _weaponID, bool _isThisTurn = false)
 	{

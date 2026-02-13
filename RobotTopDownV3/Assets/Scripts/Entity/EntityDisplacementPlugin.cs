@@ -38,9 +38,9 @@ public class EntityDisplacementPlugin : EntityPlugin
 
 		//Rotate((new int[3] { 3, 4, 5 }).RandomElement(), true);
 		if (!_spawn.isFirstSide)
-			Rotate(4, true);
+			Rotate(4, 0f);
 		else
-			Rotate(1, true);
+			Rotate(1, 0f);
 
 		spawn.SetEntity(m_linkedEntity, _isThisTurn: true);
 		m_coordinate.SetCoordinate(spawn.coordinates.X, spawn.coordinates.Z, spawn.coordinates.ID);
@@ -55,7 +55,8 @@ public class EntityDisplacementPlugin : EntityPlugin
 		Tile tile = GridManager.Instance.Tiles[_tileID];
 
 		if(m_linkedEntity.AI.TargetedEntity == null)
-			Rotate(tile, false);
+			Rotate(tile, GameConfig.current.game.actionDuration);
+			//Rotate(tile, Mathf.Max(GameConfig.current.game.entityRotationDuration, GameConfig.current.game.actionDuration));
 
 		if (m_movementTween.IsActive())
 			m_movementTween.Kill();
@@ -68,7 +69,7 @@ public class EntityDisplacementPlugin : EntityPlugin
 		onAnyEntityMovement?.Invoke(m_linkedEntity);
 	}
 
-	public void Rotate ( int _orientation, bool _isInstant, System.Action _onEndPerform = null )
+	public void Rotate ( int _orientation, float _duration = 0f, System.Action _onEndPerform = null )
 	{
 		if (_orientation == m_currentOrientation /*&& !_isInstant*/)
 		{
@@ -82,19 +83,19 @@ public class EntityDisplacementPlugin : EntityPlugin
 			m_rotationTween.Kill();
 
 		float angle = 30f + _orientation * 60f;
-		if (_isInstant)
+		if (_duration == 0f)
 		{
 			m_linkedEntity.SkinParent.transform.localRotation = Quaternion.Euler(0, angle, 0);
 			_onEndPerform?.Invoke();
 		}
 		else
-			m_rotationTween = m_linkedEntity.SkinParent.transform.DOLocalRotateQuaternion(Quaternion.Euler(0, angle, 0), GameConfig.current.game.entityRotationDuration)
+			m_rotationTween = m_linkedEntity.SkinParent.transform.DOLocalRotateQuaternion(Quaternion.Euler(0, angle, 0), _duration)
 				.OnComplete(action: ()=> { _onEndPerform?.Invoke(); });
 	}
 
-	public void Rotate(Tile _towards, bool _isInstant, System.Action _onEndPerform = null )
+	public void Rotate(Tile _towards, float _duration, System.Action _onEndPerform = null )
 	{
 		int closestOrientationToTile = GridManager.Instance.GetClosestOrientation(m_coordinate.GetTile(), _towards);
-		Rotate(closestOrientationToTile, _isInstant, _onEndPerform);
+		Rotate(closestOrientationToTile, _duration, _onEndPerform);
 	}
 }
