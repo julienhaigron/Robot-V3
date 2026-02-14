@@ -122,6 +122,8 @@ public class AttackAction : AEntityAction
 	public override bool TileInteractPredicate ( Tile _tile )
 	{
 		//TODO : select only visible enemies
+		if (Data.isAoe)
+			return true;
 
 		Entity entity = _tile.GetEntity(true);
 		return entity != null && !entity.IsAlliedTo(PerformingEntity.OwnerID);
