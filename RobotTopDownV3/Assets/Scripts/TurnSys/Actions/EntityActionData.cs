@@ -68,16 +68,25 @@ public class EntityActionData : ScriptableObject
 	{
 		Circle,
 		Ray,
-		Cone
+		Cone,
+		Arc
 	}
 	[ShowIf("@isAoe")]
 	public AOEType aoeType = AOEType.Circle;
 	[ShowIf("@isAoe && aoeType == AOEType.Circle"), Min(1)]
-	public int circleRadius = 1;
+	public int circleRange = 1;
+	[ShowIf("@isAoe && aoeType == AOEType.Arc"), Min(1)]
+	public int arcRadius = 1;
 	[ShowIf("@isAoe && aoeType == AOEType.Ray"), Min(1)]
 	public int rayDiameter = 1;
+	
+	public enum ConeType
+	{
+		Thin,
+		Large
+	}
 	[ShowIf("@isAoe && aoeType == AOEType.Cone"), Min(1)]
-	public int coneSpread = 1;
+	public ConeType coneType = ConeType.Thin;
 
 	public WeaponEquipmentData.DamageType[] usedDamageChannels;
 

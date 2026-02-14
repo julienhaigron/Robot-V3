@@ -10,7 +10,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 	public System.Action<int> onDeath;
 	public System.Action<TakeDamageCallback> onHealthChangeDamage;
 
-    private Dictionary<string, Weapon> m_weapons = new();
+	private Dictionary<string, Weapon> m_weapons = new();
 	public Dictionary<string, Weapon> Weapons => m_weapons;
 	[SerializeField] private Transform m_weaponConesParent;
 
@@ -38,10 +38,10 @@ public class EntityEquipmentPlugin : EntityPlugin
 
 	private SerializableDictionary<WeaponEquipmentData.DamageType, float> m_applyedDamageTypeBuffs = new();
 	public SerializableDictionary<WeaponEquipmentData.DamageType, float> ApplyedDamageTypeBuffs => m_applyedDamageTypeBuffs;
-	
+
 	private SerializableDictionary<WeaponEquipmentData.DamageType, float> m_applyedDamageTypeResitance = new();
 	public SerializableDictionary<WeaponEquipmentData.DamageType, float> ApplyedDamageTypeResistance => m_applyedDamageTypeResitance;
-	
+
 	private SerializableDictionary<WeaponEquipmentData.DamageCategory, float> m_applyedDamageCategoryBuffs = new();
 	public SerializableDictionary<WeaponEquipmentData.DamageCategory, float> ApplyedDamageCategoryBuffs => m_applyedDamageCategoryBuffs;
 
@@ -68,9 +68,9 @@ public class EntityEquipmentPlugin : EntityPlugin
 	public override void Init ( EntitySavedData _entityData )
 	{
 		//init weapon
-		if(_entityData.armsIds != null && _entityData.armsIds.Length > 0)
+		if (_entityData.armsIds != null && _entityData.armsIds.Length > 0)
 		{
-			foreach(StringContainer stringContainer in _entityData.armsIds)
+			foreach (StringContainer stringContainer in _entityData.armsIds)
 			{
 				AddWeapon(GameAssets.current.equipments[stringContainer.value] as WeaponEquipmentData, m_linkedEntity.Displacement.Spawn.isFirstSide);
 			}
@@ -133,9 +133,9 @@ public class EntityEquipmentPlugin : EntityPlugin
 		}
 	}
 
-	private void OnNewPhaseStart()
+	private void OnNewPhaseStart ()
 	{
-		foreach(EntityActionEnumID action in m_actionsInCooldown.Keys.ToList())
+		foreach (EntityActionEnumID action in m_actionsInCooldown.Keys.ToList())
 		{
 			m_actionsInCooldown[action]--;
 			if (m_actionsInCooldown[action] <= 0)
@@ -143,7 +143,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 		}
 	}
 
-	private void OnActionPerformed (AEntityAction _actionPerformed)
+	private void OnActionPerformed ( AEntityAction _actionPerformed )
 	{
 		EntityActionData actionData = GameAssets.current.game.entityActionsData[_actionPerformed.enumID];
 		if (actionData.tokenCooldown > 0)
@@ -164,7 +164,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 		public Vector3 hitNormal;
 	}
 
-	private Weapon AddWeapon(WeaponEquipmentData _data, bool _isFirstSide)
+	private Weapon AddWeapon ( WeaponEquipmentData _data, bool _isFirstSide )
 	{
 		Weapon newWeapon = Instantiate(_data.prefab, m_linkedEntity.Skin.IK.handGrabSocket);
 		newWeapon.Init(m_linkedEntity, _data, _isFirstSide);
@@ -191,21 +191,19 @@ public class EntityEquipmentPlugin : EntityPlugin
 		m_linkedEntity.Displacement.Rotate(_tile, false);
 	}*/
 
-	public List<Tile> GetTilesInRange(string _weaponID, bool _isThisTurn = false)
+	public List<Tile> GetTilesInWeaponRange ( string _weaponID, bool _isThisTurn = false )
 	{
 		List<Tile> tilesInRange = new();
+		Weapon usedWeapon = m_weapons[_weaponID];
 
-		WeaponCone selectedWeapon = m_weaponConeDictionary[_weaponID];
-		//shoot ray from tile to other tiles in range
-		//float angle = selectedWeapon.AimedRotation;
 		float angle = GridManager.Instance.FromOrientationToAngle(m_linkedEntity.Displacement.CurrentOrientation);
 
 		int nbOfRayPerAngle = 1;
-		int totalNbOfRay = selectedWeapon.Data.visionConeRange * nbOfRayPerAngle;
-		for(int i = 0; i< totalNbOfRay; i++)
+		int totalNbOfRay = usedWeapon.Data.visionConeRange * nbOfRayPerAngle;
+		for (int i = 0; i < totalNbOfRay; i++)
 		{
 			//calculate angle
-			float rayAngle = Mathf.LerpAngle(angle - (selectedWeapon.Data.visionConeRange / 2), angle + (selectedWeapon.Data.visionConeRange / 2), (float)i / (float)totalNbOfRay);
+			float rayAngle = Mathf.LerpAngle(angle - (usedWeapon.Data.visionConeRange / 2), angle + (usedWeapon.Data.visionConeRange / 2), (float)i / (float)totalNbOfRay);
 			rayAngle += 90f;
 			//get position in at angle Y at distance X from linkedEntity
 			if (rayAngle < 0)
@@ -213,8 +211,8 @@ public class EntityEquipmentPlugin : EntityPlugin
 
 			float radians = rayAngle * Mathf.Deg2Rad;
 			Vector3 aimedPosition = new Vector3(Mathf.Sin(radians), 0, Mathf.Cos(radians));
-			RaycastHit[] hits = Physics.RaycastAll(m_linkedEntity.Displacement.Coordinates.GetTile().transform.position, aimedPosition * selectedWeapon.Data.range, selectedWeapon.Data.range * (2*Tile.innerRadius), GameConfig.current.input.tileInternRayCastLayer);
-			foreach(RaycastHit hitInfo in hits)
+			RaycastHit[] hits = Physics.RaycastAll(m_linkedEntity.Displacement.Coordinates.GetTile().transform.position, aimedPosition * usedWeapon.Data.range, usedWeapon.Data.range * (2 * Tile.innerRadius), GameConfig.current.input.tileInternRayCastLayer);
+			foreach (RaycastHit hitInfo in hits)
 			{
 				if (hitInfo.transform.TryGetComponent(out Tile tile) && !tilesInRange.Contains(tile)
 					&& GridManager.Instance.IsVisionLineClear(m_linkedEntity.Displacement.Coordinates.GetTile(), tile, _isThisTurn))
@@ -223,6 +221,87 @@ public class EntityEquipmentPlugin : EntityPlugin
 				}
 			}
 		}
+
+		return tilesInRange;
+	}
+
+
+	public List<Tile> GetTilesInAoERange ( AttackAction _action, bool _isThisTurn = false )
+	{
+		List<Tile> tilesInRange = new();
+		EntityActionData attackData = GameAssets.current.game.entityActionsData[_action.enumID];
+
+		Weapon usedWeapon = null;
+		foreach (string weaponID in m_weapons.Keys)
+		{
+			if (m_weapons[weaponID].Data.knownedActions.Contains(attackData.enumID))
+			{
+				usedWeapon = m_weapons[weaponID];
+				break;
+			}
+		}
+		if (usedWeapon == null)
+		{
+			Debug.LogError("Error : trying to use an attack not in a weapon. No weapon found for action " + _action.enumID.ToString());
+			return tilesInRange;
+		}
+
+		if (!attackData.isAoe)
+			return tilesInRange;
+
+
+		switch (attackData.aoeType)
+		{
+			case EntityActionData.AOEType.Circle:
+				//get tiles around target tile
+
+				tilesInRange.AddRange(GridManager.Instance.GetTilesInVisionRange(_action.TargetTile, attackData.circleRange, _isThisTurn));
+
+				break;
+			case EntityActionData.AOEType.Ray:
+				//get tiles in ray towards target tile
+
+				tilesInRange.AddRange(GridManager.Instance.GetTilesInRay(_action.PerformingEntity.Displacement.Coordinates.GetTile() ,_action.TargetTile, _isThisTurn));
+
+				break;
+			case EntityActionData.AOEType.Cone:
+				//get tiles in specific cone shape with X lenth
+
+				tilesInRange.AddRange(GridManager.Instance.GetTilesInCone(m_linkedEntity.Displacement.Coordinates.GetTile().Neighbors[m_linkedEntity.Displacement.CurrentOrientation]
+						, usedWeapon.Data.range, m_linkedEntity.Displacement.CurrentOrientation, attackData.coneType, _isThisTurn));
+
+				break;
+			case EntityActionData.AOEType.Arc:
+
+				float angle = GridManager.Instance.FromOrientationToAngle(m_linkedEntity.Displacement.CurrentOrientation);
+
+				int nbOfRayPerAngle = 1;
+				int totalNbOfRay = usedWeapon.Data.visionConeRange * nbOfRayPerAngle;
+				for (int i = 0; i < totalNbOfRay; i++)
+				{
+					//calculate angle
+					float rayAngle = Mathf.LerpAngle(angle - (usedWeapon.Data.visionConeRange / 2), angle + (usedWeapon.Data.visionConeRange / 2), (float)i / (float)totalNbOfRay);
+					rayAngle += 90f;
+					//get position in at angle Y at distance X from linkedEntity
+					if (rayAngle < 0)
+						rayAngle += 360;
+
+					float radians = rayAngle * Mathf.Deg2Rad;
+					Vector3 aimedPosition = new Vector3(Mathf.Sin(radians), 0, Mathf.Cos(radians));
+					RaycastHit[] hits = Physics.RaycastAll(m_linkedEntity.Displacement.Coordinates.GetTile().transform.position, aimedPosition * usedWeapon.Data.range, usedWeapon.Data.range * (2 * Tile.innerRadius), GameConfig.current.input.tileInternRayCastLayer);
+					foreach (RaycastHit hitInfo in hits)
+					{
+						if (hitInfo.transform.TryGetComponent(out Tile tile) && !tilesInRange.Contains(tile)
+							&& GridManager.Instance.IsVisionLineClear(m_linkedEntity.Displacement.Coordinates.GetTile(), tile, _isThisTurn))
+						{
+							tilesInRange.Add(tile);
+						}
+					}
+				}
+
+				break;
+		}
+
 
 		return tilesInRange;
 	}
@@ -246,7 +325,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 		float userHitScore = userPerception + userAim + flankBonus + modAction;
 
 		float finalScore = userHitScore - targetEvasionScore;
-		
+
 		if (finalScore >= 1)
 		{
 			LogConsole.AddLog("Attack Roll [AUTOMATIC SUCESS] : targetEvasionScore = " + targetEvasionScore + " and userHitScore = " + userHitScore, LogConsole.LogEventType.PlayPhase);
@@ -262,17 +341,17 @@ public class EntityEquipmentPlugin : EntityPlugin
 		}
 	}
 
-	public WeaponEquipmentData.DistanceType GetWeaponDistanceTypeFrom(Entity _target, WeaponEquipmentData _weaponData, bool _didAttackerWinPFC )
+	public WeaponEquipmentData.DistanceType GetWeaponDistanceTypeFrom ( Entity _target, WeaponEquipmentData _weaponData, bool _didAttackerWinPFC )
 	{
 		int attackerPosition = _didAttackerWinPFC ? TurnManager.Instance.GetPositionOfEntityAtEndOfRound(_target.ID) : TurnManager.Instance.GetPositionOfEntityAtEndOfRound(_target.ID);
 		int defenderPosition = !_didAttackerWinPFC ? TurnManager.Instance.GetPositionOfEntityAtEndOfRound(_target.ID) : TurnManager.Instance.GetPositionOfEntityAtEndOfRound(_target.ID);
-		float actualDistanceFromTarget = Vector3.Distance(GridManager.Instance.Tiles[attackerPosition].transform.position, GridManager.Instance.Tiles[defenderPosition].transform.position) / (Tile.outerRadius*2f);
+		float actualDistanceFromTarget = Vector3.Distance(GridManager.Instance.Tiles[attackerPosition].transform.position, GridManager.Instance.Tiles[defenderPosition].transform.position) / (Tile.outerRadius * 2f);
 		float distanceRelativeToWeaponRangePercentage = actualDistanceFromTarget / (float)_weaponData.range;
 
 		float currentTotal = 0;
-		for(int i = 0; i < GameConfig.current.game.distanceTypeSpreadEvaluation.Keys.Count; i++)
+		for (int i = 0; i < GameConfig.current.game.distanceTypeSpreadEvaluation.Keys.Count; i++)
 		{
-			if(distanceRelativeToWeaponRangePercentage < currentTotal + GameConfig.current.game.distanceTypeSpreadEvaluation[(WeaponEquipmentData.DistanceType)i])
+			if (distanceRelativeToWeaponRangePercentage < currentTotal + GameConfig.current.game.distanceTypeSpreadEvaluation[(WeaponEquipmentData.DistanceType)i])
 				return (WeaponEquipmentData.DistanceType)i;
 
 			currentTotal += GameConfig.current.game.distanceTypeSpreadEvaluation[(WeaponEquipmentData.DistanceType)i];
@@ -280,7 +359,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 		return WeaponEquipmentData.DistanceType.Long;
 	}
 
-	public bool EffectRoll(Entity _entity, AEntityEffect _effect )
+	public bool EffectRoll ( Entity _entity, AEntityEffect _effect )
 	{
 		bool isAttackSuccessful = Random.Range(0, 100) > _effect.hitProbability;
 
@@ -294,14 +373,14 @@ public class EntityEquipmentPlugin : EntityPlugin
 
 	#region Heatlh
 
-	public void AddDamageBuff( WeaponEquipmentData.DamageType _type, int _amount )
+	public void AddDamageBuff ( WeaponEquipmentData.DamageType _type, int _amount )
 	{
 		m_applyedDamageTypeBuffs.Add(_type, _amount);
 	}
 
-	public void TakeDamage( TakeDamageCallback _damageInfo )
+	public void TakeDamage ( TakeDamageCallback _damageInfo )
 	{
-		foreach(KeyValuePair<WeaponEquipmentData.DamageType, int> pair in _damageInfo.damages)
+		foreach (KeyValuePair<WeaponEquipmentData.DamageType, int> pair in _damageInfo.damages)
 		{
 			m_currentHealth -= pair.Value;
 		}

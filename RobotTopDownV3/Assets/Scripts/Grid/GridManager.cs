@@ -180,7 +180,7 @@ public class GridManager : Singleton<GridManager>
 
 	#region Utils
 
-	public Tile GetTile(int _x, int _z )
+	public Tile GetTile ( int _x, int _z )
 	{
 		if (_x < 0 || _x >= m_width || _z < 0 || _z >= m_height)
 			return null;
@@ -402,6 +402,186 @@ public class GridManager : Singleton<GridManager>
 		return tilesInRange;
 	}
 
+	public List<Tile> GetTilesInRay ( Tile _from, Tile _to, bool _isThisTurn )
+	{
+		List<Tile> tilesInRange = new();
+		Vector2 origin = new Vector2(_from.transform.position.x, _from.transform.position.z);
+		Vector2 destination = new Vector2(_to.transform.position.x, _to.transform.position.z);
+		float angle = GetAngleFrom(origin, destination);
+
+		bool isRightAngle = angle % 60f == 0f;
+		if (!isRightAngle)
+		{
+			Vector3 direction = (_to.transform.position - _from.transform.position);
+
+			tilesInRange.AddRange(CastVisionRay(_from, _from.transform.position, direction, direction.magnitude, _isThisTurn));
+		}
+		else
+		{
+			//do three ray horizontal to each other
+			Vector3 originVector3 = _from.transform.position;
+			Vector3 target = _to.transform.position;
+
+			Vector3 mainDir = (target - originVector3).normalized;
+			float distance = Vector3.Distance(originVector3, target);
+
+			Vector3 right = Vector3.Cross(Vector3.up, mainDir).normalized;
+
+			float halfWidth = 0.3f;
+
+			Vector3 targetCenter = target;
+			Vector3 targetLeft = target - right * halfWidth;
+			Vector3 targetRight = target + right * halfWidth;
+
+			Vector3 dirCenter = (targetCenter - originVector3).normalized;
+			Vector3 dirLeft = (targetLeft - originVector3).normalized;
+			Vector3 dirRight = (targetRight - originVector3).normalized;
+
+			tilesInRange.AddRange(CastVisionRay(_from, originVector3, dirCenter, distance, _isThisTurn));
+			tilesInRange.AddRange(CastVisionRay(_from, originVector3, dirLeft, distance, _isThisTurn));
+			tilesInRange.AddRange(CastVisionRay(_from, originVector3, dirRight, distance, _isThisTurn));
+		}
+
+		return tilesInRange;
+	}
+
+	public List<Tile> GetTilesInCone ( Tile _from, int _distance, int _orientation, EntityActionData.ConeType _type, bool _isThisTurn )
+	{
+		List<Tile> tilesInRange = new();
+
+		Tile origin = _from.Neighbors[_orientation];
+		if (origin == null || !IsVisionLineClear(_from, origin, _isThisTurn))
+			return tilesInRange;
+
+		List<Tile> previousLine = new();
+		previousLine.Add(origin);
+		tilesInRange.Add(origin);
+		int leftOrientation = _orientation - 1;
+		if (leftOrientation < 0)
+			leftOrientation += 6;
+		int rightOrientation = _orientation + 1;
+		if (rightOrientation > 5)
+			rightOrientation -= 6;
+
+		Tile leftestTile = previousLine[0];
+		Tile rightestTile = previousLine[^1];
+		for (int i = 1; i < _distance; i++)
+		{
+			List<Tile> newLine = new();
+
+			if (_type == EntityActionData.ConeType.Thin)
+			{
+				if (i % 2 == 0)
+				{
+					if (leftestTile.Neighbors[_orientation] != null && IsVisionLineClear(origin, leftestTile.Neighbors[_orientation], _isThisTurn))
+						leftestTile = leftestTile.Neighbors[_orientation];
+					if (rightestTile.Neighbors[_orientation] != null && IsVisionLineClear(origin, rightestTile.Neighbors[_orientation], _isThisTurn))
+						rightestTile = rightestTile.Neighbors[_orientation];
+					foreach (Tile tile in previousLine)
+					{
+						if (tile.Neighbors[_orientation] != null && IsVisionLineClear(origin, tile.Neighbors[_orientation], _isThisTurn))
+							newLine.Add(tile.Neighbors[_orientation]);
+					}
+				}
+				else
+				{
+					if (leftestTile.Neighbors[leftOrientation] != null && IsVisionLineClear(origin, leftestTile.Neighbors[leftOrientation], _isThisTurn))
+					{
+						leftestTile = leftestTile.Neighbors[leftOrientation];
+						newLine.Add(leftestTile);
+					}
+					if (rightestTile.Neighbors[rightOrientation] != null && IsVisionLineClear(origin, rightestTile.Neighbors[rightOrientation], _isThisTurn))
+					{
+						rightestTile = leftestTile.Neighbors[rightOrientation];
+						newLine.Add(rightestTile);
+					}
+					for (int j = 0; j < previousLine.Count; j++)
+					{
+						if (previousLine[j].Neighbors[_orientation] != null && IsVisionLineClear(origin, previousLine[j].Neighbors[_orientation], _isThisTurn))
+						{
+							newLine.Add(previousLine[j].Neighbors[_orientation]);
+						}
+					}
+				}
+			}
+			else
+			{
+				if (i == 1)
+				{
+					if (previousLine[0].Neighbors[leftOrientation] != null && IsVisionLineClear(origin, previousLine[0].Neighbors[leftOrientation], _isThisTurn))
+						newLine.Add(previousLine[0].Neighbors[leftOrientation]);
+					if (previousLine[0].Neighbors[_orientation] != null && IsVisionLineClear(origin, previousLine[0].Neighbors[_orientation], _isThisTurn))
+						newLine.Add(previousLine[0].Neighbors[_orientation]);
+					if (previousLine[0].Neighbors[rightOrientation] != null && IsVisionLineClear(origin, previousLine[0].Neighbors[rightOrientation], _isThisTurn))
+						newLine.Add(previousLine[0].Neighbors[rightOrientation]);
+				}
+				else
+				{
+					Tile leftAnchor = leftestTile.Neighbors[leftOrientation];
+					if(leftAnchor != null && IsVisionLineClear(origin, previousLine[0].Neighbors[leftOrientation], _isThisTurn))
+					{
+						newLine.Add(leftAnchor);
+						if (leftAnchor.Neighbors[leftOrientation] != null && IsVisionLineClear(origin, leftAnchor.Neighbors[leftOrientation], _isThisTurn))
+						{
+							leftestTile = leftAnchor.Neighbors[leftOrientation];
+							newLine.Add(leftestTile);
+						}
+						if(leftAnchor.Neighbors[_orientation] != null && IsVisionLineClear(origin, leftAnchor.Neighbors[_orientation], _isThisTurn))
+							newLine.Add(leftAnchor.Neighbors[_orientation]);
+					}
+					Tile rightAnchor = rightestTile.Neighbors[rightOrientation];
+					if (rightAnchor != null && IsVisionLineClear(origin, previousLine[0].Neighbors[rightOrientation], _isThisTurn))
+					{
+						newLine.Add(rightAnchor);
+						if (rightAnchor.Neighbors[rightOrientation] != null && IsVisionLineClear(origin, rightAnchor.Neighbors[rightOrientation], _isThisTurn))
+						{
+							leftestTile = leftAnchor.Neighbors[rightOrientation];
+							newLine.Add(leftestTile);
+						}
+						if (rightAnchor.Neighbors[_orientation] != null && IsVisionLineClear(origin, rightAnchor.Neighbors[_orientation], _isThisTurn))
+							newLine.Add(leftAnchor.Neighbors[_orientation]);
+					}
+
+					foreach (Tile tile in previousLine)
+					{
+						if (tile.Neighbors[_orientation] != null && IsVisionLineClear(origin, tile.Neighbors[_orientation], _isThisTurn)
+							&& !tilesInRange.Contains(tile) && !newLine.Contains(tile))
+							newLine.Add(tile.Neighbors[_orientation]);
+					}
+				}
+
+			}
+
+			tilesInRange.AddRange(newLine);
+			previousLine = new(newLine);
+		}
+
+		return tilesInRange;
+	}
+
+	private List<Tile> CastVisionRay ( Tile _fromTile, Vector3 _from, Vector3 _dir, float _distance, bool _isThisTurn )
+	{
+		List<Tile> tilesInRange = new();
+		RaycastHit[] hits = Physics.RaycastAll(
+			_from,
+			_dir,
+			_distance,
+			GameConfig.current.input.tileInternRayCastLayer
+		);
+
+		foreach (RaycastHit hitInfo in hits)
+		{
+			if (hitInfo.transform.TryGetComponent(out Tile tile)
+				&& !tilesInRange.Contains(tile)
+				&& IsVisionLineClear(_fromTile, tile, _isThisTurn))
+			{
+				tilesInRange.Add(tile);
+			}
+		}
+
+		return tilesInRange;
+	}
+
 	public bool IsVisionLineClear ( Tile _from, Tile _to, bool _isThisTurn )
 	{
 		//Soltion to test:
@@ -434,7 +614,7 @@ public class GridManager : Singleton<GridManager>
 		return true;
 	}
 
-	public bool IsThereCoverBeween ( Entity _attacker, Entity _target, bool _didAttackerWinPFC)
+	public bool IsThereCoverBeween ( Entity _attacker, Entity _target, bool _didAttackerWinPFC )
 	{
 		// Orientation depuis l’attaquant vers la cible
 		int attackerPosition = _didAttackerWinPFC ? TurnManager.Instance.GetPositionOfEntityAtEndOfRound(_attacker.ID) : TurnManager.Instance.GetPositionOfEntityAtEndOfRound(_attacker.ID);
@@ -444,7 +624,7 @@ public class GridManager : Singleton<GridManager>
 		// Tile potentielle de couvert
 		Tile potentialCover = GetTileAtOrientation(m_tiles[attackerPosition], attackOrientation);
 
-		return potentialCover != null && potentialCover.GroundType == TileGroundType.Void;
+		return potentialCover != null && potentialCover.GroundType == TileGroundType.Wall;
 	}
 
 	public Tile.TileDirectionType GetHitTileSide ( Entity _from, Entity _to, bool _didAttackerWinPFC )
@@ -491,7 +671,7 @@ public class GridManager : Singleton<GridManager>
 		return (int)((angle - 30f) / 60f);
 	}
 
-	public float FromOrientationToAngle( int _orientation )
+	public float FromOrientationToAngle ( int _orientation )
 	{
 		float angle = 30f + _orientation * 60f;
 		angle -= 90f;
@@ -734,20 +914,20 @@ public class GridManager : Singleton<GridManager>
 	[Button]
 	public void FixTiles ()
 	{
-		foreach(Tile tile in m_tiles)
+		foreach (Tile tile in m_tiles)
 		{
-			if(tile.GroundType != TileGroundType.Wall)
+			if (tile.GroundType != TileGroundType.Wall)
 			{
 				Wall wall = tile.GetComponent<Wall>();
 
-				if(tile.WallPartsParent.childCount > 0)
+				if (tile.WallPartsParent.childCount > 0)
 				{
-					for(int i = tile.WallPartsParent.childCount-1; i >= 0; i--)
+					for (int i = tile.WallPartsParent.childCount - 1; i >= 0; i--)
 					{
 						DestroyImmediate(tile.WallPartsParent.GetChild(i).gameObject);
 					}
 				}
-				if(wall != null)
+				if (wall != null)
 				{
 					wall.WallParts.Clear();
 					DestroyImmediate(wall);

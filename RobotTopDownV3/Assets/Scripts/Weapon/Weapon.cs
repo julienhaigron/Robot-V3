@@ -21,35 +21,45 @@ public class Weapon : MonoBehaviour
 		m_data = _data;
 	}
 
-	public virtual void PerformAttack ( AttackAction _attackAction, bool _isSuccess, Action _onPerformEnd )
+	public virtual void PerformAttack ( AttackAction _attackAction, Action _onPerformEnd )
 	{
-		//TODO:
-		//if success => show attack reaching target
-		//else => show attack failing to reach target
-
-		Entity performingEntity = GameManager.Instance.GetEntityFromID(_attackAction.performingEntityID);
-		Entity targetEntity = GameManager.Instance.GetEntityFromID(_attackAction.targetedEntityID);
-		if (_isSuccess)
+		if (_attackAction.isAttackSuccessfull)
 		{
+			List<Entity> targetEntities = new();
+			EntityActionData attackData = GameAssets.current.game.entityActionsData[_attackAction.enumID];
+
+			if (attackData.isAoe)
+			{
+				foreach (Tile tile in m_user.Equipment.GetTilesInAoERange(_attackAction, true))
+				{
+					Entity entityOnTIle = tile.GetEntity(true);
+					if (entityOnTIle != null /*&& !entityOnTIle.IsAlliedTo(m_user.OwnerID)*/)
+						targetEntities.Add(entityOnTIle);
+				}
+			}
+			else
+				GameManager.Instance.GetEntityFromID(_attackAction.targetedEntityID);
+			
 			//apply damage
 			Dictionary<WeaponEquipmentData.DamageType, int> damages = new Dictionary<WeaponEquipmentData.DamageType, int>();
 			for(int i = 0; i < _attackAction.damageTypes.Length; i++)
 			{
 				damages.Add((WeaponEquipmentData.DamageType)_attackAction.damageTypes[i], _attackAction.damages[i]);
 			}
-			targetEntity.Equipment.TakeDamage(new EntityEquipmentPlugin.TakeDamageCallback() { damages = damages });
-			performingEntity.Skin.OverrideAnimation(m_data.attackAnimationSuccessId);
 
-			//aplly effects here
-			for (int i = 0; i < _attackAction.areEffectsSuccess.Length; i++)
+			m_user.Skin.OverrideAnimation(m_data.attackAnimationSuccessId);
+
+			foreach(Entity entity in targetEntities)
 			{
-				if (_attackAction.areEffectsSuccess[i])
-					GameAssets.current.game.entityEffects[(AEntityEffect.EntityEffectEnumID)_attackAction.effectsIds[i]].ApplyEffect(targetEntity);
-			}
+				entity.Equipment.TakeDamage(new EntityEquipmentPlugin.TakeDamageCallback() { damages = damages });
 
-			//if is bullet weapon :
-			//1) instantiate X bullet at weapon muzzle
-			//2) _isSuccess ? send bullet towards target : (send bullet next to target || target to evade animation)
+				//aplly effects here
+				for (int i = 0; i < _attackAction.areEffectsSuccess.Length; i++)
+				{
+					if (_attackAction.areEffectsSuccess[i])
+						GameAssets.current.game.entityEffects[(AEntityEffect.EntityEffectEnumID)_attackAction.effectsIds[i]].ApplyEffect(entity);
+				}
+			}
 
 			foreach(ParticleSystem ps in m_onPerformPS)
 			{
@@ -61,7 +71,7 @@ public class Weapon : MonoBehaviour
 		else
 		{
 			//show failure
-			performingEntity.Skin.OverrideAnimation(m_data.attackAnimationFailureId);
+			m_user.Skin.OverrideAnimation(m_data.attackAnimationFailureId);
 			DOVirtual.DelayedCall(GameConfig.current.game.actionDuration, () => _onPerformEnd?.Invoke());
 		}
 	}

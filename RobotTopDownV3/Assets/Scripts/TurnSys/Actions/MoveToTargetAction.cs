@@ -53,9 +53,9 @@ public class MoveToTargetAction : AEntityAction
 	{
 		base.Perform(_state);
 		List<Tile> tilesInRange = new();
-		foreach (Weapon weapon in PerformingEntity.Equipment.Weapons.Values)
-			tilesInRange.AddRange(PerformingEntity.Equipment.GetTilesInRange(weapon.Data.name, true));
-		
+		foreach (string weaponId in PerformingEntity.Equipment.Weapons.Keys)
+			tilesInRange.AddRange(PerformingEntity.Equipment.GetTilesInWeaponRange(weaponId, true));
+
 		foreach (Tile tile in tilesInRange)
 		{
 			tile.UI.SetOutlineColor(Color.blue);

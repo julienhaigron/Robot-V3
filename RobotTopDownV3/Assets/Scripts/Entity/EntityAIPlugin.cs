@@ -48,6 +48,7 @@ public class EntityAIPlugin : EntityPlugin
 			AttackAction attackAction = (TurnManager.Instance.GetAction(availableAttackAction, m_linkedEntity.ID) as AttackAction);
 			attackAction.attackingWeaponId = _weaponId;
 			attackAction.targetedEntityID = m_lastEntityTargeted.ID;
+			attackAction.targetTileID = m_lastEntityTargeted.Displacement.Coordinates.ID;
 			attackAction.Init(GameAssets.current.game.entityActionsData[availableAttackAction.enumID], m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID);
 			resultInfo.ReplaceAction(attackAction);
 		}
@@ -197,7 +198,7 @@ public class EntityAIPlugin : EntityPlugin
 		foreach (string weaponId in m_linkedEntity.Equipment.Weapons.Keys)
 		{
 			m_entitiesInWeaponRange.Add(weaponId, new());
-			List<Tile> tilesInWeaponCone = m_linkedEntity.Equipment.GetTilesInRange(weaponId);
+			List<Tile> tilesInWeaponCone = m_linkedEntity.Equipment.GetTilesInWeaponRange(weaponId);
 			foreach (Tile tile in tilesInWeaponCone)
 			{
 				Entity entityOnTile = tile.GetEntity(_isThisTurn);

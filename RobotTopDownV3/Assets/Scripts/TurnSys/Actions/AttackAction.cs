@@ -8,7 +8,11 @@ public class AttackAction : AEntityAction
 	public string attackingWeaponId;
 	public int targetedEntityID = -1;
 	public Entity TargetEntity => GameManager.Instance.GetEntityFromID(targetedEntityID);
+	public int targetTileID = -1;
+	public Tile TargetTile => GridManager.Instance.Tiles[targetTileID];
 	public bool isAttackSuccessfull = false;
+	
+	//damages
 	public bool[] areEffectsSuccess;
 	public int[] damages;
 	public short[] damageTypes;
@@ -26,19 +30,13 @@ public class AttackAction : AEntityAction
 		serializer.SerializeValue(ref pfcResult);
 	}
 
-	//todo :
-	//better attack roll
-	// => add vision angle calculus to it
-	// => add PFC system
-	// => add entity state (stunned, burning, frozen, whtvr)
-	// => add damage channels
-
 	public override void Prepare ( Entity.EntityState _state )
 	{
-		if (targetedEntityID != -1 || (targetedEntityID == -1 && PerformingEntity.AI.TargetedEntity != null))
+		if (targetedEntityID != -1 || (targetedEntityID == -1 && PerformingEntity.AI.TargetedEntity != null)
+			|| (Data.isAoe && targetTileID != -1))
 		{
 			targetedEntityID = PerformingEntity.AI.TargetedEntity.ID;
-			isAttackSuccessfull = PerformingEntity.Equipment.AttackRoll(this);
+			isAttackSuccessfull = Data.isAoe ? true : PerformingEntity.Equipment.AttackRoll(this);
 
 			if (isAttackSuccessfull)
 			{
@@ -88,16 +86,16 @@ public class AttackAction : AEntityAction
 
 		//if enemy is in weapon range
 		bool isEnemyInWeaponRange = PerformingEntity.AI.IsEntityInWeaponRange(TargetEntity, out Weapon _attackingWeapon);
-		List<Tile> tilesInWeaponRange = PerformingEntity.Equipment.GetTilesInRange(_attackingWeapon.Data.name, true);
+		List<Tile> tilesInWeaponRange = PerformingEntity.Equipment.GetTilesInWeaponRange(_attackingWeapon.Data.name, true);
 
-		if (isEnemyInWeaponRange)
+		if (isEnemyInWeaponRange || (Data.isAoe && targetTileID != -1))
 		{
 			base.Perform(_state);
 			foreach (Tile tile in tilesInWeaponRange)
 			{
 				tile.UI.SetOutlineColor(Color.red);
 			}
-			_attackingWeapon.PerformAttack(this, isAttackSuccessfull, () =>
+			_attackingWeapon.PerformAttack(this, () =>
 			{
 				foreach (Tile tile in tilesInWeaponRange)
 				{
@@ -127,6 +125,14 @@ public class AttackAction : AEntityAction
 
 		Entity entity = _tile.GetEntity(true);
 		return entity != null && !entity.IsAlliedTo(PerformingEntity.OwnerID);
+	}
+
+	public override void RegisterInteraction ( Tile _tile )
+	{
+		if (_tile.GetEntity(true))
+			targetedEntityID = _tile.GetEntity(true).ID;
+		targetTileID = _tile.coordinates.ID;
+		base.RegisterInteraction(_tile);
 	}
 
 	public override void GhostDisplay ( Entity.EntityState _state )

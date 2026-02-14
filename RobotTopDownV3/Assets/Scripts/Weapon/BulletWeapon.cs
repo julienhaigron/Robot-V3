@@ -42,23 +42,48 @@ public class BulletWeapon : Weapon
 		m_aimDurationWFS = new WaitForSeconds(m_aimDuration);
 	}
 
-	public override void PerformAttack ( AttackAction _attackAction, bool _isSuccess, Action _onPerformEnd )
+	public override void PerformAttack ( AttackAction _attackAction, Action _onPerformEnd )
 	{
 		Entity performingEntity = GameManager.Instance.GetEntityFromID(_attackAction.performingEntityID);
 		Entity targetEntity = GameManager.Instance.GetEntityFromID((int)_attackAction.targetedEntityID);
 		Vector3 targetPosition = targetEntity.Skin.Center.position;
 		
 		//1) aim at position
-		if (_isSuccess)
+		if (_attackAction.isAttackSuccessfull)
 		{
+			List<Entity> targetEntities = new();
+			EntityActionData attackData = GameAssets.current.game.entityActionsData[_attackAction.enumID];
+
+			if (attackData.isAoe)
+			{
+				foreach (Tile tile in m_user.Equipment.GetTilesInAoERange(_attackAction, true))
+				{
+					Entity entityOnTIle = tile.GetEntity(true);
+					if (entityOnTIle != null /*&& !entityOnTIle.IsAlliedTo(m_user.OwnerID)*/)
+						targetEntities.Add(entityOnTIle);
+				}
+			}
+			else
+				GameManager.Instance.GetEntityFromID(_attackAction.targetedEntityID);
+
 			//apply damage
 			Dictionary<WeaponEquipmentData.DamageType, int> damages = new Dictionary<WeaponEquipmentData.DamageType, int>();
 			for (int i = 0; i < _attackAction.damageTypes.Length; i++)
 			{
 				damages.Add((WeaponEquipmentData.DamageType)_attackAction.damageTypes[i], _attackAction.damages[i]);
 			}
-			//int damageAmount = m_data.damage;
-			targetEntity.Equipment.TakeDamage(new EntityEquipmentPlugin.TakeDamageCallback() { damages = damages });
+
+			foreach (Entity entity in targetEntities)
+			{
+				entity.Equipment.TakeDamage(new EntityEquipmentPlugin.TakeDamageCallback() { damages = damages });
+
+				//aplly effects here
+				for (int i = 0; i < _attackAction.areEffectsSuccess.Length; i++)
+				{
+					if (_attackAction.areEffectsSuccess[i])
+						GameAssets.current.game.entityEffects[(AEntityEffect.EntityEffectEnumID)_attackAction.effectsIds[i]].ApplyEffect(entity);
+				}
+			}
 
 			performingEntity.Skin.VisualyAimAt(_attackAction.attackingWeaponId, targetPosition);
 		}
