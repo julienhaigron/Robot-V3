@@ -461,6 +461,10 @@ public class GridManager : Singleton<GridManager>
 
 		TileCoordinates a = _from.coordinates;
 		TileCoordinates b = _to.coordinates;
+		Vector2 origin = new Vector2(_from.transform.position.x, _from.transform.position.z);
+		Vector2 destination = new Vector2(_to.transform.position.x, _to.transform.position.z);
+		float angle = GetAngleFrom(origin, destination);
+		bool isInSplitLine = (angle - 30f) % 60f == 0f;
 
 		int N = a.DistanceTo(b);
 
@@ -472,10 +476,50 @@ public class GridManager : Singleton<GridManager>
 			TileCoordinates c = CubeRound(f);
 
 			Tile mainTile = c.GetTile();
+			if (mainTile == _from)
+				continue;
+
 			if (mainTile == null || mainTile.IsObstacle())
 				break;
 
-			tilesInRange.Add(mainTile);
+			TryAdd(c, tilesInRange);
+
+			if (!isInSplitLine)
+				continue;
+
+			float dx = f.x - c.X;
+			float dy = f.y - c.Y;
+			float dz = f.z - c.Z;
+			if (dx == 0 && dy == 0 && dz == 0)
+				continue;
+			else if (dx == 0f || dy == 0f || dz == 0f)
+			{
+				int dir = 0;
+				if (dx == 0f)
+				{
+					if(dy > 0)
+						dir = dx > 0 ? 5 : 2;
+					else
+						dir = dx < 0 ? 2 : 5;
+				}
+				else if (dy == 0f)
+				{
+					if (dx > 0)
+						dir = dz > 0 ? 4 : 1;
+					else
+						dir = dz < 0 ? 1 : 4;
+				}
+				else if (dz == 0f)
+				{
+					if (dz > 0)
+						dir = dy > 0 ? 3 : 0;
+					else
+						dir = dy < 0 ? 0 : 3;
+				}
+
+				TileCoordinates adj = CubeNeighbor(c, dir);
+				TryAdd(adj, tilesInRange);
+			}
 
 			/*for (int dir = 0; dir < 6; dir++)
 			{
