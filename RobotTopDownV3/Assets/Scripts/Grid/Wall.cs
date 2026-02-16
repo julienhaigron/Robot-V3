@@ -19,8 +19,8 @@ public class Wall : MonoBehaviour
 	[SerializeField] private bool m_isDestructible = true;
 	public bool IsDestructible { get { return m_isDestructible; } set { m_isDestructible = value; } }
 	
-	[SerializeField] private int m_health;
-	public int Health { get { return m_health; } set { m_health = value; } }
+	[SerializeField] private int m_hp = 1;
+	public int Health { get { return m_hp; } set { m_hp = value; } }
 	
 	[SerializeField, ReadOnly] private int m_orientation; //between 0-5
 	public int Orientation { get { return m_orientation; } set { m_orientation = value; } }
@@ -57,9 +57,9 @@ public class Wall : MonoBehaviour
 	{
 		foreach(KeyValuePair<WeaponEquipmentData.DamageType, int> pair in _damages)
 		{
-			m_health -= pair.Value;
+			m_hp -= pair.Value;
 		}
-		if (m_health <= 0)
+		if (m_hp <= 0)
 			Destroy();
 	}
 

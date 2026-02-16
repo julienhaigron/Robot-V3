@@ -122,11 +122,10 @@ public class AttackAction : AEntityAction
 	public override bool TileInteractPredicate ( Tile _tile )
 	{
 		//TODO : select only visible enemies
-		if (Data.isAoe)
-			return true;
+		//TODO : should also check if unit is in supposed weapon range (counting orientation)
 
 		Entity entity = _tile.GetEntity(true);
-		return entity != null && !entity.IsAlliedTo(PerformingEntity.OwnerID);
+		return entity != null && (Data.targetType == EntityActionData.TargetType.Self == entity.IsAlliedTo(GameManager.Instance.GetEntityFromID(performingEntityID).OwnerID));
 	}
 
 	public override void RegisterInteraction ( Tile _tile )

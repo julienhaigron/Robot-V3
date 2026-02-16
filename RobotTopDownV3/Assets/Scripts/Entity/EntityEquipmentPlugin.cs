@@ -249,27 +249,20 @@ public class EntityEquipmentPlugin : EntityPlugin
 		if (!attackData.isAoe)
 			return tilesInRange;
 
-
 		switch (attackData.aoeType)
 		{
 			case EntityActionData.AOEType.Circle:
-				//get tiles around target tile
 
 				tilesInRange.AddRange(GridManager.Instance.GetTilesInVisionRange(_action.TargetTile, attackData.circleRange, _isThisTurn));
-
 				break;
 			case EntityActionData.AOEType.Ray:
-				//get tiles in ray towards target tile
 
 				tilesInRange.AddRange(GridManager.Instance.GetTilesInRay(_action.PerformingEntity.Displacement.Coordinates.GetTile() ,_action.TargetTile, _isThisTurn));
-
 				break;
 			case EntityActionData.AOEType.Cone:
-				//get tiles in specific cone shape with X lenth
 
-				tilesInRange.AddRange(GridManager.Instance.GetTilesInCone(m_linkedEntity.Displacement.Coordinates.GetTile().Neighbors[m_linkedEntity.Displacement.CurrentOrientation]
+				tilesInRange.AddRange(GridManager.Instance.GetTilesInCone(m_linkedEntity.Displacement.Coordinates.GetTile()
 						, usedWeapon.Data.range, m_linkedEntity.Displacement.CurrentOrientation, attackData.coneType, _isThisTurn));
-
 				break;
 			case EntityActionData.AOEType.Arc:
 

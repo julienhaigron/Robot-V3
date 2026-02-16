@@ -85,7 +85,7 @@ public class EntityActionData : ScriptableObject
 		Thin,
 		Large
 	}
-	[ShowIf("@isAoe && aoeType == AOEType.Cone"), Min(1)]
+	[ShowIf("@isAoe && aoeType == AOEType.Cone")]
 	public ConeType coneType = ConeType.Thin;
 
 	public WeaponEquipmentData.DamageType[] usedDamageChannels;

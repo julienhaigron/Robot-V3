@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 5537131122029428267}
   - component: {fileID: 9190299420879906313}
   - component: {fileID: 5478765675733972146}
-  - component: {fileID: 2020699476534156349}
+  - component: {fileID: 6370493442683565067}
   m_Layer: 11
   m_Name: BaseBullet
   m_TagString: Untagged
@@ -80,8 +80,8 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 2
---- !u!135 &2020699476534156349
-SphereCollider:
+--- !u!136 &6370493442683565067
+CapsuleCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -90,7 +90,7 @@ SphereCollider:
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 64
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -98,9 +98,11 @@ SphereCollider:
   m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 3
-  m_Radius: 0.1
-  m_Center: {x: 0, y: 0, z: 0}
+  serializedVersion: 2
+  m_Radius: 0.26
+  m_Height: 2.29
+  m_Direction: 2
+  m_Center: {x: 0, y: 0, z: -0.81}
 --- !u!1 &916745688522949939
 GameObject:
   m_ObjectHideFlags: 0

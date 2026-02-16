@@ -569,15 +569,27 @@ public class GridManager : Singleton<GridManager>
 		if (rightOrientation > 5)
 			rightOrientation -= 6;
 
+		int cursor = 0;
+		/*if(_type == EntityActionData.ConeType.Thin)
+		{
+			if (_distance <= 1 || !IsVisionLineClear(_from, origin.Neighbors[_orientation], _isThisTurn))
+				return tilesInRange;
+
+			previousLine.Clear();
+			previousLine.Add(origin.Neighbors[_orientation]);
+			tilesInRange.Add(origin.Neighbors[_orientation]);
+			cursor++;
+		}*/
+
 		Tile leftestTile = previousLine[0];
 		Tile rightestTile = previousLine[^1];
-		for (int i = 1; i < _distance; i++)
+		for (; cursor < _distance - 1; cursor++)
 		{
 			List<Tile> newLine = new();
 
 			if (_type == EntityActionData.ConeType.Thin)
 			{
-				if (i % 2 == 0)
+				if (cursor % 2 == 0)
 				{
 					if (leftestTile.Neighbors[_orientation] != null && IsVisionLineClear(origin, leftestTile.Neighbors[_orientation], _isThisTurn))
 						leftestTile = leftestTile.Neighbors[_orientation];
@@ -598,7 +610,7 @@ public class GridManager : Singleton<GridManager>
 					}
 					if (rightestTile.Neighbors[rightOrientation] != null && IsVisionLineClear(origin, rightestTile.Neighbors[rightOrientation], _isThisTurn))
 					{
-						rightestTile = leftestTile.Neighbors[rightOrientation];
+						rightestTile = rightestTile.Neighbors[rightOrientation];
 						newLine.Add(rightestTile);
 					}
 					for (int j = 0; j < previousLine.Count; j++)
@@ -612,14 +624,20 @@ public class GridManager : Singleton<GridManager>
 			}
 			else
 			{
-				if (i == 1)
+				if (cursor == 0)
 				{
 					if (previousLine[0].Neighbors[leftOrientation] != null && IsVisionLineClear(origin, previousLine[0].Neighbors[leftOrientation], _isThisTurn))
+					{
 						newLine.Add(previousLine[0].Neighbors[leftOrientation]);
+						leftestTile = previousLine[0].Neighbors[leftOrientation];
+					}
 					if (previousLine[0].Neighbors[_orientation] != null && IsVisionLineClear(origin, previousLine[0].Neighbors[_orientation], _isThisTurn))
 						newLine.Add(previousLine[0].Neighbors[_orientation]);
 					if (previousLine[0].Neighbors[rightOrientation] != null && IsVisionLineClear(origin, previousLine[0].Neighbors[rightOrientation], _isThisTurn))
+					{
 						newLine.Add(previousLine[0].Neighbors[rightOrientation]);
+						rightestTile = previousLine[0].Neighbors[rightOrientation];
+					}
 				}
 				else
 				{
@@ -641,17 +659,17 @@ public class GridManager : Singleton<GridManager>
 						newLine.Add(rightAnchor);
 						if (rightAnchor.Neighbors[rightOrientation] != null && IsVisionLineClear(origin, rightAnchor.Neighbors[rightOrientation], _isThisTurn))
 						{
-							leftestTile = leftAnchor.Neighbors[rightOrientation];
-							newLine.Add(leftestTile);
+							rightestTile = rightAnchor.Neighbors[rightOrientation];
+							newLine.Add(rightestTile);
 						}
 						if (rightAnchor.Neighbors[_orientation] != null && IsVisionLineClear(origin, rightAnchor.Neighbors[_orientation], _isThisTurn))
-							newLine.Add(leftAnchor.Neighbors[_orientation]);
+							newLine.Add(rightAnchor.Neighbors[_orientation]);
 					}
 
 					foreach (Tile tile in previousLine)
 					{
 						if (tile.Neighbors[_orientation] != null && IsVisionLineClear(origin, tile.Neighbors[_orientation], _isThisTurn)
-							&& !tilesInRange.Contains(tile) && !newLine.Contains(tile))
+							&& !tilesInRange.Contains(tile.Neighbors[_orientation]) && !newLine.Contains(tile.Neighbors[_orientation]))
 							newLine.Add(tile.Neighbors[_orientation]);
 					}
 				}

@@ -151,7 +151,9 @@ public class Tile : MonoBehaviour
 
 	public bool IsObstacle ()
 	{
-		if (m_groundType == TileGroundType.Wall)
+		if (m_groundType == TileGroundType.Wall && m_wall.Health > 0)
+			return true;
+		else if (m_groundType == TileGroundType.Void)
 			return true;
 
 		return false;
@@ -159,7 +161,7 @@ public class Tile : MonoBehaviour
 
 	public bool CanSeeThrough ()
 	{
-		if (m_groundType == TileGroundType.Wall)
+		if (m_groundType == TileGroundType.Wall && m_wall.Health > 0)
 			return false;
 
 		return true;

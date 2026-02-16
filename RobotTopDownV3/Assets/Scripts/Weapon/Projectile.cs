@@ -9,6 +9,7 @@ public class Projectile : PoolElement
 
 	protected ProjectileData m_projectileData;
 	private bool m_isInit;
+	private Action<Entity> m_onHitEntity;
 
 	private void Reset ()
 	{
@@ -36,7 +37,7 @@ public class Projectile : PoolElement
 		if (m_isInit == false || m_rb.isKinematic)
 			return;
 
-		if (_other.gameObject.layer != GameConfig.current.input.entityLayer.value)
+		if (_other.gameObject.layer != 6)
 		{
 			OnCollideWithOther(_other.gameObject.layer, _other);
 			return;
@@ -53,6 +54,7 @@ public class Projectile : PoolElement
 		if (_entity == m_projectileData.owner)
 			return;
 
+		m_onHitEntity?.Invoke(_entity);
 		Discard();
 		/*if (_entity.TryGetModule(out DestructibleEM destructibleEM) && destructibleEM.DestroyBulletOnHit)
 		{
@@ -64,7 +66,7 @@ public class Projectile : PoolElement
 	{
 		//spawn bullet impact
 		//GameAssets.current.effects.punchLightFx.Get(transform.position).transform.localScale = Vector3.one * .5f;
-		if(_collidedLayer == GameConfig.current.ui.wallLayerMask 
+		if(_collidedLayer == 12 
 			&& TryGetComponent(out WallSelector selector) && _other.GetComponent<WallSelector>().LinkedWall != null)
 		{
 			//TODO : not flat damage
@@ -85,16 +87,17 @@ public class Projectile : PoolElement
 		m_isInit = true;
 	}
 
-	public virtual void Launch ()
+	public virtual void Launch ( Action<Entity> _onHitEntity )
 	{
 		m_rb.isKinematic = false;
 		m_rb.AddForce((transform.forward * m_projectileData.speed.x) + (transform.up * m_projectileData.speed.y), ForceMode.VelocityChange);
+		m_onHitEntity = _onHitEntity;
 	}
 
-	public void SetProjectileDataAndLaunch ( ProjectileData _projectileData )
+	public void SetProjectileDataAndLaunch ( ProjectileData _projectileData, Action<Entity> _onHitEntity )
 	{
 		SetProjectileData(_projectileData);
-		Launch();
+		Launch(_onHitEntity);
 	}
 
 	public override void Discard ()
