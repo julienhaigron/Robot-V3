@@ -86,7 +86,7 @@ public class AttackAction : AEntityAction
 
 		//if enemy is in weapon range
 		bool isEnemyInWeaponRange = PerformingEntity.AI.IsEntityInWeaponRange(TargetEntity, out Weapon _attackingWeapon);
-		List<Tile> tilesInWeaponRange = PerformingEntity.Equipment.GetTilesInWeaponRange(_attackingWeapon.Data.name, true);
+		List<Tile> tilesInWeaponRange = Data.isAoe ? PerformingEntity.Equipment.GetTilesInAoERange(this, true) : PerformingEntity.Equipment.GetTilesInWeaponRange(_attackingWeapon.Data.name, true);
 
 		if (isEnemyInWeaponRange || (Data.isAoe && targetTileID != -1))
 		{

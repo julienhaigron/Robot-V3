@@ -292,7 +292,7 @@ Camera:
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 5623
+    m_Bits: 7671
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -620,32 +620,24 @@ MonoBehaviour:
   - {fileID: 5770960734887702693}
   m_lobby: {fileID: 0}
   m_mainLoadingElement: {fileID: 4856106718111207569}
-  m_map: {fileID: 0}
-  m_playerEntityDatas:
-  - name: Unit 1
-    frameID: player1
-    brainID: 
-    armsIds: []
-  - name: Unit 2
-    frameID: player2
-    brainID: 
-    armsIds: []
-  m_ennemiEntityDatas:
-  - name: 
-    frameID: 
-    brainID: 
-    armsIds: []
+  m_currentLevel: {fileID: 0}
   m_onlineMap: {fileID: 0}
   m_playerOneEntityDatas:
   - name: 
     frameID: 
+    reactorID: 
     brainID: 
     armsIds: []
+    auxiliarIds: []
+    chipsetsIds: []
   m_playerTwoEntityDatas:
   - name: 
     frameID: 
+    reactorID: 
     brainID: 
     armsIds: []
+    auxiliarIds: []
+    chipsetsIds: []
 --- !u!114 &6329207692699311254
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -795,8 +787,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerCamera: {fileID: 529478190741356514}
-  rotationPivotCamera: {fileID: 0}
-  arrows: []
 --- !u!114 &2601377726672517245
 MonoBehaviour:
   m_ObjectHideFlags: 0

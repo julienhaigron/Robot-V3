@@ -212,9 +212,9 @@ public class GridManager : Singleton<GridManager>
 		return _from.Neighbors[_orientation];
 	}
 
-	public List<Tile> GetPath ( Tile _from, Tile _to, bool _isThisTurn )
+	public List<Tile> GetPath ( Tile _from, Tile _to, bool _isThisTurn, bool _ignoreObstacles = false )
 	{
-		BFS(_from, _to: _to, _isThisTurn: _isThisTurn);
+		BFS(_from, _to: _to, _isThisTurn: _isThisTurn, _ignoreObstacles: _ignoreObstacles);
 
 		if (_to.Distance == int.MaxValue)
 			return null;
@@ -244,6 +244,59 @@ public class GridManager : Singleton<GridManager>
 
 		return path;
 	}
+
+	public List<Tile> GetLine ( Tile _from, Tile _to )
+	{
+		List<Tile> results = new();
+
+		TileCoordinates a = _from.coordinates;
+		TileCoordinates b = _to.coordinates;
+
+		int N = a.DistanceTo(b);
+
+		for (int i = 0; i <= N; i++)
+		{
+			float t = N == 0 ? 0f : (float)i / N;
+
+			CubeF lerp = CubeLerp(a, b, t);
+			TileCoordinates coord = CubeRound(lerp);
+
+			Tile tile = coord.GetTile();
+			if (tile != null && !results.Contains(tile))
+				results.Add(tile);
+		}
+
+		return results;
+	}
+	public CubeF CubeLerp ( TileCoordinates a, TileCoordinates b, float t )
+	{
+		return new CubeF(
+			Mathf.Lerp(a.X, b.X, t),
+			Mathf.Lerp(a.Y, b.Y, t),
+			Mathf.Lerp(a.Z, b.Z, t)
+		);
+	}
+
+	public TileCoordinates CubeRound ( CubeF f )
+	{
+		int rx = Mathf.RoundToInt(f.x);
+		int ry = Mathf.RoundToInt(f.y);
+		int rz = Mathf.RoundToInt(f.z);
+
+		float dx = Mathf.Abs(rx - f.x);
+		float dy = Mathf.Abs(ry - f.y);
+		float dz = Mathf.Abs(rz - f.z);
+
+		if (dx > dy && dx > dz)
+			rx = -ry - rz;
+		else if (dy > dz)
+			ry = -rx - rz;
+		else
+			rz = -rx - ry;
+
+		return new TileCoordinates(rx, rz, -1);
+	}
+
 
 	public List<Entity> GetEntitiesInRange ( Tile _from, int _maxDist, bool _isThisTurn )
 	{
@@ -405,44 +458,53 @@ public class GridManager : Singleton<GridManager>
 	public List<Tile> GetTilesInRay ( Tile _from, Tile _to, bool _isThisTurn )
 	{
 		List<Tile> tilesInRange = new();
-		Vector2 origin = new Vector2(_from.transform.position.x, _from.transform.position.z);
-		Vector2 destination = new Vector2(_to.transform.position.x, _to.transform.position.z);
-		float angle = GetAngleFrom(origin, destination);
 
-		bool isRightAngle = angle % 60f == 0f;
-		if (!isRightAngle)
+		TileCoordinates a = _from.coordinates;
+		TileCoordinates b = _to.coordinates;
+
+		int N = a.DistanceTo(b);
+
+		for (int i = 0; i <= N; i++)
 		{
-			Vector3 direction = (_to.transform.position - _from.transform.position);
+			float t = N == 0 ? 0f : (float)i / N;
 
-			tilesInRange.AddRange(CastVisionRay(_from, _from.transform.position, direction, direction.magnitude, _isThisTurn));
-		}
-		else
-		{
-			//do three ray horizontal to each other
-			Vector3 originVector3 = _from.transform.position;
-			Vector3 target = _to.transform.position;
+			CubeF f = CubeLerp(a, b, t);
+			TileCoordinates c = CubeRound(f);
 
-			Vector3 mainDir = (target - originVector3).normalized;
-			float distance = Vector3.Distance(originVector3, target);
+			Tile mainTile = c.GetTile();
+			if (mainTile == null || mainTile.IsObstacle())
+				break;
 
-			Vector3 right = Vector3.Cross(Vector3.up, mainDir).normalized;
+			tilesInRange.Add(mainTile);
 
-			float halfWidth = 0.3f;
+			/*for (int dir = 0; dir < 6; dir++)
+			{
+				TileCoordinates neighbor = CubeNeighbor(c, dir);
+				TryAdd(neighbor, tilesInRange);
+			}*/
 
-			Vector3 targetCenter = target;
-			Vector3 targetLeft = target - right * halfWidth;
-			Vector3 targetRight = target + right * halfWidth;
-
-			Vector3 dirCenter = (targetCenter - originVector3).normalized;
-			Vector3 dirLeft = (targetLeft - originVector3).normalized;
-			Vector3 dirRight = (targetRight - originVector3).normalized;
-
-			tilesInRange.AddRange(CastVisionRay(_from, originVector3, dirCenter, distance, _isThisTurn));
-			tilesInRange.AddRange(CastVisionRay(_from, originVector3, dirLeft, distance, _isThisTurn));
-			tilesInRange.AddRange(CastVisionRay(_from, originVector3, dirRight, distance, _isThisTurn));
 		}
 
 		return tilesInRange;
+	}
+
+	private static readonly (int x, int y, int z)[] CubeDirections = new (int, int, int)[]
+	{
+		(1, -1, 0), (1, 0, -1), (0, 1, -1),
+		(-1, 1, 0), (-1, 0, 1), (0, -1, 1)
+	};
+
+	private TileCoordinates CubeNeighbor ( TileCoordinates c, int direction )
+	{
+		var dir = CubeDirections[direction];
+		return new TileCoordinates(c.X + dir.x, c.Z + dir.z, -1);
+	}
+
+	void TryAdd ( TileCoordinates c, List<Tile> set )
+	{
+		Tile t = c.GetTile();
+		if (t != null && !t.IsObstacle())
+			set.Add(t);
 	}
 
 	public List<Tile> GetTilesInCone ( Tile _from, int _distance, int _orientation, EntityActionData.ConeType _type, bool _isThisTurn )
@@ -518,7 +580,7 @@ public class GridManager : Singleton<GridManager>
 				else
 				{
 					Tile leftAnchor = leftestTile.Neighbors[leftOrientation];
-					if(leftAnchor != null && IsVisionLineClear(origin, previousLine[0].Neighbors[leftOrientation], _isThisTurn))
+					if (leftAnchor != null && IsVisionLineClear(origin, previousLine[0].Neighbors[leftOrientation], _isThisTurn))
 					{
 						newLine.Add(leftAnchor);
 						if (leftAnchor.Neighbors[leftOrientation] != null && IsVisionLineClear(origin, leftAnchor.Neighbors[leftOrientation], _isThisTurn))
@@ -526,7 +588,7 @@ public class GridManager : Singleton<GridManager>
 							leftestTile = leftAnchor.Neighbors[leftOrientation];
 							newLine.Add(leftestTile);
 						}
-						if(leftAnchor.Neighbors[_orientation] != null && IsVisionLineClear(origin, leftAnchor.Neighbors[_orientation], _isThisTurn))
+						if (leftAnchor.Neighbors[_orientation] != null && IsVisionLineClear(origin, leftAnchor.Neighbors[_orientation], _isThisTurn))
 							newLine.Add(leftAnchor.Neighbors[_orientation]);
 					}
 					Tile rightAnchor = rightestTile.Neighbors[rightOrientation];
@@ -559,35 +621,8 @@ public class GridManager : Singleton<GridManager>
 		return tilesInRange;
 	}
 
-	private List<Tile> CastVisionRay ( Tile _fromTile, Vector3 _from, Vector3 _dir, float _distance, bool _isThisTurn )
-	{
-		List<Tile> tilesInRange = new();
-		RaycastHit[] hits = Physics.RaycastAll(
-			_from,
-			_dir,
-			_distance,
-			GameConfig.current.input.tileInternRayCastLayer
-		);
-
-		foreach (RaycastHit hitInfo in hits)
-		{
-			if (hitInfo.transform.TryGetComponent(out Tile tile)
-				&& !tilesInRange.Contains(tile)
-				&& IsVisionLineClear(_fromTile, tile, _isThisTurn))
-			{
-				tilesInRange.Add(tile);
-			}
-		}
-
-		return tilesInRange;
-	}
-
 	public bool IsVisionLineClear ( Tile _from, Tile _to, bool _isThisTurn )
 	{
-		//Soltion to test:
-		//1) from one point (FromTileCenter), several ray as a rectangle, validate vision if at least one ray can see without interuption
-		//2) from two point (from left and right feets suposing an entity would be looking toward target tile
-
 		int rayAmount = 7;
 		float distBetweenRay = Tile.innerRadius / (float)rayAmount;
 		Vector3 ab = (_to.transform.position - _from.transform.position).normalized;
@@ -695,7 +730,7 @@ public class GridManager : Singleton<GridManager>
 		}
 	}
 
-	public void BFS ( Tile cell, int _maxDistance = -1, Tile _to = null, bool _isThisTurn = false )
+	public void BFS ( Tile cell, int _maxDistance = -1, Tile _to = null, bool _isThisTurn = false, bool _ignoreObstacles = false )
 	{
 		for (int i = 0; i < m_tiles.Length; i++)
 		{
@@ -732,7 +767,7 @@ public class GridManager : Singleton<GridManager>
 				}
 
 				//obstacle
-				if (neighbor.IsObstacle() || (neighbor.GetEntity(_isThisTurn) != null && neighbor != _to))
+				if (!_ignoreObstacles && (neighbor.IsObstacle() || (neighbor.GetEntity(_isThisTurn) != null && neighbor != _to)))
 				{
 					continue;
 				}
@@ -975,6 +1010,8 @@ public struct TileCoordinates
 	}
 
 	public int ID => m_id;
+	public int OffsetX => X + (Z - (Z & 1)) / 2;
+	public int OffsetZ => Z;
 
 	public TileCoordinates ( int x, int z, int id )
 	{
@@ -997,18 +1034,28 @@ public struct TileCoordinates
 
 	public Tile GetTile ()
 	{
-		Tile tile = GridManager.Instance.Tiles[ID];
-		//Debug.Log("this :" + X + "," + Z + " getTile: " + tile.coordinates.X +"," + tile.coordinates.Z);
-		return tile;
+		if (ID != -1)
+			return GridManager.Instance.Tiles[ID];
+
+		int ox = OffsetX;
+		int oz = OffsetZ;
+
+		int width = GridManager.Instance.gridData.width;
+		int height = GridManager.Instance.gridData.height;
+
+		if (ox < 0 || oz < 0 || ox >= width || oz >= height)
+			return null;
+
+		int index = ox + oz * width;
+		return GridManager.Instance.Tiles[index];
 	}
 
-	/*public int DistanceTo ( TileCoordinates other )
+	public int DistanceTo ( TileCoordinates other )
 	{
-		return
-		((m_x < other.m_x ? other.m_x - m_x : m_x - other.m_x) +
-		(Y < other.Y ? other.Y - Y : Y - other.Y) +
-		(m_z < other.m_z ? other.m_z - m_z : m_z - other.m_z)) / 2;
-	}*/
+		return (Mathf.Abs(X - other.X)
+			  + Mathf.Abs(Y - other.Y)
+			  + Mathf.Abs(Z - other.Z)) / 2;
+	}
 
 	public override string ToString ()
 	{
@@ -1016,47 +1063,25 @@ public struct TileCoordinates
 			X.ToString() + ", " + Y.ToString() + ", " + Z.ToString() + ")";
 	}
 
-	/*public string ToStringOnSeparateLines ()
-	{
-		return X.ToString() + "\n" + Y.ToString() + "\n" + Z.ToString();
-	}*/
-
-	/*public static TileCoordinates FromPosition ( Vector3 position )
-	{
-		float x = position.x / (Tile.innerRadius * 2f);
-		float y = -x;
-		float offset = position.z / (Tile.outerRadius * 3f);
-		x -= offset;
-		y -= offset;
-		int iX = Mathf.RoundToInt(x);
-		int iY = Mathf.RoundToInt(y);
-		int iZ = Mathf.RoundToInt(-x - y);
-
-		if (iX + iY + iZ != 0)
-		{
-			float dX = Mathf.Abs(x - iX);
-			float dY = Mathf.Abs(y - iY);
-			float dZ = Mathf.Abs(-x - y - iZ);
-
-			if (dX > dY && dX > dZ)
-			{
-				iX = -iY - iZ;
-			}
-			else if (dZ > dY)
-			{
-				iZ = -iX - iY;
-			}
-		}
-
-		return new TileCoordinates(iX, iZ);
-	}*/
-
 	public Entity IsOccupied ( bool _isThisTurn )
 	{
 		return GetTile().GetEntity(_isThisTurn: _isThisTurn);
 	}
 
 }
+
+public struct CubeF
+{
+	public float x, y, z;
+
+	public CubeF ( float x, float y, float z )
+	{
+		this.x = x;
+		this.y = y;
+		this.z = z;
+	}
+}
+
 
 public enum HexDirection
 {

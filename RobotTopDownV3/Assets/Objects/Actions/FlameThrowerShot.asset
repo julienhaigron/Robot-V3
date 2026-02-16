@@ -29,11 +29,12 @@ MonoBehaviour:
   maxDistance: 5
   minTargetAmount: 1
   maxTargetAmount: 1
-  isAoe: 0
-  aoeType: 2
-  circleRadius: 5
+  isAoe: 1
+  aoeType: 1
+  circleRange: 1
+  arcRadius: 1
   rayDiameter: 1
-  coneSpread: 60
+  coneType: 0
   usedDamageChannels: 05000000
   appliableEffects:
   - {fileID: 11400000, guid: 7af3cbb2fb9300d4c8a9b333e8a5b7a4, type: 2}
