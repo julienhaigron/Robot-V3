@@ -6,7 +6,7 @@ using Unity.Netcode;
 public class WaitAction : AEntityAction
 {
 	public bool isLinkedToAction = false;
-	public int linkedActionID = -1; //EntityActionEnumID
+	public EntityActionEnumID linkedActionID;
 
 	public override void NetworkSerialize<T> ( BufferSerializer<T> serializer )
 	{

@@ -67,7 +67,7 @@ public class Projectile : PoolElement
 		//spawn bullet impact
 		//GameAssets.current.effects.punchLightFx.Get(transform.position).transform.localScale = Vector3.one * .5f;
 		if(_collidedLayer == 12 
-			&& TryGetComponent(out WallSelector selector) && _other.GetComponent<WallSelector>().LinkedWall != null)
+			&& _other.transform.TryGetComponent(out WallSelector selector) && selector.LinkedWall != null)
 		{
 			//TODO : not flat damage
 			Dictionary<WeaponEquipmentData.DamageType, int> damages = new();

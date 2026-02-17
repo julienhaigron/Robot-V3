@@ -275,7 +275,7 @@ public class TurnManager : Singleton<TurnManager>
 			for (int i = 0; i < _action.Data.tokenPreparationDuration - 1; i++)
 			{
 				WaitAction preparationWaitAction = new WaitAction();
-				preparationWaitAction.linkedActionID = (int)_action.enumID;
+				preparationWaitAction.linkedActionID = _action.enumID;
 				preparationWaitAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.Wait], _entityID, _action.supposedPositionAtActionStartID);
 
 				m_recordedActionInput[_entityID].Enqueue(new RecordedAction
@@ -308,7 +308,7 @@ public class TurnManager : Singleton<TurnManager>
 			for (int i = 0; i < _action.Data.tokenDuration - 1; i++)
 			{
 				WaitAction extraDurationWaitAction = new WaitAction();
-				extraDurationWaitAction.linkedActionID = (int)_action.enumID;
+				extraDurationWaitAction.linkedActionID = _action.enumID;
 				extraDurationWaitAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.Wait], _entityID, _action.supposedPositionAtActionStartID);
 
 				m_recordedActionInput[_entityID].Enqueue(new RecordedAction

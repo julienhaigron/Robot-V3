@@ -26,8 +26,8 @@ public class EntitySkinPlugin : EntityPlugin
 	public void OnStartActionPerform (AEntityAction _action)
 	{
 		m_animator.speed = 1;
-		if (_action is WaitAction waitAction && waitAction.linkedActionID != -1)
-			m_animator.SetTrigger(GameAssets.current.game.entityActionsData[(EntityActionEnumID)waitAction.linkedActionID].preparationAnimationKey);
+		if (_action is WaitAction waitAction && waitAction.isLinkedToAction)
+			m_animator.SetTrigger(GameAssets.current.game.entityActionsData[waitAction.linkedActionID].preparationAnimationKey);
 		else if (m_animationKeyPerActionDictionary.ContainsKey(_action.Data.type))
 			m_animator.SetTrigger(m_animationKeyPerActionDictionary[_action.Data.type]);
 	}

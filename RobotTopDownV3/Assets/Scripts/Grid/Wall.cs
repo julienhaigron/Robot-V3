@@ -66,7 +66,8 @@ public class Wall : MonoBehaviour
 
 	private void Destroy ()
 	{
-		
+		foreach (GameObject go in m_wallParts)
+			go.SetActive(false);
 	}
 
 #if UNITY_EDITOR
