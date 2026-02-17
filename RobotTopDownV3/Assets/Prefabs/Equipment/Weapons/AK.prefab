@@ -70,7 +70,7 @@ PrefabInstance:
       objectReference: {fileID: 11400000, guid: ff58337ff0d4bd14daa837f022953107, type: 2}
     - target: {fileID: 2228564425604616484, guid: 321c15f11c30d63469167f59475dd867, type: 3}
       propertyPath: m_aimDuration
-      value: 1
+      value: 0.3
       objectReference: {fileID: 0}
     - target: {fileID: 2228564425604616484, guid: 321c15f11c30d63469167f59475dd867, type: 3}
       propertyPath: m_bulletPerShoot

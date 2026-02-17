@@ -25,13 +25,13 @@ public class GridEditor : Editor
 
 		if (GUILayout.Button("GenerateGrid"))
 		{
-			gridManager.GenerateGrid(gridManager.Height, gridManager.Width);
+			gridManager.GenerateGrid();
 		}
 		if (GUILayout.Button("LoadGrid"))
 		{
 			gridManager.LoadGrid(gridManager.gridData, true);
 		}
-		if (GUILayout.Button("SavedGrid"))
+		if (GUILayout.Button("SaveGrid"))
 		{
 			gridManager.SaveGrid();
 		}
@@ -126,7 +126,11 @@ public class GridTool : EditorTool
 		/*Undo.RecordObject(tile, "Paint Tile");
 		Undo.RecordObject(tile.Wall, "Paint Tile");*/
 		//Undo.RecordObject(GridManager.Instance.gridData, "Paint Tile");
-		tile.SetGroundType(GridManager.Instance.currentGroundBrushSelected, true);
+		tile.SetGroundType(GridManager.Instance.currentGroundBrushSelected);
+		if (GridManager.Instance.currentGroundBrushSelected == TileGroundType.Wall)
+			tile.SetupWall(Wall.WallType.VerticalStrait, 0);
+		else
+			tile.RemoveWall();
 		//EditorUtility.SetDirty(tile);
 		//EditorUtility.SetDirty(GridManager.Instance.gridData);
 

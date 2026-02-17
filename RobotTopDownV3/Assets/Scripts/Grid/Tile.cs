@@ -95,49 +95,56 @@ public class Tile : MonoBehaviour
 	#region Grid sys
 
 #if UNITY_EDITOR
-	public void Init ( int _x, int _y, TileGroundType _groundType = TileGroundType.Empty )
+	public void Init ( int _x, int _y, GridData.TileData _data = null )
 	{
 		m_neighbors = new Tile[6];
 
 		m_ui.SetPosition(_x, _y);
-		SetGroundType(_groundType, true);
+		if (_data != null)
+		{
+			SetGroundType(_data.groundType);
+			if (_data.groundType == TileGroundType.Wall)
+				SetupWall(_data.wallType, _data.orientation);
+			else
+				RemoveWall();
+		}
+
 		SetActiveFOW(false, true);
 	}
 
-	public void SetGroundType ( TileGroundType _groundType, bool _isEditor = false )
+	public void SetGroundType ( TileGroundType _groundType )
 	{
 		UnityEditor.Undo.RecordObject(this, "Paint Tile");
 		//UnityEditor.Undo.RecordObject(m_wall, "Paint Tile");
 		m_groundType = _groundType;
 		m_ui.UpdateGroundMaterial();
 
-		if (_isEditor)
-		{
-			if (m_wall != null)
-			{
-				if (_groundType != TileGroundType.Wall)
-				{
-					foreach (GameObject wallPart in m_wall.WallParts)
-						DestroyImmediate(wallPart);
-					m_wall.WallParts.Clear();
-
-					DestroyImmediate(m_wall);
-					m_wall = null;
-				}
-			}
-			else
-			{
-				if (_groundType == TileGroundType.Wall)
-				{
-					m_wall = UnityEditor.Undo.AddComponent<Wall>(gameObject);
-					//m_wall = gameObject.AddComponent<Wall>();
-					m_wall.LinkWithTile(this);
-					m_wall.SetWallType(Wall.WallType.VerticalStrait);
-				}
-			}
-		}
-
 		UnityEditor.EditorUtility.SetDirty(this);
+	}
+
+	public void SetupWall ( Wall.WallType _wallType, int _orientation)
+	{
+		if (m_wall == null)
+		{
+			m_wall = UnityEditor.Undo.AddComponent<Wall>(gameObject);
+			//m_wall = gameObject.AddComponent<Wall>();
+			m_wall.LinkWithTile(this);
+			m_wall.SetWallType(_wallType);
+			m_wall.Rotate(_orientation);
+		}
+	}
+
+	public void RemoveWall ()
+	{
+		if (m_wall != null)
+		{
+			foreach (GameObject wallPart in m_wall.WallParts)
+				DestroyImmediate(wallPart);
+			m_wall.WallParts.Clear();
+
+			DestroyImmediate(m_wall);
+			m_wall = null;
+		}
 	}
 #endif
 

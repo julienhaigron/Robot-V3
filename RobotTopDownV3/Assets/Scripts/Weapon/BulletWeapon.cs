@@ -106,6 +106,8 @@ public class BulletWeapon : Weapon
 			float distance = 1f;
 			Vector3 adjacentPos = UnityEngine.Random.Range(0, 2) == 0 ? targetPosition + perpendicular * distance : targetPosition - perpendicular * distance;
 			performingEntity.Skin.VisualyAimAt(_attackAction.attackingWeaponId, adjacentPos);
+
+			DOVirtual.DelayedCall(1f, () => EndAttack(_attackAction));
 		}
 
 		//2) shoot at aimed position

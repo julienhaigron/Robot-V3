@@ -69,8 +69,17 @@ public class GridManager : Singleton<GridManager>
 				m_tiles[i].SetGroundType(groundType);
 				if (groundType == TileGroundType.Wall)
 				{
-					m_tiles[i].Wall.SetWallType(_data.tiles[i].wallType);
-					m_tiles[i].Wall.Rotate(_data.tiles[i].orientation);
+					if(m_tiles[i].Wall != null)
+					{
+						m_tiles[i].Wall.SetWallType(_data.tiles[i].wallType);
+						m_tiles[i].Wall.Rotate(_data.tiles[i].orientation);
+					}
+					else
+						m_tiles[i].SetupWall(_data.tiles[i].wallType, _data.tiles[i].orientation);
+				}
+				else if(m_tiles[i].Wall != null && groundType == TileGroundType.Wall)
+				{
+					m_tiles[i].RemoveWall();
 				}
 			}
 			else
@@ -86,20 +95,20 @@ public class GridManager : Singleton<GridManager>
 		}
 	}
 
-	public void GenerateGrid ( int _height, int _width )
+	public void GenerateGrid ( )
 	{
-		m_tiles = new Tile[_height * _width];
-		m_height = _height;
-		m_width = _width;
+		m_tiles = new Tile[gridData.height * gridData.width];
+		m_height = gridData.height;
+		m_width = gridData.width;
 
 		for (int i = transform.childCount; i > 0; --i)
 			DestroyImmediate(transform.GetChild(0).gameObject);
 
-		for (int z = 0, i = 0; z < _height; z++)
+		for (int z = 0, i = 0; z < gridData.height; z++)
 		{
-			for (int x = 0; x < _width; x++)
+			for (int x = 0; x < gridData.width; x++)
 			{
-				CreateTile(x, z, i++);
+				CreateTile(x, z, i++, gridData.tiles.Length > i ? gridData.tiles[i] : null);
 			}
 		}
 
@@ -107,7 +116,7 @@ public class GridManager : Singleton<GridManager>
 		//InitFOW();
 	}
 
-	private void CreateTile ( int _x, int _z, int _i )
+	private void CreateTile ( int _x, int _z, int _i, GridData.TileData _data = null )
 	{
 		Vector3 position;
 		position.x = (_x + _z * 0.5f - _z / 2) * (Tile.innerRadius * 2f);
@@ -120,7 +129,7 @@ public class GridManager : Singleton<GridManager>
 		newTile.gameObject.name = "Tile " + _x + "." + _z;
 		newTile.transform.SetParent(transform, false);
 		newTile.transform.localPosition = position;
-		newTile.Init(_x, _z);
+		newTile.Init(_x, _z, _data);
 		newTile.coordinates = TileCoordinates.FromOffsetCoordinates(_x, _z, _i);
 
 		/*#if UNITY_EDITOR
@@ -162,13 +171,10 @@ public class GridManager : Singleton<GridManager>
 
 		for (int i = 0; i < m_tiles.Length; i++)
 		{
-			bool isGroundTypeWall = m_tiles[i].GroundType == TileGroundType.Wall;
-			GridData.TileData tileData = new GridData.TileData
-				(m_tiles[i].GroundType, 
-				isGroundTypeWall ? m_tiles[i].Wall.Type : Wall.WallType.VerticalStrait, 
-				isGroundTypeWall ? m_tiles[i].Wall.Orientation : 0);
-
-			gridData.tiles[i] = tileData;
+			gridData.tiles[i] = new GridData.TileData
+				(m_tiles[i].GroundType,
+				m_tiles[i].GroundType == TileGroundType.Wall ? m_tiles[i].Wall.Type : Wall.WallType.VerticalStrait,
+				m_tiles[i].GroundType == TileGroundType.Wall ? m_tiles[i].Wall.Orientation : 0);
 		}
 
 		EditorUtility.SetDirty(gridData);
@@ -196,35 +202,8 @@ public class GridManager : Singleton<GridManager>
 
 	#region Utils
 
-	public Tile GetTile ( int _x, int _z )
-	{
-		if (_x < 0 || _x >= m_width || _z < 0 || _z >= m_height)
-			return null;
-
-		int index = _z * m_width + _x;
-		return m_tiles[index];
-	}
-
-	public bool TryGetTile ( int _x, int _z, out Tile tile )
-	{
-		tile = null;
-
-		if (_x < 0 || _x >= m_width || _z < 0 || _z >= m_height)
-			return false;
-
-		tile = m_tiles[_z * m_width + _x];
-		return true;
-	}
-
 	public Tile GetTileAtOrientation ( Tile _from, int _orientation )
 	{
-		/*Vector2Int offset = HexDirectionOffsets[_orientation];
-
-		int x = _from.coordinates.X + offset.x;
-		int z = _from.coordinates.Z + offset.y;
-
-		return GetTile(x, z);*/
-
 		return _from.Neighbors[_orientation];
 	}
 
