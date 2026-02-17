@@ -14,36 +14,9 @@ public class GridEditorWindows : EditorWindow
 		GetWindow<GridEditorWindows>("Grid Editor");
 	}
 
-	/*private void OnInspectorUpdate ()
-	{
-
-	}*/
-
 	private void OnGUI ()
 	{
-		/*if (!EditorApplication.isPlaying)
-		{
-			EditorGUILayout.HelpBox("Press PLAY to use the Grid Editor", MessageType.Info);
-			return;
-		}*/
 		Grid();
-
-		/*if (Input.GetKeyDown(KeyCode.Mouse0) *//*&& GridManager.Instance.isGroundBrushSelected*//*)
-		{
-			GridManager.Instance.isGroundBrushSelected = !GridManager.Instance.isGroundBrushSelected;
-
-			//Ray ray = CameraManager.Instance.Camera.ScreenPointToRay(Input.mousePosition);
-;			Ray ray = HandleUtility.GUIPointToWorldRay(Event.current.mousePosition);
-
-			if (Physics.Raycast(ray, out RaycastHit hitInfo, GameConfig.current.input.interactionRayCastLength, GameConfig.current.input.interactionRayCastLayer))
-			{
-				if (hitInfo.transform.parent.TryGetComponent(out Tile tile))
-				{
-					tile.SetGroundType(GridManager.Instance.currentGroundBrushSelected);
-					EditorUtility.SetDirty(this);
-				}
-			}
-		}*/
 	}
 
 
@@ -63,12 +36,12 @@ public class GridEditorWindows : EditorWindow
 		{
 			GridManager.Instance.LoadGrid(m_data, true);
 		}
-		
+
 		if (GUILayout.Button("Save Grid", group))
 		{
-			SaveGrid();
+			GridManager.Instance.SaveGrid();
 		}
-		
+
 		if (GUILayout.Button("Fix Grid", group))
 		{
 			GridManager.Instance.FixTiles();
@@ -80,22 +53,6 @@ public class GridEditorWindows : EditorWindow
 		GridManager.Instance.currentGroundBrushSelected = (TileGroundType)EditorGUILayout.EnumPopup("Current ground brush: ", GridManager.Instance.currentGroundBrushSelected);
 
 		EndBox();
-	}
-
-	public void SaveGrid ()
-	{
-		GridManager grid = GridManager.Instance;
-		m_data.height = grid.Height;
-		m_data.width = grid.Width;
-		m_data.tiles = new GridData.TileData[grid.Tiles.Length];
-
-		for (int i = 0; i < grid.Tiles.Length; i++)
-		{
-			GridData.TileData tileData = new GridData.TileData(grid.Tiles[i].GroundType);
-			m_data.tiles[i] = tileData;
-		}
-
-		EditorUtility.SetDirty(m_data);
 	}
 
 	#region window visual

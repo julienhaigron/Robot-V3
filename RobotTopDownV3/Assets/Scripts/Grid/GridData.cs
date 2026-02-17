@@ -19,9 +19,11 @@ public class GridData : ScriptableObject
 		public Wall.WallType wallType;
 		public int orientation; //between 0-5
 
-		public TileData(TileGroundType _groundType )
+		public TileData(TileGroundType _groundType, Wall.WallType _wallType, int _orientation )
 		{
 			groundType = _groundType;
+			wallType = _wallType;
+			orientation = _orientation;
 		}
 	}
 
@@ -33,7 +35,7 @@ public class GridData : ScriptableObject
 			List<TileData> list = tiles.ToList();
 			for(int i = tiles.Length; i < width * height; i++)
 			{
-				list.Add(new TileData(TileGroundType.Empty));
+				list.Add(new TileData(TileGroundType.Empty, Wall.WallType.VerticalStrait, 0));
 			}
 			tiles = list.ToArray();
 		}

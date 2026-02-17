@@ -52,28 +52,6 @@ public class GridManager : Singleton<GridManager>
 	public TileGroundType currentGroundBrushSelected;
 	public GridData gridData;
 
-#endif
-	#endregion
-
-	public override void Awake ()
-	{
-		base.Awake();
-		//InputManager.onTileSelected += OnTileSelected;
-		EntityDisplacementPlugin.onAnyEntityMovement += OnEntityMovement;
-		EntityDisplacementPlugin.onAnyEntitySpawn += OnNewEntity;
-		EntityEquipmentPlugin.onAnyEntityDeath += OnEntityDeath;
-	}
-
-	private void OnDestroy ()
-	{
-		//InputManager.onTileSelected -= OnTileSelected;
-		EntityDisplacementPlugin.onAnyEntityMovement -= OnEntityMovement;
-		EntityDisplacementPlugin.onAnyEntitySpawn -= OnNewEntity;
-		EntityEquipmentPlugin.onAnyEntityDeath -= OnEntityDeath;
-	}
-
-	#region Creation
-
 	public void LoadGrid ( GridData _data, bool _isEditorMode = false )
 	{
 		//GenerateGrid(_data.height, _data.width);
@@ -176,7 +154,45 @@ public class GridManager : Singleton<GridManager>
 		UnityEditor.EditorUtility.SetDirty(newTile);
 	}
 
+	public void SaveGrid ()
+	{
+		gridData.height = m_height;
+		gridData.width = m_width;
+		gridData.tiles = new GridData.TileData[m_tiles.Length];
+
+		for (int i = 0; i < m_tiles.Length; i++)
+		{
+			bool isGroundTypeWall = m_tiles[i].GroundType == TileGroundType.Wall;
+			GridData.TileData tileData = new GridData.TileData
+				(m_tiles[i].GroundType, 
+				isGroundTypeWall ? m_tiles[i].Wall.Type : Wall.WallType.VerticalStrait, 
+				isGroundTypeWall ? m_tiles[i].Wall.Orientation : 0);
+
+			gridData.tiles[i] = tileData;
+		}
+
+		EditorUtility.SetDirty(gridData);
+	}
+
+#endif
 	#endregion
+
+	public override void Awake ()
+	{
+		base.Awake();
+		//InputManager.onTileSelected += OnTileSelected;
+		EntityDisplacementPlugin.onAnyEntityMovement += OnEntityMovement;
+		EntityDisplacementPlugin.onAnyEntitySpawn += OnNewEntity;
+		EntityEquipmentPlugin.onAnyEntityDeath += OnEntityDeath;
+	}
+
+	private void OnDestroy ()
+	{
+		//InputManager.onTileSelected -= OnTileSelected;
+		EntityDisplacementPlugin.onAnyEntityMovement -= OnEntityMovement;
+		EntityDisplacementPlugin.onAnyEntitySpawn -= OnNewEntity;
+		EntityEquipmentPlugin.onAnyEntityDeath -= OnEntityDeath;
+	}
 
 	#region Utils
 

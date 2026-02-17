@@ -28,6 +28,7 @@ public class Wall : MonoBehaviour
 	[SerializeField] private WallType m_type = WallType.VerticalStrait;
 	public WallType Type { get { return m_type; } set { m_type = value; } }
 
+	[Serializable]
 	public enum WallType
 	{
 		VerticalStrait,
@@ -71,9 +72,9 @@ public class Wall : MonoBehaviour
 #if UNITY_EDITOR
 	public void SetWallType(WallType _type )
 	{
-		Rotate(0);
-		Undo.RecordObject(this, "Rotate Wall");
-		Undo.RecordObject(m_linkedTile, "Rotate Wall");
+		//Rotate(0);
+		Undo.RecordObject(this, "Set Wall Type");
+		Undo.RecordObject(m_linkedTile, "Set Wall Type 2");
 		m_type = _type;
 
 		foreach(GameObject go in m_wallParts)
@@ -108,7 +109,7 @@ public class Wall : MonoBehaviour
 	public void Rotate(int _newRotation )
 	{
 		Undo.RecordObject(this, "Rotate Wall");
-		Undo.RecordObject(m_linkedTile, "Rotate Wall");
+		Undo.RecordObject(m_linkedTile, "Rotate Wall 2");
 
 		m_orientation = _newRotation;
 		float yRotation = 60f * _newRotation;
@@ -159,7 +160,7 @@ public class Wall : MonoBehaviour
 		}
 	}
 
-	public void HandleInputs ()
+	/*public void HandleInputs ()
 	{
 		if (Input.GetKeyDown(KeyCode.R))
 			RotateRight();
@@ -169,7 +170,7 @@ public class Wall : MonoBehaviour
 			WallType nextWallType = (WallType)((int)++Type % (int)WallType.Total);
 			SetWallType(nextWallType);
 		}
-	}
+	}*/
 
 	[CustomEditor(typeof(Wall))]
 	class WallEditor : Editor

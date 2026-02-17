@@ -95,42 +95,45 @@ public class Tile : MonoBehaviour
 	#region Grid sys
 
 #if UNITY_EDITOR
-	public void Init(int _x, int _y, TileGroundType _groundType = TileGroundType.Empty)
+	public void Init ( int _x, int _y, TileGroundType _groundType = TileGroundType.Empty )
 	{
 		m_neighbors = new Tile[6];
 
 		m_ui.SetPosition(_x, _y);
-		SetGroundType(_groundType);
+		SetGroundType(_groundType, true);
 		SetActiveFOW(false, true);
 	}
 
-	public void SetGroundType (TileGroundType _groundType)
+	public void SetGroundType ( TileGroundType _groundType, bool _isEditor = false )
 	{
 		UnityEditor.Undo.RecordObject(this, "Paint Tile");
 		//UnityEditor.Undo.RecordObject(m_wall, "Paint Tile");
 		m_groundType = _groundType;
 		m_ui.UpdateGroundMaterial();
 
-		if(m_wall != null)
+		if (_isEditor)
 		{
-			if(_groundType != TileGroundType.Wall)
+			if (m_wall != null)
 			{
-				foreach(GameObject wallPart in m_wall.WallParts)
-					DestroyImmediate(wallPart);
-				m_wall.WallParts.Clear();
+				if (_groundType != TileGroundType.Wall)
+				{
+					foreach (GameObject wallPart in m_wall.WallParts)
+						DestroyImmediate(wallPart);
+					m_wall.WallParts.Clear();
 
-				DestroyImmediate(m_wall);
-				m_wall = null;
+					DestroyImmediate(m_wall);
+					m_wall = null;
+				}
 			}
-		}
-		else
-		{
-			if (_groundType == TileGroundType.Wall)
+			else
 			{
-				m_wall = UnityEditor.Undo.AddComponent<Wall>(gameObject);
-				//m_wall = gameObject.AddComponent<Wall>();
-				m_wall.LinkWithTile(this);
-				m_wall.SetWallType(Wall.WallType.VerticalStrait);
+				if (_groundType == TileGroundType.Wall)
+				{
+					m_wall = UnityEditor.Undo.AddComponent<Wall>(gameObject);
+					//m_wall = gameObject.AddComponent<Wall>();
+					m_wall.LinkWithTile(this);
+					m_wall.SetWallType(Wall.WallType.VerticalStrait);
+				}
 			}
 		}
 
@@ -142,7 +145,7 @@ public class Tile : MonoBehaviour
 	{
 		return m_neighbors[(int)_direction];
 	}
-	
+
 	public void SetNeighbor ( HexDirection _direction, Tile _tile )
 	{
 		m_neighbors[(int)_direction] = _tile;
@@ -172,20 +175,20 @@ public class Tile : MonoBehaviour
 
 	#region Turn sys
 
-	private void OnEntitySelected(int? _entityID )
+	private void OnEntitySelected ( int? _entityID )
 	{
 		UI.ResetOutline();
 		m_canInteract = false;
 	}
 
-	private void OnActionSelected (AEntityAction _action)
+	private void OnActionSelected ( AEntityAction _action )
 	{
 		bool canInteract = _action.TileInteractPredicate(this);
 		m_canInteract = canInteract;
-		UI.SetAsInteractable(m_canInteract , GameAssets.current.game.entityActionsData[_action.enumID].tileOutlineColor);
+		UI.SetAsInteractable(m_canInteract, GameAssets.current.game.entityActionsData[_action.enumID].tileOutlineColor);
 	}
 
-	private void OnActionAdded (TurnManager.RecordedAction _recordedAction)
+	private void OnActionAdded ( TurnManager.RecordedAction _recordedAction )
 	{
 		UI.ResetOutline();
 		m_canInteract = false;
@@ -231,12 +234,12 @@ public class Tile : MonoBehaviour
 
 	#endregion
 
-	public void SetActiveFOW (bool _isActive = false, bool _isInstant = false )
+	public void SetActiveFOW ( bool _isActive = false, bool _isInstant = false )
 	{
 		m_isVisible = _isActive;
 		m_ui.SetActiveFOW(_isActive, _isInstant);
 
-		if(currentContent.entity != null)
+		if (currentContent.entity != null)
 			currentContent.entity.SetVisibility(!_isActive);
 	}
 }
