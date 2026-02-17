@@ -90,8 +90,9 @@ public class MoveToTargetAction : AEntityAction
 	public override bool TileInteractPredicate ( Tile _tile )
 	{
 		int maxDistance = TurnManager.Instance.RemainingActionToken[performingEntityID];
+		int distance = GridManager.Instance.GetDistanceBetween(GridManager.Instance.Tiles[TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntityID)], _tile, true);
 
-		if (_tile.GetEntity(true) != null || _tile.IsObstacle() || GridManager.Instance.GetDistanceBetween(GridManager.Instance.Tiles[TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntityID)], _tile, true) > maxDistance)
+		if ( _tile.IsObstacle() || distance > maxDistance || distance < 1)
 			return false;
 
 		return true;

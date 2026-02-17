@@ -17,7 +17,7 @@ public class WaitAction : AEntityAction
 
 	public override bool TileInteractPredicate ( Tile _tile )
 	{
-		return _tile == PlayerController.Instance.SelectedEntity.Displacement.Coordinates.GetTile();
+		return _tile == GridManager.Instance.Tiles[TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntityID)];
 	}
 
 	public override void RegisterInteraction ( Tile _tile )

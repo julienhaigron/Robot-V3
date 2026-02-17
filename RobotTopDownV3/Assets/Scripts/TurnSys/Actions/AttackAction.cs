@@ -125,7 +125,7 @@ public class AttackAction : AEntityAction
 		//TODO : should also check if unit is in supposed weapon range (counting orientation)
 
 		Entity entity = _tile.GetEntity(true);
-		return entity != null && (Data.targetType == EntityActionData.TargetType.Self == entity.IsAlliedTo(GameManager.Instance.GetEntityFromID(performingEntityID).OwnerID));
+		return entity != null && ((Data.targetType == EntityActionData.TargetType.Self) == entity.IsAlliedTo(GameManager.Instance.GetEntityFromID(performingEntityID).OwnerID));
 	}
 
 	public override void RegisterInteraction ( Tile _tile )

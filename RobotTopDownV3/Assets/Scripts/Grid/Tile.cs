@@ -210,7 +210,7 @@ public class Tile : MonoBehaviour
 
 	public void NewPhase ()
 	{
-		nextTurnActionContent = new TileContent { entity = currentContent.entity };
+		SetEntity(currentContent.entity, false);
 	}
 
 	public void SetEntity ( Entity _entity, bool _isThisTurn )
@@ -228,8 +228,6 @@ public class Tile : MonoBehaviour
 		else
 			return nextTurnActionContent.entity;
 	}
-
-
 
 	#endregion
 
