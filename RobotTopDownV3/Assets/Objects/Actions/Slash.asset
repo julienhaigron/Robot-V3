@@ -22,11 +22,11 @@ MonoBehaviour:
   preparationAnimationKey: 
   afterPerformAnimationKey: 
   previousActionAttackModificator: 0
-  type: 0
+  type: 1
   subType: 1
   targetType: 1
   minDistance: 0
-  maxDistance: 5
+  maxDistance: 1
   minTargetAmount: 1
   maxTargetAmount: 1
   isAoe: 0

@@ -9,6 +9,7 @@ public class ActionDisplayOnTile : PoolElement
 	private TurnManager.RecordedAction m_recordedAction;
 	public TurnManager.RecordedAction RecordedAction => m_recordedAction;
 	public Tile OriginTile => GridManager.Instance.Tiles[m_recordedAction.action.supposedPositionAtActionStartID];
+	public Tile DestinationTile => GridManager.Instance.Tiles[m_recordedAction.action.positionAtActionEndID];
 
 	public void Init (TurnManager.RecordedAction _recordedAction)
 	{

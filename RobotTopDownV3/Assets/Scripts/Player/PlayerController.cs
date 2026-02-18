@@ -55,6 +55,7 @@ public class PlayerController : Singleton<PlayerController>
 	//public List<ActionDisplayOnTile> tempArrows = new();
 	private SerializableDictionary<int, List<ActionDisplayOnTile>> m_tempActionDisplays = new();
 	//public SerializableDictionary<int, List<ActionDisplayOnTile>> TempActionDisplays => m_tempActionDisplays;
+	private SerializableDictionary<int, GhostEntity> m_ghostEntities = new();
 
 	private void Start ()
 	{
@@ -221,16 +222,27 @@ public class PlayerController : Singleton<PlayerController>
 				}
 				actionsOnTile.Reverse();
 
-				foreach (ActionDisplayOnTile display in actionsOnTile)
+				if (actionsOnTile.Count > 0)
 				{
-					List<TurnManager.RecordedAction> actionQueue = TurnManager.Instance.RecordedActions[m_selectedEntity.ID].ToList();
-					for (int i = 0; i < actionQueue.Count; i++)
+					//remove actions
+					foreach (ActionDisplayOnTile display in actionsOnTile)
 					{
-						if (actionQueue[i].action == display.RecordedAction.action)
+						List<TurnManager.RecordedAction> actionQueue = TurnManager.Instance.RecordedActions[m_selectedEntity.ID].ToList();
+						for (int i = 0; i < actionQueue.Count; i++)
 						{
-							TurnManager.Instance.RemoveActionFrom(actionQueue[i], i);
+							if (actionQueue[i].action == display.RecordedAction.action)
+							{
+								TurnManager.Instance.RemoveActionFrom(actionQueue[i], i);
+							}
 						}
 					}
+				}
+				else
+				{
+					//unselect entity
+					m_selectedEntity.Deselect();
+					m_selectedEntity = null;
+					onEntitySelected?.Invoke(null);
 				}
 			}
 		}
@@ -246,15 +258,39 @@ public class PlayerController : Singleton<PlayerController>
 
 			ClearGhostActionOnTileDisplay();
 
-			if (TurnManager.Instance.currentPhase == TurnManager.TurnPhase.Recording
+			int totalCostSpend = 0;
+			bool didContainTile = false;
+			if (m_actionDisplays.ContainsKey(m_selectedEntity.ID))
+			{
+				foreach (ActionDisplayOnTile display in m_actionDisplays[m_selectedEntity.ID])
+				{
+					totalCostSpend += display.RecordedAction.action.Data.tokenCost;
+					if (display.DestinationTile == _tile)
+					{
+						didContainTile = true;
+						break;
+					}
+				}
+			}
+
+			bool isTargetValid = TurnManager.Instance.currentPhase == TurnManager.TurnPhase.Recording
 				&& (TurnManager.Instance.CurrentActionTypeSelected == EntityActionEnumID.NeighborMove || TurnManager.Instance.CurrentActionTypeSelected == EntityActionEnumID.TargetTileMove)
-				&& TurnManager.Instance.CurrentActionSelected.TileInteractPredicate(_tile))
+				&& TurnManager.Instance.CurrentActionSelected.TileInteractPredicate(_tile);
+
+			Tile from = GridManager.Instance.Tiles[TurnManager.Instance.GetLastRegisteredPositionOfEntity(m_selectedEntity.ID)];
+			int distanceToTarget = isTargetValid ? GridManager.Instance.GetDistanceBetween(from, _tile) : 0; 
+			TurnManager.Instance.RefreshActionDisplay(m_selectedEntity.ID
+				, didContainTile ? totalCostSpend : (GameConfig.current.game.actionTokenPerRound - TurnManager.Instance.RemainingActionToken[m_selectedEntity.ID]) + distanceToTarget);
+			if (isTargetValid)
 			{
 				TurnManager.Instance.CurrentActionSelected.positionAtActionEndID = _tile.coordinates.ID;
 				TurnManager.Instance.CurrentActionSelected.GhostDisplay(TurnManager.Instance.CurrentStateTypeSelected);
 			}
 
+
+
 			m_hoveredTile = _tile;
+
 		}
 	}
 
@@ -263,6 +299,7 @@ public class PlayerController : Singleton<PlayerController>
 		m_selectedEntity = null;
 		ClearActionOnTileDisplay();
 		ClearGhostActionOnTileDisplay();
+		ClearGhostEntities();
 	}
 
 	public void AddActionDisplay ( ActionDisplayOnTile _display, int _performingEntityID, bool _isTemp )
@@ -278,6 +315,26 @@ public class PlayerController : Singleton<PlayerController>
 			if (!m_actionDisplays.ContainsKey(_performingEntityID))
 				m_actionDisplays.Add(_performingEntityID, new());
 			m_actionDisplays[_performingEntityID].Add(_display);
+		}
+	}
+
+	public void AddGhostAt ( Entity _entity, Tile _position, int _orientation )
+	{
+		if (!m_ghostEntities.ContainsKey(_entity.ID))
+		{
+			GhostEntity newGhost = Instantiate(GameAssets.current.game.baseGhost/*, GameManager.Instance.transform*/);
+			newGhost.Init(_entity);
+			m_ghostEntities.Add(_entity.ID, newGhost);
+		}
+
+		m_ghostEntities[_entity.ID].ShowAtPositionAndOrientation(_position, _orientation);
+	}
+
+	public void ClearGhostEntities ()
+	{
+		foreach (GhostEntity ghost in m_ghostEntities.Values)
+		{
+			ghost.Hide();
 		}
 	}
 

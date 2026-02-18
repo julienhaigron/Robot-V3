@@ -83,4 +83,14 @@ public class EntitySkinPlugin : EntityPlugin
 			m_humanoidEntityIK.ReleaseAim();
 		}
 	}
+
+	public void Show ()
+	{
+		m_visualRoot.SetActive(true);
+	}
+
+	public void Hide ()
+	{
+		m_visualRoot.SetActive(false);
+	}
 }

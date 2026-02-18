@@ -24,6 +24,7 @@ public class GameAssets : ScriptableObject
         public List<LevelData> levels = new();
 
         [Title("Entity")]
+        public GhostEntity baseGhost;
         public List<FrameEquipmentData> frames = new();
 
         public WeaponCone weaponCone;

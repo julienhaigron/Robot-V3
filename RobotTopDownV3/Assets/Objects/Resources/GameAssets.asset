@@ -32,6 +32,7 @@ MonoBehaviour:
     - {fileID: 11400000, guid: 8a6954d87f761a44d91a6e04577b276b, type: 2}
     - {fileID: 11400000, guid: 949f97dacb028be43823f17b50a53791, type: 2}
     - {fileID: 11400000, guid: 197186d81997d9b47a9bf17799354160, type: 2}
+    baseGhost: {fileID: 7839904307103858393, guid: bee3bc7545f82b54babded2b3df64c96, type: 3}
     frames:
     - {fileID: 11400000, guid: 11de9230c09867747908272f3310089f, type: 2}
     - {fileID: 11400000, guid: d1ff8cefde9698646866f7c141843e06, type: 2}

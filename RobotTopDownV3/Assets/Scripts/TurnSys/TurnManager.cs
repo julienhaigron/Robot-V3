@@ -74,7 +74,7 @@ public class TurnManager : Singleton<TurnManager>
 				}
 				action.NetworkSerialize(serializer);
 			}
-			
+
 			serializer.SerializeValue(ref freeActionType);
 			if (serializer.IsWriter)
 			{
@@ -146,7 +146,7 @@ public class TurnManager : Singleton<TurnManager>
 		return lastRecordedAction.action.positionAtActionEndID;
 	}
 
-	public int GetPositionOfEntityAtEndOfRound (int _entityID )
+	public int GetPositionOfEntityAtEndOfRound ( int _entityID )
 	{
 		if (currentPhase != TurnPhase.Calculating)
 			return -1;
@@ -162,8 +162,8 @@ public class TurnManager : Singleton<TurnManager>
 		else
 			return m_actionsToPlay[_entityID].ToList()[^1].action.positionAtActionEndID;
 	}
-	
-	public int GetPositionOfEntityAtStartOfRound (int _entityID )
+
+	public int GetPositionOfEntityAtStartOfRound ( int _entityID )
 	{
 		if (currentPhase != TurnPhase.Calculating)
 			return -1;
@@ -227,7 +227,7 @@ public class TurnManager : Singleton<TurnManager>
 				break;
 		}
 
-		if(action == null)
+		if (action == null)
 		{
 			switch (_actionData.type)
 			{
@@ -365,25 +365,42 @@ public class TurnManager : Singleton<TurnManager>
 		RefreshActionDisplay(_removedRecordedAction.performingEntityID);
 	}
 
-	public void RefreshActionDisplay ( int? _selectedEntityID )
+	public void RefreshActionDisplay ( int? _selectedEntityID, int _specificTokenCount = -1 )
 	{
 		PlayerController.Instance.ClearActionOnTileDisplay();
 		PlayerController.Instance.ClearGhostActionOnTileDisplay();
+		PlayerController.Instance.ClearGhostEntities();
 
-		/*if (!_selectedEntityID.HasValue || !m_recordedActionInput.ContainsKey((int)_selectedEntityID))
-			return;*/
 
-		if (_selectedEntityID.HasValue && m_recordedActionInput.ContainsKey((int)_selectedEntityID) 
+		if (_selectedEntityID.HasValue && m_recordedActionInput.ContainsKey((int)_selectedEntityID)
 			&& m_remainingActionToken[_selectedEntityID.Value] >= GameAssets.current.game.entityActionsData[m_currentActionTypeSelected].tokenCost)
 			SetCurrentActionSelected(m_currentActionTypeSelected);
 
-		// display all selected entity actions
+		// display all player entity actions
 		foreach (int entityID in m_recordedActionInput.Keys)
 		{
+			int totalCost = 0;
+			Entity entity = GameManager.Instance.GetEntityFromID(entityID);
+			Tile lastRecordedPosition = entity.Displacement.Coordinates.GetTile();
+			int lastRecordedOrientation = entity.Displacement.CurrentOrientation;
+
 			foreach (RecordedAction recordedAction in m_recordedActionInput[entityID].ToArray())
 			{
+				totalCost += recordedAction.action.Data.tokenCost;
 				recordedAction.action.Display(recordedAction);
+
+				if (_specificTokenCount != -1 && totalCost <= _specificTokenCount)
+				{
+					lastRecordedPosition = GridManager.Instance.Tiles[recordedAction.action.positionAtActionEndID];
+					if (recordedAction.action.enumID == EntityActionEnumID.RotateEntity)
+						lastRecordedOrientation = (recordedAction.action as RotateEntityAction).targetedOrientationID;
+					else if (recordedAction.freeAction != null && recordedAction.freeAction.enumID == EntityActionEnumID.RotateEntity)
+						lastRecordedOrientation = (recordedAction.freeAction as RotateEntityAction).targetedOrientationID;
+				}
 			}
+
+			if (_selectedEntityID.HasValue)
+				PlayerController.Instance.AddGhostAt(entity, lastRecordedPosition, lastRecordedOrientation);
 		}
 	}
 
@@ -520,8 +537,16 @@ public class TurnManager : Singleton<TurnManager>
 				{
 					LogConsole.AddLog("Action replaced to " + resultInfo.replacedAction, LogConsole.LogEventType.PlayPhase);
 					resultInfo.replacedAction.Prepare(recordedAction.entityState);
-					returnActionToPlayThisRound.Enqueue(new RecordedAction() { type = resultInfo.replacedAction.enumID, performingEntityID = resultInfo.replacedAction.performingEntityID, action = resultInfo.replacedAction, entityState = recordedAction.entityState
-						, freeAction = resultInfo.replacedFreeAction, freeActionType = resultInfo.replacedFreeAction == null ? EntityActionEnumID.Wait : resultInfo.replacedFreeAction.enumID });
+					returnActionToPlayThisRound.Enqueue(new RecordedAction()
+					{
+						type = resultInfo.replacedAction.enumID,
+						performingEntityID = resultInfo.replacedAction.performingEntityID,
+						action = resultInfo.replacedAction,
+						entityState = recordedAction.entityState
+						,
+						freeAction = resultInfo.replacedFreeAction,
+						freeActionType = resultInfo.replacedFreeAction == null ? EntityActionEnumID.Wait : resultInfo.replacedFreeAction.enumID
+					});
 				}
 			}
 
@@ -577,15 +602,15 @@ public class TurnManager : Singleton<TurnManager>
 			{
 				RecordedAction action = m_actionsToPlay[entityID].Dequeue();
 				m_actionsBeingDone.Add(entityID, action);
-				if(action.freeActionType != EntityActionEnumID.Wait)
+				if (action.freeActionType != EntityActionEnumID.Wait)
 				{
-					action.action.onEndPerform += (performingEntity) => 
+					action.action.onEndPerform += ( performingEntity ) =>
 					{
 						action.freeAction.onEndPerform += OnActionEndPerform;
 						action.freeAction.OnStartPerform(action.entityState);
 						action.freeAction.Perform(action.entityState);
 					};
-					
+
 				}
 				else
 					action.action.onEndPerform += OnActionEndPerform;
