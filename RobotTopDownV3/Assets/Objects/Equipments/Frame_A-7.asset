@@ -17,9 +17,8 @@ MonoBehaviour:
   knownedActions: 09000000
   faction: 0
   prefab: {fileID: 4673310249167116355, guid: 206cf16509b1846479a1f553fd6add2d, type: 3}
-  actionTokenAmount: 8
   visibilityRange: 8
-  maxHealth: 50
+  maxHealth: 5
   armSlotAvailable: 2
   auxiliarSlotAvailable: 3
   statBonuses:

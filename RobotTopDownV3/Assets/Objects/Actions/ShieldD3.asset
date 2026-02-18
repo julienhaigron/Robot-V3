@@ -13,13 +13,14 @@ MonoBehaviour:
   m_Name: ShieldD3
   m_EditorClassIdentifier: 
   displayName: Shield D3
-  enumID: 8
+  enumID: 7
   icon: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
   tileOutlineColor: {r: 0, g: 0.8663821, b: 1, a: 1}
-  tokenCost: 1
   tokenPreparationDuration: 1
   tokenCooldown: 0
   tokenDuration: 1
+  preparationAnimationKey: 
+  afterPerformAnimationKey: 
   previousActionAttackModificator: 0
   type: 4
   subType: 1
@@ -30,7 +31,9 @@ MonoBehaviour:
   maxTargetAmount: 1
   isAoe: 0
   aoeType: 2
-  circleRadius: 5
+  circleRange: 1
+  arcRadius: 1
   rayDiameter: 1
-  coneSpread: 5
+  coneType: 0
+  usedDamageChannels: 
   appliableEffects: []

@@ -141,6 +141,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_linkedEntity: {fileID: 4737523583837535854}
+  m_visualRoot: {fileID: 6395917073196368840}
   m_center: {fileID: 0}
   m_animator: {fileID: 0}
   m_humanoidEntityIK: {fileID: 0}

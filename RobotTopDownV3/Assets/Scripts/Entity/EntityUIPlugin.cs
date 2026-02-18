@@ -42,5 +42,13 @@ public class EntityUIPlugin : EntityPlugin
 		}
 
 		m_healthBar.SetHealth(m_linkedEntity.Equipment.CurrentHealth, m_linkedEntity.Equipment.MaxHealth);
+
+		if (m_linkedEntity.Equipment.CurrentHealth <= 0)
+			HideUI();
+	}
+
+	public void HideUI ()
+	{
+		gameObject.SetActive(false);
 	}
 }

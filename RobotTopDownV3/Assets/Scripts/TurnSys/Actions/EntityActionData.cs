@@ -8,7 +8,9 @@ using Sirenix.OdinInspector;
 public class EntityActionData : ScriptableObject
 {
 	public string displayName;
-	public EntityActionEnumID enumID;
+	[ReadOnly]
+	public EntityActionEnumID enumID = EntityActionEnumID.Unknowned;
+
 	public Sprite icon;
 	public Color tileOutlineColor = Color.green;
 	public int tokenCost => tokenPreparationDuration + tokenDuration;

@@ -10,16 +10,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2a743e40aeafc0445b10e59cec8dfa98, type: 3}
-  m_Name: WaitAction
+  m_Name: Wait
   m_EditorClassIdentifier: 
   displayName: Wait
-  enumID: 3
+  enumID: 4
   icon: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
   tileOutlineColor: {r: 0, g: 1, b: 0, a: 1}
-  tokenCost: 1
   tokenPreparationDuration: 0
   tokenCooldown: 1
   tokenDuration: 1
+  preparationAnimationKey: 
+  afterPerformAnimationKey: 
   previousActionAttackModificator: 0
   type: 4
   subType: 0
@@ -30,8 +31,9 @@ MonoBehaviour:
   maxTargetAmount: 1
   isAoe: 0
   aoeType: 0
-  circleRadius: 1
+  circleRange: 1
+  arcRadius: 1
   rayDiameter: 1
-  coneSpread: 1
+  coneType: 0
   usedDamageChannels: 
   appliableEffects: []

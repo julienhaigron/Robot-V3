@@ -13,11 +13,13 @@ public class BulletWeapon : Weapon
 	[SerializeField] private float m_speed;
 	[SerializeField] private float m_timeBetweenEachBullet = .5f;
 	[SerializeField] private float m_aimDuration = 1f;
+	[SerializeField] private float m_shootCooldownDuration = .3f;
 	[SerializeField] private PoolData m_bulletPool;
 
 	private ProjectileData m_bulletData;
 	private WaitForSeconds m_timeBetweenBulletsWFS;
 	private WaitForSeconds m_aimDurationWFS;
+	private WaitForSeconds m_shootCooldownDurationWFS;
 	private Coroutine m_shootCR;
 
 	private List<Entity> m_entitiesHitByLastShot = new();
@@ -44,6 +46,7 @@ public class BulletWeapon : Weapon
 
 		m_timeBetweenBulletsWFS = new WaitForSeconds(m_timeBetweenEachBullet);
 		m_aimDurationWFS = new WaitForSeconds(m_aimDuration);
+		m_shootCooldownDurationWFS = new WaitForSeconds(m_shootCooldownDuration);
 	}
 
 	public override void PerformAttack ( AttackAction _attackAction, Action _onPerformEnd )
@@ -106,8 +109,6 @@ public class BulletWeapon : Weapon
 			float distance = 1f;
 			Vector3 adjacentPos = UnityEngine.Random.Range(0, 2) == 0 ? targetPosition + perpendicular * distance : targetPosition - perpendicular * distance;
 			performingEntity.Skin.VisualyAimAt(_attackAction.attackingWeaponId, adjacentPos);
-
-			DOVirtual.DelayedCall(1f, () => EndAttack(_attackAction));
 		}
 
 		//2) shoot at aimed position
@@ -128,6 +129,9 @@ public class BulletWeapon : Weapon
 			yield return m_timeBetweenBulletsWFS;
 		}
 
+		yield return m_shootCooldownDurationWFS;
+
+		EndAttack(m_lastPerformedAction);
 		m_shootCR = null;
 	}
 
@@ -153,7 +157,6 @@ public class BulletWeapon : Weapon
 				GameAssets.current.game.entityEffects[(AEntityEffect.EntityEffectEnumID)m_lastPerformedAction.effectsIds[i]].ApplyEffect(_entityHit);
 		}
 
-		EndAttack(m_lastPerformedAction);
 	}
 
 	private void EndAttack ( AttackAction _attackAction )

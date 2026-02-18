@@ -5,6 +5,7 @@ using System.Linq;
 
 public class EntitySkinPlugin : EntityPlugin
 {
+	[SerializeField] private GameObject m_visualRoot;
 	[SerializeField] private Transform m_center;
 	public Transform Center => m_center;
 
@@ -21,6 +22,7 @@ public class EntitySkinPlugin : EntityPlugin
 
 		m_linkedEntity.onStartPerformAction += OnStartActionPerform;
 		m_linkedEntity.onEndPerformAction += OnEndActionPerform;
+		m_linkedEntity.Equipment.onDeath += OnEntityDeath;
 	}
 
 	public void OnStartActionPerform (AEntityAction _action)
@@ -59,6 +61,12 @@ public class EntitySkinPlugin : EntityPlugin
 			m_humanoidEntityIK.Aim(_aimedPosition);
 		}
 
+	}
+
+	private void OnEntityDeath (int _entityID)
+	{
+		//TODO : actual clean death with anim and PS
+		m_visualRoot.SetActive(false);
 	}
 
 	public void ReleaseAim ( string _weaponID )

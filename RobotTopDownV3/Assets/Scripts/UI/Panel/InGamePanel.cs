@@ -85,7 +85,7 @@ public sealed class InGamePanel : AUIPanel
 	{
 		m_phaseTitleTmp.text = "Input Phase";
 	}
-	
+
 	private void OnEndInputPhase ()
 	{
 		m_phaseTitleTmp.text = "Play Phase";
@@ -93,6 +93,15 @@ public sealed class InGamePanel : AUIPanel
 
 	private void OnClickEndPhaseBtn ()
 	{
+
+		foreach (Entity entity in GameManager.Instance.PlayersEntityAnchor[0].Entities)
+		{
+			for (int i = TurnManager.Instance.RemainingActionToken[entity.ID]; i < GameConfig.current.game.actionTokenPerRound; i++)
+			{
+				TurnManager.Instance.AddAction(entity.ID, EntityActionEnumID.Wait, Entity.EntityState.Guarding);
+			}
+		}
+
 		TurnManager.onEndInputPhase?.Invoke();
 
 		if (!GameManager.Instance.IsOnline)

@@ -28,7 +28,6 @@ public class EntityEquipmentPlugin : EntityPlugin
 	private SerializableDictionary<EntityActionEnumID, int> m_actionsInCooldown = new();
 	public SerializableDictionary<EntityActionEnumID, int> ActionInCooldown => m_actionsInCooldown;
 
-	//TODO : load all variables bellow through Init()
 	[Title("Stats")]
 	private float m_generalDamageBuff = 0f;
 	public float GeneralDamageBuff => m_generalDamageBuff;

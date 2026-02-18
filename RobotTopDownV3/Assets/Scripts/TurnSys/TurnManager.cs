@@ -308,6 +308,7 @@ public class TurnManager : Singleton<TurnManager>
 			for (int i = 0; i < _action.Data.tokenDuration - 1; i++)
 			{
 				WaitAction extraDurationWaitAction = new WaitAction();
+
 				extraDurationWaitAction.linkedActionID = _action.enumID;
 				extraDurationWaitAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.Wait], _entityID, _action.supposedPositionAtActionStartID);
 

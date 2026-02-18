@@ -17,8 +17,8 @@ MonoBehaviour:
   knownedActions: 
   chipsetSlotAvailable: 2
   agility: 0.15
-  distanceAccuracy: 0.2
-  distanceEvasion: 0.8
+  distanceAccuracy: 0.8
+  distanceEvasion: 0.2
   meleeEvasion: 0.25
   capacities: 0000000001000000
   knownedStates: 0000000001000000

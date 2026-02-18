@@ -96,6 +96,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 3972841971231541499}
     - target: {fileID: 4353477765861233231, guid: facf97aac763a09489a27b119520aaff, type: 3}
+      propertyPath: m_visualRoot
+      value: 
+      objectReference: {fileID: 6460170402808096229}
+    - target: {fileID: 4353477765861233231, guid: facf97aac763a09489a27b119520aaff, type: 3}
       propertyPath: m_humanoidEntityIK
       value: 
       objectReference: {fileID: 8861741417107084591}
@@ -138,6 +142,11 @@ PrefabInstance:
 --- !u!4 &3748587738414805172 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3846169601763104409, guid: facf97aac763a09489a27b119520aaff, type: 3}
+  m_PrefabInstance: {fileID: 100766324068165165}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &6460170402808096229 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6395917073196368840, guid: facf97aac763a09489a27b119520aaff, type: 3}
   m_PrefabInstance: {fileID: 100766324068165165}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &2761663593128625815
