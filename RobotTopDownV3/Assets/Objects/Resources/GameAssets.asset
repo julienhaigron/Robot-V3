@@ -108,6 +108,7 @@ MonoBehaviour:
     - EnnemiRobot
     - PlayerRobot 1
     - PlayerRobot
+    - Weapon_FlamingSaber
     values:
     - {fileID: 11400000, guid: 80c151b23c81a824eb52ac271f7ddb56, type: 2}
     - {fileID: 11400000, guid: ebdfa3c8fc2e36647b90d0a3d19624b6, type: 2}
@@ -124,3 +125,4 @@ MonoBehaviour:
     - {fileID: 11400000, guid: 269ea4b9e1222fe42bc648cbcdf4a6a9, type: 2}
     - {fileID: 11400000, guid: d1ff8cefde9698646866f7c141843e06, type: 2}
     - {fileID: 11400000, guid: 11de9230c09867747908272f3310089f, type: 2}
+    - {fileID: 11400000, guid: f4244f10f226692459c0d1dfce572068, type: 2}

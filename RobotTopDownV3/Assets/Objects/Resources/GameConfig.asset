@@ -16,10 +16,11 @@ MonoBehaviour:
     defaultStartAction: {fileID: 11400000, guid: 61635f88cdfa6ab44b50dbc9c3aa34e0, type: 2}
     actionDuration: 1
     entityRotationDuration: 0.5
+    actionTokenPerRound: 10
     cameraMovementSpeed: 15
     cameraRotationDuration: 0.5
     cameraRotationStep: 90
-    cameraMovementBoundsOffset: {x: 7, y: 1.75}
+    cameraMovementBoundsOffset: {x: 7, y: 5}
     cameraZoomSpeed: 5
     cameraZoomBounds: {x: 5, y: 10.5}
     entityFlankRatio:
@@ -57,9 +58,6 @@ MonoBehaviour:
     wallRayCastLayer:
       serializedVersion: 2
       m_Bits: 4096
-    bulletInteractionLayerMask:
-      serializedVersion: 2
-      m_Bits: 2048
   meta:
     colorsPerType:
       keys: 00000000010000000200000003000000
