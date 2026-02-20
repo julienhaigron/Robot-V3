@@ -23,7 +23,7 @@ MonoBehaviour:
   afterPerformAnimationKey: 
   previousActionAttackModificator: 0
   type: 1
-  subType: 1
+  subType: 4
   targetType: 1
   minDistance: 0
   maxDistance: 1

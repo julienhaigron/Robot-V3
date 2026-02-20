@@ -137,7 +137,7 @@ public class BulletWeapon : Weapon
 
 	private void OnBulletHit ( Entity _entityHit )
 	{
-		if (m_entitiesHitByLastShot.Contains(_entityHit))
+		if (m_entitiesHitByLastShot.Contains(_entityHit) || m_lastPerformedAction == null)
 			return;
 
 		m_entitiesHitByLastShot.Add(_entityHit);

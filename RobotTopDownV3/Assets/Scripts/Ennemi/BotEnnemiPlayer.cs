@@ -17,7 +17,7 @@ public class BotEnnemiPlayer : MonoBehaviour
 
 	public void InputPhase ()
 	{
-		if (!GameManager.Instance.IsOnline)
+		if (GameManager.Instance.IsOnline)
 			return;
 
 		foreach(Entity entity in GameManager.Instance.PlayersEntityAnchor[1].Entities)
@@ -30,7 +30,7 @@ public class BotEnnemiPlayer : MonoBehaviour
 	{
 		for(int i = 0; i < GameConfig.current.game.actionTokenPerRound; i++)
 		{
-			TurnManager.Instance.AddAction(entity.ID, EntityActionEnumID.Wait, Entity.EntityState.Guarding);
+			TurnManager.Instance.AddAction(entity.ID, EntityActionEnumID.Wait, Entity.EntityState.Patroling);
 		}
 
 	}
