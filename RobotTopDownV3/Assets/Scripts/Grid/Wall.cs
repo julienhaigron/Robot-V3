@@ -38,6 +38,7 @@ public class Wall : MonoBehaviour
 		TAngle,
 		SmallAngle,
 		ReverseSmallAngle,
+		Biet,
 		Total
 	}
 	//TODO :
