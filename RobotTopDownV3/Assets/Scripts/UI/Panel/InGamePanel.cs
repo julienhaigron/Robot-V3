@@ -38,7 +38,7 @@ public sealed class InGamePanel : AUIPanel
 
 	#region animation
 
-	protected override IEnumerator ShowCR ( float _delay, bool _instant )
+	/*protected override IEnumerator ShowCR ( float _delay, bool _instant )
 	{
 		if (_delay != 0f)
 			yield return new WaitForSecondsRealtime(_delay);
@@ -55,9 +55,9 @@ public sealed class InGamePanel : AUIPanel
 	protected override void OnShowFinished ()
 	{
 		CanClick = true;
-	}
+	}*/
 
-	protected override IEnumerator HideCR ( float _delay, bool _instant )
+	/*protected override IEnumerator HideCR ( float _delay, bool _instant )
 	{
 		CanClick = false;
 
@@ -71,12 +71,12 @@ public sealed class InGamePanel : AUIPanel
 			yield return m_hideDurationWFS;
 
 		OnHideFinished();
-	}
+	}*/
 
-	protected override void OnHideFinished ()
+	/*protected override void OnHideFinished ()
 	{
 		base.OnHideFinished();
-	}
+	}*/
 	#endregion
 
 	#region Callbacks
@@ -96,6 +96,9 @@ public sealed class InGamePanel : AUIPanel
 
 		foreach (Entity entity in GameManager.Instance.PlayersEntityAnchor[0].Entities)
 		{
+			if (entity.Equipment.IsDead)
+				continue;
+
 			for (int i = TurnManager.Instance.RemainingActionToken[entity.ID]; i < GameConfig.current.game.actionTokenPerRound; i++)
 			{
 				TurnManager.Instance.AddAction(entity.ID, EntityActionEnumID.Wait, Entity.EntityState.Guarding);

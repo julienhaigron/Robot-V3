@@ -635,6 +635,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: UIManager
       objectReference: {fileID: 0}
+    - target: {fileID: 4467847604247844404, guid: eae536bd8400d134eab9a71e46db670f, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4652389405100149524, guid: eae536bd8400d134eab9a71e46db670f, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5092352735480115403, guid: eae536bd8400d134eab9a71e46db670f, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0

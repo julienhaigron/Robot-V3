@@ -69,15 +69,9 @@ public class GridManager : Singleton<GridManager>
 				m_tiles[i].SetGroundType(groundType);
 				if (groundType == TileGroundType.Wall)
 				{
-					if(m_tiles[i].Wall != null)
-					{
-						m_tiles[i].Wall.SetWallType(_data.tiles[i].wallType);
-						m_tiles[i].Wall.Rotate(_data.tiles[i].orientation);
-					}
-					else
-						m_tiles[i].SetupWall(_data.tiles[i].wallType, _data.tiles[i].orientation);
+					m_tiles[i].SetupWall(_data.tiles[i].wallType, _data.tiles[i].orientation);
 				}
-				else if(m_tiles[i].Wall != null && groundType == TileGroundType.Wall)
+				else if (m_tiles[i].Wall != null && groundType == TileGroundType.Wall)
 				{
 					m_tiles[i].RemoveWall();
 				}
@@ -95,7 +89,7 @@ public class GridManager : Singleton<GridManager>
 		}
 	}
 
-	public void GenerateGrid ( )
+	public void GenerateGrid ()
 	{
 		m_tiles = new Tile[gridData.height * gridData.width];
 		m_height = gridData.height;
@@ -123,7 +117,7 @@ public class GridManager : Singleton<GridManager>
 		position.y = 0f;
 		position.z = _z * (Tile.outerRadius * 1.5f);
 
-		Tile newTile = Instantiate(GameAssets.current.game.baseTile);
+		Tile newTile = PrefabUtility.InstantiatePrefab(GameAssets.current.game.baseTile) as Tile;
 		m_tiles[_i] = newTile;
 
 		newTile.gameObject.name = "Tile " + _x + "." + _z;
@@ -178,6 +172,34 @@ public class GridManager : Singleton<GridManager>
 		}
 
 		EditorUtility.SetDirty(gridData);
+	}
+
+	[Button]
+	public void FixTiles ()
+	{
+		int counter = 0;
+		foreach (Tile tile in m_tiles)
+		{
+			GridData.TileData tileData = gridData.tiles[counter++];
+
+			if (tile.GroundType != TileGroundType.Wall)
+			{
+				tile.RemoveWall();
+			}
+			else if (tile.GroundType == TileGroundType.Wall)
+			{
+				if (tile.Wall != null && tile.WallPartsParent.childCount > 0)
+				{
+					for (int i = tile.WallPartsParent.childCount - 1; i >= 0; i--)
+					{
+						DestroyImmediate(tile.WallPartsParent.GetChild(i).gameObject);
+					}
+				}
+				tile.SetupWall(tileData.wallType, tileData.orientation);
+			}
+
+			EditorUtility.SetDirty(tile);
+		}
 	}
 
 #endif
@@ -492,7 +514,7 @@ public class GridManager : Singleton<GridManager>
 				int dir = 0;
 				if (dx == 0f)
 				{
-					if(dy > 0)
+					if (dy > 0)
 						dir = dx > 0 ? 5 : 2;
 					else
 						dir = dx < 0 ? 2 : 5;
@@ -922,7 +944,7 @@ public class GridManager : Singleton<GridManager>
 	public void OnEntityDeath ( Entity _entity )
 	{
 		int playerId = !GameManager.Instance.IsOnline ? 0 : OnlinePlayerInstance.Self.connectionIndex;
-		if (!_entity.IsAlliedTo(playerId))
+		if (!_entity.IsAlliedTo(playerId) || !m_entitiesVisions[_entity.OwnerID].entitiesVisionRange.ContainsKey(_entity))
 			return;
 
 		foreach (Tile tile in m_entitiesVisions[_entity.OwnerID].entitiesVisionRange[_entity])
@@ -1000,39 +1022,6 @@ public class GridManager : Singleton<GridManager>
 	}
 
 	#endregion
-
-
-#if UNITY_EDITOR
-	[Button]
-	public void FixTiles ()
-	{
-		foreach (Tile tile in m_tiles)
-		{
-			if (tile.GroundType != TileGroundType.Wall)
-			{
-				Wall wall = tile.GetComponent<Wall>();
-
-				if (tile.WallPartsParent.childCount > 0)
-				{
-					for (int i = tile.WallPartsParent.childCount - 1; i >= 0; i--)
-					{
-						DestroyImmediate(tile.WallPartsParent.GetChild(i).gameObject);
-					}
-				}
-				if (wall != null)
-				{
-					wall.WallParts.Clear();
-					DestroyImmediate(wall);
-				}
-
-				tile.Wall = null;
-			}
-
-			EditorUtility.SetDirty(tile);
-		}
-	}
-
-#endif
 
 }
 

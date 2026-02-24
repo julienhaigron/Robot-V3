@@ -724,6 +724,8 @@ public class TurnManager : Singleton<TurnManager>
 		GameManager.Instance.GetEntityFromID(_entityID).Equipment.onDeath -= OnEntityDeath;
 
 		m_recordedActionInput.Remove(_entityID);
+		m_actionsToPlay.Remove(_entityID);
+		m_actionsBeingDone.Remove(_entityID);
 	}
 
 	private void EndRound ()
@@ -769,6 +771,8 @@ public class TurnManager : Singleton<TurnManager>
 			LogConsole.AddLog("Defeat", LogConsole.LogEventType.Main);
 
 		GameManager.Instance.EndGame();
+		UIManager.Instance.ClosePanel<InGamePanel>();
+		UIManager.Instance.OpenPopup<EndLevelPopup>().Init(_isSuccess);
 	}
 
 

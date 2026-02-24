@@ -83,24 +83,26 @@ public class Wall : MonoBehaviour
 			DestroyImmediate(go);
 		}
 		m_wallParts.Clear();
+		m_linkedTile.WallPartsParent.rotation = Quaternion.identity;
 
 		if (!GameAssets.current.game.baseWallVisualPerType.ContainsKey(_type))
 		{
 			Debug.LogError("Missing value in GameAssets.current.game.baseWallVisualPerType");
 			return;
 		}
-		GameObject wallPrefab = Instantiate(GameAssets.current.game.baseWallVisualPerType[_type]);
+		
+		GameObject wallPrefab = PrefabUtility.InstantiatePrefab(GameAssets.current.game.baseWallVisualPerType[_type], m_linkedTile.transform) as GameObject;
+		m_linkedTile.WallPartsParent = wallPrefab.transform;
 		for (int i = wallPrefab.transform.childCount - 1; i >= 0; i--)
 		{
 			Transform tfm = wallPrefab.transform.GetChild(i);
-			Vector3 localPosition = tfm.localPosition;
+			/*Vector3 localPosition = tfm.localPosition;
 			tfm.parent = m_linkedTile.WallPartsParent;
-			tfm.localPosition = localPosition;
+			tfm.localPosition = localPosition;*/
 			Undo.AddComponent<WallSelector>(tfm.gameObject).Link(this);
 			//tfm.gameObject.AddComponent<WallSelector>().Link(this);
 			m_wallParts.Add(tfm.gameObject);
 		}
-		DestroyImmediate(wallPrefab);
 
 		EditorUtility.SetDirty(this);
 		EditorUtility.SetDirty(m_linkedTile);

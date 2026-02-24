@@ -123,6 +123,7 @@ public class LobbySelectionPanel : AUIPanel
             UnityTransport transport = (UnityTransport)NetworkManager.Singleton.NetworkConfig.NetworkTransport;
             transport.SetConnectionData(sender.Address.ToString(), response.Port);
             NetworkManager.Singleton.StartClient();
+            Close();
             UIManager.Instance.OpenPanel<InGamePanel>();
         }, sender);
         m_lobbies.Add(newDisplay);

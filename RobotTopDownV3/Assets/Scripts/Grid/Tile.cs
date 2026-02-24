@@ -4,6 +4,10 @@ using UnityEngine;
 using System;
 using Sirenix.OdinInspector;
 using Unity.Netcode;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+
 
 public class Tile : MonoBehaviour
 {
@@ -29,7 +33,7 @@ public class Tile : MonoBehaviour
 	public bool IsVisible => m_isVisible;
 
 	[SerializeField] private Transform m_wallPartsParent;
-	public Transform WallPartsParent => m_wallPartsParent;
+	public Transform WallPartsParent { get => m_wallPartsParent; set => m_wallPartsParent = value; }
 
 	[SerializeField] private Wall m_wall;
 	public Wall Wall { get { return m_wall; } set { m_wall = value; } }
@@ -125,13 +129,11 @@ public class Tile : MonoBehaviour
 	public void SetupWall ( Wall.WallType _wallType, int _orientation)
 	{
 		if (m_wall == null)
-		{
 			m_wall = UnityEditor.Undo.AddComponent<Wall>(gameObject);
-			//m_wall = gameObject.AddComponent<Wall>();
-			m_wall.LinkWithTile(this);
-			m_wall.SetWallType(_wallType);
-			m_wall.Rotate(_orientation);
-		}
+
+		m_wall.LinkWithTile(this);
+		m_wall.SetWallType(_wallType);
+		m_wall.Rotate(_orientation);
 	}
 
 	public void RemoveWall ()
@@ -145,6 +147,13 @@ public class Tile : MonoBehaviour
 			DestroyImmediate(m_wall);
 			m_wall = null;
 		}
+	}
+
+	[Button]
+	private void PrintSavedData ()
+	{
+		GridData.TileData data = GridManager.Instance.gridData.tiles[coordinates.ID];
+		Debug.Log(coordinates.ID + " : " + data.groundType + " ; " + data.wallType + " ; " + data.orientation);
 	}
 #endif
 

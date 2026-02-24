@@ -385,6 +385,8 @@ public class EntityEquipmentPlugin : EntityPlugin
 
 	private void Death ()
 	{
+		m_linkedEntity.Displacement.Coordinates.GetTile().SetEntity(null, true);
+
 		m_isDead = true;
 		onDeath?.Invoke(m_linkedEntity.ID);
 		onAnyEntityDeath?.Invoke(m_linkedEntity);

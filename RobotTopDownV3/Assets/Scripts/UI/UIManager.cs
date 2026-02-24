@@ -8,6 +8,7 @@ using Random = UnityEngine.Random;
 
 public sealed class UIManager : SingletonPersistant<UIManager>
 {
+	public static Action onFocusedWindowChanged;
 	public static Action onChangeScreen;
 	//Panel contain TopCanvas
 
@@ -32,6 +33,7 @@ public sealed class UIManager : SingletonPersistant<UIManager>
 	public AUIPopup activePopup { get; private set; }
 	private List<Type> previousPanels { get; set; }
 	public AUIPanel currentPanel { get; private set; }
+	public HashSet<AUIWindow> oppenedPanels = new();
 	public AUIPanel nextPanel { get; private set; }
 	public AUIPanel rootPanel { get; private set; }
 	private Dictionary<Type, AUITopCanvas> topCanvasesDictionary { get; set; }
@@ -138,6 +140,9 @@ public sealed class UIManager : SingletonPersistant<UIManager>
 
 	private AUIPanel OpenPanel ( Type _type, float _showDelay, bool _showInstant, bool _pushHistory, bool _additive, bool _closePreviousInstant = false, bool _closeAndOpenSimultaneous = true )
 	{
+		if (currentPanel != null && currentPanel == panelsDictionary[_type])
+			return null;
+
 		if (panelsDictionary.ContainsKey(_type) == false)
 			throw new Exception(GetType().Name + " - Do not have panel [" + _type.Name + "].");
 
@@ -149,15 +154,25 @@ public sealed class UIManager : SingletonPersistant<UIManager>
 		{
 			currentPanel.CanClick = false;
 
-			if (!_additive && _pushHistory)
-				currentPanel.Close(0f, _closePreviousInstant);
+			if (!_additive)
+			{
+				HashSet<AUIWindow> panelToClose = new(oppenedPanels);
+				foreach (AUIWindow item in panelToClose)
+				{
+					item.Close(0f, _closePreviousInstant);
+				}
+
+				//currentPanel.Close(0f, _closePreviousInstant);
+			}
+
 			if (_pushHistory)
 				previousPanels.Add(currentPanel.GetType());
+
+			//oppenedPanels.Add(panelsDictionary[_type]);
 
 			//wait for the end of close to show next
 			if (!_additive && !_closePreviousInstant && !_closeAndOpenSimultaneous)
 			{
-				currentPanel.SetCanvasEnable(false);
 				//the next Panel will be activated OnPanelClosed
 				/*this.currentPanel.OnCloseAnimationFinishedAction += () =>
 				{
@@ -179,24 +194,31 @@ public sealed class UIManager : SingletonPersistant<UIManager>
 		nextPanel.SetCanvasEnable(true);
 		nextPanel.ShowWindow(m_nextShowPanelDelay, m_nextShowPanelInstant);
 		currentPanel = nextPanel;
-
+		OnFocusedWindowChanged(_showInstant);
+/*#if UNITY_EDITOR
+		if (ApplicationManager.config.debug.showUIManagerLog)
+			Debug.Log("AUIManager - Open panel [" + _type.Name + "].");
+#endif*/
 		nextPanel = null;
-
-		onChangeScreen?.Invoke();
 		return currentPanel;
 	}
 
-	public void ClosePanel<T> ()
+	public void ClosePanel<T> ( bool _instant = false )
 	{
 		Type type = typeof(T);
 		this.ClosePanel(type);
 	}
 
-	private void ClosePanel ( Type _type )
+	private void ClosePanel ( Type _type, bool _instant = false )
 	{
+
 		if (this.panelsDictionary.ContainsKey(_type) == false)
 			throw new Exception(this.GetType().Name + " - Do not have panel [" + _type.Name + "].");
 
+/*#if UNITY_EDITOR
+		if (ApplicationManager.config.debug.showUIManagerLog)
+			Debug.Log("AUIManager - Closing panel [" + _type.Name + "].");
+#endif*/
 
 		AUIPanel panel = this.panelsDictionary[_type];
 
@@ -207,9 +229,37 @@ public sealed class UIManager : SingletonPersistant<UIManager>
 		}
 
 		if (panel.CanvasEnabled)
-			panel.Close(0f, false);
+			panel.Close(0f, _instant);
 
 		this.previousPanels.Remove(_type);
+	}
+
+	public void ReOpenPreviousPanel ()
+	{
+		this.ClosePanel(this.currentPanel.GetType());
+
+		Type lastPanelType;
+		if (previousPanels.Count == 0)
+			lastPanelType = default(Type);
+		int last = previousPanels.Count - 1;
+		lastPanelType = previousPanels[last];
+		previousPanels.RemoveAt(last);
+
+		AUIPanel panel = this.panelsDictionary[lastPanelType];
+/*#if UNITY_EDITOR
+		if (ApplicationManager.config.debug.showUIManagerLog)
+			Debug.Log("AUIManager - Reopenig panel [" + panel.GetType().Name + "].");
+#endif*/
+
+		if (!panel.CanvasEnabled)
+		{
+			panel.gameObject.SetActive(true);
+			panel.ShowWindow(0f, false);
+		}
+		else
+			panel.CanClick = true;
+
+		this.currentPanel = panel;
 	}
 
 	public T GetPanel<T> () where T : AUIPanel
@@ -390,6 +440,15 @@ public sealed class UIManager : SingletonPersistant<UIManager>
 			_action += () => activePopup.onWindowClosed -= _action;
 			activePopup.onWindowClosed += _action;
 		}
+	}
+
+	void OnFocusedWindowChanged ( bool _instant )
+	{
+		//Set right Currencies List
+		//FocusedAUIWindow.topCurrencyVisibleList
+		//InputManager.inputArea.CancelInput();
+
+		onFocusedWindowChanged?.Invoke();
 	}
 
 	#endregion
