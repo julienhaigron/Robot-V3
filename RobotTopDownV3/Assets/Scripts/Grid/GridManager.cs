@@ -102,7 +102,8 @@ public class GridManager : Singleton<GridManager>
 		{
 			for (int x = 0; x < gridData.width; x++)
 			{
-				CreateTile(x, z, i++, gridData.tiles.Length > i ? gridData.tiles[i] : null);
+				CreateTile(x, z, i, gridData.tiles.Length > i ? gridData.tiles[i] : null);
+				i++;
 			}
 		}
 

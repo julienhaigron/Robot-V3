@@ -5,8 +5,6 @@ using UnityEditor;
 
 public class GridEditorWindows : EditorWindow
 {
-	public GridData m_data;
-
 
 	[MenuItem("Tools/Grid Editor")]
 	public static void LoadWindows ()
@@ -30,11 +28,9 @@ public class GridEditorWindows : EditorWindow
 		StartBox("Grid");
 		EditorGUILayout.BeginHorizontal(group);
 
-		m_data = (GridData)EditorGUILayout.ObjectField("Data: ", m_data, typeof(GridData), true);
-
 		if (GUILayout.Button("Load Grid", group))
 		{
-			GridManager.Instance.LoadGrid(m_data, true);
+			GridManager.Instance.LoadGrid(GridManager.Instance.gridData, true);
 		}
 
 		if (GUILayout.Button("Save Grid", group))
