@@ -16,7 +16,7 @@ MonoBehaviour:
   energyCost: 10
   knownedActions: 
   chipsetSlotAvailable: 2
-  agility: 0.15
+  agility: 0.8
   distanceAccuracy: 0.8
   distanceEvasion: 0.2
   meleeEvasion: 0.25

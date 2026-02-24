@@ -148,7 +148,10 @@ public class Entity : MonoBehaviour
     public void SetVisibility(bool _isVisible )
 	{
         m_ui.gameObject.SetActive(_isVisible);
-        m_skinParent.SetActive(_isVisible);
+        if (_isVisible)
+            m_skin.Show();
+        else
+            m_skin.Hide();
     }
 
     public void AddEffect(AEntityEffect _effect )

@@ -7,6 +7,7 @@ Shader "Custom/FogOfWar_Apply_Stylized"
         _EdgeSoftness("Edge Softness", Range(0,1)) = 0.2
         _NoiseTex("Noise Texture", 2D) = "white" {}
         _NoiseScale("Noise Scale", Float) = 5.0
+        _MainTex("Main Texture", 2D) = "white" {}
     }
         SubShader
         {
@@ -23,6 +24,7 @@ Shader "Custom/FogOfWar_Apply_Stylized"
                 #include "UnityCG.cginc"
 
                 sampler2D _FogMask;
+                sampler2D _MainTex;
                 sampler2D _NoiseTex;
                 fixed4 _FogColor;
                 float _EdgeSoftness;

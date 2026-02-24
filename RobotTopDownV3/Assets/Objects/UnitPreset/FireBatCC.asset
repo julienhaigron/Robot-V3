@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f0bd4350348c78f4e89080417667cc11, type: 3}
-  m_Name: FireBat2
+  m_Name: FireBatCC
   m_EditorClassIdentifier: 
   displayName: Fire Bat
   frame: {fileID: 11400000, guid: c4fc98459ea1c6f409c0f37294d3eb79, type: 2}

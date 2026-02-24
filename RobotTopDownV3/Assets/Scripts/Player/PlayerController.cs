@@ -63,6 +63,7 @@ public class PlayerController : Singleton<PlayerController>
 		InputManager.onTileRightClick += OnTileRightClick;
 		InputManager.onTileHovered += OnTileHovered;
 		TurnManager.onEndInputPhase += OnEndInputPhase;
+		EntityEquipmentPlugin.onAnyEntityDeath += OnAnyEntityDeath;
 
 		m_targetRotation = playerCamera.transform.rotation;
 		m_currentZoomDistance = playerCamera.transform.position.y;
@@ -74,6 +75,7 @@ public class PlayerController : Singleton<PlayerController>
 		InputManager.onTileRightClick -= OnTileRightClick;
 		InputManager.onTileHovered -= OnTileHovered;
 		TurnManager.onEndInputPhase -= OnEndInputPhase;
+		EntityEquipmentPlugin.onAnyEntityDeath -= OnAnyEntityDeath;
 
 		if (m_cameraRotationTween.IsActive())
 			m_cameraRotationTween.Kill();
@@ -360,5 +362,10 @@ public class PlayerController : Singleton<PlayerController>
 			}
 			m_tempActionDisplays[entityID].Clear();
 		}
+	}
+
+	private void OnAnyEntityDeath(Entity _entity )
+	{
+		m_ghostEntities.Remove(_entity.ID);
 	}
 }
