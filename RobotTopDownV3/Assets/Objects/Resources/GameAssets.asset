@@ -15,7 +15,7 @@ MonoBehaviour:
   game:
     baseTile: {fileID: 1296925374456379223, guid: de323a5a1d0a9594f928198e7ec5f84c, type: 3}
     baseWallVisualPerType:
-      keys: 00000000010000000200000003000000040000000500000006000000
+      keys: 0000000001000000020000000300000004000000050000000600000007000000
       values:
       - {fileID: 4284569996962346650, guid: 505729bffecb5274886dd86e20eec79a, type: 3}
       - {fileID: 4284569996962346650, guid: efefe57a62487444eb9f6f935865a22f, type: 3}
@@ -24,6 +24,7 @@ MonoBehaviour:
       - {fileID: 365438557547955023, guid: cb44724e40cef3f4dba5afa535043c9d, type: 3}
       - {fileID: 365438557547955023, guid: baccb178baf498d4a909c566783c2faa, type: 3}
       - {fileID: 365438557547955023, guid: 93be84e1c556b9449900f56036992ca7, type: 3}
+      - {fileID: 365438557547955023, guid: 11159afb9d3869e4bb434de5237fba0f, type: 3}
     maps:
     - {fileID: 11400000, guid: 6f08d292abbf2bc4d8b8635617613b35, type: 2}
     - {fileID: 11400000, guid: 55ec503584887cb4aa7dd66763e4d7a7, type: 2}
