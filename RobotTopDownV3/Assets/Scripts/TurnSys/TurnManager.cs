@@ -22,6 +22,7 @@ public class TurnManager : Singleton<TurnManager>
 	public static System.Action onStartInputPhase;
 	public static System.Action onEndInputPhase;
 	public static System.Action onNewPhaseStart;
+	public static System.Action onEndLevel;
 
 	[SerializeField] private NetworkedTurnSystem m_networkedTurnSystem;
 
@@ -765,14 +766,8 @@ public class TurnManager : Singleton<TurnManager>
 
 	public void EndLevel ( bool _isSuccess )
 	{
-		if (_isSuccess)
-			LogConsole.AddLog("Victory", LogConsole.LogEventType.Main);
-		else
-			LogConsole.AddLog("Defeat", LogConsole.LogEventType.Main);
-
-		GameManager.Instance.EndGame();
-		UIManager.Instance.ClosePanel<InGamePanel>();
-		UIManager.Instance.OpenPopup<EndLevelPopup>().Init(_isSuccess);
+		GameManager.Instance.EndGame(_isSuccess);
+		onEndLevel?.Invoke();
 	}
 
 

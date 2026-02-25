@@ -37,7 +37,7 @@ public class EndLevelPopup : AUIPopup
 	private void OnClickContinue ()
 	{
 		Close();
-		UIManager.Instance.OpenPanel<SoloCampainPanel>(.2f);
+		GameManager.Instance.GoBackToMainMenu();
 	}
 
 }

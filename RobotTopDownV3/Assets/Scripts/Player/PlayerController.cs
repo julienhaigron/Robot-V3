@@ -64,6 +64,7 @@ public class PlayerController : Singleton<PlayerController>
 		InputManager.onTileHovered += OnTileHovered;
 		TurnManager.onEndInputPhase += OnEndInputPhase;
 		EntityEquipmentPlugin.onAnyEntityDeath += OnAnyEntityDeath;
+		TurnManager.onEndLevel += OnEndLevel;
 
 		m_targetRotation = playerCamera.transform.rotation;
 		m_currentZoomDistance = playerCamera.transform.position.y;
@@ -76,6 +77,7 @@ public class PlayerController : Singleton<PlayerController>
 		InputManager.onTileHovered -= OnTileHovered;
 		TurnManager.onEndInputPhase -= OnEndInputPhase;
 		EntityEquipmentPlugin.onAnyEntityDeath -= OnAnyEntityDeath;
+		TurnManager.onEndLevel -= OnEndLevel;
 
 		if (m_cameraRotationTween.IsActive())
 			m_cameraRotationTween.Kill();
@@ -296,7 +298,17 @@ public class PlayerController : Singleton<PlayerController>
 		}
 	}
 
+	#region Ghost
+
 	private void OnEndInputPhase ()
+	{
+		m_selectedEntity = null;
+		ClearActionOnTileDisplay();
+		ClearGhostActionOnTileDisplay();
+		ClearGhostEntities();
+	}
+
+	private void OnEndLevel ()
 	{
 		m_selectedEntity = null;
 		ClearActionOnTileDisplay();
@@ -368,4 +380,6 @@ public class PlayerController : Singleton<PlayerController>
 	{
 		m_ghostEntities.Remove(_entity.ID);
 	}
+
+	#endregion
 }

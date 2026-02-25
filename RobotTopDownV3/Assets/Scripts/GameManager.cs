@@ -65,7 +65,8 @@ public class GameManager : SingletonPersistant<GameManager>
 
 	private void OnSceneLoaded (Scene _scene, LoadSceneMode _mode)
 	{
-		StartGame();
+		if(m_currentLevel != null)
+			StartGame();
 	}
 
 	public void SetupLevel(LevelData _level )
@@ -146,9 +147,32 @@ public class GameManager : SingletonPersistant<GameManager>
 		}
 	}
 
-	public void EndGame ()
+	public void EndGame (bool _isSuccessfull)
 	{
+		if (_isSuccessfull)
+			LogConsole.AddLog("Victory", LogConsole.LogEventType.Main);
+		else
+			LogConsole.AddLog("Defeat", LogConsole.LogEventType.Main);
+
+		UIManager.Instance.ClosePanel<InGamePanel>();
+		UIManager.Instance.OpenPopup<EndLevelPopup>().Init(_isSuccessfull);
 		m_fogCanvas.gameObject.SetActive(false);
+	}
+
+	public void GoBackToMainMenu ()
+	{
+		m_currentLevel = null;
+		foreach (EntityAnchor anchor in m_playersEntityAnchor)
+		{
+			foreach (Entity entity in anchor.Entities)
+			{
+				Destroy(entity);
+			}
+		}
+
+		SceneManager.LoadSceneAsync("MainScene");
+
+		UIManager.Instance.OpenPanel<SoloCampainPanel>(.2f);
 	}
 
 }
