@@ -83,7 +83,7 @@ public class GameManager : SingletonPersistant<GameManager>
 
 	public void StartGame ()
 	{
-		GridManager.Instance.LoadGrid(m_currentLevel.map);
+		GridManager.Instance.LoadGrid();
 		UIManager.Instance.OpenPanel<InGamePanel>();
 
 		if (m_currentGameMode == GameMode.Offline)

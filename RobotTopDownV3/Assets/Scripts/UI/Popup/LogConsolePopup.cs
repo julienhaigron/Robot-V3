@@ -23,6 +23,7 @@ public class LogConsolePopup : AUIPopup
 	protected override void OnShowFinished ()
 	{
 		base.OnShowFinished();
+		m_console.text = "";
 		m_scrollRect.verticalScrollbar.value = 0f;
 
 		foreach(LogConsole.Log log in LogConsole.Instance.AllLogs)
