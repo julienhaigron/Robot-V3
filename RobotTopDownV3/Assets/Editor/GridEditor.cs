@@ -29,7 +29,7 @@ public class GridEditor : Editor
 		}
 		if (GUILayout.Button("LoadGrid"))
 		{
-			gridManager.LoadGrid(gridManager.gridData, true);
+			gridManager.LoadGrid(true);
 		}
 		if (GUILayout.Button("SaveGrid"))
 		{

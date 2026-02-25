@@ -30,7 +30,7 @@ public class GridEditorWindows : EditorWindow
 
 		if (GUILayout.Button("Load Grid", group))
 		{
-			GridManager.Instance.LoadGrid(GridManager.Instance.gridData, true);
+			GridManager.Instance.LoadGrid(true);
 		}
 
 		if (GUILayout.Button("Save Grid", group))

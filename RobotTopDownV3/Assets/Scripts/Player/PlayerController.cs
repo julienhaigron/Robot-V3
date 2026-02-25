@@ -21,7 +21,7 @@ public class PlayerController : Singleton<PlayerController>
 			if (GridManager.Instance == null)
 				return Vector2.zero;
 
-			return new Vector2(0, GridManager.Instance.gridData.width * Tile.innerRadius * 2f);
+			return new Vector2(0, GridManager.Instance.GridData.width * Tile.innerRadius * 2f);
 		}
 	}
 	private Vector2 zLimits
@@ -31,7 +31,7 @@ public class PlayerController : Singleton<PlayerController>
 			if (GridManager.Instance == null)
 				return Vector2.zero;
 
-			return new Vector2(0, GridManager.Instance.gridData.height * 1.5f);
+			return new Vector2(0, GridManager.Instance.GridData.height * 1.5f);
 		}
 	}
 

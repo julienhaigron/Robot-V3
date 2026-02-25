@@ -50,9 +50,22 @@ public class GridManager : Singleton<GridManager>
 
 	//public bool isGroundBrushSelected = false;
 	public TileGroundType currentGroundBrushSelected;
-	public GridData gridData;
+	[SerializeField] private GridData m_gridData;
+	public GridData GridData
+	{
+		get
+		{
+			if(m_gridData == null)
+			{
+				Debug.LogError("Missing GridData ScriptableObject in the GridManager of this scene");
+				return null;
+			}
+			else
+				return m_gridData;
+		}
+	}
 
-	public void LoadGrid ( GridData _data, bool _isEditorMode = false )
+	public void LoadGrid ( bool _isEditorMode = false )
 	{
 		//GenerateGrid(_data.height, _data.width);
 
@@ -62,14 +75,14 @@ public class GridManager : Singleton<GridManager>
 
 		for (int i = 0; i < m_tiles.Length; i++)
 		{
-			TileGroundType groundType = _data.tiles[i].groundType;
+			TileGroundType groundType = GridData.tiles[i].groundType;
 
 			if (_isEditorMode)
 			{
 				m_tiles[i].SetGroundType(groundType);
 				if (groundType == TileGroundType.Wall)
 				{
-					m_tiles[i].SetupWall(_data.tiles[i].wallType, _data.tiles[i].orientation);
+					m_tiles[i].SetupWall(GridData.tiles[i].wallType, GridData.tiles[i].orientation);
 				}
 				else if (m_tiles[i].Wall != null && groundType == TileGroundType.Wall)
 				{
@@ -91,18 +104,18 @@ public class GridManager : Singleton<GridManager>
 
 	public void GenerateGrid ()
 	{
-		m_tiles = new Tile[gridData.height * gridData.width];
-		m_height = gridData.height;
-		m_width = gridData.width;
+		m_tiles = new Tile[GridData.height * GridData.width];
+		m_height = GridData.height;
+		m_width = GridData.width;
 
 		for (int i = transform.childCount; i > 0; --i)
 			DestroyImmediate(transform.GetChild(0).gameObject);
 
-		for (int z = 0, i = 0; z < gridData.height; z++)
+		for (int z = 0, i = 0; z < m_gridData.height; z++)
 		{
-			for (int x = 0; x < gridData.width; x++)
+			for (int x = 0; x < m_gridData.width; x++)
 			{
-				CreateTile(x, z, i, gridData.tiles.Length > i ? gridData.tiles[i] : null);
+				CreateTile(x, z, i, GridData.tiles.Length > i ? GridData.tiles[i] : null);
 				i++;
 			}
 		}
@@ -160,19 +173,19 @@ public class GridManager : Singleton<GridManager>
 
 	public void SaveGrid ()
 	{
-		gridData.height = m_height;
-		gridData.width = m_width;
-		gridData.tiles = new GridData.TileData[m_tiles.Length];
+		GridData.height = m_height;
+		GridData.width = m_width;
+		GridData.tiles = new GridData.TileData[m_tiles.Length];
 
 		for (int i = 0; i < m_tiles.Length; i++)
 		{
-			gridData.tiles[i] = new GridData.TileData
+			GridData.tiles[i] = new GridData.TileData
 				(m_tiles[i].GroundType,
 				m_tiles[i].GroundType == TileGroundType.Wall ? m_tiles[i].Wall.Type : Wall.WallType.VerticalStrait,
 				m_tiles[i].GroundType == TileGroundType.Wall ? m_tiles[i].Wall.Orientation : 0);
 		}
 
-		EditorUtility.SetDirty(gridData);
+		EditorUtility.SetDirty(m_gridData);
 	}
 
 	[Button]
@@ -181,7 +194,7 @@ public class GridManager : Singleton<GridManager>
 		int counter = 0;
 		foreach (Tile tile in m_tiles)
 		{
-			GridData.TileData tileData = gridData.tiles[counter++];
+			GridData.TileData tileData = m_gridData.tiles[counter++];
 
 			if (tile.GroundType != TileGroundType.Wall)
 			{
@@ -1087,8 +1100,8 @@ public struct TileCoordinates
 		int ox = OffsetX;
 		int oz = OffsetZ;
 
-		int width = GridManager.Instance.gridData.width;
-		int height = GridManager.Instance.gridData.height;
+		int width = GridManager.Instance.GridData.width;
+		int height = GridManager.Instance.GridData.height;
 
 		if (ox < 0 || oz < 0 || ox >= width || oz >= height)
 			return null;

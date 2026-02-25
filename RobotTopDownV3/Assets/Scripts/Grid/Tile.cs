@@ -152,7 +152,7 @@ public class Tile : MonoBehaviour
 	[Button]
 	private void PrintSavedData ()
 	{
-		GridData.TileData data = GridManager.Instance.gridData.tiles[coordinates.ID];
+		GridData.TileData data = GridManager.Instance.GridData.tiles[coordinates.ID];
 		Debug.Log(coordinates.ID + " : " + data.groundType + " ; " + data.wallType + " ; " + data.orientation);
 	}
 #endif
