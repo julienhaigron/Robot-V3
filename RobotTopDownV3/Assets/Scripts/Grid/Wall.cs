@@ -75,8 +75,8 @@ public class Wall : MonoBehaviour
 	public void SetWallType(WallType _type )
 	{
 		//Rotate(0);
-		Undo.RecordObject(this, "Set Wall Type");
-		Undo.RecordObject(m_linkedTile, "Set Wall Type 2");
+		//Undo.RecordObject(this, "Set Wall Type");
+		//Undo.RecordObject(m_linkedTile, "Set Wall Type 2");
 		m_type = _type;
 
 		foreach(GameObject go in m_wallParts)
@@ -85,6 +85,9 @@ public class Wall : MonoBehaviour
 		}
 		m_wallParts.Clear();
 		m_linkedTile.WallPartsParent.rotation = Quaternion.identity;
+
+		if (m_linkedTile.WallPartsParent != null)
+			DestroyImmediate(m_linkedTile.WallPartsParent.gameObject);
 
 		if (!GameAssets.current.game.baseWallVisualPerType.ContainsKey(_type))
 		{
@@ -100,27 +103,27 @@ public class Wall : MonoBehaviour
 			/*Vector3 localPosition = tfm.localPosition;
 			tfm.parent = m_linkedTile.WallPartsParent;
 			tfm.localPosition = localPosition;*/
-			Undo.AddComponent<WallSelector>(tfm.gameObject).Link(this);
-			//tfm.gameObject.AddComponent<WallSelector>().Link(this);
+			//Undo.AddComponent<WallSelector>(tfm.gameObject).Link(this);
+			tfm.gameObject.AddComponent<WallSelector>().Link(this);
 			m_wallParts.Add(tfm.gameObject);
 		}
 
-		EditorUtility.SetDirty(this);
-		EditorUtility.SetDirty(m_linkedTile);
+		//EditorUtility.SetDirty(this);
+		//EditorUtility.SetDirty(m_linkedTile);
 	}
 
 	[Button]
 	public void Rotate(int _newRotation )
 	{
-		Undo.RecordObject(this, "Rotate Wall");
-		Undo.RecordObject(m_linkedTile, "Rotate Wall 2");
+		//Undo.RecordObject(this, "Rotate Wall");
+		//Undo.RecordObject(m_linkedTile, "Rotate Wall 2");
 
 		m_orientation = _newRotation;
 		float yRotation = 60f * _newRotation;
 		m_linkedTile.WallPartsParent.localRotation = Quaternion.Euler(0, yRotation, 0);
 
-		EditorUtility.SetDirty(this);
-		EditorUtility.SetDirty(m_linkedTile);
+		//EditorUtility.SetDirty(this);
+		//EditorUtility.SetDirty(m_linkedTile);
 	}
 
 	[Button]

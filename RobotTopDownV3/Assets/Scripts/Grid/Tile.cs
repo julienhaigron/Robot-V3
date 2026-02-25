@@ -129,7 +129,8 @@ public class Tile : MonoBehaviour
 	public void SetupWall ( Wall.WallType _wallType, int _orientation)
 	{
 		if (m_wall == null)
-			m_wall = UnityEditor.Undo.AddComponent<Wall>(gameObject);
+			m_wall = gameObject.AddComponent<Wall>();
+			//m_wall = UnityEditor.Undo.AddComponent<Wall>(gameObject);
 
 		m_wall.LinkWithTile(this);
 		m_wall.SetWallType(_wallType);
