@@ -53,7 +53,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 		m_linkedEntity.onSelect += OnEntitySelected;
 		m_linkedEntity.onDeselect += OnEntityDeselected;
 		m_linkedEntity.onStartPerformAction += OnActionPerformed;
-		m_linkedEntity.onNewPhaseBegin += OnNewPhaseStart;
+		m_linkedEntity.onNewRoundBegin += OnNewPhaseStart;
 	}
 
 	private void OnDestroy ()
@@ -61,7 +61,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 		m_linkedEntity.onSelect -= OnEntitySelected;
 		m_linkedEntity.onDeselect -= OnEntityDeselected;
 		m_linkedEntity.onStartPerformAction -= OnActionPerformed;
-		m_linkedEntity.onNewPhaseBegin -= OnNewPhaseStart;
+		m_linkedEntity.onNewRoundBegin -= OnNewPhaseStart;
 	}
 
 	public override void Init ( EntitySavedData _entityData )
@@ -351,7 +351,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 		return WeaponEquipmentData.DistanceType.Long;
 	}
 
-	public bool EffectRoll ( Entity _entity, AEntityEffect _effect )
+	public bool StatusRoll ( Entity _entity, AEntityStatus _effect )
 	{
 		bool isAttackSuccessful = Random.Range(0, 100) > _effect.hitProbability;
 

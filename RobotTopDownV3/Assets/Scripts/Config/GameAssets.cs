@@ -30,7 +30,8 @@ public class GameAssets : ScriptableObject
         public WeaponCone weaponCone;
 
         public SerializableDictionary<EntityActionEnumID, EntityActionData> entityActionsData = new SerializableDictionary<EntityActionEnumID, EntityActionData>();
-        public SerializableDictionary<AEntityEffect.EntityEffectEnumID, AEntityEffect> entityEffects = new SerializableDictionary<AEntityEffect.EntityEffectEnumID, AEntityEffect>();
+        public SerializableDictionary<EntityPassiveEffectEnumID, AEntityPassiveEffect> entityEffects = new SerializableDictionary<EntityPassiveEffectEnumID, AEntityPassiveEffect>();
+        public SerializableDictionary<EntityStatusEnumID, AEntityStatus> entityStatus = new SerializableDictionary<EntityStatusEnumID, AEntityStatus>();
 
         [Title("Pools")]
         public PoolData arrowPoolData;

@@ -1,7 +1,7 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "StunEffect", menuName = "ScriptableObject/Effect/StunEffect")]
-public class StunEffect : AEntityEffect
+[CreateAssetMenu(fileName = "StunEffect", menuName = "ScriptableObject/Status/StunStatus")]
+public class StunStatus : AEntityStatus
 {
     //public int damageAmount = 1;
 

@@ -10,7 +10,7 @@ public class Entity : MonoBehaviour
     public Action onDeselect;
     public Action<AEntityAction> onStartPerformAction;
     public Action onEndPerformAction;
-    public Action onNewPhaseBegin;
+    public Action onNewRoundBegin;
 
     [Title("Depedencies")]
     [SerializeField] private GameObject m_skinParent;
@@ -40,9 +40,9 @@ public class Entity : MonoBehaviour
     private EntityState m_state;
     public EntityState State => m_state;
 
-    private List<AEntityEffect> m_effects = new();
-    public List<AEntityEffect> Effects => m_effects;
-    private Dictionary<AEntityEffect, int> m_remainingDurationToActiveEffects = new();
+    private List<AEntityStatus> m_effects = new();
+    public List<AEntityStatus> Effects => m_effects;
+    private Dictionary<AEntityStatus, int> m_remainingDurationToActiveEffects = new();
 
     private int m_ownerID;
     public int OwnerID => m_ownerID;
@@ -72,12 +72,12 @@ public class Entity : MonoBehaviour
 
 	private void Awake ()
 	{
-        TurnManager.onNewPhaseStart += OnPhaseStart;
+        TurnManager.onNewRoundStart += OnRoundStart;
     }
 
     private void OnDestroy ()
     {
-        TurnManager.onNewPhaseStart -= OnPhaseStart;
+        TurnManager.onNewRoundStart -= OnRoundStart;
     }
 
     public void Init ( EntitySavedData _data, EntityAnchor.Spawn _spawn, int _id, int _playerID )
@@ -95,11 +95,11 @@ public class Entity : MonoBehaviour
         m_knownedActions = _data.GetActions();
     }
 
-    private void OnPhaseStart ()
+    private void OnRoundStart ()
 	{
-        onNewPhaseBegin?.Invoke();
+        onNewRoundBegin?.Invoke();
 
-        foreach (AEntityEffect effect in m_effects)
+        foreach (AEntityStatus effect in m_effects)
 		{
             if (--m_remainingDurationToActiveEffects[effect] <= 0)
 			{
@@ -107,7 +107,7 @@ public class Entity : MonoBehaviour
                 m_remainingDurationToActiveEffects.Remove(effect);
 			}
 
-            effect.ApplyEffect(this);
+            effect.ApplyStatus(this);
 		}
 	}
 
@@ -154,7 +154,7 @@ public class Entity : MonoBehaviour
             m_skin.Hide();
     }
 
-    public void AddEffect(AEntityEffect _effect )
+    public void AddEffect(AEntityStatus _effect )
 	{
         m_effects.Add(_effect);
         m_remainingDurationToActiveEffects.Add(_effect, _effect.duration);

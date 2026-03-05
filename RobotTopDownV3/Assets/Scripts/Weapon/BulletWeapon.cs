@@ -85,10 +85,10 @@ public class BulletWeapon : Weapon
 					entity.Equipment.TakeDamage(new EntityEquipmentPlugin.TakeDamageCallback() { damages = damages });
 
 					//aplly effects here
-					for (int i = 0; i < _attackAction.areEffectsSuccess.Length; i++)
+					for (int i = 0; i < _attackAction.areStatusesSuccess.Length; i++)
 					{
-						if (_attackAction.areEffectsSuccess[i])
-							GameAssets.current.game.entityEffects[(AEntityEffect.EntityEffectEnumID)_attackAction.effectsIds[i]].ApplyEffect(entity);
+						if (_attackAction.areStatusesSuccess[i])
+							GameAssets.current.game.entityStatus[(EntityStatusEnumID)_attackAction.statusIds[i]].ApplyStatus(entity);
 					}
 				}
 
@@ -151,10 +151,10 @@ public class BulletWeapon : Weapon
 		_entityHit.Equipment.TakeDamage(new EntityEquipmentPlugin.TakeDamageCallback() { damages = damages });
 
 		//aplly effects
-		for (int i = 0; i < m_lastPerformedAction.areEffectsSuccess.Length; i++)
+		for (int i = 0; i < m_lastPerformedAction.areStatusesSuccess.Length; i++)
 		{
-			if (m_lastPerformedAction.areEffectsSuccess[i])
-				GameAssets.current.game.entityEffects[(AEntityEffect.EntityEffectEnumID)m_lastPerformedAction.effectsIds[i]].ApplyEffect(_entityHit);
+			if (m_lastPerformedAction.areStatusesSuccess[i])
+				GameAssets.current.game.entityStatus[(EntityStatusEnumID)m_lastPerformedAction.statusIds[i]].ApplyStatus(_entityHit);
 		}
 
 	}

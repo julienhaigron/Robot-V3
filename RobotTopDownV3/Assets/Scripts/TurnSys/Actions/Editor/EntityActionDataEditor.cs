@@ -6,7 +6,7 @@ using UnityEditor;
 using System;
 
 [CustomEditor(typeof(EntityActionData))]
-    public class EntityActionDataEditor : OdinEditor
+public class EntityActionDataEditor : OdinEditor
 {
     EntityActionData targetAction;
 

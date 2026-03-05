@@ -13,7 +13,7 @@ public class AttackAction : AEntityAction
 	public bool isAttackSuccessfull = false;
 	
 	//damages
-	public bool[] areEffectsSuccess;
+	public bool[] areStatusesSuccess;
 	public int[] damages;
 	public short[] damageTypes;
 	public int pfcResult = (int)EntityActionData.PFCResultType.Failure;
@@ -24,7 +24,7 @@ public class AttackAction : AEntityAction
 		serializer.SerializeValue(ref attackingWeaponId);
 		serializer.SerializeValue(ref targetedEntityID);
 		serializer.SerializeValue(ref isAttackSuccessfull);
-		serializer.SerializeValue(ref areEffectsSuccess);
+		serializer.SerializeValue(ref areStatusesSuccess);
 		serializer.SerializeValue(ref damages);
 		serializer.SerializeValue(ref damageTypes);
 		serializer.SerializeValue(ref pfcResult);
@@ -40,10 +40,10 @@ public class AttackAction : AEntityAction
 
 			if (isAttackSuccessfull)
 			{
-				areEffectsSuccess = new bool[effectsIds.Length];
-				for (int i = 0; i < effectsIds.Length; i++)
+				areStatusesSuccess = new bool[statusIds.Length];
+				for (int i = 0; i < statusIds.Length; i++)
 				{
-					areEffectsSuccess[i] = PerformingEntity.Equipment.EffectRoll(TargetEntity, GameAssets.current.game.entityEffects[(AEntityEffect.EntityEffectEnumID)effectsIds[i]]);
+					areStatusesSuccess[i] = PerformingEntity.Equipment.StatusRoll(TargetEntity, GameAssets.current.game.entityStatus[(EntityStatusEnumID)statusIds[i]]);
 				}
 
 				Dictionary<WeaponEquipmentData.DamageType, int> damagesDealt =

@@ -166,13 +166,14 @@ public class GameManager : SingletonPersistant<GameManager>
 		{
 			foreach (Entity entity in anchor.Entities)
 			{
-				Destroy(entity);
+				Destroy(entity.gameObject);
 			}
+			anchor.Entities.Clear();
 		}
 
-		SceneManager.LoadSceneAsync("MainScene");
-
 		UIManager.Instance.OpenPanel<SoloCampainPanel>(.2f);
+
+		SceneManager.LoadSceneAsync("MainScene");
 	}
 
 }

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d9c7f8aef1299b84eb998fcb168a8be9, type: 3}
   m_Name: Burn1
   m_EditorClassIdentifier: 
+  enumID: 1
   duration: 2
   hitProbability: 50
-  enumId: 0
   damageAmount: 1

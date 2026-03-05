@@ -25,7 +25,7 @@ public class NetworkedTurnSystem : NetworkBehaviour
                 TurnManager.Instance.ActionsToPlay.Add(_entitiesRecordedActions[i].entityId, actionQueue);
 		}
 
-        TurnManager.Instance.PlayThisPhaseActions();
+        TurnManager.Instance.PlayThisRoundActions();
 	}
 
 	[ClientRpc(RequireOwnership = false)]

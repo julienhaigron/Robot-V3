@@ -14,7 +14,7 @@ public abstract class AEntityAction : INetworkSerializable
     public Entity PerformingEntity => GameManager.Instance.GetEntityFromID(performingEntityID);
     public int supposedPositionAtActionStartID; //tile
     public int positionAtActionEndID; //tile
-    public int[] effectsIds;
+    public int[] statusIds;
     public EntityActionData Data => GameAssets.current.game.entityActionsData[enumID];
 
 
@@ -24,7 +24,7 @@ public abstract class AEntityAction : INetworkSerializable
         serializer.SerializeValue(ref performingEntityID);
 		serializer.SerializeValue(ref supposedPositionAtActionStartID);
 		serializer.SerializeValue(ref positionAtActionEndID);
-		serializer.SerializeValue(ref effectsIds);
+		serializer.SerializeValue(ref statusIds);
     }
 
     public virtual void Init(EntityActionData _data, int _performingEntityID, int _positionAtActionStartID )
@@ -34,10 +34,10 @@ public abstract class AEntityAction : INetworkSerializable
         supposedPositionAtActionStartID = _positionAtActionStartID;
         positionAtActionEndID = _positionAtActionStartID;
 
-        effectsIds = new int[_data.appliableEffects.Length];
-		for (int i = 0; i < _data.appliableEffects.Length; i++)
+        statusIds = new int[_data.appliableStatus.Length];
+		for (int i = 0; i < _data.appliableStatus.Length; i++)
 		{
-            effectsIds[i] = (int)_data.appliableEffects[i].enumId;
+            statusIds[i] = (int)_data.appliableStatus[i].enumID;
         }
     }
 

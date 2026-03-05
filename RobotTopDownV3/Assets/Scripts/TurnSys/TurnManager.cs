@@ -21,7 +21,7 @@ public class TurnManager : Singleton<TurnManager>
 	public static System.Action<AEntityAction> onActionSelected;
 	public static System.Action onStartInputPhase;
 	public static System.Action onEndInputPhase;
-	public static System.Action onNewPhaseStart;
+	public static System.Action onNewRoundStart;
 	public static System.Action onEndLevel;
 
 	[SerializeField] private NetworkedTurnSystem m_networkedTurnSystem;
@@ -478,10 +478,10 @@ public class TurnManager : Singleton<TurnManager>
 	{
 		LogConsole.AddLog("Start round", LogConsole.LogEventType.Main);
 
-		StartNextPhase();
+		StartNextRoundTick();
 	}
 
-	private void StartNextPhase ()
+	private void StartNextRoundTick ()
 	{
 		LogConsole.AddLog("Start phase", LogConsole.LogEventType.Main);
 
@@ -569,10 +569,10 @@ public class TurnManager : Singleton<TurnManager>
 		//and wait for all actions to be performed and server signaled by every clients
 		//then server do EndPhase 
 		if (!GameManager.Instance.IsOnline)
-			PlayThisPhaseActions();
+			PlayThisRoundActions();
 		else if (GameManager.Instance.IsOnline)
 		{
-			NetworkTaskOrchestrator.Instance.LaunchClientTask("PlayPhase", EndPhase);
+			NetworkTaskOrchestrator.Instance.LaunchClientTask("PlayPhase", EndRoundTick);
 			List<RecordedEntityActionsContainer> actionsToSend = new();
 
 			foreach (var kvp in m_actionsToPlay)
@@ -589,9 +589,9 @@ public class TurnManager : Singleton<TurnManager>
 		}
 	}
 
-	public void PlayThisPhaseActions ()
+	public void PlayThisRoundActions ()
 	{
-		onNewPhaseStart?.Invoke();
+		onNewRoundStart?.Invoke();
 		currentPhase = TurnPhase.Playing;
 		m_actionsBeingDone.Clear();
 		List<int> entityIDs = new(m_actionsToPlay.Keys);
@@ -699,7 +699,7 @@ public class TurnManager : Singleton<TurnManager>
 
 				if (!GameManager.Instance.IsOnline)
 				{
-					EndPhase();
+					EndRoundTick();
 				}
 				else
 				{
@@ -711,13 +711,13 @@ public class TurnManager : Singleton<TurnManager>
 
 	}
 
-	private void EndPhase ()
+	private void EndRoundTick ()
 	{
 		LogConsole.AddLog("Server ended phase", LogConsole.LogEventType.PlayPhase);
 		if (m_recordedActionInput.Keys.Count == 0)
 			EndRound(); //end turn
 		else
-			StartNextPhase(); //end this phase
+			StartNextRoundTick(); //end this phase
 	}
 
 	private void OnEntityDeath ( int _entityID )

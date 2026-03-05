@@ -2,14 +2,14 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
-[CreateAssetMenu(fileName = "BurnEffect", menuName = "ScriptableObject/Effect/BurnEffect")]
-public class BurnEffect : AEntityEffect
+[CreateAssetMenu(fileName = "BurnEffect", menuName = "ScriptableObject/Status/BurnStatus")]
+public class BurnStatus : AEntityStatus
 {
     public int damageAmount = 1;
 
-	public override void ApplyEffect ( Entity _entity )
+	public override void ApplyStatus ( Entity _entity )
 	{
-		base.ApplyEffect(_entity);
+		base.ApplyStatus(_entity);
 
 		Dictionary<WeaponEquipmentData.DamageType, int> damage = new();
 		damage.Add(WeaponEquipmentData.DamageType.Feu, damageAmount);

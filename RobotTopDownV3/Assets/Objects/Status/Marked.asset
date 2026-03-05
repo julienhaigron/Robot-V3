@@ -9,9 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0da801fdaaf5bb449b09c27fde47641b, type: 3}
-  m_Name: StunEffect
+  m_Script: {fileID: 11500000, guid: 96087f69a63c0da42a45809539d72788, type: 3}
+  m_Name: Marked
   m_EditorClassIdentifier: 
+  enumID: 2
   duration: 1
   hitProbability: 50
-  enumId: 0

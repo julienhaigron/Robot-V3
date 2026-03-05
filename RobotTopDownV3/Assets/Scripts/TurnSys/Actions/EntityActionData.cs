@@ -90,9 +90,15 @@ public class EntityActionData : ScriptableObject
 	[ShowIf("@isAoe && aoeType == AOEType.Cone")]
 	public ConeType coneType = ConeType.Thin;
 
+	[Title("Damage")]
 	public WeaponEquipmentData.DamageType[] usedDamageChannels;
 
-	public AEntityEffect[] appliableEffects;
+	[Title("Effect")]
+	[Min(0)] public int pushStrenght = 0;
+	[Min(0)] public int pullStrenght = 0;
+
+	public AEntityStatus[] appliableStatus;
+	public AEntityPassiveEffect[] passiveEffects;
 
 	public enum PFCResultType
 	{
