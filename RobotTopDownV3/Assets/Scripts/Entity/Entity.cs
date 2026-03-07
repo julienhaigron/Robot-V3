@@ -40,8 +40,8 @@ public class Entity : MonoBehaviour
     private EntityState m_state;
     public EntityState State => m_state;
 
-    private List<AEntityStatus> m_effects = new();
-    public List<AEntityStatus> Effects => m_effects;
+    private List<EntityStatusEnumID> m_status = new();
+    public List<EntityStatusEnumID> Status => m_status;
     private Dictionary<AEntityStatus, int> m_remainingDurationToActiveEffects = new();
 
     private int m_ownerID;
@@ -99,15 +99,15 @@ public class Entity : MonoBehaviour
 	{
         onNewRoundBegin?.Invoke();
 
-        foreach (AEntityStatus effect in m_effects)
+        foreach (EntityStatusEnumID status in m_status)
 		{
-            if (--m_remainingDurationToActiveEffects[effect] <= 0)
+            if (--m_remainingDurationToActiveEffects[GameAssets.current.game.entityStatus[status]] <= 0)
 			{
-                m_effects.Remove(effect);
-                m_remainingDurationToActiveEffects.Remove(effect);
+                m_status.Remove(status);
+                m_remainingDurationToActiveEffects.Remove(GameAssets.current.game.entityStatus[status]);
 			}
 
-            effect.ApplyStatus(this);
+            GameAssets.current.game.entityStatus[status].ApplyStatus(this);
 		}
 	}
 
@@ -154,10 +154,10 @@ public class Entity : MonoBehaviour
             m_skin.Hide();
     }
 
-    public void AddEffect(AEntityStatus _effect )
+    public void AddStatus(EntityStatusEnumID _statusID )
 	{
-        m_effects.Add(_effect);
-        m_remainingDurationToActiveEffects.Add(_effect, _effect.duration);
+        m_status.Add(_statusID);
+        m_remainingDurationToActiveEffects.Add(GameAssets.current.game.entityStatus[_statusID], GameAssets.current.game.entityStatus[_statusID].duration);
     }
 
 }

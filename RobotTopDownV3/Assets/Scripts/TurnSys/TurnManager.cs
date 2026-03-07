@@ -270,10 +270,10 @@ public class TurnManager : Singleton<TurnManager>
 		if (m_remainingActionToken[_entityID] <= 0)
 			return false;
 
-		if (_action.Data.tokenPreparationDuration > 1)
+		if (_action.Data.GetTokenPreparationCost(GameManager.Instance.GetEntityFromID(_entityID), null) > 1)
 		{
 			//add wait tile for each actions in queue
-			for (int i = 0; i < _action.Data.tokenPreparationDuration - 1; i++)
+			for (int i = 0; i < _action.Data.GetTokenPreparationCost(GameManager.Instance.GetEntityFromID(_entityID), null) - 1; i++)
 			{
 				WaitAction preparationWaitAction = new WaitAction();
 				preparationWaitAction.linkedActionID = _action.enumID;
@@ -303,10 +303,10 @@ public class TurnManager : Singleton<TurnManager>
 		};
 		m_recordedActionInput[_entityID].Enqueue(recordedAction);
 
-		if (_action.Data.tokenDuration > 1)
+		if (_action.Data.GetTokenTotalCost(GameManager.Instance.GetEntityFromID(_entityID), null) > 1)
 		{
 			//add wait tile for each actions in queue
-			for (int i = 0; i < _action.Data.tokenDuration - 1; i++)
+			for (int i = 0; i < _action.Data.GetTokenTotalCost(GameManager.Instance.GetEntityFromID(_entityID), null) - 1; i++)
 			{
 				WaitAction extraDurationWaitAction = new WaitAction();
 
@@ -326,7 +326,7 @@ public class TurnManager : Singleton<TurnManager>
 		}
 
 
-		m_remainingActionToken[_entityID] -= GameAssets.current.game.entityActionsData[_action.enumID].tokenCost;
+		m_remainingActionToken[_entityID] -= GameAssets.current.game.entityActionsData[_action.enumID].GetTokenTotalCost(GameManager.Instance.GetEntityFromID(_entityID), null);
 
 		LogConsole.AddLog("Add " + _action.ToString() + " action to queue.", LogConsole.LogEventType.InputPhase);
 		//Update action display on grid + UI
@@ -343,7 +343,7 @@ public class TurnManager : Singleton<TurnManager>
 		List<RecordedAction> actionQueue = m_recordedActionInput[_actionToStartRemoveFrom.performingEntityID].ToList();
 		for (int i = actionQueue.Count - 1; i >= _recordedActionPositionInQueue; i--)
 		{
-			m_remainingActionToken[_actionToStartRemoveFrom.performingEntityID] += actionQueue[i].action.Data.tokenCost;
+			m_remainingActionToken[_actionToStartRemoveFrom.performingEntityID] += actionQueue[i].action.Data.GetTokenTotalCost(GameManager.Instance.GetEntityFromID(_actionToStartRemoveFrom.performingEntityID), null);
 			actionQueue.RemoveAt(i);
 		}
 		//actionQueue.RemoveRange(_recordedActionPositionInQueue, actionQueue.Count - _recordedActionPositionInQueue);
@@ -373,8 +373,8 @@ public class TurnManager : Singleton<TurnManager>
 		PlayerController.Instance.ClearGhostEntities();
 
 
-		if (_selectedEntityID.HasValue && m_recordedActionInput.ContainsKey((int)_selectedEntityID)
-			&& m_remainingActionToken[_selectedEntityID.Value] >= GameAssets.current.game.entityActionsData[m_currentActionTypeSelected].tokenCost)
+		if (_selectedEntityID.HasValue && m_recordedActionInput.ContainsKey(_selectedEntityID.Value)
+			&& m_remainingActionToken[_selectedEntityID.Value] >= GameAssets.current.game.entityActionsData[m_currentActionTypeSelected].GetTokenTotalCost(GameManager.Instance.GetEntityFromID(_selectedEntityID.Value), null))
 			SetCurrentActionSelected(m_currentActionTypeSelected);
 
 		// display all player entity actions
@@ -387,7 +387,7 @@ public class TurnManager : Singleton<TurnManager>
 
 			foreach (RecordedAction recordedAction in m_recordedActionInput[entityID].ToArray())
 			{
-				totalCost += recordedAction.action.Data.tokenCost;
+				totalCost += recordedAction.action.Data.GetTokenTotalCost(GameManager.Instance.GetEntityFromID(entityID), null);
 				recordedAction.action.Display(recordedAction);
 
 				if (_specificTokenCount != -1 && totalCost <= _specificTokenCount)
@@ -499,7 +499,7 @@ public class TurnManager : Singleton<TurnManager>
 			{
 				RecordedAction recordedAction = recordedActions[entityID].Dequeue();
 				m_actionsToPlay[entityID].Enqueue(recordedAction);
-				totalCost += recordedAction.action.Data.tokenCost;
+				totalCost += recordedAction.action.Data.GetTokenTotalCost(GameManager.Instance.GetEntityFromID(entityID), null);
 			}
 
 			if (m_recordedActionInput[entityID].Count == 0)

@@ -57,7 +57,7 @@ public static class ScriptableEnumAutoGenerator
     {
         Type enumType = scriptableType.BaseType.GetGenericArguments()[0];
         string enumName = enumType.Name;
-        string fileName = scriptableType + ".cs";
+        string fileName = enumType + ".cs";
 
         var assets = FindAssets(scriptableType);
 

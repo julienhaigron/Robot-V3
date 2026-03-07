@@ -90,6 +90,11 @@ public class BulletWeapon : Weapon
 						if (_attackAction.areStatusesSuccess[i])
 							GameAssets.current.game.entityStatus[(EntityStatusEnumID)_attackAction.statusIds[i]].ApplyStatus(entity);
 					}
+
+					foreach (AEntityPassiveEffect passiveEffectID in _attackAction.Data.passiveEffects)
+					{
+						passiveEffectID.ApplyEffect(m_user, entity);
+					}
 				}
 
 				//TODO : add aoe damage anim/viosual/effect here

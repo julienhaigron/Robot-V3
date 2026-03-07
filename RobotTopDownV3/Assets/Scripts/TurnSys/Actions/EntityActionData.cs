@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Sirenix.OdinInspector;
+using System.Linq;
 
 
 [CreateAssetMenu(fileName = "EntityActionData", menuName = "Tools/Scriptables/Entity Action")]
@@ -13,10 +14,10 @@ public class EntityActionData : ScriptableObject
 
 	public Sprite icon;
 	public Color tileOutlineColor = Color.green;
-	public int tokenCost => tokenPreparationDuration + tokenDuration;
-	[Min(0)] public int tokenPreparationDuration;
-	[Min(0)] public int tokenCooldown;
-	[Min(0)] public int tokenDuration;
+	//public int tokenCost => tokenPreparationDuration + tokenDuration + tokenCooldown;
+	[SerializeField] private int m_tokenPreparationDuration;
+	[SerializeField] private int m_tokenCooldown;
+	[SerializeField] private int m_tokenDuration;
 
 	[Title("Animation")]
 	public string preparationAnimationKey;
@@ -192,4 +193,74 @@ public class EntityActionData : ScriptableObject
 
 		return PFCResultType.Failure;
 	}
+
+	#region Getters
+
+	public int GetTokenTotalCost ( Entity _performingEntity, Entity _targetEntity )
+	{
+		return GetTokenPreparationCost(_performingEntity, _targetEntity) + GetTokenCooldownCost(_performingEntity, _targetEntity) + m_tokenDuration;
+	}
+
+	public int GetTokenPreparationCost ( Entity _performingEntity, Entity _targetEntity )
+	{
+		PreparationCostReductionPassiveEffect so = (GameAssets.current.game.entityEffects[EntityPassiveEffectEnumID.PreparationCostReduction] as PreparationCostReductionPassiveEffect);
+
+		if (passiveEffects.Contains(so) && so.UseConditionPredicate(_performingEntity, _targetEntity))
+		{
+			return m_tokenPreparationDuration - (GameAssets.current.game.entityEffects[EntityPassiveEffectEnumID.PreparationCostReduction] as PreparationCostReductionPassiveEffect).reductionAmount;
+		}
+
+		return m_tokenPreparationDuration;
+
+	}
+
+	public int GetTokenCooldownCost ( Entity _performingEntity, Entity _targetEntity )
+	{
+		CooldownCostReductionPassiveEffect so = (GameAssets.current.game.entityEffects[EntityPassiveEffectEnumID.CooldownCostReduction] as CooldownCostReductionPassiveEffect);
+
+		if (passiveEffects.Contains(so) && so.UseConditionPredicate(_performingEntity, _targetEntity))
+		{
+			return m_tokenCooldown - (GameAssets.current.game.entityEffects[EntityPassiveEffectEnumID.CooldownCostReduction] as CooldownCostReductionPassiveEffect).reductionAmount;
+		}
+
+		return m_tokenCooldown;
+	}
+
+	public int GetMaxRange ( Entity _performingEntity, Entity _targetEntity )
+	{
+		MaxRangeUpPassiveEffect so = (GameAssets.current.game.entityEffects[EntityPassiveEffectEnumID.MaxRangeUp] as MaxRangeUpPassiveEffect);
+
+		if (passiveEffects.Contains(so) && so.UseConditionPredicate(_performingEntity, _targetEntity))
+		{
+			return maxDistance + (GameAssets.current.game.entityEffects[EntityPassiveEffectEnumID.MaxRangeUp] as MaxRangeUpPassiveEffect).rangeBoostAmount;
+		}
+
+		return maxDistance;
+	}
+
+	public int GetMaxTargetAmount ( Entity _performingEntity, Entity _targetEntity )
+	{
+		MaxTargetUpPassiveEffect so = (GameAssets.current.game.entityEffects[EntityPassiveEffectEnumID.MaxRangeUp] as MaxTargetUpPassiveEffect);
+
+		if (passiveEffects.Contains(so) && so.UseConditionPredicate(_performingEntity, _targetEntity))
+		{
+			return maxTargetAmount + (GameAssets.current.game.entityEffects[EntityPassiveEffectEnumID.MaxRangeUp] as MaxTargetUpPassiveEffect).targetBoostAmount;
+		}
+
+		return maxTargetAmount;
+	}
+
+	public int GetDamageAmountForType ( Entity _performingEntity, Entity _targetEntity, WeaponEquipmentData.DamageType _damageType )
+	{
+		DamageUpPassiveEffect so = (GameAssets.current.game.entityEffects[EntityPassiveEffectEnumID.MaxRangeUp] as DamageUpPassiveEffect);
+
+		if (passiveEffects.Contains(so) && so.UseConditionPredicate(_performingEntity, _targetEntity))
+		{
+			return maxTargetAmount + (GameAssets.current.game.entityEffects[EntityPassiveEffectEnumID.MaxRangeUp] as DamageUpPassiveEffect).damageBoostAmount;
+		}
+
+		return maxTargetAmount;
+	}
+
+	#endregion
 }

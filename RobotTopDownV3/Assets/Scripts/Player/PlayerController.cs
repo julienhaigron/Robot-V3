@@ -268,7 +268,7 @@ public class PlayerController : Singleton<PlayerController>
 			{
 				foreach (ActionDisplayOnTile display in m_actionDisplays[m_selectedEntity.ID])
 				{
-					totalCostSpend += display.RecordedAction.action.Data.tokenCost;
+					totalCostSpend += display.RecordedAction.action.Data.GetTokenTotalCost(m_selectedEntity, m_selectedEntity.AI.TargetedEntity);
 					if (display.DestinationTile == _tile)
 					{
 						didContainTile = true;

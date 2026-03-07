@@ -20,7 +20,7 @@ public class ActionButton : BaseButton
 		EntityActionData data = GameAssets.current.game.entityActionsData[_action];
 		m_icon.sprite = data.icon;
 		m_name.text = data.displayName;
-		m_tokenCost.text = data.tokenCost.ToString();
+		m_tokenCost.text = data.GetTokenTotalCost(null, null).ToString();
 	}
 
 	private void OnActionTokenUsed ()
