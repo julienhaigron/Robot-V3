@@ -271,28 +271,6 @@ public class TurnManager : Singleton<TurnManager>
 		if (m_remainingActionToken[_entityID] <= 0)
 			return false;
 
-		/*if (_action.Data.GetTokenPreparationCost(GameManager.Instance.GetEntityFromID(_entityID), null) > 1)
-		{
-			//add wait tile for each actions in queue
-			for (int i = 0; i < _action.Data.GetTokenPreparationCost(GameManager.Instance.GetEntityFromID(_entityID), null) - 1; i++)
-			{
-				WaitAction preparationWaitAction = new WaitAction();
-				preparationWaitAction.linkedActionID = _action.enumID;
-				preparationWaitAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.Wait], _entityID, _action.supposedPositionAtActionStartID);
-
-				m_recordedActionInput[_entityID].Enqueue(new RecordedAction
-				{
-					type = EntityActionEnumID.Wait,
-					performingEntityID = _entityID,
-					action = preparationWaitAction,
-					entityState = _state,
-					freeAction = new WaitAction(),
-					freeActionType = EntityActionEnumID.Wait
-				});
-
-			}
-		}*/
-
 		RecordedAction recordedAction = new RecordedAction
 		{
 			type = _action.enumID,
@@ -304,30 +282,8 @@ public class TurnManager : Singleton<TurnManager>
 		};
 		m_recordedActionInput[_entityID].Enqueue(recordedAction);
 
-		/*if (_action.Data.GetTokenTotalCost(GameManager.Instance.GetEntityFromID(_entityID), null) > 1)
-		{
-			//add wait tile for each actions in queue
-			for (int i = 0; i < _action.Data.GetTokenTotalCost(GameManager.Instance.GetEntityFromID(_entityID), null) - 1; i++)
-			{
-				WaitAction extraDurationWaitAction = new WaitAction();
 
-				extraDurationWaitAction.linkedActionID = _action.enumID;
-				extraDurationWaitAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.Wait], _entityID, _action.supposedPositionAtActionStartID);
-
-				m_recordedActionInput[_entityID].Enqueue(new RecordedAction
-				{
-					type = EntityActionEnumID.Wait,
-					performingEntityID = _entityID,
-					action = extraDurationWaitAction,
-					entityState = _state,
-					freeAction = new WaitAction(),
-					freeActionType = EntityActionEnumID.Wait
-				});
-			}
-		}*/
-
-
-		m_remainingActionToken[_entityID] -= GameAssets.current.game.entityActionsData[_action.enumID].GetTokenTotalCost(GameManager.Instance.GetEntityFromID(_entityID), null);
+		m_remainingActionToken[_entityID] -= GameAssets.current.game.entityActionsData[_action.enumID].GetTokenTotalCost(_action, GameManager.Instance.GetEntityFromID(_entityID), null);
 
 		LogConsole.AddLog("Add " + _action.ToString() + " action to queue.", LogConsole.LogEventType.InputPhase);
 		//Update action display on grid + UI
@@ -344,7 +300,7 @@ public class TurnManager : Singleton<TurnManager>
 		List<RecordedAction> actionQueue = m_recordedActionInput[_actionToStartRemoveFrom.performingEntityID].ToList();
 		for (int i = actionQueue.Count - 1; i >= _recordedActionPositionInQueue; i--)
 		{
-			m_remainingActionToken[_actionToStartRemoveFrom.performingEntityID] += actionQueue[i].action.Data.GetTokenTotalCost(GameManager.Instance.GetEntityFromID(_actionToStartRemoveFrom.performingEntityID), null);
+			m_remainingActionToken[_actionToStartRemoveFrom.performingEntityID] += actionQueue[i].action.TotalCost;
 			actionQueue.RemoveAt(i);
 		}
 		//actionQueue.RemoveRange(_recordedActionPositionInQueue, actionQueue.Count - _recordedActionPositionInQueue);
@@ -375,7 +331,7 @@ public class TurnManager : Singleton<TurnManager>
 
 
 		if (_selectedEntityID.HasValue && m_recordedActionInput.ContainsKey(_selectedEntityID.Value)
-			&& m_remainingActionToken[_selectedEntityID.Value] >= GameAssets.current.game.entityActionsData[m_currentActionTypeSelected].GetTokenTotalCost(GameManager.Instance.GetEntityFromID(_selectedEntityID.Value), null))
+			&& m_remainingActionToken[_selectedEntityID.Value] >= GameAssets.current.game.entityActionsData[m_currentActionTypeSelected].GetTokenTotalCost(m_currentEntityAction, GameManager.Instance.GetEntityFromID(_selectedEntityID.Value), null))
 			SetCurrentActionSelected(m_currentActionTypeSelected);
 
 		// display all player entity actions
@@ -388,7 +344,7 @@ public class TurnManager : Singleton<TurnManager>
 
 			foreach (RecordedAction recordedAction in m_recordedActionInput[entityID].ToArray())
 			{
-				totalCost += recordedAction.action.Data.GetTokenTotalCost(GameManager.Instance.GetEntityFromID(entityID), null);
+				totalCost += recordedAction.action.TotalCost;
 				recordedAction.action.Display(recordedAction);
 
 				if (_specificTokenCount != -1 && totalCost <= _specificTokenCount)
@@ -505,7 +461,7 @@ public class TurnManager : Singleton<TurnManager>
 			{
 				RecordedAction recordedAction = recordedActions[entityID].Dequeue();
 				m_actionsToPlay[entityID].Enqueue(recordedAction);
-				totalCost += recordedAction.action.Data.GetTokenTotalCost(GameManager.Instance.GetEntityFromID(entityID), null);
+				totalCost += recordedAction.action.TotalCost;
 			}
 
 			if (m_recordedActionInput[entityID].Count == 0)

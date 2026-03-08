@@ -6,8 +6,11 @@ public class ApplyStatusPassiveEffect : AEntityPassiveEffect
 	public bool doApplyToSelf = false;
 	public EntityStatusEnumID statusApplied;
 
-	public override bool UseConditionPredicate ( Entity _entity, Entity _targetEntity )
+	public override bool UseConditionPredicate ( AEntityAction _action, Entity _entity, Entity _targetEntity )
 	{
+		if (_action == null || _entity == null)
+			return false;
+
 		return true;
 	}
 

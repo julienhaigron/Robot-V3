@@ -20,6 +20,8 @@ public abstract class AEntityAction : INetworkSerializable
     public int preparationDuration = 0;
     public int actualDuration = 1;
     public int cooldownDuration = 0;
+    public int TotalCost => preparationDuration + actualDuration + cooldownDuration;
+
     public int lifetime = 0;
 
     public virtual void NetworkSerialize<T> ( BufferSerializer<T> serializer ) where T : IReaderWriter
@@ -48,9 +50,9 @@ public abstract class AEntityAction : INetworkSerializable
             statusIds[i] = (int)_data.appliableStatus[i].enumID;
         }
 
-        preparationDuration = _data.GetTokenPreparationCost(GameManager.Instance.GetEntityFromID(_performingEntityID), null);
+        preparationDuration = _data.GetTokenPreparationCost(this, GameManager.Instance.GetEntityFromID(_performingEntityID), null);
         actualDuration = _data.tokenDuration;
-        cooldownDuration = _data.GetTokenCooldownCost(GameManager.Instance.GetEntityFromID(_performingEntityID), null);
+        cooldownDuration = _data.GetTokenCooldownCost(this, GameManager.Instance.GetEntityFromID(_performingEntityID), null);
     }
 
     public abstract void Prepare ( Entity.EntityState _state );

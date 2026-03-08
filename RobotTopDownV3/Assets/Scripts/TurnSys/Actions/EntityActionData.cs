@@ -196,16 +196,16 @@ public class EntityActionData : ScriptableObject
 
 	#region Getters
 
-	public int GetTokenTotalCost ( Entity _performingEntity, Entity _targetEntity )
+	public int GetTokenTotalCost ( AEntityAction _action, Entity _performingEntity, Entity _targetEntity )
 	{
-		return GetTokenPreparationCost(_performingEntity, _targetEntity) + GetTokenCooldownCost(_performingEntity, _targetEntity) + tokenDuration;
+		return GetTokenPreparationCost(_action, _performingEntity, _targetEntity) + GetTokenCooldownCost(_action, _performingEntity, _targetEntity) + tokenDuration;
 	}
 
-	public int GetTokenPreparationCost ( Entity _performingEntity, Entity _targetEntity )
+	public int GetTokenPreparationCost ( AEntityAction _action, Entity _performingEntity, Entity _targetEntity )
 	{
 		PreparationCostReductionPassiveEffect so = (GameAssets.current.game.entityEffects[EntityPassiveEffectEnumID.PreparationCostReduction] as PreparationCostReductionPassiveEffect);
 
-		if (passiveEffects.Contains(so) && so.UseConditionPredicate(_performingEntity, _targetEntity))
+		if (passiveEffects.Contains(so) && so.UseConditionPredicate(_action, _performingEntity, _targetEntity))
 		{
 			return m_tokenPreparationDuration - (GameAssets.current.game.entityEffects[EntityPassiveEffectEnumID.PreparationCostReduction] as PreparationCostReductionPassiveEffect).reductionAmount;
 		}
@@ -214,11 +214,11 @@ public class EntityActionData : ScriptableObject
 
 	}
 
-	public int GetTokenCooldownCost ( Entity _performingEntity, Entity _targetEntity )
+	public int GetTokenCooldownCost ( AEntityAction _action, Entity _performingEntity, Entity _targetEntity )
 	{
 		CooldownCostReductionPassiveEffect so = (GameAssets.current.game.entityEffects[EntityPassiveEffectEnumID.CooldownCostReduction] as CooldownCostReductionPassiveEffect);
 
-		if (passiveEffects.Contains(so) && so.UseConditionPredicate(_performingEntity, _targetEntity))
+		if (passiveEffects.Contains(so) && so.UseConditionPredicate(_action, _performingEntity, _targetEntity))
 		{
 			return m_tokenCooldown - (GameAssets.current.game.entityEffects[EntityPassiveEffectEnumID.CooldownCostReduction] as CooldownCostReductionPassiveEffect).reductionAmount;
 		}
@@ -226,11 +226,11 @@ public class EntityActionData : ScriptableObject
 		return m_tokenCooldown;
 	}
 
-	public int GetMaxRange ( Entity _performingEntity, Entity _targetEntity )
+	public int GetMaxRange ( AEntityAction _action, Entity _performingEntity, Entity _targetEntity )
 	{
 		MaxRangeUpPassiveEffect so = (GameAssets.current.game.entityEffects[EntityPassiveEffectEnumID.MaxRangeUp] as MaxRangeUpPassiveEffect);
 
-		if (passiveEffects.Contains(so) && so.UseConditionPredicate(_performingEntity, _targetEntity))
+		if (passiveEffects.Contains(so) && so.UseConditionPredicate(_action, _performingEntity, _targetEntity))
 		{
 			return maxDistance + (GameAssets.current.game.entityEffects[EntityPassiveEffectEnumID.MaxRangeUp] as MaxRangeUpPassiveEffect).rangeBoostAmount;
 		}
@@ -238,11 +238,11 @@ public class EntityActionData : ScriptableObject
 		return maxDistance;
 	}
 
-	public int GetMaxTargetAmount ( Entity _performingEntity, Entity _targetEntity )
+	public int GetMaxTargetAmount ( AEntityAction _action, Entity _performingEntity, Entity _targetEntity )
 	{
 		MaxTargetUpPassiveEffect so = (GameAssets.current.game.entityEffects[EntityPassiveEffectEnumID.MaxRangeUp] as MaxTargetUpPassiveEffect);
 
-		if (passiveEffects.Contains(so) && so.UseConditionPredicate(_performingEntity, _targetEntity))
+		if (passiveEffects.Contains(so) && so.UseConditionPredicate(_action, _performingEntity, _targetEntity))
 		{
 			return maxTargetAmount + (GameAssets.current.game.entityEffects[EntityPassiveEffectEnumID.MaxRangeUp] as MaxTargetUpPassiveEffect).targetBoostAmount;
 		}
@@ -250,11 +250,11 @@ public class EntityActionData : ScriptableObject
 		return maxTargetAmount;
 	}
 
-	public int GetDamageAmountForType ( Entity _performingEntity, Entity _targetEntity, WeaponEquipmentData.DamageType _damageType )
+	public int GetDamageAmountForType ( AEntityAction _action, Entity _performingEntity, Entity _targetEntity, WeaponEquipmentData.DamageType _damageType )
 	{
 		DamageUpPassiveEffect so = (GameAssets.current.game.entityEffects[EntityPassiveEffectEnumID.MaxRangeUp] as DamageUpPassiveEffect);
 
-		if (passiveEffects.Contains(so) && so.UseConditionPredicate(_performingEntity, _targetEntity))
+		if (passiveEffects.Contains(so) && so.UseConditionPredicate(_action, _performingEntity, _targetEntity))
 		{
 			return maxTargetAmount + (GameAssets.current.game.entityEffects[EntityPassiveEffectEnumID.MaxRangeUp] as DamageUpPassiveEffect).damageBoostAmount;
 		}
