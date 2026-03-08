@@ -7,7 +7,7 @@ using Unity.Netcode;
 public abstract class AEntityAction : INetworkSerializable
 {
     public Action onPerform;
-    public Action<int> onEndPerform;
+    public Action<int, bool> onEndTick;
 
     public EntityActionEnumID enumID;
     public int performingEntityID; //entity
@@ -17,6 +17,10 @@ public abstract class AEntityAction : INetworkSerializable
     public int[] statusIds;
     public EntityActionData Data => GameAssets.current.game.entityActionsData[enumID];
 
+    public int preparationDuration = 0;
+    public int actualDuration = 1;
+    public int cooldownDuration = 0;
+    public int lifetime = 0;
 
     public virtual void NetworkSerialize<T> ( BufferSerializer<T> serializer ) where T : IReaderWriter
     {
@@ -25,6 +29,10 @@ public abstract class AEntityAction : INetworkSerializable
 		serializer.SerializeValue(ref supposedPositionAtActionStartID);
 		serializer.SerializeValue(ref positionAtActionEndID);
 		serializer.SerializeValue(ref statusIds);
+		serializer.SerializeValue(ref preparationDuration);
+		serializer.SerializeValue(ref actualDuration);
+		serializer.SerializeValue(ref cooldownDuration);
+		serializer.SerializeValue(ref lifetime);
     }
 
     public virtual void Init(EntityActionData _data, int _performingEntityID, int _positionAtActionStartID )
@@ -39,11 +47,32 @@ public abstract class AEntityAction : INetworkSerializable
 		{
             statusIds[i] = (int)_data.appliableStatus[i].enumID;
         }
+
+        preparationDuration = _data.GetTokenPreparationCost(GameManager.Instance.GetEntityFromID(_performingEntityID), null);
+        actualDuration = _data.tokenDuration;
+        cooldownDuration = _data.GetTokenCooldownCost(GameManager.Instance.GetEntityFromID(_performingEntityID), null);
     }
 
     public abstract void Prepare ( Entity.EntityState _state );
 
-    public virtual void Perform (Entity.EntityState _state)
+    //returns true if action fully performed
+    public bool PerformTick ( Entity.EntityState _state )
+	{
+        lifetime++;
+        
+        if (lifetime == preparationDuration + 1 )
+        {
+            Perform(_state);
+            return true;
+        }
+        else
+        {
+            DG.Tweening.DOVirtual.DelayedCall(GameConfig.current.game.actionDuration, () => EndTick());
+            return false;
+        }
+    }
+
+    protected virtual void Perform (Entity.EntityState _state)
 	{
         onPerform?.Invoke();
     }
@@ -62,10 +91,19 @@ public abstract class AEntityAction : INetworkSerializable
         TurnManager.Instance.RefreshActionDisplay(performingEntityID);
     }
 
-    public virtual void EndPerform ()
+    protected virtual void EndTick ()
+	{
+        bool didEndAction = lifetime >= preparationDuration + actualDuration + cooldownDuration;
+
+        if (didEndAction)
+            EndAction();
+
+        onEndTick?.Invoke(performingEntityID, didEndAction);
+	}
+
+    protected virtual void EndAction ()
     {
         PerformingEntity.EndPerformAction();
-        onEndPerform?.Invoke(performingEntityID);
     }
 
     public abstract bool CheckConflict ( AEntityAction _otherAction, bool _isCheck = true );

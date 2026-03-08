@@ -32,17 +32,17 @@ public class RotateEntityAction : AEntityAction
 		return false;
 	}
 
-	public override void Perform ( Entity.EntityState _state )
+	protected override void Perform ( Entity.EntityState _state )
 	{
 		if(targetedOrientationID == -1)
 		{
 			//shouldnt happen
 			base.Perform(_state);
-			EndPerform();
+			EndTick();
 		}
 		else
 		{
-			PerformingEntity.Displacement.Rotate(targetedOrientationID, GameConfig.current.game.entityRotationDuration, EndPerform);
+			PerformingEntity.Displacement.Rotate(targetedOrientationID, GameConfig.current.game.entityRotationDuration, EndTick);
 		}
 
 	}

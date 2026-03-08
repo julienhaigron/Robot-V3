@@ -16,8 +16,8 @@ MonoBehaviour:
   enumID: 6
   icon: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
   tileOutlineColor: {r: 1, g: 0, b: 0, a: 1}
-  tokenPreparationDuration: 0
-  tokenCooldown: 1
+  m_tokenPreparationDuration: 0
+  m_tokenCooldown: 0
   tokenDuration: 1
   preparationAnimationKey: 
   afterPerformAnimationKey: 
@@ -36,5 +36,7 @@ MonoBehaviour:
   rayDiameter: 1
   coneType: 1
   usedDamageChannels: 05000000
-  appliableEffects:
-  - {fileID: 11400000, guid: 7af3cbb2fb9300d4c8a9b333e8a5b7a4, type: 2}
+  pushStrenght: 0
+  pullStrenght: 0
+  appliableStatus: []
+  passiveEffects: []

@@ -49,7 +49,7 @@ public class MoveToTargetAction : AEntityAction
 		GameManager.Instance.GetEntityFromID(performingEntityID).Displacement.Coordinates.GetTile().SetEntity(null, _isThisTurn: false);
 	}
 
-	public override void Perform ( Entity.EntityState _state )
+	protected override void Perform ( Entity.EntityState _state )
 	{
 		base.Perform(_state);
 		List<Tile> tilesInRange = new();
@@ -70,7 +70,7 @@ public class MoveToTargetAction : AEntityAction
 				{
 					tile.UI.ResetOutline();
 				}
-				EndPerform();
+				EndTick();
 			});
 
 		}
@@ -82,7 +82,7 @@ public class MoveToTargetAction : AEntityAction
 				{
 					tile.UI.ResetOutline();
 				}
-				EndPerform();
+				EndTick();
 			});
 		}
 	}

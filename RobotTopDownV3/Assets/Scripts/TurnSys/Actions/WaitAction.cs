@@ -5,15 +5,6 @@ using Unity.Netcode;
 
 public class WaitAction : AEntityAction
 {
-	public bool isLinkedToAction = false;
-	public EntityActionEnumID linkedActionID;
-
-	public override void NetworkSerialize<T> ( BufferSerializer<T> serializer )
-	{
-		base.NetworkSerialize(serializer);
-		serializer.SerializeValue(ref isLinkedToAction);
-		serializer.SerializeValue(ref linkedActionID);
-	}
 
 	public override bool TileInteractPredicate ( Tile _tile )
 	{
@@ -36,17 +27,11 @@ public class WaitAction : AEntityAction
 	}
 
 
-	public override void Perform ( Entity.EntityState _state )
+	protected override void Perform ( Entity.EntityState _state )
 	{
 		base.Perform(_state);
 
-		DG.Tweening.DOVirtual.DelayedCall(GameConfig.current.game.actionDuration, () => EndPerform());
-	}
-
-	public override void EndPerform ()
-	{
-		base.EndPerform();
-
+		DG.Tweening.DOVirtual.DelayedCall(GameConfig.current.game.actionDuration, () => EndTick());
 	}
 
 	public override void Display ( TurnManager.RecordedAction _recordedAction )

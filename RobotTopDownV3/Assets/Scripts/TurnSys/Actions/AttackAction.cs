@@ -74,14 +74,14 @@ public class AttackAction : AEntityAction
 		return false;
 	}
 
-	public override void Perform ( Entity.EntityState _state )
+	protected override void Perform ( Entity.EntityState _state )
 	{
 		PerformingEntity.AI.DOAllPrewarmCheck();
 		if (targetedEntityID == -1)
 		{
 			//TODO : add no target feedback
 			base.Perform(_state);
-			EndPerform();
+			EndTick();
 		}
 
 		//if enemy is in weapon range
@@ -101,7 +101,7 @@ public class AttackAction : AEntityAction
 				{
 					tile.UI.ResetOutline();
 				}
-				EndPerform();
+				EndTick();
 			});
 		}
 		else
@@ -110,7 +110,7 @@ public class AttackAction : AEntityAction
 			//Debug.Log("target not in range");
 			//DG.Tweening.DOVirtual.DelayedCall(GameConfig.current.game.actionDuration, () => EndPerform());
 			base.Perform(_state);
-			EndPerform();
+			EndTick();
 		}
 	}
 

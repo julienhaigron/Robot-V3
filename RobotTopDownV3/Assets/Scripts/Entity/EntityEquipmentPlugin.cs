@@ -144,9 +144,9 @@ public class EntityEquipmentPlugin : EntityPlugin
 
 	private void OnActionPerformed ( AEntityAction _actionPerformed )
 	{
-		EntityActionData actionData = GameAssets.current.game.entityActionsData[_actionPerformed.enumID];
+		/*EntityActionData actionData = GameAssets.current.game.entityActionsData[_actionPerformed.enumID];
 		if (actionData.GetTokenCooldownCost(m_linkedEntity, null) > 0)
-			m_actionsInCooldown.Add(_actionPerformed.enumID, actionData.GetTokenCooldownCost(m_linkedEntity, null));
+			m_actionsInCooldown.Add(_actionPerformed.enumID, actionData.GetTokenCooldownCost(m_linkedEntity, null));*/
 	}
 
 	#endregion

@@ -17,7 +17,7 @@ public class EntityActionData : ScriptableObject
 	//public int tokenCost => tokenPreparationDuration + tokenDuration + tokenCooldown;
 	[SerializeField] private int m_tokenPreparationDuration;
 	[SerializeField] private int m_tokenCooldown;
-	[SerializeField] private int m_tokenDuration;
+	public int tokenDuration = 1;
 
 	[Title("Animation")]
 	public string preparationAnimationKey;
@@ -198,7 +198,7 @@ public class EntityActionData : ScriptableObject
 
 	public int GetTokenTotalCost ( Entity _performingEntity, Entity _targetEntity )
 	{
-		return GetTokenPreparationCost(_performingEntity, _targetEntity) + GetTokenCooldownCost(_performingEntity, _targetEntity) + m_tokenDuration;
+		return GetTokenPreparationCost(_performingEntity, _targetEntity) + GetTokenCooldownCost(_performingEntity, _targetEntity) + tokenDuration;
 	}
 
 	public int GetTokenPreparationCost ( Entity _performingEntity, Entity _targetEntity )

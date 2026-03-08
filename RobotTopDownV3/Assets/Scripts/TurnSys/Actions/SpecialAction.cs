@@ -40,7 +40,7 @@ public class SpecialAction : AEntityAction
 		return false;
 	}
 
-	public override void Perform ( Entity.EntityState _state )
+	protected override void Perform ( Entity.EntityState _state )
 	{
 		//todo : apply effect
 	}

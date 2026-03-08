@@ -48,20 +48,15 @@ public class MoveToNeighborAction : AEntityAction
 		}
 	}
 
-	public override void Perform ( Entity.EntityState _state )
+	protected override void Perform ( Entity.EntityState _state )
 	{
 		base.Perform(_state);
 
 		//move to targetTile
 		if (finalTargetTileID != -1/* && finalTargetTile.GetEntity(false) == null*/)
-			GameManager.Instance.GetEntityFromID(performingEntityID).Displacement.MoveToTile((int)finalTargetTileID, EndPerform);
+			GameManager.Instance.GetEntityFromID(performingEntityID).Displacement.MoveToTile((int)finalTargetTileID, EndTick);
 		else
-			DG.Tweening.DOVirtual.DelayedCall(GameConfig.current.game.actionDuration, () => EndPerform());
-	}
-
-	public override void EndPerform ()
-	{ 
-		base.EndPerform();
+			DG.Tweening.DOVirtual.DelayedCall(GameConfig.current.game.actionDuration, () => EndTick());
 	}
 
 	public override bool TileInteractPredicate ( Tile _tile )
