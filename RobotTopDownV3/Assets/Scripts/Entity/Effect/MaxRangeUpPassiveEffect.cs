@@ -19,7 +19,10 @@ public class MaxRangeUpPassiveEffect : AEntityPassiveEffect
 			case ConditionType.Noone:
 				return true;
 			case ConditionType.DidNotMoveThisTurn:
-				return _entity.Displacement.CoordinateAtStartOfTurn.ID == _action.supposedPositionAtActionStartID;
+				bool recordedCheck = TurnManager.Instance.TrackedEventsPerEntity[_entity.ID].firstTimeEntityMoved == -1
+					|| TurnManager.Instance.TrackedEventsPerEntity[_entity.ID].firstTimeEntityMoved >= _action.timeAtStart;
+				bool liveCheck = !_entity.Displacement.DidMoveThisTurn;
+				return liveCheck && recordedCheck;
 		}
 	}
 

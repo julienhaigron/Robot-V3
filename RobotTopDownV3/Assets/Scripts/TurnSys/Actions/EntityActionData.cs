@@ -98,7 +98,7 @@ public class EntityActionData : ScriptableObject
 	[Min(0)] public int pushStrenght = 0;
 	[Min(0)] public int pullStrenght = 0;
 
-	public AEntityStatus[] appliableStatus;
+	//public AEntityStatus[] appliableStatus;
 	public AEntityPassiveEffect[] passiveEffects;
 
 	public enum PFCResultType
@@ -205,7 +205,8 @@ public class EntityActionData : ScriptableObject
 	{
 		PreparationCostReductionPassiveEffect so = (GameAssets.current.game.entityEffects[EntityPassiveEffectEnumID.PreparationCostReduction] as PreparationCostReductionPassiveEffect);
 
-		if (passiveEffects.Contains(so) && so.UseConditionPredicate(_action, _performingEntity, _targetEntity))
+		if (_action != null && _performingEntity.KnownedPassiveEffectsPerAction.ContainsKey(_action.enumID) &&
+			_performingEntity.KnownedPassiveEffectsPerAction[_action.enumID].Contains(so.enumID) && so.UseConditionPredicate(_action, _performingEntity, _targetEntity))
 		{
 			return m_tokenPreparationDuration - (GameAssets.current.game.entityEffects[EntityPassiveEffectEnumID.PreparationCostReduction] as PreparationCostReductionPassiveEffect).reductionAmount;
 		}
@@ -218,7 +219,8 @@ public class EntityActionData : ScriptableObject
 	{
 		CooldownCostReductionPassiveEffect so = (GameAssets.current.game.entityEffects[EntityPassiveEffectEnumID.CooldownCostReduction] as CooldownCostReductionPassiveEffect);
 
-		if (passiveEffects.Contains(so) && so.UseConditionPredicate(_action, _performingEntity, _targetEntity))
+		if (_action != null && _performingEntity.KnownedPassiveEffectsPerAction.ContainsKey(_action.enumID) &&
+			_performingEntity.KnownedPassiveEffectsPerAction[_action.enumID].Contains(so.enumID) && so.UseConditionPredicate(_action, _performingEntity, _targetEntity))
 		{
 			return m_tokenCooldown - (GameAssets.current.game.entityEffects[EntityPassiveEffectEnumID.CooldownCostReduction] as CooldownCostReductionPassiveEffect).reductionAmount;
 		}
@@ -230,7 +232,8 @@ public class EntityActionData : ScriptableObject
 	{
 		MaxRangeUpPassiveEffect so = (GameAssets.current.game.entityEffects[EntityPassiveEffectEnumID.MaxRangeUp] as MaxRangeUpPassiveEffect);
 
-		if (passiveEffects.Contains(so) && so.UseConditionPredicate(_action, _performingEntity, _targetEntity))
+		if (_action != null && _performingEntity.KnownedPassiveEffectsPerAction.ContainsKey(_action.enumID) &&
+			_performingEntity.KnownedPassiveEffectsPerAction[_action.enumID].Contains(so.enumID) && so.UseConditionPredicate(_action, _performingEntity, _targetEntity))
 		{
 			return maxDistance + (GameAssets.current.game.entityEffects[EntityPassiveEffectEnumID.MaxRangeUp] as MaxRangeUpPassiveEffect).rangeBoostAmount;
 		}
@@ -242,7 +245,8 @@ public class EntityActionData : ScriptableObject
 	{
 		MaxTargetUpPassiveEffect so = (GameAssets.current.game.entityEffects[EntityPassiveEffectEnumID.MaxRangeUp] as MaxTargetUpPassiveEffect);
 
-		if (passiveEffects.Contains(so) && so.UseConditionPredicate(_action, _performingEntity, _targetEntity))
+		if (_action != null && _performingEntity.KnownedPassiveEffectsPerAction.ContainsKey(_action.enumID) &&
+			_performingEntity.KnownedPassiveEffectsPerAction[_action.enumID].Contains(so.enumID) && so.UseConditionPredicate(_action, _performingEntity, _targetEntity))
 		{
 			return maxTargetAmount + (GameAssets.current.game.entityEffects[EntityPassiveEffectEnumID.MaxRangeUp] as MaxTargetUpPassiveEffect).targetBoostAmount;
 		}
@@ -254,7 +258,8 @@ public class EntityActionData : ScriptableObject
 	{
 		DamageUpPassiveEffect so = (GameAssets.current.game.entityEffects[EntityPassiveEffectEnumID.MaxRangeUp] as DamageUpPassiveEffect);
 
-		if (passiveEffects.Contains(so) && so.UseConditionPredicate(_action, _performingEntity, _targetEntity))
+		if (_action != null && _performingEntity.KnownedPassiveEffectsPerAction.ContainsKey(_action.enumID) &&
+			_performingEntity.KnownedPassiveEffectsPerAction[_action.enumID].Contains(so.enumID) && so.UseConditionPredicate(_action, _performingEntity, _targetEntity))
 		{
 			return maxTargetAmount + (GameAssets.current.game.entityEffects[EntityPassiveEffectEnumID.MaxRangeUp] as DamageUpPassiveEffect).damageBoostAmount;
 		}

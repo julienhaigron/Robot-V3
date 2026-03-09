@@ -49,7 +49,7 @@ public class EntityAIPlugin : EntityPlugin
 			attackAction.attackingWeaponId = _weaponId;
 			attackAction.targetedEntityID = m_lastEntityTargeted.ID;
 			attackAction.targetTileID = m_lastEntityTargeted.Displacement.Coordinates.ID;
-			attackAction.Init(GameAssets.current.game.entityActionsData[availableAttackAction.enumID], m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID);
+			attackAction.Init(GameAssets.current.game.entityActionsData[availableAttackAction.enumID], m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID, _recordedAction.action.timeAtStart);
 			resultInfo.ReplaceAction(attackAction);
 		}
 		else if (HasEnemyInVisionRange() && !HasEnemyWeaponInRange())
@@ -74,7 +74,7 @@ public class EntityAIPlugin : EntityPlugin
 					{
 						RotateEntityAction rotateAction = (TurnManager.Instance.GetAction(EntityActionEnumID.RotateEntity, m_linkedEntity.ID) as RotateEntityAction);
 						rotateAction.targetedOrientationID = GridManager.Instance.GetClosestOrientation(m_linkedEntity.Displacement.Coordinates.GetTile(), closestEntity.Displacement.Coordinates.GetTile());
-						rotateAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.RotateEntity], m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID);
+						rotateAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.RotateEntity], m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID, _recordedAction.action.timeAtStart);
 						resultInfo.ReplaceFreeAction(rotateAction);
 					}
 				}
@@ -92,14 +92,14 @@ public class EntityAIPlugin : EntityPlugin
 					moveToAction.mode = MoveToTargetAction.MoveActionMode.Entity;
 					moveToAction.targetEntiyID = closestEntity.ID;
 					moveToAction.thisActionDestinationID = pathToEnemy[1].coordinates.ID;
-					moveToAction.Init(GameAssets.current.game.entityActionsData[movementAction.enumID], m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID);
+					moveToAction.Init(GameAssets.current.game.entityActionsData[movementAction.enumID], m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID, _recordedAction.action.timeAtStart);
 					resultInfo.ReplaceAction(moveToAction);
 
 					if (!isAtCorrectOrientation)
 					{
 						RotateEntityAction rotateAction = (TurnManager.Instance.GetAction(EntityActionEnumID.RotateEntity, m_linkedEntity.ID) as RotateEntityAction);
 						rotateAction.targetedOrientationID = GridManager.Instance.GetClosestOrientation(m_linkedEntity.Displacement.Coordinates.GetTile(), closestEntity.Displacement.Coordinates.GetTile());
-						rotateAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.RotateEntity], m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID);
+						rotateAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.RotateEntity], m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID, _recordedAction.action.timeAtStart);
 						resultInfo.ReplaceFreeAction(rotateAction);
 					}
 				}
@@ -112,7 +112,7 @@ public class EntityAIPlugin : EntityPlugin
 					TargetEntity(closestEntity);
 					RotateEntityAction rotateAction = (TurnManager.Instance.GetAction(EntityActionEnumID.RotateEntity, m_linkedEntity.ID) as RotateEntityAction);
 					rotateAction.targetedOrientationID = GridManager.Instance.GetClosestOrientation(m_linkedEntity.Displacement.Coordinates.GetTile(), closestEntity.Displacement.Coordinates.GetTile());
-					rotateAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.RotateEntity], m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID);
+					rotateAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.RotateEntity], m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID, _recordedAction.action.timeAtStart);
 					resultInfo.ReplaceFreeAction(rotateAction);
 				}
 				

@@ -40,11 +40,11 @@ public class AttackAction : AEntityAction
 
 			if (isAttackSuccessfull)
 			{
-				areStatusesSuccess = new bool[statusIds.Length];
+				/*areStatusesSuccess = new bool[statusIds.Length];
 				for (int i = 0; i < statusIds.Length; i++)
 				{
 					areStatusesSuccess[i] = PerformingEntity.Equipment.StatusRoll(TargetEntity, GameAssets.current.game.entityStatus[(EntityStatusEnumID)statusIds[i]]);
-				}
+				}*/
 
 				Dictionary<WeaponEquipmentData.DamageType, int> damagesDealt =
 					PerformingEntity.Equipment.Weapons[attackingWeaponId].GetDamages(PerformingEntity, TargetEntity, Data, (EntityActionData.PFCResultType)pfcResult);

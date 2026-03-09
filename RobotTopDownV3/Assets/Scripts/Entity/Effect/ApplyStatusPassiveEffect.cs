@@ -4,6 +4,7 @@ using UnityEngine;
 public class ApplyStatusPassiveEffect : AEntityPassiveEffect
 {
 	public bool doApplyToSelf = false;
+	public bool doApplyToTile = false;
 	public EntityStatusEnumID statusApplied;
 
 	public override bool UseConditionPredicate ( AEntityAction _action, Entity _entity, Entity _targetEntity )
@@ -20,5 +21,10 @@ public class ApplyStatusPassiveEffect : AEntityPassiveEffect
 			_entity.AddStatus(statusApplied);
 		else
 			_targetEntity.AddStatus(statusApplied);
+	}
+
+	public void ApplyEffect(Tile _tile )
+	{
+		_tile.AddStatus(statusApplied);
 	}
 }

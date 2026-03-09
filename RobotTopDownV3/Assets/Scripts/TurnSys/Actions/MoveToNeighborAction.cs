@@ -23,9 +23,9 @@ public class MoveToNeighborAction : AEntityAction
 		serializer.SerializeValue(ref finalTargetTileID);
 	}
 
-	public override void Init ( EntityActionData _data, int _performingEntityID, int _positionAtActionStartID )
+	public override void Init ( EntityActionData _data, int _performingEntityID, int _positionAtActionStartID, int _timeAtStart )
 	{
-		base.Init(_data, _performingEntityID, _positionAtActionStartID);
+		base.Init(_data, _performingEntityID, _positionAtActionStartID, _timeAtStart);
 
 		if (mode == MoveActionMode.Coordinate)
 			positionAtActionEndID = targetTileID;

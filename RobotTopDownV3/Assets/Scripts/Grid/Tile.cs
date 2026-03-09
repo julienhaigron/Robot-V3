@@ -38,6 +38,10 @@ public class Tile : MonoBehaviour
 	[SerializeField] private Wall m_wall;
 	public Wall Wall { get { return m_wall; } set { m_wall = value; } }
 
+	private List<EntityStatusEnumID> m_status = new();
+	public List<EntityStatusEnumID> Status => m_status;
+	private Dictionary<AEntityStatus, int> m_remainingDurationToActiveEffects = new();
+
 	//Content on tile
 	public TileContent currentContent;
 	public TileContent nextTurnActionContent;
@@ -83,6 +87,7 @@ public class Tile : MonoBehaviour
 		TurnManager.onActionSelected += OnActionSelected;
 		TurnManager.onEndInputPhase += OnEndInputPhase;
 		TurnManager.onStartInputPhase += OnStartInputPhase;
+		TurnManager.onNewRoundStart += OnRoundStart;
 		PlayerController.onEntitySelected += OnEntitySelected;
 	}
 
@@ -93,6 +98,7 @@ public class Tile : MonoBehaviour
 		TurnManager.onActionSelected -= OnActionSelected;
 		TurnManager.onEndInputPhase -= OnEndInputPhase;
 		TurnManager.onStartInputPhase -= OnStartInputPhase;
+		TurnManager.onNewRoundStart -= OnRoundStart;
 		PlayerController.onEntitySelected -= OnEntitySelected;
 	}
 
@@ -184,6 +190,8 @@ public class Tile : MonoBehaviour
 		if (m_groundType == TileGroundType.Wall && m_wall.Health > 0)
 			return false;
 
+		//if(m_status.Contains())
+
 		return true;
 	}
 
@@ -233,6 +241,20 @@ public class Tile : MonoBehaviour
 		SetEntity(currentContent.entity, false);
 	}
 
+	private void OnRoundStart ()
+	{
+		foreach (EntityStatusEnumID status in m_status)
+		{
+			if (--m_remainingDurationToActiveEffects[GameAssets.current.game.entityStatus[status]] <= 0)
+			{
+				m_status.Remove(status);
+				m_remainingDurationToActiveEffects.Remove(GameAssets.current.game.entityStatus[status]);
+			}
+
+			GameAssets.current.game.entityStatus[status].PerformStatusEffectAtBeginingOfRound(this);
+		}
+	}
+
 	public void SetEntity ( Entity _entity, bool _isThisTurn )
 	{
 		if (_isThisTurn)
@@ -250,6 +272,13 @@ public class Tile : MonoBehaviour
 	}
 
 	#endregion
+
+	public void AddStatus ( EntityStatusEnumID _statusID )
+	{
+		GameAssets.current.game.entityStatus[_statusID].ApplyStatus(this);
+		m_status.Add(_statusID);
+		m_remainingDurationToActiveEffects.Add(GameAssets.current.game.entityStatus[_statusID], GameAssets.current.game.entityStatus[_statusID].duration);
+	}
 
 	public void SetActiveFOW ( bool _isActive = false, bool _isInstant = false )
 	{

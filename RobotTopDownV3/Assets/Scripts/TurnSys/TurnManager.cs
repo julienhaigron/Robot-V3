@@ -48,6 +48,21 @@ public class TurnManager : Singleton<TurnManager>
 	public enum TurnPhase { Recording, Calculating, Playing }
 	public TurnPhase currentPhase;
 
+	//prevision
+	private SerializableDictionary<int, TrackedEntityEvents> m_trackedEventsPerEntity = new();
+	public SerializableDictionary<int, TrackedEntityEvents> TrackedEventsPerEntity => m_trackedEventsPerEntity;
+	public class TrackedEntityEvents
+	{
+		public int firstTimeEntityMoved;
+		public int firstTimeEntityAttacked;
+
+		public void ResetAllValues ()
+		{
+			firstTimeEntityMoved = -1;
+			firstTimeEntityAttacked = -1;
+		}
+	}
+
 	public struct RecordedAction : INetworkSerializable
 	{
 		public EntityActionEnumID type;
@@ -132,6 +147,11 @@ public class TurnManager : Singleton<TurnManager>
 			foreach (Entity entity in anchor.Entities)
 			{
 				entity.Equipment.onDeath += OnEntityDeath;
+				m_trackedEventsPerEntity.Add(entity.ID, new TrackedEntityEvents() 
+				{ 
+					firstTimeEntityMoved = -1,
+					firstTimeEntityAttacked = -1 
+				});
 			}
 		}
 	}
@@ -165,23 +185,6 @@ public class TurnManager : Singleton<TurnManager>
 			return m_actionsToPlay[_entityID].ToList()[^1].action.positionAtActionEndID;
 	}
 
-	public int GetPositionOfEntityAtStartOfRound ( int _entityID )
-	{
-		if (currentPhase != TurnPhase.Calculating)
-			return -1;
-
-		if (m_actionsToPlay.ContainsKey(_entityID) == false
-			|| m_actionsToPlay[_entityID] == null || m_actionsToPlay[_entityID].Count == 0)
-		{
-			if (m_actionsBeingDone.ContainsKey(_entityID))
-				return m_actionsBeingDone[_entityID].Item1.action.supposedPositionAtActionStartID;
-			else
-				return GameManager.Instance.GetEntityFromID(_entityID).Displacement.Coordinates.ID;
-		}
-		else
-			return m_actionsToPlay[_entityID].ToList()[0].action.supposedPositionAtActionStartID;
-	}
-
 	public void SetCurrentStateSelected ( Entity.EntityState _state )
 	{
 		m_currentStateTypeSelected = _state;
@@ -204,28 +207,31 @@ public class TurnManager : Singleton<TurnManager>
 	{
 		AEntityAction action = null;
 
+		int timeAtStart = m_recordedActionInput.ContainsKey(_performingEntityID) && m_recordedActionInput[_performingEntityID].Count > 0
+			? m_recordedActionInput[_performingEntityID].ToArray()[^1].action.timeAtStart + 1 : 0;
+
 		//for base actions
 		switch (_actionData.enumID)
 		{
 			case EntityActionEnumID.NeighborMove:
 				action = new MoveToNeighborAction();
-				action.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.NeighborMove], _performingEntityID, GetLastRegisteredPositionOfEntity(_performingEntityID));
+				action.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.NeighborMove], _performingEntityID, GetLastRegisteredPositionOfEntity(_performingEntityID), timeAtStart);
 				break;
 			case EntityActionEnumID.TargetTileMove:
 				action = new MoveToTargetAction();
-				action.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.TargetTileMove], _performingEntityID, GetLastRegisteredPositionOfEntity(_performingEntityID));
+				action.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.TargetTileMove], _performingEntityID, GetLastRegisteredPositionOfEntity(_performingEntityID), timeAtStart);
 				break;
 			case EntityActionEnumID.Attack:
 				action = new AttackAction();
-				action.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.Attack], _performingEntityID, GetLastRegisteredPositionOfEntity(_performingEntityID));
+				action.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.Attack], _performingEntityID, GetLastRegisteredPositionOfEntity(_performingEntityID), timeAtStart);
 				break;
 			case EntityActionEnumID.Wait:
 				action = new WaitAction();
-				action.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.Wait], _performingEntityID, GetLastRegisteredPositionOfEntity(_performingEntityID));
+				action.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.Wait], _performingEntityID, GetLastRegisteredPositionOfEntity(_performingEntityID), timeAtStart);
 				break;
 			case EntityActionEnumID.RotateEntity:
 				action = new RotateEntityAction();
-				action.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.RotateEntity], _performingEntityID, GetLastRegisteredPositionOfEntity(_performingEntityID));
+				action.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.RotateEntity], _performingEntityID, GetLastRegisteredPositionOfEntity(_performingEntityID), timeAtStart);
 				break;
 		}
 
@@ -236,19 +242,19 @@ public class TurnManager : Singleton<TurnManager>
 				case EntityActionData.ActionType.DistanceAttack:
 				case EntityActionData.ActionType.MeleeAttack:
 					action = new AttackAction();
-					action.Init(GameAssets.current.game.entityActionsData[_actionData.enumID], _performingEntityID, GetLastRegisteredPositionOfEntity(_performingEntityID));
+					action.Init(GameAssets.current.game.entityActionsData[_actionData.enumID], _performingEntityID, GetLastRegisteredPositionOfEntity(_performingEntityID), timeAtStart);
 					break;
 				case EntityActionData.ActionType.Movement:
 					action = new MoveToTargetAction();
-					action.Init(GameAssets.current.game.entityActionsData[_actionData.enumID], _performingEntityID, GetLastRegisteredPositionOfEntity(_performingEntityID));
+					action.Init(GameAssets.current.game.entityActionsData[_actionData.enumID], _performingEntityID, GetLastRegisteredPositionOfEntity(_performingEntityID), timeAtStart);
 					break;
 				case EntityActionData.ActionType.Special:
 					action = new SpecialAction();
-					action.Init(GameAssets.current.game.entityActionsData[_actionData.enumID], _performingEntityID, GetLastRegisteredPositionOfEntity(_performingEntityID));
+					action.Init(GameAssets.current.game.entityActionsData[_actionData.enumID], _performingEntityID, GetLastRegisteredPositionOfEntity(_performingEntityID), timeAtStart);
 					break;
 				case EntityActionData.ActionType.Rotation:
 					action = new RotateEntityAction();
-					action.Init(GameAssets.current.game.entityActionsData[_actionData.enumID], _performingEntityID, GetLastRegisteredPositionOfEntity(_performingEntityID));
+					action.Init(GameAssets.current.game.entityActionsData[_actionData.enumID], _performingEntityID, GetLastRegisteredPositionOfEntity(_performingEntityID), timeAtStart);
 					break;
 			}
 		}
@@ -285,6 +291,8 @@ public class TurnManager : Singleton<TurnManager>
 
 		m_remainingActionToken[_entityID] -= GameAssets.current.game.entityActionsData[_action.enumID].GetTokenTotalCost(_action, GameManager.Instance.GetEntityFromID(_entityID), null);
 
+		TrackedEventCheck();
+
 		LogConsole.AddLog("Add " + _action.ToString() + " action to queue.", LogConsole.LogEventType.InputPhase);
 		//Update action display on grid + UI
 		onActionAdded?.Invoke(recordedAction);
@@ -307,6 +315,7 @@ public class TurnManager : Singleton<TurnManager>
 		m_recordedActionInput[_actionToStartRemoveFrom.performingEntityID] = new Queue<RecordedAction>(actionQueue);
 		onActionRemoved?.Invoke(_actionToStartRemoveFrom);
 
+		TrackedEventCheck();
 		RefreshActionDisplay(_actionToStartRemoveFrom.performingEntityID);
 	}
 
@@ -320,7 +329,27 @@ public class TurnManager : Singleton<TurnManager>
 		m_recordedActionInput[_removedRecordedAction.performingEntityID] = new Queue<RecordedAction>(actionQueue);
 		onActionRemoved?.Invoke(_removedRecordedAction);
 
+		TrackedEventCheck();
 		RefreshActionDisplay(_removedRecordedAction.performingEntityID);
+	}
+
+	private void TrackedEventCheck ()
+	{
+		foreach(KeyValuePair<int, TrackedEntityEvents> pair in m_trackedEventsPerEntity)
+		{
+			pair.Value.ResetAllValues();
+
+			if (!m_recordedActionInput.ContainsKey(pair.Key))
+				continue;
+
+			foreach(RecordedAction recordedAction in m_recordedActionInput[pair.Key].ToArray())
+			{
+				if (recordedAction.action.Data.type == EntityActionData.ActionType.Movement)
+					pair.Value.firstTimeEntityMoved = recordedAction.action.timeAtStart;
+				if (recordedAction.action.Data.type == EntityActionData.ActionType.DistanceAttack || recordedAction.action.Data.type == EntityActionData.ActionType.MeleeAttack)
+					pair.Value.firstTimeEntityAttacked = recordedAction.action.timeAtStart;
+			}
+		}
 	}
 
 	public void RefreshActionDisplay ( int? _selectedEntityID, int _specificTokenCount = -1 )
@@ -380,6 +409,9 @@ public class TurnManager : Singleton<TurnManager>
 			}
 		}
 
+		foreach (TrackedEntityEvents trackedEvents in m_trackedEventsPerEntity.Values)
+			trackedEvents.ResetAllValues();
+
 		onStartInputPhase?.Invoke();
 
 		if (GameManager.Instance.IsOnline && GameManager.Instance.Lobby.IsServer)
@@ -436,6 +468,7 @@ public class TurnManager : Singleton<TurnManager>
 		LogConsole.AddLog("Start turn", LogConsole.LogEventType.Main);
 		m_actionsToPlay.Clear();
 		m_actionsBeingDone.Clear();
+
 		StartNextRoundTick();
 	}
 

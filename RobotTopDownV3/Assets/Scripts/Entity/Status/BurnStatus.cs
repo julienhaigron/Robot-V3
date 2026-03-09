@@ -7,13 +7,20 @@ public class BurnStatus : AEntityStatus
 {
     public int damageAmount = 1;
 
-	public override void ApplyStatus ( Entity _entity )
+	public override void ApplyStatusEffect ( Entity _entity )
 	{
-		base.ApplyStatus(_entity);
+		base.ApplyStatusEffect(_entity);
 
 		Dictionary<WeaponEquipmentData.DamageType, int> damage = new();
 		damage.Add(WeaponEquipmentData.DamageType.Feu, damageAmount);
 
 		_entity.Equipment.TakeDamage(new EntityEquipmentPlugin.TakeDamageCallback() { damages = damage, entityTargeted = _entity });
+	}
+
+	public override void PerformStatusEffectAtBeginingOfRound ( Tile _tile )
+	{
+		base.PerformStatusEffectAtBeginingOfRound(_tile);
+		if (_tile.currentContent.entity != null)
+			_tile.currentContent.entity.AddStatus(enumID);
 	}
 }

@@ -54,15 +54,15 @@ public class Weapon : MonoBehaviour
 				entity.Equipment.TakeDamage(new EntityEquipmentPlugin.TakeDamageCallback() { damages = damages });
 
 				//aplly effects here
-				for (int i = 0; i < _attackAction.areStatusesSuccess.Length; i++)
+				/*for (int i = 0; i < _attackAction.areStatusesSuccess.Length; i++)
 				{
 					if (_attackAction.areStatusesSuccess[i])
 						GameAssets.current.game.entityStatus[(EntityStatusEnumID)_attackAction.statusIds[i]].ApplyStatus(entity);
-				}
-				
-				foreach(AEntityPassiveEffect passiveEffectID in _attackAction.Data.passiveEffects)
+				}*/
+
+				foreach (EntityPassiveEffectEnumID passiveEffectID in m_user.KnownedPassiveEffectsPerAction[_attackAction.enumID])
 				{
-					passiveEffectID.ApplyEffect(m_user, entity);
+					GameAssets.current.game.entityEffects[passiveEffectID].ApplyEffect(m_user, entity);
 				}
 			}
 

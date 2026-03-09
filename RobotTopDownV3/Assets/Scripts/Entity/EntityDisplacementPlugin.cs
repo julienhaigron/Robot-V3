@@ -19,11 +19,8 @@ public class EntityDisplacementPlugin : EntityPlugin
 	private EntityAnchor.Spawn m_spawn;
 	public EntityAnchor.Spawn Spawn => m_spawn;
 
-	/*private bool m_didMoveThisTurn = false;
-	public bool DidMoveThisTurn => m_didMoveThisTurn;*/
-
-	private TileCoordinates m_coordinateAtStartOfTurn;
-	public TileCoordinates CoordinateAtStartOfTurn => m_coordinateAtStartOfTurn;
+	private bool m_didMoveThisTurn = false;
+	public bool DidMoveThisTurn => m_didMoveThisTurn;
 
 	private Tween m_movementTween;
 	private Tween m_rotationTween;
@@ -32,13 +29,13 @@ public class EntityDisplacementPlugin : EntityPlugin
 	private void Awake ()
 	{
 		m_linkedEntity.onStartPerformAction += OnStartPerformAction;
-		m_linkedEntity.onNewRoundBegin += OnNewTurnBegin;
+		TurnManager.onStartInputPhase += OnNewTurnBegin;
 	}
 
 	private void OnDestroy ()
 	{
 		m_linkedEntity.onStartPerformAction -= OnStartPerformAction;
-		m_linkedEntity.onNewRoundBegin -= OnNewTurnBegin;
+		TurnManager.onStartInputPhase -= OnNewTurnBegin;
 
 		if (m_movementTween.IsActive())
 			m_movementTween.Kill();
@@ -117,13 +114,12 @@ public class EntityDisplacementPlugin : EntityPlugin
 
 	private void OnStartPerformAction(AEntityAction _actionPerformed )
 	{
-		/*if (_actionPerformed.Data.type == EntityActionData.ActionType.Movement)
-			m_didMoveThisTurn = true;*/
+		if (_actionPerformed.Data.type == EntityActionData.ActionType.Movement)
+			m_didMoveThisTurn = true;
 	}
 
 	private void OnNewTurnBegin ()
 	{
-		//m_didMoveThisTurn = false;
-		m_coordinateAtStartOfTurn = m_coordinate;
+		m_didMoveThisTurn = false;
 	}
 }

@@ -36,6 +36,9 @@ public class Entity : MonoBehaviour
 
     private List<EntityActionEnumID> m_knownedActions = new();
     public List<EntityActionEnumID> KnownedActions => m_knownedActions;
+    
+    private Dictionary<EntityActionEnumID, List<EntityPassiveEffectEnumID>> m_knownedPassiveEffectsPerAction = new();
+    public Dictionary<EntityActionEnumID, List<EntityPassiveEffectEnumID>> KnownedPassiveEffectsPerAction => m_knownedPassiveEffectsPerAction;
 
     private EntityState m_state;
     public EntityState State => m_state;
@@ -93,6 +96,11 @@ public class Entity : MonoBehaviour
         m_skin.Init(_data);
 
         m_knownedActions = _data.GetActions();
+
+        foreach(EntityActionEnumID actionID in m_knownedActions)
+		{
+            m_knownedPassiveEffectsPerAction.Add(actionID, _data.GetPassiveEffects(actionID));
+        }
     }
 
     private void OnRoundStart ()
@@ -107,7 +115,7 @@ public class Entity : MonoBehaviour
                 m_remainingDurationToActiveEffects.Remove(GameAssets.current.game.entityStatus[status]);
 			}
 
-            GameAssets.current.game.entityStatus[status].ApplyStatus(this);
+            GameAssets.current.game.entityStatus[status].ApplyStatusEffect(this);
 		}
 	}
 

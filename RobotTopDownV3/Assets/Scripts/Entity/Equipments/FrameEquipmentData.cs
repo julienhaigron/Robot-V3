@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Sirenix.OdinInspector;
 using Unity.Netcode;
+using System.Linq;
 
 
 [CreateAssetMenu(fileName = "FrameData", menuName = "ScriptableObject/Equipment/FrameData", order = 1)]
@@ -149,6 +150,41 @@ public class EntitySavedData : INetworkSerializable
 		}
 
 		return actions;
+	}
+
+	public List<EntityPassiveEffectEnumID> GetPassiveEffects( EntityActionEnumID _actionID )
+	{
+		List<EntityPassiveEffectEnumID> passiveEffects = new();
+		passiveEffects.AddRange(FrameData.passiveEffects);
+		passiveEffects.AddRange(ReactorData.passiveEffects);
+		passiveEffects.AddRange(BrainData.passiveEffects);
+
+		/*foreach (StringContainer container in armsIds)
+		{
+			if (GameAssets.current.equipments[container.value] is EntityEquipmentData equipment && equipment.knownedActions.Contains(_action.enumID))
+			{
+				passiveEffects.AddRange(equipment.passiveEffects);
+			}
+		}
+		foreach (StringContainer container in auxiliarIds)
+		{
+			if (GameAssets.current.equipments[container.value] is EntityEquipmentData equipment && equipment.knownedActions.Contains(_action.enumID))
+			{
+				passiveEffects.AddRange(equipment.passiveEffects);
+			}
+		}*/
+		foreach (StringContainer container in chipsetsIds)
+		{
+			if (GameAssets.current.equipments[container.value] is EntityEquipmentData equipment)
+			{
+				passiveEffects.AddRange(equipment.passiveEffects);
+			}
+		}
+
+		foreach(AEntityPassiveEffect effect in GameAssets.current.game.entityActionsData[_actionID].passiveEffects)
+			passiveEffects.Add(effect.enumID);
+
+		return passiveEffects;
 	}
 
 	public int GetMaxHealth ()

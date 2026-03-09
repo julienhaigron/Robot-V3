@@ -9,6 +9,8 @@ public class EntityEquipmentData : ScriptableObject
     public int energyCost;
     [BoxGroup(GroupID ="Actions")]
     public EntityActionEnumID[] knownedActions;
+    [BoxGroup(GroupID ="PassiveEffects")]
+    public EntityPassiveEffectEnumID[] passiveEffects;
 
     //public enum EquipmentType { Frame, Arm, Leg, Brain, Occultor, Reactor, Chipset, Armor }
 

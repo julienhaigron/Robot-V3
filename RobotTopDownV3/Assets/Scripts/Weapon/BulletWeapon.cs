@@ -67,7 +67,8 @@ public class BulletWeapon : Weapon
 
 			if (attackData.isAoe)
 			{
-				foreach (Tile tile in m_user.Equipment.GetTilesInAoERange(_attackAction, true))
+				List<Tile> tilesInRange = m_user.Equipment.GetTilesInAoERange(_attackAction, true);
+				foreach (Tile tile in tilesInRange)
 				{
 					Entity entityOnTIle = tile.GetEntity(true);
 					if (entityOnTIle != null /*&& !entityOnTIle.IsAlliedTo(m_user.OwnerID)*/)
@@ -84,16 +85,25 @@ public class BulletWeapon : Weapon
 				{
 					entity.Equipment.TakeDamage(new EntityEquipmentPlugin.TakeDamageCallback() { damages = damages });
 
-					//aplly effects here
+					/*//aplly status here
 					for (int i = 0; i < _attackAction.areStatusesSuccess.Length; i++)
 					{
 						if (_attackAction.areStatusesSuccess[i])
 							GameAssets.current.game.entityStatus[(EntityStatusEnumID)_attackAction.statusIds[i]].ApplyStatus(entity);
-					}
+					}*/
 
-					foreach (AEntityPassiveEffect passiveEffectID in _attackAction.Data.passiveEffects)
+					foreach (EntityPassiveEffectEnumID passiveEffectID in m_user.KnownedPassiveEffectsPerAction[_attackAction.enumID])
 					{
-						passiveEffectID.ApplyEffect(m_user, entity);
+						GameAssets.current.game.entityEffects[passiveEffectID].ApplyEffect(m_user, entity);
+					}
+				}
+
+				foreach (EntityPassiveEffectEnumID passiveEffectID in m_user.KnownedPassiveEffectsPerAction[_attackAction.enumID])
+				{
+					if (GameAssets.current.game.entityEffects[passiveEffectID] is ApplyStatusPassiveEffect applyStatus && applyStatus.doApplyToTile)
+					{
+						foreach (Tile tile in tilesInRange)
+							applyStatus.ApplyEffect(tile);
 					}
 				}
 
@@ -156,10 +166,15 @@ public class BulletWeapon : Weapon
 		_entityHit.Equipment.TakeDamage(new EntityEquipmentPlugin.TakeDamageCallback() { damages = damages });
 
 		//aplly effects
-		for (int i = 0; i < m_lastPerformedAction.areStatusesSuccess.Length; i++)
+		/*for (int i = 0; i < m_lastPerformedAction.areStatusesSuccess.Length; i++)
 		{
 			if (m_lastPerformedAction.areStatusesSuccess[i])
 				GameAssets.current.game.entityStatus[(EntityStatusEnumID)m_lastPerformedAction.statusIds[i]].ApplyStatus(_entityHit);
+		}*/
+
+		foreach (EntityPassiveEffectEnumID passiveEffectID in m_user.KnownedPassiveEffectsPerAction[m_lastPerformedAction.enumID])
+		{
+			GameAssets.current.game.entityEffects[passiveEffectID].ApplyEffect(m_user, _entityHit);
 		}
 
 	}

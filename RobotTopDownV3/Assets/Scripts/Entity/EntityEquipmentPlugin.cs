@@ -47,21 +47,25 @@ public class EntityEquipmentPlugin : EntityPlugin
 	private SerializableDictionary<WeaponEquipmentData.DamageCategory, float> m_applyedDamageCategoryResitance = new();
 	public SerializableDictionary<WeaponEquipmentData.DamageCategory, float> ApplyedDamageTypeCategoryResitance => m_applyedDamageCategoryResitance;
 
+	private bool m_didAttackThisTurn = false;
+	public bool DidAttackThisTurn => m_didAttackThisTurn;
 
 	private void Awake ()
 	{
 		m_linkedEntity.onSelect += OnEntitySelected;
 		m_linkedEntity.onDeselect += OnEntityDeselected;
-		m_linkedEntity.onStartPerformAction += OnActionPerformed;
 		m_linkedEntity.onNewRoundBegin += OnNewPhaseStart;
+		m_linkedEntity.onStartPerformAction += OnStartPerformAction;
+		TurnManager.onStartInputPhase += OnNewTurnBegin;
 	}
 
 	private void OnDestroy ()
 	{
 		m_linkedEntity.onSelect -= OnEntitySelected;
 		m_linkedEntity.onDeselect -= OnEntityDeselected;
-		m_linkedEntity.onStartPerformAction -= OnActionPerformed;
 		m_linkedEntity.onNewRoundBegin -= OnNewPhaseStart;
+		m_linkedEntity.onStartPerformAction -= OnStartPerformAction;
+		TurnManager.onStartInputPhase -= OnNewTurnBegin;
 	}
 
 	public override void Init ( EntitySavedData _entityData )
@@ -142,11 +146,15 @@ public class EntityEquipmentPlugin : EntityPlugin
 		}
 	}
 
-	private void OnActionPerformed ( AEntityAction _actionPerformed )
+	private void OnStartPerformAction ( AEntityAction _actionPerformed )
 	{
-		/*EntityActionData actionData = GameAssets.current.game.entityActionsData[_actionPerformed.enumID];
-		if (actionData.GetTokenCooldownCost(m_linkedEntity, null) > 0)
-			m_actionsInCooldown.Add(_actionPerformed.enumID, actionData.GetTokenCooldownCost(m_linkedEntity, null));*/
+		if (_actionPerformed.Data.type == EntityActionData.ActionType.MeleeAttack || _actionPerformed.Data.type == EntityActionData.ActionType.DistanceAttack)
+			m_didAttackThisTurn = true;
+	}
+
+	private void OnNewTurnBegin ()
+	{
+		m_didAttackThisTurn = false;
 	}
 
 	#endregion
