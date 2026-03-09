@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: MaxTargetUp
   m_EditorClassIdentifier: 
   enumID: 4
-  targetBoostAmount: 1
   conditionType: 0
+  targetBoostAmount: 1

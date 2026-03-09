@@ -319,7 +319,7 @@ public class TurnManager : Singleton<TurnManager>
 		RefreshActionDisplay(_actionToStartRemoveFrom.performingEntityID);
 	}
 
-	public void RemoveAction ( RecordedAction _removedRecordedAction )
+	/*public void RemoveAction ( RecordedAction _removedRecordedAction )
 	{
 		if (!m_recordedActionInput.ContainsKey(_removedRecordedAction.performingEntityID))
 			return;
@@ -331,7 +331,7 @@ public class TurnManager : Singleton<TurnManager>
 
 		TrackedEventCheck();
 		RefreshActionDisplay(_removedRecordedAction.performingEntityID);
-	}
+	}*/
 
 	private void TrackedEventCheck ()
 	{

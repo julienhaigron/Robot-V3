@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: DamageUpOnMarked
   m_EditorClassIdentifier: 
   enumID: 2
-  damageBoostAmount: 1
   conditionType: 2
+  damageBoostAmount: 1

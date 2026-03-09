@@ -49,6 +49,7 @@ public class EntityActionData : ScriptableObject
 	}
 	public ActionSubType subType;
 
+	#region Target Vars
 	[Title("Target")] //TODO: see this later https://odininspector.com/attributes/hide-if-group-attribute
 	public enum TargetType
 	{
@@ -64,7 +65,9 @@ public class EntityActionData : ScriptableObject
 
 	public int minTargetAmount = 1;
 	public int maxTargetAmount = 1;
+	#endregion
 
+	#region AOE Vars
 	[ShowIf("@targetType != TargetType.Self")]
 	public bool isAoe = false;
 	public enum AOEType
@@ -90,8 +93,11 @@ public class EntityActionData : ScriptableObject
 	}
 	[ShowIf("@isAoe && aoeType == AOEType.Cone")]
 	public ConeType coneType = ConeType.Thin;
+	#endregion
 
 	[Title("Damage")]
+	public int hitAmount = 1;
+	public float damageFactor = 1f;
 	public WeaponEquipmentData.DamageType[] usedDamageChannels;
 
 	[Title("Effect")]
@@ -99,7 +105,7 @@ public class EntityActionData : ScriptableObject
 	[Min(0)] public int pullStrenght = 0;
 
 	//public AEntityStatus[] appliableStatus;
-	public AEntityPassiveEffect[] passiveEffects;
+	public EntityPassiveEffectEnumID[] passiveEffects;
 
 	public enum PFCResultType
 	{
@@ -254,17 +260,30 @@ public class EntityActionData : ScriptableObject
 		return maxTargetAmount;
 	}
 
-	public int GetDamageAmountForType ( AEntityAction _action, Entity _performingEntity, Entity _targetEntity, WeaponEquipmentData.DamageType _damageType )
+	public float GetDamageFactorAmountForType ( AEntityAction _action, Entity _performingEntity, Entity _targetEntity, WeaponEquipmentData.DamageType _damageType )
 	{
-		DamageUpPassiveEffect so = (GameAssets.current.game.entityEffects[EntityPassiveEffectEnumID.MaxRangeUp] as DamageUpPassiveEffect);
+		DamageUpPassiveEffect so = (GameAssets.current.game.entityEffects[EntityPassiveEffectEnumID.DamageUpOnMarked] as DamageUpPassiveEffect);
 
 		if (_action != null && _performingEntity.KnownedPassiveEffectsPerAction.ContainsKey(_action.enumID) &&
 			_performingEntity.KnownedPassiveEffectsPerAction[_action.enumID].Contains(so.enumID) && so.UseConditionPredicate(_action, _performingEntity, _targetEntity))
 		{
-			return maxTargetAmount + (GameAssets.current.game.entityEffects[EntityPassiveEffectEnumID.MaxRangeUp] as DamageUpPassiveEffect).damageBoostAmount;
+			return damageFactor + (GameAssets.current.game.entityEffects[EntityPassiveEffectEnumID.DamageUpOnMarked] as DamageUpPassiveEffect).damageBoostAmount;
 		}
 
-		return maxTargetAmount;
+		return damageFactor;
+	}
+	
+	public float GetHitAmount ( AEntityAction _action, Entity _performingEntity, Entity _targetEntity )
+	{
+		DamageUpPassiveEffect so = (GameAssets.current.game.entityEffects[EntityPassiveEffectEnumID.DamageUpOnMarked] as DamageUpPassiveEffect);
+
+		if (_action != null && _performingEntity.KnownedPassiveEffectsPerAction.ContainsKey(_action.enumID) &&
+			_performingEntity.KnownedPassiveEffectsPerAction[_action.enumID].Contains(so.enumID) && so.UseConditionPredicate(_action, _performingEntity, _targetEntity))
+		{
+			return hitAmount + (GameAssets.current.game.entityEffects[EntityPassiveEffectEnumID.DamageUpOnMarked] as DamageUpPassiveEffect).damageBoostAmount;
+		}
+
+		return hitAmount;
 	}
 
 	#endregion

@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: PreparationCostReduction
   m_EditorClassIdentifier: 
   enumID: 5
-  reductionAmount: 1
   conditionType: 1
+  reductionAmount: 1

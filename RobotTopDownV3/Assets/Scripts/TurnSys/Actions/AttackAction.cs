@@ -47,7 +47,7 @@ public class AttackAction : AEntityAction
 				}*/
 
 				Dictionary<WeaponEquipmentData.DamageType, int> damagesDealt =
-					PerformingEntity.Equipment.Weapons[attackingWeaponId].GetDamages(PerformingEntity, TargetEntity, Data, (EntityActionData.PFCResultType)pfcResult);
+					PerformingEntity.Equipment.Weapons[attackingWeaponId].GetDamages(PerformingEntity, TargetEntity, this, (EntityActionData.PFCResultType)pfcResult);
 
 				List<int> tmpDamages = new();
 				List<short> tmpDamageTypes = new();

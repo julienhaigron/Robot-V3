@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: MaxRangeUp
   m_EditorClassIdentifier: 
   enumID: 3
-  rangeBoostAmount: 1
   conditionType: 1
+  rangeBoostAmount: 1

@@ -39,34 +39,38 @@ public class Weapon : MonoBehaviour
 			}
 			else
 				GameManager.Instance.GetEntityFromID(_attackAction.targetedEntityID);
-			
+
 			//apply damage
 			Dictionary<WeaponEquipmentData.DamageType, int> damages = new Dictionary<WeaponEquipmentData.DamageType, int>();
-			for(int i = 0; i < _attackAction.damageTypes.Length; i++)
+			for (int i = 0; i < _attackAction.damageTypes.Length; i++)
 			{
 				damages.Add((WeaponEquipmentData.DamageType)_attackAction.damageTypes[i], _attackAction.damages[i]);
 			}
 
 			m_user.Skin.OverrideAnimation(m_data.attackAnimationSuccessId);
 
-			foreach(Entity entity in targetEntities)
+			foreach (Entity entity in targetEntities)
 			{
-				entity.Equipment.TakeDamage(new EntityEquipmentPlugin.TakeDamageCallback() { damages = damages });
-
-				//aplly effects here
-				/*for (int i = 0; i < _attackAction.areStatusesSuccess.Length; i++)
+				for (int i = 0; i < _attackAction.Data.GetHitAmount(_attackAction, m_user, entity); i++)
 				{
-					if (_attackAction.areStatusesSuccess[i])
-						GameAssets.current.game.entityStatus[(EntityStatusEnumID)_attackAction.statusIds[i]].ApplyStatus(entity);
-				}*/
+					entity.Equipment.TakeDamage(new EntityEquipmentPlugin.TakeDamageCallback() { damages = damages });
 
-				foreach (EntityPassiveEffectEnumID passiveEffectID in m_user.KnownedPassiveEffectsPerAction[_attackAction.enumID])
-				{
-					GameAssets.current.game.entityEffects[passiveEffectID].ApplyEffect(m_user, entity);
+
+					//aplly effects here
+					/*for (int i = 0; i < _attackAction.areStatusesSuccess.Length; i++)
+					{
+						if (_attackAction.areStatusesSuccess[i])
+							GameAssets.current.game.entityStatus[(EntityStatusEnumID)_attackAction.statusIds[i]].ApplyStatus(entity);
+					}*/
+
+					foreach (EntityPassiveEffectEnumID passiveEffectID in m_user.KnownedPassiveEffectsPerAction[_attackAction.enumID])
+					{
+						GameAssets.current.game.entityEffects[passiveEffectID].ApplyEffect(m_user, entity);
+					}
 				}
 			}
 
-			foreach(ParticleSystem ps in m_onPerformPS)
+			foreach (ParticleSystem ps in m_onPerformPS)
 			{
 				ps.Play();
 			}
@@ -81,7 +85,7 @@ public class Weapon : MonoBehaviour
 		}
 	}
 
-	public virtual Dictionary<WeaponEquipmentData.DamageType, int> GetDamages (Entity _user, Entity _target, EntityActionData _actionData, EntityActionData.PFCResultType _pfcResultType)
+	public virtual Dictionary<WeaponEquipmentData.DamageType, int> GetDamages ( Entity _user, Entity _target, AEntityAction _action, EntityActionData.PFCResultType _pfcResultType )
 	{
 		Dictionary<WeaponEquipmentData.DamageType, int> damages = new();
 		bool didWinPFC = _pfcResultType == EntityActionData.PFCResultType.FirstWins;
@@ -89,10 +93,11 @@ public class Weapon : MonoBehaviour
 
 		foreach (KeyValuePair<WeaponEquipmentData.DamageType, int> pair in Data.baseDamages)
 		{
-			if(!_actionData.usedDamageChannels.Contains(pair.Key))
+			if (!_action.Data.usedDamageChannels.Contains(pair.Key))
 				continue;
 
-			float damage = ( (float)pair.Value * 
+			float damage = (((float)pair.Value * (_action.Data.damageFactor + _action.Data.GetDamageFactorAmountForType(_action, _user, _target, pair.Key)))
+				*
 				(
 					1 + Mathf.Max((_user.Equipment.ApplyedDamageTypeBuffs.ContainsKey(pair.Key) ? _user.Equipment.ApplyedDamageTypeBuffs[pair.Key] : 0f)
 					- (_target.Equipment.ApplyedDamageTypeResistance.ContainsKey(pair.Key) ? _target.Equipment.ApplyedDamageTypeResistance[pair.Key] : 0), -1f)
@@ -103,12 +108,12 @@ public class Weapon : MonoBehaviour
 					- (_target.Equipment.ApplyedDamageTypeCategoryResitance.ContainsKey(GameConfig.current.game.damageCateforyPerDamageType[pair.Key]) ? _target.Equipment.ApplyedDamageTypeCategoryResitance[GameConfig.current.game.damageCateforyPerDamageType[pair.Key]] : 0), -1f)
 				)
 				*
-				(	1 + Mathf.Max(_user.Equipment.GeneralDamageBuff
-					-  _user.Equipment.GeneralDamageResistance, -1f)
+				(1 + Mathf.Max(_user.Equipment.GeneralDamageBuff
+					- _user.Equipment.GeneralDamageResistance, -1f)
 				)
 				*
 				(
-					1 + Mathf.Max( flankMod
+					1 + Mathf.Max(flankMod
 					+ _user.Data.GetStatBonusFromAll(EntityEquipmentData.StatBonus.StatType.FlankBonus)
 					- _target.Data.GetStatBonusFromAll(EntityEquipmentData.StatBonus.StatType.FlankResistance), -1f)
 				)
@@ -121,5 +126,5 @@ public class Weapon : MonoBehaviour
 		}
 
 		return damages;
-	} 
+	}
 }

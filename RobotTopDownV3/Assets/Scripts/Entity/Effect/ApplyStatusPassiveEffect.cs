@@ -7,13 +7,6 @@ public class ApplyStatusPassiveEffect : AEntityPassiveEffect
 	public bool doApplyToTile = false;
 	public EntityStatusEnumID statusApplied;
 
-	public override bool UseConditionPredicate ( AEntityAction _action, Entity _entity, Entity _targetEntity )
-	{
-		if (_action == null || _entity == null)
-			return false;
-
-		return true;
-	}
 
 	public override void ApplyEffect ( Entity _entity, Entity _targetEntity )
 	{

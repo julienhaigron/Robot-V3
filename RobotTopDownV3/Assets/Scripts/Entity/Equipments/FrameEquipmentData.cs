@@ -158,21 +158,22 @@ public class EntitySavedData : INetworkSerializable
 		passiveEffects.AddRange(FrameData.passiveEffects);
 		passiveEffects.AddRange(ReactorData.passiveEffects);
 		passiveEffects.AddRange(BrainData.passiveEffects);
+		passiveEffects.AddRange(GameAssets.current.game.entityActionsData[_actionID].passiveEffects);
 
-		/*foreach (StringContainer container in armsIds)
+		foreach (StringContainer container in armsIds)
 		{
-			if (GameAssets.current.equipments[container.value] is EntityEquipmentData equipment && equipment.knownedActions.Contains(_action.enumID))
+			if (GameAssets.current.equipments[container.value] is EntityEquipmentData equipment && equipment.knownedActions.Contains(_actionID))
 			{
 				passiveEffects.AddRange(equipment.passiveEffects);
 			}
 		}
 		foreach (StringContainer container in auxiliarIds)
 		{
-			if (GameAssets.current.equipments[container.value] is EntityEquipmentData equipment && equipment.knownedActions.Contains(_action.enumID))
+			if (GameAssets.current.equipments[container.value] is EntityEquipmentData equipment && equipment.knownedActions.Contains(_actionID))
 			{
 				passiveEffects.AddRange(equipment.passiveEffects);
 			}
-		}*/
+		}
 		foreach (StringContainer container in chipsetsIds)
 		{
 			if (GameAssets.current.equipments[container.value] is EntityEquipmentData equipment)
@@ -181,8 +182,6 @@ public class EntitySavedData : INetworkSerializable
 			}
 		}
 
-		foreach(AEntityPassiveEffect effect in GameAssets.current.game.entityActionsData[_actionID].passiveEffects)
-			passiveEffects.Add(effect.enumID);
 
 		return passiveEffects;
 	}

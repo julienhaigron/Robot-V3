@@ -22,7 +22,7 @@ public class BulletWeapon : Weapon
 	private WaitForSeconds m_shootCooldownDurationWFS;
 	private Coroutine m_shootCR;
 
-	private List<Entity> m_entitiesHitByLastShot = new();
+	//private List<Entity> m_entitiesHitByLastShot = new();
 	private AttackAction m_lastPerformedAction;
 	private Action m_onPerformAttackEnd;
 
@@ -52,8 +52,8 @@ public class BulletWeapon : Weapon
 	public override void PerformAttack ( AttackAction _attackAction, Action _onPerformEnd )
 	{
 		m_lastPerformedAction = _attackAction;
-		m_entitiesHitByLastShot.Clear();
 		m_onPerformAttackEnd = _onPerformEnd;
+		//m_entitiesHitByLastShot.Clear();
 
 		Entity performingEntity = GameManager.Instance.GetEntityFromID(_attackAction.performingEntityID);
 		Entity targetEntity = GameManager.Instance.GetEntityFromID((int)_attackAction.targetedEntityID);
@@ -83,18 +83,21 @@ public class BulletWeapon : Weapon
 
 				foreach (Entity entity in targetEntities)
 				{
-					entity.Equipment.TakeDamage(new EntityEquipmentPlugin.TakeDamageCallback() { damages = damages });
-
-					/*//aplly status here
-					for (int i = 0; i < _attackAction.areStatusesSuccess.Length; i++)
+					for (int i = 0; i < _attackAction.Data.GetHitAmount(_attackAction, m_user, entity); i++)
 					{
-						if (_attackAction.areStatusesSuccess[i])
-							GameAssets.current.game.entityStatus[(EntityStatusEnumID)_attackAction.statusIds[i]].ApplyStatus(entity);
-					}*/
+						entity.Equipment.TakeDamage(new EntityEquipmentPlugin.TakeDamageCallback() { damages = damages });
 
-					foreach (EntityPassiveEffectEnumID passiveEffectID in m_user.KnownedPassiveEffectsPerAction[_attackAction.enumID])
-					{
-						GameAssets.current.game.entityEffects[passiveEffectID].ApplyEffect(m_user, entity);
+						/*//aplly status here
+						for (int i = 0; i < _attackAction.areStatusesSuccess.Length; i++)
+						{
+							if (_attackAction.areStatusesSuccess[i])
+								GameAssets.current.game.entityStatus[(EntityStatusEnumID)_attackAction.statusIds[i]].ApplyStatus(entity);
+						}*/
+
+						foreach (EntityPassiveEffectEnumID passiveEffectID in m_user.KnownedPassiveEffectsPerAction[_attackAction.enumID])
+						{
+							GameAssets.current.game.entityEffects[passiveEffectID].ApplyEffect(m_user, entity);
+						}
 					}
 				}
 
@@ -136,8 +139,9 @@ public class BulletWeapon : Weapon
 	private IEnumerator ShootCR ( AttackAction _attackAction )
 	{
 		yield return m_aimDurationWFS;
+		Entity targetEntity = GameManager.Instance.GetEntityFromID((int)_attackAction.targetedEntityID);
 
-		for (int i = 0; i < m_bulletPerShoot; i++)
+		for (int i = 0; i < _attackAction.Data.GetHitAmount(_attackAction, m_user, targetEntity); i++)
 		{
 			m_bulletPool.Get<Projectile>(m_bulletPoint.transform.position, m_bulletPoint.rotation).SetProjectileDataAndLaunch(m_bulletData, OnBulletHit);
 
@@ -152,10 +156,10 @@ public class BulletWeapon : Weapon
 
 	private void OnBulletHit ( Entity _entityHit )
 	{
-		if (m_entitiesHitByLastShot.Contains(_entityHit) || m_lastPerformedAction == null || m_lastPerformedAction.damageTypes == null)
+		if (/*m_entitiesHitByLastShot.Contains(_entityHit) ||*/ m_lastPerformedAction == null || m_lastPerformedAction.damageTypes == null)
 			return;
 
-		m_entitiesHitByLastShot.Add(_entityHit);
+		//m_entitiesHitByLastShot.Add(_entityHit);
 		//apply damage
 		Dictionary<WeaponEquipmentData.DamageType, int> damages = new Dictionary<WeaponEquipmentData.DamageType, int>();
 		for (int i = 0; i < m_lastPerformedAction.damageTypes.Length; i++)
