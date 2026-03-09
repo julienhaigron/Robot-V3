@@ -9,9 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aeee6379e7fa924468e4c164c6c2e7f3, type: 3}
-  m_Name: CooldownCostReduction
+  m_Script: {fileID: 11500000, guid: be9c8929f04da7b4eb349122d7d61e73, type: 3}
+  m_Name: HitAmountBoost
   m_EditorClassIdentifier: 
-  enumID: 2
-  conditionType: 1
-  reductionAmount: 1
+  enumID: 4
+  conditionType: 0
+  hitAmountBoost: 1

@@ -16,6 +16,14 @@ public abstract class ScriptableEnum<TEnum> : ScriptableObject where TEnum : Enu
 {
     [ReadOnly]
     public TEnum enumID;
+
+#if UNITY_EDITOR
+    [Button]
+    private void RefreshAllEnum ()
+	{
+        ScriptableEnumAutoGenerator.GenerateAllEnums();
+    }
+#endif
 }
 
 #if UNITY_EDITOR

@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6ddc2f4ea5e912f4b9e146fe8f9dcba6, type: 3}
   m_Name: Smoked
   m_EditorClassIdentifier: 
-  enumID: 3
+  enumID: 5
   duration: 1
   hitProbability: 50

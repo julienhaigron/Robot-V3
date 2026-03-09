@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0da801fdaaf5bb449b09c27fde47641b, type: 3}
   m_Name: Stun
   m_EditorClassIdentifier: 
-  enumID: 4
+  enumID: 6
   duration: 1
   hitProbability: 50

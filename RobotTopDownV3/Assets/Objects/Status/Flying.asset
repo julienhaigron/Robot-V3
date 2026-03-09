@@ -9,9 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aeee6379e7fa924468e4c164c6c2e7f3, type: 3}
-  m_Name: CooldownCostReduction
+  m_Script: {fileID: 11500000, guid: f75b26fc29cd0054ab26c6ffd0a11c1d, type: 3}
+  m_Name: Flying
   m_EditorClassIdentifier: 
   enumID: 2
-  conditionType: 1
-  reductionAmount: 1
+  duration: 1
+  hitProbability: 50

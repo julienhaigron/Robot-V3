@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 96087f69a63c0da42a45809539d72788, type: 3}
   m_Name: Marked
   m_EditorClassIdentifier: 
-  enumID: 2
+  enumID: 3
   duration: 1
   hitProbability: 50

@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1d005b3446560e840b5acbfd60967bc8, type: 3}
   m_Name: PreparationCostReduction
   m_EditorClassIdentifier: 
-  enumID: 5
+  enumID: 7
   conditionType: 1
   reductionAmount: 1

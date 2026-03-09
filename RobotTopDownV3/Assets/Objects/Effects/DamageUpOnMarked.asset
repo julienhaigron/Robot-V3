@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ab90005d990d498468fcf0058bc784fd, type: 3}
   m_Name: DamageUpOnMarked
   m_EditorClassIdentifier: 
-  enumID: 2
+  enumID: 3
   conditionType: 2
   damageBoostAmount: 1

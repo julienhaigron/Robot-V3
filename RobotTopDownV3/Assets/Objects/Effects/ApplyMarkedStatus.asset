@@ -9,9 +9,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aeee6379e7fa924468e4c164c6c2e7f3, type: 3}
-  m_Name: CooldownCostReduction
+  m_Script: {fileID: 11500000, guid: d8a3de66be57e894a81fb26d5d5819d5, type: 3}
+  m_Name: ApplyMarkedStatus
   m_EditorClassIdentifier: 
-  enumID: 2
-  conditionType: 1
-  reductionAmount: 1
+  enumID: 1
+  conditionType: 0
+  doApplyToSelf: 0
+  doApplyToTile: 0
+  statusApplied: 3

@@ -37,9 +37,17 @@ public class EntityAIPlugin : EntityPlugin
 		// 1) Do all prewarm check (enemyInSeight, weaponRange, ...)
 		DOAllPrewarmCheck();
 		// 2) react depending on those factor
+
+		bool canMove = m_linkedEntity.Status.Contains(EntityStatusEnumID.Stun) || m_linkedEntity.Status.Contains(EntityStatusEnumID.Rooted);
 		EntityActionData availableAttackAction = GetAvailableAttackAction();
 
-		if (HasEnemyWeaponInRange() && availableAttackAction != null /* && _recordedAction.entityState == Entity.EntityState.Patroling*/)
+		if (m_linkedEntity.Status.Contains(EntityStatusEnumID.Stun))
+		{
+			WaitAction waitAction = (TurnManager.Instance.GetAction(EntityActionEnumID.Wait, m_linkedEntity.ID) as WaitAction);
+			waitAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.Wait], m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID, _recordedAction.action.timeAtStart);
+			resultInfo.ReplaceAction(waitAction);
+		}
+		else if (HasEnemyWeaponInRange() && availableAttackAction != null /* && _recordedAction.entityState == Entity.EntityState.Patroling*/)
 		{
 			// if eneemy in weapon range
 			//  => shoot directly
@@ -52,7 +60,7 @@ public class EntityAIPlugin : EntityPlugin
 			attackAction.Init(GameAssets.current.game.entityActionsData[availableAttackAction.enumID], m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID, _recordedAction.action.timeAtStart);
 			resultInfo.ReplaceAction(attackAction);
 		}
-		else if (HasEnemyInVisionRange() && !HasEnemyWeaponInRange())
+		else if (canMove && HasEnemyInVisionRange() && !HasEnemyWeaponInRange())
 		{
 			Entity closestEntity = GetClosestEnemyInVisionRange(true);
 			bool isEntityInRangeWeaponsPossibleRange = IsEntityInWeaponPossibleRange(closestEntity, out string _weapon, true);
@@ -85,8 +93,6 @@ public class EntityAIPlugin : EntityPlugin
 						return resultInfo;
 
 					EntityActionData movementAction = GetMovementAction();
-
-					//problem here
 
 					MoveToTargetAction moveToAction = (TurnManager.Instance.GetAction(movementAction.enumID, m_linkedEntity.ID) as MoveToTargetAction);
 					moveToAction.mode = MoveToTargetAction.MoveActionMode.Entity;
@@ -121,6 +127,12 @@ public class EntityAIPlugin : EntityPlugin
 
 
 			}
+		} 
+		else if(!canMove && (_recordedAction.action.Data.type == EntityActionData.ActionType.Movement || _recordedAction.action.Data.type == EntityActionData.ActionType.Rotation))
+		{
+			WaitAction waitAction = (TurnManager.Instance.GetAction(EntityActionEnumID.Wait, m_linkedEntity.ID) as WaitAction);
+			waitAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.Wait], m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID, _recordedAction.action.timeAtStart);
+			resultInfo.ReplaceAction(waitAction);
 		}
 
 		return resultInfo;
