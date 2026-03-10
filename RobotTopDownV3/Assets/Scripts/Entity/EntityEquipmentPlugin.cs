@@ -16,6 +16,9 @@ public class EntityEquipmentPlugin : EntityPlugin
 
 	private Dictionary<string, WeaponCone> m_weaponConeDictionary = new();
 
+	private Dictionary<string, Tool> m_tools = new();
+	public Dictionary<string, Tool> Tools => m_tools;
+
 	private int m_currentHealth;
 	public int CurrentHealth => m_currentHealth;
 
@@ -75,7 +78,10 @@ public class EntityEquipmentPlugin : EntityPlugin
 		{
 			foreach (StringContainer stringContainer in _entityData.armsIds)
 			{
-				AddWeapon(GameAssets.current.equipments[stringContainer.value] as WeaponEquipmentData, m_linkedEntity.Displacement.Spawn.isFirstSide);
+				if(GameAssets.current.equipments[stringContainer.value] is WeaponEquipmentData weaponData)
+					AddWeapon(weaponData, m_linkedEntity.Displacement.Spawn.isFirstSide);
+				else if(GameAssets.current.equipments[stringContainer.value] is ToolEquipmentData toolData)
+					AddTool(toolData, m_linkedEntity.Displacement.Spawn.isFirstSide);
 			}
 		}
 
@@ -371,16 +377,38 @@ public class EntityEquipmentPlugin : EntityPlugin
 
 	#endregion
 
-	#region Heatlh
+	#region Tool
 
-	public void AddDamageBuff ( WeaponEquipmentData.DamageType _type, int _amount )
+	private Tool AddTool ( ToolEquipmentData _data, bool _isFirstSide )
 	{
-		m_applyedDamageTypeBuffs.Add(_type, _amount);
+		Tool newTool = Instantiate(_data.prefab, m_linkedEntity.Skin.IK.handGrabSocket);
+		newTool.Init(m_linkedEntity, _data, _isFirstSide);
+		m_tools.Add(_data.name, newTool);
+
+		return newTool;
 	}
+
+	#endregion
+
+	#region Heatlh
 
 	public void TakeDamage ( TakeDamageCallback _damageInfo )
 	{
-		foreach (KeyValuePair<WeaponEquipmentData.DamageType, int> pair in _damageInfo.damages)
+		//apply flat damage reduction (ex: Shield)
+		Dictionary<WeaponEquipmentData.DamageType, int> damages = new(_damageInfo.damages);
+		foreach(Tool tool in m_tools.Values)
+		{
+			if(tool is Shield shield 
+				&& shield.orientation == GridManager.Instance.GetClosestOrientation(m_linkedEntity.Displacement.Coordinates.GetTile(), _damageInfo.entityAttacker.Displacement.Coordinates.GetTile()))
+			{
+				foreach(WeaponEquipmentData.DamageType damageType in damages.Keys)
+				{
+					damages[damageType] -= shield.RemoveDamage(damages[damageType]);
+				}
+			}
+		}
+
+		foreach (KeyValuePair<WeaponEquipmentData.DamageType, int> pair in damages)
 		{
 			m_currentHealth -= pair.Value;
 		}

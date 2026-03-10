@@ -38,7 +38,7 @@ public class EntityAIPlugin : EntityPlugin
 		DOAllPrewarmCheck();
 		// 2) react depending on those factor
 
-		bool canMove = m_linkedEntity.Status.Contains(EntityStatusEnumID.Stun) || m_linkedEntity.Status.Contains(EntityStatusEnumID.Rooted);
+		bool canMove = !m_linkedEntity.Status.Contains(EntityStatusEnumID.Stun) && !m_linkedEntity.Status.Contains(EntityStatusEnumID.Rooted);
 		EntityActionData availableAttackAction = GetAvailableAttackAction();
 
 		if (m_linkedEntity.Status.Contains(EntityStatusEnumID.Stun))
@@ -121,14 +121,14 @@ public class EntityAIPlugin : EntityPlugin
 					rotateAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.RotateEntity], m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID, _recordedAction.action.timeAtStart);
 					resultInfo.ReplaceFreeAction(rotateAction);
 				}
-				
+
 				if (!isEntityInRangeWeaponsPossibleRange)
 					TargetEntity(null);
 
 
 			}
-		} 
-		else if(!canMove && (_recordedAction.action.Data.type == EntityActionData.ActionType.Movement || _recordedAction.action.Data.type == EntityActionData.ActionType.Rotation))
+		}
+		else if (!canMove && (_recordedAction.action.Data.type == EntityActionData.ActionType.Movement || _recordedAction.action.Data.type == EntityActionData.ActionType.Rotation))
 		{
 			WaitAction waitAction = (TurnManager.Instance.GetAction(EntityActionEnumID.Wait, m_linkedEntity.ID) as WaitAction);
 			waitAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.Wait], m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID, _recordedAction.action.timeAtStart);
@@ -226,21 +226,16 @@ public class EntityAIPlugin : EntityPlugin
 
 	#region Targeting
 
-	public bool IsEntityInWeaponRange ( Entity _targetEntity, out Weapon _attackingWeapon )
+	public bool IsEntityInWeaponRange ( Entity _targetEntity, string _attackingWeaponId )
 	{
-		foreach (string _weaponId in m_entitiesInWeaponRange.Keys)
+		foreach (Entity entity in m_entitiesInWeaponRange[_attackingWeaponId])
 		{
-			foreach (Entity entity in m_entitiesInWeaponRange[_weaponId])
+			if (entity == _targetEntity)
 			{
-				if (entity == _targetEntity)
-				{
-					_attackingWeapon = m_linkedEntity.Equipment.Weapons[_weaponId];
-					return true;
-				}
+				return true;
 			}
 		}
 
-		_attackingWeapon = null;
 		return false;
 	}
 

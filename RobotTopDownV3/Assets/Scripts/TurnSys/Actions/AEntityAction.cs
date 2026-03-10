@@ -12,6 +12,7 @@ public abstract class AEntityAction : INetworkSerializable
     public EntityActionEnumID enumID;
     public int performingEntityID; //entity
     public Entity PerformingEntity => GameManager.Instance.GetEntityFromID(performingEntityID);
+    public string linkedEquipmentId;
     public int supposedPositionAtActionStartID; //tile
     public int positionAtActionEndID; //tile
     //public int[] statusIds;
@@ -29,7 +30,8 @@ public abstract class AEntityAction : INetworkSerializable
     {
         serializer.SerializeValue(ref enumID);
         serializer.SerializeValue(ref performingEntityID);
-		serializer.SerializeValue(ref supposedPositionAtActionStartID);
+        serializer.SerializeValue(ref linkedEquipmentId);
+        serializer.SerializeValue(ref supposedPositionAtActionStartID);
 		serializer.SerializeValue(ref positionAtActionEndID);
 		//serializer.SerializeValue(ref statusIds);
 		serializer.SerializeValue(ref preparationDuration);
@@ -43,6 +45,7 @@ public abstract class AEntityAction : INetworkSerializable
 	{
         enumID = _data.enumID;
         performingEntityID = _performingEntityID;
+        linkedEquipmentId = GameManager.Instance.GetEntityFromID(performingEntityID).ComponentLinkedToAction.ContainsKey(enumID) ? GameManager.Instance.GetEntityFromID(performingEntityID).ComponentLinkedToAction[enumID] : null;
         supposedPositionAtActionStartID = _positionAtActionStartID;
         positionAtActionEndID = _positionAtActionStartID;
 
@@ -112,7 +115,13 @@ public abstract class AEntityAction : INetworkSerializable
         PerformingEntity.EndPerformAction();
     }
 
-    public abstract bool CheckConflict ( AEntityAction _otherAction, bool _isCheck = true );
+    public struct ActionConflictResultInfo
+	{
+        public bool isFirstActionConflicted;
+        public bool isSecondActionConflicted;
+	}
+
+    public abstract ActionConflictResultInfo CheckConflict ( AEntityAction _otherAction, bool _isCheck = true );
 
     public abstract void Display ( TurnManager.RecordedAction _recordedAction );
 

@@ -1,4 +1,4 @@
-//GENERATED 13
+//GENERATED 16
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -18,6 +18,9 @@ public enum EntityActionEnumID
 		Slash,
 		Walk,
 
+		TurnShield,
+		InvokeEntity,
+		ApplyEffect,
 		//#END#ENTITYACTIONENUMID#//
 		Unknowned,
 }

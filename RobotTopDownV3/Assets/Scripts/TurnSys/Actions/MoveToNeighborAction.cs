@@ -80,7 +80,7 @@ public class MoveToNeighborAction : AEntityAction
 		base.RegisterInteraction(_tile);
 	}
 
-	public override bool CheckConflict ( AEntityAction _otherAction , bool _isCheck = true )
+	public override ActionConflictResultInfo CheckConflict ( AEntityAction _otherAction , bool _isCheck = true )
 	{
 		if (finalTargetTileID == -1)
 		{
@@ -89,47 +89,44 @@ public class MoveToNeighborAction : AEntityAction
 				Debug.LogError("CRITICAL ERROR : performing entity " + GameManager.Instance.GetEntityFromID(performingEntityID).Data.name + " cant go back to where it was. Hope this never happens"); // solution? insta kill performing entity
 			else
 				GameManager.Instance.GetEntityFromID(performingEntityID).Displacement.Coordinates.GetTile().SetEntity(GameManager.Instance.GetEntityFromID(performingEntityID), _isThisTurn: false);
-			return false;
+			return new() { isFirstActionConflicted = false, isSecondActionConflicted = false };
 		}
 
-		bool hasConflict = false;
+		bool doesSelfHaveConflict = false;
+		bool doesOtherHaveConflict = false;
+
 
 		if (_otherAction is MoveToNeighborAction && (_otherAction as MoveToNeighborAction).finalTargetTileID == finalTargetTileID)
 		{
-			hasConflict = true;
-
 			int roll = UnityEngine.Random.Range((int)0, 2);
 			if (roll == 0)
 			{
-				//performing entity wins roll
-				//finalTargetTile.SetEntity(performingEntity, _isThisTurn: false);
-				//(_otherAction as MoveAction).performingEntity.Displacement.Coordinates.GetTile().SetEntity((_otherAction as MoveAction).performingEntity, _isThisTurn: false);
 				(_otherAction as MoveToNeighborAction).finalTargetTileID = -1;
+				doesOtherHaveConflict = true;
 			}
 			else
-			{
-				//(_otherAction as MoveAction).finalTargetTile.SetEntity(_otherAction.performingEntity, _isThisTurn: false);				
+			{			
 				finalTargetTileID = -1;
+				doesSelfHaveConflict = true;
 			}
 		}
 		else if (_otherAction is MoveToTargetAction && (_otherAction as MoveToTargetAction).thisActionDestinationID == finalTargetTileID)
 		{
-			hasConflict = true;
-
 			int roll = UnityEngine.Random.Range((int)0, 2);
 			if (roll == 0)
 			{
-				//performing entity wins roll
 				(_otherAction as MoveToTargetAction).thisActionDestinationID = -1;
+				doesOtherHaveConflict = true;
 			}
 			else
 			{
 				finalTargetTileID = -1;
+				doesSelfHaveConflict = true;
 			}
 		}
 		else if (IsDestinationOccupiedOnNextTurnAction())
 		{
-			hasConflict = true;
+			doesSelfHaveConflict = true;
 			RefreshDestinatedTile();
 
 			/*if (finalTargetTile != null)
@@ -138,16 +135,16 @@ public class MoveToNeighborAction : AEntityAction
 		//check if tile too far
 		else if (finalTargetTileID != -1 && GridManager.Instance.GetDistanceBetween(GameManager.Instance.GetEntityFromID(performingEntityID).Displacement.Coordinates.GetTile(), GridManager.Instance.Tiles[(int)finalTargetTileID], false) > 1)
 		{
-			hasConflict = true;
+			doesSelfHaveConflict = true;
 			RefreshDestinatedTile();
 		}
 
-		if (hasConflict == false)
+		if (doesSelfHaveConflict == false)
 		{
 			GridManager.Instance.Tiles[(int)finalTargetTileID].SetEntity(GameManager.Instance.GetEntityFromID(performingEntityID), _isThisTurn: false);
 		}
 
-		return hasConflict;
+		return new() { isFirstActionConflicted = doesSelfHaveConflict, isSecondActionConflicted = doesOtherHaveConflict };
 	}
 
 	private bool IsDestinationOccupiedOnNextTurnAction ()

@@ -16,7 +16,7 @@ public class ApplyStatusPassiveEffect : AEntityPassiveEffect
 			_targetEntity.AddStatus(statusApplied);
 	}
 
-	public void ApplyEffect(Tile _tile )
+	public override void ApplyEffect(Tile _tile )
 	{
 		_tile.AddStatus(statusApplied);
 	}

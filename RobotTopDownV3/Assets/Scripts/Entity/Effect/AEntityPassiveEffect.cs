@@ -9,7 +9,7 @@ public abstract class AEntityPassiveEffect : ScriptableEnum<EntityPassiveEffectE
 
 	public virtual bool UseConditionPredicate ( AEntityAction _action, Entity _entity, Entity _targetEntity )
 	{
-		if (_action == null || _entity == null)
+		if (_action == null || _entity == null )
 			return false;
 
 		switch (conditionType)
@@ -23,12 +23,17 @@ public abstract class AEntityPassiveEffect : ScriptableEnum<EntityPassiveEffectE
 				bool liveCheck = !_entity.Displacement.DidMoveThisTurn;
 				return liveCheck && recordedCheck;
 			case ConditionType.IsTargetMarked:
-				return _targetEntity.Status.Contains(EntityStatusEnumID.Marked);
+				return _targetEntity != null && _targetEntity.Status.Contains(EntityStatusEnumID.Marked);
 		}
 	}
 
 	public virtual void ApplyEffect ( Entity _performingEntity, Entity _targetEntity )
     {
+
+    }
+
+	public virtual void ApplyEffect ( Tile _tile )
+	{
 
     }
 }

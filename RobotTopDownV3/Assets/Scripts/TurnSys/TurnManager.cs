@@ -35,7 +35,7 @@ public class TurnManager : Singleton<TurnManager>
 	private SerializableDictionary<int, int> m_remainingActionToken = new();
 	public SerializableDictionary<int, int> RemainingActionToken => m_remainingActionToken;
 
-	private List<System.Tuple<RecordedAction, RecordedAction>> m_recordedConflict;
+	private List<RecordedAction> m_recordedConflict;
 
 	private AEntityAction m_currentEntityAction;
 	public AEntityAction CurrentActionSelected => m_currentEntityAction;
@@ -47,6 +47,7 @@ public class TurnManager : Singleton<TurnManager>
 
 	public enum TurnPhase { Recording, Calculating, Playing }
 	public TurnPhase currentPhase;
+	public int currentRound = 0;
 
 	//prevision
 	private SerializableDictionary<int, TrackedEntityEvents> m_trackedEventsPerEntity = new();
@@ -127,11 +128,13 @@ public class TurnManager : Singleton<TurnManager>
 	public override void Awake ()
 	{
 		base.Awake();
+		EntityAnchor.onEntityAdded += OnEntityAdded;
 		PlayerController.onEntitySelected += OnEntitySelected;
 	}
 
 	private void OnDestroy ()
 	{
+		EntityAnchor.onEntityAdded -= OnEntityAdded;
 		PlayerController.onEntitySelected -= OnEntitySelected;
 	}
 
@@ -140,20 +143,14 @@ public class TurnManager : Singleton<TurnManager>
 		RefreshActionDisplay(_selectedEntity);
 	}
 
-	public void Init ()
+	public void OnEntityAdded ( Entity _entity )
 	{
-		foreach (EntityAnchor anchor in GameManager.Instance.PlayersEntityAnchor)
+		_entity.Equipment.onDeath += OnEntityDeath;
+		m_trackedEventsPerEntity.Add(_entity.ID, new TrackedEntityEvents()
 		{
-			foreach (Entity entity in anchor.Entities)
-			{
-				entity.Equipment.onDeath += OnEntityDeath;
-				m_trackedEventsPerEntity.Add(entity.ID, new TrackedEntityEvents() 
-				{ 
-					firstTimeEntityMoved = -1,
-					firstTimeEntityAttacked = -1 
-				});
-			}
-		}
+			firstTimeEntityMoved = -1,
+			firstTimeEntityAttacked = -1
+		});
 	}
 
 	#region Input phase
@@ -208,9 +205,9 @@ public class TurnManager : Singleton<TurnManager>
 		AEntityAction action = null;
 
 		int timeAtStart = m_recordedActionInput.ContainsKey(_performingEntityID) && m_recordedActionInput[_performingEntityID].Count > 0
-			? m_recordedActionInput[_performingEntityID].ToArray()[^1].action.timeAtStart + 1 : 0;
+			? m_recordedActionInput[_performingEntityID].ToArray()[^1].action.timeAtStart + 1 : currentRound;
 
-		//for base actions
+		//for base actions or exceptions
 		switch (_actionData.enumID)
 		{
 			case EntityActionEnumID.NeighborMove:
@@ -233,6 +230,11 @@ public class TurnManager : Singleton<TurnManager>
 				action = new RotateEntityAction();
 				action.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.RotateEntity], _performingEntityID, GetLastRegisteredPositionOfEntity(_performingEntityID), timeAtStart);
 				break;
+			case EntityActionEnumID.TurnShield:
+				action = new TurnShieldAction();
+				action.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.TurnShield], _performingEntityID, GetLastRegisteredPositionOfEntity(_performingEntityID), timeAtStart);
+				break;
+
 		}
 
 		if (action == null)
@@ -335,14 +337,14 @@ public class TurnManager : Singleton<TurnManager>
 
 	private void TrackedEventCheck ()
 	{
-		foreach(KeyValuePair<int, TrackedEntityEvents> pair in m_trackedEventsPerEntity)
+		foreach (KeyValuePair<int, TrackedEntityEvents> pair in m_trackedEventsPerEntity)
 		{
 			pair.Value.ResetAllValues();
 
 			if (!m_recordedActionInput.ContainsKey(pair.Key))
 				continue;
 
-			foreach(RecordedAction recordedAction in m_recordedActionInput[pair.Key].ToArray())
+			foreach (RecordedAction recordedAction in m_recordedActionInput[pair.Key].ToArray())
 			{
 				if (recordedAction.action.Data.type == EntityActionData.ActionType.Movement)
 					pair.Value.firstTimeEntityMoved = recordedAction.action.timeAtStart;
@@ -394,6 +396,7 @@ public class TurnManager : Singleton<TurnManager>
 	[Button]
 	public void StartInputPhase ()
 	{
+		currentRound = 0;
 		currentPhase = TurnPhase.Recording;
 		//UIManager.Instance.OpenPanel<InGamePanel>();
 		LogConsole.AddLog("Start Input phase", LogConsole.LogEventType.Main);
@@ -468,13 +471,14 @@ public class TurnManager : Singleton<TurnManager>
 		LogConsole.AddLog("Start turn", LogConsole.LogEventType.Main);
 		m_actionsToPlay.Clear();
 		m_actionsBeingDone.Clear();
+		currentRound = 0;
 
 		StartNextRoundTick();
 	}
 
 	private void StartNextRoundTick ()
 	{
-		
+		currentRound++;
 		LogConsole.AddLog("Start tick", LogConsole.LogEventType.Main);
 
 		//1 - calculate phase
@@ -525,7 +529,7 @@ public class TurnManager : Singleton<TurnManager>
 
 				if (recordedAction.action.lifetime > 0 || !resultInfo.isActionChanging)
 				{
-					if(recordedAction.action.lifetime == 0)
+					if (recordedAction.action.lifetime == 0)
 						LogConsole.AddLog("Succesfully add " + resultInfo.replacedAction + " action to queue", LogConsole.LogEventType.PlayPhase);
 					recordedAction.action.Prepare(recordedAction.entityState);
 					returnActionToPlayThisRound.Enqueue(recordedAction);
@@ -585,9 +589,9 @@ public class TurnManager : Singleton<TurnManager>
 		}
 	}
 
-	private List<System.Tuple<RecordedAction, RecordedAction>> CheckForConflicts ()
+	private List<RecordedAction> CheckForConflicts ()
 	{
-		List<System.Tuple<RecordedAction, RecordedAction>> conflicts = new();
+		List<RecordedAction> conflicts = new();
 		foreach (int entity in m_actionsToPlay.Keys)
 		{
 			Queue<RecordedAction> actionsPlayedThisRound = m_actionsToPlay[entity];
@@ -600,10 +604,16 @@ public class TurnManager : Singleton<TurnManager>
 					Queue<RecordedAction> otherEntityActionsPlayedThisRound = m_actionsToPlay[otherEntity];
 					foreach (RecordedAction otherAction in otherEntityActionsPlayedThisRound.ToArray())
 					{
-						if (action.action.CheckConflict(otherAction.action))
+						AEntityAction.ActionConflictResultInfo resultInfo = action.action.CheckConflict(otherAction.action);
+						if (resultInfo.isFirstActionConflicted)
 						{
-							LogConsole.AddLog("Conflict detected: [" + action.action.ToString() + "|" + action.action.ToString() + "]", LogConsole.LogEventType.PlayPhase);
-							conflicts.Add(new System.Tuple<RecordedAction, RecordedAction>(action, otherAction));
+							LogConsole.AddLog("Conflict detected: [" + action.action.ToString() + "]", LogConsole.LogEventType.PlayPhase);
+							conflicts.Add(action);
+						}
+						else if (resultInfo.isSecondActionConflicted)
+						{
+							LogConsole.AddLog("Conflict detected: [" + otherAction.action.ToString() + "]", LogConsole.LogEventType.PlayPhase);
+							conflicts.Add(otherAction);
 						}
 					}
 				}
@@ -613,13 +623,32 @@ public class TurnManager : Singleton<TurnManager>
 		return conflicts;
 	}
 
-	private List<System.Tuple<RecordedAction, RecordedAction>> ResolveConflicts ()
+	private List<RecordedAction> ResolveConflicts ()
 	{
-		List<System.Tuple<RecordedAction, RecordedAction>> remainingConflict = new();
-		foreach (System.Tuple<RecordedAction, RecordedAction> conflict in m_recordedConflict)
+		List<RecordedAction> remainingConflict = new();
+
+		foreach (RecordedAction conflictedAction in m_recordedConflict)
 		{
-			if (conflict.Item1.action.CheckConflict(conflict.Item2.action, false))
-				remainingConflict.Add(conflict);
+			foreach (int otherEntity in m_actionsToPlay.Keys)
+			{
+				if (conflictedAction.performingEntityID == otherEntity) continue;
+
+				Queue<RecordedAction> otherEntityActionsPlayedThisRound = m_actionsToPlay[otherEntity];
+				foreach (RecordedAction otherAction in otherEntityActionsPlayedThisRound.ToArray())
+				{
+					AEntityAction.ActionConflictResultInfo resultInfo = conflictedAction.action.CheckConflict(otherAction.action);
+					if (resultInfo.isFirstActionConflicted)
+					{
+						LogConsole.AddLog("Conflict detected: [" + conflictedAction.action.ToString() + "]", LogConsole.LogEventType.PlayPhase);
+						remainingConflict.Add(conflictedAction);
+					}
+					else if (resultInfo.isSecondActionConflicted)
+					{
+						LogConsole.AddLog("Conflict detected: [" + otherAction.action.ToString() + "]", LogConsole.LogEventType.PlayPhase);
+						remainingConflict.Add(otherAction);
+					}
+				}
+			}
 		}
 
 		return remainingConflict;
@@ -651,7 +680,7 @@ public class TurnManager : Singleton<TurnManager>
 		}
 	}
 
-	private void PlayActionTick(RecordedAction _action )
+	private void PlayActionTick ( RecordedAction _action )
 	{
 		if (_action.freeActionType != EntityActionEnumID.Wait)
 		{
@@ -677,7 +706,7 @@ public class TurnManager : Singleton<TurnManager>
 		{
 			//performing entity still has actions this phase to do
 			RecordedAction action = m_actionsToPlay[_performingEntityID].Dequeue();
-			m_actionsBeingDone[_performingEntityID] = new (action, false);
+			m_actionsBeingDone[_performingEntityID] = new(action, false);
 			PlayActionTick(action);
 		}
 		else
@@ -692,12 +721,12 @@ public class TurnManager : Singleton<TurnManager>
 				m_actionsBeingDone[_performingEntityID] = new(m_actionsBeingDone[_performingEntityID].Item1, true);
 
 			bool areAllActionPerformed = true;
-			foreach(Tuple<RecordedAction, bool> tuple in m_actionsBeingDone.Values)
+			foreach (Tuple<RecordedAction, bool> tuple in m_actionsBeingDone.Values)
 			{
 				if (tuple.Item2 == false)
 					areAllActionPerformed = false;
 			}
-			
+
 			if (areAllActionPerformed)
 			{
 				//m_actionsToPlay.Clear();
@@ -775,6 +804,27 @@ public class TurnManager : Singleton<TurnManager>
 		onEndLevel?.Invoke();
 	}
 
+	public void AddEntityMidGame(Entity _entity, Action _onEndSpawn = null)
+	{
+		int remainingActionTickThisTurn = GameConfig.current.game.actionTokenPerRound - currentRound;
+
+		Entity.EntityState availableState = _entity.KnownedStates[0];
+
+		for(int i = 0; i< remainingActionTickThisTurn; i++)
+		{
+			m_recordedActionInput[_entity.ID].Enqueue(new RecordedAction()
+			{
+				type = EntityActionEnumID.Wait,
+				performingEntityID = _entity.ID,
+				action = GetAction(EntityActionEnumID.Wait, _entity.ID),
+				freeAction = GetAction(EntityActionEnumID.Wait, _entity.ID),
+				freeActionType = EntityActionEnumID.Wait,
+				entityState = availableState
+			});
+		}
+
+		_onEndSpawn?.Invoke();
+	}
 
 	#endregion
 

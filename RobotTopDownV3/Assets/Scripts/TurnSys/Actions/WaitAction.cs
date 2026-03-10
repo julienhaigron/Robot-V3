@@ -21,9 +21,10 @@ public class WaitAction : AEntityAction
 
 	}
 
-	public override bool CheckConflict ( AEntityAction _otherAction, bool _isCheck = true )
+	public override ActionConflictResultInfo CheckConflict ( AEntityAction _otherAction, bool _isCheck = true )
 	{
-		return false;
+
+		return new() { isFirstActionConflicted = false, isSecondActionConflicted = false };
 	}
 
 

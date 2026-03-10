@@ -67,11 +67,11 @@ public class AttackAction : AEntityAction
 		}
 	}
 
-	public override bool CheckConflict ( AEntityAction _otherAction, bool _isCheck = true )
+	public override ActionConflictResultInfo CheckConflict ( AEntityAction _otherAction, bool _isCheck = true )
 	{
 		pfcResult = (int)EntityActionData.PFC(Data, _otherAction.Data);
 		//no conflict ?
-		return false;
+		return new() { isFirstActionConflicted = false, isSecondActionConflicted = false};
 	}
 
 	protected override void Perform ( Entity.EntityState _state )
@@ -85,17 +85,17 @@ public class AttackAction : AEntityAction
 		}
 
 		//if enemy is in weapon range
-		bool isEnemyInWeaponRange = PerformingEntity.AI.IsEntityInWeaponRange(TargetEntity, out Weapon _attackingWeapon);
+		bool isEnemyInWeaponRange = PerformingEntity.AI.IsEntityInWeaponRange(TargetEntity, attackingWeaponId);
 
 		if (isEnemyInWeaponRange || (Data.isAoe && targetTileID != -1))
 		{
-			List<Tile> tilesInWeaponRange = Data.isAoe ? PerformingEntity.Equipment.GetTilesInAoERange(this, true) : PerformingEntity.Equipment.GetTilesInWeaponRange(_attackingWeapon.Data.name, true);
+			List<Tile> tilesInWeaponRange = Data.isAoe ? PerformingEntity.Equipment.GetTilesInAoERange(this, true) : PerformingEntity.Equipment.GetTilesInWeaponRange(attackingWeaponId, true);
 			base.Perform(_state);
 			foreach (Tile tile in tilesInWeaponRange)
 			{
 				tile.UI.SetOutlineColor(Color.red);
 			}
-			_attackingWeapon.PerformAttack(this, () =>
+			PerformingEntity.Equipment.Weapons[attackingWeaponId].PerformAttack(this, () =>
 			{
 				foreach (Tile tile in tilesInWeaponRange)
 				{
@@ -121,11 +121,18 @@ public class AttackAction : AEntityAction
 
 	public override bool TileInteractPredicate ( Tile _tile )
 	{
-		//TODO : select only visible enemies
-		//TODO : should also check if unit is in supposed weapon range (counting orientation)
+		if (Data.targetType == EntityActionData.TargetType.Self && _tile.coordinates.ID == TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntityID))
+			return true;
 
+		Entity user = GameManager.Instance.GetEntityFromID(performingEntityID);
+		Weapon attackingWeapon = user.Equipment.Weapons[user.ComponentLinkedToAction[enumID]];
+		bool isInRange = GridManager.Instance.GetTilesInVisionRange(GridManager.Instance.Tiles[TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntityID)], attackingWeapon.Data.range, true).Contains(_tile);
+
+		if (Data.targetType == EntityActionData.TargetType.Tile && isInRange)
+			return true;
+		
 		Entity entity = _tile.GetEntity(true);
-		return entity != null && ((Data.targetType == EntityActionData.TargetType.Self) == entity.IsAlliedTo(GameManager.Instance.GetEntityFromID(performingEntityID).OwnerID));
+		return entity != null && isInRange && !entity.IsAlliedTo(GameManager.Instance.GetEntityFromID(performingEntityID).OwnerID);
 	}
 
 	public override void RegisterInteraction ( Tile _tile )

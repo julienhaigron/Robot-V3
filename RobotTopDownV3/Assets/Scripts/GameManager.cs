@@ -106,7 +106,6 @@ public class GameManager : SingletonPersistant<GameManager>
 		}
 
 		m_fogCanvas.gameObject.SetActive(true);
-		TurnManager.Instance.Init();
 		TurnManager.Instance.StartInputPhase();
 	}
 

@@ -4,19 +4,19 @@ using UnityEngine;
 using Unity.Netcode;
 using System.Linq;
 
-public class RotateEntityAction : AEntityAction
+public class TurnShieldAction : SpecialAction
 {
-	public int targetedOrientationID = -1; //0 - 5
+	public int targetedOrientation = 0;
 
 	public override void NetworkSerialize<T> ( BufferSerializer<T> serializer )
 	{
 		base.NetworkSerialize(serializer);
-		serializer.SerializeValue(ref targetedOrientationID);
+		serializer.SerializeValue(ref targetedOrientation);
 	}
 
 	public override void RegisterInteraction ( Tile _tile )
 	{
-		targetedOrientationID = GridManager.Instance.GetClosestOrientation(PerformingEntity.Displacement.Coordinates.GetTile(), _tile);
+		targetedOrientation = GridManager.Instance.GetClosestOrientation(GridManager.Instance.Tiles[TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntityID)], _tile);
 
 		base.RegisterInteraction(_tile);
 	}
@@ -29,22 +29,13 @@ public class RotateEntityAction : AEntityAction
 	public override ActionConflictResultInfo CheckConflict ( AEntityAction _otherAction, bool _isCheck = true )
 	{
 		//no conflict ?
-
 		return new() { isFirstActionConflicted = false, isSecondActionConflicted = false };
 	}
 
 	protected override void Perform ( Entity.EntityState _state )
 	{
-		if(targetedOrientationID == -1)
-		{
-			//shouldnt happen
-			EndTick();
-		}
-		else
-		{
-			PerformingEntity.Displacement.Rotate(targetedOrientationID, GameConfig.current.game.entityRotationDuration, EndTick);
-		}
-
+		//todo : apply effect
+		GameManager.Instance.GetEntityFromID(performingEntityID).Equipment.Tools[linkedEquipmentId].PerformAction(this, EndTick);
 		base.Perform(_state);
 	}
 
@@ -60,6 +51,6 @@ public class RotateEntityAction : AEntityAction
 
 	public override bool TileInteractPredicate ( Tile _tile )
 	{
-		return PerformingEntity.Displacement.Coordinates.GetTile().Neighbors.Contains(_tile);
+		return _tile != null && GridManager.Instance.Tiles[TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntityID)].Neighbors.Contains(_tile);
 	}
 }

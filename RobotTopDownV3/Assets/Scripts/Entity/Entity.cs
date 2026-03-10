@@ -36,9 +36,15 @@ public class Entity : MonoBehaviour
 
     private List<EntityActionEnumID> m_knownedActions = new();
     public List<EntityActionEnumID> KnownedActions => m_knownedActions;
+
+    private Dictionary<EntityActionEnumID, string> m_componentLinkedToAction;
+    public Dictionary<EntityActionEnumID, string> ComponentLinkedToAction => m_componentLinkedToAction;
     
     private Dictionary<EntityActionEnumID, List<EntityPassiveEffectEnumID>> m_knownedPassiveEffectsPerAction = new();
     public Dictionary<EntityActionEnumID, List<EntityPassiveEffectEnumID>> KnownedPassiveEffectsPerAction => m_knownedPassiveEffectsPerAction;
+
+    private List<EntityState> m_knownedStates = new();
+    public List<EntityState> KnownedStates => m_knownedStates;
 
     private EntityState m_state;
     public EntityState State => m_state;
@@ -95,12 +101,15 @@ public class Entity : MonoBehaviour
         m_ai.Init(_data);
         m_skin.Init(_data);
 
-        m_knownedActions = _data.GetActions();
+        m_componentLinkedToAction = _data.GetActions();
+        m_knownedActions = new(m_componentLinkedToAction.Keys);
 
-        foreach(EntityActionEnumID actionID in m_knownedActions)
+        foreach (EntityActionEnumID actionID in m_knownedActions)
 		{
             m_knownedPassiveEffectsPerAction.Add(actionID, _data.GetPassiveEffects(actionID));
         }
+
+        m_knownedStates.AddRange(_data.BrainData.knownedStates);
     }
 
     private void OnRoundStart ()

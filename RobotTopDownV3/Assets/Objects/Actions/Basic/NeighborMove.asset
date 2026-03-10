@@ -35,8 +35,10 @@ MonoBehaviour:
   arcRadius: 1
   rayDiameter: 1
   coneType: 0
+  hitAmount: 1
+  damageFactor: 1
   usedDamageChannels: 
   pushStrenght: 0
   pullStrenght: 0
-  appliableStatus: []
-  passiveEffects: []
+  passiveEffects: 
+  invocatedEntity: {fileID: 0}

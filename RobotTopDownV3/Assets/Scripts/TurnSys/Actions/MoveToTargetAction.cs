@@ -125,7 +125,7 @@ public class MoveToTargetAction : AEntityAction
 		TurnManager.Instance.RefreshActionDisplay(performingEntityID);
 	}
 
-	public override bool CheckConflict ( AEntityAction _otherAction, bool _isCheck = true )
+	public override ActionConflictResultInfo CheckConflict ( AEntityAction _otherAction, bool _isCheck = true )
 	{
 		Entity performingEntity = GameManager.Instance.GetEntityFromID(performingEntityID);
 		if (finalTargetTileID == -1)
@@ -135,10 +135,11 @@ public class MoveToTargetAction : AEntityAction
 				Debug.LogError("CRITICAL ERROR : performing entity " + performingEntity.Data.name + " cant go back to where it was. Hope this never happens"); // solution? insta kill performing entity
 			else
 				performingEntity.Displacement.Coordinates.GetTile().SetEntity(performingEntity, _isThisTurn: false);
-			return false;
+			return new() { isFirstActionConflicted = false, isSecondActionConflicted = false };
 		}
 
-		bool hasConflict = false;
+		bool doesSelfHaveConflict = false;
+		bool doesOtherHaveConflict = false;
 
 		if (_otherAction is MoveToNeighborAction _otherNeighborMoveAction && _otherNeighborMoveAction.finalTargetTileID == thisActionDestinationID)
 		{
@@ -147,10 +148,11 @@ public class MoveToTargetAction : AEntityAction
 			{
 				//performing entity wins roll
 				_otherNeighborMoveAction.finalTargetTileID = -1;
+				doesOtherHaveConflict = true;
 			}
 			else
 			{
-				hasConflict = true;
+				doesSelfHaveConflict = true;
 				thisActionDestinationID = -1;
 			}
 		}
@@ -161,42 +163,43 @@ public class MoveToTargetAction : AEntityAction
 			{
 				//performing entity wins roll
 				_otherMoveToTargetAction.thisActionDestinationID = -1;
+				doesOtherHaveConflict = true;
 			}
 			else
 			{
-				hasConflict = true;
+				doesSelfHaveConflict = true;
 				thisActionDestinationID = -1;
 			}
 		}
 		else if (IsDestinationOccupiedOnNextTurnAction())
 		{
 			if (_isCheck)
-				hasConflict = true;
+				doesSelfHaveConflict = true;
 			else
 			{
 				RefreshDestinatedTile();
 				if (finalTargetTileID == -1)
-					hasConflict = true;
+					doesSelfHaveConflict = true;
 			}
 		}
 		else if (thisActionDestinationID != -1 && GridManager.Instance.GetDistanceBetween(performingEntity.Displacement.Coordinates.GetTile(), GridManager.Instance.Tiles[(int)thisActionDestinationID], false) > 1)
 		{
 			//check if tile too far
-			hasConflict = true;
+			doesSelfHaveConflict = true;
 			RefreshDestinatedTile();
 		}
 		else if (thisActionDestinationID == -1)
 		{
-			hasConflict = true;
+			doesSelfHaveConflict = true;
 			RefreshDestinatedTile();
 		}
 
-		if (hasConflict == false)
+		if (doesSelfHaveConflict == false)
 		{
 			GridManager.Instance.Tiles[(int)thisActionDestinationID].SetEntity(performingEntity, _isThisTurn: false);
 		}
 
-		return hasConflict;
+		return new() { isFirstActionConflicted = doesSelfHaveConflict, isSecondActionConflicted = doesOtherHaveConflict };
 	}
 
 	private bool IsDestinationOccupiedOnNextTurnAction ()

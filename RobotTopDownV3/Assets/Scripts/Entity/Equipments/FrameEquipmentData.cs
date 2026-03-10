@@ -120,36 +120,55 @@ public class EntitySavedData : INetworkSerializable
 		return totalBonus;
 	}
 
-	public List<EntityActionEnumID> GetActions ()
+	public Dictionary<EntityActionEnumID, string> GetActions ()
 	{
-		List<EntityActionEnumID> actions = new();
-		actions.AddRange(FrameData.knownedActions);
-		actions.AddRange(ReactorData.knownedActions);
-		actions.AddRange(BrainData.knownedActions);
+		Dictionary<EntityActionEnumID, string> actionsPerComponents = new();
+		
+		foreach(EntityActionEnumID actionID in FrameData.knownedActions)
+		{
+			actionsPerComponents.Add(actionID, FrameData.name);
+		}
+		foreach (EntityActionEnumID actionID in ReactorData.knownedActions)
+		{
+			actionsPerComponents.Add(actionID, ReactorData.name);
+		}
+		foreach (EntityActionEnumID actionID in BrainData.knownedActions)
+		{
+			actionsPerComponents.Add(actionID, BrainData.name);
+		}
 
 		foreach (StringContainer container in armsIds)
 		{
 			if (GameAssets.current.equipments[container.value] is EntityEquipmentData equipment)
 			{
-				actions.AddRange(equipment.knownedActions);
+				foreach (EntityActionEnumID actionID in equipment.knownedActions)
+				{
+					actionsPerComponents.Add(actionID, equipment.name);
+				}
 			}
 		}
 		foreach (StringContainer container in auxiliarIds)
 		{
 			if (GameAssets.current.equipments[container.value] is EntityEquipmentData equipment)
 			{
-				actions.AddRange(equipment.knownedActions);
+				foreach (EntityActionEnumID actionID in equipment.knownedActions)
+				{
+					actionsPerComponents.Add(actionID, equipment.name);
+				}
 			}
 		}
 		foreach (StringContainer container in chipsetsIds)
 		{
 			if (GameAssets.current.equipments[container.value] is EntityEquipmentData equipment)
 			{
-				actions.AddRange(equipment.knownedActions);
+				foreach (EntityActionEnumID actionID in equipment.knownedActions)
+				{
+					actionsPerComponents.Add(actionID, equipment.name);
+				}
 			}
 		}
 
-		return actions;
+		return actionsPerComponents;
 	}
 
 	public List<EntityPassiveEffectEnumID> GetPassiveEffects( EntityActionEnumID _actionID )
