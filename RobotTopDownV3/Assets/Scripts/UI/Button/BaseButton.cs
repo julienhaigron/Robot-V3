@@ -40,4 +40,9 @@ public class BaseButton : MonoBehaviour
         else
             transform.DOScale(_isVisible ? 1f : 0f, 1f);
     }
+
+    public virtual void SetInteractability(bool _isInteractable )
+	{
+        m_button.interactable = _isInteractable;
+    }
 }

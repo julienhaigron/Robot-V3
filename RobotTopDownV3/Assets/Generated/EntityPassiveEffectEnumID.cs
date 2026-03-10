@@ -8,4 +8,5 @@ public enum EntityPassiveEffectEnumID
     MaxRangeUp = 5,
     MaxTargetUp = 6,
     PreparationCostReduction = 7,
+    PushOrPull = 8,
 }

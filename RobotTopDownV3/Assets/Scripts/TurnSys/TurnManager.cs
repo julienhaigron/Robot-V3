@@ -155,33 +155,6 @@ public class TurnManager : Singleton<TurnManager>
 
 	#region Input phase
 
-	public int GetLastRegisteredPositionOfEntity ( int _entityID )
-	{
-		if (m_recordedActionInput.ContainsKey(_entityID) == false
-			|| m_recordedActionInput[_entityID] == null || m_recordedActionInput[_entityID].Count == 0)
-			return GameManager.Instance.GetEntityFromID(_entityID).Displacement.Coordinates.ID;
-
-		RecordedAction lastRecordedAction = m_recordedActionInput[_entityID].ToArray()[^1];
-		return lastRecordedAction.action.positionAtActionEndID;
-	}
-
-	public int GetPositionOfEntityAtEndOfRound ( int _entityID )
-	{
-		if (currentPhase != TurnPhase.Calculating)
-			return -1;
-
-		if (m_actionsToPlay.ContainsKey(_entityID) == false
-			|| m_actionsToPlay[_entityID] == null || m_actionsToPlay[_entityID].Count == 0)
-		{
-			if (m_actionsBeingDone.ContainsKey(_entityID))
-				return m_actionsBeingDone[_entityID].Item1.action.positionAtActionEndID;
-			else
-				return GameManager.Instance.GetEntityFromID(_entityID).Displacement.Coordinates.ID;
-		}
-		else
-			return m_actionsToPlay[_entityID].ToList()[^1].action.positionAtActionEndID;
-	}
-
 	public void SetCurrentStateSelected ( Entity.EntityState _state )
 	{
 		m_currentStateTypeSelected = _state;
@@ -233,6 +206,18 @@ public class TurnManager : Singleton<TurnManager>
 			case EntityActionEnumID.TurnShield:
 				action = new TurnShieldAction();
 				action.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.TurnShield], _performingEntityID, GetLastRegisteredPositionOfEntity(_performingEntityID), timeAtStart);
+				break;
+			case EntityActionEnumID.InvokeEntity:
+				action = new InvokeEntityAction();
+				action.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.InvokeEntity], _performingEntityID, GetLastRegisteredPositionOfEntity(_performingEntityID), timeAtStart);
+				break;
+			case EntityActionEnumID.ApplyEffect:
+				action = new ApplyEffectAction();
+				action.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.ApplyEffect], _performingEntityID, GetLastRegisteredPositionOfEntity(_performingEntityID), timeAtStart);
+				break;
+			case EntityActionEnumID.MoveThenAttack:
+				action = new MoveThenAttackAction();
+				action.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.MoveThenAttack], _performingEntityID, GetLastRegisteredPositionOfEntity(_performingEntityID), timeAtStart);
 				break;
 
 		}
@@ -334,6 +319,33 @@ public class TurnManager : Singleton<TurnManager>
 		TrackedEventCheck();
 		RefreshActionDisplay(_removedRecordedAction.performingEntityID);
 	}*/
+
+	public int GetLastRegisteredPositionOfEntity ( int _entityID )
+	{
+		if (m_recordedActionInput.ContainsKey(_entityID) == false
+			|| m_recordedActionInput[_entityID] == null || m_recordedActionInput[_entityID].Count == 0)
+			return GameManager.Instance.GetEntityFromID(_entityID).Displacement.Coordinates.ID;
+
+		RecordedAction lastRecordedAction = m_recordedActionInput[_entityID].ToArray()[^1];
+		return lastRecordedAction.action.positionAtActionEndID;
+	}
+
+	public int GetPositionOfEntityAtEndOfRound ( int _entityID )
+	{
+		if (currentPhase != TurnPhase.Calculating)
+			return -1;
+
+		if (m_actionsToPlay.ContainsKey(_entityID) == false
+			|| m_actionsToPlay[_entityID] == null || m_actionsToPlay[_entityID].Count == 0)
+		{
+			if (m_actionsBeingDone.ContainsKey(_entityID))
+				return m_actionsBeingDone[_entityID].Item1.action.positionAtActionEndID;
+			else
+				return GameManager.Instance.GetEntityFromID(_entityID).Displacement.Coordinates.ID;
+		}
+		else
+			return m_actionsToPlay[_entityID].ToList()[^1].action.positionAtActionEndID;
+	}
 
 	private void TrackedEventCheck ()
 	{

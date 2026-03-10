@@ -21,6 +21,7 @@ MonoBehaviour:
   tokenDuration: 1
   preparationAnimationKey: 
   afterPerformAnimationKey: 
+  conditionType: 0
   previousActionAttackModificator: 0
   type: 0
   subType: 0

@@ -133,7 +133,7 @@ public class MoveToNeighborAction : AEntityAction
 				finalTargetTile.SetEntity(performingEntity, _isThisTurn: false);*/
 		}
 		//check if tile too far
-		else if (finalTargetTileID != -1 && GridManager.Instance.GetDistanceBetween(GameManager.Instance.GetEntityFromID(performingEntityID).Displacement.Coordinates.GetTile(), GridManager.Instance.Tiles[(int)finalTargetTileID], false) > 1)
+		else if (finalTargetTileID != -1 && GridManager.Instance.GetDistanceBetween(GridManager.Instance.Tiles[supposedPositionAtActionStartID], GridManager.Instance.Tiles[(int)finalTargetTileID], false) > 1)
 		{
 			doesSelfHaveConflict = true;
 			RefreshDestinatedTile();

@@ -61,7 +61,7 @@ public class EntityDisplacementPlugin : EntityPlugin
 		onAnyEntitySpawn.Invoke(m_linkedEntity);
 	}
 
-	public void MoveToTile( int _tileID,  System.Action onMovementDoneAction)
+	public void MoveToTile( int _tileID,  System.Action onMovementDoneAction, bool _isInstant = false)
 	{
 		if(m_coordinate.GetTile().GetEntity(true) == m_linkedEntity)
 			m_coordinate.GetTile().SetEntity(null, _isThisTurn: true);
@@ -74,9 +74,17 @@ public class EntityDisplacementPlugin : EntityPlugin
 		if (m_movementTween.IsActive())
 			m_movementTween.Kill();
 
-		m_movementTween = transform.DOMove(tile.transform.position - m_bottomPosition.localPosition, GameConfig.current.game.actionDuration).SetEase(Ease.Linear).OnComplete(() => onMovementDoneAction?.Invoke());
+		m_movementTween = transform.DOMove(tile.transform.position - m_bottomPosition.localPosition, _isInstant ? GameConfig.current.game.actionDuration : 0)
+			.SetEase(Ease.Linear).OnComplete(() => onMovementDoneAction?.Invoke());
 		tile.SetEntity(m_linkedEntity, _isThisTurn: true);
 		m_coordinate.SetCoordinate(tile.coordinates.X, tile.coordinates.Z, tile.coordinates.ID);
+
+		if(tile.GroundType == TileGroundType.Void && !m_linkedEntity.Status.Contains(EntityStatusEnumID.Flying))
+		{
+			Dictionary<WeaponEquipmentData.DamageType, int> damages = new();
+			damages.Add(WeaponEquipmentData.DamageType.Contendant, 9999);
+			m_linkedEntity.Equipment.TakeDamage(new EntityEquipmentPlugin.TakeDamageCallback() { damages = damages });
+		}
 
 		//refresh fow
 		onAnyEntityMovement?.Invoke(m_linkedEntity);

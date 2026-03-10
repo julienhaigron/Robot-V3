@@ -1,4 +1,4 @@
-//GENERATED 16
+//GENERATED 17
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -21,6 +21,7 @@ public enum EntityActionEnumID
 		TurnShield,
 		InvokeEntity,
 		ApplyEffect,
+		MoveThenAttack,
 		//#END#ENTITYACTIONENUMID#//
 		Unknowned,
 }

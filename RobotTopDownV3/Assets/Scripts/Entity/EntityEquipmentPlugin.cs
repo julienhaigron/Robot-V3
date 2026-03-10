@@ -78,9 +78,9 @@ public class EntityEquipmentPlugin : EntityPlugin
 		{
 			foreach (StringContainer stringContainer in _entityData.armsIds)
 			{
-				if(GameAssets.current.equipments[stringContainer.value] is WeaponEquipmentData weaponData)
+				if (GameAssets.current.equipments[stringContainer.value] is WeaponEquipmentData weaponData)
 					AddWeapon(weaponData, m_linkedEntity.Displacement.Spawn.isFirstSide);
-				else if(GameAssets.current.equipments[stringContainer.value] is ToolEquipmentData toolData)
+				else if (GameAssets.current.equipments[stringContainer.value] is ToolEquipmentData toolData)
 					AddTool(toolData, m_linkedEntity.Displacement.Spawn.isFirstSide);
 			}
 		}
@@ -270,7 +270,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 				break;
 			case EntityActionData.AOEType.Ray:
 
-				tilesInRange.AddRange(GridManager.Instance.GetTilesInRay(_action.PerformingEntity.Displacement.Coordinates.GetTile() ,_action.TargetTile, _isThisTurn));
+				tilesInRange.AddRange(GridManager.Instance.GetTilesInRay(_action.PerformingEntity.Displacement.Coordinates.GetTile(), _action.TargetTile, _isThisTurn));
 				break;
 			case EntityActionData.AOEType.Cone:
 
@@ -396,14 +396,17 @@ public class EntityEquipmentPlugin : EntityPlugin
 	{
 		//apply flat damage reduction (ex: Shield)
 		Dictionary<WeaponEquipmentData.DamageType, int> damages = new(_damageInfo.damages);
-		foreach(Tool tool in m_tools.Values)
+		if (_damageInfo.entityAttacker != null)
 		{
-			if(tool is Shield shield 
-				&& shield.orientation == GridManager.Instance.GetClosestOrientation(m_linkedEntity.Displacement.Coordinates.GetTile(), _damageInfo.entityAttacker.Displacement.Coordinates.GetTile()))
+			foreach (Tool tool in m_tools.Values)
 			{
-				foreach(WeaponEquipmentData.DamageType damageType in damages.Keys)
+				if (tool is Shield shield
+					&& shield.orientation == GridManager.Instance.GetClosestOrientation(m_linkedEntity.Displacement.Coordinates.GetTile(), _damageInfo.entityAttacker.Displacement.Coordinates.GetTile()))
 				{
-					damages[damageType] -= shield.RemoveDamage(damages[damageType]);
+					foreach (WeaponEquipmentData.DamageType damageType in damages.Keys)
+					{
+						damages[damageType] -= shield.RemoveDamage(damages[damageType]);
+					}
 				}
 			}
 		}

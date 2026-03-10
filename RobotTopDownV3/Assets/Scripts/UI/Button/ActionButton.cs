@@ -13,6 +13,15 @@ public class ActionButton : BaseButton
 
 	private EntityActionEnumID m_actionType;
 
+	private void Awake ()
+	{
+		TurnManager.onActionAdded += OnActionAdded;
+	}
+
+	private void OnDestroy ()
+	{
+		TurnManager.onActionAdded -= OnActionAdded;
+	}
 
 	public void Init( EntityActionEnumID _action )
 	{
@@ -21,11 +30,28 @@ public class ActionButton : BaseButton
 		m_icon.sprite = data.icon;
 		m_name.text = data.displayName;
 		m_tokenCost.text = data.GetTokenTotalCost(null, null, null).ToString();
+
+		RefreshInteractability();
 	}
 
-	private void OnActionTokenUsed ()
+	private void RefreshInteractability ()
+	{
+		if (PlayerController.Instance.SelectedEntity == null)
+			return;
+
+		SetInteractability(GameAssets.current.game.entityActionsData[m_actionType].UseConditionPredicate(TurnManager.Instance.GetAction(m_actionType, PlayerController.Instance.SelectedEntity.ID), PlayerController.Instance.SelectedEntity, null));
+	}
+
+	public override void SetInteractability ( bool _isInteractable )
+	{
+		base.SetInteractability(_isInteractable);
+		m_icon.color = _isInteractable ? Color.white : Color.black;
+	}
+
+	private void OnActionAdded (TurnManager.RecordedAction _addedAction)
 	{
 		//refresh if is available
+		RefreshInteractability();
 	}
 
 	protected override void OnClick ()
