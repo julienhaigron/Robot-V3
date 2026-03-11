@@ -40,7 +40,7 @@ MonoBehaviour:
     - {fileID: 11400000, guid: 269ea4b9e1222fe42bc648cbcdf4a6a9, type: 2}
     weaponCone: {fileID: 868673094015138981, guid: 8693abc4f151cbc4b94435d3e63342fb, type: 3}
     entityActionsData:
-      keys: 00000000030000000100000002000000040000000700000008000000090000000a00000005000000060000000b0000000c0000000d000000
+      keys: 00000000030000000100000002000000040000000700000008000000090000000a00000005000000060000000b0000000c0000000d0000000e000000
       values:
       - {fileID: 11400000, guid: 65141cef94be0da4aa62b38b7184715e, type: 2}
       - {fileID: 11400000, guid: b8ac4dc65be2b4147a3477108787f128, type: 2}
@@ -56,20 +56,23 @@ MonoBehaviour:
       - {fileID: 11400000, guid: 5d4f8b775e9c4e34a9790fac070f5f8a, type: 2}
       - {fileID: 11400000, guid: 66b784af57f493b4d907229418aedef0, type: 2}
       - {fileID: 11400000, guid: 1893165c079cfca44a87e251f1b9c933, type: 2}
+      - {fileID: 11400000, guid: c8a7b83647a4eb84785c0649593f507d, type: 2}
     entityEffects:
-      keys: 0000000001000000020000000300000004000000050000000600000007000000090000000a0000000b000000
+      keys: 0000000001000000020000000300000004000000050000000600000007000000090000000a0000000b0000000d00000008000000
       values:
       - {fileID: 0}
-      - {fileID: 11400000, guid: 58114cea11aee9e4aad5472d3eeaecf2, type: 2}
+      - {fileID: 11400000, guid: 6b411fb908b3f1e4cbf0b606160306c2, type: 2}
       - {fileID: 11400000, guid: 58114cea11aee9e4aad5472d3eeaecf2, type: 2}
       - {fileID: 11400000, guid: 148e8958c33500e4ba1eacde51b0c89c, type: 2}
       - {fileID: 11400000, guid: e75c71a2b03d6d14f80b1283c85f2c93, type: 2}
       - {fileID: 11400000, guid: 64d8c988724d1064bacbcba76b15f961, type: 2}
+      - {fileID: 11400000, guid: 4fba334cac435f44cb3bfdb56c4604c7, type: 2}
       - {fileID: 11400000, guid: a4e48370004c84540b659fe6bb3f5783, type: 2}
-      - {fileID: 11400000, guid: bbace26cd4bcd9b45aaef9aa6fc3b54d, type: 2}
+      - {fileID: 11400000, guid: 1f209b863915fca4e85d024b55330106, type: 2}
       - {fileID: 11400000, guid: 7935f68659f8c2e41892adad7b5aabcb, type: 2}
       - {fileID: 11400000, guid: f51fdc06b22d1fc4cbf2003d883bd22f, type: 2}
-      - {fileID: 11400000, guid: 46ae190248476e842af4b57ea6a3cda0, type: 2}
+      - {fileID: 11400000, guid: bb712f254ab47b8488b6fe299764224a, type: 2}
+      - {fileID: 11400000, guid: bbace26cd4bcd9b45aaef9aa6fc3b54d, type: 2}
     entityStatus:
       keys: 
       values: []

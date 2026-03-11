@@ -204,12 +204,14 @@ public class EntityEquipmentPlugin : EntityPlugin
 		m_linkedEntity.Displacement.Rotate(_tile, false);
 	}*/
 
-	public List<Tile> GetTilesInWeaponRange ( string _weaponID, bool _isThisTurn = false )
+	public List<Tile> GetTilesInWeaponRange (AEntityAction _action, string _weaponID, bool _isThisTurn = false )
 	{
 		List<Tile> tilesInRange = new();
 		Weapon usedWeapon = m_weapons[_weaponID];
 
 		float angle = GridManager.Instance.FromOrientationToAngle(m_linkedEntity.Displacement.CurrentOrientation);
+
+		bool ignoreObstacles = _action.effects.Contains(EntityPassiveEffectEnumID.TrajectoryControl);
 
 		int nbOfRayPerAngle = 1;
 		int totalNbOfRay = usedWeapon.Data.visionConeRange * nbOfRayPerAngle;
@@ -228,7 +230,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 			foreach (RaycastHit hitInfo in hits)
 			{
 				if (hitInfo.transform.TryGetComponent(out Tile tile) && !tilesInRange.Contains(tile)
-					&& GridManager.Instance.IsVisionLineClear(m_linkedEntity.Displacement.Coordinates.GetTile(), tile, _isThisTurn))
+					&& (ignoreObstacles || GridManager.Instance.IsVisionLineClear(m_linkedEntity.Displacement.Coordinates.GetTile(), tile, _isThisTurn)))
 				{
 					tilesInRange.Add(tile);
 				}

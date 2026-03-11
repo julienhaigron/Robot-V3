@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8a14843fe3bc11240955293fb8fcd791, type: 3}
   m_Name: Pull1
   m_EditorClassIdentifier: 
-  enumID: 9
+  enumID: 10
   conditionType: 0
   movementStrength: -1

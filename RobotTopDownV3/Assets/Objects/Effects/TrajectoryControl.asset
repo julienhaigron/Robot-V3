@@ -9,9 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8a14843fe3bc11240955293fb8fcd791, type: 3}
-  m_Name: Push1
+  m_Script: {fileID: 11500000, guid: 29ec68ee6561d484f93d81a503c8029b, type: 3}
+  m_Name: TrajectoryControl
   m_EditorClassIdentifier: 
-  enumID: 11
+  enumID: 13
   conditionType: 0
-  movementStrength: 1
+  rangeBoostAmount: 1

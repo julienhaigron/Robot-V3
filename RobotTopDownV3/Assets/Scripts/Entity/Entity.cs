@@ -42,6 +42,8 @@ public class Entity : MonoBehaviour
     
     private Dictionary<EntityActionEnumID, List<EntityPassiveEffectEnumID>> m_knownedPassiveEffectsPerAction = new();
     public Dictionary<EntityActionEnumID, List<EntityPassiveEffectEnumID>> KnownedPassiveEffectsPerAction => m_knownedPassiveEffectsPerAction;
+    private List<EntityPassiveEffectEnumID> m_allPassiveEffects = new();
+    public List<EntityPassiveEffectEnumID> AllPassiveEffects => m_allPassiveEffects;
 
     private List<EntityState> m_knownedStates = new();
     public List<EntityState> KnownedStates => m_knownedStates;

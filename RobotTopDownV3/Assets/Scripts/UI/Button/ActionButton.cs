@@ -39,7 +39,11 @@ public class ActionButton : BaseButton
 		if (PlayerController.Instance.SelectedEntity == null)
 			return;
 
-		SetInteractability(GameAssets.current.game.entityActionsData[m_actionType].UseConditionPredicate(TurnManager.Instance.GetAction(m_actionType, PlayerController.Instance.SelectedEntity.ID), PlayerController.Instance.SelectedEntity, null));
+		int entityID = PlayerController.Instance.SelectedEntity.ID;
+		int timeAtStart = TurnManager.Instance.RecordedActions.ContainsKey(entityID) && TurnManager.Instance.RecordedActions[entityID].Count > 0
+			? TurnManager.Instance.RecordedActions[entityID].ToArray()[^1].action.TimeAtEnd : TurnManager.Instance.currentRound;
+
+		SetInteractability(GameAssets.current.game.entityActionsData[m_actionType].UseConditionPredicate(TurnManager.Instance.GetAction(m_actionType, PlayerController.Instance.SelectedEntity.ID, timeAtStart), PlayerController.Instance.SelectedEntity, null));
 	}
 
 	public override void SetInteractability ( bool _isInteractable )

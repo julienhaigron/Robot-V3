@@ -54,7 +54,7 @@ public class MoveToTargetAction : AEntityAction
 		base.Perform(_state);
 		List<Tile> tilesInRange = new();
 		foreach (string weaponId in PerformingEntity.Equipment.Weapons.Keys)
-			tilesInRange.AddRange(PerformingEntity.Equipment.GetTilesInWeaponRange(weaponId, true));
+			tilesInRange.AddRange(PerformingEntity.Equipment.GetTilesInWeaponRange(this, weaponId, true));
 
 		foreach (Tile tile in tilesInRange)
 		{

@@ -78,17 +78,20 @@ public class TurnManager : Singleton<TurnManager>
 
 	public struct RecordedAction : INetworkSerializable
 	{
-		public EntityActionEnumID type;
+		public int timeAtStart;
 		public int performingEntityID;
+		public EntityActionEnumID type;
+		public Entity.EntityState entityState;
 		public AEntityAction action;
 		public EntityActionEnumID freeActionType;
 		public AEntityAction freeAction;
-		public Entity.EntityState entityState;
 
 		public void NetworkSerialize<T> ( BufferSerializer<T> serializer ) where T : IReaderWriter
 		{
-			serializer.SerializeValue(ref type);
+			serializer.SerializeValue(ref timeAtStart);
 			serializer.SerializeValue(ref performingEntityID);
+			serializer.SerializeValue(ref entityState);
+			serializer.SerializeValue(ref type);
 
 			if (serializer.IsWriter)
 			{
@@ -96,7 +99,7 @@ public class TurnManager : Singleton<TurnManager>
 			}
 			else
 			{
-				action = Instance.GetAction(GameAssets.current.game.entityActionsData[type], performingEntityID);
+				action = Instance.GetAction(GameAssets.current.game.entityActionsData[type], performingEntityID, timeAtStart);
 
 				if (action == null)
 				{
@@ -105,6 +108,7 @@ public class TurnManager : Singleton<TurnManager>
 				action.NetworkSerialize(serializer);
 			}
 
+
 			serializer.SerializeValue(ref freeActionType);
 			if (serializer.IsWriter)
 			{
@@ -112,7 +116,7 @@ public class TurnManager : Singleton<TurnManager>
 			}
 			else
 			{
-				freeAction = Instance.GetAction(GameAssets.current.game.entityActionsData[freeActionType], performingEntityID);
+				freeAction = Instance.GetAction(GameAssets.current.game.entityActionsData[freeActionType], performingEntityID, timeAtStart);
 
 				if (freeAction == null)
 				{
@@ -120,8 +124,13 @@ public class TurnManager : Singleton<TurnManager>
 				}
 				freeAction.NetworkSerialize(serializer);
 			}
+		}
 
-			serializer.SerializeValue(ref entityState);
+		public void AddActionMod(AEntityAction _actionMod )
+		{
+			_actionMod.OnModActionAdded(action);
+			freeActionType = _actionMod.enumID;
+			freeAction = _actionMod;
 		}
 	}
 
@@ -174,64 +183,68 @@ public class TurnManager : Singleton<TurnManager>
 
 	public void SetCurrentActionSelected ( EntityActionEnumID _action )
 	{
+		int performingEntityID = PlayerController.Instance.SelectedEntity.ID;
+		int timeAtStart = m_recordedActionInput.ContainsKey(performingEntityID) && m_recordedActionInput[performingEntityID].Count > 0
+			? m_recordedActionInput[performingEntityID].ToArray()[^1].action.TimeAtEnd : currentRound;
+		
+		m_currentEntityAction = GetAction(GameAssets.current.game.entityActionsData[_action], performingEntityID, timeAtStart);
 		m_currentActionTypeSelected = _action;
-		m_currentEntityAction = GetAction(GameAssets.current.game.entityActionsData[_action], PlayerController.Instance.SelectedEntity.ID);
 
 		onActionSelected?.Invoke(m_currentEntityAction);
 	}
 
-	public AEntityAction GetAction ( EntityActionEnumID _actionType, int _performingEntityID )
+	public AEntityAction GetAction ( EntityActionEnumID _actionType, int _performingEntityID, int _timeAtStart )
 	{
-		return GetAction(GameAssets.current.game.entityActionsData[_actionType], _performingEntityID);
+		return GetAction(GameAssets.current.game.entityActionsData[_actionType], _performingEntityID, _timeAtStart);
 	}
 
-	public AEntityAction GetAction ( EntityActionData _actionData, int _performingEntityID )
+	public AEntityAction GetAction ( EntityActionData _actionData, int _performingEntityID, int _timeAtStart )
 	{
 		AEntityAction action = null;
-
-		int timeAtStart = m_recordedActionInput.ContainsKey(_performingEntityID) && m_recordedActionInput[_performingEntityID].Count > 0
-			? m_recordedActionInput[_performingEntityID].ToArray()[^1].action.timeAtStart + 1 : currentRound;
 
 		//for base actions or exceptions
 		switch (_actionData.enumID)
 		{
 			case EntityActionEnumID.NeighborMove:
 				action = new MoveToNeighborAction();
-				action.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.NeighborMove], _performingEntityID, GetLastRegisteredPositionOfEntity(_performingEntityID), timeAtStart);
+				action.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.NeighborMove], _performingEntityID, GetLastRegisteredPositionOfEntity(_performingEntityID), _timeAtStart);
 				break;
 			case EntityActionEnumID.TargetTileMove:
 				action = new MoveToTargetAction();
-				action.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.TargetTileMove], _performingEntityID, GetLastRegisteredPositionOfEntity(_performingEntityID), timeAtStart);
+				action.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.TargetTileMove], _performingEntityID, GetLastRegisteredPositionOfEntity(_performingEntityID), _timeAtStart);
 				break;
 			case EntityActionEnumID.Attack:
 				action = new AttackAction();
-				action.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.Attack], _performingEntityID, GetLastRegisteredPositionOfEntity(_performingEntityID), timeAtStart);
+				action.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.Attack], _performingEntityID, GetLastRegisteredPositionOfEntity(_performingEntityID), _timeAtStart);
 				break;
 			case EntityActionEnumID.Wait:
 				action = new WaitAction();
-				action.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.Wait], _performingEntityID, GetLastRegisteredPositionOfEntity(_performingEntityID), timeAtStart);
+				action.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.Wait], _performingEntityID, GetLastRegisteredPositionOfEntity(_performingEntityID), _timeAtStart);
 				break;
 			case EntityActionEnumID.RotateEntity:
 				action = new RotateEntityAction();
-				action.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.RotateEntity], _performingEntityID, GetLastRegisteredPositionOfEntity(_performingEntityID), timeAtStart);
+				action.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.RotateEntity], _performingEntityID, GetLastRegisteredPositionOfEntity(_performingEntityID), _timeAtStart);
 				break;
 			case EntityActionEnumID.TurnShield:
 				action = new TurnShieldAction();
-				action.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.TurnShield], _performingEntityID, GetLastRegisteredPositionOfEntity(_performingEntityID), timeAtStart);
+				action.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.TurnShield], _performingEntityID, GetLastRegisteredPositionOfEntity(_performingEntityID), _timeAtStart);
 				break;
 			case EntityActionEnumID.InvokeEntity:
 				action = new InvokeEntityAction();
-				action.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.InvokeEntity], _performingEntityID, GetLastRegisteredPositionOfEntity(_performingEntityID), timeAtStart);
+				action.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.InvokeEntity], _performingEntityID, GetLastRegisteredPositionOfEntity(_performingEntityID), _timeAtStart);
 				break;
 			case EntityActionEnumID.ApplyEffect:
 				action = new ApplyEffectAction();
-				action.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.ApplyEffect], _performingEntityID, GetLastRegisteredPositionOfEntity(_performingEntityID), timeAtStart);
+				action.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.ApplyEffect], _performingEntityID, GetLastRegisteredPositionOfEntity(_performingEntityID), _timeAtStart);
 				break;
 			case EntityActionEnumID.MoveThenAttack:
 				action = new MoveThenAttackAction();
-				action.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.MoveThenAttack], _performingEntityID, GetLastRegisteredPositionOfEntity(_performingEntityID), timeAtStart);
+				action.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.MoveThenAttack], _performingEntityID, GetLastRegisteredPositionOfEntity(_performingEntityID), _timeAtStart);
 				break;
-
+			case EntityActionEnumID.AddTrajectoryControl:
+				action = new AddEffectToAction();
+				action.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.AddTrajectoryControl], _performingEntityID, GetLastRegisteredPositionOfEntity(_performingEntityID), _timeAtStart);
+				break;
 		}
 
 		if (action == null)
@@ -241,19 +254,19 @@ public class TurnManager : Singleton<TurnManager>
 				case EntityActionData.ActionType.DistanceAttack:
 				case EntityActionData.ActionType.MeleeAttack:
 					action = new AttackAction();
-					action.Init(GameAssets.current.game.entityActionsData[_actionData.enumID], _performingEntityID, GetLastRegisteredPositionOfEntity(_performingEntityID), timeAtStart);
+					action.Init(GameAssets.current.game.entityActionsData[_actionData.enumID], _performingEntityID, GetLastRegisteredPositionOfEntity(_performingEntityID), _timeAtStart);
 					break;
 				case EntityActionData.ActionType.Movement:
 					action = new MoveToTargetAction();
-					action.Init(GameAssets.current.game.entityActionsData[_actionData.enumID], _performingEntityID, GetLastRegisteredPositionOfEntity(_performingEntityID), timeAtStart);
+					action.Init(GameAssets.current.game.entityActionsData[_actionData.enumID], _performingEntityID, GetLastRegisteredPositionOfEntity(_performingEntityID), _timeAtStart);
 					break;
 				case EntityActionData.ActionType.Special:
 					action = new SpecialAction();
-					action.Init(GameAssets.current.game.entityActionsData[_actionData.enumID], _performingEntityID, GetLastRegisteredPositionOfEntity(_performingEntityID), timeAtStart);
+					action.Init(GameAssets.current.game.entityActionsData[_actionData.enumID], _performingEntityID, GetLastRegisteredPositionOfEntity(_performingEntityID), _timeAtStart);
 					break;
 				case EntityActionData.ActionType.Rotation:
 					action = new RotateEntityAction();
-					action.Init(GameAssets.current.game.entityActionsData[_actionData.enumID], _performingEntityID, GetLastRegisteredPositionOfEntity(_performingEntityID), timeAtStart);
+					action.Init(GameAssets.current.game.entityActionsData[_actionData.enumID], _performingEntityID, GetLastRegisteredPositionOfEntity(_performingEntityID), _timeAtStart);
 					break;
 			}
 		}
@@ -264,7 +277,10 @@ public class TurnManager : Singleton<TurnManager>
 	public bool AddAction ( int _entityID, EntityActionEnumID _actionType, Entity.EntityState _state )
 	{
 		AEntityAction action = null;
-		action = GetAction(GameAssets.current.game.entityActionsData[_actionType], _entityID);
+		int timeAtStart = m_recordedActionInput.ContainsKey(_entityID) && m_recordedActionInput[_entityID].Count > 0
+			? m_recordedActionInput[_entityID].ToArray()[^1].action.TimeAtEnd : currentRound;
+
+		action = GetAction(GameAssets.current.game.entityActionsData[_actionType], _entityID, timeAtStart);
 		return AddAction(_entityID, action, _state);
 	}
 
@@ -278,6 +294,7 @@ public class TurnManager : Singleton<TurnManager>
 
 		RecordedAction recordedAction = new RecordedAction
 		{
+			timeAtStart = _action.timeAtStart,
 			type = _action.enumID,
 			performingEntityID = _entityID,
 			action = _action,
@@ -553,22 +570,30 @@ public class TurnManager : Singleton<TurnManager>
 
 				if (recordedAction.action.lifetime > 0 || !resultInfo.isActionChanging)
 				{
-					if (recordedAction.action.lifetime == 0)
+					if (recordedAction.action.lifetime >= recordedAction.action.TimeAtStartPerform 
+						&& recordedAction.action.lifetime < recordedAction.action.TimeAtStartPerform + recordedAction.action.actualDuration)
+					{
+						recordedAction.action.Prepare(recordedAction.entityState);
 						LogConsole.AddLog("Succesfully add " + resultInfo.replacedAction + " action to queue", LogConsole.LogEventType.PlayPhase);
-					recordedAction.action.Prepare(recordedAction.entityState);
+					}
 					returnActionToPlayThisRound.Enqueue(recordedAction);
 				}
 				else
 				{
-					LogConsole.AddLog("Action replaced to " + resultInfo.replacedAction, LogConsole.LogEventType.PlayPhase);
-					resultInfo.replacedAction.Prepare(recordedAction.entityState);
+					if (recordedAction.action.lifetime >= recordedAction.action.TimeAtStartPerform
+						&& recordedAction.action.lifetime < recordedAction.action.TimeAtStartPerform + recordedAction.action.actualDuration)
+					{
+						resultInfo.replacedFreeAction.OnModActionAdded(resultInfo.replacedAction);
+						resultInfo.replacedAction.Prepare(recordedAction.entityState);
+						LogConsole.AddLog("Action replaced to " + resultInfo.replacedAction, LogConsole.LogEventType.PlayPhase);
+					}
 					returnActionToPlayThisRound.Enqueue(new RecordedAction()
 					{
+						timeAtStart = recordedAction.action.timeAtStart,
 						type = resultInfo.replacedAction.enumID,
 						performingEntityID = resultInfo.replacedAction.performingEntityID,
 						action = resultInfo.replacedAction,
-						entityState = recordedAction.entityState
-						,
+						entityState = recordedAction.entityState,
 						freeAction = resultInfo.replacedFreeAction,
 						freeActionType = resultInfo.replacedFreeAction == null ? EntityActionEnumID.Wait : resultInfo.replacedFreeAction.enumID
 					});
@@ -704,24 +729,22 @@ public class TurnManager : Singleton<TurnManager>
 		}
 	}
 
-	private void PlayActionTick ( RecordedAction _action )
+	private void PlayActionTick ( RecordedAction _recordedAction )
 	{
-		if (_action.freeActionType != EntityActionEnumID.Wait)
+		if (_recordedAction.freeActionType != EntityActionEnumID.Wait)
 		{
-			_action.action.onEndTick += ( performingEntity, didEndAction ) =>
+			_recordedAction.action.onEndTick += ( performingEntity, didEndAction ) =>
 			{
-				_action.freeAction.onEndTick += OnActionEndTick;
-				_action.freeAction.OnStartPerform(_action.entityState);
-				_action.freeAction.PerformTick(_action.entityState);
+				_recordedAction.freeAction.onEndTick += OnActionEndTick;
+				_recordedAction.freeAction.PerformTick(_recordedAction.entityState);
 			};
 
 		}
 		else
-			_action.action.onEndTick += OnActionEndTick;
+			_recordedAction.action.onEndTick += OnActionEndTick;
 
-		LogConsole.AddLog("Action performed: " + _action.action.ToString(), LogConsole.LogEventType.PlayPhase);
-		_action.action.OnStartPerform(_action.entityState);
-		_action.action.PerformTick(_action.entityState);
+		LogConsole.AddLog("Action performed: " + _recordedAction.action.ToString(), LogConsole.LogEventType.PlayPhase);
+		_recordedAction.action.PerformTick(_recordedAction.entityState);
 	}
 
 	private void OnActionEndTick ( int _performingEntityID, bool _didEndAction )
@@ -747,18 +770,6 @@ public class TurnManager : Singleton<TurnManager>
 			TryEndRoundTick();
 		}
 
-	}
-
-	private bool AreAllActionsAndEventPerformed ()
-	{
-		bool areAllActionPerformed = true;
-		foreach (Tuple<RecordedAction, bool> tuple in m_actionsBeingDone.Values)
-		{
-			if (tuple.Item2 == false)
-				areAllActionPerformed = false;
-		}
-
-		return areAllActionPerformed;
 	}
 
 	private void TryEndRoundTick ()
@@ -810,6 +821,11 @@ public class TurnManager : Singleton<TurnManager>
 	private void OnEntityDeath ( int _entityID )
 	{
 		GameManager.Instance.GetEntityFromID(_entityID).Equipment.onDeath -= OnEntityDeath;
+		Entity deadEntity = GameManager.Instance.GetEntityFromID(_entityID);
+		foreach(EntityPassiveEffectEnumID effetID in deadEntity.AllPassiveEffects)
+		{
+			GameAssets.current.game.entityEffects[effetID].OnDeathTrigger(deadEntity);
+		}
 
 		m_recordedActionInput.Remove(_entityID);
 		m_actionsToPlay.Remove(_entityID);
@@ -863,14 +879,15 @@ public class TurnManager : Singleton<TurnManager>
 
 		Entity.EntityState availableState = _entity.KnownedStates[0];
 
-		for (int i = 0; i < remainingActionTickThisTurn; i++)
+		for (int i = 1; i < remainingActionTickThisTurn; i++)
 		{
 			m_recordedActionInput[_entity.ID].Enqueue(new RecordedAction()
 			{
+				timeAtStart = currentRound + i,
 				type = EntityActionEnumID.Wait,
 				performingEntityID = _entity.ID,
-				action = GetAction(EntityActionEnumID.Wait, _entity.ID),
-				freeAction = GetAction(EntityActionEnumID.Wait, _entity.ID),
+				action = GetAction(EntityActionEnumID.Wait, _entity.ID, currentRound + i),
+				freeAction = GetAction(EntityActionEnumID.Wait, _entity.ID, currentRound + i),
 				freeActionType = EntityActionEnumID.Wait,
 				entityState = availableState
 			});

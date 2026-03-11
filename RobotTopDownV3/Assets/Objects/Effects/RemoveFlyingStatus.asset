@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb0fed09184cc99408afeb59c8dea74f, type: 3}
   m_Name: RemoveFlyingStatus
   m_EditorClassIdentifier: 
-  enumID: 11
+  enumID: 12
   conditionType: 0
   doApplyToSelf: 0
   doApplyToTile: 0

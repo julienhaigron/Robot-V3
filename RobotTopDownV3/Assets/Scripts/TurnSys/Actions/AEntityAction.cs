@@ -16,6 +16,7 @@ public abstract class AEntityAction : INetworkSerializable
     public int supposedPositionAtActionStartID; //tile
     public int positionAtActionEndID; //tile
     //public int[] statusIds;
+    public EntityPassiveEffectEnumID[] effects;
     public EntityActionData Data => GameAssets.current.game.entityActionsData[enumID];
 
     public int preparationDuration = 0;
@@ -25,6 +26,8 @@ public abstract class AEntityAction : INetworkSerializable
 
     public int lifetime = 0;
     public int timeAtStart = 0;
+    public int TimeAtStartPerform => timeAtStart + preparationDuration;
+    public int TimeAtEnd => timeAtStart + TotalCost;
 
     public virtual void NetworkSerialize<T> ( BufferSerializer<T> serializer ) where T : IReaderWriter
     {
@@ -33,6 +36,7 @@ public abstract class AEntityAction : INetworkSerializable
         serializer.SerializeValue(ref linkedEquipmentId);
         serializer.SerializeValue(ref supposedPositionAtActionStartID);
 		serializer.SerializeValue(ref positionAtActionEndID);
+		serializer.SerializeValue(ref effects);
 		//serializer.SerializeValue(ref statusIds);
 		serializer.SerializeValue(ref preparationDuration);
 		serializer.SerializeValue(ref actualDuration);
@@ -49,6 +53,7 @@ public abstract class AEntityAction : INetworkSerializable
         supposedPositionAtActionStartID = _positionAtActionStartID;
         positionAtActionEndID = _positionAtActionStartID;
 
+        effects = GameManager.Instance.GetEntityFromID(_performingEntityID).KnownedPassiveEffectsPerAction[enumID].ToArray();
         /*statusIds = new int[_data.appliableStatus.Length];
 		for (int i = 0; i < _data.appliableStatus.Length; i++)
 		{
@@ -67,6 +72,9 @@ public abstract class AEntityAction : INetworkSerializable
     //returns true if action fully performed
     public bool PerformTick ( Entity.EntityState _state )
 	{
+        if (lifetime == 0)
+            OnStartPerform(_state);
+
         lifetime++;
         
         if (lifetime == preparationDuration + 1 )
@@ -122,6 +130,11 @@ public abstract class AEntityAction : INetworkSerializable
 	}
 
     public abstract ActionConflictResultInfo CheckConflict ( AEntityAction _otherAction, bool _isCheck = true );
+
+    public virtual void OnModActionAdded(AEntityAction _mainAction )
+	{
+
+	}
 
     public abstract void Display ( TurnManager.RecordedAction _recordedAction );
 

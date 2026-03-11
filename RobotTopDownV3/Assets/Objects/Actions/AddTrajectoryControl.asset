@@ -10,12 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2a743e40aeafc0445b10e59cec8dfa98, type: 3}
-  m_Name: ShieldD3
+  m_Name: AddTrajectoryControl
   m_EditorClassIdentifier: 
-  displayName: Shield D3
-  enumID: 7
-  icon: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
-  tileOutlineColor: {r: 0, g: 0.8663821, b: 1, a: 1}
+  displayName: Add Trajectory Control
+  enumID: 14
+  icon: {fileID: 0}
+  tileOutlineColor: {r: 0, g: 1, b: 0, a: 1}
   m_tokenPreparationDuration: 0
   m_tokenCooldown: 0
   tokenDuration: 1
@@ -24,14 +24,14 @@ MonoBehaviour:
   conditionType: 0
   previousActionAttackModificator: 0
   type: 4
-  subType: 1
-  targetType: 0
+  subType: 5
+  targetType: 1
   minDistance: 0
-  maxDistance: 5
+  maxDistance: 0
   minTargetAmount: 1
   maxTargetAmount: 1
   isAoe: 0
-  aoeType: 2
+  aoeType: 0
   circleRange: 1
   arcRadius: 1
   rayDiameter: 1
@@ -39,5 +39,5 @@ MonoBehaviour:
   hitAmount: 1
   damageFactor: 1
   usedDamageChannels: 
-  passiveEffects: 
+  passiveEffects: 0d000000
   invocatedEntity: {fileID: 0}

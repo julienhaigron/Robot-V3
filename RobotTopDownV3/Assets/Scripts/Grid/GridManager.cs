@@ -391,7 +391,7 @@ public class GridManager : Singleton<GridManager>
 		return entitiesInRange;
 	}*/
 
-	public List<Tile> GetTilesInRange ( Tile _from, int _maxDist, bool _isThisTurn )
+	public List<Tile> GetTilesInRange ( Tile _from, int _maxDist, bool _ignoreObsacles, bool _isThisTurn )
 	{
 		List<Tile> tilesInRange = new();
 
@@ -425,7 +425,7 @@ public class GridManager : Singleton<GridManager>
 				}
 
 				//obstacle
-				if (neighbor.CanSeeThrough())
+				if (_ignoreObsacles || neighbor.CanSeeThrough())
 				{
 					tilesInRange.Add(neighbor);
 				}

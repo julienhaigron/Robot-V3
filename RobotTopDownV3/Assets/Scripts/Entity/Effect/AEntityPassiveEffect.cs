@@ -41,4 +41,9 @@ public abstract class AEntityPassiveEffect : ScriptableEnum<EntityPassiveEffectE
 	{
 
     }
+
+	public virtual void OnDeathTrigger(Entity _deadEntity )
+	{
+
+	}
 }

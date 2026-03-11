@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
+using System.Linq;
 
 public class AttackAction : AEntityAction
 {
@@ -23,6 +24,7 @@ public class AttackAction : AEntityAction
 		base.NetworkSerialize(serializer);
 		serializer.SerializeValue(ref attackingWeaponId);
 		serializer.SerializeValue(ref targetedEntityID);
+		serializer.SerializeValue(ref targetTileID);
 		serializer.SerializeValue(ref isAttackSuccessfull);
 		serializer.SerializeValue(ref areStatusesSuccess);
 		serializer.SerializeValue(ref damages);
@@ -76,7 +78,7 @@ public class AttackAction : AEntityAction
 
 	protected override void Perform ( Entity.EntityState _state )
 	{
-		PerformingEntity.AI.DOAllPrewarmCheck();
+		PerformingEntity.AI.DOAllPrewarmCheck(this);
 		if (targetedEntityID == -1)
 		{
 			//TODO : add no target feedback
@@ -89,7 +91,7 @@ public class AttackAction : AEntityAction
 
 		if (isEnemyInWeaponRange || (Data.isAoe && targetTileID != -1))
 		{
-			List<Tile> tilesInWeaponRange = Data.isAoe ? PerformingEntity.Equipment.GetTilesInAoERange(this, true) : PerformingEntity.Equipment.GetTilesInWeaponRange(attackingWeaponId, true);
+			List<Tile> tilesInWeaponRange = Data.isAoe ? PerformingEntity.Equipment.GetTilesInAoERange(this, true) : PerformingEntity.Equipment.GetTilesInWeaponRange(this, attackingWeaponId, true);
 			base.Perform(_state);
 			foreach (Tile tile in tilesInWeaponRange)
 			{
@@ -124,9 +126,14 @@ public class AttackAction : AEntityAction
 		if (Data.targetType == EntityActionData.TargetType.Self && _tile.coordinates.ID == TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntityID))
 			return true;
 
+		bool attackIgnoresObstacles = (Data.type == EntityActionData.ActionType.DistanceAttack && effects.Contains(EntityPassiveEffectEnumID.TrajectoryControl)) 
+			|| Data.targetType == EntityActionData.TargetType.Mortar;
 		Entity user = GameManager.Instance.GetEntityFromID(performingEntityID);
 		Weapon attackingWeapon = user.Equipment.Weapons[user.ComponentLinkedToAction[enumID]];
-		bool isInRange = GridManager.Instance.GetTilesInVisionRange(GridManager.Instance.Tiles[TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntityID)], attackingWeapon.Data.range, true).Contains(_tile);
+		Tile from = GridManager.Instance.Tiles[TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntityID)];
+		List<Tile> tilesInRange = attackIgnoresObstacles ? GridManager.Instance.GetTilesInVisionRange(from, attackingWeapon.Data.range, true)
+			: GridManager.Instance.GetTilesInRange(from, attackingWeapon.Data.range, true, true);
+		bool isInRange = tilesInRange.Contains(_tile);
 
 		if (Data.targetType == EntityActionData.TargetType.Tile && isInRange)
 			return true;

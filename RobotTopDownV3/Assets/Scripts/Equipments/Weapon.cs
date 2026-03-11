@@ -63,7 +63,7 @@ public class Weapon : MonoBehaviour
 							GameAssets.current.game.entityStatus[(EntityStatusEnumID)_attackAction.statusIds[i]].ApplyStatus(entity);
 					}*/
 
-					foreach (EntityPassiveEffectEnumID passiveEffectID in m_user.KnownedPassiveEffectsPerAction[_attackAction.enumID])
+					foreach (EntityPassiveEffectEnumID passiveEffectID in _attackAction.effects)
 					{
 						GameAssets.current.game.entityEffects[passiveEffectID].ApplyEffect(m_user, entity);
 					}

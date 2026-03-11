@@ -1,4 +1,4 @@
-//GENERATED 17
+//GENERATED 18
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -22,6 +22,7 @@ public enum EntityActionEnumID
 		InvokeEntity,
 		ApplyEffect,
 		MoveThenAttack,
+		AddTrajectoryControl,
 		//#END#ENTITYACTIONENUMID#//
 		Unknowned,
 }
