@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: be9c8929f04da7b4eb349122d7d61e73, type: 3}
   m_Name: HitAmountBoost
   m_EditorClassIdentifier: 
-  enumID: 4
+  enumID: 5
   conditionType: 0
   hitAmountBoost: 1

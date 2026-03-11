@@ -16,6 +16,13 @@ public class SmokedStatus : AEntityStatus
 		_entity.Equipment.TakeDamage(new EntityEquipmentPlugin.TakeDamageCallback() { damages = damage, entityTargeted = _entity });*/
 	}
 
+	public override void ApplyStatus ( Tile _tile )
+	{
+		base.ApplyStatus(_tile);
+
+		_tile.SetActiveFOW(true, false);
+	}
+
 	/*public override void ApplyStatus ( Tile _tile )
 	{
 		base.ApplyStatus(_tile);

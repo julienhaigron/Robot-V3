@@ -190,7 +190,8 @@ public class Tile : MonoBehaviour
 		if (m_groundType == TileGroundType.Wall && m_wall.Health > 0)
 			return false;
 
-		//if(m_status.Contains())
+		if (m_status.Contains(EntityStatusEnumID.Smoked))
+			return false;
 
 		return true;
 	}
@@ -246,10 +247,7 @@ public class Tile : MonoBehaviour
 		foreach (EntityStatusEnumID status in m_status)
 		{
 			if (--m_remainingDurationToActiveEffects[GameAssets.current.game.entityStatus[status]] <= 0)
-			{
-				m_status.Remove(status);
-				m_remainingDurationToActiveEffects.Remove(GameAssets.current.game.entityStatus[status]);
-			}
+				RemoveStatus(status);
 
 			GameAssets.current.game.entityStatus[status].PerformStatusEffectAtBeginingOfRound(this);
 		}
@@ -278,6 +276,13 @@ public class Tile : MonoBehaviour
 		GameAssets.current.game.entityStatus[_statusID].ApplyStatus(this);
 		m_status.Add(_statusID);
 		m_remainingDurationToActiveEffects.Add(GameAssets.current.game.entityStatus[_statusID], GameAssets.current.game.entityStatus[_statusID].duration);
+	}
+
+	public void RemoveStatus ( EntityStatusEnumID _statusID )
+	{
+		GameAssets.current.game.entityStatus[_statusID].RemoveStatus(this);
+		m_status.Remove(_statusID);
+		m_remainingDurationToActiveEffects.Remove(GameAssets.current.game.entityStatus[_statusID]);
 	}
 
 	public void SetActiveFOW ( bool _isActive = false, bool _isInstant = false )

@@ -15,7 +15,9 @@ public class PushOrPullPassiveEffect : AEntityPassiveEffect
 		{
 			destination = destination.Neighbors[direction];
 		}
+		TurnManager.InPlayEvent movementEvent = new();
+		TurnManager.Instance.AddGameEvent(movementEvent);
+		_targetEntity.Displacement.MoveToTile(destination.coordinates.ID, movementEvent.EndEvent, false);
 
-		_targetEntity.Displacement.MoveToTile(destination.coordinates.ID, null, true);
 	}
 }

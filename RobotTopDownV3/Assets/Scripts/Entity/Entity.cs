@@ -176,5 +176,11 @@ public class Entity : MonoBehaviour
         m_status.Add(_statusID);
         m_remainingDurationToActiveEffects.Add(GameAssets.current.game.entityStatus[_statusID], GameAssets.current.game.entityStatus[_statusID].duration);
     }
+    
+    public void RemoveStatus ( EntityStatusEnumID _statusID )
+	{
+        m_status.Remove(_statusID);
+        m_remainingDurationToActiveEffects.Remove(GameAssets.current.game.entityStatus[_statusID]);
+    }
 
 }

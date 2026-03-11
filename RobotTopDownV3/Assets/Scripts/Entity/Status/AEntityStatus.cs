@@ -19,9 +19,13 @@ public abstract class AEntityStatus : ScriptableEnum<EntityStatusEnumID>
         //- spawn visual prefab (smoke, fire, ...)
 	}
 
+    public virtual void RemoveStatus(Tile _tile )
+	{
+
+	}
+
     public virtual void PerformStatusEffectAtBeginingOfRound(Tile _tile )
 	{
-        //TODO :
-        //- apply status effect to entity on tile (ex damage for fire)
+
     }
 }

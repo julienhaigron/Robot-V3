@@ -57,16 +57,19 @@ MonoBehaviour:
       - {fileID: 11400000, guid: 66b784af57f493b4d907229418aedef0, type: 2}
       - {fileID: 11400000, guid: 1893165c079cfca44a87e251f1b9c933, type: 2}
     entityEffects:
-      keys: 0000000001000000020000000300000004000000050000000600000007000000
+      keys: 0000000001000000020000000300000004000000050000000600000007000000090000000a0000000b000000
       values:
       - {fileID: 0}
+      - {fileID: 11400000, guid: 58114cea11aee9e4aad5472d3eeaecf2, type: 2}
       - {fileID: 11400000, guid: 58114cea11aee9e4aad5472d3eeaecf2, type: 2}
       - {fileID: 11400000, guid: 148e8958c33500e4ba1eacde51b0c89c, type: 2}
       - {fileID: 11400000, guid: e75c71a2b03d6d14f80b1283c85f2c93, type: 2}
       - {fileID: 11400000, guid: 64d8c988724d1064bacbcba76b15f961, type: 2}
       - {fileID: 11400000, guid: a4e48370004c84540b659fe6bb3f5783, type: 2}
       - {fileID: 11400000, guid: bbace26cd4bcd9b45aaef9aa6fc3b54d, type: 2}
-      - {fileID: 11400000, guid: 1f209b863915fca4e85d024b55330106, type: 2}
+      - {fileID: 11400000, guid: 7935f68659f8c2e41892adad7b5aabcb, type: 2}
+      - {fileID: 11400000, guid: f51fdc06b22d1fc4cbf2003d883bd22f, type: 2}
+      - {fileID: 11400000, guid: 46ae190248476e842af4b57ea6a3cda0, type: 2}
     entityStatus:
       keys: 
       values: []

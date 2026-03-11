@@ -9,9 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1d005b3446560e840b5acbfd60967bc8, type: 3}
-  m_Name: PreparationCostReduction
+  m_Script: {fileID: 11500000, guid: 8a14843fe3bc11240955293fb8fcd791, type: 3}
+  m_Name: Push1
   m_EditorClassIdentifier: 
-  enumID: 8
-  conditionType: 1
-  reductionAmount: 1
+  enumID: 10
+  conditionType: 0
+  movementStrength: 1

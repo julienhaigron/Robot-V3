@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aeee6379e7fa924468e4c164c6c2e7f3, type: 3}
   m_Name: CooldownCostReduction
   m_EditorClassIdentifier: 
-  enumID: 2
+  enumID: 3
   conditionType: 1
   reductionAmount: 1

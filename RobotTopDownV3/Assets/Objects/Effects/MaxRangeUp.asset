@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 86a23be8a6d3eb148a7707d5bde22e99, type: 3}
   m_Name: MaxRangeUp
   m_EditorClassIdentifier: 
-  enumID: 5
+  enumID: 6
   conditionType: 1
   rangeBoostAmount: 1

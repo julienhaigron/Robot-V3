@@ -1,12 +1,15 @@
 public enum EntityPassiveEffectEnumID
 {
     Unknown = 0,
-    ApplyMarkedStatus = 1,
-    CooldownCostReduction = 2,
-    DamageUpOnMarked = 3,
-    HitAmountBoost = 4,
-    MaxRangeUp = 5,
-    MaxTargetUp = 6,
-    PreparationCostReduction = 7,
-    PushOrPull = 8,
+    ApplyFlyingStatus = 1,
+    ApplyMarkedStatus = 2,
+    CooldownCostReduction = 3,
+    DamageUpOnMarked = 4,
+    HitAmountBoost = 5,
+    MaxRangeUp = 6,
+    MaxTargetUp = 7,
+    PreparationCostReduction = 8,
+    Pull1 = 9,
+    Push1 = 10,
+    RemoveFlyingStatus = 11,
 }

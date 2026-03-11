@@ -29,9 +29,10 @@ public class TurnManager : Singleton<TurnManager>
 
 	[SerializeField] private SerializableDictionary<int, Queue<RecordedAction>> m_recordedActionInput = new(); //all actions this turn
 	public SerializableDictionary<int, Queue<RecordedAction>> RecordedActions => m_recordedActionInput;
-	[SerializeField] private SerializableDictionary<int, Queue<RecordedAction>> m_actionsToPlay = new(); //this phase action
+	[SerializeField] private SerializableDictionary<int, Queue<RecordedAction>> m_actionsToPlay = new(); //this tick actions
 	public SerializableDictionary<int, Queue<RecordedAction>> ActionsToPlay => m_actionsToPlay;
 	private SerializableDictionary<int, Tuple<RecordedAction, bool>> m_actionsBeingDone = new(); //current actions running
+
 	private SerializableDictionary<int, int> m_remainingActionToken = new();
 	public SerializableDictionary<int, int> RemainingActionToken => m_remainingActionToken;
 
@@ -61,6 +62,17 @@ public class TurnManager : Singleton<TurnManager>
 		{
 			firstTimeEntityMoved = -1;
 			firstTimeEntityAttacked = -1;
+		}
+	}
+
+	private List<InPlayEvent> m_inPlayEventBeingDone = new();
+	public class InPlayEvent
+	{
+		public Action<InPlayEvent> onEventFinished;
+
+		public void EndEvent ()
+		{
+			onEventFinished?.Invoke(this);
 		}
 	}
 
@@ -732,29 +744,58 @@ public class TurnManager : Singleton<TurnManager>
 			else
 				m_actionsBeingDone[_performingEntityID] = new(m_actionsBeingDone[_performingEntityID].Item1, true);
 
-			bool areAllActionPerformed = true;
-			foreach (Tuple<RecordedAction, bool> tuple in m_actionsBeingDone.Values)
-			{
-				if (tuple.Item2 == false)
-					areAllActionPerformed = false;
-			}
-
-			if (areAllActionPerformed)
-			{
-				//m_actionsToPlay.Clear();
-
-				if (!GameManager.Instance.IsOnline)
-				{
-					EndRoundTick();
-				}
-				else
-				{
-					LogConsole.AddLog("Client ended tick", LogConsole.LogEventType.PlayPhase);
-					NetworkTaskOrchestrator.Instance.NotifyTaskEndToServerRPC("PlayPhase");
-				}
-			}
+			TryEndRoundTick();
 		}
 
+	}
+
+	private bool AreAllActionsAndEventPerformed ()
+	{
+		bool areAllActionPerformed = true;
+		foreach (Tuple<RecordedAction, bool> tuple in m_actionsBeingDone.Values)
+		{
+			if (tuple.Item2 == false)
+				areAllActionPerformed = false;
+		}
+
+		return areAllActionPerformed;
+	}
+
+	private void TryEndRoundTick ()
+	{
+		bool areAllActionPerformed = true;
+		foreach (Tuple<RecordedAction, bool> tuple in m_actionsBeingDone.Values)
+		{
+			if (tuple.Item2 == false)
+				areAllActionPerformed = false;
+		}
+
+		if (areAllActionPerformed && m_inPlayEventBeingDone.Count == 0)
+		{
+			//m_actionsToPlay.Clear();
+
+			if (!GameManager.Instance.IsOnline)
+			{
+				EndRoundTick();
+			}
+			else
+			{
+				LogConsole.AddLog("Client ended tick", LogConsole.LogEventType.PlayPhase);
+				NetworkTaskOrchestrator.Instance.NotifyTaskEndToServerRPC("PlayPhase");
+			}
+		}
+	}
+
+	public void AddGameEvent ( InPlayEvent _newGameEvent )
+	{
+		_newGameEvent.onEventFinished += OnGameEventEnded;
+		m_inPlayEventBeingDone.Add(_newGameEvent);
+	}
+
+	private void OnGameEventEnded ( InPlayEvent _event )
+	{
+		m_inPlayEventBeingDone.Remove(_event);
+		TryEndRoundTick();
 	}
 
 	private void EndRoundTick ()
@@ -816,13 +857,13 @@ public class TurnManager : Singleton<TurnManager>
 		onEndLevel?.Invoke();
 	}
 
-	public void AddEntityMidGame(Entity _entity, Action _onEndSpawn = null)
+	public void AddEntityMidGame ( Entity _entity, Action _onEndSpawn = null )
 	{
 		int remainingActionTickThisTurn = GameConfig.current.game.actionTokenPerRound - currentRound;
 
 		Entity.EntityState availableState = _entity.KnownedStates[0];
 
-		for(int i = 0; i< remainingActionTickThisTurn; i++)
+		for (int i = 0; i < remainingActionTickThisTurn; i++)
 		{
 			m_recordedActionInput[_entity.ID].Enqueue(new RecordedAction()
 			{
