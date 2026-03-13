@@ -1,4 +1,4 @@
-//GENERATED 18
+//GENERATED 25
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -23,6 +23,14 @@ public enum EntityActionEnumID
 		ApplyEffect,
 		MoveThenAttack,
 		AddTrajectoryControl,
+		MingunBalayage,
+		MinigunBalayage,
+		MinigunRafaleCible,
+		MissileArrayBarrageDeMissiles,
+		FlailFrappeSimple,
+		FlailFrappeCharge,
+		HammerFrappeSimple,
+		HammerEcrasement,
 		//#END#ENTITYACTIONENUMID#//
 		Unknowned,
 }

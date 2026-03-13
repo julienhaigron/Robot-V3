@@ -10,24 +10,24 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2a743e40aeafc0445b10e59cec8dfa98, type: 3}
-  m_Name: RotateEntity
+  m_Name: HammerEcrasement
   m_EditorClassIdentifier: 
-  displayName: RotateEntity
-  enumID: 2
+  displayName: Ecrasement
+  enumID: 22
   icon: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
-  tileOutlineColor: {r: 0, g: 1, b: 0, a: 1}
-  m_tokenPreparationDuration: 0
+  tileOutlineColor: {r: 1, g: 0, b: 0, a: 1}
+  m_tokenPreparationDuration: 1
   m_tokenCooldown: 0
-  tokenDuration: 0
+  tokenDuration: 1
   preparationAnimationKey: 
   afterPerformAnimationKey: 
   conditionType: 0
   previousActionAttackModificator: 0
-  type: 4
-  subType: 0
+  type: 1
+  subType: 4
   targetType: 1
-  minDistance: 0
-  maxDistance: 0
+  minDistance: 1
+  maxDistance: 1
   minTargetAmount: 1
   maxTargetAmount: 1
   isAoe: 0
@@ -35,9 +35,13 @@ MonoBehaviour:
   circleRange: 1
   arcRadius: 1
   rayDiameter: 1
-  coneType: 0
+  coneType: 1
   hitAmount: 1
   damageFactor: 1
-  usedDamageChannels: 
-  passiveEffects: []
+  usedDamageChannels: 02000000
+  passiveEffects:
+  - enumID: 7
+    conditionType: 1
+  - enumID: 0
+    conditionType: 0
   invocatedEntity: {fileID: 0}

@@ -22,7 +22,7 @@ public class AddEffectToAction : SpecialAction
 	public override void OnModActionAdded ( AEntityAction _mainAction )
 	{
 		base.OnModActionAdded(_mainAction);
-		List<EntityPassiveEffectEnumID> newEffectList = _mainAction.effects.ToList();
+		List<AEntityPassiveEffect.PassiveEffectContainer> newEffectList = _mainAction.effects.ToList();
 		newEffectList.AddRange(Data.passiveEffects);
 		_mainAction.effects = newEffectList.ToArray();
 	}

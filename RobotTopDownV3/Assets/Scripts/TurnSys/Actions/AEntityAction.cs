@@ -16,7 +16,7 @@ public abstract class AEntityAction : INetworkSerializable
     public int supposedPositionAtActionStartID; //tile
     public int positionAtActionEndID; //tile
     //public int[] statusIds;
-    public EntityPassiveEffectEnumID[] effects;
+    public AEntityPassiveEffect.PassiveEffectContainer[] effects;
     public EntityActionData Data => GameAssets.current.game.entityActionsData[enumID];
 
     public int preparationDuration = 0;

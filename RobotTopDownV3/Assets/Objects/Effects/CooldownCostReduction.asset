@@ -13,5 +13,4 @@ MonoBehaviour:
   m_Name: CooldownCostReduction
   m_EditorClassIdentifier: 
   enumID: 3
-  conditionType: 1
   reductionAmount: 1

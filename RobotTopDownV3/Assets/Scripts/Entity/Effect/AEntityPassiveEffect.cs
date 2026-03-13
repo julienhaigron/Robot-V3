@@ -1,18 +1,31 @@
 using UnityEngine;
+using Unity.Netcode;
 using System;
 
 [Serializable]
 public abstract class AEntityPassiveEffect : ScriptableEnum<EntityPassiveEffectEnumID>
 {
-	public enum ConditionType { Noone, DidNotMoveThisTurn, DidNotAttackThisTurn, IsTargetMarked }
-	public ConditionType conditionType = ConditionType.Noone;
+	[Serializable]
+	public struct PassiveEffectContainer : INetworkSerializable
+	{
+		public EntityPassiveEffectEnumID enumID;
+		public ConditionType conditionType;
 
-	public virtual bool UseConditionPredicate ( AEntityAction _action, Entity _entity, Entity _targetEntity )
+		public void NetworkSerialize<T> ( BufferSerializer<T> serializer ) where T : IReaderWriter
+		{
+			serializer.SerializeValue(ref enumID);
+			serializer.SerializeValue(ref conditionType);
+		}
+	}
+
+	public enum ConditionType { Noone, DidNotMoveThisTurn, DidNotAttackThisTurn, IsTargetMarked }
+
+	public virtual bool UseConditionPredicate ( AEntityAction _action, Entity _entity, Entity _targetEntity, ConditionType _conditionType )
 	{
 		if (_action == null || _entity == null )
 			return false;
 
-		switch (conditionType)
+		switch (_conditionType)
 		{
 			default:
 			case ConditionType.Noone:

@@ -40,10 +40,10 @@ public class Entity : MonoBehaviour
     private Dictionary<EntityActionEnumID, string> m_componentLinkedToAction;
     public Dictionary<EntityActionEnumID, string> ComponentLinkedToAction => m_componentLinkedToAction;
     
-    private Dictionary<EntityActionEnumID, List<EntityPassiveEffectEnumID>> m_knownedPassiveEffectsPerAction = new();
-    public Dictionary<EntityActionEnumID, List<EntityPassiveEffectEnumID>> KnownedPassiveEffectsPerAction => m_knownedPassiveEffectsPerAction;
-    private List<EntityPassiveEffectEnumID> m_allPassiveEffects = new();
-    public List<EntityPassiveEffectEnumID> AllPassiveEffects => m_allPassiveEffects;
+    private Dictionary<EntityActionEnumID, List<AEntityPassiveEffect.PassiveEffectContainer>> m_knownedPassiveEffectsPerAction = new();
+    public Dictionary<EntityActionEnumID, List<AEntityPassiveEffect.PassiveEffectContainer>> KnownedPassiveEffectsPerAction => m_knownedPassiveEffectsPerAction;
+    private List<AEntityPassiveEffect.PassiveEffectContainer> m_allPassiveEffects = new();
+    public List<AEntityPassiveEffect.PassiveEffectContainer> AllPassiveEffects => m_allPassiveEffects;
 
     private List<EntityState> m_knownedStates = new();
     public List<EntityState> KnownedStates => m_knownedStates;

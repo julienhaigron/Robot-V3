@@ -13,7 +13,6 @@ MonoBehaviour:
   m_Name: Kamikaze
   m_EditorClassIdentifier: 
   enumID: 6
-  conditionType: 0
   explosionRange: 1
   damages:
     keys: 02000000

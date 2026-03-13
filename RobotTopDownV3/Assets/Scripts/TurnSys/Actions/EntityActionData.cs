@@ -14,7 +14,6 @@ public class EntityActionData : ScriptableObject
 
 	public Sprite icon;
 	public Color tileOutlineColor = Color.green;
-	//public int tokenCost => tokenPreparationDuration + tokenDuration + tokenCooldown;
 	[SerializeField] private int m_tokenPreparationDuration;
 	[SerializeField] private int m_tokenCooldown;
 	public int tokenDuration = 1;
@@ -59,11 +58,11 @@ public class EntityActionData : ScriptableObject
 	public enum TargetType
 	{
 		Self,
-		Distance,
+		OtherEntity,
 		Mortar,
 		Tile
 	}
-	public TargetType targetType = TargetType.Distance;
+	public TargetType targetType = TargetType.OtherEntity;
 	[ShowIf("@targetType != TargetType.Self")]
 	public int minDistance;
 	[ShowIf("@targetType != TargetType.Self")]
@@ -108,7 +107,7 @@ public class EntityActionData : ScriptableObject
 
 	[Title("Effect")]
 	//public AEntityStatus[] appliableStatus;
-	public EntityPassiveEffectEnumID[] passiveEffects;
+	public AEntityPassiveEffect.PassiveEffectContainer[] passiveEffects;
 
 	[Title("Misc")]
 	[ShowIf("@type == ActionType.Special")] public UnitPreset invocatedEntity;
@@ -208,6 +207,21 @@ public class EntityActionData : ScriptableObject
 
 	#region Getters
 
+	public bool ContainsEffect(EntityPassiveEffectEnumID _enumID, out AEntityPassiveEffect.PassiveEffectContainer _passiveEffect)
+	{
+		foreach(AEntityPassiveEffect.PassiveEffectContainer effectContainer in passiveEffects)
+		{
+			if(effectContainer.enumID == _enumID)
+			{
+				_passiveEffect = effectContainer;
+				return true;
+			}
+		}
+
+		_passiveEffect = new AEntityPassiveEffect.PassiveEffectContainer() { enumID = EntityPassiveEffectEnumID.Unknown, conditionType = AEntityPassiveEffect.ConditionType.Noone};
+		return false;
+	}
+
 	public int GetTokenTotalCost ( AEntityAction _action, Entity _performingEntity, Entity _targetEntity )
 	{
 		return GetTokenPreparationCost(_action, _performingEntity, _targetEntity) + GetTokenCooldownCost(_action, _performingEntity, _targetEntity) + tokenDuration;
@@ -217,8 +231,8 @@ public class EntityActionData : ScriptableObject
 	{
 		PreparationCostReductionPassiveEffect so = (GameAssets.current.game.entityEffects[EntityPassiveEffectEnumID.PreparationCostReduction] as PreparationCostReductionPassiveEffect);
 
-		if (_action != null && _performingEntity != null && _action.effects.Contains(EntityPassiveEffectEnumID.PreparationCostReduction)
-			&& so.UseConditionPredicate(_action, _performingEntity, _targetEntity))
+		if (_action != null && _performingEntity != null && ContainsEffect(EntityPassiveEffectEnumID.PreparationCostReduction, out AEntityPassiveEffect.PassiveEffectContainer effectContainer)
+			&& so.UseConditionPredicate(_action, _performingEntity, _targetEntity, effectContainer.conditionType))
 		{
 			return m_tokenPreparationDuration - (GameAssets.current.game.entityEffects[EntityPassiveEffectEnumID.PreparationCostReduction] as PreparationCostReductionPassiveEffect).reductionAmount;
 		}
@@ -231,8 +245,8 @@ public class EntityActionData : ScriptableObject
 	{
 		CooldownCostReductionPassiveEffect so = (GameAssets.current.game.entityEffects[EntityPassiveEffectEnumID.CooldownCostReduction] as CooldownCostReductionPassiveEffect);
 
-		if (_action != null && _performingEntity != null && _action.effects.Contains(EntityPassiveEffectEnumID.CooldownCostReduction)
-			&& so.UseConditionPredicate(_action, _performingEntity, _targetEntity))
+		if (_action != null && _performingEntity != null && ContainsEffect(EntityPassiveEffectEnumID.CooldownCostReduction, out AEntityPassiveEffect.PassiveEffectContainer effectContainer)
+			&& so.UseConditionPredicate(_action, _performingEntity, _targetEntity, effectContainer.conditionType))
 		{
 			return m_tokenCooldown - (GameAssets.current.game.entityEffects[EntityPassiveEffectEnumID.CooldownCostReduction] as CooldownCostReductionPassiveEffect).reductionAmount;
 		}
@@ -244,8 +258,8 @@ public class EntityActionData : ScriptableObject
 	{
 		MaxRangeUpPassiveEffect so = (GameAssets.current.game.entityEffects[EntityPassiveEffectEnumID.MaxRangeUp] as MaxRangeUpPassiveEffect);
 
-		if (_action != null && _performingEntity != null && _action.effects.Contains(EntityPassiveEffectEnumID.MaxRangeUp)
-			&& so.UseConditionPredicate(_action, _performingEntity, _targetEntity))
+		if (_action != null && _performingEntity != null && ContainsEffect(EntityPassiveEffectEnumID.MaxRangeUp, out AEntityPassiveEffect.PassiveEffectContainer effectContainer)
+			&& so.UseConditionPredicate(_action, _performingEntity, _targetEntity, effectContainer.conditionType))
 		{
 			return maxDistance + (GameAssets.current.game.entityEffects[EntityPassiveEffectEnumID.MaxRangeUp] as MaxRangeUpPassiveEffect).rangeBoostAmount;
 		}
@@ -255,12 +269,12 @@ public class EntityActionData : ScriptableObject
 
 	public int GetMaxTargetAmount ( AEntityAction _action, Entity _performingEntity, Entity _targetEntity )
 	{
-		MaxTargetUpPassiveEffect so = (GameAssets.current.game.entityEffects[EntityPassiveEffectEnumID.MaxRangeUp] as MaxTargetUpPassiveEffect);
+		MaxTargetUpPassiveEffect so = (GameAssets.current.game.entityEffects[EntityPassiveEffectEnumID.MaxTargetUp] as MaxTargetUpPassiveEffect);
 
-		if (_action != null && _performingEntity != null && _action.effects.Contains(EntityPassiveEffectEnumID.MaxRangeUp)
-			&& so.UseConditionPredicate(_action, _performingEntity, _targetEntity))
+		if (_action != null && _performingEntity != null && ContainsEffect(EntityPassiveEffectEnumID.MaxTargetUp, out AEntityPassiveEffect.PassiveEffectContainer effectContainer)
+			&& so.UseConditionPredicate(_action, _performingEntity, _targetEntity, effectContainer.conditionType))
 		{
-			return maxTargetAmount + (GameAssets.current.game.entityEffects[EntityPassiveEffectEnumID.MaxRangeUp] as MaxTargetUpPassiveEffect).targetBoostAmount;
+			return maxTargetAmount + (GameAssets.current.game.entityEffects[EntityPassiveEffectEnumID.MaxTargetUp] as MaxTargetUpPassiveEffect).targetBoostAmount;
 		}
 
 		return maxTargetAmount;
@@ -270,8 +284,8 @@ public class EntityActionData : ScriptableObject
 	{
 		DamageUpPassiveEffect so = (GameAssets.current.game.entityEffects[EntityPassiveEffectEnumID.DamageUpOnMarked] as DamageUpPassiveEffect);
 
-		if (_action != null && _performingEntity != null && _action.effects.Contains(EntityPassiveEffectEnumID.DamageUpOnMarked)
-			&& so.UseConditionPredicate(_action, _performingEntity, _targetEntity))
+		if (_action != null && _performingEntity != null && ContainsEffect(EntityPassiveEffectEnumID.DamageUpOnMarked, out AEntityPassiveEffect.PassiveEffectContainer effectContainer)
+			&& so.UseConditionPredicate(_action, _performingEntity, _targetEntity, effectContainer.conditionType))
 		{
 			return damageFactor + (GameAssets.current.game.entityEffects[EntityPassiveEffectEnumID.DamageUpOnMarked] as DamageUpPassiveEffect).damageBoostAmount;
 		}
@@ -283,8 +297,8 @@ public class EntityActionData : ScriptableObject
 	{
 		HitAmountBoostPassiveEffect so = (GameAssets.current.game.entityEffects[EntityPassiveEffectEnumID.HitAmountBoost] as HitAmountBoostPassiveEffect);
 
-		if (_action != null && _performingEntity != null && _action.effects.Contains(EntityPassiveEffectEnumID.HitAmountBoost)
-			&& so.UseConditionPredicate(_action, _performingEntity, _targetEntity))
+		if (_action != null && _performingEntity != null && ContainsEffect(EntityPassiveEffectEnumID.HitAmountBoost, out AEntityPassiveEffect.PassiveEffectContainer effectContainer)
+			&& so.UseConditionPredicate(_action, _performingEntity, _targetEntity, effectContainer.conditionType))
 		{
 			return hitAmount + (GameAssets.current.game.entityEffects[EntityPassiveEffectEnumID.HitAmountBoost] as HitAmountBoostPassiveEffect).hitAmountBoost;
 		}

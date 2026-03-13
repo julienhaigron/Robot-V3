@@ -171,9 +171,9 @@ public class EntitySavedData : INetworkSerializable
 		return actionsPerComponents;
 	}
 
-	public List<EntityPassiveEffectEnumID> GetPassiveEffects( EntityActionEnumID _actionID )
+	public List<AEntityPassiveEffect.PassiveEffectContainer> GetPassiveEffects( EntityActionEnumID _actionID )
 	{
-		List<EntityPassiveEffectEnumID> passiveEffects = new();
+		List<AEntityPassiveEffect.PassiveEffectContainer> passiveEffects = new();
 		passiveEffects.AddRange(FrameData.passiveEffects);
 		passiveEffects.AddRange(ReactorData.passiveEffects);
 		passiveEffects.AddRange(BrainData.passiveEffects);

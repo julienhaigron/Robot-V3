@@ -211,7 +211,12 @@ public class EntityEquipmentPlugin : EntityPlugin
 
 		float angle = GridManager.Instance.FromOrientationToAngle(m_linkedEntity.Displacement.CurrentOrientation);
 
-		bool ignoreObstacles = _action.effects.Contains(EntityPassiveEffectEnumID.TrajectoryControl);
+		bool ignoreObstacles = false;
+		foreach(AEntityPassiveEffect.PassiveEffectContainer passiveContainer in _action.effects)
+		{
+			ignoreObstacles = passiveContainer.enumID == EntityPassiveEffectEnumID.TrajectoryControl;
+			break;
+		}
 
 		int nbOfRayPerAngle = 1;
 		int totalNbOfRay = usedWeapon.Data.visionConeRange * nbOfRayPerAngle;

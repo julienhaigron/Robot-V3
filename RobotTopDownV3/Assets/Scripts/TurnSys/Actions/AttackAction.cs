@@ -126,7 +126,7 @@ public class AttackAction : AEntityAction
 		if (Data.targetType == EntityActionData.TargetType.Self && _tile.coordinates.ID == TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntityID))
 			return true;
 
-		bool attackIgnoresObstacles = (Data.type == EntityActionData.ActionType.DistanceAttack && effects.Contains(EntityPassiveEffectEnumID.TrajectoryControl)) 
+		bool attackIgnoresObstacles = (Data.type == EntityActionData.ActionType.DistanceAttack && effects.Any(e => e.enumID == EntityPassiveEffectEnumID.TrajectoryControl)) 
 			|| Data.targetType == EntityActionData.TargetType.Mortar;
 		Entity user = GameManager.Instance.GetEntityFromID(performingEntityID);
 		Weapon attackingWeapon = user.Equipment.Weapons[user.ComponentLinkedToAction[enumID]];

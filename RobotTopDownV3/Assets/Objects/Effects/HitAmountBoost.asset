@@ -13,5 +13,4 @@ MonoBehaviour:
   m_Name: HitAmountBoost
   m_EditorClassIdentifier: 
   enumID: 5
-  conditionType: 0
   hitAmountBoost: 1

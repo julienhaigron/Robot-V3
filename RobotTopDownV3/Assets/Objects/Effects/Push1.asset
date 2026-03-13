@@ -13,5 +13,4 @@ MonoBehaviour:
   m_Name: Push1
   m_EditorClassIdentifier: 
   enumID: 11
-  conditionType: 0
   movementStrength: 1

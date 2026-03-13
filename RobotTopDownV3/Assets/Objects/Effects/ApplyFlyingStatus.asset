@@ -13,7 +13,6 @@ MonoBehaviour:
   m_Name: ApplyFlyingStatus
   m_EditorClassIdentifier: 
   enumID: 1
-  conditionType: 0
   doApplyToSelf: 0
   doApplyToTile: 0
   statusApplied: 2

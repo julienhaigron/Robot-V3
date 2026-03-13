@@ -13,7 +13,6 @@ MonoBehaviour:
   m_Name: RemoveFlyingStatus
   m_EditorClassIdentifier: 
   enumID: 12
-  conditionType: 0
   doApplyToSelf: 0
   doApplyToTile: 0
   statusRemoved: 2

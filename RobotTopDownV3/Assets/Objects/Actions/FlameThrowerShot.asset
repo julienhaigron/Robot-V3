@@ -39,5 +39,5 @@ MonoBehaviour:
   hitAmount: 1
   damageFactor: 1
   usedDamageChannels: 05000000
-  passiveEffects: 
+  passiveEffects: []
   invocatedEntity: {fileID: 0}

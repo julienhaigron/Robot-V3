@@ -10,34 +10,36 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2a743e40aeafc0445b10e59cec8dfa98, type: 3}
-  m_Name: RotateEntity
+  m_Name: MissileArrayBarrageDeMissiles
   m_EditorClassIdentifier: 
-  displayName: RotateEntity
-  enumID: 2
+  displayName: BarrageDeMissiles
+  enumID: 18
   icon: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
-  tileOutlineColor: {r: 0, g: 1, b: 0, a: 1}
-  m_tokenPreparationDuration: 0
+  tileOutlineColor: {r: 1, g: 0, b: 0, a: 1}
+  m_tokenPreparationDuration: 2
   m_tokenCooldown: 0
-  tokenDuration: 0
+  tokenDuration: 1
   preparationAnimationKey: 
   afterPerformAnimationKey: 
   conditionType: 0
   previousActionAttackModificator: 0
-  type: 4
-  subType: 0
-  targetType: 1
-  minDistance: 0
-  maxDistance: 0
+  type: 0
+  subType: 1
+  targetType: 3
+  minDistance: 5
+  maxDistance: 10
   minTargetAmount: 1
-  maxTargetAmount: 1
-  isAoe: 0
+  maxTargetAmount: 3
+  isAoe: 1
   aoeType: 0
   circleRange: 1
   arcRadius: 1
   rayDiameter: 1
-  coneType: 0
+  coneType: 1
   hitAmount: 1
-  damageFactor: 1
-  usedDamageChannels: 
-  passiveEffects: []
+  damageFactor: 1.2
+  usedDamageChannels: 0200000005000000
+  passiveEffects:
+  - enumID: 9
+    conditionType: 1
   invocatedEntity: {fileID: 0}

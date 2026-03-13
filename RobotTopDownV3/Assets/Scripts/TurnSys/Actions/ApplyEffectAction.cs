@@ -26,20 +26,20 @@ public class ApplyEffectAction : SpecialAction
 			{
 				if(Data.targetType == EntityActionData.TargetType.Tile)
 				{
-					foreach (EntityPassiveEffectEnumID effect in Data.passiveEffects)
-						GameAssets.current.game.entityEffects[effect].ApplyEffect(tile);
+					foreach (AEntityPassiveEffect.PassiveEffectContainer effect in Data.passiveEffects)
+						GameAssets.current.game.entityEffects[effect.enumID].ApplyEffect(tile);
 				}
 				else
 				{
-					foreach (EntityPassiveEffectEnumID effect in Data.passiveEffects)
-						GameAssets.current.game.entityEffects[effect].ApplyEffect(tile.GetEntity(true), GameManager.Instance.GetEntityFromID(targetTileID));
+					foreach (AEntityPassiveEffect.PassiveEffectContainer effect in Data.passiveEffects)
+						GameAssets.current.game.entityEffects[effect.enumID].ApplyEffect(tile.GetEntity(true), GameManager.Instance.GetEntityFromID(targetTileID));
 				}
 			}
 		}
 		else
 		{
-			foreach (EntityPassiveEffectEnumID effect in Data.passiveEffects)
-				GameAssets.current.game.entityEffects[effect].ApplyEffect(GameManager.Instance.GetEntityFromID(performingEntityID), GameManager.Instance.GetEntityFromID(targetTileID));
+			foreach (AEntityPassiveEffect.PassiveEffectContainer effect in Data.passiveEffects)
+				GameAssets.current.game.entityEffects[effect.enumID].ApplyEffect(GameManager.Instance.GetEntityFromID(performingEntityID), GameManager.Instance.GetEntityFromID(targetTileID));
 		}
 
 		base.Perform(_state);

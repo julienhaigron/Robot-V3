@@ -822,9 +822,9 @@ public class TurnManager : Singleton<TurnManager>
 	{
 		GameManager.Instance.GetEntityFromID(_entityID).Equipment.onDeath -= OnEntityDeath;
 		Entity deadEntity = GameManager.Instance.GetEntityFromID(_entityID);
-		foreach(EntityPassiveEffectEnumID effetID in deadEntity.AllPassiveEffects)
+		foreach(AEntityPassiveEffect.PassiveEffectContainer effetID in deadEntity.AllPassiveEffects)
 		{
-			GameAssets.current.game.entityEffects[effetID].OnDeathTrigger(deadEntity);
+			GameAssets.current.game.entityEffects[effetID.enumID].OnDeathTrigger(deadEntity);
 		}
 
 		m_recordedActionInput.Remove(_entityID);

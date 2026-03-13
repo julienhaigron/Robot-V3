@@ -94,16 +94,16 @@ public class BulletWeapon : Weapon
 								GameAssets.current.game.entityStatus[(EntityStatusEnumID)_attackAction.statusIds[i]].ApplyStatus(entity);
 						}*/
 
-						foreach (EntityPassiveEffectEnumID passiveEffectID in m_lastPerformedAction.effects)
+						foreach (AEntityPassiveEffect.PassiveEffectContainer passiveEffectID in m_lastPerformedAction.effects)
 						{
-							GameAssets.current.game.entityEffects[passiveEffectID].ApplyEffect(m_user, entity);
+							GameAssets.current.game.entityEffects[passiveEffectID.enumID].ApplyEffect(m_user, entity);
 						}
 					}
 				}
 
-				foreach (EntityPassiveEffectEnumID passiveEffectID in m_lastPerformedAction.effects)
+				foreach (AEntityPassiveEffect.PassiveEffectContainer passiveEffectID in m_lastPerformedAction.effects)
 				{
-					if (GameAssets.current.game.entityEffects[passiveEffectID] is ApplyStatusPassiveEffect applyStatus && applyStatus.doApplyToTile)
+					if (GameAssets.current.game.entityEffects[passiveEffectID.enumID] is ApplyStatusPassiveEffect applyStatus && applyStatus.doApplyToTile)
 					{
 						foreach (Tile tile in tilesInRange)
 							applyStatus.ApplyEffect(tile);
@@ -176,9 +176,9 @@ public class BulletWeapon : Weapon
 				GameAssets.current.game.entityStatus[(EntityStatusEnumID)m_lastPerformedAction.statusIds[i]].ApplyStatus(_entityHit);
 		}*/
 
-		foreach (EntityPassiveEffectEnumID passiveEffectID in m_lastPerformedAction.effects)
+		foreach (AEntityPassiveEffect.PassiveEffectContainer passiveEffectID in m_lastPerformedAction.effects)
 		{
-			GameAssets.current.game.entityEffects[passiveEffectID].ApplyEffect(m_user, _entityHit);
+			GameAssets.current.game.entityEffects[passiveEffectID.enumID].ApplyEffect(m_user, _entityHit);
 		}
 
 	}
