@@ -1,4 +1,4 @@
-//GENERATED 15
+//GENERATED 16
 public enum EntityPassiveEffectEnumID
 {
 	Unknown,
@@ -18,6 +18,7 @@ public enum EntityPassiveEffectEnumID
 	TrajectoryControl,
 	ApplyStunStatus,
 
+	ApplyBurning1Status,
 	//#END#ENTITYPASSIVEEFFECTENUMID#//
 
 }

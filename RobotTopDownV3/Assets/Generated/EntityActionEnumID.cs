@@ -1,4 +1,4 @@
-//GENERATED 26
+//GENERATED 30
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -31,6 +31,10 @@ public enum EntityActionEnumID
 		FlailFrappeCharge,
 		HammerFrappeSimple,
 		HammerEcrasement,
+		AmpificateurDefensifInvoke,
+		KamikazeExplode,
+		LanceFlammeBalayage,
+		LanceFlammeJetDeFlamme,
 		//#END#ENTITYACTIONENUMID#//
 		Unknowned,
 }

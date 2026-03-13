@@ -68,7 +68,9 @@ public class EntityActionData : ScriptableObject
 	[ShowIf("@targetType != TargetType.Self")]
 	public int maxDistance;
 
+	[ShowIf("@!isAoe")]
 	public int minTargetAmount = 1;
+	[ShowIf("@!isAoe")]
 	public int maxTargetAmount = 1;
 	#endregion
 

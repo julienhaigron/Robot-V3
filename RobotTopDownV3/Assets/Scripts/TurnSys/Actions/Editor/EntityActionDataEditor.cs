@@ -33,7 +33,7 @@ public class EntityActionDataEditor : OdinEditor
 		{
 			Regex rgx = new Regex("[^a-zA-Z0-9]");
 			targetAction.name = rgx.Replace(targetAction.name, "");
-			if (GUILayout.Button("Compute currencies enum"))
+			if (GUILayout.Button("Compute enum"))
 			{
 				ComputeEnum();
 			}

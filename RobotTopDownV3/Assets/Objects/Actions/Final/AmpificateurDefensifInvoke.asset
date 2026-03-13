@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2a743e40aeafc0445b10e59cec8dfa98, type: 3}
-  m_Name: HammerEcrasement
+  m_Name: AmpificateurDefensifInvoke
   m_EditorClassIdentifier: 
-  displayName: Ecrasement
-  enumID: 22
+  displayName: "D\xE9ploiement de l'amplificateur"
+  enumID: 23
   icon: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
   tileOutlineColor: {r: 1, g: 0, b: 0, a: 1}
   m_tokenPreparationDuration: 1
@@ -23,9 +23,9 @@ MonoBehaviour:
   afterPerformAnimationKey: 
   conditionType: 0
   previousActionAttackModificator: 0
-  type: 1
-  subType: 4
-  targetType: 1
+  type: 4
+  subType: 7
+  targetType: 3
   minDistance: 1
   maxDistance: 1
   minTargetAmount: 1
@@ -39,9 +39,5 @@ MonoBehaviour:
   hitAmount: 1
   damageFactor: 1
   usedDamageChannels: 02000000
-  passiveEffects:
-  - enumID: 7
-    conditionType: 1
-  - enumID: 14
-    conditionType: 0
+  passiveEffects: []
   invocatedEntity: {fileID: 0}

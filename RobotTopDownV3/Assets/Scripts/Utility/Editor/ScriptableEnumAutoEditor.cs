@@ -41,7 +41,7 @@ public class ScriptableEnumAutoEditor : OdinEditor
         //{
         Regex rgx = new Regex("[^a-zA-Z0-9]");
         target.name = rgx.Replace(target.name, "");
-        if (GUILayout.Button("Compute currencies enum"))
+        if (GUILayout.Button("Compute enum"))
         {
             GenerateAllEnums();
         }

@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d8a3de66be57e894a81fb26d5d5819d5, type: 3}
-  m_Name: ApplyStunStatus
+  m_Name: ApplyBurning1Status
   m_EditorClassIdentifier: 
-  enumID: 14
+  enumID: 15
   doApplyToSelf: 0
   doApplyToTile: 0
-  statusApplied: 6
+  statusApplied: 1
