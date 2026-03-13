@@ -1,40 +1,60 @@
-using UnityEngine;
-using Sirenix.OdinInspector;
-using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Reflection;
 using System.IO;
-
-#if UNITY_EDITOR
 using UnityEditor;
 using UnityEditor.Callbacks;
-#endif
+using Sirenix.OdinInspector.Editor;
+using UnityEngine;
+using Sirenix.OdinInspector;
+using System;
 
-public abstract class ScriptableEnum<TEnum> : ScriptableObject where TEnum : Enum
+[CustomEditor(typeof(ScriptableEnum<>))]
+public class ScriptableEnumAutoEditor : OdinEditor
 {
-    [ReadOnly]
-    public TEnum enumID;
+    ScriptableObject targetAction;
 
-#if UNITY_EDITOR
-    [Button]
-    private void RefreshAllEnum ()
-	{
-        ScriptableEnumAutoGenerator.GenerateAllEnums();
+
+    protected override void OnEnable ()
+    {
+        base.OnEnable();
+        Init();
     }
-#endif
-}
 
-#if UNITY_EDITOR
+    private void Init ()
+    {
+        targetAction = (target as ScriptableObject);
+    }
+    public override void OnInspectorGUI ()
+    {
+        OnInspectorGUI(targetAction);
+    }
+    private void OnInspectorGUI ( ScriptableObject target )
+    {
+        if (target == null)
+        {
+            Init();
+        }
 
-[InitializeOnLoad]
-public static class ScriptableEnumAutoGenerator
-{
-    static ScriptableEnumAutoGenerator ()
+        //if (!string.Equals(target.name, target.enumID.ToString()))
+        //{
+        Regex rgx = new Regex("[^a-zA-Z0-9]");
+        target.name = rgx.Replace(target.name, "");
+        if (GUILayout.Button("Compute currencies enum"))
+        {
+            GenerateAllEnums();
+        }
+        //}
+
+        GUILayout.Space(5f);
+
+        base.OnInspectorGUI();
+    }
+    /*static ScriptableEnumAutoEditor ()
     {
         EditorApplication.delayCall += GenerateAllEnums;
-    }
+    }*/
 
     public static void GenerateAllEnums ()
     {
@@ -67,40 +87,33 @@ public static class ScriptableEnumAutoGenerator
         string enumName = enumType.Name;
         string fileName = enumType + ".cs";
 
-        var assets = FindAssets(scriptableType);
+        List<ScriptableObject> assets = FindAssets(scriptableType);
+        HashSet<string> processedAssets = new HashSet<string>();
+        List<ScriptableObject> ignoredAssets = new List<ScriptableObject>();
 
-        HashSet<string> names = new();
-        List<string> entries = new();
-
-        foreach (var asset in assets)
+        string enumList = "";
+        Regex rgx = new Regex("[^a-zA-Z0-9 -]");
+        foreach (ScriptableObject scriptable in assets)
         {
-            string cleanName = Regex.Replace(asset.name, "[^a-zA-Z0-9]", "");
-
-            if (string.IsNullOrEmpty(cleanName))
-                continue;
-
-            if (names.Add(cleanName))
-                entries.Add(cleanName);
+            scriptable.name = rgx.Replace(scriptable.name, "");
+            if (processedAssets.Add(scriptable.name))
+            {
+                enumList += "\t" + scriptable.name + ",\n";
+            }
+            else
+            {
+                ignoredAssets.Add(scriptable);
+            }
         }
 
-        entries.Sort();
-
-        string enumContent =
-$@"public enum {enumName}
-{{
-    Unknown = 0,
-";
-
-        int index = 1;
-        foreach (var entry in entries)
+        while (ignoredAssets.Count > 0)
         {
-            enumContent += $"    {entry} = {index},\n";
-            index++;
+            assets.Remove(ignoredAssets[0]);
+            ignoredAssets.RemoveAt(0);
         }
 
-        enumContent += "}";
+        ScriptGenerator.AppendContent(fileName, enumName, enumList, true);
 
-        WriteEnumFileIfChanged(fileName, enumContent);
     }
 
     static List<ScriptableObject> FindAssets ( Type type )
@@ -125,7 +138,7 @@ $@"public enum {enumName}
         return assets;
     }
 
-    static void WriteEnumFileIfChanged ( string fileName, string newContent )
+    /*static void WriteEnumFileIfChanged ( string fileName, string newContent )
     {
         string folder = "Assets/Generated";
         if (!Directory.Exists(folder))
@@ -143,29 +156,29 @@ $@"public enum {enumName}
 
         File.WriteAllText(path, newContent);
         AssetDatabase.Refresh();
-    }
+    }*/
 
-    [DidReloadScripts]
-    static void ResolveEnums ()
-    {
-        try
-        {
-            GenerateAllEnums();
-        }
-        catch (Exception e)
-        {
-            Debug.LogWarning($"GenerateAllEnums failed: {e.Message}");
-        }
+    /* [DidReloadScripts]
+     static void ResolveEnums ()
+     {
+         try
+         {
+             GenerateAllEnums();
+         }
+         catch (Exception e)
+         {
+             Debug.LogWarning($"GenerateAllEnums failed: {e.Message}");
+         }
 
-        var scriptableEnumTypes = GetAllScriptableEnumTypes();
+         var scriptableEnumTypes = GetAllScriptableEnumTypes();
 
-        foreach (var type in scriptableEnumTypes)
-        {
-            AssignEnumIDs(type);
-        }
+         foreach (var type in scriptableEnumTypes)
+         {
+             AssignEnumIDs(type);
+         }
 
-        AssetDatabase.SaveAssets();
-    }
+         AssetDatabase.SaveAssets();
+     }*/
 
     static void AssignEnumIDs ( Type scriptableType )
     {
@@ -223,5 +236,3 @@ $@"public enum {enumName}
         EditorUtility.SetDirty(asset);
     }
 }
-
-#endif
