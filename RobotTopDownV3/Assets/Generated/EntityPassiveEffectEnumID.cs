@@ -1,4 +1,4 @@
-//GENERATED 17
+//GENERATED 19
 public enum EntityPassiveEffectEnumID
 {
 	Unknown,
@@ -8,7 +8,7 @@ public enum EntityPassiveEffectEnumID
 	CooldownCostReduction,
 	DamageUpOnMarked,
 	HitAmountBoost,
-	Kamikaze,
+	DamageOnDeath,
 	MaxRangeUp,
 	MaxTargetUp,
 	PreparationCostReduction,
@@ -21,6 +21,9 @@ public enum EntityPassiveEffectEnumID
 	ApplyBurning1Status,
 	ApplyRootedStatus,
 	ApplySmokedStatus,
+	InstantDeath,
+	KamaikazeDealDamage,
+	Kamikaze,
 	//#END#ENTITYPASSIVEEFFECTENUMID#//
 
 }

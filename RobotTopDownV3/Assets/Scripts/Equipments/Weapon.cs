@@ -65,7 +65,7 @@ public class Weapon : MonoBehaviour
 
 					foreach (AEntityPassiveEffect.PassiveEffectContainer passiveEffectID in _attackAction.effects)
 					{
-						GameAssets.current.game.entityEffects[passiveEffectID.enumID].ApplyEffect(m_user, entity);
+						GameAssets.current.game.entityEffects[passiveEffectID.enumID].ApplyEffect(m_user, entity, passiveEffectID);
 					}
 				}
 			}

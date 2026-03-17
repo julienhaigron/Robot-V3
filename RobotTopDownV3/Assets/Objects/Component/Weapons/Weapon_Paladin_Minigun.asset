@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 377ca2099ac4b6147bf777f681302f03, type: 3}
+  m_Name: Weapon_Paladin_Minigun
+  m_EditorClassIdentifier: 
+  icon: {fileID: 0}
+  energyCost: 30
+  knownedActions: 0f00000010000000
+  passiveEffects: []
+  prefab: {fileID: 7856189691443182411, guid: 3c486e26f7821614791b716f5411b97f, type: 3}
+  baseDamages:
+    keys: 0100000005000000
+    values: 0500000005000000
+  damageCategory: 1
+  range: 5
+  visionConeRange: 60
+  distanceAccuracyBonus:
+    keys: 000000000100000002000000
+    values:
+    - 0.2
+    - 0.2
+    - 0.2
+  attackAnimationSuccessId: 
+  attackAnimationFailureId: 
+  isTwoHanded: 0

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Envol
   m_EditorClassIdentifier: 
   displayName: Envol
-  enumID: 40
+  enumID: 39
   icon: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
   tileOutlineColor: {r: 1, g: 0, b: 0, a: 1}
   m_tokenPreparationDuration: 1
@@ -43,5 +43,8 @@ MonoBehaviour:
   passiveEffects:
   - enumID: 1
     conditionType: 0
+    targetType: 3
+    effectRange: 0
   invocatedEntity: {fileID: 0}
+  invocationCountLimit: 1
   movementSpeed: 0

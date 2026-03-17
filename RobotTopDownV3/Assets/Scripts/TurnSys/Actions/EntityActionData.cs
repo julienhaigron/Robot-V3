@@ -91,7 +91,6 @@ public class EntityActionData : ScriptableObject
 	#endregion
 
 	#region AOE Vars
-	[ShowIf("@targetType != TargetType.Self")]
 	public bool isAoe = false;
 	public enum AOEType
 	{
@@ -129,6 +128,7 @@ public class EntityActionData : ScriptableObject
 
 	[Title("Misc")]
 	[ShowIf("@codeType == ActionCodeType.Special")] public UnitPreset invocatedEntity;
+	[ShowIf("@codeType == ActionCodeType.Special")] public int invocationCountLimit = 1;
 	[ShowIf("@type == ActionType.Movement")] public int movementSpeed = 1;
 
 	public enum PFCResultType

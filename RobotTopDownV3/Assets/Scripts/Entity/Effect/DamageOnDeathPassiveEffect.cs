@@ -2,8 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Kamikaze", menuName = "ScriptableObject/PassiveEffect/Kamikaze")]
-public class KamikazePassiveEffect : AEntityPassiveEffect
+[CreateAssetMenu(fileName = "DamageOnDeath", menuName = "ScriptableObject/PassiveEffect/DamageOnDeath")]
+public class DamageOnDeathPassiveEffect : AEntityPassiveEffect
 {
 	public int explosionRange = 1;
 	public SerializableDictionary<WeaponEquipmentData.DamageType, int> damages = new();

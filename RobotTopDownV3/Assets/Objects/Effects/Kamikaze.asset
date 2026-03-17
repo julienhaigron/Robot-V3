@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b47663d1b91de544b8388d664c08817, type: 3}
   m_Name: Kamikaze
   m_EditorClassIdentifier: 
-  enumID: 6
+  enumID: 20
   explosionRange: 1
   damages:
     keys: 02000000

@@ -25,23 +25,30 @@ MonoBehaviour:
   previousActionAttackModificator: 0
   type: 4
   subType: 7
-  codeType: 4
-  targetType: 3
+  codeType: 6
+  targetType: 0
   minDistance: 1
   maxDistance: 1
   minTargetAmount: 1
   maxTargetAmount: 1
-  isAoe: 0
+  isAoe: 1
   aoeType: 0
   circleRange: 1
   arcRadius: 1
   rayDiameter: 1
   coneType: 1
   hitAmount: 1
-  damageFactor: 1
+  damageFactor: 1.5
   usedDamageChannels: 02000000
   passiveEffects:
-  - enumID: 6
+  - enumID: 18
     conditionType: 0
+    targetType: 3
+    effectRange: 0
+  - enumID: 19
+    conditionType: 0
+    targetType: 2
+    effectRange: 1
   invocatedEntity: {fileID: 0}
+  invocationCountLimit: 1
   movementSpeed: 0

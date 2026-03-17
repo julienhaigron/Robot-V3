@@ -32,14 +32,14 @@ public class ApplyEffectAction : SpecialAction
 				else
 				{
 					foreach (AEntityPassiveEffect.PassiveEffectContainer effect in Data.passiveEffects)
-						GameAssets.current.game.entityEffects[effect.enumID].ApplyEffect(tile.GetEntity(true), GameManager.Instance.GetEntityFromID(targetTileID));
+						GameAssets.current.game.entityEffects[effect.enumID].ApplyEffect(tile.GetEntity(true), GameManager.Instance.GetEntityFromID(targetTileID), effect);
 				}
 			}
 		}
 		else
 		{
 			foreach (AEntityPassiveEffect.PassiveEffectContainer effect in Data.passiveEffects)
-				GameAssets.current.game.entityEffects[effect.enumID].ApplyEffect(GameManager.Instance.GetEntityFromID(performingEntityID), GameManager.Instance.GetEntityFromID(targetTileID));
+				GameAssets.current.game.entityEffects[effect.enumID].ApplyEffect(GameManager.Instance.GetEntityFromID(performingEntityID), GameManager.Instance.GetEntityFromID(targetTileID), effect);
 		}
 
 		base.Perform(_state);

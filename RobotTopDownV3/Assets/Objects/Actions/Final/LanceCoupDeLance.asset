@@ -10,36 +10,38 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2a743e40aeafc0445b10e59cec8dfa98, type: 3}
-  m_Name: Run
+  m_Name: LanceCoupDeLance
   m_EditorClassIdentifier: 
-  displayName: Walk
-  enumID: 45
+  displayName: Coup de lance
+  enumID: 47
   icon: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
-  tileOutlineColor: {r: 0.34384358, g: 1, b: 0, a: 1}
+  tileOutlineColor: {r: 1, g: 0, b: 0, a: 1}
   m_tokenPreparationDuration: 0
-  m_tokenCooldown: 0
+  m_tokenCooldown: 1
   tokenDuration: 1
   preparationAnimationKey: 
   afterPerformAnimationKey: 
-  conditionType: 2
+  conditionType: 0
   previousActionAttackModificator: 0
-  type: 2
-  subType: 0
-  codeType: 1
-  targetType: 0
-  minDistance: 0
-  maxDistance: 5
+  type: 1
+  subType: 5
+  codeType: 2
+  targetType: 1
+  minDistance: 1
+  maxDistance: 3
   minTargetAmount: 1
   maxTargetAmount: 1
-  isAoe: 0
-  aoeType: 2
+  isAoe: 1
+  aoeType: 1
   circleRange: 1
   arcRadius: 1
   rayDiameter: 1
-  coneType: 0
+  coneType: 1
   hitAmount: 1
   damageFactor: 1
-  usedDamageChannels: 
-  passiveEffects: []
+  usedDamageChannels: 01000000
+  passiveEffects:
+  - enumID: 10
+    conditionType: 0
   invocatedEntity: {fileID: 0}
-  movementSpeed: 3
+  movementSpeed: 0

@@ -10,15 +10,25 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 377ca2099ac4b6147bf777f681302f03, type: 3}
-  m_Name: Pistol
+  m_Name: Weapon_Commando_LanceGrenade
   m_EditorClassIdentifier: 
-  ID: pistol
-  type: 1
   icon: {fileID: 0}
-  accuracy: 0.5
-  damage: 1
+  energyCost: 30
+  knownedActions: 1a0000001c0000001b000000
+  passiveEffects: []
+  prefab: {fileID: 7856189691443182411, guid: 3c486e26f7821614791b716f5411b97f, type: 3}
+  baseDamages:
+    keys: 0100000005000000
+    values: 0500000005000000
+  damageCategory: 1
   range: 5
-  visionConeRange: 30
+  visionConeRange: 60
+  distanceAccuracyBonus:
+    keys: 000000000100000002000000
+    values:
+    - 0.2
+    - 0.2
+    - 0.2
   attackAnimationSuccessId: 
   attackAnimationFailureId: 
   isTwoHanded: 0

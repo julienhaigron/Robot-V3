@@ -432,6 +432,24 @@ public class EntityEquipmentPlugin : EntityPlugin
 		onHealthChangeDamage?.Invoke(_damageInfo);
 	}
 
+	public void InstantDeath ()
+	{
+		Dictionary<WeaponEquipmentData.DamageType, int> damages = new();
+		damages.Add(WeaponEquipmentData.DamageType.Contendant, 999999);
+		m_currentHealth = 0;
+		onHealthChangeDamage?.Invoke(new TakeDamageCallback()
+		{
+			critical = false,
+			damages = damages,
+			entityAttacker = m_linkedEntity,
+			entityTargeted = m_linkedEntity,
+			hitNormal = Vector3.zero,
+			hitPos = Vector3.zero
+		});
+
+		Death();
+	}
+
 	private void Death ()
 	{
 		m_linkedEntity.Displacement.Coordinates.GetTile().SetEntity(null, true);

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: KitDePiegePiegeMarquant
   m_EditorClassIdentifier: 
   displayName: Piege marquant
-  enumID: 38
+  enumID: 37
   icon: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
   tileOutlineColor: {r: 1, g: 0, b: 0, a: 1}
   m_tokenPreparationDuration: 1

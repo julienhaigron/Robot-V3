@@ -1,4 +1,4 @@
-//GENERATED 47
+//GENERATED 53
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -23,7 +23,6 @@ public enum EntityActionEnumID
 		ApplyEffect,
 		MoveThenAttack,
 		AddTrajectoryControl,
-		MingunBalayage,
 		MinigunBalayage,
 		MinigunRafaleCible,
 		MissileArrayBarrageDeMissiles,
@@ -45,7 +44,6 @@ public enum EntityActionEnumID
 		RapiereDelugeDEstoc,
 		MineExplosion,
 		RapiereDelugePerforation,
-		MineInvoke,
 		KitDePiegePiegeMarquant,
 		KitDePiegePiegeChoc,
 		Envol,
@@ -53,7 +51,14 @@ public enum EntityActionEnumID
 		SniperTirDeSniper,
 		RailgunTirAttirant,
 		RailgunTirRepoussant,
-		Run,
+		KnightRun,
+		GlaiveDeSivirLanceDuGlaive,
+		GlaiveDeSivirChainThrow,
+		LanceCoupDeLance,
+		LanceDelugeDeCoup,
+		ToolPortalsInvoke,
+		ToolRepulseurRepulse,
+		ToolMineInvoke,
 		//#END#ENTITYACTIONENUMID#//
 		Unknowned,
 }

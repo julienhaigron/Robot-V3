@@ -1,6 +1,7 @@
 using UnityEngine;
 using Unity.Netcode;
 using System;
+using Sirenix.OdinInspector;
 
 [Serializable]
 public abstract class AEntityPassiveEffect : ScriptableEnum<EntityPassiveEffectEnumID>
@@ -10,14 +11,20 @@ public abstract class AEntityPassiveEffect : ScriptableEnum<EntityPassiveEffectE
 	{
 		public EntityPassiveEffectEnumID enumID;
 		public ConditionType conditionType;
+		public TargetType targetType;
+		[ShowIf("@targetType == TargetType.ConeOnSelf || targetType == TargetType.ConeOnTarget")]
+		public int effectRange;
 
 		public void NetworkSerialize<T> ( BufferSerializer<T> serializer ) where T : IReaderWriter
 		{
 			serializer.SerializeValue(ref enumID);
 			serializer.SerializeValue(ref conditionType);
+			serializer.SerializeValue(ref targetType);
+			serializer.SerializeValue(ref effectRange);
 		}
 	}
 
+	public enum TargetType { OtherEntity, Tile, ConeOnSelf, Self, ConeOnTarget}
 	public enum ConditionType { Noone, DidNotMoveThisTurn, DidNotAttackThisTurn, IsTargetMarked }
 
 	public virtual bool UseConditionPredicate ( AEntityAction _action, Entity _entity, Entity _targetEntity, ConditionType _conditionType )
@@ -45,7 +52,7 @@ public abstract class AEntityPassiveEffect : ScriptableEnum<EntityPassiveEffectE
 		}
 	}
 
-	public virtual void ApplyEffect ( Entity _performingEntity, Entity _targetEntity )
+	public virtual void ApplyEffect ( Entity _performingEntity, Entity _targetEntity, PassiveEffectContainer _effectContainer )
     {
 
     }

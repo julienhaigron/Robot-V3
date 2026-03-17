@@ -10,36 +10,36 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2a743e40aeafc0445b10e59cec8dfa98, type: 3}
-  m_Name: MineInvoke
+  m_Name: GlaiveDeSivirChainThrow
   m_EditorClassIdentifier: 
-  displayName: Mine explosive
-  enumID: 37
+  displayName: Chain throw
+  enumID: 46
   icon: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
   tileOutlineColor: {r: 1, g: 0, b: 0, a: 1}
-  m_tokenPreparationDuration: 1
+  m_tokenPreparationDuration: 0
   m_tokenCooldown: 0
   tokenDuration: 1
   preparationAnimationKey: 
   afterPerformAnimationKey: 
   conditionType: 0
   previousActionAttackModificator: 0
-  type: 4
-  subType: 7
-  codeType: 7
-  targetType: 3
+  type: 1
+  subType: 5
+  codeType: 2
+  targetType: 1
   minDistance: 1
-  maxDistance: 1
+  maxDistance: 3
   minTargetAmount: 1
   maxTargetAmount: 1
-  isAoe: 0
+  isAoe: 1
   aoeType: 0
-  circleRange: 1
+  circleRange: 3
   arcRadius: 1
   rayDiameter: 1
   coneType: 1
   hitAmount: 1
-  damageFactor: 1
-  usedDamageChannels: 02000000
+  damageFactor: 0.8
+  usedDamageChannels: 00000000
   passiveEffects: []
   invocatedEntity: {fileID: 0}
   movementSpeed: 0

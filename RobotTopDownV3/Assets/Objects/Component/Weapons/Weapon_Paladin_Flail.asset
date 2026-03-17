@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 377ca2099ac4b6147bf777f681302f03, type: 3}
+  m_Name: Weapon_Paladin_Flail
+  m_EditorClassIdentifier: 
+  icon: {fileID: 0}
+  energyCost: 30
+  knownedActions: 1200000013000000
+  passiveEffects: []
+  prefab: {fileID: 4024176136403563100, guid: 66812f69ad78b734dbdc05849c6752ae, type: 3}
+  baseDamages:
+    keys: 000000000500000002000000
+    values: 050000000500000005000000
+  damageCategory: 1
+  range: 1
+  visionConeRange: 60
+  distanceAccuracyBonus:
+    keys: 000000000100000002000000
+    values:
+    - 0.2
+    - 0.2
+    - 0.2
+  attackAnimationSuccessId: 
+  attackAnimationFailureId: 
+  isTwoHanded: 0

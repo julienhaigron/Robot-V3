@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: RailgunTirAttirant
   m_EditorClassIdentifier: 
   displayName: Tir attirant
-  enumID: 43
+  enumID: 42
   icon: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
   tileOutlineColor: {r: 1, g: 0, b: 0, a: 1}
   m_tokenPreparationDuration: 1
@@ -31,7 +31,7 @@ MonoBehaviour:
   maxDistance: 12
   minTargetAmount: 1
   maxTargetAmount: 1
-  isAoe: 1
+  isAoe: 0
   aoeType: 0
   circleRange: 2
   arcRadius: 1
@@ -43,5 +43,12 @@ MonoBehaviour:
   passiveEffects:
   - enumID: 4
     conditionType: 3
+    targetType: 3
+    effectRange: 0
+  - enumID: 10
+    conditionType: 0
+    targetType: 4
+    effectRange: 2
   invocatedEntity: {fileID: 0}
+  invocationCountLimit: 1
   movementSpeed: 0

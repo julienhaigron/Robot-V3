@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: SniperTirDeSniper
   m_EditorClassIdentifier: 
   displayName: Tir de sniper
-  enumID: 42
+  enumID: 41
   icon: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
   tileOutlineColor: {r: 1, g: 0, b: 0, a: 1}
   m_tokenPreparationDuration: 1
@@ -43,5 +43,8 @@ MonoBehaviour:
   passiveEffects:
   - enumID: 4
     conditionType: 3
+    targetType: 3
+    effectRange: 0
   invocatedEntity: {fileID: 0}
+  invocationCountLimit: 1
   movementSpeed: 0

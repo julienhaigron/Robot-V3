@@ -40,7 +40,7 @@ MonoBehaviour:
     - {fileID: 11400000, guid: 269ea4b9e1222fe42bc648cbcdf4a6a9, type: 2}
     weaponCone: {fileID: 868673094015138981, guid: 8693abc4f151cbc4b94435d3e63342fb, type: 3}
     entityActionsData:
-      keys: 00000000030000000100000002000000040000000700000008000000090000000a00000005000000060000000b0000000c0000000d0000000e0000000f000000100000001100000012000000130000001400000015000000160000001700000018000000190000001a0000001b0000001c0000001d0000001e0000001f000000200000002100000022000000230000002400000025000000260000002700000028000000290000002a0000002b0000002c0000002d000000
+      keys: 00000000030000000100000002000000040000000700000008000000090000000a00000005000000060000000b0000000c0000000d0000000e0000000f000000100000001100000012000000130000001400000015000000160000001700000018000000190000001a0000001b0000001c0000001d0000001e0000001f000000200000002100000022000000230000002400000025000000260000002700000028000000290000002a0000002b0000002c0000002d0000002e0000002f00000030000000310000003200000033000000
       values:
       - {fileID: 11400000, guid: 65141cef94be0da4aa62b38b7184715e, type: 2}
       - {fileID: 11400000, guid: b8ac4dc65be2b4147a3477108787f128, type: 2}
@@ -57,7 +57,6 @@ MonoBehaviour:
       - {fileID: 11400000, guid: 66b784af57f493b4d907229418aedef0, type: 2}
       - {fileID: 11400000, guid: 1893165c079cfca44a87e251f1b9c933, type: 2}
       - {fileID: 11400000, guid: c8a7b83647a4eb84785c0649593f507d, type: 2}
-      - {fileID: 11400000, guid: 60b7e95e5038d4944bcada68a98b2ebf, type: 2}
       - {fileID: 11400000, guid: 60b7e95e5038d4944bcada68a98b2ebf, type: 2}
       - {fileID: 11400000, guid: 0bb049d799f4d8e429c95388c7608af2, type: 2}
       - {fileID: 11400000, guid: fc47371cbba866945b03a4c1c4b2bdd9, type: 2}
@@ -79,7 +78,6 @@ MonoBehaviour:
       - {fileID: 11400000, guid: 229e3350ffb0ea9428a8343b3ab10e22, type: 2}
       - {fileID: 11400000, guid: 400e8801feb8c2344af8b305f17dac25, type: 2}
       - {fileID: 11400000, guid: 39347b6112ffac24abc9469ec22d1f8d, type: 2}
-      - {fileID: 11400000, guid: 66797e179220d9d418c66fd4466ea557, type: 2}
       - {fileID: 11400000, guid: dc272101f4d322848abeec29a8aa49ce, type: 2}
       - {fileID: 11400000, guid: 11a4a3acf70c0d544b04f5e4e8405799, type: 2}
       - {fileID: 11400000, guid: 618e887b3337cdd49a04eb66d412310b, type: 2}
@@ -88,8 +86,16 @@ MonoBehaviour:
       - {fileID: 11400000, guid: 2f1dfa4f9de34c447b771eab068aaabc, type: 2}
       - {fileID: 11400000, guid: c6ee470a106d2cd499baaa9fe5e90dd0, type: 2}
       - {fileID: 11400000, guid: d8c8a5ce5698e754d87afe2649ecca43, type: 2}
+      - {fileID: 11400000, guid: cef583373cbce0a428209e97c4b42eff, type: 2}
+      - {fileID: 11400000, guid: 9f9a09e8aebb41746a74e32d3b489d54, type: 2}
+      - {fileID: 11400000, guid: 51417963dcaa6c145b45d70eb3bf3d28, type: 2}
+      - {fileID: 11400000, guid: b13925b3dcfa2444d87464ead16a1c6f, type: 2}
+      - {fileID: 11400000, guid: 6750ca58c9271134dab6a55976ba6738, type: 2}
+      - {fileID: 11400000, guid: fa68c381b19dae34ea0aa80637073d6d, type: 2}
+      - {fileID: 11400000, guid: 66797e179220d9d418c66fd4466ea557, type: 2}
+      - {fileID: 0}
     entityEffects:
-      keys: 0000000001000000020000000300000004000000050000000600000007000000090000000a0000000b0000000d00000008000000
+      keys: 0000000001000000020000000300000004000000050000000600000007000000090000000a0000000b0000000d000000080000000e0000000f0000001000000011000000120000000c000000
       values:
       - {fileID: 0}
       - {fileID: 11400000, guid: 6b411fb908b3f1e4cbf0b606160306c2, type: 2}
@@ -104,9 +110,22 @@ MonoBehaviour:
       - {fileID: 11400000, guid: f51fdc06b22d1fc4cbf2003d883bd22f, type: 2}
       - {fileID: 11400000, guid: bb712f254ab47b8488b6fe299764224a, type: 2}
       - {fileID: 11400000, guid: bbace26cd4bcd9b45aaef9aa6fc3b54d, type: 2}
+      - {fileID: 11400000, guid: fa314733ac51d5d4ab94b881fcae87e4, type: 2}
+      - {fileID: 11400000, guid: d1ba608866f4bf740830e13ba0a5f3d0, type: 2}
+      - {fileID: 11400000, guid: 1252a063894e1ad46a032ca00f35cb39, type: 2}
+      - {fileID: 11400000, guid: 6bc53db1f169e60418978c61ad9c02ec, type: 2}
+      - {fileID: 11400000, guid: dc20f2dcd9f59294f99def4ea4c10f74, type: 2}
+      - {fileID: 11400000, guid: 46ae190248476e842af4b57ea6a3cda0, type: 2}
     entityStatus:
-      keys: 
-      values: []
+      keys: 00000000010000000200000003000000040000000500000006000000
+      values:
+      - {fileID: 0}
+      - {fileID: 11400000, guid: 7af3cbb2fb9300d4c8a9b333e8a5b7a4, type: 2}
+      - {fileID: 11400000, guid: 3f66be7a80c7acd439b1f8b2e01c90c3, type: 2}
+      - {fileID: 11400000, guid: 8e5bfd61c7b1163409a1714c5cc52df9, type: 2}
+      - {fileID: 11400000, guid: 76af4e2f09571714081bb9cb6f83c0a3, type: 2}
+      - {fileID: 11400000, guid: c751ea5480127c74fab9380a7b894335, type: 2}
+      - {fileID: 11400000, guid: 089f5b6503687a44ca2eb812dcd04d46, type: 2}
     arrowPoolData: {fileID: 11400000, guid: 64f7846c9740e524a979a96964270b2f, type: 2}
   ui:
     baseLobbyDisplay: {fileID: 2566041125526859700, guid: cc5b4c04e157c914381ced09bd279f76, type: 3}
@@ -153,8 +172,8 @@ MonoBehaviour:
     - Weapon_FlameThrowerXV-68
     - Weapon_ShieldGeneratorD-3
     - AK
-    - DefaultWeapon
-    - Pistol
+    - Frame_Knight
+    - Frame_Paladin_Knight
     - EnnemiRobot
     - PlayerRobot 1
     - PlayerRobot
@@ -170,8 +189,8 @@ MonoBehaviour:
     - {fileID: 11400000, guid: 4fafc18289220b34e814bd02c23c59ad, type: 2}
     - {fileID: 11400000, guid: 092f78630a84b294eaead47e6587f5b4, type: 2}
     - {fileID: 11400000, guid: 3820ae6eea1419c4fb586677667c12aa, type: 2}
-    - {fileID: 11400000, guid: dc7d2dbc3edd72d4f9025dff20a7cbaa, type: 2}
-    - {fileID: 11400000, guid: 88252aa38fb340c469720857dae6ae3b, type: 2}
+    - {fileID: 11400000, guid: 88274172e15f236458c997d0aa978d08, type: 2}
+    - {fileID: 11400000, guid: a3e7c26a1fd560541a94a1ec30820110, type: 2}
     - {fileID: 11400000, guid: 269ea4b9e1222fe42bc648cbcdf4a6a9, type: 2}
     - {fileID: 11400000, guid: d1ff8cefde9698646866f7c141843e06, type: 2}
     - {fileID: 11400000, guid: 11de9230c09867747908272f3310089f, type: 2}
