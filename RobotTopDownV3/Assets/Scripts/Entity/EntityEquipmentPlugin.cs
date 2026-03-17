@@ -204,18 +204,21 @@ public class EntityEquipmentPlugin : EntityPlugin
 		m_linkedEntity.Displacement.Rotate(_tile, false);
 	}*/
 
-	public List<Tile> GetTilesInWeaponRange (AEntityAction _action, string _weaponID, bool _isThisTurn = false )
+	public List<Tile> GetTilesInWeaponRange ( AEntityAction _action, string _weaponID, bool _isThisTurn = false )
 	{
 		List<Tile> tilesInRange = new();
 		Weapon usedWeapon = m_weapons[_weaponID];
 
 		float angle = GridManager.Instance.FromOrientationToAngle(m_linkedEntity.Displacement.CurrentOrientation);
 
-		bool ignoreObstacles = false;
-		foreach(AEntityPassiveEffect.PassiveEffectContainer passiveContainer in _action.effects)
+		bool ignoreObstacles = _action == null || _action.effects == null;
+		if (!ignoreObstacles)
 		{
-			ignoreObstacles = passiveContainer.enumID == EntityPassiveEffectEnumID.TrajectoryControl;
-			break;
+			foreach (AEntityPassiveEffect.PassiveEffectContainer passiveContainer in _action.effects)
+			{
+				ignoreObstacles = passiveContainer.enumID == EntityPassiveEffectEnumID.TrajectoryControl;
+				break;
+			}
 		}
 
 		int nbOfRayPerAngle = 1;

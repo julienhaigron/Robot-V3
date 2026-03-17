@@ -1,4 +1,4 @@
-//GENERATED 30
+//GENERATED 47
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -35,6 +35,25 @@ public enum EntityActionEnumID
 		KamikazeExplode,
 		LanceFlammeBalayage,
 		LanceFlammeJetDeFlamme,
+		LanceGrenadeGrenadeShrapnel,
+		LanceGrenadeGrenadeIncendiaire,
+		LanceGrenadeGrenadeFumigene,
+		GanteletCoupDePoint,
+		GanteletRue,
+		GanteletCoupCharge,
+		RapiereEstoc,
+		RapiereDelugeDEstoc,
+		MineExplosion,
+		RapiereDelugePerforation,
+		MineInvoke,
+		KitDePiegePiegeMarquant,
+		KitDePiegePiegeChoc,
+		Envol,
+		Atterissage,
+		SniperTirDeSniper,
+		RailgunTirAttirant,
+		RailgunTirRepoussant,
+		Run,
 		//#END#ENTITYACTIONENUMID#//
 		Unknowned,
 }

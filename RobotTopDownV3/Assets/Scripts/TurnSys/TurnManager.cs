@@ -203,73 +203,46 @@ public class TurnManager : Singleton<TurnManager>
 		AEntityAction action = null;
 
 		//for base actions or exceptions
-		switch (_actionData.enumID)
+		switch (_actionData.codeType)
 		{
-			case EntityActionEnumID.NeighborMove:
+			case EntityActionData.ActionCodeType.NeighborMove:
 				action = new MoveToNeighborAction();
-				action.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.NeighborMove], _performingEntityID, GetLastRegisteredPositionOfEntity(_performingEntityID), _timeAtStart);
 				break;
-			case EntityActionEnumID.TargetTileMove:
+			case EntityActionData.ActionCodeType.TargetTileMove:
 				action = new MoveToTargetAction();
-				action.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.TargetTileMove], _performingEntityID, GetLastRegisteredPositionOfEntity(_performingEntityID), _timeAtStart);
 				break;
-			case EntityActionEnumID.Attack:
+			case EntityActionData.ActionCodeType.Attack:
 				action = new AttackAction();
-				action.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.Attack], _performingEntityID, GetLastRegisteredPositionOfEntity(_performingEntityID), _timeAtStart);
 				break;
-			case EntityActionEnumID.Wait:
-				action = new WaitAction();
-				action.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.Wait], _performingEntityID, GetLastRegisteredPositionOfEntity(_performingEntityID), _timeAtStart);
-				break;
-			case EntityActionEnumID.RotateEntity:
-				action = new RotateEntityAction();
-				action.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.RotateEntity], _performingEntityID, GetLastRegisteredPositionOfEntity(_performingEntityID), _timeAtStart);
-				break;
-			case EntityActionEnumID.TurnShield:
-				action = new TurnShieldAction();
-				action.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.TurnShield], _performingEntityID, GetLastRegisteredPositionOfEntity(_performingEntityID), _timeAtStart);
-				break;
-			case EntityActionEnumID.InvokeEntity:
-				action = new InvokeEntityAction();
-				action.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.InvokeEntity], _performingEntityID, GetLastRegisteredPositionOfEntity(_performingEntityID), _timeAtStart);
-				break;
-			case EntityActionEnumID.ApplyEffect:
-				action = new ApplyEffectAction();
-				action.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.ApplyEffect], _performingEntityID, GetLastRegisteredPositionOfEntity(_performingEntityID), _timeAtStart);
-				break;
-			case EntityActionEnumID.MoveThenAttack:
+			case EntityActionData.ActionCodeType.MoveThenAttack:
 				action = new MoveThenAttackAction();
-				action.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.MoveThenAttack], _performingEntityID, GetLastRegisteredPositionOfEntity(_performingEntityID), _timeAtStart);
 				break;
-			case EntityActionEnumID.AddTrajectoryControl:
+			case EntityActionData.ActionCodeType.TurnEntity:
+				action = new RotateEntityAction();
+				break;
+			case EntityActionData.ActionCodeType.TurnShield:
+				action = new TurnShieldAction();
+				break;
+			case EntityActionData.ActionCodeType.Special:
+				action = new SpecialAction();
+				break;
+			case EntityActionData.ActionCodeType.InvokeEntity:
+				action = new InvokeEntityAction();
+				break;
+			case EntityActionData.ActionCodeType.ApplyEffect:
+				action = new ApplyEffectAction();
+				break;
+			case EntityActionData.ActionCodeType.AddEffectToAction:
 				action = new AddEffectToAction();
-				action.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.AddTrajectoryControl], _performingEntityID, GetLastRegisteredPositionOfEntity(_performingEntityID), _timeAtStart);
 				break;
+			case EntityActionData.ActionCodeType.Wait:
+				action = new WaitAction();
+				break;
+			default:
+				Debug.LogError("Missing entree in TurnManager.GetAction for type \"" + _actionData.codeType + "\"");
+				return action;
 		}
-
-		if (action == null)
-		{
-			switch (_actionData.type)
-			{
-				case EntityActionData.ActionType.DistanceAttack:
-				case EntityActionData.ActionType.MeleeAttack:
-					action = new AttackAction();
-					action.Init(GameAssets.current.game.entityActionsData[_actionData.enumID], _performingEntityID, GetLastRegisteredPositionOfEntity(_performingEntityID), _timeAtStart);
-					break;
-				case EntityActionData.ActionType.Movement:
-					action = new MoveToTargetAction();
-					action.Init(GameAssets.current.game.entityActionsData[_actionData.enumID], _performingEntityID, GetLastRegisteredPositionOfEntity(_performingEntityID), _timeAtStart);
-					break;
-				case EntityActionData.ActionType.Special:
-					action = new SpecialAction();
-					action.Init(GameAssets.current.game.entityActionsData[_actionData.enumID], _performingEntityID, GetLastRegisteredPositionOfEntity(_performingEntityID), _timeAtStart);
-					break;
-				case EntityActionData.ActionType.Rotation:
-					action = new RotateEntityAction();
-					action.Init(GameAssets.current.game.entityActionsData[_actionData.enumID], _performingEntityID, GetLastRegisteredPositionOfEntity(_performingEntityID), _timeAtStart);
-					break;
-			}
-		}
+		action.Init(GameAssets.current.game.entityActionsData[_actionData.enumID], _performingEntityID, GetLastRegisteredPositionOfEntity(_performingEntityID), _timeAtStart);
 
 		return action;
 	}

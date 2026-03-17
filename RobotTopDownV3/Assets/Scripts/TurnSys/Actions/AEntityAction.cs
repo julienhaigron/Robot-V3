@@ -47,22 +47,19 @@ public abstract class AEntityAction : INetworkSerializable
 
     public virtual void Init(EntityActionData _data, int _performingEntityID, int _positionAtActionStartID, int _timeAtStart )
 	{
+        Entity performingEntity = GameManager.Instance.GetEntityFromID(_performingEntityID);
         enumID = _data.enumID;
         performingEntityID = _performingEntityID;
-        linkedEquipmentId = GameManager.Instance.GetEntityFromID(performingEntityID).ComponentLinkedToAction.ContainsKey(enumID) ? GameManager.Instance.GetEntityFromID(performingEntityID).ComponentLinkedToAction[enumID] : null;
+        linkedEquipmentId = performingEntity.ComponentLinkedToAction.ContainsKey(enumID) ? performingEntity.ComponentLinkedToAction[enumID] : null;
         supposedPositionAtActionStartID = _positionAtActionStartID;
         positionAtActionEndID = _positionAtActionStartID;
 
-        effects = GameManager.Instance.GetEntityFromID(_performingEntityID).KnownedPassiveEffectsPerAction[enumID].ToArray();
-        /*statusIds = new int[_data.appliableStatus.Length];
-		for (int i = 0; i < _data.appliableStatus.Length; i++)
-		{
-            statusIds[i] = (int)_data.appliableStatus[i].enumID;
-        }*/
+        effects = performingEntity.KnownedPassiveEffectsPerAction == null || !performingEntity.KnownedPassiveEffectsPerAction.ContainsKey(enumID) 
+            ? null : performingEntity.KnownedPassiveEffectsPerAction[enumID].ToArray();
 
-        preparationDuration = _data.GetTokenPreparationCost(this, GameManager.Instance.GetEntityFromID(_performingEntityID), null);
+        preparationDuration = _data.GetTokenPreparationCost(this, performingEntity, null);
         actualDuration = _data.tokenDuration;
-        cooldownDuration = _data.GetTokenCooldownCost(this, GameManager.Instance.GetEntityFromID(_performingEntityID), null);
+        cooldownDuration = _data.GetTokenCooldownCost(this, performingEntity, null);
 
         timeAtStart = _timeAtStart;
     }

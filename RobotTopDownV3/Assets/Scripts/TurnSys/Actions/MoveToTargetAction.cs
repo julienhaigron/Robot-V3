@@ -39,7 +39,7 @@ public class MoveToTargetAction : AEntityAction
 				break;
 		}
 
-		positionAtActionEndID = thisActionDestinationIDArray[^1];
+		positionAtActionEndID = thisActionDestinationIDArray == null ? _positionAtActionStartID : thisActionDestinationIDArray[^1];
 	}
 
 	public override void Prepare ( Entity.EntityState _state )
@@ -129,11 +129,10 @@ public class MoveToTargetAction : AEntityAction
 			action.mode = mode;
 
 			List<int> tileIDList = new();
-			for (int j = 0; j < (i + Data.movementSpeed) % (path.Count - 1); j++)
-				tileIDList.Add(path[i + j].coordinates.ID);
+			for (int j = 0; j < Data.movementSpeed && i+j < path.Count - 1; j++)
+				tileIDList.Add(path[i + j + 1].coordinates.ID);
 			action.thisActionDestinationIDArray = tileIDList.ToArray();
-			action.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.TargetTileMove]
-				, performingEntityID, path[i].coordinates.ID, timeAtStart + (i / Data.movementSpeed));
+			action.Init(GameAssets.current.game.entityActionsData[enumID], performingEntityID, path[i].coordinates.ID, timeAtStart + i);
 
 			TurnManager.Instance.AddAction(performingEntityID, action, TurnManager.Instance.CurrentStateTypeSelected);
 		}
@@ -292,12 +291,16 @@ public class MoveToTargetAction : AEntityAction
 
 	public override void GhostDisplay ( Entity.EntityState _state )
 	{
-		Tile from = GridManager.Instance.Tiles[TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntityID)];
+		if (positionAtActionEndID == -1)
+			return;
 
-		for (int i = 0; i < thisActionDestinationIDArray.Length; i++)
+		Tile from = GridManager.Instance.Tiles[TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntityID)];
+		List<Tile> path = GridManager.Instance.GetPath(from, GridManager.Instance.Tiles[positionAtActionEndID], true, false);
+
+		for (int i = 0; i < path.Count - 1; i++)
 		{
-			Tile thisTile = i== 0 ? from : GridManager.Instance.Tiles[thisActionDestinationIDArray[i]];
-			Tile otherTile = GridManager.Instance.Tiles[thisActionDestinationIDArray[i+1]];
+			Tile thisTile = path[i];
+			Tile otherTile = path[i+1];
 			ActionDisplayOnTile arrow = ObjectsPooling.GetElement(GameAssets.current.game.arrowPoolData) as ActionDisplayOnTile;
 			Vector3 startPos = thisTile.transform.position;
 			Vector3 destination = otherTile.transform.position;

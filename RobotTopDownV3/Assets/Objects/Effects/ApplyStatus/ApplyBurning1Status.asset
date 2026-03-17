@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enumID: 15
   doApplyToSelf: 0
-  doApplyToTile: 0
+  doApplyToTile: 1
   statusApplied: 1

@@ -53,6 +53,22 @@ public class EntityActionData : ScriptableObject
 	}
 	public ActionSubType subType;
 
+	public ActionCodeType codeType = ActionCodeType.Attack;
+	public enum ActionCodeType
+	{
+		NeighborMove,
+		TargetTileMove,
+		Attack,
+		MoveThenAttack,
+		Special,
+		AddEffectToAction,
+		ApplyEffect,
+		InvokeEntity,
+		TurnShield,
+		TurnEntity,
+		Wait,
+	}
+
 	#region Target Vars
 	[Title("Target")] //TODO: see this later https://odininspector.com/attributes/hide-if-group-attribute
 	public enum TargetType
@@ -112,8 +128,8 @@ public class EntityActionData : ScriptableObject
 	public AEntityPassiveEffect.PassiveEffectContainer[] passiveEffects;
 
 	[Title("Misc")]
-	[ShowIf("@type == ActionType.Special")] public UnitPreset invocatedEntity;
-	[ShowIf("@type == ActionType.Movement")] public int movementSpeed;
+	[ShowIf("@codeType == ActionCodeType.Special")] public UnitPreset invocatedEntity;
+	[ShowIf("@type == ActionType.Movement")] public int movementSpeed = 1;
 
 	public enum PFCResultType
 	{

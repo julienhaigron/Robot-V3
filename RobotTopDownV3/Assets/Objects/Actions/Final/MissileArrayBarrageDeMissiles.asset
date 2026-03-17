@@ -25,6 +25,7 @@ MonoBehaviour:
   previousActionAttackModificator: 0
   type: 0
   subType: 1
+  codeType: 2
   targetType: 3
   minDistance: 5
   maxDistance: 10
@@ -43,3 +44,4 @@ MonoBehaviour:
   - enumID: 9
     conditionType: 1
   invocatedEntity: {fileID: 0}
+  movementSpeed: 0

@@ -91,6 +91,7 @@ public class EntityAIPlugin : EntityPlugin
 					List<Tile> pathToEnemy = GridManager.Instance.GetPath(closestEntity.Displacement.Coordinates.GetTile(), m_linkedEntity.Displacement.Coordinates.GetTile(), true);
 					if (pathToEnemy == null || pathToEnemy.Count < 2)
 						return resultInfo;
+					pathToEnemy.Reverse();
 
 					EntityActionData movementAction = GetMovementAction();
 					List<int> tileIDs = new();
@@ -219,7 +220,7 @@ public class EntityAIPlugin : EntityPlugin
 					&& GameAssets.current.game.entityActionsData[pair.Key].type != EntityActionData.ActionType.MeleeAttack))
 					continue;
 
-				AEntityAction relatedAction = _action.enumID== pair.Key ? _action : TurnManager.Instance.GetAction(GameAssets.current.game.entityActionsData[pair.Key], m_linkedEntity.ID, _action.timeAtStart);
+				AEntityAction relatedAction = _action.enumID == pair.Key ? _action : TurnManager.Instance.GetAction(GameAssets.current.game.entityActionsData[pair.Key], m_linkedEntity.ID, _action.timeAtStart);
 				List<Tile> tilesInWeaponCone = m_linkedEntity.Equipment.GetTilesInWeaponRange(relatedAction, weaponId);
 				foreach (Tile tile in tilesInWeaponCone)
 				{
