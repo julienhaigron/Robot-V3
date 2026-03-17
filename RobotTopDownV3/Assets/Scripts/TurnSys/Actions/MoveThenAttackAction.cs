@@ -60,12 +60,12 @@ public class MoveThenAttackAction : AttackAction
 				isActionCanceled = true;
 			}
 		}
-		else if (_otherAction is MoveToTargetAction && (_otherAction as MoveToTargetAction).thisActionDestinationID == positionAfterMovementID)
+		else if (_otherAction is MoveToTargetAction && (_otherAction as MoveToTargetAction).thisActionDestinationIDArray.Contains(positionAfterMovementID))
 		{
 			int roll = UnityEngine.Random.Range((int)0, 2);
 			if (roll == 0)
 			{
-				(_otherAction as MoveToTargetAction).thisActionDestinationID = -1;
+				(_otherAction as MoveToTargetAction).thisActionDestinationIDArray = null;
 				doesOtherHaveConflict = true;
 			}
 			else

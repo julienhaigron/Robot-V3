@@ -113,6 +113,7 @@ public class EntityActionData : ScriptableObject
 
 	[Title("Misc")]
 	[ShowIf("@type == ActionType.Special")] public UnitPreset invocatedEntity;
+	[ShowIf("@type == ActionType.Movement")] public int movementSpeed;
 
 	public enum PFCResultType
 	{

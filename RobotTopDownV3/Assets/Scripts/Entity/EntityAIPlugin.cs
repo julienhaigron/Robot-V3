@@ -93,11 +93,14 @@ public class EntityAIPlugin : EntityPlugin
 						return resultInfo;
 
 					EntityActionData movementAction = GetMovementAction();
+					List<int> tileIDs = new();
+					for (int i = 0; i < movementAction.movementSpeed && i + 1 < pathToEnemy.Count; i++)
+						tileIDs.Add(pathToEnemy[i + 1].coordinates.ID);
 
 					MoveToTargetAction moveToAction = (TurnManager.Instance.GetAction(movementAction.enumID, m_linkedEntity.ID, _recordedAction.timeAtStart) as MoveToTargetAction);
 					moveToAction.mode = MoveToTargetAction.MoveActionMode.Entity;
 					moveToAction.targetEntiyID = closestEntity.ID;
-					moveToAction.thisActionDestinationID = pathToEnemy[1].coordinates.ID;
+					moveToAction.thisActionDestinationIDArray = tileIDs.ToArray();
 					moveToAction.Init(GameAssets.current.game.entityActionsData[movementAction.enumID], m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID, _recordedAction.action.timeAtStart);
 					resultInfo.ReplaceAction(moveToAction);
 

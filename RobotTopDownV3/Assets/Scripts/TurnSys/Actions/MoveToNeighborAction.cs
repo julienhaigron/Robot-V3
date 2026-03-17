@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using Unity.Netcode;
+using System.Linq;
 
 public class MoveToNeighborAction : AEntityAction
 {
@@ -110,12 +111,12 @@ public class MoveToNeighborAction : AEntityAction
 				doesSelfHaveConflict = true;
 			}
 		}
-		else if (_otherAction is MoveToTargetAction && (_otherAction as MoveToTargetAction).thisActionDestinationID == finalTargetTileID)
+		else if (_otherAction is MoveToTargetAction && (_otherAction as MoveToTargetAction).thisActionDestinationIDArray.Contains(finalTargetTileID))
 		{
 			int roll = UnityEngine.Random.Range((int)0, 2);
 			if (roll == 0)
 			{
-				(_otherAction as MoveToTargetAction).thisActionDestinationID = -1;
+				(_otherAction as MoveToTargetAction).thisActionDestinationIDArray = null;
 				doesOtherHaveConflict = true;
 			}
 			else

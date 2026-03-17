@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using Unity.Netcode;
+using System.Linq;
 
 public class MoveToTargetAction : AEntityAction
 {
@@ -11,7 +12,7 @@ public class MoveToTargetAction : AEntityAction
 	public MoveActionMode mode;
 
 	public int finalTargetTileID = -1;
-	public int thisActionDestinationID = -1;
+	public int[] thisActionDestinationIDArray = null;
 	public enum MoveActionMode { Coordinate, Entity }
 
 	public override void NetworkSerialize<T> ( BufferSerializer<T> serializer )
@@ -21,7 +22,7 @@ public class MoveToTargetAction : AEntityAction
 		serializer.SerializeValue(ref targetTileID);
 		serializer.SerializeValue(ref mode);
 		serializer.SerializeValue(ref finalTargetTileID);
-		serializer.SerializeValue(ref thisActionDestinationID);
+		serializer.SerializeValue(ref thisActionDestinationIDArray);
 	}
 
 	public override void Init ( EntityActionData _data, int _performingEntityID, int _positionAtActionStartID, int _timeAtStart )
@@ -38,7 +39,7 @@ public class MoveToTargetAction : AEntityAction
 				break;
 		}
 
-		positionAtActionEndID = (int)thisActionDestinationID;
+		positionAtActionEndID = thisActionDestinationIDArray[^1];
 	}
 
 	public override void Prepare ( Entity.EntityState _state )
@@ -52,47 +53,57 @@ public class MoveToTargetAction : AEntityAction
 	protected override void Perform ( Entity.EntityState _state )
 	{
 		base.Perform(_state);
-		List<Tile> tilesInRange = new();
-		foreach (string weaponId in PerformingEntity.Equipment.Weapons.Keys)
-			tilesInRange.AddRange(PerformingEntity.Equipment.GetTilesInWeaponRange(this, weaponId, true));
-
-		foreach (Tile tile in tilesInRange)
-		{
-			tile.UI.SetOutlineColor(Color.blue);
-		}
 
 		//move to targetTile
-		if (thisActionDestinationID != -1/* && thisActionDestination.GetEntity(false) == null*/)
+		if (thisActionDestinationIDArray != null/* && thisActionDestination.GetEntity(false) == null*/)
 		{
-			GameManager.Instance.GetEntityFromID(performingEntityID).Displacement.MoveToTile((int)thisActionDestinationID, () =>
-			{
-				foreach (Tile tile in tilesInRange)
-				{
-					tile.UI.ResetOutline();
-				}
-				EndTick();
-			});
-
+			GameManager.Instance.StartCoroutine(PerformCR());
 		}
 		else
 		{
-			DG.Tweening.DOVirtual.DelayedCall(GameConfig.current.game.actionDuration, () => 
+			DG.Tweening.DOVirtual.DelayedCall(GameConfig.current.game.actionDuration, () =>
 			{
-				foreach (Tile tile in tilesInRange)
-				{
-					tile.UI.ResetOutline();
-				}
 				EndTick();
 			});
 		}
 	}
 
+	private IEnumerator PerformCR ()
+	{
+		/*Tile from = GameManager.Instance.GetEntityFromID(performingEntityID).Displacement.Coordinates.GetTile();
+		Tile to = GridManager.Instance.Tiles[thisActionDestinationIDArray[];
+		List<Tile> path = GridManager.Instance.GetPath(from, to, false);*/
+		int movementAmount = Mathf.Min(thisActionDestinationIDArray.Length, Data.movementSpeed);
+		float movementSpeed = GameConfig.current.game.actionDuration / movementAmount;
+
+		for (int i = 0; i < movementAmount; i++)
+		{
+			List<Tile> tilesInRange = new();
+			foreach (string weaponId in PerformingEntity.Equipment.Weapons.Keys)
+				tilesInRange.AddRange(PerformingEntity.Equipment.GetTilesInWeaponRange(this, weaponId, true));
+
+			foreach (Tile tile in tilesInRange)
+			{
+				tile.UI.SetOutlineColor(Color.blue);
+			}
+			GameManager.Instance.GetEntityFromID(performingEntityID).Displacement.MoveToTile(thisActionDestinationIDArray[i], null, true, movementSpeed);
+
+			yield return new WaitForSeconds(movementSpeed);
+			foreach (Tile tile in tilesInRange)
+			{
+				tile.UI.ResetOutline();
+			}
+		}
+
+		EndTick();
+	}
+
 	public override bool TileInteractPredicate ( Tile _tile )
 	{
-		int maxDistance = TurnManager.Instance.RemainingActionToken[performingEntityID];
+		int maxDistance = TurnManager.Instance.RemainingActionToken[performingEntityID] * Data.movementSpeed;
 		int distance = GridManager.Instance.GetDistanceBetween(GridManager.Instance.Tiles[TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntityID)], _tile, true);
 
-		if ( _tile.IsObstacle() || distance > maxDistance || distance < 1)
+		if (_tile.IsObstacle() || distance > maxDistance || distance < 1)
 			return false;
 
 		return true;
@@ -105,7 +116,7 @@ public class MoveToTargetAction : AEntityAction
 		List<Tile> path = GridManager.Instance.GetPath(from, _tile, true);
 
 		path.Reverse();
-		for (int i = 0; i < path.Count - 1; i++)
+		for (int i = 0; i < path.Count - 1; i += Data.movementSpeed)
 		{
 			MoveToTargetAction action = new MoveToTargetAction();
 			/*if (i == 0)
@@ -115,10 +126,14 @@ public class MoveToTargetAction : AEntityAction
 				action.targetTileID = _tile.coordinates.ID;
 			else if (mode == MoveActionMode.Entity)
 				action.targetEntiyID = _tile.GetEntity(true).ID;
-			action.thisActionDestinationID = path[i + 1].coordinates.ID;
 			action.mode = mode;
 
-			action.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.TargetTileMove], performingEntityID, path[i].coordinates.ID, timeAtStart + i);
+			List<int> tileIDList = new();
+			for (int j = 0; j < (i + Data.movementSpeed) % (path.Count - 1); j++)
+				tileIDList.Add(path[i + j].coordinates.ID);
+			action.thisActionDestinationIDArray = tileIDList.ToArray();
+			action.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.TargetTileMove]
+				, performingEntityID, path[i].coordinates.ID, timeAtStart + (i / Data.movementSpeed));
 
 			TurnManager.Instance.AddAction(performingEntityID, action, TurnManager.Instance.CurrentStateTypeSelected);
 		}
@@ -141,7 +156,29 @@ public class MoveToTargetAction : AEntityAction
 		bool doesSelfHaveConflict = false;
 		bool doesOtherHaveConflict = false;
 
-		if (_otherAction is MoveToNeighborAction _otherNeighborMoveAction && _otherNeighborMoveAction.finalTargetTileID == thisActionDestinationID)
+		if (IsDestinationOccupiedOnNextTurnAction())
+		{
+			if (_isCheck)
+				doesSelfHaveConflict = true;
+			else
+			{
+				RefreshDestinatedTile();
+				if (finalTargetTileID == -1)
+					doesSelfHaveConflict = true;
+			}
+		}
+		else if (thisActionDestinationIDArray != null && GridManager.Instance.GetDistanceBetween(GridManager.Instance.Tiles[supposedPositionAtActionStartID], GridManager.Instance.Tiles[thisActionDestinationIDArray[^1]], false) > Data.movementSpeed)
+		{
+			//check if tile too far
+			doesSelfHaveConflict = true;
+			RefreshDestinatedTile();
+		}
+		else if (thisActionDestinationIDArray == null)
+		{
+			doesSelfHaveConflict = true;
+			RefreshDestinatedTile();
+		}
+		else if (_otherAction is MoveToNeighborAction _otherNeighborMoveAction && thisActionDestinationIDArray.Contains(_otherNeighborMoveAction.finalTargetTileID))
 		{
 			int roll = UnityEngine.Random.Range((int)0, 2);
 			if (roll == 0)
@@ -153,50 +190,42 @@ public class MoveToTargetAction : AEntityAction
 			else
 			{
 				doesSelfHaveConflict = true;
-				thisActionDestinationID = -1;
+				thisActionDestinationIDArray = null;
 			}
 		}
-		else if (_otherAction is MoveToTargetAction _otherMoveToTargetAction && _otherMoveToTargetAction.thisActionDestinationID == thisActionDestinationID)
+		else if (_otherAction is MoveToTargetAction _otherMoveToTargetAction && _otherMoveToTargetAction.thisActionDestinationIDArray == thisActionDestinationIDArray)
 		{
-			int roll = UnityEngine.Random.Range((int)0, 2);
-			if (roll == 0)
+			bool doesHaveCollision = false;
+			foreach (int ourID in thisActionDestinationIDArray)
 			{
-				//performing entity wins roll
-				_otherMoveToTargetAction.thisActionDestinationID = -1;
-				doesOtherHaveConflict = true;
+				if (_otherMoveToTargetAction.thisActionDestinationIDArray.Contains(ourID))
+				{
+					doesHaveCollision = true;
+					break;
+				}
 			}
-			else
+			if (doesHaveCollision)
 			{
-				doesSelfHaveConflict = true;
-				thisActionDestinationID = -1;
-			}
-		}
-		else if (IsDestinationOccupiedOnNextTurnAction())
-		{
-			if (_isCheck)
-				doesSelfHaveConflict = true;
-			else
-			{
-				RefreshDestinatedTile();
-				if (finalTargetTileID == -1)
+
+				int roll = UnityEngine.Random.Range((int)0, 2);
+				if (roll == 0)
+				{
+					//performing entity wins roll
+					_otherMoveToTargetAction.thisActionDestinationIDArray = null;
+					doesOtherHaveConflict = true;
+				}
+				else
+				{
 					doesSelfHaveConflict = true;
+					thisActionDestinationIDArray = null;
+				}
 			}
-		}
-		else if (thisActionDestinationID != -1 && GridManager.Instance.GetDistanceBetween(GridManager.Instance.Tiles[supposedPositionAtActionStartID], GridManager.Instance.Tiles[(int)thisActionDestinationID], false) > 1)
-		{
-			//check if tile too far
-			doesSelfHaveConflict = true;
-			RefreshDestinatedTile();
-		}
-		else if (thisActionDestinationID == -1)
-		{
-			doesSelfHaveConflict = true;
-			RefreshDestinatedTile();
 		}
 
 		if (doesSelfHaveConflict == false)
 		{
-			GridManager.Instance.Tiles[(int)thisActionDestinationID].SetEntity(performingEntity, _isThisTurn: false);
+			foreach (int tileID in thisActionDestinationIDArray)
+				GridManager.Instance.Tiles[tileID].SetEntity(performingEntity, _isThisTurn: false);
 		}
 
 		return new() { isFirstActionConflicted = doesSelfHaveConflict, isSecondActionConflicted = doesOtherHaveConflict };
@@ -204,12 +233,22 @@ public class MoveToTargetAction : AEntityAction
 
 	private bool IsDestinationOccupiedOnNextTurnAction ()
 	{
-		if (thisActionDestinationID == -1)
+		if (thisActionDestinationIDArray == null)
 			return false;
 
-		Entity entityOnDestination = GridManager.Instance.Tiles[(int)thisActionDestinationID].GetEntity(_isThisTurn: false);
+		bool hasOtherEntityOnDestinations = false;
+		foreach (int tileID in thisActionDestinationIDArray)
+		{
+			Entity entity = GridManager.Instance.Tiles[tileID].GetEntity(_isThisTurn: false);
+			if ((entity != null && entity.ID != performingEntityID)
+				|| GridManager.Instance.Tiles[tileID].IsObstacle())
+			{
+				hasOtherEntityOnDestinations = true;
+				break;
+			}
+		}
 
-		return (entityOnDestination != null && entityOnDestination.ID != performingEntityID) || GridManager.Instance.Tiles[(int)thisActionDestinationID].IsObstacle();
+		return hasOtherEntityOnDestinations;
 	}
 
 	private void RefreshDestinatedTile ()
@@ -226,38 +265,46 @@ public class MoveToTargetAction : AEntityAction
 		}
 
 		pathToTile.Reverse();
-		thisActionDestinationID = pathToTile[1].coordinates.ID;
-		positionAtActionEndID = pathToTile[1].coordinates.ID;
+		for (int i = 0; i < Data.movementSpeed; i++)
+		{
+			thisActionDestinationIDArray[i] = pathToTile[i + 1].coordinates.ID;
+			positionAtActionEndID = pathToTile[i + 1].coordinates.ID;
+		}
 	}
 
 	public override void Display ( TurnManager.RecordedAction _recordedAction )
 	{
-		ActionDisplayOnTile arrow = ObjectsPooling.GetElement(GameAssets.current.game.arrowPoolData) as ActionDisplayOnTile;
-		Vector3 startPos = GridManager.Instance.Tiles[supposedPositionAtActionStartID].transform.position;
-		Vector3 destination = GridManager.Instance.Tiles[(int)thisActionDestinationID].transform.position;
-		Vector3 position = Vector3.Lerp(startPos, destination, .5f);
-		arrow.Init(_recordedAction);
-		arrow.transform.position = position;
-		arrow.transform.LookAt(GridManager.Instance.Tiles[(int)thisActionDestinationID].transform);
+		Vector3 previousPosition = GridManager.Instance.Tiles[supposedPositionAtActionStartID].transform.position;
+		foreach (int tileID in thisActionDestinationIDArray)
+		{
+			ActionDisplayOnTile arrow = ObjectsPooling.GetElement(GameAssets.current.game.arrowPoolData) as ActionDisplayOnTile;
+			Vector3 startPos = previousPosition;
+			Vector3 destination = GridManager.Instance.Tiles[tileID].transform.position;
+			Vector3 position = Vector3.Lerp(startPos, destination, .5f);
+			previousPosition = destination;
+			arrow.Init(_recordedAction);
+			arrow.transform.position = position;
+			arrow.transform.LookAt(GridManager.Instance.Tiles[tileID].transform);
 
-		PlayerController.Instance.AddActionDisplay(arrow, performingEntityID, false);
+			PlayerController.Instance.AddActionDisplay(arrow, performingEntityID, false);
+		}
 	}
 
 	public override void GhostDisplay ( Entity.EntityState _state )
 	{
-		Tile from = GridManager.Instance.Tiles[(int)TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntityID)];
-		List<Tile> pathToTile = GridManager.Instance.GetPath(from, GridManager.Instance.Tiles[(int)positionAtActionEndID], _isThisTurn: false);
-		pathToTile.Reverse();
+		Tile from = GridManager.Instance.Tiles[TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntityID)];
 
-		for (int i = 0; i < pathToTile.Count - 1; i++)
+		for (int i = 0; i < thisActionDestinationIDArray.Length; i++)
 		{
+			Tile thisTile = i== 0 ? from : GridManager.Instance.Tiles[thisActionDestinationIDArray[i]];
+			Tile otherTile = GridManager.Instance.Tiles[thisActionDestinationIDArray[i+1]];
 			ActionDisplayOnTile arrow = ObjectsPooling.GetElement(GameAssets.current.game.arrowPoolData) as ActionDisplayOnTile;
-			Vector3 startPos = pathToTile[i].transform.position;
-			Vector3 destination = pathToTile[i + 1].transform.position;
+			Vector3 startPos = thisTile.transform.position;
+			Vector3 destination = otherTile.transform.position;
 			Vector3 position = Vector3.Lerp(startPos, destination, .5f);
 			arrow.SetMaterial(GameAssets.current.ui.ghostEntityStateMaterials[_state]);
 			arrow.transform.position = position;
-			arrow.transform.LookAt(pathToTile[i + 1].transform);
+			arrow.transform.LookAt(otherTile.transform);
 
 			PlayerController.Instance.AddActionDisplay(arrow, performingEntityID, true);
 		}

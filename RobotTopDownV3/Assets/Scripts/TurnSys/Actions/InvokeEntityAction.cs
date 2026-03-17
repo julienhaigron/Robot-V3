@@ -60,11 +60,11 @@ public class InvokeEntityAction : SpecialAction
 			}
 
 		}
-		else if (_otherAction is MoveToTargetAction _otherMoveToTargetAction && _otherMoveToTargetAction.thisActionDestinationID == targetTileID)
+		else if (_otherAction is MoveToTargetAction _otherMoveToTargetAction && _otherMoveToTargetAction.thisActionDestinationIDArray.Contains(targetTileID))
 		{
 			if (result == EntityActionData.PFCResultType.FirstWins)
 			{
-				_otherMoveToTargetAction.thisActionDestinationID = -1;
+				_otherMoveToTargetAction.thisActionDestinationIDArray = null;
 				doesOtherHaveConflict = true;
 			}
 			else if (result == EntityActionData.PFCResultType.SecondWins)
@@ -77,7 +77,7 @@ public class InvokeEntityAction : SpecialAction
 				int roll = Random.Range((int)0, 2);
 				if (roll == 0)
 				{
-					_otherMoveToTargetAction.thisActionDestinationID = -1;
+					_otherMoveToTargetAction.thisActionDestinationIDArray = null;
 					doesOtherHaveConflict = true;
 				}
 				else
