@@ -43,5 +43,8 @@ MonoBehaviour:
   passiveEffects:
   - enumID: 2
     conditionType: 0
+    targetType: 0
+    effectRange: 0
   invocatedEntity: {fileID: 0}
+  invocationCountLimit: 1
   movementSpeed: 0

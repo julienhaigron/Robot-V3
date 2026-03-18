@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   icon: {fileID: 0}
   energyCost: 10
-  knownedActions: 0900000017000000
+  knownedActions: 0a00000018000000
   passiveEffects: []
   faction: 0
   prefab: {fileID: 4673310249167116355, guid: 206cf16509b1846479a1f553fd6add2d, type: 3}

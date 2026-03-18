@@ -154,6 +154,61 @@ public static class ScriptGenerator
         AssetDatabase.Refresh();
     }
 
+    public static void RewriteContent ( string file, string tag, string lineToRewrite, string lineToAdd)
+    {
+        string filePath = GetFilePath(file);
+        string endTag = FormatTag(tag, true);
+
+        List<string> content = new List<string>();
+        IEnumerable<string> lines = File.ReadLines(filePath);
+
+        bool encounteredEndTag = false;
+        int lineIndex = 0;
+
+        foreach (string iterationLine in lines)
+        {
+            string line = iterationLine;
+            if (lineIndex == 0)
+            {
+
+                Regex rgx = new Regex("//GENERATED [0-9]+");
+                if (!rgx.Match(line).Success)
+                {
+                    content.Add("//GENERATED 1");
+                }
+                else
+                {
+                    line = "//GENERATED " + (int.Parse((line.Substring(line.IndexOf(" ")))) + 1);
+                }
+            }
+            lineIndex++;
+            if(string.Equals(line, lineToRewrite))
+            {
+                content.Add(lineToAdd);
+            }
+            else if (!encounteredEndTag)
+            {
+                if (line.Contains(endTag))
+                {
+                    encounteredEndTag = true;
+                    content.Add(line);
+                }
+                else
+                {
+                    content.Add(line);
+                }
+            }
+            else
+            {
+                content.Add(line);
+            }
+        }
+        if (encounteredEndTag)
+        {
+            File.WriteAllLines(filePath, content.ToArray());
+        }
+        AssetDatabase.Refresh();
+    }
 
     private static string GetFilePath ( string file )
     {

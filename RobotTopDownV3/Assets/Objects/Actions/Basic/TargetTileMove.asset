@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: TargetTileMove
   m_EditorClassIdentifier: 
   displayName: Target Tile Move
-  enumID: 3
+  enumID: 4
   icon: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
   tileOutlineColor: {r: 0, g: 1, b: 0, a: 1}
   m_tokenPreparationDuration: 0
@@ -42,4 +42,5 @@ MonoBehaviour:
   usedDamageChannels: 
   passiveEffects: []
   invocatedEntity: {fileID: 0}
+  invocationCountLimit: 1
   movementSpeed: 1

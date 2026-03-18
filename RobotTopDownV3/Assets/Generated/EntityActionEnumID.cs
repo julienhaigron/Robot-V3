@@ -6,6 +6,7 @@ using UnityEngine;
 [System.Serializable]
 public enum EntityActionEnumID
 {
+		Unknowned,
 		//#START#ENTITYACTIONENUMID#//
 		Attack,
 		NeighborMove,
@@ -59,6 +60,5 @@ public enum EntityActionEnumID
 		ToolPortalsInvoke,
 		ToolRepulseurRepulse,
 		ToolMineInvoke,
-		//#END#ENTITYACTIONENUMID#//
-		Unknowned,
+		//#END#ENTITYACTIONENUMID
 }

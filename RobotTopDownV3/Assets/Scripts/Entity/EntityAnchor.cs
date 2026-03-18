@@ -64,7 +64,7 @@ public class EntityAnchor : MonoBehaviour
 
 	private void SpawnEntity ( EntitySavedData _entityData, int _entityID, int _playerID)
 	{
-		Entity entity = Instantiate((GameAssets.current.equipments[_entityData.frameID] as FrameEquipmentData).prefab, transform);
+		Entity entity = Instantiate(_entityData.FrameData.prefab, transform);
 		m_entities.Add(entity);
 		entity.Init(_entityData, GetRandomAvailableSpawnPosition(), _entityID, _playerID);
 		onEntityAdded?.Invoke(entity);
@@ -72,7 +72,7 @@ public class EntityAnchor : MonoBehaviour
 
 	public void SpawnEntityDuringPlay ( EntitySavedData _entityData, int _entityID, int _playerID, int _tileID, System.Action _onEndSpawn = null )
 	{
-		Entity entity = Instantiate((GameAssets.current.equipments[_entityData.frameID] as FrameEquipmentData).prefab, transform);
+		Entity entity = Instantiate(_entityData.FrameData.prefab, transform);
 		m_entities.Add(entity);
 		entity.Init(_entityData, new Spawn(GridManager.Instance.Tiles[_tileID].coordinates, Spawn.InitializationState.Success, true), _entityID, _playerID);
 		onEntityAdded?.Invoke(entity);

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   icon: {fileID: 0}
   energyCost: 30
-  knownedActions: 1400000015000000
+  knownedActions: 1600000015000000
   passiveEffects: []
   prefab: {fileID: 4024176136403563100, guid: 66812f69ad78b734dbdc05849c6752ae, type: 3}
   baseDamages:

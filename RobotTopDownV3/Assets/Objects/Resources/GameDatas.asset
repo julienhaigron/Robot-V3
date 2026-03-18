@@ -21,12 +21,12 @@ MonoBehaviour:
     knownedFrames: []
     units:
     - name: Fire Bat
-      frameID: Frame_A-7
+      frameID: Frame_Commando_Kamikaze
       reactorID: Reactor_B-99
       brainID: Brain_Z-1
       armsIds:
-      - value: Weapon_FlameThrowerXV-68
-      - value: Weapon_ShieldGeneratorD-3
+      - value: Weapon_Commando_LanceFlamme
+      - value: Weapon_Commando_Gantelet
       auxiliarIds:
       - value: Armor_CD1
       - value: Armor_CD2
@@ -34,12 +34,12 @@ MonoBehaviour:
       chipsetsIds:
       - value: Chipset_ZB-38
     - name: Fire Bat
-      frameID: Frame_A-7
+      frameID: Frame_Paladin_Knight
       reactorID: Reactor_B-99
       brainID: Brain_Z-1
       armsIds:
-      - value: Weapon_FlamingSaber
-      - value: Weapon_ShieldGeneratorD-3
+      - value: Weapon_Paladin_Hammer
+      - value: Weapon_Paladin_Minigun
       auxiliarIds:
       - value: Armor_CD1
       - value: Armor_CD2

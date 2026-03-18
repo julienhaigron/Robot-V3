@@ -1,7 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 using Sirenix.OdinInspector;
+
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+
 
 [CreateAssetMenu(fileName = "GameAssets", menuName = "ScriptableObject/GameAssets")]
 public class GameAssets : ScriptableObject
@@ -74,6 +80,41 @@ public class GameAssets : ScriptableObject
             if (!equipments.ContainsKey(eq.name))
                 equipments.Add(eq.name, eq);
         }
+    }
+#endif
+
+#if UNITY_EDITOR
+    [Button]
+    public void ReloadActions ()
+    {
+        string[] guids = AssetDatabase.FindAssets("t:EntityActionData");
+        List<EntityActionData> fetchedActions = new();
+        foreach (string guid in guids)
+        {
+            string path = AssetDatabase.GUIDToAssetPath(guid);
+            var asset = AssetDatabase.LoadAssetAtPath<EntityActionData>(path);
+            if (asset != null)
+                fetchedActions.Add(asset);
+        }
+
+        foreach (EntityActionData action in fetchedActions)
+        {
+            if (Enum.TryParse(action.name, out EntityActionEnumID _result))
+            {
+                action.enumID = _result;
+                if (!game.entityActionsData.ContainsKey(action.enumID))
+                {
+                    game.entityActionsData.Add(action.enumID, action);
+                }
+                else
+                {
+                    game.entityActionsData[action.enumID] = action;
+                }
+                EditorUtility.SetDirty(action);
+            }
+        }
+
+        EditorUtility.SetDirty(current);
     }
 #endif
 }

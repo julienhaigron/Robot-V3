@@ -20,6 +20,10 @@ public class UnitPreset : ScriptableObject
     [OnValueChanged("@RefreshTotalEnergyCostRemaining()")]
     public ChipsetEquipmentData[] chipsets;
 
+    public bool isInvocation = false;
+    [ShowIf("@isInvocation")]
+    public bool isTangible = true;
+
     [ReadOnly, SerializeField]
     private int m_totalEnergyCostRemaining;
     public int TotalEnergyCostRemaining => m_totalEnergyCostRemaining;

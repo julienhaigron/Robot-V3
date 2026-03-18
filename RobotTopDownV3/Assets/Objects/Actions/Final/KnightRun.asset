@@ -42,4 +42,5 @@ MonoBehaviour:
   usedDamageChannels: 
   passiveEffects: []
   invocatedEntity: {fileID: 0}
+  invocationCountLimit: 1
   movementSpeed: 3

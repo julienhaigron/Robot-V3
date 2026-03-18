@@ -80,8 +80,8 @@ public class TurnManager : Singleton<TurnManager>
 	{
 		public int timeAtStart;
 		public int performingEntityID;
-		public EntityActionEnumID type;
 		public Entity.EntityState entityState;
+		public EntityActionEnumID type;
 		public AEntityAction action;
 		public EntityActionEnumID freeActionType;
 		public AEntityAction freeAction;
@@ -161,6 +161,12 @@ public class TurnManager : Singleton<TurnManager>
 
 	private void OnEntitySelected ( int? _selectedEntity )
 	{
+		if (_selectedEntity.HasValue)
+		{
+			Entity selectedEntity = GameManager.Instance.GetEntityFromID(_selectedEntity.Value);
+			SetCurrentActionSelected(selectedEntity.KnownedActions[0]);
+			SetCurrentStateSelected(selectedEntity.KnownedStates[0]);
+		}
 		RefreshActionDisplay(_selectedEntity);
 	}
 
@@ -578,10 +584,17 @@ public class TurnManager : Singleton<TurnManager>
 
 		//2-recursively check for possible conflict and change actions if needed
 		//	     => dealing with conflict can create new one
+		int currentIteration = 0;
 		m_recordedConflict = CheckForConflicts();
-		while (m_recordedConflict.Count > 0)
+		while (m_recordedConflict.Count > 0 && currentIteration++ < 20)
 		{
 			m_recordedConflict = ResolveConflicts();
+		}
+
+		foreach(RecordedAction actionInConflict in m_recordedConflict)
+		{
+			Debug.LogError("This action conflict cannot be resolved: " + actionInConflict.type);
+			return;
 		}
 
 		//c)play this phases entities turn actions
@@ -658,7 +671,7 @@ public class TurnManager : Singleton<TurnManager>
 				Queue<RecordedAction> otherEntityActionsPlayedThisRound = m_actionsToPlay[otherEntity];
 				foreach (RecordedAction otherAction in otherEntityActionsPlayedThisRound.ToArray())
 				{
-					AEntityAction.ActionConflictResultInfo resultInfo = conflictedAction.action.CheckConflict(otherAction.action);
+					AEntityAction.ActionConflictResultInfo resultInfo = conflictedAction.action.CheckConflict(otherAction.action, false);
 					if (resultInfo.isFirstActionConflicted)
 					{
 						LogConsole.AddLog("Conflict detected: [" + conflictedAction.action.ToString() + "]", LogConsole.LogEventType.PlayPhase);
@@ -704,7 +717,8 @@ public class TurnManager : Singleton<TurnManager>
 
 	private void PlayActionTick ( RecordedAction _recordedAction )
 	{
-		if (_recordedAction.freeActionType != EntityActionEnumID.Wait)
+		if (_recordedAction.freeActionType != EntityActionEnumID.Wait
+			&& _recordedAction.freeActionType != EntityActionEnumID.Unknowned)
 		{
 			_recordedAction.action.onEndTick += ( performingEntity, didEndAction ) =>
 			{

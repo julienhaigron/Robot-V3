@@ -33,9 +33,36 @@ public class EntityActionDataEditor : OdinEditor
 		{
 			Regex rgx = new Regex("[^a-zA-Z0-9]");
 			targetAction.name = rgx.Replace(targetAction.name, "");
-			if (GUILayout.Button("Compute enum"))
+			if (GUILayout.Button("Add enum"))
 			{
 				ComputeEnum();
+			}
+
+			if (GUILayout.Button("Rename enum"))
+			{
+				//ComputeEnum();
+				string previousLine = "\t\t" + targetAction.enumID.ToString() + ",\n";
+				string newLine = "\t\t" + targetAction.name + ",\n";
+				ScriptGenerator.RewriteContent("EntityActionEnumID.cs", "EntityActionEnumID", previousLine, newLine);
+			}
+			
+			if (GUILayout.Button("Refresh enum"))
+			{
+				//ComputeEnum();
+				if (Enum.TryParse(targetAction.name, out EntityActionEnumID _result))
+				{
+					targetAction.enumID = _result;
+					if (!GameAssets.current.game.entityActionsData.ContainsKey(targetAction.enumID))
+					{
+						GameAssets.current.game.entityActionsData.Add(targetAction.enumID, targetAction);
+					}
+					else
+					{
+						GameAssets.current.game.entityActionsData[targetAction.enumID] = targetAction;
+					}
+					EditorUtility.SetDirty(targetAction);
+					EditorUtility.SetDirty(GameAssets.current);
+				}
 			}
 		}
 

@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e340e03f272314442a53b80f2350e240, type: 3}
-  m_Name: Frame_Invoc_Mine
+  m_Name: Frame_InvocMine
   m_EditorClassIdentifier: 
   icon: {fileID: 0}
   energyCost: 10
-  knownedActions: 0900000017000000
+  knownedActions: 23000000
   passiveEffects: []
   faction: 0
   prefab: {fileID: 4673310249167116355, guid: 206cf16509b1846479a1f553fd6add2d, type: 3}

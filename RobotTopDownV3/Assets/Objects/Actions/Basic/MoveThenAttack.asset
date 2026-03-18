@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: MoveThenAttack
   m_EditorClassIdentifier: 
   displayName: MoveThenAttack
-  enumID: 13
+  enumID: 14
   icon: {fileID: 0}
   tileOutlineColor: {r: 0, g: 1, b: 0, a: 1}
   m_tokenPreparationDuration: 0
@@ -42,4 +42,5 @@ MonoBehaviour:
   usedDamageChannels: 
   passiveEffects: []
   invocatedEntity: {fileID: 0}
+  invocationCountLimit: 1
   movementSpeed: 0

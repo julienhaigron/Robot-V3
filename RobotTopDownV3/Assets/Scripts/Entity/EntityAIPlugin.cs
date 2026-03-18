@@ -38,7 +38,8 @@ public class EntityAIPlugin : EntityPlugin
 		DOAllPrewarmCheck(_recordedAction.action);
 		// 2) react depending on those factor
 
-		bool canMove = !m_linkedEntity.Status.Contains(EntityStatusEnumID.Stun) && !m_linkedEntity.Status.Contains(EntityStatusEnumID.Rooted);
+		EntityActionData movementAction = GetMovementAction();
+		bool canMove = !m_linkedEntity.Status.Contains(EntityStatusEnumID.Stun) && !m_linkedEntity.Status.Contains(EntityStatusEnumID.Rooted) && movementAction != null;
 		EntityActionData availableAttackAction = GetAvailableAttackAction();
 
 		if (m_linkedEntity.Status.Contains(EntityStatusEnumID.Stun))
@@ -93,7 +94,6 @@ public class EntityAIPlugin : EntityPlugin
 						return resultInfo;
 					pathToEnemy.Reverse();
 
-					EntityActionData movementAction = GetMovementAction();
 					List<int> tileIDs = new();
 					for (int i = 0; i < movementAction.movementSpeed && i + 1 < pathToEnemy.Count; i++)
 						tileIDs.Add(pathToEnemy[i + 1].coordinates.ID);

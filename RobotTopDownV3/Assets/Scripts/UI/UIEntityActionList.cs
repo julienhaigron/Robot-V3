@@ -48,15 +48,15 @@ public class UIEntityActionList : MonoBehaviour
 			for (int i = 0; i < amountMissingStateBtn; i++)
 				CreateNewStateButton().SetVisible(false, true);
 
-			for (int i = 0; i < m_actionButtons.Count; i++)
+			for (int i = 0; i < selectedEntity.KnownedActions.Count; i++)
 			{
 				m_actionButtons[i].Init(selectedEntity.KnownedActions[i]);
 				m_actionButtons[i].SetVisible(_isVisible: true, _isInstant: true);
 			}
 
-			for (int i = 0; i < m_stateButtons.Count; i++)
+			for (int i = 0; i < selectedEntity.KnownedStates.Count; i++)
 			{
-				m_stateButtons[i].Init(selectedEntity.Data.BrainData.knownedStates[i]);
+				m_stateButtons[i].Init(selectedEntity.KnownedStates[i]);
 				m_stateButtons[i].SetVisible(_isVisible: true, _isInstant: true);
 			}
 		}
