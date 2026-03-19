@@ -48,7 +48,7 @@ public class TurnManager : Singleton<TurnManager>
 
 	public enum TurnPhase { Recording, Calculating, Playing }
 	public TurnPhase currentPhase;
-	public int currentRound = 0;
+	public int currentTick = 0;
 
 	//prevision
 	private SerializableDictionary<int, TrackedEntityEvents> m_trackedEventsPerEntity = new();
@@ -191,7 +191,7 @@ public class TurnManager : Singleton<TurnManager>
 	{
 		int performingEntityID = PlayerController.Instance.SelectedEntity.ID;
 		int timeAtStart = m_recordedActionInput.ContainsKey(performingEntityID) && m_recordedActionInput[performingEntityID].Count > 0
-			? m_recordedActionInput[performingEntityID].ToArray()[^1].action.TimeAtEnd : currentRound;
+			? m_recordedActionInput[performingEntityID].ToArray()[^1].action.TimeAtEnd : currentTick;
 		
 		m_currentEntityAction = GetAction(GameAssets.current.game.entityActionsData[_action], performingEntityID, timeAtStart);
 		m_currentActionTypeSelected = _action;
@@ -257,7 +257,7 @@ public class TurnManager : Singleton<TurnManager>
 	{
 		AEntityAction action = null;
 		int timeAtStart = m_recordedActionInput.ContainsKey(_entityID) && m_recordedActionInput[_entityID].Count > 0
-			? m_recordedActionInput[_entityID].ToArray()[^1].action.TimeAtEnd : currentRound;
+			? m_recordedActionInput[_entityID].ToArray()[^1].action.TimeAtEnd : currentTick;
 
 		action = GetAction(GameAssets.current.game.entityActionsData[_actionType], _entityID, timeAtStart);
 		return AddAction(_entityID, action, _state);
@@ -416,7 +416,7 @@ public class TurnManager : Singleton<TurnManager>
 	[Button]
 	public void StartInputPhase ()
 	{
-		currentRound = 0;
+		currentTick = 0;
 		currentPhase = TurnPhase.Recording;
 		//UIManager.Instance.OpenPanel<InGamePanel>();
 		LogConsole.AddLog("Start Input phase", LogConsole.LogEventType.Main);
@@ -491,14 +491,14 @@ public class TurnManager : Singleton<TurnManager>
 		LogConsole.AddLog("Start turn", LogConsole.LogEventType.Main);
 		m_actionsToPlay.Clear();
 		m_actionsBeingDone.Clear();
-		currentRound = 0;
+		currentTick = 0;
 
 		StartNextRoundTick();
 	}
 
 	private void StartNextRoundTick ()
 	{
-		currentRound++;
+		currentTick++;
 		LogConsole.AddLog("Start tick", LogConsole.LogEventType.Main);
 
 		//1 - calculate phase
@@ -799,7 +799,7 @@ public class TurnManager : Singleton<TurnManager>
 	private void EndRoundTick ()
 	{
 		LogConsole.AddLog("Server ended tick", LogConsole.LogEventType.PlayPhase);
-		if (m_recordedActionInput.Keys.Count == 0)
+		if (m_recordedActionInput.Keys.Count == 0 || currentTick >= GameConfig.current.game.actionTokenPerRound)
 			EndTurn(); //end turn
 		else
 			StartNextRoundTick(); //end this phase
@@ -862,7 +862,7 @@ public class TurnManager : Singleton<TurnManager>
 
 	public void AddEntityMidGame ( Entity _entity, Action _onEndSpawn = null )
 	{
-		int remainingActionTickThisTurn = GameConfig.current.game.actionTokenPerRound - currentRound;
+		int remainingActionTickThisTurn = GameConfig.current.game.actionTokenPerRound - currentTick;
 
 		Entity.EntityState availableState = _entity.KnownedStates[0];
 
@@ -870,11 +870,11 @@ public class TurnManager : Singleton<TurnManager>
 		{
 			m_recordedActionInput[_entity.ID].Enqueue(new RecordedAction()
 			{
-				timeAtStart = currentRound + i,
+				timeAtStart = currentTick + i,
 				type = EntityActionEnumID.Wait,
 				performingEntityID = _entity.ID,
-				action = GetAction(EntityActionEnumID.Wait, _entity.ID, currentRound + i),
-				freeAction = GetAction(EntityActionEnumID.Wait, _entity.ID, currentRound + i),
+				action = GetAction(EntityActionEnumID.Wait, _entity.ID, currentTick + i),
+				freeAction = GetAction(EntityActionEnumID.Wait, _entity.ID, currentTick + i),
 				freeActionType = EntityActionEnumID.Wait,
 				entityState = availableState
 			});
