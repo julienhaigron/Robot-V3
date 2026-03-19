@@ -166,7 +166,7 @@ public class MoveToTargetAction : AEntityAction
 					doesSelfHaveConflict = true;
 			}
 		}
-		else if (thisActionDestinationIDArray != null && GridManager.Instance.GetDistanceBetween(GridManager.Instance.Tiles[supposedPositionAtActionStartID], GridManager.Instance.Tiles[thisActionDestinationIDArray[^1]], false) > Data.movementSpeed)
+		else if (thisActionDestinationIDArray != null && GridManager.Instance.GetDistanceBetween(PerformingEntity.Displacement.Coordinates.GetTile(), GridManager.Instance.Tiles[thisActionDestinationIDArray[^1]], false) > Data.movementSpeed)
 		{
 			//check if tile too far
 			doesSelfHaveConflict = true;

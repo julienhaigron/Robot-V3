@@ -762,9 +762,9 @@ public class TurnManager : Singleton<TurnManager>
 	private void TryEndRoundTick ()
 	{
 		bool areAllActionPerformed = true;
-		foreach (Tuple<RecordedAction, bool> tuple in m_actionsBeingDone.Values)
+		foreach (int playerID in m_actionsBeingDone.Keys)
 		{
-			if (tuple.Item2 == false)
+			if(m_actionsBeingDone[playerID].Item2 == false)
 				areAllActionPerformed = false;
 		}
 
