@@ -106,6 +106,7 @@ public class GameManager : SingletonPersistant<GameManager>
 		}
 
 		m_fogCanvas.gameObject.SetActive(true);
+		TurnManager.Instance.Init();
 		TurnManager.Instance.StartInputPhase();
 	}
 
@@ -153,7 +154,7 @@ public class GameManager : SingletonPersistant<GameManager>
 		else
 			LogConsole.AddLog("Defeat", LogConsole.LogEventType.Main);
 
-		UIManager.Instance.ClosePanel<InGamePanel>();
+		UIManager.Instance.ClosePanel<InGamePanel>(true);
 		UIManager.Instance.OpenPopup<EndLevelPopup>().Init(_isSuccessfull);
 		m_fogCanvas.gameObject.SetActive(false);
 	}

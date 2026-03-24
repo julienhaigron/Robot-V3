@@ -95,7 +95,7 @@ namespace Pinpin
 			GUILayout.Space(ToolbarStyles.topSpace);
 			GUILayout.BeginHorizontal();
 
-			/*string savedObjectID = EditorPrefs.GetString("SelectedObjectID");
+			string savedObjectID = EditorPrefs.GetString("SelectedObjectID");
 			bool isSceneObject = EditorPrefs.GetBool("IsSceneObject");
 
 			string activeObjectName = "None";
@@ -162,7 +162,7 @@ namespace Pinpin
 				}
 			}
 
-			GUILayout.Space(16f);*/
+			GUILayout.Space(16f);
 
 			if (GUILayout.Button(new GUIContent("Assets", "Select Game Assets"), ToolbarStyles.commandButtonStyle))
 			{
@@ -184,10 +184,32 @@ namespace Pinpin
 
 			if (GUILayout.Button(new GUIContent("UI", "Select SafeArea"), ToolbarStyles.commandButtonStyle))
 			{
-				string guid = AssetDatabase.FindAssets("UIManager")[0];
-				string path = AssetDatabase.GUIDToAssetPath(guid);
-				UnityEditor.Selection.activeObject = AssetDatabase.LoadAssetAtPath<UIManager>(path);
-				UnityEditor.EditorGUIUtility.PingObject(UnityEditor.Selection.activeObject);
+				GameObject safeArea = null;
+
+				if (UnityEditor.SceneManagement.PrefabStageUtility.GetCurrentPrefabStage() != null) //is in prefab
+				{
+					safeArea = UnityEditor.SceneManagement.PrefabStageUtility.GetCurrentPrefabStage().FindComponentOfType<UIManager>().gameObject;
+				}
+				else //in Scene
+				{
+					safeArea = GameObject.Find("UIManager");
+				}
+
+				if (safeArea != null)
+				{
+					EditorApplication.ExecuteMenuItem("Window/General/Hierarchy");
+					Selection.objects = new Object[] { safeArea };
+
+					SandolkakosDigital.EditorUtils.SceneHierarchyUtility.SetExpanded(safeArea, true);
+
+				}
+				else //no safeArea found
+				{
+					string guid = AssetDatabase.FindAssets("UIManager")[0];
+					string path = AssetDatabase.GUIDToAssetPath(guid);
+					UnityEditor.Selection.activeObject = AssetDatabase.LoadAssetAtPath<UIManager>(path);
+					UnityEditor.EditorGUIUtility.PingObject(UnityEditor.Selection.activeObject);
+				}
 			}
 
 			GUILayout.EndHorizontal();

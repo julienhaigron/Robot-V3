@@ -180,6 +180,11 @@ public class TurnManager : Singleton<TurnManager>
 		});
 	}
 
+	public void Init ()
+	{
+		m_trackedEventsPerEntity.Clear();
+	}
+
 	#region Input phase
 
 	public void SetCurrentStateSelected ( Entity.EntityState _state )
@@ -856,6 +861,10 @@ public class TurnManager : Singleton<TurnManager>
 
 	public void EndLevel ( bool _isSuccess )
 	{
+		if (currentPhase == TurnPhase.Recording)
+			return;
+
+		currentPhase = TurnPhase.Recording;
 		GameManager.Instance.EndGame(_isSuccess);
 		onEndLevel?.Invoke();
 	}

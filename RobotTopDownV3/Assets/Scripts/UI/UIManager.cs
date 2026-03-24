@@ -44,6 +44,9 @@ public sealed class UIManager : SingletonPersistant<UIManager>
 	public override void Awake ()
 	{
 		base.Awake();
+		if (Instance != this)
+			return;
+
 		m_panels = new List<AUIPanel>();
 		m_popups = new List<AUIPopup>();
 		m_topCanvases = new List<AUITopCanvas>();

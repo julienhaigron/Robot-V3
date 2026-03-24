@@ -244,7 +244,7 @@ public class Tile : MonoBehaviour
 
 	private void OnRoundStart ()
 	{
-		foreach (EntityStatusEnumID status in m_status)
+		foreach (EntityStatusEnumID status in m_status.ToArray())
 		{
 			if (--m_remainingDurationToActiveEffects[GameAssets.current.game.entityStatus[status]] <= 0)
 				RemoveStatus(status);

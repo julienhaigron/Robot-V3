@@ -118,13 +118,13 @@ public class Entity : MonoBehaviour
 	{
         onNewRoundBegin?.Invoke();
 
-        foreach (EntityStatusEnumID status in m_status)
+        foreach (EntityStatusEnumID status in m_status.ToArray())
 		{
-            if (--m_remainingDurationToActiveEffects[GameAssets.current.game.entityStatus[status]] <= 0)
+            if (m_remainingDurationToActiveEffects.ContainsKey(GameAssets.current.game.entityStatus[status]) 
+                && --m_remainingDurationToActiveEffects[GameAssets.current.game.entityStatus[status]] <= 0)
 			{
-                m_status.Remove(status);
-                m_remainingDurationToActiveEffects.Remove(GameAssets.current.game.entityStatus[status]);
-			}
+                RemoveStatus(status);
+            }
 
             GameAssets.current.game.entityStatus[status].ApplyStatusEffect(this);
 		}
@@ -176,7 +176,10 @@ public class Entity : MonoBehaviour
     public void AddStatus(EntityStatusEnumID _statusID )
 	{
         m_status.Add(_statusID);
-        m_remainingDurationToActiveEffects.Add(GameAssets.current.game.entityStatus[_statusID], GameAssets.current.game.entityStatus[_statusID].duration);
+        if (m_remainingDurationToActiveEffects.ContainsKey(GameAssets.current.game.entityStatus[_statusID]))
+            m_remainingDurationToActiveEffects[GameAssets.current.game.entityStatus[_statusID]] = GameAssets.current.game.entityStatus[_statusID].duration;
+        else
+            m_remainingDurationToActiveEffects.Add(GameAssets.current.game.entityStatus[_statusID], GameAssets.current.game.entityStatus[_statusID].duration);
     }
     
     public void RemoveStatus ( EntityStatusEnumID _statusID )
