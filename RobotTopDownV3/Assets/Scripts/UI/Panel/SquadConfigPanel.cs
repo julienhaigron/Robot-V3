@@ -45,12 +45,12 @@ public class SquadConfigPanel : AUIPanel
 
 	private void RefreshUnits ()
 	{
-		for(int i = 0; i < GameDatas.current.player.units.Count; i++)
+		for(int i = 0; i < GameDatas.current.currentPlayerSave.units.Count; i++)
 		{
 			if(unitDisplays.Count < i)
 				unitDisplays.Add(Instantiate(m_unitDisplayPrefab, m_unitsParent));
 
-			unitDisplays[i].Init(GameDatas.current.player.units[i]);
+			unitDisplays[i].Init(GameDatas.current.currentPlayerSave.units[i]);
 		}
 	}
 }

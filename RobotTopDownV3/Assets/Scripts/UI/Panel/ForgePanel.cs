@@ -42,9 +42,9 @@ public class ForgePanel : AUIPanel
 
 	private void CreateUnit (FrameEquipmentData _frame)
 	{
-		GameDatas.current.player.AddEquipmentToInventory(_frame);
+		GameDatas.current.currentPlayerSave.AddEquipmentToInventory(_frame);
 
 		EntitySavedData newSavedUnit = new EntitySavedData() { armsIds = null, brainID = null, frameID = _frame.name, name = "New Unit" };
-		GameDatas.current.player.units.Add(newSavedUnit);
+		GameDatas.current.currentPlayerSave.units.Add(newSavedUnit);
 	}
 }

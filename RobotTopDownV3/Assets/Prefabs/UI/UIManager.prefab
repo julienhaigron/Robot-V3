@@ -132,7 +132,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 458782666846846238, guid: 67b1d76e8b3c5204c87a5620116eabd4, type: 3}
       propertyPath: m_Name
-      value: GameModeSelectionPanel
+      value: StartMenuPanel
       objectReference: {fileID: 0}
     - target: {fileID: 458782666846846238, guid: 67b1d76e8b3c5204c87a5620116eabd4, type: 3}
       propertyPath: m_IsActive

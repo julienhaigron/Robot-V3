@@ -34,7 +34,22 @@ public class GameDatas : ScriptableObject
 	[TitleGroup("Saved Datas")]
 	public Game game = new Game();
 	[TitleGroup("Saved Datas")]
-	public Player player = new Player();
+	public List<PlayerSave> playerSaves = new List<PlayerSave>();
+	public PlayerSave currentPlayerSave
+	{
+		get
+		{
+			if (playerSaves == null || game.lastPlayerSaveSelectedID == -1 || playerSaves.Count <= game.lastPlayerSaveSelectedID)
+			{
+				Debug.LogError("No saves detected. Creating default save");
+				CreateSave("NewSave");
+				game.lastPlayerSaveSelectedID = 0;
+				return playerSaves[0];
+			}
+			else
+				return playerSaves[game.lastPlayerSaveSelectedID];
+		}
+	}
 
 	[System.Serializable]
 	public partial class App
@@ -47,12 +62,20 @@ public class GameDatas : ScriptableObject
 	[System.Serializable]
 	public partial class Game
 	{
-		
+		public int lastPlayerSaveSelectedID = -1;
+	}
+
+	public void CreateSave (string _saveName)
+	{
+		PlayerSave newSave = new PlayerSave();
+		newSave.saveName = _saveName;
+		playerSaves.Add(new PlayerSave());
 	}
 	
 	[System.Serializable]
-	public partial class Player
+	public partial class PlayerSave
 	{
+		public string saveName;
 		public List<string> knownedFrames = new();
 		public List<EntitySavedData> units = new();
 		public List<Equipment> equipmentInventory = new ();

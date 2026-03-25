@@ -17,33 +17,6 @@ MonoBehaviour:
     hapticEnabled: 1
     musicVolume: 1
     sfxVolume: 1
-  player:
-    knownedFrames: []
-    units:
-    - name: Fire Bat
-      frameID: Frame_Commando_Kamikaze
-      reactorID: Reactor_B-99
-      brainID: Brain_Z-1
-      armsIds:
-      - value: Weapon_Commando_LanceFlamme
-      - value: Weapon_Commando_Gantelet
-      auxiliarIds:
-      - value: Armor_CD1
-      - value: Armor_CD2
-      - value: Occultor_SF-5
-      chipsetsIds:
-      - value: Chipset_ZB-38
-    - name: Fire Bat
-      frameID: Frame_Paladin_Knight
-      reactorID: Reactor_B-99
-      brainID: Brain_Z-1
-      armsIds:
-      - value: Weapon_Paladin_Hammer
-      - value: Weapon_Paladin_Minigun
-      auxiliarIds:
-      - value: Armor_CD1
-      - value: Armor_CD2
-      - value: Occultor_SF-5
-      chipsetsIds:
-      - value: Chipset_ZB-38
-    equipmentInventory: []
+  game:
+    lastPlayerSaveSelectedID: -1
+  playerSaves: []

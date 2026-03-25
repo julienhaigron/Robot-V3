@@ -36,9 +36,16 @@ public class BaseButton : MonoBehaviour
         m_isVisible = _isVisible;
 
         if (_isInstant)
-            transform.localScale = _isVisible ? Vector3.one : Vector3.zero;
-        else
-            transform.DOScale(_isVisible ? 1f : 0f, 1f);
+            gameObject.SetActive(_isVisible);
+		else
+		{
+            if (_isVisible)
+                gameObject.SetActive(_isVisible);
+            transform.DOScale(_isVisible ? 1f : 0f, 1f).OnComplete(() =>
+            {
+                gameObject.SetActive(_isVisible);
+            });
+		}
     }
 
     public virtual void SetInteractability(bool _isInteractable )

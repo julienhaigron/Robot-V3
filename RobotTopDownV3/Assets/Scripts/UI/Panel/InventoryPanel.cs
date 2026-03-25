@@ -31,12 +31,12 @@ public class InventoryPanel : AUIPanel
 
 	private void RefreshInventory ()
 	{
-		for (int i = 0; i < GameDatas.current.player.equipmentInventory.Count; i++)
+		for (int i = 0; i < GameDatas.current.currentPlayerSave.equipmentInventory.Count; i++)
 		{
 			if (equipmentDisplay.Count < i)
 				equipmentDisplay.Add(Instantiate(m_equipmentDisplayPrefab, m_inventoryParent));
 
-			equipmentDisplay[i].Init(GameDatas.current.player.equipmentInventory[i].GetData<EntityEquipmentData>());
+			equipmentDisplay[i].Init(GameDatas.current.currentPlayerSave.equipmentInventory[i].GetData<EntityEquipmentData>());
 		}
 	}
 }
