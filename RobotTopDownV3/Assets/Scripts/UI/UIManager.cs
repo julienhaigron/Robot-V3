@@ -157,7 +157,8 @@ public sealed class UIManager : SingletonPersistant<UIManager>
 		{
 			currentPanel.CanClick = false;
 
-			if (!_additive)
+			currentPanel.Close(0f, _closePreviousInstant);
+			/*if (!_additive)
 			{
 				HashSet<AUIWindow> panelToClose = new(oppenedPanels);
 				foreach (AUIWindow item in panelToClose)
@@ -166,7 +167,7 @@ public sealed class UIManager : SingletonPersistant<UIManager>
 				}
 
 				//currentPanel.Close(0f, _closePreviousInstant);
-			}
+			}*/
 
 			if (_pushHistory)
 				previousPanels.Add(currentPanel.GetType());

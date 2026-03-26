@@ -17,7 +17,7 @@ public class ShopPanel : AUIPanel
 
 	private void OnClickReturn ()
 	{
-		UIManager.Instance.OpenPanel<SoloCampainPanel>();
+		UIManager.Instance.OpenPanel<SoloHubPanel>();
 	}
 	
 	private void OnClickOpenInventory ()

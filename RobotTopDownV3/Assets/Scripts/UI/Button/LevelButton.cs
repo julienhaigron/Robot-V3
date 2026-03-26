@@ -20,7 +20,7 @@ public class LevelButton : BaseButton
 
 	protected override void OnClick ()
 	{
-		UIManager.Instance.ClosePanel<SoloCampainPanel>();
+		UIManager.Instance.ClosePanel<SoloHubPanel>();
 		GameManager.Instance.SetupLevel(m_level);
 		base.OnClick();
 	}

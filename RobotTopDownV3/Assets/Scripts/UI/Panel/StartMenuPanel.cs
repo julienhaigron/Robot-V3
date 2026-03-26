@@ -62,6 +62,7 @@ public class StartMenuPanel : AUIPanel
 		{
 			case StartMenuDisplayMode.Start:
 				m_startModeParent.gameObject.SetActive(true);
+				m_newGameBtn.gameObject.SetActive(GameDatas.current.playerSaves.Count < m_savesBtns.Length);
 				m_loadGameBtn.gameObject.SetActive(GameDatas.current.game.lastPlayerSaveSelectedID != -1);
 				break;
 			case StartMenuDisplayMode.LoadSave:
@@ -69,7 +70,10 @@ public class StartMenuPanel : AUIPanel
 				for (int i = 0; i < m_savesBtns.Length; i++)
 				{
 					if (GameDatas.current.playerSaves.Count > i)
+					{
+						m_savesBtns[i].gameObject.SetActive(true);
 						m_savesBtns[i].Init(GameDatas.current.playerSaves[i], i);
+					}
 					else
 						m_savesBtns[i].gameObject.SetActive(false);
 				}
@@ -97,10 +101,9 @@ public class StartMenuPanel : AUIPanel
 	{
 		//OLD :ChangeDisplayMode(StartMenuDisplayMode.NewSave, false);
 
-		GameDatas.current.game.lastPlayerSaveSelectedID++;
-		GameManager.Instance.CurrentGameMode = GameManager.GameMode.Offline;
-		Close();
-		UIManager.Instance.OpenPanel<SoloCampainPanel>();
+		GameDatas.current.game.lastPlayerSaveSelectedID = GameDatas.current.playerSaves.Count;
+		GameDatas.current.CreateSave("New save");
+		GameManager.Instance.LoadSaveAndGoToHub(GameDatas.current.game.lastPlayerSaveSelectedID);
 	}
 
 	private void OnClickOptionBtn ()

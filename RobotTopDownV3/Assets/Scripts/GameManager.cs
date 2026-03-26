@@ -65,8 +65,26 @@ public class GameManager : SingletonPersistant<GameManager>
 
 	private void OnSceneLoaded (Scene _scene, LoadSceneMode _mode)
 	{
-		if(m_currentLevel != null)
+		if(string.Equals(_scene.name, GameConfig.current.game.hubSceneName))
+		{
+
+		}
+		else if(string.Equals(_scene.name, GameConfig.current.game.startScreenSceneName))
+		{
+
+		}
+		else if(m_currentLevel != null)
 			StartGame();
+	}
+
+	public void LoadSaveAndGoToHub (int _saveID)
+	{
+		GameDatas.current.game.lastPlayerSaveSelectedID = _saveID;
+		m_currentGameMode = GameMode.Offline;
+		//UIManager.Instance.GetPanel<StartMenuPanel>().Close();
+		UIManager.Instance.OpenPanel<SoloHubPanel>();
+
+		SceneManager.LoadSceneAsync(GameConfig.current.game.hubSceneName);
 	}
 
 	public void SetupLevel(LevelData _level )
@@ -80,6 +98,33 @@ public class GameManager : SingletonPersistant<GameManager>
 
 		SceneManager.LoadSceneAsync(_level.map.name);
 	}
+
+	public void GoBackToHub ()
+	{
+		m_currentLevel = null;
+		foreach (EntityAnchor anchor in m_playersEntityAnchor)
+		{
+			foreach (Entity entity in anchor.Entities)
+			{
+				Destroy(entity.gameObject);
+			}
+			anchor.Entities.Clear();
+		}
+
+		LoadSaveAndGoToHub(GameDatas.current.game.lastPlayerSaveSelectedID);
+	}
+
+	public void GoToStartScreen ()
+	{
+		UIManager.Instance.OpenPanel<StartMenuPanel>();
+		SceneManager.LoadSceneAsync(GameConfig.current.game.startScreenSceneName);
+	}
+
+	public LevelData GetRandomLevel ()
+	{
+		return GameAssets.current.game.levels.RandomElement();
+	}
+
 
 	public void StartGame ()
 	{
@@ -159,21 +204,5 @@ public class GameManager : SingletonPersistant<GameManager>
 		m_fogCanvas.gameObject.SetActive(false);
 	}
 
-	public void GoBackToMainMenu ()
-	{
-		m_currentLevel = null;
-		foreach (EntityAnchor anchor in m_playersEntityAnchor)
-		{
-			foreach (Entity entity in anchor.Entities)
-			{
-				Destroy(entity.gameObject);
-			}
-			anchor.Entities.Clear();
-		}
-
-		UIManager.Instance.OpenPanel<SoloCampainPanel>(.2f);
-
-		SceneManager.LoadSceneAsync("MainScene");
-	}
 
 }

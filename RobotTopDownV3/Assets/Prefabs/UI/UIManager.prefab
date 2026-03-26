@@ -443,7 +443,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 458782666846846238, guid: 51cb3c786bd9ae14f8367b1e968601f0, type: 3}
       propertyPath: m_Name
-      value: SoloPanel
+      value: SoloHubPanel
       objectReference: {fileID: 0}
     - target: {fileID: 458782666846846238, guid: 51cb3c786bd9ae14f8367b1e968601f0, type: 3}
       propertyPath: m_IsActive

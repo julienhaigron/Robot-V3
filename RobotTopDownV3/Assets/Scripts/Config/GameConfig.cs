@@ -37,6 +37,10 @@ public partial class GameConfig : ScriptableObject
 		public float entityCoverBonus = 2;
 		public SerializableDictionary<WeaponEquipmentData.DistanceType, float> distanceTypeSpreadEvaluation;
 		public SerializableDictionary<WeaponEquipmentData.DamageType, WeaponEquipmentData.DamageCategory> damageCateforyPerDamageType;
+
+		[Title("Hub")]
+		public string hubSceneName;
+		public string startScreenSceneName;
 	}
 
 	[System.Serializable]

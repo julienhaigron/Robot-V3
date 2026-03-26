@@ -36,9 +36,7 @@ public class SaveButton : BaseButton
 			return;
 
 		GameDatas.current.game.lastPlayerSaveSelectedID = m_id;
-		GameManager.Instance.CurrentGameMode = GameManager.GameMode.Offline;
-		UIManager.Instance.GetPanel<StartMenuPanel>().Close();
-		UIManager.Instance.OpenPanel<SoloCampainPanel>();
+		GameManager.Instance.LoadSaveAndGoToHub(m_id);
 		base.OnClick();
 	}
 
