@@ -3,22 +3,22 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
-public class SquadConfigPanel : AUIPanel
+public class HangarPanel : AUIPanel
 {
 	[SerializeField] private BaseButton m_returnBtn;
 	[SerializeField] private BaseButton m_openForgeBtn;
 	[SerializeField] private BaseButton m_openInventoryBtn;
-	[SerializeField] private Transform m_unitsParent;
+	[SerializeField] private BaseButton m_addNewEntityBtn;
+	[SerializeField] private BaseButton m_upgradeHangarBtn;
 
-	[SerializeField] private UnitDisplay m_unitDisplayPrefab;
-
-	private List<UnitDisplay> unitDisplays = new();
 
 	private void Awake ()
 	{
 		m_returnBtn.onClick += OnClickReturn;
 		m_openInventoryBtn.onClick += OnClickOpenInventory;
 		m_openForgeBtn.onClick += OnClickOpenForge;
+		m_addNewEntityBtn.onClick += OnClickCreateNewEntity;
+		m_upgradeHangarBtn.onClick += OnClickOpenUpgradePopup;
 	}
 
 	private void OnClickReturn ()
@@ -36,21 +36,28 @@ public class SquadConfigPanel : AUIPanel
 		UIManager.Instance.OpenPanel<ForgePanel>();
 	}
 
+	private void OnClickCreateNewEntity ()
+	{
+		FrameEquipmentData baseFrame = GameAssets.current.game.frames[0];
+		HubManager.Instance.AddEntity(GameDatas.current.currentPlayerSave.AddNewUnit(baseFrame));
+	}
+	
+	private void OnClickOpenUpgradePopup ()
+	{
+		UIManager.Instance.OpenPopup<HangarUpgradePopup>();
+	}
+
 	protected override void OnShowStarted ()
 	{
 		base.OnShowStarted();
 
-		RefreshUnits();
+		HubManager.Instance.ShowHangar();
 	}
 
-	private void RefreshUnits ()
+	protected override void OnHideFinished ()
 	{
-		for(int i = 0; i < GameDatas.current.currentPlayerSave.units.Count; i++)
-		{
-			if(unitDisplays.Count < i)
-				unitDisplays.Add(Instantiate(m_unitDisplayPrefab, m_unitsParent));
-
-			unitDisplays[i].Init(GameDatas.current.currentPlayerSave.units[i]);
-		}
+		base.OnHideFinished();
+		HubManager.Instance.HideHangar();
 	}
+
 }

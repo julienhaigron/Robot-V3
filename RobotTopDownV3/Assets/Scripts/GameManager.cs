@@ -134,7 +134,7 @@ public class GameManager : SingletonPersistant<GameManager>
 		if (m_currentGameMode == GameMode.Offline)
 		{
 			LogConsole.AddLog("Start OfflineGame", LogConsole.LogEventType.Main);
-			m_playersEntityAnchor[0].Init(GameDatas.current.currentPlayerSave.units, 0);
+			m_playersEntityAnchor[0].Init(GameDatas.current.currentPlayerSave.squadUnits, 0);
 			List<EntitySavedData> ennemies = new();
 			foreach (UnitPreset ennemi in m_currentLevel.enemies)
 			{

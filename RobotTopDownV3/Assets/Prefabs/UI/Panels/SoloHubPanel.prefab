@@ -103,6 +103,7 @@ MonoBehaviour:
   m_openShopBtn: {fileID: 5218385956505645931}
   m_recycleShopBtn: {fileID: 6374927169795626225}
   m_repairBtn: {fileID: 4680526219085891248}
+  m_missionBtn: {fileID: 2087051322529363407}
   m_returnBtn: {fileID: 282503928107864974}
 --- !u!1 &770198328676753043
 GameObject:
@@ -2137,6 +2138,17 @@ PrefabInstance:
       addedObject: {fileID: 8698713477551494267}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 610470f5c7e09224499375bfa2416e56, type: 3}
+--- !u!114 &2087051322529363407 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3272911831302135717, guid: 610470f5c7e09224499375bfa2416e56, type: 3}
+  m_PrefabInstance: {fileID: 3575020166996617834}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 188bed51bf7dbd84b9b789ba9bfb59f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &7177829779135458878 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 5909219420003501140, guid: 610470f5c7e09224499375bfa2416e56, type: 3}

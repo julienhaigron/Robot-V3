@@ -19,7 +19,7 @@ public class InventoryPanel : AUIPanel
 
 	private void OnClickReturn ()
 	{
-		UIManager.Instance.OpenPanel<SquadConfigPanel>();
+		UIManager.Instance.OpenPanel<HangarPanel>();
 	}
 
 	protected override void OnShowStarted ()

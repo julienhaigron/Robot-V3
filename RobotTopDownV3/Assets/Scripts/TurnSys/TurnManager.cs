@@ -46,8 +46,8 @@ public class TurnManager : Singleton<TurnManager>
 	private Entity.EntityState m_currentStateTypeSelected;
 	public Entity.EntityState CurrentStateTypeSelected => m_currentStateTypeSelected;
 
-	public enum TurnPhase { Recording, Calculating, Playing }
-	public TurnPhase currentPhase;
+	public enum TurnPhase { Recording, Calculating, Playing, Off }
+	public TurnPhase currentPhase = TurnPhase.Off;
 	public int currentTick = 0;
 
 	//prevision
@@ -861,10 +861,10 @@ public class TurnManager : Singleton<TurnManager>
 
 	public void EndLevel ( bool _isSuccess )
 	{
-		if (currentPhase == TurnPhase.Recording)
+		if (currentPhase == TurnPhase.Off)
 			return;
 
-		currentPhase = TurnPhase.Recording;
+		currentPhase = TurnPhase.Off;
 		GameManager.Instance.EndGame(_isSuccess);
 		onEndLevel?.Invoke();
 	}

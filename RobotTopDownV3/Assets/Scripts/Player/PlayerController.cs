@@ -10,9 +10,6 @@ public class PlayerController : Singleton<PlayerController>
 {
 	public static Action<int?> onEntitySelected;
 
-	[Title("Camera Settings")]
-	[SerializeField] private GameObject playerCamera;
-
 	[Header("Camera Limits")]
 	private Vector2 xLimits
 	{
@@ -66,8 +63,8 @@ public class PlayerController : Singleton<PlayerController>
 		EntityEquipmentPlugin.onAnyEntityDeath += OnAnyEntityDeath;
 		TurnManager.onEndLevel += OnEndLevel;
 
-		m_targetRotation = playerCamera.transform.rotation;
-		m_currentZoomDistance = playerCamera.transform.position.y;
+		m_targetRotation = CameraManager.Instance.CameraParent.transform.rotation;
+		m_currentZoomDistance = CameraManager.Instance.CameraParent.transform.position.y;
 	}
 
 	private void OnDestroy ()
@@ -85,6 +82,9 @@ public class PlayerController : Singleton<PlayerController>
 
 	private void FixedUpdate ()
 	{
+		if (TurnManager.Instance.currentPhase == TurnManager.TurnPhase.Off)
+			return;
+
 		HandleCameraMovement();
 
 		HandleCameraRotation();
@@ -96,8 +96,8 @@ public class PlayerController : Singleton<PlayerController>
 	{
 		float moveX = 0f;
 		float moveZ = 0f;
-		Vector3 forward = playerCamera.transform.forward;
-		Vector3 right = playerCamera.transform.right;
+		Vector3 forward = CameraManager.Instance.CameraParent.transform.forward;
+		Vector3 right = CameraManager.Instance.CameraParent.transform.right;
 
 		forward.y = 0f;
 		right.y = 0f;
@@ -111,12 +111,12 @@ public class PlayerController : Singleton<PlayerController>
 			* GameConfig.current.game.cameraMovementSpeed
 			* Time.fixedDeltaTime;
 
-		Vector3 targetPos = playerCamera.transform.position + move;
+		Vector3 targetPos = CameraManager.Instance.CameraParent.transform.position + move;
 
 		targetPos.x = Mathf.Clamp(targetPos.x, xLimits.x - GameConfig.current.game.cameraMovementBoundsOffset.x, xLimits.y + GameConfig.current.game.cameraMovementBoundsOffset.x);
 		targetPos.z = Mathf.Clamp(targetPos.z, zLimits.x - GameConfig.current.game.cameraMovementBoundsOffset.y, zLimits.y + GameConfig.current.game.cameraMovementBoundsOffset.y);
 
-		playerCamera.transform.position = targetPos;
+		CameraManager.Instance.CameraParent.transform.position = targetPos;
 	}
 
 	private void HandleCameraRotation ()
@@ -139,7 +139,7 @@ public class PlayerController : Singleton<PlayerController>
 		if (m_cameraRotationTween.IsActive())
 			m_cameraRotationTween.Kill();
 
-		m_cameraRotationTween = playerCamera.transform.DOLocalRotateQuaternion(m_targetRotation, GameConfig.current.game.cameraRotationDuration).SetEase(Ease.OutQuad);
+		m_cameraRotationTween = CameraManager.Instance.CameraParent.transform.DOLocalRotateQuaternion(m_targetRotation, GameConfig.current.game.cameraRotationDuration).SetEase(Ease.OutQuad);
 	}
 
 	private void HandleCameraZoom ()
@@ -153,7 +153,7 @@ public class PlayerController : Singleton<PlayerController>
 		m_currentZoomDistance += zoomMovement;
 		m_currentZoomDistance = Mathf.Clamp(m_currentZoomDistance, GameConfig.current.game.cameraZoomBounds.x, GameConfig.current.game.cameraZoomBounds.y);
 
-		playerCamera.transform.position = new Vector3(playerCamera.transform.position.x, m_currentZoomDistance, playerCamera.transform.position.z);
+		CameraManager.Instance.CameraParent.transform.position = new Vector3(CameraManager.Instance.CameraParent.transform.position.x, m_currentZoomDistance, CameraManager.Instance.CameraParent.transform.position.z);
 	}
 
 	private void OnTileLeftClick ( Tile _tile )

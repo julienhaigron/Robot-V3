@@ -19,7 +19,7 @@ public class ForgePanel : AUIPanel
 
 	private void OnClickReturn ()
 	{
-		UIManager.Instance.OpenPanel<SquadConfigPanel>();
+		UIManager.Instance.OpenPanel<HangarPanel>();
 	}
 
 	protected override void OnShowStarted ()
@@ -45,6 +45,6 @@ public class ForgePanel : AUIPanel
 		GameDatas.current.currentPlayerSave.AddEquipmentToInventory(_frame);
 
 		EntitySavedData newSavedUnit = new EntitySavedData() { armsIds = null, brainID = null, frameID = _frame.name, name = "New Unit" };
-		GameDatas.current.currentPlayerSave.units.Add(newSavedUnit);
+		GameDatas.current.currentPlayerSave.squadUnits.Add(newSavedUnit);
 	}
 }

@@ -44,20 +44,40 @@ public class InputManager : MonoBehaviour
 		if (context.started == false)
 			return;
 
-		if (IsPointerOverBlockingUI())
-			return;
-
-		Ray ray = CameraManager.Instance.Camera.ScreenPointToRay(Input.mousePosition);
-
-		if (Physics.Raycast(ray, out RaycastHit hitInfo, GameConfig.current.input.interactionRayCastLength, GameConfig.current.input.interactionRayCastLayer))
+		if (HubManager.Instance != null)
 		{
-
-			if (hitInfo.transform.parent.TryGetComponent(out Tile tile))
+			if(UIManager.Instance.currentPanel is HangarPanel && UIManager.Instance.activePopup == null)
 			{
-				if (string.Equals(context.control.name, "leftButton"))
-					onTileleftClick?.Invoke(tile);
-				else if (string.Equals(context.control.name, "rightButton"))
-					onTileRightClick?.Invoke(tile);
+				Ray ray = CameraManager.Instance.Camera.ScreenPointToRay(Input.mousePosition);
+
+				if (Physics.Raycast(ray, out RaycastHit hitInfo, GameConfig.current.input.interactionRayCastLength, GameConfig.current.input.entityLayer))
+				{
+
+					if (hitInfo.transform.parent.parent.TryGetComponent(out Entity entity))
+					{
+						if (string.Equals(context.control.name, "leftButton"))
+							HubManager.Instance.SelectEntity(entity);
+					}
+				}
+			}
+		}
+		else
+		{
+			if (IsPointerOverBlockingUI())
+				return;
+
+			Ray ray = CameraManager.Instance.Camera.ScreenPointToRay(Input.mousePosition);
+
+			if (Physics.Raycast(ray, out RaycastHit hitInfo, GameConfig.current.input.interactionRayCastLength, GameConfig.current.input.interactionRayCastLayer))
+			{
+
+				if (hitInfo.transform.parent.TryGetComponent(out Tile tile))
+				{
+					if (string.Equals(context.control.name, "leftButton"))
+						onTileleftClick?.Invoke(tile);
+					else if (string.Equals(context.control.name, "rightButton"))
+						onTileRightClick?.Invoke(tile);
+				}
 			}
 		}
 	}

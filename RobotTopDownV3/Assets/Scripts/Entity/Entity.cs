@@ -114,6 +114,13 @@ public class Entity : MonoBehaviour
         m_knownedStates.AddRange(_data.BrainData.knownedStates);
     }
 
+    public void InitVisualOnly ( EntitySavedData _data )
+    {
+        m_data = _data;
+        m_equipment.Init(_data);
+        m_skin.Init(_data);
+    }
+
     private void OnRoundStart ()
 	{
         onNewRoundBegin?.Invoke();

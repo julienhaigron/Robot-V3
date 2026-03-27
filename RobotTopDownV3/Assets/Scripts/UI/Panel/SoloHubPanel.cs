@@ -24,7 +24,7 @@ public class SoloHubPanel : AUIPanel
 
 	private void OnClickChangeSquadBtn ()
 	{
-		UIManager.Instance.OpenPanel<SquadConfigPanel>();
+		UIManager.Instance.OpenPanel<HangarPanel>();
 	}
 	
 	private void OnClickOpenRecycleBtn ()

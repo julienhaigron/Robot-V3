@@ -46,7 +46,7 @@ public class ObjectsPooling : SingletonPersistant<ObjectsPooling>
 			if(m_everyPoolTfm.ContainsKey(pool) == false)
 			{
 				GameObject newParent = new GameObject(pool.name);
-				newParent.transform.parent = transform;
+				newParent.transform.parent = m_mainParent;
 				m_everyPoolTfm.Add(pool, newParent.transform);
 			}
 

@@ -77,7 +77,8 @@ public class GameDatas : ScriptableObject
 	{
 		public string saveName;
 		public List<string> knownedFrames = new();
-		public List<EntitySavedData> units = new();
+		public List<EntitySavedData> allBuiltUnits = new();
+		public List<EntitySavedData> squadUnits = new();
 		public List<Equipment> equipmentInventory = new ();
 
 		public Equipment AddEquipmentToInventory ( EntityEquipmentData _data )
@@ -88,6 +89,15 @@ public class GameDatas : ScriptableObject
 			Equipment equipment = new(_data.name);
 
 			return equipment;
+		}
+
+		public EntitySavedData AddNewUnit (FrameEquipmentData _frame)
+		{
+			EntitySavedData newEntity = new();
+			newEntity.frameID = _frame.name;
+			squadUnits.Add(newEntity);
+
+			return newEntity;
 		}
 
 		[Serializable]

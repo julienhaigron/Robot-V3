@@ -12,15 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e340e03f272314442a53b80f2350e240, type: 3}
   m_Name: PlayerRobot
   m_EditorClassIdentifier: 
-  ID: player1
-  type: 0
   icon: {fileID: 0}
-  faction: 0
-  prefabId: 0
-  actionTokenAmount: 8
+  energyCost: 0
   knownedActions: 000000000200000004000000010000000300000000000000
+  passiveEffects: []
+  faction: 0
+  prefab: {fileID: 4673310249167116355, guid: 206cf16509b1846479a1f553fd6add2d, type: 3}
   visibilityRange: 8
-  capacities: 00000000
-  knownedStates: 0000000001000000
   maxHealth: 5
   armSlotAvailable: 2
+  auxiliarSlotAvailable: 2
+  statBonuses: []

@@ -71,6 +71,6 @@ public class UnitPreset : ScriptableObject
     [Button]
     public void AddToUnits ()
 	{
-        GameDatas.current.currentPlayerSave.units.Add(GetSavedData());
+        GameDatas.current.currentPlayerSave.squadUnits.Add(GetSavedData());
     }
 }

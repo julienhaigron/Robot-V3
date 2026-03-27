@@ -80,7 +80,7 @@ public class EntitySavedData : INetworkSerializable
                     totalBonus += statBonus.value;
             }
         }*/
-		if (_auxiliar)
+		if (_auxiliar && auxiliarIds != null)
 		{
 			foreach (StringContainer container in auxiliarIds)
 			{
@@ -102,7 +102,7 @@ public class EntitySavedData : INetworkSerializable
 				}
 			}
 		}
-		if (_chipsets)
+		if (_chipsets && chipsetsIds != null)
 		{
 			foreach (StringContainer container in chipsetsIds)
 			{
