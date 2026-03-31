@@ -84,7 +84,7 @@ public class UpgradeAsset : ScriptableObject
         GameDatas.current.upgradeLevels[m_saveKey]++;
         if (removeMoney)
         {
-            GameDatas.current.RemoveCurrency(m_currencyType, GetCurrentPrice(), GameDatas.CurrencyEvent.Meta, "Upgrade" + m_displayName + GetCurrentLevel());
+            GameDatas.current.RemoveCurrency(m_currencyType, GetCurrentPrice(), "Upgrade" + m_displayName + GetCurrentLevel());
         }
        /* AnalyticsManager.SendEvent("upgrade", new Dictionary<string, object>()
             {
@@ -110,7 +110,7 @@ public class UpgradeAsset : ScriptableObject
         return GetValue(GetCurrentLevel());
     }
 
-    public virtual string GetCurrentDisplayedValue ()
+    /*public virtual string GetCurrentDisplayedValue ()
     {
         float valueToDisplay = GetCurrentValue() - m_displayedValueOffset;
 
@@ -128,7 +128,7 @@ public class UpgradeAsset : ScriptableObject
             return m_prefix + MathHelper.ConvertToEngineeringNotation(valueToDisplay, 3) + m_suffix;
         else
             return m_prefix + valueToDisplay.ToString() + m_suffix;
-    }
+    }*/
 
     public virtual int GetCurrentLevel ()
     {

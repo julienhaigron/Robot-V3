@@ -160,6 +160,10 @@ MonoBehaviour:
       - {fileID: 2100000, guid: e1a0eb7cc1923f946ab2d41224f8cda7, type: 2}
       - {fileID: 2100000, guid: 70fa849432054e74c89bb3e1a876324c, type: 2}
       - {fileID: 2100000, guid: 75966bde5e759e8459a8eda2d59676f2, type: 2}
+  currencies:
+    keys: 01000000
+    values:
+    - {fileID: 11400000, guid: 20677c04df8070340a210167399ab1c7, type: 2}
   equipments:
     keys:
     - Armor_CD1
@@ -241,3 +245,4 @@ MonoBehaviour:
     - {fileID: 11400000, guid: 2d94a8985ceb79b4d88440205b20e0d5, type: 2}
     - {fileID: 11400000, guid: 55f3f48e7e9726943bd5ae7bad8a47ed, type: 2}
     - {fileID: 11400000, guid: 02717077237066f4fb15dc94b1382d21, type: 2}
+  upgrades: []

@@ -14,10 +14,10 @@ public class GameAssets : ScriptableObject
 {
     public static GameAssets current => ApplicationManager.assets;
 
-
     public Game game;
     public UI ui;
 
+    public SerializableDictionary<CurrencyType, Currency> currencies = new SerializableDictionary<CurrencyType, Currency>();
     public SerializableDictionary<string, EntityEquipmentData> equipments = new SerializableDictionary<string, EntityEquipmentData>();
     public List<UpgradeAsset> upgrades = new List<UpgradeAsset>();
 

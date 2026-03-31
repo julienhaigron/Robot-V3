@@ -9,7 +9,6 @@ public class BulletWeapon : Weapon
 	[SerializeField] private Transform m_bulletPoint;
 	[SerializeField] private Transform m_leftHandTarget;
 
-	[SerializeField, Min(1)] private int m_bulletPerShoot = 1;
 	[SerializeField] private float m_speed;
 	[SerializeField] private float m_timeBetweenEachBullet = .5f;
 	[SerializeField] private float m_aimDuration = 1f;

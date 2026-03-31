@@ -1,5 +1,8 @@
+//GENERATED 1
 public enum CurrencyType
 {
-	Unknowned,
-	SoftCurrency
+	Unknown,
+	//#START#CURRENCYTYPE#//
+	SoftCurrency,
+	//#END#CURRENCYTYPE#//
 }

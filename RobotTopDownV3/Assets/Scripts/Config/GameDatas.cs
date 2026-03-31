@@ -22,6 +22,10 @@ public class GameDatas : ScriptableObject
 	public static Action onBeforeLoad;
 	public static Action onAfterLoad;
 
+	public static Action<CurrencyType> onCurrencyChanged;
+	public static Action<CurrencyType, ulong> onCurrencyAdded;
+	public static Action<CurrencyType, ulong, CurrencyRemoveMode> onCurrencyRemoved;
+
 #if UNITY_EDITOR
 	[TitleGroup("Quick Settings")]
 	[InfoBox("PreventSave is ignored in builds.")]
@@ -127,39 +131,34 @@ public class GameDatas : ScriptableObject
 
 	}
 
-	public enum CurrencyEvent
+	public enum CurrencyRemoveMode
 	{
-		Core, //the transaction happened within the core loop (user gained coins for completing the level, user spent coins to upgrade the character etc)
-		Meta, //the transaction happened within the metagame (user spent coins on cosmetics, user earned coins from a secondary game mode etc.)
-		IAP //the currency was gained via making an in-app purchase
+		Spent,
+		Lost,
 	}
 
-	public void AddCurrency ( CurrencyType _type, ulong _amount, CurrencyEvent currencyEvent, string eventID, FeedbackFlags feedback = FeedbackFlags.Everything )
+	public void AddCurrency ( CurrencyType _type, ulong _amount, string eventID )
 	{
 		if (_amount <= 0ul)
 			return;
 
-		AddCurrency(_type, _amount, feedback);
-		//Send event
-		ProgressionEvents.TrackCurrency(_type, _amount, false, currencyEvent, eventID);
+		AddCurrency(_type, _amount);
 	}
 
-	public void RemoveCurrency ( CurrencyType _type, ulong _amount, CurrencyEvent currencyEvent, string eventID, FeedbackFlags feedback = FeedbackFlags.Everything, CurrencyRemoveMode _currencyRemoveMode = CurrencyRemoveMode.Spent )
+	public void RemoveCurrency ( CurrencyType _type, ulong _amount, string eventID, CurrencyRemoveMode _currencyRemoveMode = CurrencyRemoveMode.Spent )
 	{
 		if (_amount <= 0ul)
 			return;
 
-		RemoveCurrency(_type, _amount, feedback, _currencyRemoveMode);
-		//Send event
-		ProgressionEvents.TrackCurrency(_type, _amount, true, currencyEvent, eventID);
+		RemoveCurrency(_type, _amount, _currencyRemoveMode);
 	}
 
-	public void AddCurrency ( CurrencyType _type, ulong _amount, FeedbackFlags feedback = FeedbackFlags.Everything )
+	public void AddCurrency ( CurrencyType _type, ulong _amount)
 	{
 		if (_amount <= 0ul)
 			return;
 
-		GameConfig.current.feedbacks.addCurrencyFeedback.PlayQueue(0, feedback);
+		//GameConfig.current.feedbacks.addCurrencyFeedback.PlayQueue(0, feedback);
 		currencies[_type] += _amount;
 		totalCurrenciesGot[_type] += _amount;
 
@@ -167,12 +166,12 @@ public class GameDatas : ScriptableObject
 		onCurrencyAdded?.Invoke(_type, _amount);
 	}
 
-	public void RemoveCurrency ( CurrencyType _type, ulong _amount, FeedbackFlags feedback = FeedbackFlags.Everything, CurrencyRemoveMode _currencyRemoveMode = CurrencyRemoveMode.Spent )
+	public void RemoveCurrency ( CurrencyType _type, ulong _amount, CurrencyRemoveMode _currencyRemoveMode = CurrencyRemoveMode.Spent )
 	{
 		if (_amount <= 0ul)
 			return;
 
-		GameConfig.current.feedbacks.removeCurrencyFeedback.Play(feedback);
+		//GameConfig.current.feedbacks.removeCurrencyFeedback.Play(feedback);
 		if (_amount > currencies[_type])
 		{
 			Debug.LogWarning("TRIED TO REMOVE MORE CURRENCY " + _type.ToString() + " THAN POSSESSED (" + currencies[_type] + " - " + _amount + ")");
