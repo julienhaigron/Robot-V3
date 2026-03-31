@@ -19,6 +19,7 @@ public class GameAssets : ScriptableObject
     public UI ui;
 
     public SerializableDictionary<string, EntityEquipmentData> equipments = new SerializableDictionary<string, EntityEquipmentData>();
+    public List<UpgradeAsset> upgrades = new List<UpgradeAsset>();
 
     [System.Serializable]
     public class Game

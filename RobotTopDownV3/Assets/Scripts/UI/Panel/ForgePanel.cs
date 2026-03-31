@@ -33,7 +33,7 @@ public class ForgePanel : AUIPanel
 	{
 		for (int i = 0; i < GameAssets.current.game.frames.Count; i++)
 		{
-			if (frameDisplays.Count < i)
+			if (i >= frameDisplays.Count)
 				frameDisplays.Add(Instantiate(m_frameDisplayPrefab, m_unitsParent));
 
 			frameDisplays[i].Init(GameAssets.current.game.frames[i], () => CreateUnit(GameAssets.current.game.frames[i]));

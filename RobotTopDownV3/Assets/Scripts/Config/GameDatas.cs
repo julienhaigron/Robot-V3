@@ -51,6 +51,12 @@ public class GameDatas : ScriptableObject
 		}
 	}
 
+	public SerializableDictionary<CurrencyType, ulong> currencies = new SerializableDictionary<CurrencyType, ulong>();
+	public SerializableDictionary<CurrencyType, ulong> totalCurrenciesGot = new SerializableDictionary<CurrencyType, ulong>();
+	public SerializableDictionary<CurrencyType, ulong> totalCurrenciesSpent = new SerializableDictionary<CurrencyType, ulong>();
+
+	public SerializableDictionary<string, int> upgradeLevels = new SerializableDictionary<string, int>();
+
 	[System.Serializable]
 	public partial class App
 	{
@@ -119,6 +125,68 @@ public class GameDatas : ScriptableObject
 			}
 		}
 
+	}
+
+	public enum CurrencyEvent
+	{
+		Core, //the transaction happened within the core loop (user gained coins for completing the level, user spent coins to upgrade the character etc)
+		Meta, //the transaction happened within the metagame (user spent coins on cosmetics, user earned coins from a secondary game mode etc.)
+		IAP //the currency was gained via making an in-app purchase
+	}
+
+	public void AddCurrency ( CurrencyType _type, ulong _amount, CurrencyEvent currencyEvent, string eventID, FeedbackFlags feedback = FeedbackFlags.Everything )
+	{
+		if (_amount <= 0ul)
+			return;
+
+		AddCurrency(_type, _amount, feedback);
+		//Send event
+		ProgressionEvents.TrackCurrency(_type, _amount, false, currencyEvent, eventID);
+	}
+
+	public void RemoveCurrency ( CurrencyType _type, ulong _amount, CurrencyEvent currencyEvent, string eventID, FeedbackFlags feedback = FeedbackFlags.Everything, CurrencyRemoveMode _currencyRemoveMode = CurrencyRemoveMode.Spent )
+	{
+		if (_amount <= 0ul)
+			return;
+
+		RemoveCurrency(_type, _amount, feedback, _currencyRemoveMode);
+		//Send event
+		ProgressionEvents.TrackCurrency(_type, _amount, true, currencyEvent, eventID);
+	}
+
+	public void AddCurrency ( CurrencyType _type, ulong _amount, FeedbackFlags feedback = FeedbackFlags.Everything )
+	{
+		if (_amount <= 0ul)
+			return;
+
+		GameConfig.current.feedbacks.addCurrencyFeedback.PlayQueue(0, feedback);
+		currencies[_type] += _amount;
+		totalCurrenciesGot[_type] += _amount;
+
+		onCurrencyChanged?.Invoke(_type);
+		onCurrencyAdded?.Invoke(_type, _amount);
+	}
+
+	public void RemoveCurrency ( CurrencyType _type, ulong _amount, FeedbackFlags feedback = FeedbackFlags.Everything, CurrencyRemoveMode _currencyRemoveMode = CurrencyRemoveMode.Spent )
+	{
+		if (_amount <= 0ul)
+			return;
+
+		GameConfig.current.feedbacks.removeCurrencyFeedback.Play(feedback);
+		if (_amount > currencies[_type])
+		{
+			Debug.LogWarning("TRIED TO REMOVE MORE CURRENCY " + _type.ToString() + " THAN POSSESSED (" + currencies[_type] + " - " + _amount + ")");
+			totalCurrenciesSpent[_type] += currencies[_type];
+			onCurrencyRemoved?.Invoke(_type, currencies[_type], _currencyRemoveMode);
+			currencies[_type] = 0;
+		}
+		else
+		{
+			currencies[_type] -= _amount;
+			totalCurrenciesSpent[_type] += _amount;
+			onCurrencyRemoved?.Invoke(_type, _amount, _currencyRemoveMode);
+		}
+		onCurrencyChanged?.Invoke(_type);
 	}
 
 	#region Saving

@@ -6,7 +6,7 @@ using System.Linq;
 public class HangarPanel : AUIPanel
 {
 	[SerializeField] private BaseButton m_returnBtn;
-	[SerializeField] private BaseButton m_openForgeBtn;
+	//[SerializeField] private BaseButton m_openForgeBtn;
 	[SerializeField] private BaseButton m_openInventoryBtn;
 	[SerializeField] private BaseButton m_addNewEntityBtn;
 	[SerializeField] private BaseButton m_upgradeHangarBtn;
@@ -16,7 +16,7 @@ public class HangarPanel : AUIPanel
 	{
 		m_returnBtn.onClick += OnClickReturn;
 		m_openInventoryBtn.onClick += OnClickOpenInventory;
-		m_openForgeBtn.onClick += OnClickOpenForge;
+		//m_openForgeBtn.onClick += OnClickOpenForge;
 		m_addNewEntityBtn.onClick += OnClickCreateNewEntity;
 		m_upgradeHangarBtn.onClick += OnClickOpenUpgradePopup;
 	}
@@ -31,10 +31,10 @@ public class HangarPanel : AUIPanel
 		UIManager.Instance.OpenPanel<InventoryPanel>();
 	}
 	
-	private void OnClickOpenForge ()
+	/*private void OnClickOpenForge ()
 	{
 		UIManager.Instance.OpenPanel<ForgePanel>();
-	}
+	}*/
 
 	private void OnClickCreateNewEntity ()
 	{
