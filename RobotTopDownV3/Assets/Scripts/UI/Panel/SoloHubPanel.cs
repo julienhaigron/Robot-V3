@@ -29,7 +29,7 @@ public class SoloHubPanel : AUIPanel
 	
 	private void OnClickOpenRecycleBtn ()
 	{
-		UIManager.Instance.OpenPanel<ShopPanel>();
+		UIManager.Instance.OpenPanel<RecyclePanel>();
 	}
 
 	private void OnClickOpenShopBtn ()
@@ -39,7 +39,7 @@ public class SoloHubPanel : AUIPanel
 
 	private void OnClickOpenRepairBtn ()
 	{
-		UIManager.Instance.OpenPanel<ShopPanel>();
+		UIManager.Instance.OpenPanel<RepairStationPanel>();
 	}
 	
 	private void OnClickMissionBtn ()
@@ -50,6 +50,7 @@ public class SoloHubPanel : AUIPanel
 	
 	private void OnClickReturnBtn ()
 	{
+		Close();
 		GameManager.Instance.GoToStartScreen();
 	}
 

@@ -1,7 +1,7 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "HubStructureUpgrade", menuName = "ScriptableObject/Structure/HubStructureUpgrade")]
-public class HubStructureUpgrade : IncrementalUpgrade
+[CreateAssetMenu(fileName = "HangarStructureUpgrade", menuName = "ScriptableObject/Structure/HangarStructureUpgrade")]
+public class HangarStructureUpgrade : StructureUpgrade
 {
     public int[] maxHangarUnitAmountPerLevel;
     public int[] maxComponentCapacityPerLevel;

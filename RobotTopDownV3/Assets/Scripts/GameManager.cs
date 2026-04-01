@@ -67,11 +67,11 @@ public class GameManager : SingletonPersistant<GameManager>
 	{
 		if(string.Equals(_scene.name, GameConfig.current.game.hubSceneName))
 		{
-
+			UIManager.Instance.OpenPanel<SoloHubPanel>();
 		}
 		else if(string.Equals(_scene.name, GameConfig.current.game.startScreenSceneName))
 		{
-
+			UIManager.Instance.OpenPanel<StartMenuPanel>();
 		}
 		else if(m_currentLevel != null)
 			StartGame();
@@ -82,7 +82,6 @@ public class GameManager : SingletonPersistant<GameManager>
 		GameDatas.current.game.lastPlayerSaveSelectedID = _saveID;
 		m_currentGameMode = GameMode.Offline;
 		//UIManager.Instance.GetPanel<StartMenuPanel>().Close();
-		UIManager.Instance.OpenPanel<SoloHubPanel>();
 
 		SceneManager.LoadSceneAsync(GameConfig.current.game.hubSceneName);
 	}
@@ -116,7 +115,6 @@ public class GameManager : SingletonPersistant<GameManager>
 
 	public void GoToStartScreen ()
 	{
-		UIManager.Instance.OpenPanel<StartMenuPanel>();
 		SceneManager.LoadSceneAsync(GameConfig.current.game.startScreenSceneName);
 	}
 

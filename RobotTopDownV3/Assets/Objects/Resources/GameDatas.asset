@@ -20,3 +20,15 @@ MonoBehaviour:
   game:
     lastPlayerSaveSelectedID: -1
   playerSaves: []
+  currencies:
+    keys: 
+    values: 
+  totalCurrenciesGot:
+    keys: 
+    values: 
+  totalCurrenciesSpent:
+    keys: 
+    values: 
+  upgradeLevels:
+    keys: []
+    values: 

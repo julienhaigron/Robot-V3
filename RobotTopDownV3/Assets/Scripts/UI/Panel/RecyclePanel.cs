@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
-public class ShopPanel : AUIPanel
+public class RecyclePanel : AUIPanel
 {
 	[SerializeField] private BaseButton m_returnBtn;
 	[SerializeField] private BaseButton m_openInventoryBtn;
 	[SerializeField] private BaseButton m_upgradeBtn;
+
 
 	private void Awake ()
 	{
@@ -20,7 +21,7 @@ public class ShopPanel : AUIPanel
 	{
 		UIManager.Instance.OpenPanel<SoloHubPanel>();
 	}
-	
+
 	private void OnClickOpenInventory ()
 	{
 		UIManager.Instance.OpenPanel<InventoryPanel>();
@@ -28,6 +29,6 @@ public class ShopPanel : AUIPanel
 
 	private void OnClickOpenUpgradePopup ()
 	{
-		UIManager.Instance.OpenPopup<StructureUpgradePopup>().Init(StructureUpgradePopup.StructureType.Shop);
+		UIManager.Instance.OpenPopup<StructureUpgradePopup>().Init(StructureUpgradePopup.StructureType.Recycler);
 	}
 }

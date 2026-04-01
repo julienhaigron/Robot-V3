@@ -338,7 +338,7 @@ GameObject:
   - component: {fileID: 3965478963127132357}
   - component: {fileID: 8885605014435231409}
   m_Layer: 0
-  m_Name: HangarUpgradePopup
+  m_Name: StructureUpgradePopup
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -424,7 +424,7 @@ MonoBehaviour:
   m_overrideDurations: 0
   m_showDuration: 0.3
   m_hideDuration: 0.3
-  m_texte: {fileID: 9142525499503205270}
+  m_titleTMP: {fileID: 9142525499503205270}
   m_closeBtn: {fileID: 5180132102302766100}
 --- !u!1001 &7999424169046733113
 PrefabInstance:
