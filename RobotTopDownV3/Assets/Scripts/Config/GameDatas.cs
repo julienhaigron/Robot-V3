@@ -420,7 +420,46 @@ public class GameDatas : ScriptableObject
 	public void Initialize ()
 	{
 		//meta.Initialize();
+		if (currencies == null)
+		{
+			currencies = new SerializableDictionary<CurrencyType, ulong>();
+		}
+		if (totalCurrenciesGot == null)
+		{
+			totalCurrenciesGot = new SerializableDictionary<CurrencyType, ulong>();
+		}
+		if (totalCurrenciesSpent == null)
+		{
+			totalCurrenciesSpent = new SerializableDictionary<CurrencyType, ulong>();
+		}
+		foreach (KeyValuePair<CurrencyType, Currency> currency in GameAssets.current.currencies)
+		{
+			if (!currencies.ContainsKey(currency.Key))
+			{
+				currencies.Add(currency.Key, currency.Value.baseCurrency);
+			}
+			if (!totalCurrenciesGot.ContainsKey(currency.Key))
+			{
+				totalCurrenciesGot.Add(currency.Key, currency.Value.baseCurrency);
+			}
+			if (!totalCurrenciesSpent.ContainsKey(currency.Key))
+			{
+				totalCurrenciesSpent.Add(currency.Key, 0);
+			}
+		}
 
+		if (upgradeLevels == null)
+		{
+			upgradeLevels = new SerializableDictionary<string, int>();
+		}
+		foreach (UpgradeAsset upgrade in GameAssets.current.upgrades)
+		{
+			if (!upgradeLevels.ContainsKey(upgrade.saveKey))
+			{
+				upgradeLevels.Add(upgrade.saveKey, 0);
+			}
+		}
+		
 		Debug.Log("Game Datas Initialized.");
 	}
 

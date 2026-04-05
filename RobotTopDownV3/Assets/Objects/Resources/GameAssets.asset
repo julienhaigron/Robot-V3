@@ -30,9 +30,6 @@ MonoBehaviour:
     - {fileID: 11400000, guid: 55ec503584887cb4aa7dd66763e4d7a7, type: 2}
     levels:
     - {fileID: 11400000, guid: b42abe5b22535cf40beab03ef8f2d66f, type: 2}
-    - {fileID: 11400000, guid: 8a6954d87f761a44d91a6e04577b276b, type: 2}
-    - {fileID: 11400000, guid: 949f97dacb028be43823f17b50a53791, type: 2}
-    - {fileID: 11400000, guid: 197186d81997d9b47a9bf17799354160, type: 2}
     structureUpgrades:
       keys: 00000000
       values:

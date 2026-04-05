@@ -18,22 +18,17 @@ MonoBehaviour:
     musicVolume: 1
     sfxVolume: 1
   game:
-    lastPlayerSaveSelectedID: 0
-  playerSaves:
-  - saveName: 
-    knownedFrames: []
-    allBuiltUnits: []
-    squadUnits: []
-    equipmentInventory: []
+    lastPlayerSaveSelectedID: -1
+  playerSaves: []
   currencies:
-    keys: 
-    values: 
+    keys: 01000000
+    values: 0000000000000000
   totalCurrenciesGot:
-    keys: 
-    values: 
+    keys: 01000000
+    values: 0000000000000000
   totalCurrenciesSpent:
-    keys: 
-    values: 
+    keys: 01000000
+    values: 0000000000000000
   upgradeLevels:
     keys:
     - hangarstructure

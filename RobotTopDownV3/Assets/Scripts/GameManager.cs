@@ -202,5 +202,18 @@ public class GameManager : SingletonPersistant<GameManager>
 		m_fogCanvas.gameObject.SetActive(false);
 	}
 
+	//hub
+	public bool SquadValidityPredicate ()
+	{
+		bool isValid = true;
+
+		foreach (EntitySavedData entityData in GameDatas.current.currentPlayerSave.squadUnits)
+		{
+			if (!entityData.IsUnitValid())
+				isValid = false;
+		}
+
+		return isValid;
+	}
 
 }

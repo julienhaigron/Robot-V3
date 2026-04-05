@@ -54,4 +54,15 @@ public class SoloHubPanel : AUIPanel
 		GameManager.Instance.GoToStartScreen();
 	}
 
+	protected override void OnShowStarted ()
+	{
+		base.OnShowStarted();
+		RefreshVisual();
+	}
+
+	private void RefreshVisual ()
+	{
+		m_missionBtn.SetInteractability(GameManager.Instance.SquadValidityPredicate());
+	}
+
 }

@@ -56,6 +56,27 @@ public class EntitySavedData : INetworkSerializable
 		serializer.SerializeValue(ref chipsetsIds);
 	}
 
+	public bool IsUnitValid ()
+	{
+		if (string.IsNullOrEmpty(frameID) || string.IsNullOrEmpty(reactorID) || string.IsNullOrEmpty(brainID))
+			return false;
+
+		int remainingEnergy = ReactorData.energyProduced;
+		remainingEnergy -= FrameData.energyCost;
+		remainingEnergy -= BrainData.energyCost;
+		foreach (StringContainer equipment in armsIds)
+			remainingEnergy -= GameAssets.current.equipments[equipment.value].energyCost;
+		foreach (StringContainer equipment in auxiliarIds)
+			remainingEnergy -= GameAssets.current.equipments[equipment.value].energyCost;
+		foreach (StringContainer equipment in chipsetsIds)
+			remainingEnergy -= GameAssets.current.equipments[equipment.value].energyCost;
+
+		if (remainingEnergy < 0)
+			return false;
+
+		return true;
+	}
+
 	public float GetStatBonusFromAll ( EntityEquipmentData.StatBonus.StatType _stat)
 	{
 		return GetStatBonusFrom(_stat, true, true, true, true);
@@ -126,14 +147,21 @@ public class EntitySavedData : INetworkSerializable
 		
 		foreach(EntityActionEnumID actionID in FrameData.knownedActions)
 		{
+			if (actionsPerComponents.ContainsKey(actionID))
+				continue;
+
 			actionsPerComponents.Add(actionID, FrameData.name);
 		}
 		foreach (EntityActionEnumID actionID in ReactorData.knownedActions)
 		{
+			if (actionsPerComponents.ContainsKey(actionID))
+				continue;
 			actionsPerComponents.Add(actionID, ReactorData.name);
 		}
 		foreach (EntityActionEnumID actionID in BrainData.knownedActions)
 		{
+			if (actionsPerComponents.ContainsKey(actionID))
+				continue;
 			actionsPerComponents.Add(actionID, BrainData.name);
 		}
 
@@ -143,6 +171,8 @@ public class EntitySavedData : INetworkSerializable
 			{
 				foreach (EntityActionEnumID actionID in equipment.knownedActions)
 				{
+					if (actionsPerComponents.ContainsKey(actionID))
+						continue;
 					actionsPerComponents.Add(actionID, equipment.name);
 				}
 			}
@@ -153,6 +183,8 @@ public class EntitySavedData : INetworkSerializable
 			{
 				foreach (EntityActionEnumID actionID in equipment.knownedActions)
 				{
+					if (actionsPerComponents.ContainsKey(actionID))
+						continue;
 					actionsPerComponents.Add(actionID, equipment.name);
 				}
 			}
@@ -163,6 +195,8 @@ public class EntitySavedData : INetworkSerializable
 			{
 				foreach (EntityActionEnumID actionID in equipment.knownedActions)
 				{
+					if (actionsPerComponents.ContainsKey(actionID))
+						continue;
 					actionsPerComponents.Add(actionID, equipment.name);
 				}
 			}

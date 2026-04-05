@@ -24,4 +24,9 @@ public class HangarStructureUpgrade : StructureUpgrade
 
 		return -1;
 	}
+
+	public int GetMaxHangarUnit ()
+	{
+		return maxHangarUnitAmountPerLevel[GetCurrentLevel()];
+	}
 }
