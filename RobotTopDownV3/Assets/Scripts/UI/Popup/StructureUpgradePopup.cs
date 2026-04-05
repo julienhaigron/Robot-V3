@@ -8,6 +8,11 @@ public class StructureUpgradePopup : AUIPopup
 {
 	[SerializeField] private TextMeshProUGUI m_titleTMP;
 	[SerializeField] private BaseButton m_closeBtn;
+	[SerializeField] private BaseButton m_buyUpgradeBtn;
+	[SerializeField] private StructureUpgradeAddonDisplay[] addonDisplays;
+
+	private StructureType m_type;
+	private StructureUpgrade Upgrade => GameAssets.current.game.structureUpgrades[m_type];
 
 	public enum StructureType
 	{
@@ -20,6 +25,7 @@ public class StructureUpgradePopup : AUIPopup
 	private void Awake ()
 	{
 		m_closeBtn.onClick += OnClickClose;
+		m_buyUpgradeBtn.onClick += OnClickOnBuyBtn;
 	}
 
 	protected override void OnHideFinished ()
@@ -31,26 +37,37 @@ public class StructureUpgradePopup : AUIPopup
 	{
 		Close();
 	}
+	
+	private void OnClickOnBuyBtn ()
+	{
+		if (!Upgrade.CanUpgrade())
+			return;
+
+		Upgrade.Upgrade(true);
+
+		RefreshVisual();
+	}
 
 	public void Init ( StructureType _type )
 	{
-		switch (_type)
+		m_type = _type;
+
+		RefreshVisual();
+	}
+
+	private void RefreshVisual ()
+	{
+		m_buyUpgradeBtn.SetInteractability(Upgrade.CanUpgrade());
+
+		m_titleTMP.text = Upgrade.displayName;
+		for(int i = 0; i< addonDisplays.Length; i++)
 		{
-			case StructureType.Hangar:
-				m_titleTMP.text = "Hangar upgrade";
-				break;
-			case StructureType.Recycler:
-				m_titleTMP.text = "Recycler upgrade";
+			if (Upgrade.addonDescriptions.Length <= i)
+				continue;
 
-				break;
-			case StructureType.Shop:
-				m_titleTMP.text = "Shop upgrade";
-
-				break;
-			case StructureType.RepairStation:
-				m_titleTMP.text = "Repair Station upgrade";
-
-				break;
+			int bonus = Upgrade.GetAddonValue(Upgrade.GetCurrentLevel() + 1, i) - Upgrade.GetAddonValue(Upgrade.GetCurrentLevel(), i);
+			string content = Upgrade.GetAddonDescription(i, bonus);
+			addonDisplays[i].Init(content);
 		}
 	}
 

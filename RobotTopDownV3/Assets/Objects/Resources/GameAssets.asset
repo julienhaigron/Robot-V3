@@ -33,6 +33,10 @@ MonoBehaviour:
     - {fileID: 11400000, guid: 8a6954d87f761a44d91a6e04577b276b, type: 2}
     - {fileID: 11400000, guid: 949f97dacb028be43823f17b50a53791, type: 2}
     - {fileID: 11400000, guid: 197186d81997d9b47a9bf17799354160, type: 2}
+    structureUpgrades:
+      keys: 00000000
+      values:
+      - {fileID: 11400000, guid: 0d4448f120cab5c42814f6681918124f, type: 2}
     baseGhost: {fileID: 7839904307103858393, guid: bee3bc7545f82b54babded2b3df64c96, type: 3}
     frames:
     - {fileID: 11400000, guid: 11de9230c09867747908272f3310089f, type: 2}
@@ -245,4 +249,5 @@ MonoBehaviour:
     - {fileID: 11400000, guid: 2d94a8985ceb79b4d88440205b20e0d5, type: 2}
     - {fileID: 11400000, guid: 55f3f48e7e9726943bd5ae7bad8a47ed, type: 2}
     - {fileID: 11400000, guid: 02717077237066f4fb15dc94b1382d21, type: 2}
-  upgrades: []
+  upgrades:
+  - {fileID: 11400000, guid: 0d4448f120cab5c42814f6681918124f, type: 2}
