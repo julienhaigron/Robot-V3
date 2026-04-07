@@ -9,17 +9,12 @@ using System.Linq;
 [CreateAssetMenu(fileName = "FrameData", menuName = "ScriptableObject/Equipment/FrameData", order = 1)]
 public class FrameEquipmentData : EntityEquipmentData
 {
-	public Entity.EntityFaction faction;
-
 	public Entity prefab;
-
-	[Title("Action")]
-	[Min(0)] public int visibilityRange = 8;
 
 	[BoxGroup(GroupID = "Stat")]
 	public int maxHealth;
-	[BoxGroup(GroupID = "Stat")]
-	public int armSlotAvailable = 2;
+	/*[BoxGroup(GroupID = "Stat")]
+	public int armSlotAvailable = 2;*/
 	[BoxGroup(GroupID = "Stat")]
 	public int auxiliarSlotAvailable = 2;
 	[BoxGroup(GroupID = "Stat")]
@@ -36,20 +31,23 @@ public class EntitySavedData : INetworkSerializable
 	public string name;
 	public string frameID;
 	public string reactorID;
+	public string neuronalMembraneID;
 	public string brainID;
 	public StringContainer[] armsIds;
 	public StringContainer[] auxiliarIds;
 	public StringContainer[] chipsetsIds;
 
-	public FrameEquipmentData FrameData => GameAssets.current.equipments[frameID] as FrameEquipmentData;
-	public ReactorEquipmentData ReactorData => GameAssets.current.equipments[reactorID] as ReactorEquipmentData;
-	public BrainEquipmentData BrainData => GameAssets.current.equipments[brainID] as BrainEquipmentData;
+	public FrameEquipmentData FrameData => string.IsNullOrEmpty(frameID) ? null : GameAssets.current.equipments[frameID] as FrameEquipmentData;
+	public ReactorEquipmentData ReactorData => string.IsNullOrEmpty(reactorID) ? null : GameAssets.current.equipments[reactorID] as ReactorEquipmentData;
+	public NeuronalMembraneEquipmentData NeuronalMembraneData => string.IsNullOrEmpty(neuronalMembraneID) ? null : GameAssets.current.equipments[neuronalMembraneID] as NeuronalMembraneEquipmentData;
+	public BrainEquipmentData BrainData => string.IsNullOrEmpty(brainID) ? null : GameAssets.current.equipments[brainID] as BrainEquipmentData;
 
 	public void NetworkSerialize<T> ( BufferSerializer<T> serializer ) where T : IReaderWriter
 	{
 		serializer.SerializeValue(ref name);
 		serializer.SerializeValue(ref frameID);
 		serializer.SerializeValue(ref reactorID);
+		serializer.SerializeValue(ref neuronalMembraneID);
 		serializer.SerializeValue(ref brainID);
 		serializer.SerializeValue(ref armsIds);
 		serializer.SerializeValue(ref auxiliarIds);
@@ -58,23 +56,36 @@ public class EntitySavedData : INetworkSerializable
 
 	public bool IsUnitValid ()
 	{
-		if (string.IsNullOrEmpty(frameID) || string.IsNullOrEmpty(reactorID) || string.IsNullOrEmpty(brainID))
+		if (string.IsNullOrEmpty(frameID) || string.IsNullOrEmpty(reactorID) || string.IsNullOrEmpty(brainID) || string.IsNullOrEmpty(neuronalMembraneID))
 			return false;
 
 		int remainingEnergy = ReactorData.energyProduced;
-		remainingEnergy -= FrameData.energyCost;
-		remainingEnergy -= BrainData.energyCost;
-		foreach (StringContainer equipment in armsIds)
-			remainingEnergy -= GameAssets.current.equipments[equipment.value].energyCost;
-		foreach (StringContainer equipment in auxiliarIds)
-			remainingEnergy -= GameAssets.current.equipments[equipment.value].energyCost;
-		foreach (StringContainer equipment in chipsetsIds)
-			remainingEnergy -= GameAssets.current.equipments[equipment.value].energyCost;
+		remainingEnergy -= GetTotalEnergyUsed();
 
 		if (remainingEnergy < 0)
 			return false;
 
 		return true;
+	}
+
+	public int GetTotalEnergyUsed ()
+	{
+		int totalEnergyUsed = 0;
+
+		if (string.IsNullOrEmpty(frameID) || string.IsNullOrEmpty(reactorID) || string.IsNullOrEmpty(brainID) || string.IsNullOrEmpty(neuronalMembraneID))
+			return totalEnergyUsed;
+
+		totalEnergyUsed += FrameData.energyCost;
+		totalEnergyUsed += BrainData.energyCost;
+		totalEnergyUsed += NeuronalMembraneData.energyCost;
+		foreach (StringContainer equipment in armsIds)
+			totalEnergyUsed += GameAssets.current.equipments[equipment.value].energyCost;
+		foreach (StringContainer equipment in auxiliarIds)
+			totalEnergyUsed += GameAssets.current.equipments[equipment.value].energyCost;
+		foreach (StringContainer equipment in chipsetsIds)
+			totalEnergyUsed += GameAssets.current.equipments[equipment.value].energyCost;
+
+		return totalEnergyUsed;
 	}
 
 	public float GetStatBonusFromAll ( EntityEquipmentData.StatBonus.StatType _stat)
@@ -158,6 +169,12 @@ public class EntitySavedData : INetworkSerializable
 				continue;
 			actionsPerComponents.Add(actionID, ReactorData.name);
 		}
+		foreach (EntityActionEnumID actionID in NeuronalMembraneData.knownedActions)
+		{
+			if (actionsPerComponents.ContainsKey(actionID))
+				continue;
+			actionsPerComponents.Add(actionID, NeuronalMembraneData.name);
+		}
 		foreach (EntityActionEnumID actionID in BrainData.knownedActions)
 		{
 			if (actionsPerComponents.ContainsKey(actionID))
@@ -210,6 +227,7 @@ public class EntitySavedData : INetworkSerializable
 		List<AEntityPassiveEffect.PassiveEffectContainer> passiveEffects = new();
 		passiveEffects.AddRange(FrameData.passiveEffects);
 		passiveEffects.AddRange(ReactorData.passiveEffects);
+		passiveEffects.AddRange(NeuronalMembraneData.passiveEffects);
 		passiveEffects.AddRange(BrainData.passiveEffects);
 		passiveEffects.AddRange(GameAssets.current.game.entityActionsData[_actionID].passiveEffects);
 
@@ -250,6 +268,17 @@ public class EntitySavedData : INetworkSerializable
 	public float GetStaticPerceptionBonus ( bool _isVisual )
 	{
 		float result = 0;
+
+		/*if(NeuronalMembraneData != null)
+		{
+			foreach (EntityEquipmentData.StatBonus statBonus in NeuronalMembraneData.visionTypes)
+			{
+				if (statBonus.type == EntityEquipmentData.StatBonus.StatType.VisualPerception && _isVisual)
+					result += statBonus.value;
+				else if (statBonus.type == EntityEquipmentData.StatBonus.StatType.SoundPerception && !_isVisual)
+					result += statBonus.value;
+			}
+		}*/
 		foreach (StringContainer container in auxiliarIds)
 		{
 			if (GameAssets.current.equipments[container.value] is OccultorEquipmentData occultor)

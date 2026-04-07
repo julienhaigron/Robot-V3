@@ -12,7 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 377ca2099ac4b6147bf777f681302f03, type: 3}
   m_Name: Weapon_FlameThrowerXV-68
   m_EditorClassIdentifier: 
+  faction: 0
   icon: {fileID: 0}
+  displayName: 
   energyCost: 30
   knownedActions: 07000000
   passiveEffects: []

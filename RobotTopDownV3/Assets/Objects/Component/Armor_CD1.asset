@@ -12,8 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 73da1a7b01684d94b9134ed939d3e96f, type: 3}
   m_Name: Armor_CD1
   m_EditorClassIdentifier: 
+  faction: 0
   icon: {fileID: 0}
+  displayName: 
   energyCost: 20
+  knownedActions: 
+  passiveEffects: []
   statBonuses:
   - type: 6
     value: 0.3

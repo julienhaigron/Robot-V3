@@ -48,6 +48,7 @@ public class GameAssets : ScriptableObject
     [System.Serializable]
     public class UI
 	{
+        public ComponentDisplay baseComponentDisplay;
         public LobbyDisplay baseLobbyDisplay;
         public EntityActionDisplay baseEntityActionDisplay;
         [Title("Flying Number")]
@@ -61,6 +62,10 @@ public class GameAssets : ScriptableObject
         public SerializableDictionary<Entity.EntityState, Material> entityStateMaterials = new();
         public SerializableDictionary<Entity.EntityState, Color> entityStateColors = new();
         public SerializableDictionary<Entity.EntityState, Material> ghostEntityStateMaterials = new();
+
+        [Title("Icons")]
+        public SerializableDictionary<EntityEquipmentData.EquipmentType, Sprite> componentIcons = new();
+        public SerializableDictionary<EntityEquipmentData.EntityFaction, Sprite> corporationsIcons = new();
     }
 
 #if UNITY_EDITOR

@@ -75,11 +75,6 @@ public class Entity : MonoBehaviour
         Patroling,
         Special //to add
     }
-    public enum EntityFaction
-	{
-        Scout,
-        Psy
-	}
 
 	private void Awake ()
 	{

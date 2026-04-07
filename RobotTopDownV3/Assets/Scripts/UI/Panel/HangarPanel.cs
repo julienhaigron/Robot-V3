@@ -39,6 +39,8 @@ public class HangarPanel : AUIPanel
 	{
 		FrameEquipmentData baseFrame = GameAssets.current.game.frames[0];
 		HubManager.Instance.AddEntity(GameDatas.current.currentPlayerSave.AddNewUnit(baseFrame));
+
+		RefreshDisplay();
 	}
 	
 	private void OnClickOpenUpgradePopup ()
@@ -51,6 +53,7 @@ public class HangarPanel : AUIPanel
 		base.OnShowStarted();
 
 		HubManager.Instance.ShowHangar();
+		RefreshDisplay();
 	}
 
 	protected override void OnHideFinished ()
@@ -61,9 +64,14 @@ public class HangarPanel : AUIPanel
 
 	private void RefreshDisplay ()
 	{
-		m_addNewEntityBtn.SetInteractability(GameDatas.current.currentPlayerSave.squadUnits.Count < HangarUpgrade.GetMaxHangarUnit());	
-		m_maxUnitInSquadTMP.text = GameDatas.current.currentPlayerSave.squadUnits.Count +  "/" + HangarUpgrade.GetMaxHangarUnit();
+		m_addNewEntityBtn.SetInteractability(GameDatas.current.currentPlayerSave.squadUnits.Count < HangarUpgrade.GetCurrentMaxHangarUnit());	
+		m_maxUnitInSquadTMP.text = GameDatas.current.currentPlayerSave.squadUnits.Count +  "/" + HangarUpgrade.GetCurrentMaxHangarUnit();
+		m_maxUnitInHangarTMP.text = GameDatas.current.currentPlayerSave.allBuiltUnits.Count + "/" + HangarUpgrade.GetCurrentMaxUnitAmount();
 
-		//m_maxEnergyCostInSquadTMP.text = 
+		int totalEnergyUsed = 0;
+		foreach (EntitySavedData savedEntity in GameDatas.current.currentPlayerSave.squadUnits)
+			totalEnergyUsed += savedEntity.GetTotalEnergyUsed();
+		m_maxEnergyCostInSquadTMP.text = totalEnergyUsed + "/" + HangarUpgrade.GetCurrentMaxSquadEnergyAmount();
+
 	}
 }

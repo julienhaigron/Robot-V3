@@ -8,9 +8,9 @@ public class InventoryPanel : AUIPanel
 	[SerializeField] private BaseButton m_returnBtn;
 	[SerializeField] private Transform m_inventoryParent;
 
-	[SerializeField] private EntityEquipmentDisplay m_equipmentDisplayPrefab;
+	[SerializeField] private ComponentDisplay m_equipmentDisplayPrefab;
 
-	private List<EntityEquipmentDisplay> equipmentDisplay = new();
+	private List<ComponentDisplay> equipmentDisplay = new();
 
 	private void Awake ()
 	{
@@ -36,7 +36,8 @@ public class InventoryPanel : AUIPanel
 			if (equipmentDisplay.Count < i)
 				equipmentDisplay.Add(Instantiate(m_equipmentDisplayPrefab, m_inventoryParent));
 
-			equipmentDisplay[i].Init(GameDatas.current.currentPlayerSave.equipmentInventory[i].GetData<EntityEquipmentData>());
+			equipmentDisplay[i].Init(null, GameDatas.current.currentPlayerSave.equipmentInventory[i], GameDatas.current.currentPlayerSave.equipmentInventory[i].GetData<EntityEquipmentData>()
+				, ComponentDisplay.DisplayMode.ShopSelling);
 		}
 	}
 }

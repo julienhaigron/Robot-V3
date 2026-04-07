@@ -943,7 +943,7 @@ public class GridManager : Singleton<GridManager>
 
 		Tile from = _entity.Displacement.Coordinates.GetTile();
 		from.SetActiveFOW(false, true);
-		List<Tile> tileInEntityRange = GetTilesInVisionRange(from, _entity.Data.FrameData.visibilityRange, true);
+		List<Tile> tileInEntityRange = GetTilesInVisionRange(from, _entity.Data.NeuronalMembraneData.visionRange, true);
 
 		foreach (Tile tile in tileInEntityRange)
 		{
@@ -992,7 +992,7 @@ public class GridManager : Singleton<GridManager>
 		}
 
 		List<Tile> previousTilesInRangeList = new(m_entitiesVisions[_entity.OwnerID].entitiesVisionRange[_entity]);
-		List<Tile> newTilesInRangeList = GetTilesInVisionRange(_entity.Displacement.Coordinates.GetTile(), _entity.Data.FrameData.visibilityRange, true);
+		List<Tile> newTilesInRangeList = GetTilesInVisionRange(_entity.Displacement.Coordinates.GetTile(), _entity.Data.NeuronalMembraneData.visionRange, true);
 		m_entitiesVisions[_entity.OwnerID].entitiesVisionRange[_entity] = new(newTilesInRangeList);
 
 		foreach (Tile tile in newTilesInRangeList)

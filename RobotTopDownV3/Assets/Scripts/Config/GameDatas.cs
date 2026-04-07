@@ -90,15 +90,25 @@ public class GameDatas : ScriptableObject
 		public List<EntitySavedData> allBuiltUnits = new();
 		public List<EntitySavedData> squadUnits = new();
 		public List<Equipment> equipmentInventory = new ();
+		public int equipmentCounter = 0;
+
 
 		public Equipment AddEquipmentToInventory ( EntityEquipmentData _data )
 		{
-			if (_data == null || string.IsNullOrEmpty(_data.name))
+			string ID = _data == null ? null : _data.name + equipmentCounter;
+			if (_data == null || string.IsNullOrEmpty(ID))
 				return null;
 
-			Equipment equipment = new(_data.name);
+			Equipment equipment = new(ID, _data.name);
+			equipmentInventory.Add(equipment);
+			equipmentCounter++;
 
 			return equipment;
+		}
+
+		public void RemoveEquipmentFromInventory ( Equipment _data )
+		{
+			equipmentInventory.Remove(_data);
 		}
 
 		public EntitySavedData AddNewUnit (FrameEquipmentData _frame)
@@ -114,18 +124,20 @@ public class GameDatas : ScriptableObject
 		public class Equipment
 		{
 			public string ID;
+			public string dataID;
 
-			public Equipment ( string _ID)
+			public Equipment ( string _ID, string _dataID)
 			{
 				this.ID = _ID;
+				this.dataID = _dataID;
 			}
 
 			public T GetData<T> () where T : EntityEquipmentData
 			{
-				if (!GameAssets.current.equipments.ContainsKey(ID))
+				if (!GameAssets.current.equipments.ContainsKey(dataID))
 					return null;
 
-				return GameAssets.current.equipments[ID] as T;
+				return GameAssets.current.equipments[dataID] as T;
 			}
 		}
 

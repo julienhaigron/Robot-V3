@@ -129,6 +129,7 @@ MonoBehaviour:
       - {fileID: 11400000, guid: 089f5b6503687a44ca2eb812dcd04d46, type: 2}
     arrowPoolData: {fileID: 11400000, guid: 64f7846c9740e524a979a96964270b2f, type: 2}
   ui:
+    baseComponentDisplay: {fileID: 6816767632338375938, guid: 6e102cf7754096846b421344887ef18e, type: 3}
     baseLobbyDisplay: {fileID: 2566041125526859700, guid: cc5b4c04e157c914381ced09bd279f76, type: 3}
     baseEntityActionDisplay: {fileID: 1776869416438720975, guid: 43cde6fde6a65d04c81939ddc6df829d, type: 3}
     flyingDamageFontAsset: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -161,6 +162,25 @@ MonoBehaviour:
       - {fileID: 2100000, guid: e1a0eb7cc1923f946ab2d41224f8cda7, type: 2}
       - {fileID: 2100000, guid: 70fa849432054e74c89bb3e1a876324c, type: 2}
       - {fileID: 2100000, guid: 75966bde5e759e8459a8eda2d59676f2, type: 2}
+    componentIcons:
+      keys: 0000000001000000020000000300000004000000050000000600000007000000
+      values:
+      - {fileID: 0}
+      - {fileID: 0}
+      - {fileID: 0}
+      - {fileID: 0}
+      - {fileID: 0}
+      - {fileID: 0}
+      - {fileID: 0}
+      - {fileID: 0}
+    corporationsIcons:
+      keys: 0000000001000000020000000300000004000000
+      values:
+      - {fileID: 0}
+      - {fileID: 0}
+      - {fileID: 0}
+      - {fileID: 0}
+      - {fileID: 0}
   currencies:
     keys: 01000000
     values:

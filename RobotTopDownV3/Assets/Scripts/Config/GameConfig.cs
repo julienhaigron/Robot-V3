@@ -53,6 +53,7 @@ public partial class GameConfig : ScriptableObject
 	public class UI
 	{
 		public LayerMask wallLayerMask;
+		public float doubleClickDelay = 0.25f;
 	}
 
 	[System.Serializable]

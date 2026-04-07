@@ -1770,7 +1770,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 458782666846846238, guid: e2ddfe81402cc6a4a94821d26853d12b, type: 3}
       propertyPath: m_Name
-      value: EntityConfigPanel
+      value: EntityComponentConfigPopup
       objectReference: {fileID: 0}
     - target: {fileID: 458782666846846238, guid: e2ddfe81402cc6a4a94821d26853d12b, type: 3}
       propertyPath: m_IsActive
@@ -2112,7 +2112,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 7194699372739572324, guid: 40abbfbb0d89f7c41969c792d4b1f810, type: 3}
       propertyPath: m_Name
-      value: UnitPopup
+      value: EntityConfigPopup
       objectReference: {fileID: 0}
     - target: {fileID: 7194699372739572324, guid: 40abbfbb0d89f7c41969c792d4b1f810, type: 3}
       propertyPath: m_IsActive

@@ -25,4 +25,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 28da51fc5fc9f6f44895bc8c77a683ff, type: 2}
   chipsets:
   - {fileID: 11400000, guid: 413afd951faf0e544b2cd83d0ce95a1d, type: 2}
+  isInvocation: 0
+  isTangible: 1
   m_totalEnergyCostRemaining: 5

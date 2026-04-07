@@ -202,7 +202,7 @@ public class EntityAIPlugin : EntityPlugin
 		if (m_linkedEntity.Data.BrainData.capacities.Contains(EntityCapacityAsset.EntityCapacityType.VisualSensor)
 			|| m_linkedEntity.Data.BrainData.capacities.Contains(EntityCapacityAsset.EntityCapacityType.RadarSensor))
 		{
-			m_entitiesInVisionRange = GridManager.Instance.GetEntitiesInRange(m_linkedEntity.Displacement.Coordinates.GetTile(), m_linkedEntity.Data.FrameData.visibilityRange, _isThisTurn);
+			m_entitiesInVisionRange = GridManager.Instance.GetEntitiesInRange(m_linkedEntity.Displacement.Coordinates.GetTile(), m_linkedEntity.Data.NeuronalMembraneData.visionRange, _isThisTurn);
 		}
 
 		return m_entitiesInVisionRange;

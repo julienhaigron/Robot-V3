@@ -12,6 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 087fdcb19e35df443b5ddfcf9bf4957f, type: 3}
   m_Name: Reactor_B-99
   m_EditorClassIdentifier: RTD::ReactorEquipmentData
+  faction: 0
   icon: {fileID: 0}
+  displayName: 
   energyCost: 0
+  knownedActions: 
+  passiveEffects: []
   energyProduced: 160
