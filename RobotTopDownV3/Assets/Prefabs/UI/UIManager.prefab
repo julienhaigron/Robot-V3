@@ -39,12 +39,12 @@ RectTransform:
   - {fileID: 1693352281910944883}
   - {fileID: 3310090986178185307}
   - {fileID: 7366176477638661221}
-  - {fileID: 4909300978776987881}
   - {fileID: 65558697985501414}
   - {fileID: 6611328406761992236}
   - {fileID: 2562248808516308254}
   - {fileID: 4476816249087596629}
   - {fileID: 283719208209233118}
+  - {fileID: 4909300978776987881}
   - {fileID: 1352082198983273784}
   - {fileID: 4266696729154225084}
   m_Father: {fileID: 0}
@@ -2112,7 +2112,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 7194699372739572324, guid: 40abbfbb0d89f7c41969c792d4b1f810, type: 3}
       propertyPath: m_Name
-      value: EntityConfigPopup
+      value: EntityConfigPanel
       objectReference: {fileID: 0}
     - target: {fileID: 7194699372739572324, guid: 40abbfbb0d89f7c41969c792d4b1f810, type: 3}
       propertyPath: m_IsActive

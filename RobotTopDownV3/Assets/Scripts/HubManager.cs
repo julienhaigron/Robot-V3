@@ -42,7 +42,7 @@ public class HubManager : Singleton<HubManager>
 	{
 		m_selectedEntity = _selectedEntity;
 
-		UIManager.Instance.OpenPopup<EntityConfigPopup>().Init(_selectedEntity.Data);
+		UIManager.Instance.OpenPanel<EntityConfigPanel>().Init(_selectedEntity.Data);
 
 		//RefreshEntitiesPosition();
 	}

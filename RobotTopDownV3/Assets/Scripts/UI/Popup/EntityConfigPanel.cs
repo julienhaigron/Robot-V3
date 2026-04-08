@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-public class EntityConfigPopup : AUIPopup
+public class EntityConfigPanel : AUIPanel
 {
 
 	[SerializeField] private TextMeshProUGUI m_texte;
