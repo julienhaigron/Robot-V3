@@ -13,4 +13,8 @@ MonoBehaviour:
   m_Name: LocalizationDatabase
   m_EditorClassIdentifier: 
   languages: 0a0000000e000000
-  entries: []
+  entries:
+  - key: menu/audio
+    values:
+    - yes
+    - oui

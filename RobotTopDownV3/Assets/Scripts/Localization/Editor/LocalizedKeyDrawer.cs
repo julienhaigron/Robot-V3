@@ -74,7 +74,7 @@ public class LocalizedKeyDrawer : PropertyDrawer
         }
     }
 
-    private void PingKey ( string key )
+    private void PingKey ( string _key )
     {
         var db = GetDatabase();
 
@@ -89,7 +89,7 @@ public class LocalizedKeyDrawer : PropertyDrawer
         EditorGUIUtility.PingObject(db);
 
         // Trouver l'index
-        int index = db.entries.FindIndex(e => e.key == key);
+        int index = db.entries.FindIndex(e => e.key == _key);
 
         if (index >= 0)
         {

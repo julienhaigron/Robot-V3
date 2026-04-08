@@ -4,7 +4,7 @@ using System.Text;
 
 public static class LocalizationEnumGenerator
 {
-    private const string filePath = "Assets/Scripts/Localization/LocalizationKey.cs";
+    private const string m_filePath = "Assets/Scripts/Localization/LocalizationKey.cs";
 
     [MenuItem("Tools/Localization/Generate Enum")]
     public static void Generate ()
@@ -49,16 +49,16 @@ public static class LocalizationEnumGenerator
         sb.AppendLine("    }");
         sb.AppendLine("}");
 
-        File.WriteAllText(filePath, sb.ToString());
+        File.WriteAllText(m_filePath, sb.ToString());
         AssetDatabase.Refresh();
 
         UnityEngine.Debug.Log("Localization enum and mapping generated!");
     }
 
-    private static string Sanitize ( string key )
+    private static string Sanitize ( string _key )
     {
         // Remplace / et les caractères invalides par _
-        string enumName = key.Replace("/", "_").Replace(" ", "_").Replace("-", "_");
+        string enumName = _key.Replace("/", "_").Replace(" ", "_").Replace("-", "_");
 
         // Assurer que ça commence par une lettre (sinon on préfixe)
         if (enumName.Length > 0 && !char.IsLetter(enumName[0]))

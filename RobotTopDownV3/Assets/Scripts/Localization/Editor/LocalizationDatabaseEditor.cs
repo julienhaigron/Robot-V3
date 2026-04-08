@@ -9,13 +9,13 @@ public class LocalizationDatabaseEditor : Editor
 {
     public static int HighlightedIndex = -1;
 
-    private Dictionary<string, bool> foldouts = new Dictionary<string, bool>();
-    private LocalizationDatabase db;
+    //private Dictionary<string, bool> foldouts = new Dictionary<string, bool>();
+    private LocalizationDatabase m_db;
 
-    private string search;
-    private Vector2 scroll;
-    private string newEntryPath = "menu/audio";
-    private Dictionary<string, bool> treeFoldouts = new Dictionary<string, bool>();
+    private string m_search;
+    private Vector2 m_scroll;
+    private string m_newEntryPath = "section/newElement";
+    private Dictionary<string, bool> m_treeFoldouts = new Dictionary<string, bool>();
 
     private class TreeNode
     {
@@ -24,13 +24,231 @@ public class LocalizationDatabaseEditor : Editor
         public List<int> entryIndices = new List<int>();
     }
 
-    private TreeNode BuildTree ()
+    private void OnEnable ()
     {
-        TreeNode root = new TreeNode { name = "Root" };
+        m_db = (LocalizationDatabase)target;
+    }
+
+    public override void OnInspectorGUI ()
+    {
+        serializedObject.Update();
+
+        m_search = EditorGUILayout.TextField("Search", m_search);
+
+        DrawLanguages();
+        EditorGUILayout.Space();
+        DrawAddEntry();
+        EditorGUILayout.Space();
+        DrawTable();
+
+        serializedObject.ApplyModifiedProperties();
+
+        if (GUI.changed)
+        {
+            EditorUtility.SetDirty(m_db);
+        }
+
+        if (GUILayout.Button("Validate Database"))
+        {
+            ValidateDatabase();
+        }
+
+    }
+
+    /*private Dictionary<string, List<int>> GetGroupedEntries ()
+    {
+        var groups = new Dictionary<string, List<int>>();
 
         for (int i = 0; i < db.entries.Count; i++)
         {
             string key = db.entries[i].key;
+
+            if (string.IsNullOrEmpty(key))
+                key = "Uncategorized";
+
+            string category = key.Contains("/")
+                ? key.Split('/')[0]
+                : "Uncategorized";
+
+            if (!groups.ContainsKey(category))
+                groups[category] = new List<int>();
+
+            groups[category].Add(i);
+        }
+
+        return groups;
+    }*/
+
+    private void DrawLanguages ()
+    {
+        EditorGUILayout.LabelField("Languages", EditorStyles.boldLabel);
+
+        for (int i = 0; i < m_db.languages.Count; i++)
+        {
+            EditorGUILayout.BeginHorizontal();
+
+            m_db.languages[i] = (SystemLanguage)EditorGUILayout.EnumPopup(m_db.languages[i]);
+
+            if (GUILayout.Button("X", GUILayout.Width(25)))
+            {
+                RemoveLanguage(i);
+            }
+
+            EditorGUILayout.EndHorizontal();
+        }
+
+        if (GUILayout.Button("Add Language"))
+        {
+            AddLanguage();
+        }
+    }
+
+    private void AddLanguage ()
+    {
+        m_db.languages.Add(SystemLanguage.French);
+
+        foreach (var entry in m_db.entries)
+        {
+            entry.values.Add("");
+        }
+    }
+
+    private void RemoveLanguage ( int _index )
+    {
+        m_db.languages.RemoveAt(_index);
+
+        foreach (var entry in m_db.entries)
+        {
+            if (entry.values.Count > _index)
+                entry.values.RemoveAt(_index);
+        }
+    }
+
+    private void DrawNode ( TreeNode _node, int _indent = 0, string _path = "" )
+    {
+        foreach (var child in _node.children)
+        {
+            string currentPath = string.IsNullOrEmpty(_path)
+                ? child.Key
+                : _path + "/" + child.Key;
+
+            if (!m_treeFoldouts.ContainsKey(currentPath))
+                m_treeFoldouts[currentPath] = true;
+
+            EditorGUILayout.BeginHorizontal();
+            GUILayout.Space(_indent * 15);
+
+            m_treeFoldouts[currentPath] = EditorGUILayout.Foldout(m_treeFoldouts[currentPath], child.Key, true);
+            EditorGUILayout.EndHorizontal();
+
+            if (m_treeFoldouts[currentPath])
+            {
+                // Dessiner les entrées (feuilles)
+                foreach (int index in child.Value.entryIndices)
+                {
+                    EditorGUILayout.BeginHorizontal();
+                    GUILayout.Space((_indent + 1) * 15);
+
+                    DrawRow(index);
+
+                    EditorGUILayout.EndHorizontal();
+                }
+
+                DrawNode(child.Value, _indent + 1, currentPath);
+            }
+        }
+    }
+
+    private void DrawAddEntry ()
+    {
+        EditorGUILayout.BeginHorizontal();
+
+        m_newEntryPath = EditorGUILayout.TextField(m_newEntryPath);
+
+        if (GUILayout.Button("Add Entry"))
+        {
+            AddEntry(m_newEntryPath);
+        }
+
+        EditorGUILayout.EndHorizontal();
+    }
+
+    private void AddEntry ( string _path )
+    {
+        var newEntry = new LocalizationEntry();
+
+        newEntry.key = _path;
+
+        for (int i = 0; i < m_db.languages.Count; i++)
+        {
+            newEntry.values.Add("");
+        }
+
+        m_db.entries.Add(newEntry);
+
+        LocalizationEnumGenerator.Generate();
+    }
+
+    /*private void DrawTable ()
+    {
+        EditorGUILayout.LabelField("Entries", EditorStyles.boldLabel);
+
+        scroll = EditorGUILayout.BeginScrollView(scroll);
+        if (HighlightedIndex >= 0)
+        {
+            scroll.y = HighlightedIndex * 20f; // approx hauteur ligne
+        }
+
+        DrawCustomHeader();
+        var groups = GetGroupedEntries();
+
+        foreach (var group in groups)
+        {
+            *//*if (!string.IsNullOrEmpty(search) && !db.entries[i].key.ToLower().Contains(search.ToLower()))
+                continue;*//*
+            string category = group.Key;
+
+            if (!foldouts.ContainsKey(category))
+                foldouts[category] = true;
+
+            // Foldout
+            foldouts[category] = EditorGUILayout.Foldout(foldouts[category], category, true);
+
+            if (foldouts[category])
+            {
+                foreach (int index in group.Value)
+                {
+                    DrawRow(index);
+                }
+            }
+        }
+
+        EditorGUILayout.EndScrollView();
+    }*/
+    private void DrawTable ()
+    {
+        EditorGUILayout.LabelField("Entries", EditorStyles.boldLabel);
+
+        m_scroll = EditorGUILayout.BeginScrollView(m_scroll);
+
+        DrawCustomHeader();
+
+        var tree = BuildTree();
+
+        DrawNode(tree);
+
+        EditorGUILayout.EndScrollView();
+
+        DrawAddEntry();
+    }
+
+    private TreeNode BuildTree ()
+    {
+        TreeNode root = new TreeNode { name = "Root" };
+
+        for (int i = 0; i < m_db.entries.Count; i++)
+        {
+            string key = m_db.entries[i].key;
 
             if (string.IsNullOrEmpty(key))
                 key = "Uncategorized";
@@ -57,215 +275,13 @@ public class LocalizationDatabaseEditor : Editor
         return root;
     }
 
-    private void OnEnable ()
-    {
-        db = (LocalizationDatabase)target;
-    }
-
-    public override void OnInspectorGUI ()
-    {
-        serializedObject.Update();
-
-        search = EditorGUILayout.TextField("Search", search);
-
-        DrawLanguages();
-        EditorGUILayout.Space();
-        DrawAddEntry();
-        EditorGUILayout.Space();
-        DrawTable();
-
-        serializedObject.ApplyModifiedProperties();
-
-        if (GUI.changed)
-        {
-            EditorUtility.SetDirty(db);
-        }
-
-        if (GUILayout.Button("Validate Database"))
-        {
-            ValidateDatabase();
-        }
-
-    }
-
-    private Dictionary<string, List<int>> GetGroupedEntries ()
-    {
-        var groups = new Dictionary<string, List<int>>();
-
-        for (int i = 0; i < db.entries.Count; i++)
-        {
-            string key = db.entries[i].key;
-
-            if (string.IsNullOrEmpty(key))
-                key = "Uncategorized";
-
-            string category = key.Contains("/")
-                ? key.Split('/')[0]
-                : "Uncategorized";
-
-            if (!groups.ContainsKey(category))
-                groups[category] = new List<int>();
-
-            groups[category].Add(i);
-        }
-
-        return groups;
-    }
-
-    private void DrawLanguages ()
-    {
-        EditorGUILayout.LabelField("Languages", EditorStyles.boldLabel);
-
-        for (int i = 0; i < db.languages.Count; i++)
-        {
-            EditorGUILayout.BeginHorizontal();
-
-            db.languages[i] = (SystemLanguage)EditorGUILayout.EnumPopup(db.languages[i]);
-
-            if (GUILayout.Button("X", GUILayout.Width(25)))
-            {
-                RemoveLanguage(i);
-            }
-
-            EditorGUILayout.EndHorizontal();
-        }
-
-        if (GUILayout.Button("Add Language"))
-        {
-            AddLanguage();
-        }
-    }
-
-    private void AddLanguage ()
-    {
-        db.languages.Add(SystemLanguage.French);
-
-        foreach (var entry in db.entries)
-        {
-            entry.values.Add("");
-        }
-    }
-
-    private void RemoveLanguage ( int index )
-    {
-        db.languages.RemoveAt(index);
-
-        foreach (var entry in db.entries)
-        {
-            if (entry.values.Count > index)
-                entry.values.RemoveAt(index);
-        }
-    }
-
-    private void DrawNode ( TreeNode node, int indent = 0, string path = "" )
-    {
-        foreach (var child in node.children)
-        {
-            string currentPath = string.IsNullOrEmpty(path)
-                ? child.Key
-                : path + "/" + child.Key;
-
-            if (!treeFoldouts.ContainsKey(currentPath))
-                treeFoldouts[currentPath] = true;
-
-            EditorGUILayout.BeginHorizontal();
-            GUILayout.Space(indent * 15);
-
-            treeFoldouts[currentPath] = EditorGUILayout.Foldout(treeFoldouts[currentPath], child.Key, true);
-            EditorGUILayout.EndHorizontal();
-
-            if (treeFoldouts[currentPath])
-            {
-                // Dessiner les entrées (feuilles)
-                foreach (int index in child.Value.entryIndices)
-                {
-                    EditorGUILayout.BeginHorizontal();
-                    GUILayout.Space((indent + 1) * 15);
-
-                    DrawRow(index);
-
-                    EditorGUILayout.EndHorizontal();
-                }
-
-                DrawNode(child.Value, indent + 1, currentPath);
-            }
-        }
-    }
-
-    private void DrawAddEntry ()
-    {
-        EditorGUILayout.BeginHorizontal();
-
-        newEntryPath = EditorGUILayout.TextField(newEntryPath);
-
-        if (GUILayout.Button("Add Entry"))
-        {
-            AddEntry(newEntryPath);
-        }
-
-        EditorGUILayout.EndHorizontal();
-    }
-
-    private void AddEntry ( string path )
-    {
-        var newEntry = new LocalizationEntry();
-
-        newEntry.key = path;
-
-        for (int i = 0; i < db.languages.Count; i++)
-        {
-            newEntry.values.Add("");
-        }
-
-        db.entries.Add(newEntry);
-
-        LocalizationEnumGenerator.Generate();
-    }
-
-    private void DrawTable ()
-    {
-        EditorGUILayout.LabelField("Entries", EditorStyles.boldLabel);
-
-        scroll = EditorGUILayout.BeginScrollView(scroll);
-        if (HighlightedIndex >= 0)
-        {
-            scroll.y = HighlightedIndex * 20f; // approx hauteur ligne
-        }
-
-        DrawCustomHeader();
-        var groups = GetGroupedEntries();
-
-        foreach (var group in groups)
-        {
-            /*if (!string.IsNullOrEmpty(search) && !db.entries[i].key.ToLower().Contains(search.ToLower()))
-                continue;*/
-            string category = group.Key;
-
-            if (!foldouts.ContainsKey(category))
-                foldouts[category] = true;
-
-            // Foldout
-            foldouts[category] = EditorGUILayout.Foldout(foldouts[category], category, true);
-
-            if (foldouts[category])
-            {
-                foreach (int index in group.Value)
-                {
-                    DrawRow(index);
-                }
-            }
-        }
-
-        EditorGUILayout.EndScrollView();
-    }
-
     private void DrawCustomHeader ()
     {
         EditorGUILayout.BeginHorizontal();
 
         GUILayout.Label("Key", GUILayout.Width(150));
 
-        foreach (var lang in db.languages)
+        foreach (var lang in m_db.languages)
         {
             GUILayout.Label(lang.ToString(), GUILayout.Width(150));
         }
@@ -275,11 +291,11 @@ public class LocalizationDatabaseEditor : Editor
         EditorGUILayout.EndHorizontal();
     }
 
-    private void DrawRow ( int index )
+    private void DrawRow ( int _index )
     {
-        var entry = db.entries[index];
+        var entry = m_db.entries[_index];
 
-        bool isHighlighted = index == HighlightedIndex;
+        bool isHighlighted = _index == HighlightedIndex;
 
         if (isHighlighted)
         {
@@ -287,7 +303,7 @@ public class LocalizationDatabaseEditor : Editor
         }
 
         EditorGUILayout.BeginHorizontal();
-        bool isDuplicate = IsDuplicateKey(entry.key, index);
+        bool isDuplicate = IsDuplicateKey(entry.key, _index);
 
         if (isDuplicate)
             GUI.backgroundColor = Color.yellow;
@@ -296,10 +312,10 @@ public class LocalizationDatabaseEditor : Editor
 
         GUI.backgroundColor = Color.white;
 
-        while (entry.values.Count < db.languages.Count)
+        while (entry.values.Count < m_db.languages.Count)
             entry.values.Add("");
 
-        for (int i = 0; i < db.languages.Count; i++)
+        for (int i = 0; i < m_db.languages.Count; i++)
         {
             bool isMissing = string.IsNullOrEmpty(entry.values[i]);
 
@@ -313,19 +329,19 @@ public class LocalizationDatabaseEditor : Editor
 
         if (GUILayout.Button("X", GUILayout.Width(25)))
         {
-            db.entries.RemoveAt(index);
+            m_db.entries.RemoveAt(_index);
         }
 
         EditorGUILayout.EndHorizontal();
     }
 
-    private bool IsDuplicateKey ( string key, int currentIndex )
+    private bool IsDuplicateKey ( string _key, int _currentIndex )
     {
-        for (int i = 0; i < db.entries.Count; i++)
+        for (int i = 0; i < m_db.entries.Count; i++)
         {
-            if (i == currentIndex) continue;
+            if (i == _currentIndex) continue;
 
-            if (db.entries[i].key == key)
+            if (m_db.entries[i].key == _key)
                 return true;
         }
 
@@ -336,7 +352,7 @@ public class LocalizationDatabaseEditor : Editor
     {
         HashSet<string> keys = new HashSet<string>();
 
-        foreach (var entry in db.entries)
+        foreach (var entry in m_db.entries)
         {
             if (string.IsNullOrEmpty(entry.key))
             {
@@ -352,7 +368,7 @@ public class LocalizationDatabaseEditor : Editor
             {
                 if (string.IsNullOrEmpty(entry.values[i]))
                 {
-                    Debug.LogWarning($"Missing translation: {entry.key} ({db.languages[i]})");
+                    Debug.LogWarning($"Missing translation: {entry.key} ({m_db.languages[i]})");
                 }
             }
         }

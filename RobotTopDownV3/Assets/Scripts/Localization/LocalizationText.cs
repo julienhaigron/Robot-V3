@@ -16,12 +16,12 @@ public class LocalizationText : MonoBehaviour
     private void OnEnable ()
     {
         UpdateText();
-        LocalizationManager.OnLanguageChanged += UpdateText;
+        LocalizationManager.onLanguageChanged += UpdateText;
     }
 
     private void OnDisable ()
     {
-        LocalizationManager.OnLanguageChanged -= UpdateText;
+        LocalizationManager.onLanguageChanged -= UpdateText;
     }
 
     private void UpdateText ()

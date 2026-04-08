@@ -6,9 +6,9 @@ public enum LocalizationKey
 
 public static class LocalizationKeyExtensions
 {
-    public static string ToKey(this LocalizationKey key)
+    public static string ToKey(this LocalizationKey _key)
     {
-        switch(key)
+        switch(_key)
         {
             case LocalizationKey.menu_audio: return "menu/audio";
             default: return string.Empty;

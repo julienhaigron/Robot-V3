@@ -4,13 +4,13 @@ using System.Collections.Generic;
 
 public class LocalizationManager : Singleton<LocalizationManager>
 {
-    public static event System.Action OnLanguageChanged;
+    public static event System.Action onLanguageChanged;
+
+    [SerializeField] private LocalizationDatabase m_database;
 
     public SystemLanguage CurrentLanguage;
 
-    [SerializeField] private LocalizationDatabase database;
-
-    private Dictionary<string, string> localizedDict;
+    private Dictionary<string, string> m_localizedDict;
 
     public override void Awake ()
     {
@@ -18,31 +18,31 @@ public class LocalizationManager : Singleton<LocalizationManager>
         BuildDictionary();
     }
 
-    public string Get ( LocalizationKey key )
+    public string Get ( LocalizationKey _key )
     {
-        return Get(key.ToString().Replace("_", "/"));
+        return Get(_key.ToString().Replace("_", "/"));
     }
 
-    public string Get ( string key )
+    public string Get ( string _key )
     {
-        return localizedDict.TryGetValue(key, out var value) ? value : key;
+        return m_localizedDict.TryGetValue(_key, out var value) ? value : _key;
     }
 
-    public void SetLanguage ( SystemLanguage language )
+    public void SetLanguage ( SystemLanguage _language )
     {
-        CurrentLanguage = language;
+        CurrentLanguage = _language;
         BuildDictionary();
-        OnLanguageChanged?.Invoke();
+        onLanguageChanged?.Invoke();
     }
 
     private void BuildDictionary ()
     {
-        localizedDict = new Dictionary<string, string>();
+        m_localizedDict = new Dictionary<string, string>();
 
-        int langIndex = database.languages.IndexOf(CurrentLanguage);
-        int fallbackIndex = database.languages.IndexOf(SystemLanguage.English);
+        int langIndex = m_database.languages.IndexOf(CurrentLanguage);
+        int fallbackIndex = m_database.languages.IndexOf(SystemLanguage.English);
 
-        foreach (var entry in database.entries)
+        foreach (var entry in m_database.entries)
         {
             string value = null;
 
@@ -57,7 +57,7 @@ public class LocalizationManager : Singleton<LocalizationManager>
             if (string.IsNullOrEmpty(value))
                 value = entry.key;
 
-            localizedDict[entry.key] = value;
+            m_localizedDict[entry.key] = value;
         }
     }
 
