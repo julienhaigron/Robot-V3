@@ -5,6 +5,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine;
 using System.Collections.Generic;
 using System.Collections;
+using Unity.Netcode;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -95,11 +96,11 @@ public class GameDatas : ScriptableObject
 
 		public Equipment AddEquipmentToInventory ( EntityEquipmentData _data )
 		{
-			string ID = _data == null ? null : _data.name + equipmentCounter;
-			if (_data == null || string.IsNullOrEmpty(ID))
+			string newID = _data == null ? null : _data.name + equipmentCounter;
+			if (_data == null || string.IsNullOrEmpty(newID))
 				return null;
 
-			Equipment equipment = new(ID, _data.name);
+			Equipment equipment = new() { ID = newID, dataID = _data.name };
 			equipmentInventory.Add(equipment);
 			equipmentCounter++;
 
@@ -114,27 +115,27 @@ public class GameDatas : ScriptableObject
 		public EntitySavedData AddNewUnit (FrameEquipmentData _frame)
 		{
 			EntitySavedData newEntity = new();
-			newEntity.frameID = _frame.name;
+			newEntity.frame = new() { ID = _frame.name + equipmentCounter++, dataID = _frame.name };
 			squadUnits.Add(newEntity);
 
 			return newEntity;
 		}
 
 		[Serializable]
-		public class Equipment
+		public class Equipment : INetworkSerializable
 		{
 			public string ID;
 			public string dataID;
 
-			public Equipment ( string _ID, string _dataID)
+			public void NetworkSerialize<T> ( BufferSerializer<T> serializer ) where T : IReaderWriter
 			{
-				this.ID = _ID;
-				this.dataID = _dataID;
+				serializer.SerializeValue(ref ID);
+				serializer.SerializeValue(ref dataID);
 			}
 
 			public T GetData<T> () where T : EntityEquipmentData
 			{
-				if (!GameAssets.current.equipments.ContainsKey(dataID))
+				if (dataID == null || !GameAssets.current.equipments.ContainsKey(dataID))
 					return null;
 
 				return GameAssets.current.equipments[dataID] as T;

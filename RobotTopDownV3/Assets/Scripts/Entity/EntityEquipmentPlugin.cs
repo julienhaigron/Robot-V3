@@ -74,13 +74,13 @@ public class EntityEquipmentPlugin : EntityPlugin
 	public override void Init ( EntitySavedData _entityData )
 	{
 		//init weapon
-		if (_entityData.armsIds != null && _entityData.armsIds.Length > 0)
+		if (_entityData.arms != null && _entityData.arms.Length > 0)
 		{
-			foreach (StringContainer stringContainer in _entityData.armsIds)
+			foreach (GameDatas.PlayerSave.Equipment stringContainer in _entityData.arms)
 			{
-				if (GameAssets.current.equipments[stringContainer.value] is WeaponEquipmentData weaponData)
+				if (GameAssets.current.equipments[stringContainer.dataID] is WeaponEquipmentData weaponData)
 					AddWeapon(weaponData, m_linkedEntity.Displacement.Spawn.isFirstSide);
-				else if (GameAssets.current.equipments[stringContainer.value] is ToolEquipmentData toolData)
+				else if (GameAssets.current.equipments[stringContainer.dataID] is ToolEquipmentData toolData)
 					AddTool(toolData, m_linkedEntity.Displacement.Spawn.isFirstSide);
 			}
 		}

@@ -36,8 +36,7 @@ public class InventoryPanel : AUIPanel
 			if (equipmentDisplay.Count < i)
 				equipmentDisplay.Add(Instantiate(m_equipmentDisplayPrefab, m_inventoryParent));
 
-			equipmentDisplay[i].Init(null, GameDatas.current.currentPlayerSave.equipmentInventory[i], GameDatas.current.currentPlayerSave.equipmentInventory[i].GetData<EntityEquipmentData>()
-				, ComponentDisplay.DisplayMode.ShopSelling);
+			equipmentDisplay[i].Init(null, GameDatas.current.currentPlayerSave.equipmentInventory[i], ComponentDisplay.DisplayMode.ShopSelling);
 		}
 	}
 }

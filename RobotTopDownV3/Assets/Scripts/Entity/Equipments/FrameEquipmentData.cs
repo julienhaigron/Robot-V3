@@ -29,34 +29,34 @@ public class FrameEquipmentData : EntityEquipmentData
 public class EntitySavedData : INetworkSerializable
 {
 	public string name;
-	public string frameID;
-	public string reactorID;
-	public string neuronalMembraneID;
-	public string brainID;
-	public StringContainer[] armsIds;
-	public StringContainer[] auxiliarIds;
-	public StringContainer[] chipsetsIds;
+	public GameDatas.PlayerSave.Equipment frame;
+	public GameDatas.PlayerSave.Equipment reactor;
+	public GameDatas.PlayerSave.Equipment neuronalMembrane;
+	public GameDatas.PlayerSave.Equipment brain;
+	public GameDatas.PlayerSave.Equipment[] arms;
+	public GameDatas.PlayerSave.Equipment[] auxiliar;
+	public GameDatas.PlayerSave.Equipment[] chipsets;
 
-	public FrameEquipmentData FrameData => string.IsNullOrEmpty(frameID) ? null : GameAssets.current.equipments[frameID] as FrameEquipmentData;
-	public ReactorEquipmentData ReactorData => string.IsNullOrEmpty(reactorID) ? null : GameAssets.current.equipments[reactorID] as ReactorEquipmentData;
-	public NeuronalMembraneEquipmentData NeuronalMembraneData => string.IsNullOrEmpty(neuronalMembraneID) ? null : GameAssets.current.equipments[neuronalMembraneID] as NeuronalMembraneEquipmentData;
-	public BrainEquipmentData BrainData => string.IsNullOrEmpty(brainID) ? null : GameAssets.current.equipments[brainID] as BrainEquipmentData;
+	public FrameEquipmentData FrameData => frame == null || string.IsNullOrEmpty(frame.dataID) ? null : GameAssets.current.equipments[frame.dataID] as FrameEquipmentData;
+	public ReactorEquipmentData ReactorData => reactor == null || string.IsNullOrEmpty(reactor.dataID) ? null : GameAssets.current.equipments[reactor.dataID] as ReactorEquipmentData;
+	public NeuronalMembraneEquipmentData NeuronalMembraneData => neuronalMembrane == null || string.IsNullOrEmpty(neuronalMembrane.dataID) ? null : GameAssets.current.equipments[neuronalMembrane.dataID] as NeuronalMembraneEquipmentData;
+	public BrainEquipmentData BrainData => brain == null || string.IsNullOrEmpty(brain.dataID) ? null : GameAssets.current.equipments[brain.dataID] as BrainEquipmentData;
 
 	public void NetworkSerialize<T> ( BufferSerializer<T> serializer ) where T : IReaderWriter
 	{
 		serializer.SerializeValue(ref name);
-		serializer.SerializeValue(ref frameID);
-		serializer.SerializeValue(ref reactorID);
-		serializer.SerializeValue(ref neuronalMembraneID);
-		serializer.SerializeValue(ref brainID);
-		serializer.SerializeValue(ref armsIds);
-		serializer.SerializeValue(ref auxiliarIds);
-		serializer.SerializeValue(ref chipsetsIds);
+		serializer.SerializeValue(ref frame);
+		serializer.SerializeValue(ref reactor);
+		serializer.SerializeValue(ref neuronalMembrane);
+		serializer.SerializeValue(ref brain);
+		serializer.SerializeValue(ref arms);
+		serializer.SerializeValue(ref auxiliar);
+		serializer.SerializeValue(ref chipsets);
 	}
 
 	public bool IsUnitValid ()
 	{
-		if (string.IsNullOrEmpty(frameID) || string.IsNullOrEmpty(reactorID) || string.IsNullOrEmpty(brainID) || string.IsNullOrEmpty(neuronalMembraneID))
+		if (string.IsNullOrEmpty(frame.dataID) || string.IsNullOrEmpty(reactor.dataID) || string.IsNullOrEmpty(brain.dataID) || string.IsNullOrEmpty(neuronalMembrane.dataID))
 			return false;
 
 		int remainingEnergy = ReactorData.energyProduced;
@@ -72,18 +72,18 @@ public class EntitySavedData : INetworkSerializable
 	{
 		int totalEnergyUsed = 0;
 
-		if (string.IsNullOrEmpty(frameID) || string.IsNullOrEmpty(reactorID) || string.IsNullOrEmpty(brainID) || string.IsNullOrEmpty(neuronalMembraneID))
+		if (FrameData == null || ReactorData == null || BrainData == null || NeuronalMembraneData == null)
 			return totalEnergyUsed;
 
 		totalEnergyUsed += FrameData.energyCost;
 		totalEnergyUsed += BrainData.energyCost;
 		totalEnergyUsed += NeuronalMembraneData.energyCost;
-		foreach (StringContainer equipment in armsIds)
-			totalEnergyUsed += GameAssets.current.equipments[equipment.value].energyCost;
-		foreach (StringContainer equipment in auxiliarIds)
-			totalEnergyUsed += GameAssets.current.equipments[equipment.value].energyCost;
-		foreach (StringContainer equipment in chipsetsIds)
-			totalEnergyUsed += GameAssets.current.equipments[equipment.value].energyCost;
+		foreach (GameDatas.PlayerSave.Equipment equipment in arms)
+			totalEnergyUsed += GameAssets.current.equipments[equipment.dataID].energyCost;
+		foreach (GameDatas.PlayerSave.Equipment equipment in auxiliar)
+			totalEnergyUsed += GameAssets.current.equipments[equipment.dataID].energyCost;
+		foreach (GameDatas.PlayerSave.Equipment equipment in chipsets)
+			totalEnergyUsed += GameAssets.current.equipments[equipment.dataID].energyCost;
 
 		return totalEnergyUsed;
 	}
@@ -96,9 +96,9 @@ public class EntitySavedData : INetworkSerializable
 	public float GetStatBonusFrom ( EntityEquipmentData.StatBonus.StatType _stat, bool _frame = false/*, bool _brain = false*/, bool _arms = false, bool _auxiliar = false, bool _chipsets = false )
 	{
 		float totalBonus = 0;
-		if (_frame && GameAssets.current.equipments[frameID] is FrameEquipmentData frame)
+		if (_frame && GameAssets.current.equipments[frame.dataID] is FrameEquipmentData frameData)
 		{
-			foreach (EntityEquipmentData.StatBonus statBonus in frame.statBonuses)
+			foreach (EntityEquipmentData.StatBonus statBonus in frameData.statBonuses)
 			{
 				if (statBonus.type == _stat)
 					totalBonus += statBonus.value;
@@ -112,11 +112,11 @@ public class EntitySavedData : INetworkSerializable
                     totalBonus += statBonus.value;
             }
         }*/
-		if (_auxiliar && auxiliarIds != null)
+		if (_auxiliar && auxiliar != null)
 		{
-			foreach (StringContainer container in auxiliarIds)
+			foreach (GameDatas.PlayerSave.Equipment container in auxiliar)
 			{
-				if (GameAssets.current.equipments[container.value] is OccultorEquipmentData occultor)
+				if (GameAssets.current.equipments[container.dataID] is OccultorEquipmentData occultor)
 				{
 					foreach (EntityEquipmentData.StatBonus statBonus in occultor.statBonuses)
 					{
@@ -124,7 +124,7 @@ public class EntitySavedData : INetworkSerializable
 							totalBonus += statBonus.value;
 					}
 				}
-				else if (GameAssets.current.equipments[container.value] is ArmorEquipmentData armor)
+				else if (GameAssets.current.equipments[container.dataID] is ArmorEquipmentData armor)
 				{
 					foreach (EntityEquipmentData.StatBonus statBonus in armor.statBonuses)
 					{
@@ -134,11 +134,11 @@ public class EntitySavedData : INetworkSerializable
 				}
 			}
 		}
-		if (_chipsets && chipsetsIds != null)
+		if (_chipsets && chipsets != null)
 		{
-			foreach (StringContainer container in chipsetsIds)
+			foreach (GameDatas.PlayerSave.Equipment container in chipsets)
 			{
-				if (GameAssets.current.equipments[container.value] is ChipsetEquipmentData chipset)
+				if (GameAssets.current.equipments[container.dataID] is ChipsetEquipmentData chipset)
 				{
 					foreach (EntityEquipmentData.StatBonus statBonus in chipset.statBonuses)
 					{
@@ -182,9 +182,9 @@ public class EntitySavedData : INetworkSerializable
 			actionsPerComponents.Add(actionID, BrainData.name);
 		}
 
-		foreach (StringContainer container in armsIds)
+		foreach (GameDatas.PlayerSave.Equipment container in arms)
 		{
-			if (GameAssets.current.equipments[container.value] is EntityEquipmentData equipment)
+			if (GameAssets.current.equipments[container.dataID] is EntityEquipmentData equipment)
 			{
 				foreach (EntityActionEnumID actionID in equipment.knownedActions)
 				{
@@ -194,9 +194,9 @@ public class EntitySavedData : INetworkSerializable
 				}
 			}
 		}
-		foreach (StringContainer container in auxiliarIds)
+		foreach (GameDatas.PlayerSave.Equipment container in auxiliar)
 		{
-			if (GameAssets.current.equipments[container.value] is EntityEquipmentData equipment)
+			if (GameAssets.current.equipments[container.dataID] is EntityEquipmentData equipment)
 			{
 				foreach (EntityActionEnumID actionID in equipment.knownedActions)
 				{
@@ -206,9 +206,9 @@ public class EntitySavedData : INetworkSerializable
 				}
 			}
 		}
-		foreach (StringContainer container in chipsetsIds)
+		foreach (GameDatas.PlayerSave.Equipment container in chipsets)
 		{
-			if (GameAssets.current.equipments[container.value] is EntityEquipmentData equipment)
+			if (GameAssets.current.equipments[container.dataID] is EntityEquipmentData equipment)
 			{
 				foreach (EntityActionEnumID actionID in equipment.knownedActions)
 				{
@@ -231,23 +231,23 @@ public class EntitySavedData : INetworkSerializable
 		passiveEffects.AddRange(BrainData.passiveEffects);
 		passiveEffects.AddRange(GameAssets.current.game.entityActionsData[_actionID].passiveEffects);
 
-		foreach (StringContainer container in armsIds)
+		foreach (GameDatas.PlayerSave.Equipment container in arms)
 		{
-			if (GameAssets.current.equipments[container.value] is EntityEquipmentData equipment && equipment.knownedActions.Contains(_actionID))
+			if (GameAssets.current.equipments[container.dataID] is EntityEquipmentData equipment && equipment.knownedActions.Contains(_actionID))
 			{
 				passiveEffects.AddRange(equipment.passiveEffects);
 			}
 		}
-		foreach (StringContainer container in auxiliarIds)
+		foreach (GameDatas.PlayerSave.Equipment container in auxiliar)
 		{
-			if (GameAssets.current.equipments[container.value] is EntityEquipmentData equipment && equipment.knownedActions.Contains(_actionID))
+			if (GameAssets.current.equipments[container.dataID] is EntityEquipmentData equipment && equipment.knownedActions.Contains(_actionID))
 			{
 				passiveEffects.AddRange(equipment.passiveEffects);
 			}
 		}
-		foreach (StringContainer container in chipsetsIds)
+		foreach (GameDatas.PlayerSave.Equipment container in chipsets)
 		{
-			if (GameAssets.current.equipments[container.value] is EntityEquipmentData equipment)
+			if (GameAssets.current.equipments[container.dataID] is EntityEquipmentData equipment)
 			{
 				passiveEffects.AddRange(equipment.passiveEffects);
 			}
@@ -279,9 +279,9 @@ public class EntitySavedData : INetworkSerializable
 					result += statBonus.value;
 			}
 		}*/
-		foreach (StringContainer container in auxiliarIds)
+		foreach (GameDatas.PlayerSave.Equipment container in auxiliar)
 		{
-			if (GameAssets.current.equipments[container.value] is OccultorEquipmentData occultor)
+			if (GameAssets.current.equipments[container.dataID] is OccultorEquipmentData occultor)
 			{
 				foreach (EntityEquipmentData.StatBonus statBonus in occultor.statBonuses)
 				{
@@ -292,9 +292,9 @@ public class EntitySavedData : INetworkSerializable
 				}
 			}
 		}
-		foreach (StringContainer container in chipsetsIds)
+		foreach (GameDatas.PlayerSave.Equipment container in chipsets)
 		{
-			if (GameAssets.current.equipments[container.value] is ChipsetEquipmentData chipset)
+			if (GameAssets.current.equipments[container.dataID] is ChipsetEquipmentData chipset)
 			{
 				foreach (EntityEquipmentData.StatBonus statBonus in chipset.statBonuses)
 				{
@@ -311,9 +311,9 @@ public class EntitySavedData : INetworkSerializable
 	public float GetStaticStealthBonus ( bool _isVisual )
 	{
 		float result = 0;
-		foreach (StringContainer container in auxiliarIds)
+		foreach (GameDatas.PlayerSave.Equipment container in auxiliar)
 		{
-			if (GameAssets.current.equipments[container.value] is OccultorEquipmentData occultor)
+			if (GameAssets.current.equipments[container.dataID] is OccultorEquipmentData occultor)
 			{
 				if (_isVisual)
 					result += occultor.visualCamo;
@@ -329,9 +329,9 @@ public class EntitySavedData : INetworkSerializable
 				}
 			}
 		}
-		foreach (StringContainer container in chipsetsIds)
+		foreach (GameDatas.PlayerSave.Equipment container in chipsets)
 		{
-			if (GameAssets.current.equipments[container.value] is ChipsetEquipmentData chipset)
+			if (GameAssets.current.equipments[container.dataID] is ChipsetEquipmentData chipset)
 			{
 				foreach (EntityEquipmentData.StatBonus statBonus in chipset.statBonuses)
 				{
@@ -347,7 +347,7 @@ public class EntitySavedData : INetworkSerializable
 	}
 }
 
-[System.Serializable]
+/*[System.Serializable]
 public class StringContainer : INetworkSerializable
 {
 	public string value;
@@ -356,4 +356,4 @@ public class StringContainer : INetworkSerializable
 	{
 		serializer.SerializeValue(ref value);
 	}
-}
+}*/

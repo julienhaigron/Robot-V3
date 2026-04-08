@@ -13,20 +13,25 @@ public class ComponentSlot : ComponentContainer
 
     private EntitySavedData m_unitData;
     private EntityEquipmentData m_equipmentData;
+    private GameDatas.PlayerSave.Equipment m_equipmentSavedData;
 
-    public override void Init ( ComponentContainer _container, EntitySavedData _unitData, EntityEquipmentData _equipmentData, Func<EntityEquipmentData, bool> _predicate, ComponentDisplay.DisplayMode _displayMode )
+    public override void Init ( ComponentContainer _container, EntitySavedData _unitData, GameDatas.PlayerSave.Equipment _componentSavedData, Func<GameDatas.PlayerSave.Equipment, bool> _predicate, ComponentDisplay.DisplayMode _displayMode )
     {
-        base.Init(_container, _unitData, _equipmentData, _predicate, _displayMode);
+        base.Init(_container, _unitData, _componentSavedData, _predicate, _displayMode);
         m_unitData = _unitData;
-        m_equipmentData = _equipmentData;
+        m_equipmentSavedData = _componentSavedData;
+        m_equipmentData = _componentSavedData.GetData<EntityEquipmentData>();
+        m_openEntityConfigBtn.onClick = null;
         m_openEntityConfigBtn.onClick += OnClickOpenEntityConfigBtn;
+        m_openEntityConfigBtn.gameObject.SetActive(m_equipmentData != null && (m_equipmentData.GetEquipmentType() == EntityEquipmentData.EquipmentType.Frame
+            || m_equipmentData.GetEquipmentType() == EntityEquipmentData.EquipmentType.Brain || m_equipmentData.GetEquipmentType() == EntityEquipmentData.EquipmentType.NeuronalMembrane));
 
-        if (IsValid(_equipmentData))
+        if (IsValid(_componentSavedData))
         {
             ComponentDisplay newDisplay = Instantiate(GameAssets.current.ui.baseComponentDisplay, m_displayParent);
-            newDisplay.Init(_unitData, null, _equipmentData, _displayMode);
+            newDisplay.Init(_unitData, _componentSavedData, _displayMode);
 
-            m_currentEquipment = newDisplay;
+            m_currentDisplay = newDisplay;
             newDisplay.CurrentContainer = this;
             newDisplay.transform.SetParent(transform);
             newDisplay.transform.localPosition = Vector3.zero;
@@ -34,16 +39,27 @@ public class ComponentSlot : ComponentContainer
 
     }
 
+    public override bool IsValid ( GameDatas.PlayerSave.Equipment _savedData )
+    {
+        return m_equipmentSavedData != _savedData && base.IsValid(_savedData);
+    }
+
     private void OnClickOpenEntityConfigBtn ()
     {
-        UIManager.Instance.OpenPopup<EntityComponentConfigPopup>().Init(m_unitData, m_equipmentData);
+        UIManager.Instance.OpenPanel<EntityComponentConfigPanel>().Init(m_unitData, m_equipmentSavedData);
+    }
+
+    public void Cleanup ()
+    {
+        if(m_currentDisplay != null)
+            Destroy(m_currentDisplay.gameObject);
     }
 
     #region DnD
 
     public override void RegisterInteraction ( ComponentDisplay _component )
     {
-        if (m_currentEquipment != null)
+        if (m_currentDisplay != null)
         {
             Swap(_component);
         }
@@ -55,10 +71,10 @@ public class ComponentSlot : ComponentContainer
 
     public void SetEquipment ( ComponentDisplay equipment )
     {
-        if (m_currentEquipment != null)
-            onItemRemoved?.Invoke(m_currentEquipment);
+        if (m_currentDisplay != null)
+            onItemRemoved?.Invoke(m_currentDisplay);
 
-        m_currentEquipment = equipment;
+        m_currentDisplay = equipment;
 
         equipment.CurrentContainer = this;
 
@@ -70,7 +86,7 @@ public class ComponentSlot : ComponentContainer
 
     private void Swap ( ComponentDisplay incoming )
     {
-        ComponentDisplay temp = m_currentEquipment;
+        ComponentDisplay temp = m_currentDisplay;
 
         SetEquipment(incoming);
 
@@ -82,10 +98,10 @@ public class ComponentSlot : ComponentContainer
 
     public void Clear ()
     {
-        if (m_currentEquipment != null)
+        if (m_currentDisplay != null)
         {
-            onItemRemoved?.Invoke(m_currentEquipment);
-            m_currentEquipment = null;
+            onItemRemoved?.Invoke(m_currentDisplay);
+            m_currentDisplay = null;
         }
     }
 

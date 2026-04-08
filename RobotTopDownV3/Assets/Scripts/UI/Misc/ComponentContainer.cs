@@ -4,41 +4,41 @@ using System;
 
 public abstract class ComponentContainer : MonoBehaviour, IDropHandler
 {
-    protected ComponentDisplay m_currentEquipment;
-    public ComponentDisplay CurrentEquipment
+    protected ComponentDisplay m_currentDisplay;
+    public ComponentDisplay CurrentDisplay
     {
         get
         {
-            return m_currentEquipment;
+            return m_currentDisplay;
         }
         set
         {
-            m_currentEquipment = value;
+            m_currentDisplay = value;
         }
     }
-    protected Func<EntityEquipmentData, bool> m_predicate;
+    protected Func<GameDatas.PlayerSave.Equipment, bool> m_predicate;
 
     protected ComponentContainer m_linkedContainer;
     public ComponentContainer LinkedContainer => m_linkedContainer;
 
-    public virtual void Init ( ComponentContainer _container, EntitySavedData _unitData, EntityEquipmentData _equipmentData, Func<EntityEquipmentData, bool> _predicate, ComponentDisplay.DisplayMode _displayMode )
+    public virtual void Init ( ComponentContainer _container, EntitySavedData _unitData, GameDatas.PlayerSave.Equipment _componentSavedData, Func<GameDatas.PlayerSave.Equipment, bool> _predicate, ComponentDisplay.DisplayMode _displayMode )
     {
         m_linkedContainer = _container;
         m_predicate = _predicate;
     }
 
-    public bool IsValid ( EntityEquipmentData item )
+    public virtual bool IsValid ( GameDatas.PlayerSave.Equipment _savedData )
     {
-        if (item == null)
+        if (_savedData == null)
             return false;
 
-        return m_predicate == null || m_predicate(item);
+        return m_predicate == null || m_predicate(_savedData);
     }
 
     public void OnDrop ( PointerEventData eventData )
     {
         ComponentDisplay dropped = eventData.pointerDrag.GetComponent<ComponentDisplay>();
-        if (dropped == null || !IsValid(dropped.ComponentData)) return;
+        if (dropped == null || !IsValid(dropped.SavedData)) return;
 
         RemoveFromOrigin(dropped);
 
@@ -50,6 +50,6 @@ public abstract class ComponentContainer : MonoBehaviour, IDropHandler
     public void RemoveFromOrigin ( ComponentDisplay item )
     {
         if (item.CurrentContainer != null)
-            item.CurrentContainer.CurrentEquipment = null;
+            item.CurrentContainer.CurrentDisplay = null;
     }
 }

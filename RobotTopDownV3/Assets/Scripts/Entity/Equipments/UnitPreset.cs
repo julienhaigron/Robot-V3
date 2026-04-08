@@ -14,6 +14,8 @@ public class UnitPreset : ScriptableObject
     [OnValueChanged("@RefreshTotalEnergyCostRemaining()")]
     public BrainEquipmentData brain;
     [OnValueChanged("@RefreshTotalEnergyCostRemaining()")]
+    public NeuronalMembraneEquipmentData neuronalMembrane;
+    [OnValueChanged("@RefreshTotalEnergyCostRemaining()")]
     public WeaponEquipmentData[] arms;
     [OnValueChanged("@RefreshTotalEnergyCostRemaining()")]
     public EntityEquipmentData[] auxiliary;
@@ -34,6 +36,7 @@ public class UnitPreset : ScriptableObject
         m_totalEnergyCostRemaining = reactor.energyProduced;
         m_totalEnergyCostRemaining -= frame.energyCost;
         m_totalEnergyCostRemaining -= brain.energyCost;
+        m_totalEnergyCostRemaining -= neuronalMembrane.energyCost;
         foreach (EntityEquipmentData equipment in arms)
             m_totalEnergyCostRemaining -= equipment.energyCost;
         foreach (EntityEquipmentData equipment in auxiliary)
@@ -46,24 +49,25 @@ public class UnitPreset : ScriptableObject
 	{
         EntitySavedData newUnit = new();
         newUnit.name = displayName;
-        newUnit.frameID = frame.name;
-        newUnit.reactorID = reactor.name;
-        newUnit.brainID = brain.name;
+        newUnit.frame = new() { ID = frame.name + GameDatas.current.currentPlayerSave.equipmentCounter++, dataID = frame.name };
+        newUnit.reactor = new() { ID = reactor.name + GameDatas.current.currentPlayerSave.equipmentCounter++, dataID = reactor.name };
+        newUnit.neuronalMembrane = new() { ID = neuronalMembrane.name + GameDatas.current.currentPlayerSave.equipmentCounter++, dataID = neuronalMembrane.name };
+        newUnit.brain = new() { ID = brain.name + GameDatas.current.currentPlayerSave.equipmentCounter++, dataID = brain.name };
 
-        List<StringContainer> armsContainer = new();
+        List<GameDatas.PlayerSave.Equipment> armsContainer = new();
         foreach (WeaponEquipmentData arm in arms)
-            armsContainer.Add(new() { value = arm.name });
-        newUnit.armsIds = armsContainer.ToArray();
+            armsContainer.Add(new() { ID = arm.name + GameDatas.current.currentPlayerSave.equipmentCounter++, dataID = arm.name });
+        newUnit.arms = armsContainer.ToArray();
 
-        List<StringContainer> auxiliaryContainer = new();
+        List<GameDatas.PlayerSave.Equipment> auxiliaryContainer = new();
         foreach (EntityEquipmentData arm in auxiliary)
-            auxiliaryContainer.Add(new() { value = arm.name });
-        newUnit.auxiliarIds = auxiliaryContainer.ToArray();
+            auxiliaryContainer.Add(new() { ID = arm.name + GameDatas.current.currentPlayerSave.equipmentCounter++, dataID = arm.name });
+        newUnit.auxiliar = auxiliaryContainer.ToArray();
 
-        List<StringContainer> chipstetsContainer = new();
+        List<GameDatas.PlayerSave.Equipment> chipstetsContainer = new();
         foreach (ChipsetEquipmentData arm in chipsets)
-            chipstetsContainer.Add(new() { value = arm.name });
-        newUnit.chipsetsIds = chipstetsContainer.ToArray();
+            chipstetsContainer.Add(new() { ID = arm.name + GameDatas.current.currentPlayerSave.equipmentCounter++, dataID = arm.name });
+        newUnit.chipsets = chipstetsContainer.ToArray();
 
         return newUnit;
     }

@@ -25,10 +25,10 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 
 	public enum DisplayMode { Hangar, RepairStation, RecyclingStation, ShopBuying, ShopSelling}
 
-    public void Init(EntitySavedData _unitData, GameDatas.PlayerSave.Equipment _partSavedData, EntityEquipmentData _componentData , DisplayMode _displayMode )
+    public void Init(EntitySavedData _unitData, GameDatas.PlayerSave.Equipment _componentSavedData , DisplayMode _displayMode )
 	{
-		m_savedData = _partSavedData;
-		m_componentData = _componentData;
+		m_savedData = _componentSavedData;
+		m_componentData = _componentSavedData.GetData<EntityEquipmentData>();
 		m_componentIcon.sprite = GameAssets.current.ui.componentIcons[m_componentData.GetEquipmentType()];
 		m_corpIcon.sprite = GameAssets.current.ui.corporationsIcons[m_componentData.faction];
 		m_icon.sprite = m_componentData.icon;
@@ -36,7 +36,7 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 		switch (_displayMode)
 		{
 			case DisplayMode.Hangar:
-				m_titleTMP.text = _unitData == null ? null : _unitData.name;
+				m_titleTMP.text = m_componentData == null ? null : m_componentData.displayName;
 				m_titleTMP.gameObject.SetActive(true);
 				m_componentIcon.gameObject.SetActive(true);
 				m_corpIcon.gameObject.SetActive(true);
@@ -124,7 +124,7 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 	{
 		if (CurrentContainer != null)
 		{
-			if (CurrentContainer.LinkedContainer != null && CurrentContainer.LinkedContainer.IsValid(ComponentData))
+			if (CurrentContainer.LinkedContainer != null && CurrentContainer.LinkedContainer.IsValid(m_savedData))
 			{
 				CurrentContainer.RemoveFromOrigin(this);
 

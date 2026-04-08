@@ -44,7 +44,7 @@ public class EntityEquipmentData : ScriptableObject
             return EquipmentType.NeuronalMembrane;
         else if (this is WeaponEquipmentData)
             return EquipmentType.Weapon;
-        else if (this is ToolEquipmentData or ArmorEquipmentData)
+        else if (this is ToolEquipmentData)
             return EquipmentType.Tool;
         else if (this is ArmorEquipmentData)
             return EquipmentType.Armor;

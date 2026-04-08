@@ -16,6 +16,7 @@ MonoBehaviour:
   frame: {fileID: 11400000, guid: c4fc98459ea1c6f409c0f37294d3eb79, type: 2}
   reactor: {fileID: 11400000, guid: 72eb56ac0197e1144a3cd4bd0c3819ea, type: 2}
   brain: {fileID: 11400000, guid: 573535521dc3abb4a822374062aed86b, type: 2}
+  neuronalMembrane: {fileID: 11400000, guid: abba24f3693db0648846aa53c2757d3b, type: 2}
   arms:
   - {fileID: 11400000, guid: f4244f10f226692459c0d1dfce572068, type: 2}
   - {fileID: 11400000, guid: 092f78630a84b294eaead47e6587f5b4, type: 2}
@@ -25,4 +26,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 28da51fc5fc9f6f44895bc8c77a683ff, type: 2}
   chipsets:
   - {fileID: 11400000, guid: 413afd951faf0e544b2cd83d0ce95a1d, type: 2}
+  isInvocation: 0
+  isTangible: 1
   m_totalEnergyCostRemaining: 5

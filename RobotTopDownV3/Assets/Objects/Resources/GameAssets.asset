@@ -163,8 +163,9 @@ MonoBehaviour:
       - {fileID: 2100000, guid: 70fa849432054e74c89bb3e1a876324c, type: 2}
       - {fileID: 2100000, guid: 75966bde5e759e8459a8eda2d59676f2, type: 2}
     componentIcons:
-      keys: 0000000001000000020000000300000004000000050000000600000007000000
+      keys: 000000000100000002000000030000000400000005000000060000000700000008000000
       values:
+      - {fileID: 0}
       - {fileID: 0}
       - {fileID: 0}
       - {fileID: 0}
@@ -226,6 +227,7 @@ MonoBehaviour:
     - Weapon_Psy_Lance
     - Weapon_Psy_Railgun
     - Weapon_Psy_Sniper
+    - NeuronalMembraneTest1
     values:
     - {fileID: 11400000, guid: 80c151b23c81a824eb52ac271f7ddb56, type: 2}
     - {fileID: 11400000, guid: ebdfa3c8fc2e36647b90d0a3d19624b6, type: 2}
@@ -266,5 +268,6 @@ MonoBehaviour:
     - {fileID: 11400000, guid: 2d94a8985ceb79b4d88440205b20e0d5, type: 2}
     - {fileID: 11400000, guid: 55f3f48e7e9726943bd5ae7bad8a47ed, type: 2}
     - {fileID: 11400000, guid: 02717077237066f4fb15dc94b1382d21, type: 2}
+    - {fileID: 11400000, guid: abba24f3693db0648846aa53c2757d3b, type: 2}
   upgrades:
   - {fileID: 11400000, guid: 0d4448f120cab5c42814f6681918124f, type: 2}

@@ -4,6 +4,7 @@ using TMPro;
 using System.Collections.Generic;
 using System.Collections;
 using System;
+using System.Linq;
 
 public class ComponentDisplayGrid : ComponentContainer
 {
@@ -15,17 +16,16 @@ public class ComponentDisplayGrid : ComponentContainer
     private List<ComponentDisplay> m_items = new();
     public List<ComponentDisplay> Items => m_items;
 
-    public override void Init ( ComponentContainer _container, EntitySavedData _unitData, EntityEquipmentData _equipmentData, Func<EntityEquipmentData, bool> _predicate, ComponentDisplay.DisplayMode _displayMode )
+    public override void Init ( ComponentContainer _container, EntitySavedData _unitData, GameDatas.PlayerSave.Equipment _componentSavedData, Func<GameDatas.PlayerSave.Equipment, bool> _predicate, ComponentDisplay.DisplayMode _displayMode )
     {
-        base.Init(_container, _unitData, _equipmentData, _predicate, _displayMode);
+        base.Init(_container, _unitData, _componentSavedData, _predicate, _displayMode);
 
         foreach (GameDatas.PlayerSave.Equipment eq in GameDatas.current.currentPlayerSave.equipmentInventory)
 		{
-            EntityEquipmentData data = eq.GetData<EntityEquipmentData>();
-			if (IsValid(data))
+			if (IsValid(eq))
             {
                 ComponentDisplay newDisplay = Instantiate(GameAssets.current.ui.baseComponentDisplay, m_itemsParent);
-                newDisplay.Init(_unitData, eq, data, _displayMode);
+                newDisplay.Init(_unitData, eq, _displayMode);
 
                 m_items.Add(newDisplay);
                 newDisplay.CurrentContainer = this;
@@ -36,10 +36,21 @@ public class ComponentDisplayGrid : ComponentContainer
         }
     }
 
-    public void Cleanup ()
+	public override bool IsValid ( GameDatas.PlayerSave.Equipment item )
+	{
+        foreach(ComponentDisplay display in m_items)
+		{
+            if (display.SavedData == item)
+                return false;
+		}
+
+		return base.IsValid(item);
+	}
+
+	public void Cleanup ()
 	{
         foreach (ComponentDisplay display in m_items)
-            Destroy(display);
+            Destroy(display.gameObject);
 
         m_items.Clear();
 

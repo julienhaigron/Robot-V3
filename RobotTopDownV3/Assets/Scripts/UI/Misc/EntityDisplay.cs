@@ -15,10 +15,10 @@ public class EntityDisplay : MonoBehaviour
     {
         m_unitData = _unitData;
         m_title.text = _unitData.name;
-        m_iconImg.sprite = GameAssets.current.equipments[_unitData.frameID].icon;
-		for (int i = 0; i < _unitData.armsIds.Length; i++)
+        m_iconImg.sprite = GameAssets.current.equipments[_unitData.frame.dataID].icon;
+		for (int i = 0; i < _unitData.arms.Length; i++)
 		{
-            m_armsImgs[i].sprite = GameAssets.current.equipments[_unitData.armsIds[i].value].icon;
+            m_armsImgs[i].sprite = GameAssets.current.equipments[_unitData.arms[i].dataID].icon;
 		}
         m_openEntityConfigBtn.onClick += OnClickOpenEntityConfigBtn;
     }

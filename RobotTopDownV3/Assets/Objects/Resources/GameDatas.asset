@@ -24,40 +24,32 @@ MonoBehaviour:
     knownedFrames: []
     allBuiltUnits: []
     squadUnits:
-    - name: Fire Bat
-      frameID: Frame_A-7
-      reactorID: Reactor_B-99
-      neuronalMembraneID: 
-      brainID: Brain_Z-1
-      armsIds:
-      - value: Weapon_FlameThrowerXV-68
-      - value: Weapon_ShieldGeneratorD-3
-      auxiliarIds:
-      - value: Armor_CD1
-      - value: Armor_CD2
-      - value: Occultor_SF-5
-      chipsetsIds:
-      - value: Chipset_ZB-38
+    - name: 
+      frame:
+        ID: PlayerRobot0
+        dataID: PlayerRobot
+      reactor:
+        ID: 
+        dataID: 
+      neuronalMembrane:
+        ID: 
+        dataID: 
+      brain:
+        ID: 
+        dataID: 
+      arms: []
+      auxiliar: []
+      chipsets: []
     equipmentInventory:
-    - ID: Armor_CD10
-      dataID: Armor_CD1
     - ID: Armor_CD11
       dataID: Armor_CD1
     - ID: Armor_CD12
       dataID: Armor_CD1
-    - ID: Frame_Knight3
-      dataID: Frame_Knight
-    - ID: Frame_Knight4
-      dataID: Frame_Knight
-    - ID: Frame_Knight5
-      dataID: Frame_Knight
-    - ID: Reactor_B-996
-      dataID: Reactor_B-99
-    - ID: Reactor_B-997
-      dataID: Reactor_B-99
-    - ID: Reactor_B-998
-      dataID: Reactor_B-99
-    equipmentCounter: 9
+    - ID: Armor_CD13
+      dataID: Armor_CD1
+    - ID: Armor_CD14
+      dataID: Armor_CD1
+    equipmentCounter: 5
   currencies:
     keys: 01000000
     values: 0000000000000000
