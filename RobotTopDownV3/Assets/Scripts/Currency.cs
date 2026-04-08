@@ -53,7 +53,7 @@ public class Currency : ScriptableEnum<CurrencyType>
 		}
 	}
 
-	public bool IsCapacityMaxed => GameDatas.current.currencies[enumID] >= MaxCapacity;
+	public bool IsCapacityMaxed => GameDatas.current.currentPlayerSave.currencies[enumID] >= MaxCapacity;
 
 	public enum CurrencyMaxCapacityType
 	{

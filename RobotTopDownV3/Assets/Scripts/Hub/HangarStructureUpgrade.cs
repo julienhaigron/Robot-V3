@@ -8,7 +8,7 @@ public class HangarStructureUpgrade : StructureUpgrade
     public int[] maxSquadUnitAmountPerLevel;
     public int[] maxSquadEnergyAmountPerLevel;
 
-	public override int GetAddonValue ( int _level, int _addonID )
+	public override float GetAddonValue ( int _level, int _addonID )
 	{
 		switch (_addonID)
 		{

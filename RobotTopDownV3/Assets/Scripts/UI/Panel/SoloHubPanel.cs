@@ -34,7 +34,7 @@ public class SoloHubPanel : AUIPanel
 
 	private void OnClickOpenShopBtn ()
 	{
-		UIManager.Instance.OpenPanel<ShopPanel>();
+		UIManager.Instance.OpenPanel<ShopPanel>().Init();
 	}
 
 	private void OnClickOpenRepairBtn ()

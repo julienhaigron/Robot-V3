@@ -81,7 +81,7 @@ public class UpgradeAsset : ScriptableObject
     [Button("Upgrade")]
     public virtual void Upgrade ( bool removeMoney = true )
     {
-        GameDatas.current.upgradeLevels[m_saveKey]++;
+        GameDatas.current.currentPlayerSave.upgradeLevels[m_saveKey]++;
         if (removeMoney)
         {
             GameDatas.current.RemoveCurrency(m_currencyType, GetCurrentPrice(), "Upgrade" + m_displayName + GetCurrentLevel());
@@ -132,17 +132,17 @@ public class UpgradeAsset : ScriptableObject
 
     public virtual int GetCurrentLevel ()
     {
-        return GameDatas.current.upgradeLevels[m_saveKey];
+        return GameDatas.current.currentPlayerSave.upgradeLevels[m_saveKey];
     }
 
     public virtual bool CanUpgrade ()
     {
-        return CanUpgrade(GetCurrentLevel(), GameDatas.current.currencies[m_currencyType]);
+        return CanUpgrade(GetCurrentLevel(), GameDatas.current.currentPlayerSave.currencies[m_currencyType]);
     }
 
     public virtual int GetPurchasableUpgradesAmount ()
     {
-        return GetPurchasableUpgradesAmount(GetCurrentLevel(), GameDatas.current.currencies[m_currencyType]);
+        return GetPurchasableUpgradesAmount(GetCurrentLevel(), GameDatas.current.currentPlayerSave.currencies[m_currencyType]);
     }
     #endregion
 
@@ -177,7 +177,7 @@ public class UpgradeAsset : ScriptableObject
 
     public virtual bool HasEnoughCurrencyForCurrentUpgrade ()
     {
-        return GameDatas.current.currencies[currencyType] >= GetCurrentPrice();
+        return GameDatas.current.currentPlayerSave.currencies[currencyType] >= GetCurrentPrice();
     }
 
     public virtual bool IsMaxedOut ()
@@ -237,9 +237,9 @@ public class UpgradeAsset : ScriptableObject
     private void AddToGameAssets ()
     {
         GameAssets.current.upgrades.Add(this);
-        if (!GameDatas.current.upgradeLevels.ContainsKey(m_saveKey))
+        if (!GameDatas.current.currentPlayerSave.upgradeLevels.ContainsKey(m_saveKey))
         {
-            GameDatas.current.upgradeLevels.Add(m_saveKey, 0);
+            GameDatas.current.currentPlayerSave.upgradeLevels.Add(m_saveKey, 0);
         }
         string assetPath = AssetDatabase.GetAssetPath(GetInstanceID());
         AssetDatabase.RenameAsset(assetPath, GenerateAssetName());

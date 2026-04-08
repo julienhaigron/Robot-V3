@@ -9,14 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 981045e478386cb49abf7ac83a4ac935, type: 3}
-  m_Name: GameDatas
+  m_Script: {fileID: 11500000, guid: 1f6b73d255e8e5244b9a359584d91adf, type: 3}
+  m_Name: LocalizationDatabase
   m_EditorClassIdentifier: 
-  preventSave: 0
-  app:
-    hapticEnabled: 1
-    musicVolume: 1
-    sfxVolume: 1
-  game:
-    lastPlayerSaveSelectedID: -1
-  playerSaves: []
+  languages: 0a0000000e000000
+  entries: []

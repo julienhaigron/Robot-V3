@@ -89,7 +89,7 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 	#region Interactions
 	public void OnBeginDrag ( PointerEventData eventData )
 	{
-		transform.SetParent(CurrentContainer.transform);
+		transform.SetParent(UIManager.Instance.TopLayer);
 		transform.SetAsLastSibling();
 
 		m_canvasGroup.blocksRaycasts = false;
@@ -104,7 +104,7 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 	{
 		m_canvasGroup.blocksRaycasts = true;
 
-		if (transform.parent == CurrentContainer.transform)
+		if (transform.parent == UIManager.Instance.TopLayer)
 		{
 			ReturnToOrigin();
 		}

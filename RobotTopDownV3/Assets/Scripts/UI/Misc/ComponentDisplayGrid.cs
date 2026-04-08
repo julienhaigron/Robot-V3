@@ -21,19 +21,18 @@ public class ComponentDisplayGrid : ComponentContainer
         base.Init(_container, _unitData, _componentSavedData, _predicate, _displayMode);
 
         foreach (GameDatas.PlayerSave.Equipment eq in GameDatas.current.currentPlayerSave.equipmentInventory)
-		{
 			if (IsValid(eq))
-            {
-                ComponentDisplay newDisplay = Instantiate(GameAssets.current.ui.baseComponentDisplay, m_itemsParent);
-                newDisplay.Init(_unitData, eq, _displayMode);
+                CreateNewDisplay(_unitData, eq, _displayMode);
+    }
 
-                m_items.Add(newDisplay);
-                newDisplay.CurrentContainer = this;
-                newDisplay.transform.SetParent(transform);
-                newDisplay.transform.localPosition = Vector3.zero;
-            }
+    public void CreateNewDisplay( EntitySavedData _unitData, GameDatas.PlayerSave.Equipment _componentSavedData, ComponentDisplay.DisplayMode _displayMode )
+	{
+        ComponentDisplay newDisplay = Instantiate(GameAssets.current.ui.baseComponentDisplay, m_itemsParent);
+        newDisplay.Init(_unitData, _componentSavedData, _displayMode);
 
-        }
+        m_items.Add(newDisplay);
+        newDisplay.CurrentContainer = this;
+        newDisplay.transform.localPosition = Vector3.zero;
     }
 
 	public override bool IsValid ( GameDatas.PlayerSave.Equipment item )

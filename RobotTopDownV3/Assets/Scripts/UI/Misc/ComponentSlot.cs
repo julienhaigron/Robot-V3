@@ -33,7 +33,7 @@ public class ComponentSlot : ComponentContainer
 
             m_currentDisplay = newDisplay;
             newDisplay.CurrentContainer = this;
-            newDisplay.transform.SetParent(transform);
+            newDisplay.transform.SetParent(m_displayParent);
             newDisplay.transform.localPosition = Vector3.zero;
         }
 
@@ -78,7 +78,7 @@ public class ComponentSlot : ComponentContainer
 
         equipment.CurrentContainer = this;
 
-        equipment.transform.SetParent(transform);
+        equipment.transform.SetParent(m_displayParent);
         equipment.transform.localPosition = Vector3.zero;
 
         onItemAdded?.Invoke(equipment);

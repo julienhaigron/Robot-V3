@@ -56,12 +56,6 @@ public class GameDatas : ScriptableObject
 		}
 	}
 
-	public SerializableDictionary<CurrencyType, ulong> currencies = new SerializableDictionary<CurrencyType, ulong>();
-	public SerializableDictionary<CurrencyType, ulong> totalCurrenciesGot = new SerializableDictionary<CurrencyType, ulong>();
-	public SerializableDictionary<CurrencyType, ulong> totalCurrenciesSpent = new SerializableDictionary<CurrencyType, ulong>();
-
-	public SerializableDictionary<string, int> upgradeLevels = new SerializableDictionary<string, int>();
-
 	[System.Serializable]
 	public partial class App
 	{
@@ -79,8 +73,9 @@ public class GameDatas : ScriptableObject
 	public void CreateSave (string _saveName)
 	{
 		PlayerSave newSave = new PlayerSave();
+		newSave.Initialize();
 		newSave.saveName = _saveName;
-		playerSaves.Add(new PlayerSave());
+		playerSaves.Add(newSave);
 	}
 	
 	[System.Serializable]
@@ -93,6 +88,11 @@ public class GameDatas : ScriptableObject
 		public List<Equipment> equipmentInventory = new ();
 		public int equipmentCounter = 0;
 
+		public SerializableDictionary<CurrencyType, ulong> currencies = new SerializableDictionary<CurrencyType, ulong>();
+		public SerializableDictionary<CurrencyType, ulong> totalCurrenciesGot = new SerializableDictionary<CurrencyType, ulong>();
+		public SerializableDictionary<CurrencyType, ulong> totalCurrenciesSpent = new SerializableDictionary<CurrencyType, ulong>();
+
+		public SerializableDictionary<string, int> upgradeLevels = new SerializableDictionary<string, int>();
 
 		public Equipment AddEquipmentToInventory ( EntityEquipmentData _data )
 		{
@@ -142,6 +142,49 @@ public class GameDatas : ScriptableObject
 			}
 		}
 
+		public void Initialize ()
+		{
+			if (currencies == null)
+			{
+				currencies = new SerializableDictionary<CurrencyType, ulong>();
+			}
+			if (totalCurrenciesGot == null)
+			{
+				totalCurrenciesGot = new SerializableDictionary<CurrencyType, ulong>();
+			}
+			if (totalCurrenciesSpent == null)
+			{
+				totalCurrenciesSpent = new SerializableDictionary<CurrencyType, ulong>();
+			}
+			foreach (KeyValuePair<CurrencyType, Currency> currency in GameAssets.current.currencies)
+			{
+				if (!currencies.ContainsKey(currency.Key))
+				{
+					currencies.Add(currency.Key, currency.Value.baseCurrency);
+				}
+				if (!totalCurrenciesGot.ContainsKey(currency.Key))
+				{
+					totalCurrenciesGot.Add(currency.Key, currency.Value.baseCurrency);
+				}
+				if (!totalCurrenciesSpent.ContainsKey(currency.Key))
+				{
+					totalCurrenciesSpent.Add(currency.Key, 0);
+				}
+			}
+
+			if (upgradeLevels == null)
+			{
+				upgradeLevels = new SerializableDictionary<string, int>();
+			}
+			foreach (UpgradeAsset upgrade in GameAssets.current.upgrades)
+			{
+				if (!upgradeLevels.ContainsKey(upgrade.saveKey))
+				{
+					upgradeLevels.Add(upgrade.saveKey, 0);
+				}
+			}
+		}
+
 	}
 
 	public enum CurrencyRemoveMode
@@ -172,8 +215,8 @@ public class GameDatas : ScriptableObject
 			return;
 
 		//GameConfig.current.feedbacks.addCurrencyFeedback.PlayQueue(0, feedback);
-		currencies[_type] += _amount;
-		totalCurrenciesGot[_type] += _amount;
+		currentPlayerSave.currencies[_type] += _amount;
+		currentPlayerSave.totalCurrenciesGot[_type] += _amount;
 
 		onCurrencyChanged?.Invoke(_type);
 		onCurrencyAdded?.Invoke(_type, _amount);
@@ -185,17 +228,17 @@ public class GameDatas : ScriptableObject
 			return;
 
 		//GameConfig.current.feedbacks.removeCurrencyFeedback.Play(feedback);
-		if (_amount > currencies[_type])
+		if (_amount > currentPlayerSave.currencies[_type])
 		{
-			Debug.LogWarning("TRIED TO REMOVE MORE CURRENCY " + _type.ToString() + " THAN POSSESSED (" + currencies[_type] + " - " + _amount + ")");
-			totalCurrenciesSpent[_type] += currencies[_type];
-			onCurrencyRemoved?.Invoke(_type, currencies[_type], _currencyRemoveMode);
-			currencies[_type] = 0;
+			Debug.LogWarning("TRIED TO REMOVE MORE CURRENCY " + _type.ToString() + " THAN POSSESSED (" + currentPlayerSave.currencies[_type] + " - " + _amount + ")");
+			currentPlayerSave.totalCurrenciesSpent[_type] += currentPlayerSave.currencies[_type];
+			onCurrencyRemoved?.Invoke(_type, currentPlayerSave.currencies[_type], _currencyRemoveMode);
+			currentPlayerSave.currencies[_type] = 0;
 		}
 		else
 		{
-			currencies[_type] -= _amount;
-			totalCurrenciesSpent[_type] += _amount;
+			currentPlayerSave.currencies[_type] -= _amount;
+			currentPlayerSave.totalCurrenciesSpent[_type] += _amount;
 			onCurrencyRemoved?.Invoke(_type, _amount, _currencyRemoveMode);
 		}
 		onCurrencyChanged?.Invoke(_type);
@@ -433,45 +476,7 @@ public class GameDatas : ScriptableObject
 	public void Initialize ()
 	{
 		//meta.Initialize();
-		if (currencies == null)
-		{
-			currencies = new SerializableDictionary<CurrencyType, ulong>();
-		}
-		if (totalCurrenciesGot == null)
-		{
-			totalCurrenciesGot = new SerializableDictionary<CurrencyType, ulong>();
-		}
-		if (totalCurrenciesSpent == null)
-		{
-			totalCurrenciesSpent = new SerializableDictionary<CurrencyType, ulong>();
-		}
-		foreach (KeyValuePair<CurrencyType, Currency> currency in GameAssets.current.currencies)
-		{
-			if (!currencies.ContainsKey(currency.Key))
-			{
-				currencies.Add(currency.Key, currency.Value.baseCurrency);
-			}
-			if (!totalCurrenciesGot.ContainsKey(currency.Key))
-			{
-				totalCurrenciesGot.Add(currency.Key, currency.Value.baseCurrency);
-			}
-			if (!totalCurrenciesSpent.ContainsKey(currency.Key))
-			{
-				totalCurrenciesSpent.Add(currency.Key, 0);
-			}
-		}
 
-		if (upgradeLevels == null)
-		{
-			upgradeLevels = new SerializableDictionary<string, int>();
-		}
-		foreach (UpgradeAsset upgrade in GameAssets.current.upgrades)
-		{
-			if (!upgradeLevels.ContainsKey(upgrade.saveKey))
-			{
-				upgradeLevels.Add(upgrade.saveKey, 0);
-			}
-		}
 		
 		Debug.Log("Game Datas Initialized.");
 	}

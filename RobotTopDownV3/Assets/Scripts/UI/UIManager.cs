@@ -18,6 +18,8 @@ public sealed class UIManager : SingletonPersistant<UIManager>
 	//3) Show Panel / Show TopCanvas
 
 	[SerializeField] private AUIPanel m_firstPanelToOpen;
+	[SerializeField] private Transform m_topLayer;
+	public Transform TopLayer => m_topLayer;
 
 	private static List<AUIPanel> m_panels;
 	private static List<AUIPopup> m_popups;
