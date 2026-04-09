@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   faction: 0
   icon: {fileID: 0}
-  displayName: 
+  displayName: Armor CD1
   energyCost: 20
   knownedActions: 
   passiveEffects: []
