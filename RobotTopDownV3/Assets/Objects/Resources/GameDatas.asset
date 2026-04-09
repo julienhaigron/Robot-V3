@@ -23,18 +23,104 @@ MonoBehaviour:
   - saveName: New save
     knownedFrames: []
     allBuiltUnits: []
-    squadUnits: []
-    equipmentInventory: []
-    equipmentCounter: 0
+    squadUnits:
+    - name: Fire Bat
+      frame:
+        ID: Frame_InvocMine83
+        dataID: Frame_InvocMine
+      reactor:
+        ID: Reactor_B-99107
+        dataID: Reactor_B-99
+      neuronalMembrane:
+        ID: NeuronalMembraneTest118
+        dataID: NeuronalMembraneTest1
+      brain:
+        ID: Brain_Z-119
+        dataID: Brain_Z-1
+      arms:
+      - ID: Weapon_FlameThrowerXV-6820
+        dataID: Weapon_FlameThrowerXV-68
+      - ID: Weapon_ShieldGeneratorD-321
+        dataID: Weapon_ShieldGeneratorD-3
+      auxiliar:
+      - ID: Armor_CD122
+        dataID: Armor_CD1
+      - ID: Armor_CD223
+        dataID: Armor_CD2
+      - ID: Occultor_SF-524
+        dataID: Occultor_SF-5
+      chipsets:
+      - ID: Chipset_ZB-3825
+        dataID: Chipset_ZB-38
+    - name: Fire Bat
+      frame:
+        ID: 
+        dataID: 
+      reactor:
+        ID: Reactor_B-9971
+        dataID: Reactor_B-99
+      neuronalMembrane:
+        ID: NeuronalMembraneTest128
+        dataID: NeuronalMembraneTest1
+      brain:
+        ID: Brain_Z-129
+        dataID: Brain_Z-1
+      arms:
+      - ID: Weapon_FlamingSaber30
+        dataID: Weapon_FlamingSaber
+      - ID: Weapon_ShieldGeneratorD-331
+        dataID: Weapon_ShieldGeneratorD-3
+      auxiliar:
+      - ID: Armor_CD132
+        dataID: Armor_CD1
+      - ID: Armor_CD233
+        dataID: Armor_CD2
+      - ID: Occultor_SF-534
+        dataID: Occultor_SF-5
+      chipsets:
+      - ID: Chipset_ZB-3835
+        dataID: Chipset_ZB-38
+    equipmentInventory:
+    - ID: Frame_A-768
+      dataID: Frame_A-7
+    - ID: Frame_InvocMine69
+      dataID: Frame_InvocMine
+    - ID: Frame_InvocMine72
+      dataID: Frame_InvocMine
+    - ID: Frame_InvocMine73
+      dataID: Frame_InvocMine
+    - ID: Frame_InvocMine82
+      dataID: Frame_InvocMine
+    - ID: Frame_InvocMine84
+      dataID: Frame_InvocMine
+    - ID: Frame_InvocMine85
+      dataID: Frame_InvocMine
+    - ID: Frame_InvocMine86
+      dataID: Frame_InvocMine
+    - ID: Frame_InvocMine87
+      dataID: Frame_InvocMine
+    - ID: Armor_CD190
+      dataID: Armor_CD1
+    - ID: Frame_InvocMine96
+      dataID: Frame_InvocMine
+    - ID: Armor_CD198
+      dataID: Armor_CD1
+    - ID: Frame_InvocMine94
+      dataID: Frame_InvocMine
+    - ID: Reactor_B-99116
+      dataID: Reactor_B-99
+    - ID: Reactor_B-99117
+      dataID: Reactor_B-99
+    equipmentCounter: 118
     currencies:
       keys: 01000000
-      values: 0000000000000000
+      values: 4600000000000000
     totalCurrenciesGot:
       keys: 01000000
-      values: 0000000000000000
+      values: 6400000000000000
     totalCurrenciesSpent:
       keys: 01000000
-      values: 0000000000000000
+      values: 1e00000000000000
     upgradeLevels:
       keys:
       - hangarstructure

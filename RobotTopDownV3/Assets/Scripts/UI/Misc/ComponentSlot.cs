@@ -5,11 +5,20 @@ using System;
 
 public class ComponentSlot : ComponentContainer
 {
-    public event Action<ComponentDisplay> onItemAdded;
-    public event Action<ComponentDisplay> onItemRemoved;
-
-    [SerializeField] private Transform m_displayParent;
     [SerializeField] private BaseButton m_openEntityConfigBtn;
+
+    protected ComponentDisplay m_currentDisplay;
+    public ComponentDisplay CurrentDisplay
+    {
+        get
+        {
+            return m_currentDisplay;
+        }
+        set
+        {
+            m_currentDisplay = value;
+        }
+    }
 
     private EntitySavedData m_unitData;
     private EntityEquipmentData m_equipmentData;
@@ -41,7 +50,12 @@ public class ComponentSlot : ComponentContainer
             m_openEntityConfigBtn.gameObject.SetActive(false);
     }
 
-    private void OnClickOpenEntityConfigBtn ()
+	public override bool IsValid ( ComponentDisplay _display )
+	{
+		return m_currentDisplay != _display && base.IsValid(_display);
+	}
+
+	private void OnClickOpenEntityConfigBtn ()
     {
         UIManager.Instance.OpenPanel<EntityComponentConfigPanel>().Init(m_unitData, m_equipmentSavedData);
     }
@@ -59,53 +73,52 @@ public class ComponentSlot : ComponentContainer
 
     #region DnD
 
-    public override void RegisterInteraction ( ComponentDisplay _component )
+    public override void RegisterInteraction ( ComponentDisplay _display )
     {
         if (m_currentDisplay != null)
         {
-            Swap(_component);
+            Swap(_display);
         }
         else
         {
-            SetEquipment(_component);
+            SetEquipment(_display);
         }
     }
 
-    public void SetEquipment ( ComponentDisplay equipment )
+    public void SetEquipment ( ComponentDisplay _display )
     {
-        if (m_currentDisplay != null)
-            onItemRemoved?.Invoke(m_currentDisplay);
+        RemoveDisplay(CurrentDisplay);
 
-        m_currentDisplay = equipment;
+        m_currentDisplay = _display;
 
-        equipment.CurrentContainer = this;
+        _display.CurrentContainer = this;
 
-        equipment.transform.SetParent(m_displayParent);
-        equipment.transform.localPosition = Vector3.zero;
-
-        onItemAdded?.Invoke(equipment);
+        _display.transform.SetParent(m_displayParent);
+        _display.transform.localPosition = Vector3.zero;
     }
 
-    private void Swap ( ComponentDisplay incoming )
+    private void Swap ( ComponentDisplay _display )
     {
         ComponentDisplay temp = m_currentDisplay;
+        ComponentContainer previousContainer = _display.CurrentContainer;
+        RemoveDisplay(CurrentDisplay);
 
-        SetEquipment(incoming);
+        SetEquipment(_display);
 
-        if (incoming.CurrentContainer != null && incoming.CurrentContainer is ComponentSlot originSlot)
-            originSlot.SetEquipment(temp);
+        if (previousContainer != null)
+            previousContainer.RegisterInteraction(temp);
         else
             temp.ReturnToOrigin();
     }
 
-    public void Clear ()
-    {
-        if (m_currentDisplay != null)
+	public override void RemoveDisplay ( ComponentDisplay _display )
+	{
+        if (m_currentDisplay == _display && _display != null)
         {
-            onItemRemoved?.Invoke(m_currentDisplay);
             m_currentDisplay = null;
+		    base.RemoveDisplay(_display);
         }
-    }
+	}
 
     #endregion
 }

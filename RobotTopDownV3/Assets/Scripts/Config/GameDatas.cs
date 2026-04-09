@@ -135,10 +135,16 @@ public class GameDatas : ScriptableObject
 
 			public T GetData<T> () where T : EntityEquipmentData
 			{
-				if (dataID == null || !GameAssets.current.equipments.ContainsKey(dataID))
+				if (string.IsNullOrEmpty(dataID) || !GameAssets.current.equipments.ContainsKey(dataID))
 					return null;
 
 				return GameAssets.current.equipments[dataID] as T;
+			}
+
+			public bool TryGetData<T> ( out T _data ) where T : EntityEquipmentData
+			{
+				_data = GetData<T>();
+				return _data != null;
 			}
 		}
 

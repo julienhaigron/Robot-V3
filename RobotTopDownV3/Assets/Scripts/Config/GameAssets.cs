@@ -32,6 +32,7 @@ public class GameAssets : ScriptableObject
         public SerializableDictionary<StructureUpgradePopup.StructureType, StructureUpgrade> structureUpgrades = new();
 
         [Title("Entity")]
+        public Entity defaultEntity;
         public GhostEntity baseGhost;
         public List<FrameEquipmentData> frames = new();
 

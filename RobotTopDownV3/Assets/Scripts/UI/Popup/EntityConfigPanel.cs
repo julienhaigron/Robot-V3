@@ -49,22 +49,22 @@ public class EntityConfigPanel : AUIPanel
 		m_texte.text = _entity.name;
 
 		componentSlotDictionary[EntityEquipmentData.EquipmentType.Frame].Init(gridDictionary[EntityEquipmentData.EquipmentType.Frame], _entity, _entity.frame
-			, item => item.GetData<EntityEquipmentData>().GetEquipmentType() == EntityEquipmentData.EquipmentType.Frame, ComponentDisplay.DisplayMode.Hangar);
+			, item => item != null && item.TryGetData(out EntityEquipmentData _data) && _data.GetEquipmentType() == EntityEquipmentData.EquipmentType.Frame, ComponentDisplay.DisplayMode.Hangar);
 		componentSlotDictionary[EntityEquipmentData.EquipmentType.Reactor].Init(gridDictionary[EntityEquipmentData.EquipmentType.Reactor], _entity, _entity.reactor
-			, item => item.GetData<EntityEquipmentData>().GetEquipmentType() == EntityEquipmentData.EquipmentType.Reactor, ComponentDisplay.DisplayMode.Hangar);
+			, item => item != null && item.TryGetData(out EntityEquipmentData _data) && _data.GetEquipmentType() == EntityEquipmentData.EquipmentType.Reactor, ComponentDisplay.DisplayMode.Hangar);
 		componentSlotDictionary[EntityEquipmentData.EquipmentType.Brain].Init(gridDictionary[EntityEquipmentData.EquipmentType.Brain], _entity, _entity.brain
-			, item => item.GetData<EntityEquipmentData>().GetEquipmentType() == EntityEquipmentData.EquipmentType.Brain, ComponentDisplay.DisplayMode.Hangar);
+			, item => item != null && item.TryGetData(out EntityEquipmentData _data) && _data.GetEquipmentType() == EntityEquipmentData.EquipmentType.Brain, ComponentDisplay.DisplayMode.Hangar);
 		componentSlotDictionary[EntityEquipmentData.EquipmentType.NeuronalMembrane].Init(gridDictionary[EntityEquipmentData.EquipmentType.NeuronalMembrane], _entity, _entity.neuronalMembrane
-			, item => item.GetData<EntityEquipmentData>().GetEquipmentType() == EntityEquipmentData.EquipmentType.NeuronalMembrane, ComponentDisplay.DisplayMode.Hangar);
+			, item => item != null && item.TryGetData(out EntityEquipmentData _data) && _data.GetEquipmentType() == EntityEquipmentData.EquipmentType.NeuronalMembrane, ComponentDisplay.DisplayMode.Hangar);
 
 		gridDictionary[EntityEquipmentData.EquipmentType.Frame].Init(componentSlotDictionary[EntityEquipmentData.EquipmentType.Frame], _entity
-			, null, item => item.GetData<EntityEquipmentData>().GetEquipmentType() == EntityEquipmentData.EquipmentType.Frame, ComponentDisplay.DisplayMode.Hangar);
+			, null, item => item != null && item.TryGetData(out EntityEquipmentData _data) && _data.GetEquipmentType() == EntityEquipmentData.EquipmentType.Frame, ComponentDisplay.DisplayMode.Hangar);
 		gridDictionary[EntityEquipmentData.EquipmentType.Reactor].Init(componentSlotDictionary[EntityEquipmentData.EquipmentType.Reactor], _entity
-			, null, item => item.GetData<EntityEquipmentData>().GetEquipmentType() == EntityEquipmentData.EquipmentType.Reactor, ComponentDisplay.DisplayMode.Hangar);
+			, null, item => item != null && item.TryGetData(out EntityEquipmentData _data) && _data.GetEquipmentType() == EntityEquipmentData.EquipmentType.Reactor, ComponentDisplay.DisplayMode.Hangar);
 		gridDictionary[EntityEquipmentData.EquipmentType.Brain].Init(componentSlotDictionary[EntityEquipmentData.EquipmentType.Brain], _entity
-			, null, item => item.GetData<EntityEquipmentData>().GetEquipmentType() == EntityEquipmentData.EquipmentType.Brain, ComponentDisplay.DisplayMode.Hangar);
+			, null, item => item != null && item.TryGetData(out EntityEquipmentData _data) && _data.GetEquipmentType() == EntityEquipmentData.EquipmentType.Brain, ComponentDisplay.DisplayMode.Hangar);
 		gridDictionary[EntityEquipmentData.EquipmentType.NeuronalMembrane].Init(componentSlotDictionary[EntityEquipmentData.EquipmentType.NeuronalMembrane], _entity
-			, null, item => item.GetData<EntityEquipmentData>().GetEquipmentType() == EntityEquipmentData.EquipmentType.NeuronalMembrane, ComponentDisplay.DisplayMode.Hangar);
+			, null, item => item != null && item.TryGetData(out EntityEquipmentData _data) && _data.GetEquipmentType() == EntityEquipmentData.EquipmentType.NeuronalMembrane, ComponentDisplay.DisplayMode.Hangar);
 	}
 
 	private void OnClickClose ()

@@ -4,18 +4,12 @@ using System;
 
 public abstract class ComponentContainer : MonoBehaviour, IDropHandler
 {
-    protected ComponentDisplay m_currentDisplay;
-    public ComponentDisplay CurrentDisplay
-    {
-        get
-        {
-            return m_currentDisplay;
-        }
-        set
-        {
-            m_currentDisplay = value;
-        }
-    }
+    public event Action<ComponentDisplay> onItemAdded;
+    public event Action<ComponentDisplay> onItemRemoved;
+
+    [SerializeField] protected Transform m_displayParent;
+    public Transform DisplayParent => m_displayParent;
+
     protected Func<GameDatas.PlayerSave.Equipment, bool> m_predicate;
 
     protected ComponentContainer m_linkedContainer;
@@ -35,21 +29,30 @@ public abstract class ComponentContainer : MonoBehaviour, IDropHandler
         return m_predicate == null || m_predicate(_display.SavedData);
     }
 
-    public void OnDrop ( PointerEventData eventData )
+    public void OnDrop ( PointerEventData _eventData )
     {
-        ComponentDisplay dropped = eventData.pointerDrag.GetComponent<ComponentDisplay>();
+        ComponentDisplay dropped = _eventData.pointerDrag.GetComponent<ComponentDisplay>();
         if (dropped == null || !IsValid(dropped)) return;
 
         RemoveFromOrigin(dropped);
 
         RegisterInteraction(dropped);
+
+        onItemAdded.Invoke(dropped);
     }
 
-    public abstract void RegisterInteraction ( ComponentDisplay _component);
+    public abstract void RegisterInteraction ( ComponentDisplay _display);
 
-    public void RemoveFromOrigin ( ComponentDisplay item )
+    public void RemoveFromOrigin ( ComponentDisplay _display )
     {
-        if (item.CurrentContainer != null)
-            item.CurrentContainer.CurrentDisplay = null;
+        if (_display.CurrentContainer != null)
+		{
+            _display.CurrentContainer.RemoveDisplay( _display);
+        }
+    }
+
+    public virtual void RemoveDisplay ( ComponentDisplay _display )
+	{
+        onItemRemoved?.Invoke(_display);
     }
 }

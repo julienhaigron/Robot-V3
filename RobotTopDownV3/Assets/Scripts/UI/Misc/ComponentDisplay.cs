@@ -23,9 +23,9 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 
 	private float m_lastClickTime;
 
-	public enum DisplayMode { Hangar, RepairStation, RecyclingStation, ShopBuying, ShopSelling}
+	public enum DisplayMode { Hangar, RepairStation, RecyclingStation, ShopBuying, ShopSelling }
 
-    public void Init(EntitySavedData _unitData, GameDatas.PlayerSave.Equipment _componentSavedData , DisplayMode _displayMode )
+	public void Init ( EntitySavedData _unitData, GameDatas.PlayerSave.Equipment _componentSavedData, DisplayMode _displayMode )
 	{
 		m_savedData = _componentSavedData;
 		m_componentData = _componentSavedData.GetData<EntityEquipmentData>();
@@ -122,21 +122,21 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 
 	private void OnDoubleClick ()
 	{
-		if (CurrentContainer != null)
+		if (CurrentContainer != null && CurrentContainer.LinkedContainer != null && CurrentContainer.LinkedContainer.IsValid(this))
 		{
-			if (CurrentContainer.LinkedContainer != null && CurrentContainer.LinkedContainer.IsValid(this))
-			{
-				CurrentContainer.RemoveFromOrigin(this);
+			CurrentContainer.RemoveFromOrigin(this);
 
-				CurrentContainer.LinkedContainer.RegisterInteraction(this);
-			}
+			CurrentContainer.LinkedContainer.RegisterInteraction(this);
 		}
 	}
 
 	public void ReturnToOrigin ()
 	{
 		if (CurrentContainer != null)
-			CurrentContainer.RegisterInteraction(this);
+		{
+			transform.SetParent(CurrentContainer.DisplayParent);
+			transform.localPosition = Vector3.zero;
+		}
 	}
 
 	#endregion

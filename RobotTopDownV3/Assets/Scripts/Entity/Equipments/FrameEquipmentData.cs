@@ -96,22 +96,22 @@ public class EntitySavedData : INetworkSerializable
 	public float GetStatBonusFrom ( EntityEquipmentData.StatBonus.StatType _stat, bool _frame = false/*, bool _brain = false*/, bool _arms = false, bool _auxiliar = false, bool _chipsets = false )
 	{
 		float totalBonus = 0;
-		if (_frame && GameAssets.current.equipments[frame.dataID] is FrameEquipmentData frameData)
+		if (_frame && FrameData != null)
 		{
-			foreach (EntityEquipmentData.StatBonus statBonus in frameData.statBonuses)
+			foreach (EntityEquipmentData.StatBonus statBonus in FrameData.statBonuses)
 			{
 				if (statBonus.type == _stat)
 					totalBonus += statBonus.value;
 			}
 		}
-		/*if (_frame && GameAssets.current.equipments[frameID] is BrainEquipmentData brain)
-        {
-            foreach (EntityEquipmentData.StatBonus statBonus in brain.statBonuses)
-            {
-                if (statBonus.type == _stat)
-                    totalBonus += statBonus.value;
-            }
-        }*/
+		/*if (_brain && BrainData != null)
+		{
+			foreach (EntityEquipmentData.StatBonus statBonus in BrainData.statBonuses)
+			{
+				if (statBonus.type == _stat)
+					totalBonus += statBonus.value;
+			}
+		}*/
 		if (_auxiliar && auxiliar != null)
 		{
 			foreach (GameDatas.PlayerSave.Equipment container in auxiliar)
@@ -260,7 +260,7 @@ public class EntitySavedData : INetworkSerializable
 	public int GetMaxHealth ()
 	{
 		float bonus = 1 + GetStatBonusFrom(EntityEquipmentData.StatBonus.StatType.Hp);
-		float maxHealth = FrameData.maxHealth;
+		float maxHealth = FrameData == null ? 0 : FrameData.maxHealth;
 
 		return Mathf.RoundToInt(maxHealth * bonus);
 	}
