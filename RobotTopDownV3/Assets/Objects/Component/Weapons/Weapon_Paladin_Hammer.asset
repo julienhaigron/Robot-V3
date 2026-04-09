@@ -12,7 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 377ca2099ac4b6147bf777f681302f03, type: 3}
   m_Name: Weapon_Paladin_Hammer
   m_EditorClassIdentifier: 
-  icon: {fileID: 0}
+  faction: 0
+  icon: {fileID: 21300000, guid: 8d975594a4401564fb22687ded98d40a, type: 3}
+  displayName: default
   energyCost: 30
   knownedActions: 1600000015000000
   passiveEffects: []

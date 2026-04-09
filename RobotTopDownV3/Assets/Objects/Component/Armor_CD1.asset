@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Armor_CD1
   m_EditorClassIdentifier: 
   faction: 0
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 70adb505f80444640a2d80bd9b3de2f3, type: 3}
   displayName: Armor CD1
   energyCost: 20
   knownedActions: 

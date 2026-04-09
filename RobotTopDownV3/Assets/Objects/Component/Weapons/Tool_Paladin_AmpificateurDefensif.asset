@@ -12,7 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3be6976ce71a11d45bc16b9a311a29a7, type: 3}
   m_Name: Tool_Paladin_AmpificateurDefensif
   m_EditorClassIdentifier: 
-  icon: {fileID: 0}
+  faction: 0
+  icon: {fileID: 21300000, guid: f3a67711588d3b64e84d793c98e2c036, type: 3}
+  displayName: default
   energyCost: 0
   knownedActions: 17000000
   passiveEffects: []

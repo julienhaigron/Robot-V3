@@ -12,7 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 377ca2099ac4b6147bf777f681302f03, type: 3}
   m_Name: Weapon_ShieldGeneratorD-3
   m_EditorClassIdentifier: 
-  icon: {fileID: 0}
+  faction: 0
+  icon: {fileID: 21300000, guid: 70adb505f80444640a2d80bd9b3de2f3, type: 3}
+  displayName: shield generator D3
   energyCost: 30
   knownedActions: 0b000000
   passiveEffects: []

@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5437014b6a01efe458861f061ef36630, type: 3}
+  m_Name: ShopstructureUpgrade
+  m_EditorClassIdentifier: 
+  m_saveKey: shopstructure
+  m_displayName: Shopstructure
+  m_suffix: 
+  m_prefix: 
+  m_useEngineeringNotation: 0
+  m_sprite: {fileID: 0}
+  m_outlineSprite: {fileID: 0}
+  m_baseValue: 0
+  m_displayedValueOffset: 0
+  m_price: 0a0000000000000014000000000000001e00000000000000
+  m_currencyType: 1
+  m_isInfinite: 0
+  m_maxLevel: 3
+  addonDescriptions:
+  - "unit\xE9s construite max"
+  - "composants poss\xE9d\xE9s"
+  - "unit\xE9 max dans la squad"
+  - squad energy
+  maxItemEachDayPerLevel: 080000000a0000000c0000000e000000
+  priceFactorPerLevel:
+  - 0.15
+  - 0.3
+  - 0.45
+  - 0.6
+  maxRerollEachDayPerLevel: 01000000020000000300000004000000
+  maxLockEachDayPerLevel: 01000000020000000300000004000000

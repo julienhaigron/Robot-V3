@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Reactor_B-99
   m_EditorClassIdentifier: RTD::ReactorEquipmentData
   faction: 0
-  icon: {fileID: 0}
-  displayName: 
+  icon: {fileID: 21300000, guid: 03da9b037a0d27b4db02f45130a6cb28, type: 3}
+  displayName: reactor B99
   energyCost: 0
   knownedActions: 
   passiveEffects: []

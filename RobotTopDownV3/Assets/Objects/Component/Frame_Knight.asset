@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Frame_Knight
   m_EditorClassIdentifier: 
   faction: 0
-  icon: {fileID: 0}
-  displayName: 
+  icon: {fileID: 21300000, guid: 3ab256982cae8674388ec2dcdc0a1743, type: 3}
+  displayName: Frame knight
   energyCost: 10
   knownedActions: 0a0000002c000000
   passiveEffects: []

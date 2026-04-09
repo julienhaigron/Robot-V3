@@ -12,11 +12,6 @@ public sealed class UIManager : SingletonPersistant<UIManager>
 	public static Action onChangeScreen;
 	//Panel contain TopCanvas
 
-	//GOALS :
-	//1) Get and Open Panel
-	//2) Get and Open TopCanvas
-	//3) Show Panel / Show TopCanvas
-
 	[SerializeField] private AUIPanel m_firstPanelToOpen;
 	[SerializeField] private Transform m_topLayer;
 	public Transform TopLayer => m_topLayer;

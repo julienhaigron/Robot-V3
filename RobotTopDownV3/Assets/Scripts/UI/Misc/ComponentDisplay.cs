@@ -124,7 +124,7 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 	{
 		if (CurrentContainer != null)
 		{
-			if (CurrentContainer.LinkedContainer != null && CurrentContainer.LinkedContainer.IsValid(m_savedData))
+			if (CurrentContainer.LinkedContainer != null && CurrentContainer.LinkedContainer.IsValid(this))
 			{
 				CurrentContainer.RemoveFromOrigin(this);
 

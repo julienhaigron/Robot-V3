@@ -12,7 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 377ca2099ac4b6147bf777f681302f03, type: 3}
   m_Name: Weapon_FlamingSaber
   m_EditorClassIdentifier: 
-  icon: {fileID: 0}
+  faction: 0
+  icon: {fileID: 21300000, guid: a2a851d73a7f86e49b369f6f737b5601, type: 3}
+  displayName: flaming saber
   energyCost: 30
   knownedActions: 09000000
   passiveEffects: []

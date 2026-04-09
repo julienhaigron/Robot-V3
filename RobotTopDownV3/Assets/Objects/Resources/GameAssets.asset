@@ -31,9 +31,10 @@ MonoBehaviour:
     levels:
     - {fileID: 11400000, guid: b42abe5b22535cf40beab03ef8f2d66f, type: 2}
     structureUpgrades:
-      keys: 00000000
+      keys: 0000000002000000
       values:
       - {fileID: 11400000, guid: 0d4448f120cab5c42814f6681918124f, type: 2}
+      - {fileID: 11400000, guid: 8463f427f2e71a5448135f40294b8ede, type: 2}
     baseGhost: {fileID: 7839904307103858393, guid: bee3bc7545f82b54babded2b3df64c96, type: 3}
     frames:
     - {fileID: 11400000, guid: 11de9230c09867747908272f3310089f, type: 2}
@@ -165,23 +166,23 @@ MonoBehaviour:
     componentIcons:
       keys: 000000000100000002000000030000000400000005000000060000000700000008000000
       values:
-      - {fileID: 0}
-      - {fileID: 0}
-      - {fileID: 0}
-      - {fileID: 0}
-      - {fileID: 0}
-      - {fileID: 0}
-      - {fileID: 0}
-      - {fileID: 0}
-      - {fileID: 0}
+      - {fileID: 21300000, guid: 03da9b037a0d27b4db02f45130a6cb28, type: 3}
+      - {fileID: 21300000, guid: 03da9b037a0d27b4db02f45130a6cb28, type: 3}
+      - {fileID: 21300000, guid: 03da9b037a0d27b4db02f45130a6cb28, type: 3}
+      - {fileID: 21300000, guid: 03da9b037a0d27b4db02f45130a6cb28, type: 3}
+      - {fileID: 21300000, guid: 03da9b037a0d27b4db02f45130a6cb28, type: 3}
+      - {fileID: 21300000, guid: 03da9b037a0d27b4db02f45130a6cb28, type: 3}
+      - {fileID: 21300000, guid: 03da9b037a0d27b4db02f45130a6cb28, type: 3}
+      - {fileID: 21300000, guid: 03da9b037a0d27b4db02f45130a6cb28, type: 3}
+      - {fileID: 21300000, guid: 03da9b037a0d27b4db02f45130a6cb28, type: 3}
     corporationsIcons:
       keys: 0000000001000000020000000300000004000000
       values:
-      - {fileID: 0}
-      - {fileID: 0}
-      - {fileID: 0}
-      - {fileID: 0}
-      - {fileID: 0}
+      - {fileID: 21300000, guid: 03da9b037a0d27b4db02f45130a6cb28, type: 3}
+      - {fileID: 21300000, guid: 03da9b037a0d27b4db02f45130a6cb28, type: 3}
+      - {fileID: 21300000, guid: 03da9b037a0d27b4db02f45130a6cb28, type: 3}
+      - {fileID: 21300000, guid: 03da9b037a0d27b4db02f45130a6cb28, type: 3}
+      - {fileID: 21300000, guid: 03da9b037a0d27b4db02f45130a6cb28, type: 3}
   currencies:
     keys: 01000000
     values:
@@ -271,3 +272,4 @@ MonoBehaviour:
     - {fileID: 11400000, guid: abba24f3693db0648846aa53c2757d3b, type: 2}
   upgrades:
   - {fileID: 11400000, guid: 0d4448f120cab5c42814f6681918124f, type: 2}
+  - {fileID: 11400000, guid: 8463f427f2e71a5448135f40294b8ede, type: 2}

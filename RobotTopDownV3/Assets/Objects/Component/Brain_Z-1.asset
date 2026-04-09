@@ -12,9 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 44b1826a41d8fc84ca7068479dfb33ef, type: 3}
   m_Name: Brain_Z-1
   m_EditorClassIdentifier: RTD::BrainEquipmentData
-  icon: {fileID: 0}
+  faction: 0
+  icon: {fileID: 21300000, guid: 03da9b037a0d27b4db02f45130a6cb28, type: 3}
+  displayName: Brain Z1
   energyCost: 10
   knownedActions: 
+  passiveEffects: []
   chipsetSlotAvailable: 2
   agility: 0.8
   distanceAccuracy: 0.8

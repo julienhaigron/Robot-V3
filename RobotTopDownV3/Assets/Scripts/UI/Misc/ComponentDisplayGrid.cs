@@ -21,7 +21,7 @@ public class ComponentDisplayGrid : ComponentContainer
         base.Init(_container, _unitData, _componentSavedData, _predicate, _displayMode);
 
         foreach (GameDatas.PlayerSave.Equipment eq in GameDatas.current.currentPlayerSave.equipmentInventory)
-			if (IsValid(eq))
+			if (m_predicate != null && m_predicate(eq))
                 CreateNewDisplay(_unitData, eq, _displayMode);
     }
 
@@ -34,17 +34,6 @@ public class ComponentDisplayGrid : ComponentContainer
         newDisplay.CurrentContainer = this;
         newDisplay.transform.localPosition = Vector3.zero;
     }
-
-	public override bool IsValid ( GameDatas.PlayerSave.Equipment item )
-	{
-        foreach(ComponentDisplay display in m_items)
-		{
-            if (display.SavedData == item)
-                return false;
-		}
-
-		return base.IsValid(item);
-	}
 
 	public void Cleanup ()
 	{
@@ -62,7 +51,7 @@ public class ComponentDisplayGrid : ComponentContainer
         m_items.Add(_component);
         _component.CurrentContainer = this;
 
-        _component.transform.SetParent(transform);
+        _component.transform.SetParent(m_itemsParent);
         _component.transform.localPosition = Vector3.zero;
 
         onItemAdded?.Invoke(_component);

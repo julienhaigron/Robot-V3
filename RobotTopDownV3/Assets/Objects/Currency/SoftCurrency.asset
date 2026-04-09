@@ -17,10 +17,9 @@ MonoBehaviour:
   onlyVisibleWhenGreaterThanZero: 1
   affectedByCurrencyHistory: 0
   showOnPlayerWhenCurrencyAdded: 1
-  icon: {fileID: 0}
-  iconWithOutline: {fileID: 0}
+  icon: {fileID: 21300000, guid: 6b017fa9074f23044b9af9a641205053, type: 3}
+  iconWithOutline: {fileID: 21300000, guid: f693e28ac3d79994c84aefd7a96d770c, type: 3}
   model: {fileID: 0}
-  type: 0
   baseCurrency: 0
   showOnlyIfUpgradeOneTime: 0
   maxCapacityType: 0

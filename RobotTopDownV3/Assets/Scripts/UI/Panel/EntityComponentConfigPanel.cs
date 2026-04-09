@@ -48,7 +48,7 @@ public class EntityComponentConfigPanel : AUIPanel
 					{
 						m_slots[i].gameObject.SetActive(true);
 						m_slots[i].Init(m_subPartGrid, _data, _data.auxiliar.Length <= i ? null : _data.auxiliar[i]
-							, item => (item.GetData<EntityEquipmentData>().GetEquipmentType() == EntityEquipmentData.EquipmentType.Armor || item.GetData<EntityEquipmentData>().GetEquipmentType() == EntityEquipmentData.EquipmentType.Occultor)
+							, item => item != null && (item.GetData<EntityEquipmentData>().GetEquipmentType() == EntityEquipmentData.EquipmentType.Armor || item.GetData<EntityEquipmentData>().GetEquipmentType() == EntityEquipmentData.EquipmentType.Occultor)
 							, ComponentDisplay.DisplayMode.Hangar);
 					}
 					else
@@ -68,7 +68,7 @@ public class EntityComponentConfigPanel : AUIPanel
 					{
 						m_slots[i].gameObject.SetActive(true);
 						m_slots[i].Init(m_subPartGrid, _data, _data.chipsets.Length <= i ? null : _data.chipsets[i]
-							, item => item.GetData<EntityEquipmentData>().GetEquipmentType() == EntityEquipmentData.EquipmentType.Chipset
+							, item => item != null && item.GetData<EntityEquipmentData>().GetEquipmentType() == EntityEquipmentData.EquipmentType.Chipset
 							, ComponentDisplay.DisplayMode.Hangar);
 					}
 					else
@@ -91,7 +91,7 @@ public class EntityComponentConfigPanel : AUIPanel
 					{
 						m_slots[i].gameObject.SetActive(true);
 						m_slots[i].Init(m_subPartGrid, _data, _data.arms.Length <= i ? null : _data.arms[i]
-							, item => (item.GetData<EntityEquipmentData>().GetEquipmentType() == EntityEquipmentData.EquipmentType.Weapon || item.GetData<EntityEquipmentData>().GetEquipmentType() == EntityEquipmentData.EquipmentType.Tool)
+							, item => item != null && (item.GetData<EntityEquipmentData>().GetEquipmentType() == EntityEquipmentData.EquipmentType.Weapon || item.GetData<EntityEquipmentData>().GetEquipmentType() == EntityEquipmentData.EquipmentType.Tool)
 							, ComponentDisplay.DisplayMode.Hangar);
 					}
 					else

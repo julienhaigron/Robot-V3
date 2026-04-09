@@ -50,7 +50,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4aece261dd758bd4a80e5a66ffd7ca6b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_title: {fileID: 0}
+  m_displayParent: {fileID: 6037240441849160473}
   m_openEntityConfigBtn: {fileID: 9015810272470614174}
 --- !u!1 &8579074791823119230
 GameObject:

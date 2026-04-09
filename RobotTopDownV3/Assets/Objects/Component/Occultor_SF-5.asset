@@ -12,8 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4eb1c374dfb5c8d42891de9c422c2eb2, type: 3}
   m_Name: Occultor_SF-5
   m_EditorClassIdentifier: 
-  icon: {fileID: 0}
+  faction: 0
+  icon: {fileID: 21300000, guid: cf44e232cfc2dd94581e254a69eaea95, type: 3}
+  displayName: occultor SF-5
   energyCost: 20
+  knownedActions: 
+  passiveEffects: []
   soundCamo: 0.3
   visualCamo: 0.2
   statBonuses:

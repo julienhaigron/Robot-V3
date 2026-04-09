@@ -27,18 +27,18 @@ public abstract class ComponentContainer : MonoBehaviour, IDropHandler
         m_predicate = _predicate;
     }
 
-    public virtual bool IsValid ( GameDatas.PlayerSave.Equipment _savedData )
+    public virtual bool IsValid ( ComponentDisplay _display )
     {
-        if (_savedData == null)
+        if (_display.SavedData == null || _display.CurrentContainer == this)
             return false;
 
-        return m_predicate == null || m_predicate(_savedData);
+        return m_predicate == null || m_predicate(_display.SavedData);
     }
 
     public void OnDrop ( PointerEventData eventData )
     {
         ComponentDisplay dropped = eventData.pointerDrag.GetComponent<ComponentDisplay>();
-        if (dropped == null || !IsValid(dropped.SavedData)) return;
+        if (dropped == null || !IsValid(dropped)) return;
 
         RemoveFromOrigin(dropped);
 

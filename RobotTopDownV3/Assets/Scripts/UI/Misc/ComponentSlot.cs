@@ -19,15 +19,16 @@ public class ComponentSlot : ComponentContainer
     {
         base.Init(_container, _unitData, _componentSavedData, _predicate, _displayMode);
         m_unitData = _unitData;
-        m_equipmentSavedData = _componentSavedData;
-        m_equipmentData = _componentSavedData.GetData<EntityEquipmentData>();
-        m_openEntityConfigBtn.onClick = null;
-        m_openEntityConfigBtn.onClick += OnClickOpenEntityConfigBtn;
-        m_openEntityConfigBtn.gameObject.SetActive(m_equipmentData != null && (m_equipmentData.GetEquipmentType() == EntityEquipmentData.EquipmentType.Frame
-            || m_equipmentData.GetEquipmentType() == EntityEquipmentData.EquipmentType.Brain || m_equipmentData.GetEquipmentType() == EntityEquipmentData.EquipmentType.NeuronalMembrane));
 
-        if (IsValid(_componentSavedData))
+        if (m_predicate != null && m_predicate(_componentSavedData))
         {
+            m_equipmentSavedData = _componentSavedData;
+            m_openEntityConfigBtn.onClick = null;
+            m_equipmentData = _componentSavedData.GetData<EntityEquipmentData>();
+            m_openEntityConfigBtn.onClick += OnClickOpenEntityConfigBtn;
+            m_openEntityConfigBtn.gameObject.SetActive(m_equipmentData != null && (m_equipmentData.GetEquipmentType() == EntityEquipmentData.EquipmentType.Frame
+                || m_equipmentData.GetEquipmentType() == EntityEquipmentData.EquipmentType.Brain || m_equipmentData.GetEquipmentType() == EntityEquipmentData.EquipmentType.NeuronalMembrane));
+
             ComponentDisplay newDisplay = Instantiate(GameAssets.current.ui.baseComponentDisplay, m_displayParent);
             newDisplay.Init(_unitData, _componentSavedData, _displayMode);
 
@@ -36,12 +37,8 @@ public class ComponentSlot : ComponentContainer
             newDisplay.transform.SetParent(m_displayParent);
             newDisplay.transform.localPosition = Vector3.zero;
         }
-
-    }
-
-    public override bool IsValid ( GameDatas.PlayerSave.Equipment _savedData )
-    {
-        return m_equipmentSavedData != _savedData && base.IsValid(_savedData);
+        else
+            m_openEntityConfigBtn.gameObject.SetActive(false);
     }
 
     private void OnClickOpenEntityConfigBtn ()
@@ -52,7 +49,12 @@ public class ComponentSlot : ComponentContainer
     public void Cleanup ()
     {
         if(m_currentDisplay != null)
+		{
             Destroy(m_currentDisplay.gameObject);
+            m_equipmentData = null;
+            m_equipmentSavedData = null;
+            m_unitData = null;
+        }
     }
 
     #region DnD
