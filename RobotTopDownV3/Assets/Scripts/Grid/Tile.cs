@@ -48,6 +48,7 @@ public class Tile : MonoBehaviour
 	public struct TileContent
 	{
 		public Entity entity;
+		public Item item;
 	}
 
 	public enum TileDirectionType
@@ -175,11 +176,15 @@ public class Tile : MonoBehaviour
 		_tile.Neighbors[(int)_direction.Opposite()] = this;
 	}
 
-	public bool IsObstacle ()
+	public bool IsObstacle (bool _isThisTurn)
 	{
 		if (m_groundType == TileGroundType.Wall && m_wall.Health > 0)
 			return true;
 		else if (m_groundType == TileGroundType.Void)
+			return true;
+		else if (_isThisTurn && currentContent.item != null && !currentContent.item.Data.CanWalkThroughPredicate(currentContent.item.LinkedData, currentContent.item, _isThisTurn))
+			return true;
+		else if (!_isThisTurn && nextTurnActionContent.item != null && !nextTurnActionContent.item.Data.CanWalkThroughPredicate(nextTurnActionContent.item.LinkedData, nextTurnActionContent.item, _isThisTurn))
 			return true;
 
 		return false;
@@ -194,6 +199,19 @@ public class Tile : MonoBehaviour
 			return false;
 
 		return true;
+	}
+
+	public void OnEntityEnter(Entity _enteringEntity )
+	{
+		if (m_groundType == TileGroundType.Void && !_enteringEntity.Status.Contains(EntityStatusEnumID.Flying))
+		{
+			Dictionary<WeaponEquipmentData.DamageType, int> damages = new();
+			damages.Add(WeaponEquipmentData.DamageType.Contendant, 9999);
+			_enteringEntity.Equipment.TakeDamage(new EntityEquipmentPlugin.TakeDamageCallback() { damages = damages });
+		}
+
+		if (currentContent.item != null)
+			currentContent.item.OnTileEnter(_enteringEntity);
 	}
 
 	#endregion
@@ -240,6 +258,7 @@ public class Tile : MonoBehaviour
 	public void NewPhase ()
 	{
 		SetEntity(currentContent.entity, false);
+		SetItem(currentContent.item, false);
 	}
 
 	private void OnRoundStart ()
@@ -267,6 +286,22 @@ public class Tile : MonoBehaviour
 			return currentContent.entity;
 		else
 			return nextTurnActionContent.entity;
+	}
+
+	public void SetItem(Item _item, bool _isThisTurn )
+	{
+		if (_isThisTurn)
+			currentContent.item = _item;
+		else
+			nextTurnActionContent.item = _item;
+	}
+
+	public Item GetItem ( bool _isThisTurn )
+	{
+		if (_isThisTurn)
+			return currentContent.item;
+		else
+			return nextTurnActionContent.item;
 	}
 
 	#endregion

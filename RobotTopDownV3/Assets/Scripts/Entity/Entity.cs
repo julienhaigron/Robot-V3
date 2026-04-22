@@ -60,9 +60,6 @@ public class Entity : MonoBehaviour
     //public EntityFaction Faction => m_data.FrameData.faction;
 
     [BoxGroup("Fix Stats")]
-    
-
-
     private EntityActionData m_lastActionPerformed;
     public EntityActionData LastActionPerformedData => m_lastActionPerformed == null ? GameConfig.current.game.defaultStartAction : m_lastActionPerformed;
 

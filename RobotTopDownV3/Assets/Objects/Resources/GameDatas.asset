@@ -26,101 +26,95 @@ MonoBehaviour:
     squadUnits:
     - name: Fire Bat
       frame:
-        ID: Frame_InvocMine83
-        dataID: Frame_InvocMine
-      reactor:
-        ID: Reactor_B-99107
-        dataID: Reactor_B-99
-      neuronalMembrane:
-        ID: NeuronalMembraneTest118
-        dataID: NeuronalMembraneTest1
-      brain:
-        ID: Brain_Z-119
-        dataID: Brain_Z-1
-      arms:
-      - ID: Weapon_FlameThrowerXV-6820
-        dataID: Weapon_FlameThrowerXV-68
-      - ID: Weapon_ShieldGeneratorD-321
-        dataID: Weapon_ShieldGeneratorD-3
-      auxiliar:
-      - ID: Armor_CD122
-        dataID: Armor_CD1
-      - ID: Armor_CD223
-        dataID: Armor_CD2
-      - ID: Occultor_SF-524
-        dataID: Occultor_SF-5
-      chipsets:
-      - ID: Chipset_ZB-3825
-        dataID: Chipset_ZB-38
-    - name: Fire Bat
-      frame:
         ID: 
         dataID: 
       reactor:
-        ID: Reactor_B-9971
-        dataID: Reactor_B-99
+        ID: 
+        dataID: 
       neuronalMembrane:
-        ID: NeuronalMembraneTest128
-        dataID: NeuronalMembraneTest1
+        ID: 
+        dataID: 
       brain:
-        ID: Brain_Z-129
-        dataID: Brain_Z-1
+        ID: 
+        dataID: 
       arms:
-      - ID: Weapon_FlamingSaber30
-        dataID: Weapon_FlamingSaber
-      - ID: Weapon_ShieldGeneratorD-331
+      - ID: Weapon_FlameThrowerXV-684
+        dataID: Weapon_FlameThrowerXV-68
+      - ID: Weapon_ShieldGeneratorD-35
         dataID: Weapon_ShieldGeneratorD-3
       auxiliar:
-      - ID: Armor_CD132
-        dataID: Armor_CD1
-      - ID: Armor_CD233
+      - ID: Armor_CD27
         dataID: Armor_CD2
-      - ID: Occultor_SF-534
+      - ID: Occultor_SF-58
+        dataID: Occultor_SF-5
+      - ID: Armor_CD122
+        dataID: Armor_CD1
+      chipsets:
+      - ID: Chipset_ZB-389
+        dataID: Chipset_ZB-38
+    - name: Fire Bat
+      frame:
+        ID: Frame_A-710
+        dataID: Frame_A-7
+      reactor:
+        ID: Reactor_B-9911
+        dataID: Reactor_B-99
+      neuronalMembrane:
+        ID: NeuronalMembraneTest112
+        dataID: NeuronalMembraneTest1
+      brain:
+        ID: Brain_Z-113
+        dataID: Brain_Z-1
+      arms:
+      - ID: Weapon_FlameThrowerXV-6814
+        dataID: Weapon_FlameThrowerXV-68
+      - ID: Weapon_ShieldGeneratorD-315
+        dataID: Weapon_ShieldGeneratorD-3
+      auxiliar:
+      - ID: Armor_CD116
+        dataID: Armor_CD1
+      - ID: Armor_CD217
+        dataID: Armor_CD2
+      - ID: Occultor_SF-518
         dataID: Occultor_SF-5
       chipsets:
-      - ID: Chipset_ZB-3835
+      - ID: Chipset_ZB-3819
         dataID: Chipset_ZB-38
     equipmentInventory:
-    - ID: Frame_A-768
+    - ID: Armor_CD123
+      dataID: Armor_CD1
+    - ID: Armor_CD124
+      dataID: Armor_CD1
+    - ID: Armor_CD125
+      dataID: Armor_CD1
+    - ID: Armor_CD126
+      dataID: Armor_CD1
+    - ID: Armor_CD135
+      dataID: Armor_CD1
+    - ID: Frame_A-736
       dataID: Frame_A-7
-    - ID: Frame_InvocMine69
-      dataID: Frame_InvocMine
-    - ID: Frame_InvocMine72
-      dataID: Frame_InvocMine
-    - ID: Frame_InvocMine73
-      dataID: Frame_InvocMine
-    - ID: Frame_InvocMine82
-      dataID: Frame_InvocMine
-    - ID: Frame_InvocMine84
-      dataID: Frame_InvocMine
-    - ID: Frame_InvocMine85
-      dataID: Frame_InvocMine
-    - ID: Frame_InvocMine86
-      dataID: Frame_InvocMine
-    - ID: Frame_InvocMine87
-      dataID: Frame_InvocMine
-    - ID: Armor_CD190
-      dataID: Armor_CD1
-    - ID: Frame_InvocMine96
-      dataID: Frame_InvocMine
-    - ID: Armor_CD198
-      dataID: Armor_CD1
-    - ID: Frame_InvocMine94
-      dataID: Frame_InvocMine
-    - ID: Reactor_B-99116
+    - ID: Frame_A-737
+      dataID: Frame_A-7
+    - ID: Frame_A-738
+      dataID: Frame_A-7
+    - ID: Frame_A-739
+      dataID: Frame_A-7
+    - ID: Reactor_B-9940
       dataID: Reactor_B-99
-    - ID: Reactor_B-99117
-      dataID: Reactor_B-99
-    equipmentCounter: 118
+    - ID: NeuronalMembraneTest141
+      dataID: NeuronalMembraneTest1
+    - ID: Brain_Z-142
+      dataID: Brain_Z-1
+    equipmentCounter: 43
     currencies:
       keys: 01000000
-      values: 4600000000000000
+      values: 0000000000000000
     totalCurrenciesGot:
       keys: 01000000
-      values: 6400000000000000
+      values: 0000000000000000
     totalCurrenciesSpent:
       keys: 01000000
-      values: 1e00000000000000
+      values: 0000000000000000
     upgradeLevels:
       keys:
       - hangarstructure

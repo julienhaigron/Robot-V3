@@ -174,6 +174,6 @@ public class MoveThenAttackAction : AttackAction
 
 		Entity entityOnDestination = GridManager.Instance.Tiles[(int)positionAfterMovementID].GetEntity(_isThisTurn: false);
 
-		return (entityOnDestination != null && entityOnDestination.ID != performingEntityID) || GridManager.Instance.Tiles[(int)positionAfterMovementID].IsObstacle();
+		return (entityOnDestination != null && entityOnDestination.ID != performingEntityID) || GridManager.Instance.Tiles[(int)positionAfterMovementID].IsObstacle(false);
 	}
 }

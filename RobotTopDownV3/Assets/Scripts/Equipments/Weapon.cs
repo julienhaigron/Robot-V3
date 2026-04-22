@@ -14,11 +14,14 @@ public class Weapon : MonoBehaviour
 	[SerializeField] protected List<ParticleSystem> m_onPerformPS;
 
 	protected Entity m_user;
+	private string m_id;
+	public string ID => m_id;
 
 	public virtual void Init ( Entity _user, WeaponEquipmentData _data, bool _isFirstSide )
 	{
 		m_user = _user;
 		m_data = _data;
+		m_id = _data.name + _user.Equipment.Tools.Values.Count;
 	}
 
 	public virtual void PerformAttack ( AttackAction _attackAction, Action _onPerformEnd )

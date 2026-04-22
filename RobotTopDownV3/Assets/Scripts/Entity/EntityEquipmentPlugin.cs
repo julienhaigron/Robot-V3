@@ -19,6 +19,9 @@ public class EntityEquipmentPlugin : EntityPlugin
 	private Dictionary<string, Tool> m_tools = new();
 	public Dictionary<string, Tool> Tools => m_tools;
 
+	private Dictionary<string, AItemLinkedData> m_itemsLinkedDataDictionary = new();
+	public Dictionary<string, AItemLinkedData> ItemsLinkedDataDictionary => m_itemsLinkedDataDictionary;
+
 	private int m_currentHealth;
 	public int CurrentHealth => m_currentHealth;
 
@@ -181,7 +184,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 	{
 		Weapon newWeapon = Instantiate(_data.prefab, m_linkedEntity.Skin.IK.handGrabSocket);
 		newWeapon.Init(m_linkedEntity, _data, _isFirstSide);
-		m_weapons.Add(_data.name, newWeapon);
+		m_weapons.Add(newWeapon.ID, newWeapon);
 
 		WeaponCone weaponCone = Instantiate(GameAssets.current.game.weaponCone, m_weaponConesParent);
 		m_weaponConeDictionary.Add(_data.name, weaponCone);
@@ -393,7 +396,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 	{
 		Tool newTool = Instantiate(_data.prefab, m_linkedEntity.Skin.IK.handGrabSocket);
 		newTool.Init(m_linkedEntity, _data, _isFirstSide);
-		m_tools.Add(_data.name, newTool);
+		m_tools.Add(newTool.ID, newTool);
 
 		return newTool;
 	}

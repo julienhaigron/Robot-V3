@@ -510,10 +510,10 @@ public class GridManager : Singleton<GridManager>
 			if (mainTile == _from)
 				continue;
 
-			if (mainTile == null || mainTile.IsObstacle())
+			if (mainTile == null || mainTile.IsObstacle(_isThisTurn))
 				break;
 
-			TryAdd(c, tilesInRange);
+			TryAdd(c, tilesInRange, _isThisTurn);
 
 			if (!isInSplitLine)
 				continue;
@@ -549,7 +549,7 @@ public class GridManager : Singleton<GridManager>
 				}
 
 				TileCoordinates adj = CubeNeighbor(c, dir);
-				TryAdd(adj, tilesInRange);
+				TryAdd(adj, tilesInRange, _isThisTurn);
 			}
 
 			/*for (int dir = 0; dir < 6; dir++)
@@ -575,10 +575,10 @@ public class GridManager : Singleton<GridManager>
 		return new TileCoordinates(c.X + dir.x, c.Z + dir.z, -1);
 	}
 
-	void TryAdd ( TileCoordinates c, List<Tile> set )
+	void TryAdd ( TileCoordinates c, List<Tile> set, bool _isThisTurn )
 	{
 		Tile t = c.GetTile();
-		if (t != null && !t.IsObstacle())
+		if (t != null && !t.IsObstacle(_isThisTurn))
 			set.Add(t);
 	}
 
@@ -860,7 +860,7 @@ public class GridManager : Singleton<GridManager>
 				}
 
 				//obstacle
-				if (!_ignoreObstacles && (neighbor.IsObstacle() || (neighbor.GetEntity(_isThisTurn) != null && neighbor != _to)))
+				if (!_ignoreObstacles && (neighbor.IsObstacle(_isThisTurn) || (neighbor.GetEntity(_isThisTurn) != null && neighbor != _to)))
 				{
 					continue;
 				}

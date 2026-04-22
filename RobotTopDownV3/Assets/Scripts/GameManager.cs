@@ -173,6 +173,18 @@ public class GameManager : SingletonPersistant<GameManager>
 		return null;
 	}
 
+	public Item SpawnItem (AItemData<AItemLinkedData> _itemData, Entity _caster, Tool _invocatorTool, TileCoordinates _coordinate)
+	{
+		Item newItem = Instantiate(_itemData.itemPrefab, _coordinate.GetTile().transform.position, Quaternion.identity);
+		if (!_caster.Equipment.ItemsLinkedDataDictionary.ContainsKey(_invocatorTool.ID))
+			_caster.Equipment.ItemsLinkedDataDictionary.Add(_invocatorTool.ID, _itemData.GetNewLinkedData());
+		newItem.Init(_itemData, _caster.Equipment.ItemsLinkedDataDictionary[_invocatorTool.ID], _caster, _coordinate.GetTile());
+
+		_itemData.OnInvokeItem(_invocatorTool);
+
+		return newItem;
+	}
+
 	public void LevelCompletionCheck(out bool _isPlayerOneDead, out bool _isPlayerTwoDead )
 	{
 		_isPlayerOneDead = true;

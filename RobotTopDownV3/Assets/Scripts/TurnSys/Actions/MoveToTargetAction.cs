@@ -103,7 +103,7 @@ public class MoveToTargetAction : AEntityAction
 		int maxDistance = TurnManager.Instance.RemainingActionToken[performingEntityID] * Data.movementSpeed;
 		int distance = GridManager.Instance.GetDistanceBetween(GridManager.Instance.Tiles[TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntityID)], _tile, true);
 
-		if (_tile.IsObstacle() || distance > maxDistance || distance < 1)
+		if (_tile.IsObstacle(true) || distance > maxDistance || distance < 1)
 			return false;
 
 		return true;
@@ -240,7 +240,7 @@ public class MoveToTargetAction : AEntityAction
 		{
 			Entity entity = GridManager.Instance.Tiles[tileID].GetEntity(_isThisTurn: false);
 			if ((entity != null && entity.ID != performingEntityID)
-				|| GridManager.Instance.Tiles[tileID].IsObstacle())
+				|| GridManager.Instance.Tiles[tileID].IsObstacle(false))
 			{
 				hasOtherEntityOnDestinations = true;
 				break;

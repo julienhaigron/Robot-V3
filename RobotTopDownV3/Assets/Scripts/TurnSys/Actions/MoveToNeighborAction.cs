@@ -62,7 +62,7 @@ public class MoveToNeighborAction : AEntityAction
 
 	public override bool TileInteractPredicate ( Tile _tile )
 	{
-		if (_tile.GetEntity(false) != null || _tile.IsObstacle() || GridManager.Instance.GetDistanceBetween(GridManager.Instance.Tiles[TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntityID)], _tile, true) != 1
+		if (_tile.GetEntity(false) != null || _tile.IsObstacle(true) || GridManager.Instance.GetDistanceBetween(GridManager.Instance.Tiles[TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntityID)], _tile, true) != 1
 			|| GridManager.Instance.Tiles[TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntityID)] == _tile)
 			return false;
 
@@ -155,7 +155,7 @@ public class MoveToNeighborAction : AEntityAction
 
 		Entity entityOnDestination = GridManager.Instance.Tiles[(int)finalTargetTileID].GetEntity(_isThisTurn: false);
 
-		return (entityOnDestination != null && entityOnDestination.ID != performingEntityID) || GridManager.Instance.Tiles[(int)finalTargetTileID].IsObstacle();
+		return (entityOnDestination != null && entityOnDestination.ID != performingEntityID) || GridManager.Instance.Tiles[(int)finalTargetTileID].IsObstacle(false);
 	}
 
 	private void RefreshDestinatedTile ()

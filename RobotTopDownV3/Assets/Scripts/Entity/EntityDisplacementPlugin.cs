@@ -80,12 +80,7 @@ public class EntityDisplacementPlugin : EntityPlugin
 		tile.SetEntity(m_linkedEntity, _isThisTurn: true);
 		m_coordinate.SetCoordinate(tile.coordinates.X, tile.coordinates.Z, tile.coordinates.ID);
 
-		if(tile.GroundType == TileGroundType.Void && !m_linkedEntity.Status.Contains(EntityStatusEnumID.Flying))
-		{
-			Dictionary<WeaponEquipmentData.DamageType, int> damages = new();
-			damages.Add(WeaponEquipmentData.DamageType.Contendant, 9999);
-			m_linkedEntity.Equipment.TakeDamage(new EntityEquipmentPlugin.TakeDamageCallback() { damages = damages });
-		}
+		tile.OnEntityEnter(m_linkedEntity);
 
 		//refresh fow
 		onAnyEntityMovement?.Invoke(m_linkedEntity);
