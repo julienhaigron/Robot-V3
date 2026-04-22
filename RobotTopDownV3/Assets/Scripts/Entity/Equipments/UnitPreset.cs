@@ -16,7 +16,7 @@ public class UnitPreset : ScriptableObject
     [OnValueChanged("@RefreshTotalEnergyCostRemaining()")]
     public NeuronalMembraneEquipmentData neuronalMembrane;
     [OnValueChanged("@RefreshTotalEnergyCostRemaining()")]
-    public WeaponEquipmentData[] arms;
+    public EntityEquipmentData[] arms;
     [OnValueChanged("@RefreshTotalEnergyCostRemaining()")]
     public EntityEquipmentData[] auxiliary;
     [OnValueChanged("@RefreshTotalEnergyCostRemaining()")]
@@ -55,7 +55,7 @@ public class UnitPreset : ScriptableObject
         newUnit.brain = new() { ID = brain.name + GameDatas.current.currentPlayerSave.equipmentCounter++, dataID = brain.name };
 
         List<GameDatas.PlayerSave.Equipment> armsContainer = new();
-        foreach (WeaponEquipmentData arm in arms)
+        foreach (EntityEquipmentData arm in arms)
             armsContainer.Add(new() { ID = arm.name + GameDatas.current.currentPlayerSave.equipmentCounter++, dataID = arm.name });
         newUnit.arms = armsContainer.ToArray();
 

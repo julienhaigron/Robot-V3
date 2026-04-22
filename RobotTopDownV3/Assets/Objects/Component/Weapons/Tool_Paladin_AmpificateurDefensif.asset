@@ -18,7 +18,7 @@ MonoBehaviour:
   energyCost: 0
   knownedActions: 17000000
   passiveEffects: []
-  prefab: {fileID: 0}
+  prefab: {fileID: 871335888112447800, guid: 385746732d1af89489d4626717c2a5e3, type: 3}
   range: 0
   attackAnimationSuccessId: 
   attackAnimationFailureId: 

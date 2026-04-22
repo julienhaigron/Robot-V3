@@ -126,6 +126,7 @@ public class GameManager : SingletonPersistant<GameManager>
 
 	public void StartGame ()
 	{
+		TurnManager.Instance.Init();
 		GridManager.Instance.LoadGrid();
 		UIManager.Instance.OpenPanel<InGamePanel>();
 
@@ -149,7 +150,6 @@ public class GameManager : SingletonPersistant<GameManager>
 		}
 
 		m_fogCanvas.gameObject.SetActive(true);
-		TurnManager.Instance.Init();
 		TurnManager.Instance.StartInputPhase();
 	}
 

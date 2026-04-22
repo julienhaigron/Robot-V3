@@ -20,42 +20,42 @@ MonoBehaviour:
   game:
     lastPlayerSaveSelectedID: 0
   playerSaves:
-  - saveName: New save
+  - saveName: NewSave
     knownedFrames: []
     allBuiltUnits: []
     squadUnits:
     - name: Fire Bat
       frame:
-        ID: 
-        dataID: 
+        ID: Frame_Paladin_Knight0
+        dataID: Frame_Paladin_Knight
       reactor:
-        ID: 
-        dataID: 
+        ID: Reactor_B-991
+        dataID: Reactor_B-99
       neuronalMembrane:
-        ID: 
-        dataID: 
+        ID: NeuronalMembraneTest12
+        dataID: NeuronalMembraneTest1
       brain:
-        ID: 
-        dataID: 
+        ID: Brain_Z-13
+        dataID: Brain_Z-1
       arms:
-      - ID: Weapon_FlameThrowerXV-684
-        dataID: Weapon_FlameThrowerXV-68
-      - ID: Weapon_ShieldGeneratorD-35
-        dataID: Weapon_ShieldGeneratorD-3
+      - ID: Weapon_Psy_GlaiveDeSivir4
+        dataID: Weapon_Psy_GlaiveDeSivir
+      - ID: Tool_Psy_Teleportation5
+        dataID: Tool_Psy_Teleportation
       auxiliar:
+      - ID: Armor_CD16
+        dataID: Armor_CD1
       - ID: Armor_CD27
         dataID: Armor_CD2
       - ID: Occultor_SF-58
         dataID: Occultor_SF-5
-      - ID: Armor_CD122
-        dataID: Armor_CD1
       chipsets:
       - ID: Chipset_ZB-389
         dataID: Chipset_ZB-38
     - name: Fire Bat
       frame:
-        ID: Frame_A-710
-        dataID: Frame_A-7
+        ID: Frame_Paladin_Knight10
+        dataID: Frame_Paladin_Knight
       reactor:
         ID: Reactor_B-9911
         dataID: Reactor_B-99
@@ -66,10 +66,10 @@ MonoBehaviour:
         ID: Brain_Z-113
         dataID: Brain_Z-1
       arms:
-      - ID: Weapon_FlameThrowerXV-6814
-        dataID: Weapon_FlameThrowerXV-68
-      - ID: Weapon_ShieldGeneratorD-315
-        dataID: Weapon_ShieldGeneratorD-3
+      - ID: Weapon_Psy_GlaiveDeSivir14
+        dataID: Weapon_Psy_GlaiveDeSivir
+      - ID: Tool_Psy_Teleportation15
+        dataID: Tool_Psy_Teleportation
       auxiliar:
       - ID: Armor_CD116
         dataID: Armor_CD1
@@ -80,32 +80,8 @@ MonoBehaviour:
       chipsets:
       - ID: Chipset_ZB-3819
         dataID: Chipset_ZB-38
-    equipmentInventory:
-    - ID: Armor_CD123
-      dataID: Armor_CD1
-    - ID: Armor_CD124
-      dataID: Armor_CD1
-    - ID: Armor_CD125
-      dataID: Armor_CD1
-    - ID: Armor_CD126
-      dataID: Armor_CD1
-    - ID: Armor_CD135
-      dataID: Armor_CD1
-    - ID: Frame_A-736
-      dataID: Frame_A-7
-    - ID: Frame_A-737
-      dataID: Frame_A-7
-    - ID: Frame_A-738
-      dataID: Frame_A-7
-    - ID: Frame_A-739
-      dataID: Frame_A-7
-    - ID: Reactor_B-9940
-      dataID: Reactor_B-99
-    - ID: NeuronalMembraneTest141
-      dataID: NeuronalMembraneTest1
-    - ID: Brain_Z-142
-      dataID: Brain_Z-1
-    equipmentCounter: 43
+    equipmentInventory: []
+    equipmentCounter: 20
     currencies:
       keys: 01000000
       values: 0000000000000000

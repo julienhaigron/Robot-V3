@@ -51,8 +51,9 @@ public class TurnManager : Singleton<TurnManager>
 	public int currentTick = 0;
 
 	//prevision
-	private SerializableDictionary<int, TrackedEntityEvents> m_trackedEventsPerEntity = new();
-	public SerializableDictionary<int, TrackedEntityEvents> TrackedEventsPerEntity => m_trackedEventsPerEntity;
+	private Dictionary<int, TrackedEntityEvents> m_trackedEventsPerEntity = new();
+	public Dictionary<int, TrackedEntityEvents> TrackedEventsPerEntity => m_trackedEventsPerEntity;
+	[Serializable]
 	public class TrackedEntityEvents
 	{
 		public int firstTimeEntityMoved;
@@ -248,6 +249,9 @@ public class TurnManager : Singleton<TurnManager>
 				break;
 			case EntityActionData.ActionCodeType.Wait:
 				action = new WaitAction();
+				break;
+			case EntityActionData.ActionCodeType.InvokeItem:
+				action = new InvokeItemAction();
 				break;
 			default:
 				Debug.LogError("Missing entree in TurnManager.GetAction for type \"" + _actionData.codeType + "\"");
