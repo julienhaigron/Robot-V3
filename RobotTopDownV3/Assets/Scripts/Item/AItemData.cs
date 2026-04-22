@@ -2,19 +2,22 @@ using UnityEngine;
 using Sirenix.OdinInspector;
 using System;
 
-[CreateAssetMenu(fileName = "ItemData", menuName = "Scriptable Objects/ItemData")]
-public abstract class AItemData<TItemLinkedData> : ScriptableObject where TItemLinkedData : AItemLinkedData
+[Serializable]
+public abstract class AItemData : ScriptableObject
 {
     public Item itemPrefab;
 
-    public abstract TItemLinkedData GetNewLinkedData ();
+    public abstract AItemLinkedData GetNewLinkedData ();
 
     public virtual bool InvokeItemPredicate ( Tool _invocatingTool, EntityActionData _actionData )
 	{
         return _invocatingTool.LinkedEntity.Equipment.ItemsLinkedDataDictionary[_invocatingTool.ID].currentInvocationCount < _actionData.invocationCountLimit;
     }
 
-    public abstract void OnInvokeItem ( Tool _invokingTool );
+    public virtual void OnInvokeItem ( Tool _invokingTool )
+	{
+        _invokingTool.LinkedEntity.Equipment.ItemsLinkedDataDictionary[_invokingTool.ID].currentInvocationCount++;
+    }
 
     public abstract bool CanWalkThroughPredicate ( AItemLinkedData _linkedData, Item _usedItem, bool _isThisTurn );
 

@@ -9,8 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d8a3de66be57e894a81fb26d5d5819d5, type: 3}
-  m_Name: ApplyRootedStatus
+  m_Script: {fileID: 11500000, guid: 8a14843fe3bc11240955293fb8fcd791, type: 3}
+  m_Name: Push3
   m_EditorClassIdentifier: 
-  enumID: 16
-  statusApplied: 4
+  enumID: 21
+  movementStrength: 3

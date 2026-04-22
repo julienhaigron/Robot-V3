@@ -1,4 +1,4 @@
-//GENERATED 19
+//GENERATED 20
 public enum EntityPassiveEffectEnumID
 {
 	Unknown,
@@ -24,6 +24,7 @@ public enum EntityPassiveEffectEnumID
 	InstantDeath,
 	KamaikazeDealDamage,
 	Kamikaze,
+	Push3,
 	//#END#ENTITYPASSIVEEFFECTENUMID#//
 
 }

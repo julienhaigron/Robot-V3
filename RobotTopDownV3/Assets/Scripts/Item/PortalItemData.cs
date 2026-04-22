@@ -2,24 +2,14 @@ using UnityEngine;
 using Sirenix.OdinInspector;
 using System;
 
-[CreateAssetMenu(fileName = "PortalData", menuName = "ScriptableObjects/Item/Portal")]
-public class PortalItemData : AItemData<PortalItemLinkedData>
+[CreateAssetMenu(fileName = "PortalData", menuName = "ScriptableObject/Item/Portal")]
+public class PortalItemData : AItemData
 {
 
-	public override PortalItemLinkedData GetNewLinkedData ()
+	public override AItemLinkedData GetNewLinkedData ()
 	{
-        return new();
+        return new PortalItemLinkedData();
 	}
-
-    /*public override bool InvokeItemPredicate ( Tool _invocatingTool, EntityActionData _actionData )
-    {
-        return _invocatingTool.LinkedEntity.Equipment.ItemsLinkedDataDictionary[_invocatingTool.] && base.InvokeItemPredicate(_invocatingTool, _actionData);
-    }*/
-
-    public override void OnInvokeItem ( Tool _invokingTool )
-    {
-        _invokingTool.LinkedEntity.Equipment.ItemsLinkedDataDictionary[_invokingTool.ID].currentInvocationCount++;
-    }
 
     public override bool CanWalkThroughPredicate (AItemLinkedData _linkedData, Item _usedItem, bool _isThisTurn )
 	{
@@ -50,20 +40,7 @@ public class PortalItemData : AItemData<PortalItemLinkedData>
 
     public override void Interract ( Entity _enteringEntity, AItemLinkedData _linkedData, Item _usedItem, Action _onEndUse )
     {
-        /*if (_linkedData is not PortalItemLinkedData portalLinkedData)
-		{
-            _onEndUse?.Invoke();
-            return;
-		}
 
-        _enteringEntity.Displacement.MoveToTile(_usedItem.CurrentPosition == portalLinkedData.portalATile
-            ? portalLinkedData.portalATile.coordinates.ID : portalLinkedData.portalBTile.coordinates.ID, _onEndUse, true, 0);*/
-
-        /*_enteringEntity.transform.position = _usedItem.CurrentPosition == portalLinkedData.portalATile 
-            ? portalLinkedData.portalATile.transform.position : portalLinkedData.portalBTile.transform.position;*/
-
-
-        base.Interract(_enteringEntity, _linkedData, _usedItem, _onEndUse);
     }
 
 }

@@ -9,8 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d8a3de66be57e894a81fb26d5d5819d5, type: 3}
-  m_Name: ApplyRootedStatus
+  m_Script: {fileID: 11500000, guid: 88d708d70db7dcd4f8611c574c8d0faf, type: 3}
+  m_Name: PortalData
   m_EditorClassIdentifier: 
-  enumID: 16
-  statusApplied: 4
+  itemPrefab: {fileID: 6520863086066432982, guid: fec1ea37e96cdfa4cb7da8eea90b17b1, type: 3}

@@ -13,6 +13,4 @@ MonoBehaviour:
   m_Name: ApplyStunStatus
   m_EditorClassIdentifier: 
   enumID: 14
-  doApplyToSelf: 0
-  doApplyToTile: 0
   statusApplied: 6

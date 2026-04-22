@@ -13,6 +13,4 @@ MonoBehaviour:
   m_Name: ApplyMarkedStatus
   m_EditorClassIdentifier: 
   enumID: 2
-  doApplyToSelf: 0
-  doApplyToTile: 0
   statusApplied: 3

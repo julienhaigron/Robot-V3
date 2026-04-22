@@ -13,6 +13,4 @@ MonoBehaviour:
   m_Name: ApplyBurning1Status
   m_EditorClassIdentifier: 
   enumID: 15
-  doApplyToSelf: 0
-  doApplyToTile: 1
   statusApplied: 1

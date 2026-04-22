@@ -3,8 +3,8 @@ using UnityEngine;
 public class Item : MonoBehaviour
 {
 
-    private AItemData<AItemLinkedData> m_data;
-    public AItemData<AItemLinkedData> Data => m_data;
+    private AItemData m_data;
+    public AItemData Data => m_data;
 
     private AItemLinkedData m_linkedData;
     public AItemLinkedData LinkedData => m_linkedData;
@@ -13,7 +13,7 @@ public class Item : MonoBehaviour
     private Tile m_currentPosition;
     public Tile CurrentPosition => m_currentPosition;
 
-    public void Init( AItemData<AItemLinkedData> _itemData, AItemLinkedData _linkedData, Entity _invocatorEntity, Tile _position )
+    public void Init( AItemData _itemData, AItemLinkedData _linkedData, Entity _invocatorEntity, Tile _position )
 	{
         m_data = _itemData;
         m_linkedData = _linkedData;

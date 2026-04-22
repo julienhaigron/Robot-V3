@@ -13,6 +13,4 @@ MonoBehaviour:
   m_Name: ApplySmokedStatus
   m_EditorClassIdentifier: 
   enumID: 17
-  doApplyToSelf: 0
-  doApplyToTile: 0
   statusApplied: 5

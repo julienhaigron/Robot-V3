@@ -103,8 +103,7 @@ public class InvokeItemAction : SpecialAction
 			return;
 		}
 
-		GameManager.Instance.SpawnItem(Data.invocatedItem, GameManager.Instance.GetEntityFromID(performingEntityID)
-			, GameManager.Instance.GetEntityFromID(performingEntityID).Equipment.Tools[linkedEquipmentId], GridManager.Instance.Tiles[targetTileID].coordinates);
+		GameManager.Instance.SpawnItem(Data.invocatedItem, PerformingEntity, PerformingEntity.Equipment.Tools[linkedEquipmentId], GridManager.Instance.Tiles[targetTileID].coordinates);
 
 		base.Perform(_state);
 		DG.Tweening.DOVirtual.DelayedCall(GameConfig.current.game.actionDuration, EndTick);
