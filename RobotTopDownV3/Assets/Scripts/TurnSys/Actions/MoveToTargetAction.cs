@@ -25,9 +25,9 @@ public class MoveToTargetAction : AEntityAction
 		serializer.SerializeValue(ref thisActionDestinationIDArray);
 	}
 
-	public override void Init ( EntityActionData _data, int _performingEntityID, int _positionAtActionStartID, int _timeAtStart )
+	public override void Init ( EntityActionData _data, string _linkedEquipmentID, int _performingEntityID, int _positionAtActionStartID, int _timeAtStart )
 	{
-		base.Init(_data, _performingEntityID, _positionAtActionStartID, _timeAtStart);
+		base.Init(_data, _linkedEquipmentID, _performingEntityID, _positionAtActionStartID, _timeAtStart);
 
 		switch (mode)
 		{
@@ -132,7 +132,7 @@ public class MoveToTargetAction : AEntityAction
 			for (int j = 0; j < Data.movementSpeed && i+j < path.Count - 1; j++)
 				tileIDList.Add(path[i + j + 1].coordinates.ID);
 			action.thisActionDestinationIDArray = tileIDList.ToArray();
-			action.Init(GameAssets.current.game.entityActionsData[enumID], performingEntityID, path[i].coordinates.ID, timeAtStart + i);
+			action.Init(GameAssets.current.game.entityActionsData[enumID], linkedEquipmentId, performingEntityID, path[i].coordinates.ID, timeAtStart + i);
 
 			TurnManager.Instance.AddAction(performingEntityID, action, TurnManager.Instance.CurrentStateTypeSelected);
 		}

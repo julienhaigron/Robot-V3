@@ -11,7 +11,8 @@ public abstract class AItemData : ScriptableObject
 
     public virtual bool InvokeItemPredicate ( Tool _invocatingTool, EntityActionData _actionData )
 	{
-        return _invocatingTool.LinkedEntity.Equipment.ItemsLinkedDataDictionary[_invocatingTool.ID].currentInvocationCount < _actionData.invocationCountLimit;
+        return !_invocatingTool.LinkedEntity.Equipment.ItemsLinkedDataDictionary.ContainsKey(_invocatingTool.ID)
+            || _invocatingTool.LinkedEntity.Equipment.ItemsLinkedDataDictionary[_invocatingTool.ID].currentInvocationCount < _actionData.invocationCountLimit;
     }
 
     public virtual void OnInvokeItem ( Tool _invokingTool )

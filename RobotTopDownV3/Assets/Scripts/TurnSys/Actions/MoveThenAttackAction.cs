@@ -44,7 +44,7 @@ public class MoveThenAttackAction : AttackAction
 		bool doesSelfHaveConflict = false;
 		bool doesOtherHaveConflict = false;
 		Entity user = GameManager.Instance.GetEntityFromID(performingEntityID);
-		int maxDist = user.Equipment.Weapons[user.ComponentLinkedToAction[enumID]].Data.range - 1;
+		int maxDist = user.Equipment.Weapons[linkedEquipmentId].Data.range - 1;
 
 		if (_otherAction is MoveToNeighborAction && (_otherAction as MoveToNeighborAction).finalTargetTileID == positionAfterMovementID)
 		{

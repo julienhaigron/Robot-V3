@@ -31,8 +31,8 @@ public class EntityEquipmentPlugin : EntityPlugin
 	private bool m_isDead = false;
 	public bool IsDead => m_isDead;
 
-	private SerializableDictionary<EntityActionEnumID, int> m_actionsInCooldown = new();
-	public SerializableDictionary<EntityActionEnumID, int> ActionInCooldown => m_actionsInCooldown;
+	private SerializableDictionary<string, int> m_equipmentInCooldown = new();
+	public SerializableDictionary<string, int> EquipmentInCooldown => m_equipmentInCooldown;
 
 	[Title("Stats")]
 	private float m_generalDamageBuff = 0f;
@@ -129,7 +129,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 
 	private void OnEntitySelected ()
 	{
-		TurnManager.Instance.SetCurrentActionSelected(EntityActionEnumID.TargetTileMove);
+		TurnManager.Instance.SetCurrentActionSelected(EntityActionEnumID.TargetTileMove, null);
 
 		foreach (WeaponCone weaponCone in m_weaponConeDictionary.Values)
 		{
@@ -147,11 +147,11 @@ public class EntityEquipmentPlugin : EntityPlugin
 
 	private void OnNewPhaseStart ()
 	{
-		foreach (EntityActionEnumID action in m_actionsInCooldown.Keys.ToList())
+		foreach (string equipment in m_equipmentInCooldown.Keys.ToList())
 		{
-			m_actionsInCooldown[action]--;
-			if (m_actionsInCooldown[action] <= 0)
-				m_actionsInCooldown.Remove(action);
+			m_equipmentInCooldown[equipment]--;
+			if (m_equipmentInCooldown[equipment] <= 0)
+				m_equipmentInCooldown.Remove(equipment);
 		}
 	}
 

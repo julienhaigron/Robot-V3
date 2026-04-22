@@ -45,12 +45,12 @@ public abstract class AEntityAction : INetworkSerializable
 		serializer.SerializeValue(ref timeAtStart);
     }
 
-    public virtual void Init(EntityActionData _data, int _performingEntityID, int _positionAtActionStartID, int _timeAtStart )
+    public virtual void Init(EntityActionData _data, string _linkedEquipmentID, int _performingEntityID, int _positionAtActionStartID, int _timeAtStart )
 	{
         Entity performingEntity = GameManager.Instance.GetEntityFromID(_performingEntityID);
         enumID = _data.enumID;
         performingEntityID = _performingEntityID;
-        linkedEquipmentId = performingEntity.ComponentLinkedToAction.ContainsKey(enumID) ? performingEntity.ComponentLinkedToAction[enumID] : null;
+        linkedEquipmentId = _linkedEquipmentID;
         supposedPositionAtActionStartID = _positionAtActionStartID;
         positionAtActionEndID = _positionAtActionStartID;
 

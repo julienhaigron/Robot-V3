@@ -42,6 +42,8 @@ public class TurnManager : Singleton<TurnManager>
 	public AEntityAction CurrentActionSelected => m_currentEntityAction;
 	private EntityActionEnumID m_currentActionTypeSelected;
 	public EntityActionEnumID CurrentActionTypeSelected => m_currentActionTypeSelected;
+	private string m_currentEquipmentLinkedToActionTypeSelected;
+	public string CurrentEquipmentLinkedToActionTypeSelected => m_currentEquipmentLinkedToActionTypeSelected;
 
 	private Entity.EntityState m_currentStateTypeSelected;
 	public Entity.EntityState CurrentStateTypeSelected => m_currentStateTypeSelected;
@@ -81,6 +83,7 @@ public class TurnManager : Singleton<TurnManager>
 	{
 		public int timeAtStart;
 		public int performingEntityID;
+		public string linkedEquipmentID;
 		public Entity.EntityState entityState;
 		public EntityActionEnumID type;
 		public AEntityAction action;
@@ -91,6 +94,7 @@ public class TurnManager : Singleton<TurnManager>
 		{
 			serializer.SerializeValue(ref timeAtStart);
 			serializer.SerializeValue(ref performingEntityID);
+			serializer.SerializeValue(ref linkedEquipmentID);
 			serializer.SerializeValue(ref entityState);
 			serializer.SerializeValue(ref type);
 
@@ -100,7 +104,7 @@ public class TurnManager : Singleton<TurnManager>
 			}
 			else
 			{
-				action = Instance.GetAction(GameAssets.current.game.entityActionsData[type], performingEntityID, timeAtStart);
+				action = Instance.GetAction(GameAssets.current.game.entityActionsData[type], performingEntityID, linkedEquipmentID, timeAtStart);
 
 				if (action == null)
 				{
@@ -117,7 +121,7 @@ public class TurnManager : Singleton<TurnManager>
 			}
 			else
 			{
-				freeAction = Instance.GetAction(GameAssets.current.game.entityActionsData[freeActionType], performingEntityID, timeAtStart);
+				freeAction = Instance.GetAction(GameAssets.current.game.entityActionsData[freeActionType], performingEntityID, linkedEquipmentID, timeAtStart);
 
 				if (freeAction == null)
 				{
@@ -165,7 +169,7 @@ public class TurnManager : Singleton<TurnManager>
 		if (_selectedEntity.HasValue)
 		{
 			Entity selectedEntity = GameManager.Instance.GetEntityFromID(_selectedEntity.Value);
-			SetCurrentActionSelected(selectedEntity.KnownedActions[0]);
+			SetCurrentActionSelected(selectedEntity.AI.GetMovementAction().enumID, null);
 			SetCurrentStateSelected(selectedEntity.KnownedStates[0]);
 		}
 		RefreshActionDisplay(_selectedEntity);
@@ -193,24 +197,25 @@ public class TurnManager : Singleton<TurnManager>
 		m_currentStateTypeSelected = _state;
 	}
 
-	public void SetCurrentActionSelected ( EntityActionEnumID _action )
+	public void SetCurrentActionSelected ( EntityActionEnumID _action, string _linkedEquipmentID )
 	{
 		int performingEntityID = PlayerController.Instance.SelectedEntity.ID;
 		int timeAtStart = m_recordedActionInput.ContainsKey(performingEntityID) && m_recordedActionInput[performingEntityID].Count > 0
 			? m_recordedActionInput[performingEntityID].ToArray()[^1].action.TimeAtEnd : currentTick;
 		
-		m_currentEntityAction = GetAction(GameAssets.current.game.entityActionsData[_action], performingEntityID, timeAtStart);
+		m_currentEntityAction = GetAction(GameAssets.current.game.entityActionsData[_action], performingEntityID, _linkedEquipmentID, timeAtStart);
 		m_currentActionTypeSelected = _action;
+		m_currentEquipmentLinkedToActionTypeSelected = _linkedEquipmentID;
 
 		onActionSelected?.Invoke(m_currentEntityAction);
 	}
 
-	public AEntityAction GetAction ( EntityActionEnumID _actionType, int _performingEntityID, int _timeAtStart )
+	public AEntityAction GetAction ( EntityActionEnumID _actionType, int _performingEntityID, string _linkedEquipmentID, int _timeAtStart )
 	{
-		return GetAction(GameAssets.current.game.entityActionsData[_actionType], _performingEntityID, _timeAtStart);
+		return GetAction(GameAssets.current.game.entityActionsData[_actionType], _performingEntityID, _linkedEquipmentID, _timeAtStart);
 	}
 
-	public AEntityAction GetAction ( EntityActionData _actionData, int _performingEntityID, int _timeAtStart )
+	public AEntityAction GetAction ( EntityActionData _actionData, int _performingEntityID, string _linkedEquipmentID, int _timeAtStart )
 	{
 		AEntityAction action = null;
 
@@ -257,18 +262,18 @@ public class TurnManager : Singleton<TurnManager>
 				Debug.LogError("Missing entree in TurnManager.GetAction for type \"" + _actionData.codeType + "\"");
 				return action;
 		}
-		action.Init(GameAssets.current.game.entityActionsData[_actionData.enumID], _performingEntityID, GetLastRegisteredPositionOfEntity(_performingEntityID), _timeAtStart);
+		action.Init(GameAssets.current.game.entityActionsData[_actionData.enumID], _linkedEquipmentID, _performingEntityID, GetLastRegisteredPositionOfEntity(_performingEntityID), _timeAtStart);
 
 		return action;
 	}
 
-	public bool AddAction ( int _entityID, EntityActionEnumID _actionType, Entity.EntityState _state )
+	public bool AddAction ( int _entityID, EntityActionEnumID _actionType, Entity.EntityState _state, string _linkedEquipmentID )
 	{
 		AEntityAction action = null;
 		int timeAtStart = m_recordedActionInput.ContainsKey(_entityID) && m_recordedActionInput[_entityID].Count > 0
 			? m_recordedActionInput[_entityID].ToArray()[^1].action.TimeAtEnd : currentTick;
 
-		action = GetAction(GameAssets.current.game.entityActionsData[_actionType], _entityID, timeAtStart);
+		action = GetAction(GameAssets.current.game.entityActionsData[_actionType], _entityID, _linkedEquipmentID, timeAtStart);
 		return AddAction(_entityID, action, _state);
 	}
 
@@ -392,7 +397,7 @@ public class TurnManager : Singleton<TurnManager>
 
 		if (_selectedEntityID.HasValue && m_recordedActionInput.ContainsKey(_selectedEntityID.Value)
 			&& m_remainingActionToken[_selectedEntityID.Value] >= GameAssets.current.game.entityActionsData[m_currentActionTypeSelected].GetTokenTotalCost(m_currentEntityAction, GameManager.Instance.GetEntityFromID(_selectedEntityID.Value), null))
-			SetCurrentActionSelected(m_currentActionTypeSelected);
+			SetCurrentActionSelected(m_currentActionTypeSelected, m_currentEquipmentLinkedToActionTypeSelected);
 
 		// display all player entity actions
 		foreach (int entityID in m_recordedActionInput.Keys)
@@ -886,8 +891,8 @@ public class TurnManager : Singleton<TurnManager>
 				timeAtStart = currentTick + i,
 				type = EntityActionEnumID.Wait,
 				performingEntityID = _entity.ID,
-				action = GetAction(EntityActionEnumID.Wait, _entity.ID, currentTick + i),
-				freeAction = GetAction(EntityActionEnumID.Wait, _entity.ID, currentTick + i),
+				action = GetAction(EntityActionEnumID.Wait, _entity.ID, null, currentTick + i),
+				freeAction = GetAction(EntityActionEnumID.Wait, _entity.ID, null, currentTick + i),
 				freeActionType = EntityActionEnumID.Wait,
 				entityState = availableState
 			});

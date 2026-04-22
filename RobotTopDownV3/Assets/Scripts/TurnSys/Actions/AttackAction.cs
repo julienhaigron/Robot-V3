@@ -129,7 +129,7 @@ public class AttackAction : AEntityAction
 		bool attackIgnoresObstacles = (Data.type == EntityActionData.ActionType.DistanceAttack && effects.Any(e => e.enumID == EntityPassiveEffectEnumID.TrajectoryControl)) 
 			|| Data.targetType == EntityActionData.TargetType.Mortar;
 		Entity user = GameManager.Instance.GetEntityFromID(performingEntityID);
-		Weapon attackingWeapon = user.Equipment.Weapons[user.ComponentLinkedToAction[enumID]];
+		Weapon attackingWeapon = user.Equipment.Weapons[linkedEquipmentId];
 		Tile from = GridManager.Instance.Tiles[TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntityID)];
 		List<Tile> tilesInRange = attackIgnoresObstacles ? GridManager.Instance.GetTilesInVisionRange(from, attackingWeapon.Data.range, true)
 			: GridManager.Instance.GetTilesInRange(from, attackingWeapon.Data.range, true, true);

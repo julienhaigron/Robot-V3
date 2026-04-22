@@ -40,12 +40,12 @@ public class EntityAIPlugin : EntityPlugin
 
 		EntityActionData movementAction = GetMovementAction();
 		bool canMove = !m_linkedEntity.Status.Contains(EntityStatusEnumID.Stun) && !m_linkedEntity.Status.Contains(EntityStatusEnumID.Rooted) && movementAction != null;
-		EntityActionData availableAttackAction = GetAvailableAttackAction();
+		EntityActionData availableAttackAction = GetAvailableAttackAction(out string availableEquipment);
 
 		if (m_linkedEntity.Status.Contains(EntityStatusEnumID.Stun))
 		{
-			WaitAction waitAction = (TurnManager.Instance.GetAction(EntityActionEnumID.Wait, m_linkedEntity.ID, _recordedAction.timeAtStart) as WaitAction);
-			waitAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.Wait], m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID, _recordedAction.action.timeAtStart);
+			WaitAction waitAction = (TurnManager.Instance.GetAction(EntityActionEnumID.Wait, m_linkedEntity.ID, null, _recordedAction.timeAtStart) as WaitAction);
+			waitAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.Wait], null, m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID, _recordedAction.action.timeAtStart);
 			resultInfo.ReplaceAction(waitAction);
 		}
 		else if (HasEnemyWeaponInRange() && availableAttackAction != null /* && _recordedAction.entityState == Entity.EntityState.Patroling*/)
@@ -54,11 +54,11 @@ public class EntityAIPlugin : EntityPlugin
 			//  => shoot directly
 			m_lastEntityTargeted = GetClosestEnemyInWeaponRange(out string _weaponId, true);
 
-			AttackAction attackAction = (TurnManager.Instance.GetAction(availableAttackAction, m_linkedEntity.ID, _recordedAction.timeAtStart) as AttackAction);
+			AttackAction attackAction = (TurnManager.Instance.GetAction(availableAttackAction, m_linkedEntity.ID, availableEquipment, _recordedAction.timeAtStart) as AttackAction);
 			attackAction.attackingWeaponId = _weaponId;
 			attackAction.targetedEntityID = m_lastEntityTargeted.ID;
 			attackAction.targetTileID = m_lastEntityTargeted.Displacement.Coordinates.ID;
-			attackAction.Init(GameAssets.current.game.entityActionsData[availableAttackAction.enumID], m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID, _recordedAction.action.timeAtStart);
+			attackAction.Init(GameAssets.current.game.entityActionsData[availableAttackAction.enumID], availableEquipment, m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID, _recordedAction.action.timeAtStart);
 			resultInfo.ReplaceAction(attackAction);
 		}
 		else if (canMove && HasEnemyInVisionRange() && !HasEnemyWeaponInRange())
@@ -81,9 +81,9 @@ public class EntityAIPlugin : EntityPlugin
 
 					if (!isAtCorrectOrientation)
 					{
-						RotateEntityAction rotateAction = (TurnManager.Instance.GetAction(EntityActionEnumID.RotateEntity, m_linkedEntity.ID, _recordedAction.timeAtStart) as RotateEntityAction);
+						RotateEntityAction rotateAction = (TurnManager.Instance.GetAction(EntityActionEnumID.RotateEntity, m_linkedEntity.ID, null, _recordedAction.timeAtStart) as RotateEntityAction);
 						rotateAction.targetedOrientationID = GridManager.Instance.GetClosestOrientation(m_linkedEntity.Displacement.Coordinates.GetTile(), closestEntity.Displacement.Coordinates.GetTile());
-						rotateAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.RotateEntity], m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID, _recordedAction.action.timeAtStart);
+						rotateAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.RotateEntity], null, m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID, _recordedAction.action.timeAtStart);
 						resultInfo.ReplaceFreeAction(rotateAction);
 					}
 				}
@@ -98,18 +98,18 @@ public class EntityAIPlugin : EntityPlugin
 					for (int i = 0; i < movementAction.movementSpeed && i + 1 < pathToEnemy.Count; i++)
 						tileIDs.Add(pathToEnemy[i + 1].coordinates.ID);
 
-					MoveToTargetAction moveToAction = (TurnManager.Instance.GetAction(movementAction.enumID, m_linkedEntity.ID, _recordedAction.timeAtStart) as MoveToTargetAction);
+					MoveToTargetAction moveToAction = (TurnManager.Instance.GetAction(movementAction.enumID, m_linkedEntity.ID, null, _recordedAction.timeAtStart) as MoveToTargetAction);
 					moveToAction.mode = MoveToTargetAction.MoveActionMode.Entity;
 					moveToAction.targetEntiyID = closestEntity.ID;
 					moveToAction.thisActionDestinationIDArray = tileIDs.ToArray();
-					moveToAction.Init(GameAssets.current.game.entityActionsData[movementAction.enumID], m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID, _recordedAction.action.timeAtStart);
+					moveToAction.Init(GameAssets.current.game.entityActionsData[movementAction.enumID], null, m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID, _recordedAction.action.timeAtStart);
 					resultInfo.ReplaceAction(moveToAction);
 
 					if (!isAtCorrectOrientation)
 					{
-						RotateEntityAction rotateAction = (TurnManager.Instance.GetAction(EntityActionEnumID.RotateEntity, m_linkedEntity.ID, _recordedAction.timeAtStart) as RotateEntityAction);
+						RotateEntityAction rotateAction = (TurnManager.Instance.GetAction(EntityActionEnumID.RotateEntity, m_linkedEntity.ID, null, _recordedAction.timeAtStart) as RotateEntityAction);
 						rotateAction.targetedOrientationID = GridManager.Instance.GetClosestOrientation(m_linkedEntity.Displacement.Coordinates.GetTile(), closestEntity.Displacement.Coordinates.GetTile());
-						rotateAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.RotateEntity], m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID, _recordedAction.action.timeAtStart);
+						rotateAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.RotateEntity], null, m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID, _recordedAction.action.timeAtStart);
 						resultInfo.ReplaceFreeAction(rotateAction);
 					}
 				}
@@ -120,9 +120,9 @@ public class EntityAIPlugin : EntityPlugin
 				if (!isAtCorrectOrientation)
 				{
 					TargetEntity(closestEntity);
-					RotateEntityAction rotateAction = (TurnManager.Instance.GetAction(EntityActionEnumID.RotateEntity, m_linkedEntity.ID, _recordedAction.timeAtStart) as RotateEntityAction);
+					RotateEntityAction rotateAction = (TurnManager.Instance.GetAction(EntityActionEnumID.RotateEntity, m_linkedEntity.ID, null, _recordedAction.timeAtStart) as RotateEntityAction);
 					rotateAction.targetedOrientationID = GridManager.Instance.GetClosestOrientation(m_linkedEntity.Displacement.Coordinates.GetTile(), closestEntity.Displacement.Coordinates.GetTile());
-					rotateAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.RotateEntity], m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID, _recordedAction.action.timeAtStart);
+					rotateAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.RotateEntity], null, m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID, _recordedAction.action.timeAtStart);
 					resultInfo.ReplaceFreeAction(rotateAction);
 				}
 
@@ -134,8 +134,8 @@ public class EntityAIPlugin : EntityPlugin
 		}
 		else if (!canMove && (_recordedAction.action.Data.type == EntityActionData.ActionType.Movement || _recordedAction.action.Data.type == EntityActionData.ActionType.Rotation))
 		{
-			WaitAction waitAction = (TurnManager.Instance.GetAction(EntityActionEnumID.Wait, m_linkedEntity.ID, _recordedAction.timeAtStart) as WaitAction);
-			waitAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.Wait], m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID, _recordedAction.action.timeAtStart);
+			WaitAction waitAction = (TurnManager.Instance.GetAction(EntityActionEnumID.Wait, m_linkedEntity.ID, null, _recordedAction.timeAtStart) as WaitAction);
+			waitAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.Wait], null, m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID, _recordedAction.action.timeAtStart);
 			resultInfo.ReplaceAction(waitAction);
 		}
 
@@ -148,21 +148,31 @@ public class EntityAIPlugin : EntityPlugin
 		WeaponCheck(_action);
 	}
 
-	private EntityActionData GetAvailableAttackAction ()
+	private EntityActionData GetAvailableAttackAction (out string _equipmentID)
 	{
-		foreach (EntityActionEnumID action in m_linkedEntity.KnownedActions)
+		foreach (EntityActionEnumID action in m_linkedEntity.ComponentLinkedToAction.Keys)
 		{
 			if ((GameAssets.current.game.entityActionsData[action].type == EntityActionData.ActionType.DistanceAttack
 				|| GameAssets.current.game.entityActionsData[action].type == EntityActionData.ActionType.MeleeAttack
-				) && !m_linkedEntity.Equipment.ActionInCooldown.ContainsKey(action))
+				))
+			{
+				foreach(string equipmentID in m_linkedEntity.ComponentLinkedToAction[action])
+				{
+					if (!m_linkedEntity.Equipment.EquipmentInCooldown.Keys.Contains(equipmentID))
+					{
+						_equipmentID = equipmentID;
+						return GameAssets.current.game.entityActionsData[action];
+					}
 
-				return GameAssets.current.game.entityActionsData[action];
+				}
+			}
 		}
 
+		_equipmentID = null;
 		return null;
 	}
 
-	private EntityActionData GetMovementAction ()
+	public EntityActionData GetMovementAction ()
 	{
 		foreach (EntityActionEnumID action in m_linkedEntity.KnownedActions)
 		{
@@ -214,13 +224,13 @@ public class EntityAIPlugin : EntityPlugin
 		foreach (string weaponId in m_linkedEntity.Equipment.Weapons.Keys)
 		{
 			m_entitiesInWeaponRange.Add(weaponId, new());
-			foreach (KeyValuePair<EntityActionEnumID, string> pair in m_linkedEntity.ComponentLinkedToAction)
+			foreach (KeyValuePair<EntityActionEnumID, List<string>> pair in m_linkedEntity.ComponentLinkedToAction)
 			{
-				if (!string.Equals(pair.Value, weaponId) || (GameAssets.current.game.entityActionsData[pair.Key].type != EntityActionData.ActionType.DistanceAttack
+				if (!pair.Value.Contains(weaponId) || (GameAssets.current.game.entityActionsData[pair.Key].type != EntityActionData.ActionType.DistanceAttack
 					&& GameAssets.current.game.entityActionsData[pair.Key].type != EntityActionData.ActionType.MeleeAttack))
 					continue;
 
-				AEntityAction relatedAction = _action.enumID == pair.Key ? _action : TurnManager.Instance.GetAction(GameAssets.current.game.entityActionsData[pair.Key], m_linkedEntity.ID, _action.timeAtStart);
+				AEntityAction relatedAction = _action.enumID == pair.Key ? _action : TurnManager.Instance.GetAction(GameAssets.current.game.entityActionsData[pair.Key], m_linkedEntity.ID, weaponId, _action.timeAtStart);
 				List<Tile> tilesInWeaponCone = m_linkedEntity.Equipment.GetTilesInWeaponRange(relatedAction, weaponId);
 				foreach (Tile tile in tilesInWeaponCone)
 				{

@@ -40,22 +40,25 @@ public class UIEntityActionList : MonoBehaviour
 		else
 		{
 			Entity selectedEntity = GameManager.Instance.GetEntityFromID((int)_entityID);
-			int amountMissingActionBtn = selectedEntity.KnownedActions.Count - m_actionButtons.Count;
-			for (int i = 0; i < amountMissingActionBtn; i++)
-				CreateNewActionButton().SetVisible(false, true);
-
-			int amountMissingStateBtn = selectedEntity.Data.BrainData.knownedStates.Length - m_stateButtons.Count;
-			for (int i = 0; i < amountMissingStateBtn; i++)
-				CreateNewStateButton().SetVisible(false, true);
-
-			for (int i = 0; i < selectedEntity.KnownedActions.Count; i++)
+			int actionCounter = 0;
+			foreach(KeyValuePair<EntityActionEnumID, List<string>> pair in selectedEntity.ComponentLinkedToAction)
 			{
-				m_actionButtons[i].Init(selectedEntity.KnownedActions[i]);
-				m_actionButtons[i].SetVisible(_isVisible: true, _isInstant: true);
+				foreach(string equipment in pair.Value)
+				{
+					if(actionCounter >= m_actionButtons.Count)
+						CreateNewActionButton().SetVisible(false, true);
+
+					m_actionButtons[actionCounter].Init(pair.Key, equipment);
+					m_actionButtons[actionCounter].SetVisible(_isVisible: true, _isInstant: true);
+					actionCounter++;
+				}
 			}
 
 			for (int i = 0; i < selectedEntity.KnownedStates.Count; i++)
 			{
+				if (i >= m_stateButtons.Count)
+					CreateNewStateButton().SetVisible(false, true);
+
 				m_stateButtons[i].Init(selectedEntity.KnownedStates[i]);
 				m_stateButtons[i].SetVisible(_isVisible: true, _isInstant: true);
 			}

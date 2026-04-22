@@ -17,7 +17,7 @@ public class SpecialAction : AEntityAction
 
 	public override void RegisterInteraction ( Tile _tile )
 	{
-		linkedEquipmentId = GameManager.Instance.GetEntityFromID(performingEntityID).ComponentLinkedToAction[enumID];
+		//linkedEquipmentId = PerformingEntity.ComponentLinkedToAction[enumID];
 		if (_tile.GetEntity(true))
 			targetedEntityID = _tile.GetEntity(true).ID;
 		targetTileID = _tile.coordinates.ID;
@@ -65,9 +65,9 @@ public class SpecialAction : AEntityAction
 			return true;
 
 		Entity user = GameManager.Instance.GetEntityFromID(performingEntityID);
-		int maxDist = GameAssets.current.equipments[user.ComponentLinkedToAction[enumID]] is WeaponEquipmentData ?
-			(GameAssets.current.equipments[user.ComponentLinkedToAction[enumID]] as WeaponEquipmentData).range
-			: (GameAssets.current.equipments[user.ComponentLinkedToAction[enumID]] as ToolEquipmentData).range;
+		int maxDist = PerformingEntity.Equipment.Weapons.ContainsKey(linkedEquipmentId) ?
+			PerformingEntity.Equipment.Weapons[linkedEquipmentId].Data.range
+			: PerformingEntity.Equipment.Tools[linkedEquipmentId].Data.range;
 		bool isInRange = GridManager.Instance.GetTilesInVisionRange(GridManager.Instance.Tiles[TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntityID)], maxDist, true).Contains(_tile);
 
 		if (Data.targetType == EntityActionData.TargetType.Tile && isInRange)
