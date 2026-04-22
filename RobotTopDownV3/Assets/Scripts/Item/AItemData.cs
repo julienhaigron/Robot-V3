@@ -15,7 +15,7 @@ public abstract class AItemData : ScriptableObject
             || _invocatingTool.LinkedEntity.Equipment.ItemsLinkedDataDictionary[_invocatingTool.ID].currentInvocationCount < _actionData.invocationCountLimit;
     }
 
-    public virtual void OnInvokeItem ( Tool _invokingTool )
+    public virtual void OnInvokeItem ( Tool _invokingTool, Item _item )
 	{
         _invokingTool.LinkedEntity.Equipment.ItemsLinkedDataDictionary[_invokingTool.ID].currentInvocationCount++;
     }

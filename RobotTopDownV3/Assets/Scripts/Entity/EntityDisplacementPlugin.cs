@@ -86,6 +86,30 @@ public class EntityDisplacementPlugin : EntityPlugin
 		onAnyEntityMovement?.Invoke(m_linkedEntity);
 	}
 
+	public void TeleportToTile(int _tileID, System.Action onMovementDoneAction )
+	{
+		if (m_coordinate.GetTile().GetEntity(true) == m_linkedEntity)
+			m_coordinate.GetTile().SetEntity(null, _isThisTurn: true);
+		Tile tile = GridManager.Instance.Tiles[_tileID];
+
+		if (m_linkedEntity.AI.TargetedEntity == null)
+			Rotate(tile, GameConfig.current.game.actionDuration);
+		//Rotate(tile, Mathf.Max(GameConfig.current.game.entityRotationDuration, GameConfig.current.game.actionDuration));
+
+		if (m_movementTween.IsActive())
+			m_movementTween.Kill();
+
+		transform.position = tile.transform.position - m_bottomPosition.localPosition;
+		tile.SetEntity(m_linkedEntity, _isThisTurn: true);
+		m_coordinate.SetCoordinate(tile.coordinates.X, tile.coordinates.Z, tile.coordinates.ID);
+
+		tile.OnEntityEnter(m_linkedEntity);
+
+		//refresh fow
+		onMovementDoneAction?.Invoke();
+		onAnyEntityMovement?.Invoke(m_linkedEntity);
+	}
+
 	public void Rotate ( int _orientation, float _duration = 0f, System.Action _onEndPerform = null )
 	{
 		if (_orientation == m_currentOrientation /*&& !_isInstant*/)
