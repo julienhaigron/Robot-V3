@@ -80,7 +80,7 @@ public class EntityDisplacementPlugin : EntityPlugin
 		tile.SetEntity(m_linkedEntity, _isThisTurn: true);
 		m_coordinate.SetCoordinate(tile.coordinates.X, tile.coordinates.Z, tile.coordinates.ID);
 
-		tile.OnEntityEnter(m_linkedEntity);
+		tile.OnEntityEnter(m_linkedEntity, false);
 
 		//refresh fow
 		onAnyEntityMovement?.Invoke(m_linkedEntity);
@@ -103,7 +103,7 @@ public class EntityDisplacementPlugin : EntityPlugin
 		tile.SetEntity(m_linkedEntity, _isThisTurn: true);
 		m_coordinate.SetCoordinate(tile.coordinates.X, tile.coordinates.Z, tile.coordinates.ID);
 
-		tile.OnEntityEnter(m_linkedEntity);
+		tile.OnEntityEnter(m_linkedEntity, true);
 
 		//refresh fow
 		onMovementDoneAction?.Invoke();

@@ -201,7 +201,7 @@ public class Tile : MonoBehaviour
 		return true;
 	}
 
-	public void OnEntityEnter(Entity _enteringEntity )
+	public void OnEntityEnter(Entity _enteringEntity, bool _isFromTeleportation )
 	{
 		if (m_groundType == TileGroundType.Void && !_enteringEntity.Status.Contains(EntityStatusEnumID.Flying))
 		{
@@ -211,7 +211,7 @@ public class Tile : MonoBehaviour
 		}
 
 		if (currentContent.item != null)
-			currentContent.item.OnTileEnter(_enteringEntity);
+			currentContent.item.OnTileEnter(_enteringEntity, _isFromTeleportation);
 	}
 
 	#endregion

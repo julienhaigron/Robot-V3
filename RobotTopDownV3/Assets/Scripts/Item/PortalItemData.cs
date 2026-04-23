@@ -35,18 +35,25 @@ public class PortalItemData : AItemData
             && (_isThisTurn && destination.currentContent.entity == null || !_isThisTurn && destination.nextTurnActionContent.entity == null);
     }
 
-    public override void OnWalkThrough ( Entity _walkingEntityn, AItemLinkedData _linkedData, Item _usedItem, Action _onEndUse )
+    public override void OnWalkThrough ( Entity _walkingEntityn, AItemLinkedData _linkedData, Item _usedItem, Action _onEndUse, bool _isFromTeleportation )
 	{
         if (_linkedData is not PortalItemLinkedData portalLinkedData)
         {
             _onEndUse?.Invoke();
             return;
         }
+
+        if (_isFromTeleportation)
+		{
+            //this avoids infinit loop
+            return;
+		}
+
         TurnManager.InPlayEvent teleportEvent = new();
         TurnManager.Instance.AddGameEvent(teleportEvent);
 
         _walkingEntityn.Displacement.TeleportToTile(_usedItem.CurrentPosition == portalLinkedData.portalATile
-            ? portalLinkedData.portalATile.coordinates.ID : portalLinkedData.portalBTile.coordinates.ID, teleportEvent.EndEvent);
+            ? portalLinkedData.portalBTile.coordinates.ID : portalLinkedData.portalATile.coordinates.ID, teleportEvent.EndEvent);
     }
 
     public override bool InteractPredicate ( Entity _interactingEntity, AItemLinkedData _linkedData, Item _usedItem )

@@ -22,7 +22,7 @@ public abstract class AItemData : ScriptableObject
 
     public abstract bool CanWalkThroughPredicate ( AItemLinkedData _linkedData, Item _usedItem, bool _isThisTurn );
 
-    public abstract void OnWalkThrough ( Entity _walkingEntityn, AItemLinkedData _linkedData, Item _usedItem, Action _onEndUse );
+    public abstract void OnWalkThrough ( Entity _walkingEntityn, AItemLinkedData _linkedData, Item _usedItem, Action _onEndUse, bool _isFromTeleportation );
 
     public abstract bool InteractPredicate ( Entity _interactingEntity, AItemLinkedData _linkedData, Item _usedItem );
 

@@ -21,9 +21,9 @@ public class Item : MonoBehaviour
         m_currentPosition = _position;
     }
 
-    public void OnTileEnter(Entity _enteringEntity )
+    public void OnTileEnter(Entity _enteringEntity, bool _isFromTeleportation )
 	{
-        m_data.OnWalkThrough(_enteringEntity, m_linkedData, this, null);
+        m_data.OnWalkThrough(_enteringEntity, m_linkedData, this, null, _isFromTeleportation);
     }
 
 }
