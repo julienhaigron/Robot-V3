@@ -81,7 +81,7 @@ MonoBehaviour:
       - ID: Chipset_ZB-3819
         dataID: Chipset_ZB-38
     equipmentInventory: []
-    equipmentCounter: 20
+    equipmentCounter: 40
     currencies:
       keys: 01000000
       values: 0000000000000000

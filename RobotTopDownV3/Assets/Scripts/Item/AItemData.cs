@@ -30,6 +30,11 @@ public abstract class AItemData : ScriptableObject
     {
         _onEndUse?.Invoke();
     }
+
+    public virtual void OnRegisterInteraction(AEntityAction _action, Item _itemOnTile )
+	{
+
+	}
 }
 
 [Serializable]

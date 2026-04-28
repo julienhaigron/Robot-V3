@@ -20,6 +20,13 @@ public class InvokeItemAction : SpecialAction
 		return Data.invocatedItem.InvokeItemPredicate(PerformingEntity.Equipment.Tools[linkedEquipmentId], Data) && _tile.GetItem(true) == null && base.TileInteractPredicate(_tile);
 	}
 
+	public override void RegisterInteraction ( Tile _tile )
+	{
+		//_tile.GetTilePlannedContent(timeAtStart).item = 
+
+		base.RegisterInteraction(_tile);
+	}
+
 	public override void Prepare ( Entity.EntityState _state )
 	{
 		isActionCanceled = false;

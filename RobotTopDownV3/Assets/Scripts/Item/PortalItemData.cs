@@ -66,6 +66,15 @@ public class PortalItemData : AItemData
 
     }
 
+	public override void OnRegisterInteraction ( AEntityAction _action, Item _itemOnTile )
+	{
+        if (_itemOnTile.LinkedData is not PortalItemLinkedData portalData)
+            return;
+        _action.positionAtActionEndID = _itemOnTile.CurrentPosition == portalData.portalATile ? portalData.portalBTile.coordinates.ID : portalData.portalATile.coordinates.ID;
+
+        base.OnRegisterInteraction(_action, _itemOnTile);
+	}
+
 }
 
 [Serializable]
