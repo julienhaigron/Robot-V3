@@ -45,11 +45,17 @@ public class Tile : MonoBehaviour
 	//Content on tile
 	public TileContent currentContent;
 	public TileContent nextTurnActionContent;
+	public TileContent[] plannedContentsPerTick;
 	public struct TileContent
 	{
 		public Entity entity;
 		public Item item;
 	}
+
+	/*public struct PlannedContent
+	{
+		public Item
+	}*/
 
 	public enum TileDirectionType
 	{
@@ -247,6 +253,7 @@ public class Tile : MonoBehaviour
 	private void OnStartInputPhase ()
 	{
 		m_canInteract = false;
+		plannedContentsPerTick = new TileContent[GameConfig.current.game.actionTokenPerRound];
 	}
 
 	private void OnEndInputPhase ()
@@ -296,12 +303,31 @@ public class Tile : MonoBehaviour
 			nextTurnActionContent.item = _item;
 	}
 
+	public bool TryGetItem(bool _isThisTurn, out Item _item )
+	{
+		if (_isThisTurn)
+		{
+			_item = currentContent.item;
+			return currentContent.item != null;
+		}
+		else
+		{
+			_item = nextTurnActionContent.item;
+			return nextTurnActionContent.item != null;
+		}
+	}
+
 	public Item GetItem ( bool _isThisTurn )
 	{
 		if (_isThisTurn)
 			return currentContent.item;
 		else
 			return nextTurnActionContent.item;
+	}
+
+	public TileContent GetTilePlannedContent(int _actionTick )
+	{
+		return plannedContentsPerTick[_actionTick];
 	}
 
 	#endregion

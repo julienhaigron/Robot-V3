@@ -314,7 +314,7 @@ public class EntityActionData : ScriptableObject
 		return damageFactor;
 	}
 	
-	public float GetHitAmount ( AEntityAction _action, Entity _performingEntity, Entity _targetEntity )
+	public int GetHitAmount ( AEntityAction _action, Entity _performingEntity, Entity _targetEntity )
 	{
 		HitAmountBoostPassiveEffect so = (GameAssets.current.game.entityEffects[EntityPassiveEffectEnumID.HitAmountBoost] as HitAmountBoostPassiveEffect);
 

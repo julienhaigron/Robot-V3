@@ -134,8 +134,12 @@ public class MoveToTargetAction : AEntityAction
 			action.thisActionDestinationIDArray = tileIDList.ToArray();
 			action.Init(GameAssets.current.game.entityActionsData[enumID], linkedEquipmentId, performingEntityID, path[i].coordinates.ID, timeAtStart + i);
 
+			if (_tile.TryGetItem(false, out Item _item))
+				_item.Data.OnRegisterInteraction(action, _item);
+
 			TurnManager.Instance.AddAction(performingEntityID, action, TurnManager.Instance.CurrentStateTypeSelected);
 		}
+
 		TurnManager.Instance.RefreshActionDisplay(performingEntityID);
 	}
 

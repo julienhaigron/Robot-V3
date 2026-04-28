@@ -139,21 +139,19 @@ public class BulletWeapon : Weapon
 	{
 		yield return m_aimDurationWFS;
 		Entity targetEntity = GameManager.Instance.GetEntityFromID((int)_attackAction.targetedEntityID);
-
-		for (int i = 0; i < _attackAction.Data.GetHitAmount(_attackAction, m_user, targetEntity); i++)
+		int hitAmount = _attackAction.Data.GetHitAmount(_attackAction, m_user, targetEntity);
+		for (int i = 0; i < hitAmount; i++)
 		{
-			m_bulletPool.Get<Projectile>(m_bulletPoint.transform.position, m_bulletPoint.rotation).SetProjectileDataAndLaunch(m_bulletData, OnBulletHit);
+			m_bulletPool.Get<Projectile>(m_bulletPoint.transform.position, m_bulletPoint.rotation).SetProjectileDataAndLaunch(m_bulletData,(Entity entity) => OnBulletHit(entity, i == hitAmount-1));
 
 			yield return m_timeBetweenBulletsWFS;
 		}
 
 		yield return m_shootCooldownDurationWFS;
-
-		EndAttack(m_lastPerformedAction);
 		m_shootCR = null;
 	}
 
-	private void OnBulletHit ( Entity _entityHit )
+	private void OnBulletHit ( Entity _entityHit, bool _isLastBullet )
 	{
 		if (/*m_entitiesHitByLastShot.Contains(_entityHit) ||*/ m_lastPerformedAction == null || m_lastPerformedAction.damageTypes == null)
 			return;
@@ -180,6 +178,8 @@ public class BulletWeapon : Weapon
 			GameAssets.current.game.entityEffects[passiveEffectID.enumID].ApplyEffect(m_user, _entityHit, passiveEffectID);
 		}
 
+		if (_isLastBullet)
+			EndAttack(m_lastPerformedAction);
 	}
 
 	private void EndAttack ( AttackAction _attackAction )

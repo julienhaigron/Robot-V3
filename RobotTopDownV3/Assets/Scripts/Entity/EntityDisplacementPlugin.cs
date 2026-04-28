@@ -80,6 +80,9 @@ public class EntityDisplacementPlugin : EntityPlugin
 		tile.SetEntity(m_linkedEntity, _isThisTurn: true);
 		m_coordinate.SetCoordinate(tile.coordinates.X, tile.coordinates.Z, tile.coordinates.ID);
 
+
+		//here
+		//this must be called right before onEndAction (OnMove tween)
 		tile.OnEntityEnter(m_linkedEntity, false);
 
 		//refresh fow
