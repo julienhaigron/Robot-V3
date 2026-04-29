@@ -336,6 +336,12 @@ public class Tile : MonoBehaviour
 			return m_nextTurnActionContent.Item;
 	}
 
+	public bool TryGetPlannedItemAt ( int _time, out Item _item )
+	{
+		_item = m_plannedContentsPerTick[_time].Item;
+		return _item != null;
+	}
+
 	public void SetPlannedItemAt(Item _item, int _time )
 	{
 		for(int i = _time; i < m_plannedContentsPerTick.Length; i++)
