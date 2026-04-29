@@ -320,6 +320,16 @@ public class Tile : MonoBehaviour
 			return nextTurnActionContent.item;
 	}
 
+	public void SetPlannedItemAt(Item _item, int _time )
+	{
+		for(int i = _time; i < plannedContentsPerTick.Length; i++)
+		{
+			if (_item == null && plannedContentsPerTick[i].item != null)
+				plannedContentsPerTick[i].item.Cancel();
+			plannedContentsPerTick[i].item = _item;
+		}
+	}
+
 	#endregion
 
 	public void AddStatus ( EntityStatusEnumID _statusID )

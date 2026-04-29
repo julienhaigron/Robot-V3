@@ -17,14 +17,14 @@ public class InvokeItemAction : SpecialAction
 
 	public override bool TileInteractPredicate ( Tile _tile )
 	{
-		return Data.invocatedItem.InvokeItemPredicate(PerformingEntity.Equipment.Tools[linkedEquipmentId], Data) && _tile.GetItem(true) == null && base.TileInteractPredicate(_tile);
+		return Data.invocatedItem.InvokeItemPredicate(PerformingEntity.Equipment.Tools[linkedEquipmentId], Data) && _tile.GetItem(true) == null && _tile.plannedContentsPerTick[timeAtStart].item == null && base.TileInteractPredicate(_tile);
 	}
 
 	public override void RegisterInteraction ( Tile _tile )
 	{
 		targetTileID = _tile.coordinates.ID;
 		Item invokedItem = GameManager.Instance.PreSpawnItem(Data.invocatedItem, PerformingEntity, PerformingEntity.Equipment.Tools[linkedEquipmentId], GridManager.Instance.Tiles[targetTileID].coordinates);
-		_tile.plannedContentsPerTick[timeAtStart].item = invokedItem;
+		_tile.SetPlannedItemAt(invokedItem, timeAtStart);
 
 		base.RegisterInteraction(_tile);
 	}
@@ -32,8 +32,9 @@ public class InvokeItemAction : SpecialAction
 	public override void CancelAction ()
 	{
 		Tile targetTile = GridManager.Instance.Tiles[targetTileID];
-		targetTile.plannedContentsPerTick[timeAtStart].item.Cancel();
-		targetTile.plannedContentsPerTick[timeAtStart].item = null;
+		targetTile.SetPlannedItemAt(null, timeAtStart);
+		/*targetTile.plannedContentsPerTick[timeAtStart].item.Cancel();
+		targetTile.plannedContentsPerTick[timeAtStart].item = null;*/
 
 		base.CancelAction();
 	}
@@ -117,6 +118,7 @@ public class InvokeItemAction : SpecialAction
 	{
 		if (isActionCanceled)
 		{
+			CancelAction();
 			EndTick();
 			return;
 		}
