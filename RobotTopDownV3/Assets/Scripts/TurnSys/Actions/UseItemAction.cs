@@ -18,7 +18,7 @@ public class UseItemAction : SpecialAction
 
 	public override bool TileInteractPredicate ( Tile _tile )
 	{
-		Item usedItem = GridManager.Instance.Tiles[targetTileID].currentContent.item;
+		Item usedItem = GridManager.Instance.Tiles[targetTileID].GetItem(true);
 		return usedItem.Data.InteractPredicate(PerformingEntity, usedItem.LinkedData, usedItem) && base.TileInteractPredicate(_tile);
 	}
 
@@ -38,7 +38,7 @@ public class UseItemAction : SpecialAction
 		bool doesSelfHaveConflict = false;
 		bool doesOtherHaveConflict = false;
 
-		Item usedItem = GridManager.Instance.Tiles[targetTileID].currentContent.item;
+		Item usedItem = GridManager.Instance.Tiles[targetTileID].GetItem(true);
 		if (!usedItem.Data.InteractPredicate(PerformingEntity, usedItem.LinkedData, usedItem))
 		{
 			isActionCanceled = true;
@@ -55,7 +55,7 @@ public class UseItemAction : SpecialAction
 			return;
 		}
 
-		Item usedItem = GridManager.Instance.Tiles[targetTileID].currentContent.item;
+		Item usedItem = GridManager.Instance.Tiles[targetTileID].GetItem(true);
 		usedItem.Data.Interract(PerformingEntity, usedItem.LinkedData, usedItem, EndTick);
 
 		base.Perform(_state);

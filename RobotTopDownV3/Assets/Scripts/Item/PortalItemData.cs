@@ -32,7 +32,7 @@ public class PortalItemData : AItemData
 
         Tile destination = _usedItem.CurrentPosition == portalData.portalATile ? portalData.portalATile : portalData.portalBTile;
         return portalData.portalATile != null && portalData.portalBTile != null
-            && (_isThisTurn && destination.currentContent.entity == null || !_isThisTurn && destination.nextTurnActionContent.entity == null);
+            && (_isThisTurn && destination.GetEntity(true) == null || !_isThisTurn && destination.GetEntity(false) == null);
     }
 
     public override void OnWalkThrough ( Entity _walkingEntityn, AItemLinkedData _linkedData, Item _usedItem, Action _onEndUse, bool _isFromTeleportation )

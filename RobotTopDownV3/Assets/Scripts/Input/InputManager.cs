@@ -82,7 +82,7 @@ public class InputManager : MonoBehaviour
 		}
 	}
 
-	private void Update ()
+	private void FixedUpdate ()
 	{
 		if (Input.GetKeyDown(KeyCode.C))
 		{
