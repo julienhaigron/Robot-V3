@@ -43,8 +43,8 @@ public class Tile : MonoBehaviour
 	private Dictionary<AEntityStatus, int> m_remainingDurationToActiveEffects = new();
 
 	//Content on tile
-	public TileContent currentContent;
-	public TileContent nextTurnActionContent;
+	public TileContent currentContent = new();
+	public TileContent nextTurnActionContent = new();
 	public TileContent[] plannedContentsPerTick;
 	public class TileContent
 	{
@@ -110,6 +110,8 @@ public class Tile : MonoBehaviour
 	public void Init ( int _x, int _y, GridData.TileData _data = null )
 	{
 		m_neighbors = new Tile[6];
+		currentContent = new();
+		nextTurnActionContent = new();
 
 		m_ui.SetPosition(_x, _y);
 		if (_data != null)

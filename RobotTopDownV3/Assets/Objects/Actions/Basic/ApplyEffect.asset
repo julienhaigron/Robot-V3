@@ -25,7 +25,7 @@ MonoBehaviour:
   previousActionAttackModificator: 0
   type: 4
   subType: 6
-  codeType: 6
+  codeType: 5
   targetType: 1
   minDistance: 0
   maxDistance: 0
@@ -42,5 +42,6 @@ MonoBehaviour:
   usedDamageChannels: 
   passiveEffects: []
   invocatedEntity: {fileID: 0}
+  invocatedItem: {fileID: 0}
   invocationCountLimit: 1
   movementSpeed: 0
