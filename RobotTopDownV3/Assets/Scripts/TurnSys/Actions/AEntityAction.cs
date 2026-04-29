@@ -124,6 +124,11 @@ public abstract class AEntityAction : INetworkSerializable
         PerformingEntity.EndPerformAction();
     }
 
+    public virtual void CancelAction ()
+	{
+
+	}
+
     public struct ActionConflictResultInfo
 	{
         public bool isFirstActionConflicted;

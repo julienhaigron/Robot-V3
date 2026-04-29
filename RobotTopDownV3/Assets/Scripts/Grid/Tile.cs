@@ -46,16 +46,11 @@ public class Tile : MonoBehaviour
 	public TileContent currentContent;
 	public TileContent nextTurnActionContent;
 	public TileContent[] plannedContentsPerTick;
-	public struct TileContent
+	public class TileContent
 	{
 		public Entity entity;
 		public Item item;
 	}
-
-	/*public struct PlannedContent
-	{
-		public Item
-	}*/
 
 	public enum TileDirectionType
 	{
@@ -323,11 +318,6 @@ public class Tile : MonoBehaviour
 			return currentContent.item;
 		else
 			return nextTurnActionContent.item;
-	}
-
-	public TileContent GetTilePlannedContent(int _actionTick )
-	{
-		return plannedContentsPerTick[_actionTick];
 	}
 
 	#endregion

@@ -173,14 +173,14 @@ public class GameManager : SingletonPersistant<GameManager>
 		return null;
 	}
 
-	public Item SpawnItem (AItemData _itemData, Entity _caster, Tool _invocatorTool, TileCoordinates _coordinate)
+	public Item PreSpawnItem (AItemData _itemData, Entity _caster, Tool _invocatorTool, TileCoordinates _coordinate)
 	{
 		Tile spawnTile = _coordinate.GetTile();
-		Item newItem = Instantiate(_itemData.itemPrefab, spawnTile.transform.position, Quaternion.identity);
+		Item newItem = Instantiate(_itemData.itemPrefab, spawnTile.transform.position + (Vector3.down * 5f), Quaternion.identity);
 		if (!_caster.Equipment.ItemsLinkedDataDictionary.ContainsKey(_invocatorTool.ID))
 			_caster.Equipment.ItemsLinkedDataDictionary.Add(_invocatorTool.ID, _itemData.GetNewLinkedData());
 		newItem.Init(_itemData, _caster.Equipment.ItemsLinkedDataDictionary[_invocatorTool.ID], _caster, spawnTile);
-		spawnTile.SetItem(newItem, true);
+		//spawnTile.SetItem(newItem, true);
 
 		_itemData.OnInvokeItem(_invocatorTool, newItem);
 

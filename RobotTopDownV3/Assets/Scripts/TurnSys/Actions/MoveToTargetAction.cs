@@ -181,7 +181,7 @@ public class MoveToTargetAction : AEntityAction
 			doesSelfHaveConflict = true;
 			RefreshDestinatedTile();
 		}
-		else if (_otherAction is MoveToNeighborAction _otherNeighborMoveAction && thisActionDestinationIDArray.Contains(_otherNeighborMoveAction.finalTargetTileID))
+		/*else if (_otherAction is MoveToNeighborAction _otherNeighborMoveAction && thisActionDestinationIDArray.Contains(_otherNeighborMoveAction.finalTargetTileID))
 		{
 			int roll = UnityEngine.Random.Range((int)0, 2);
 			if (roll == 0)
@@ -195,7 +195,7 @@ public class MoveToTargetAction : AEntityAction
 				doesSelfHaveConflict = true;
 				thisActionDestinationIDArray = null;
 			}
-		}
+		}*/
 		else if (_otherAction is MoveToTargetAction _otherMoveToTargetAction && _otherMoveToTargetAction.thisActionDestinationIDArray == thisActionDestinationIDArray)
 		{
 			bool doesHaveCollision = false;

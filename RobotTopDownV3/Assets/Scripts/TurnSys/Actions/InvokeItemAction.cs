@@ -22,9 +22,20 @@ public class InvokeItemAction : SpecialAction
 
 	public override void RegisterInteraction ( Tile _tile )
 	{
-		//_tile.GetTilePlannedContent(timeAtStart).item = 
+		targetTileID = _tile.coordinates.ID;
+		Item invokedItem = GameManager.Instance.PreSpawnItem(Data.invocatedItem, PerformingEntity, PerformingEntity.Equipment.Tools[linkedEquipmentId], GridManager.Instance.Tiles[targetTileID].coordinates);
+		_tile.plannedContentsPerTick[timeAtStart].item = invokedItem;
 
 		base.RegisterInteraction(_tile);
+	}
+
+	public override void CancelAction ()
+	{
+		Tile targetTile = GridManager.Instance.Tiles[targetTileID];
+		targetTile.plannedContentsPerTick[timeAtStart].item.Cancel();
+		targetTile.plannedContentsPerTick[timeAtStart].item = null;
+
+		base.CancelAction();
 	}
 
 	public override void Prepare ( Entity.EntityState _state )
@@ -43,7 +54,7 @@ public class InvokeItemAction : SpecialAction
 		bool doesSelfHaveConflict = false;
 		bool doesOtherHaveConflict = false;
 
-		if (_otherAction is MoveToNeighborAction _otherNeighborMoveAction && _otherNeighborMoveAction.finalTargetTileID == targetTileID)
+		/*if (_otherAction is MoveToNeighborAction _otherNeighborMoveAction && _otherNeighborMoveAction.finalTargetTileID == targetTileID)
 		{
 			if (result == EntityActionData.PFCResultType.FirstWins)
 			{
@@ -71,7 +82,7 @@ public class InvokeItemAction : SpecialAction
 			}
 
 		}
-		else if (_otherAction is MoveToTargetAction _otherMoveToTargetAction && _otherMoveToTargetAction.thisActionDestinationIDArray.Contains(targetTileID))
+		else */if (_otherAction is MoveToTargetAction _otherMoveToTargetAction && _otherMoveToTargetAction.thisActionDestinationIDArray.Contains(targetTileID))
 		{
 			if (result == EntityActionData.PFCResultType.FirstWins)
 			{
@@ -109,8 +120,10 @@ public class InvokeItemAction : SpecialAction
 			EndTick();
 			return;
 		}
-
-		GameManager.Instance.SpawnItem(Data.invocatedItem, PerformingEntity, PerformingEntity.Equipment.Tools[linkedEquipmentId], GridManager.Instance.Tiles[targetTileID].coordinates);
+		Tile targetTile = GridManager.Instance.Tiles[targetTileID];
+		Item item = targetTile.plannedContentsPerTick[timeAtStart].item;
+		targetTile.SetItem(item, true);
+		item.transform.position = targetTile.transform.position;
 
 		base.Perform(_state);
 		DG.Tweening.DOVirtual.DelayedCall(GameConfig.current.game.actionDuration, EndTick);

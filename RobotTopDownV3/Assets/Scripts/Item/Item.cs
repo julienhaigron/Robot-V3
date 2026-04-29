@@ -26,4 +26,9 @@ public class Item : MonoBehaviour
         m_data.OnWalkThrough(_enteringEntity, m_linkedData, this, null, _isFromTeleportation);
     }
 
+    public void Cancel ()
+	{
+        Destroy(gameObject);
+	}
+
 }
