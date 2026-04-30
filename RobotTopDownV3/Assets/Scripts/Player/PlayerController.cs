@@ -250,6 +250,13 @@ public class PlayerController : Singleton<PlayerController>
 				}
 			}
 		}
+		else if(m_selectedEntity != null)
+		{
+			//unselect entity
+			m_selectedEntity.Deselect();
+			m_selectedEntity = null;
+			onEntitySelected?.Invoke(null);
+		}
 	}
 
 	private void OnTileHovered ( Tile _tile )
@@ -261,13 +268,16 @@ public class PlayerController : Singleton<PlayerController>
 
 		int totalCostSpend = 0;
 		bool didContainTile = false;
+
+		//wrong way of calculating
+		//must check each actions
 		if (m_actionDisplays.ContainsKey(m_selectedEntity.ID))
 		{
 			foreach (ActionDisplayOnTile display in m_actionDisplays[m_selectedEntity.ID])
 			{
-				totalCostSpend += display.RecordedAction.action.Data.GetTokenTotalCost(display.RecordedAction.action, m_selectedEntity, m_selectedEntity.AI.TargetedEntity);
 				if (display.DestinationTile == _tile)
 				{
+					totalCostSpend = display.RecordedAction.action.TimeAtEnd;
 					didContainTile = true;
 					break;
 				}
