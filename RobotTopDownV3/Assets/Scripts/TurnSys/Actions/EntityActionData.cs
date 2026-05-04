@@ -56,7 +56,7 @@ public class EntityActionData : ScriptableObject
 	public ActionCodeType codeType = ActionCodeType.Attack;
 	public enum ActionCodeType
 	{
-		NeighborMove,
+		//NeighborMove,
 		TargetTileMove,
 		Attack,
 		MoveThenAttack,

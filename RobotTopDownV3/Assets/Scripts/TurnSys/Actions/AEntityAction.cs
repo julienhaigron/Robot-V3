@@ -101,7 +101,7 @@ public abstract class AEntityAction : INetworkSerializable
     public virtual void RegisterInteraction ( Tile _tile )
 	{
         //must be replace by actual check => means we must track if item is planned to be spawned and when in tiles
-        if (_tile.TryGetItem(false, out Item _item))
+        if (_tile.TryGetPlannedItemAt(timeAtStart, out Item _item))
             _item.Data.OnRegisterInteraction(this, _item);
 
         TurnManager.Instance.AddAction(performingEntityID, TurnManager.Instance.CurrentActionSelected, TurnManager.Instance.CurrentStateTypeSelected);
@@ -123,6 +123,11 @@ public abstract class AEntityAction : INetworkSerializable
     {
         PerformingEntity.EndPerformAction();
     }
+
+    public virtual void CancelAction ()
+	{
+
+	}
 
     public struct ActionConflictResultInfo
 	{

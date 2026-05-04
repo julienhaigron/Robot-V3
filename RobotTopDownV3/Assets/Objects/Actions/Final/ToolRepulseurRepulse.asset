@@ -25,7 +25,7 @@ MonoBehaviour:
   previousActionAttackModificator: 0
   type: 4
   subType: 7
-  codeType: 6
+  codeType: 5
   targetType: 0
   minDistance: 1
   maxDistance: 1

@@ -48,36 +48,31 @@ public class GameManager : SingletonPersistant<GameManager>
 		}
 	}
 
+	private List<Item> m_items = new();
+
 	private void Start ()
 	{
 		SceneManager.sceneLoaded += OnSceneLoaded;
 
 		m_fogCanvas.gameObject.SetActive(false);
 		m_mainLoadingElement.Load();
-
-#if UNITY_EDITOR
-		if (m_currentLevel != null)
-		{
-			StartGame();
-		}
-#endif
 	}
 
-	private void OnSceneLoaded (Scene _scene, LoadSceneMode _mode)
+	private void OnSceneLoaded ( Scene _scene, LoadSceneMode _mode )
 	{
-		if(string.Equals(_scene.name, GameConfig.current.game.hubSceneName))
+		if (string.Equals(_scene.name, GameConfig.current.game.hubSceneName))
 		{
 			UIManager.Instance.OpenPanel<SoloHubPanel>();
 		}
-		else if(string.Equals(_scene.name, GameConfig.current.game.startScreenSceneName))
+		else if (string.Equals(_scene.name, GameConfig.current.game.startScreenSceneName))
 		{
 			UIManager.Instance.OpenPanel<StartMenuPanel>();
 		}
-		else if(m_currentLevel != null)
+		else if (m_currentLevel != null)
 			StartGame();
 	}
 
-	public void LoadSaveAndGoToHub (int _saveID)
+	public void LoadSaveAndGoToHub ( int _saveID )
 	{
 		GameDatas.current.game.lastPlayerSaveSelectedID = _saveID;
 		m_currentGameMode = GameMode.Offline;
@@ -86,11 +81,11 @@ public class GameManager : SingletonPersistant<GameManager>
 		SceneManager.LoadSceneAsync(GameConfig.current.game.hubSceneName);
 	}
 
-	public void SetupLevel(LevelData _level )
+	public void SetupLevel ( LevelData _level )
 	{
 		m_currentLevel = _level;
 		m_playerTwoEntityDatas = new();
-		foreach(UnitPreset ennemi in _level.enemies)
+		foreach (UnitPreset ennemi in _level.enemies)
 		{
 			m_playerTwoEntityDatas.Add(ennemi.GetSavedData());
 		}
@@ -153,15 +148,15 @@ public class GameManager : SingletonPersistant<GameManager>
 		TurnManager.Instance.StartInputPhase();
 	}
 
-	public bool GetEntityFromID(out Entity _entity, int _entityID )
+	public bool GetEntityFromID ( out Entity _entity, int _entityID )
 	{
 		_entity = GetEntityFromID(_entityID);
 		return _entity != null;
 	}
 
-	public Entity GetEntityFromID (int _entityID)
+	public Entity GetEntityFromID ( int _entityID )
 	{
-		foreach(EntityAnchor anchor in m_playersEntityAnchor)
+		foreach (EntityAnchor anchor in m_playersEntityAnchor)
 		{
 			foreach (Entity entity in anchor.Entities)
 			{
@@ -173,25 +168,37 @@ public class GameManager : SingletonPersistant<GameManager>
 		return null;
 	}
 
-	public Item SpawnItem (AItemData _itemData, Entity _caster, Tool _invocatorTool, TileCoordinates _coordinate)
+	public Item GetItemFromID ( int _itemID )
+	{
+		foreach (Item item in m_items)
+		{
+			if (item.ID == _itemID)
+				return item;
+		}
+
+		return null;
+	}
+
+	public Item PreSpawnItem ( AItemData _itemData, Entity _caster, Tool _invocatorTool, TileCoordinates _coordinate )
 	{
 		Tile spawnTile = _coordinate.GetTile();
-		Item newItem = Instantiate(_itemData.itemPrefab, spawnTile.transform.position, Quaternion.identity);
+		Item newItem = Instantiate(_itemData.itemPrefab, spawnTile.transform.position + (Vector3.down * 5f), Quaternion.identity);
 		if (!_caster.Equipment.ItemsLinkedDataDictionary.ContainsKey(_invocatorTool.ID))
 			_caster.Equipment.ItemsLinkedDataDictionary.Add(_invocatorTool.ID, _itemData.GetNewLinkedData());
-		newItem.Init(_itemData, _caster.Equipment.ItemsLinkedDataDictionary[_invocatorTool.ID], _caster, spawnTile);
-		spawnTile.SetItem(newItem, true);
+		newItem.Init(m_items.Count, _itemData, _caster.Equipment.ItemsLinkedDataDictionary[_invocatorTool.ID], _caster, spawnTile);
+		m_items.Add(newItem);
+		//spawnTile.SetItem(newItem, true);
 
 		_itemData.OnInvokeItem(_invocatorTool, newItem);
 
 		return newItem;
 	}
 
-	public void LevelCompletionCheck(out bool _isPlayerOneDead, out bool _isPlayerTwoDead )
+	public void LevelCompletionCheck ( out bool _isPlayerOneDead, out bool _isPlayerTwoDead )
 	{
 		_isPlayerOneDead = true;
 		_isPlayerTwoDead = true;
-		foreach(Entity enemy in m_playersEntityAnchor[0].Entities)
+		foreach (Entity enemy in m_playersEntityAnchor[0].Entities)
 		{
 			if (enemy.Equipment.IsDead == false)
 				_isPlayerOneDead = false;
@@ -204,7 +211,7 @@ public class GameManager : SingletonPersistant<GameManager>
 		}
 	}
 
-	public void EndGame (bool _isSuccessfull)
+	public void EndGame ( bool _isSuccessfull )
 	{
 		if (_isSuccessfull)
 			LogConsole.AddLog("Victory", LogConsole.LogEventType.Main);

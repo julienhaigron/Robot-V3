@@ -46,7 +46,7 @@ public class MoveThenAttackAction : AttackAction
 		Entity user = GameManager.Instance.GetEntityFromID(performingEntityID);
 		int maxDist = user.Equipment.Weapons[linkedEquipmentId].Data.range - 1;
 
-		if (_otherAction is MoveToNeighborAction && (_otherAction as MoveToNeighborAction).finalTargetTileID == positionAfterMovementID)
+		/*if (_otherAction is MoveToNeighborAction && (_otherAction as MoveToNeighborAction).finalTargetTileID == positionAfterMovementID)
 		{
 			int roll = UnityEngine.Random.Range((int)0, 2);
 			if (roll == 0)
@@ -60,7 +60,7 @@ public class MoveThenAttackAction : AttackAction
 				isActionCanceled = true;
 			}
 		}
-		else if (_otherAction is MoveToTargetAction && (_otherAction as MoveToTargetAction).thisActionDestinationIDArray.Contains(positionAfterMovementID))
+		else */if (_otherAction is MoveToTargetAction && (_otherAction as MoveToTargetAction).thisActionDestinationIDArray.Contains(positionAfterMovementID))
 		{
 			int roll = UnityEngine.Random.Range((int)0, 2);
 			if (roll == 0)

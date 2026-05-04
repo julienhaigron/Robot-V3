@@ -222,9 +222,9 @@ public class TurnManager : Singleton<TurnManager>
 		//for base actions or exceptions
 		switch (_actionData.codeType)
 		{
-			case EntityActionData.ActionCodeType.NeighborMove:
+			/*case EntityActionData.ActionCodeType.NeighborMove:
 				action = new MoveToNeighborAction();
-				break;
+				break;*/
 			case EntityActionData.ActionCodeType.TargetTileMove:
 				action = new MoveToTargetAction();
 				break;
@@ -578,6 +578,10 @@ public class TurnManager : Singleton<TurnManager>
 					{
 						resultInfo.replacedFreeAction.OnModActionAdded(resultInfo.replacedAction);
 						resultInfo.replacedAction.Prepare(recordedAction.entityState);
+
+						recordedAction.action.CancelAction();
+						recordedAction.freeAction.CancelAction();
+
 						LogConsole.AddLog("Action replaced to " + resultInfo.replacedAction, LogConsole.LogEventType.PlayPhase);
 					}
 					returnActionToPlayThisRound.Enqueue(new RecordedAction()

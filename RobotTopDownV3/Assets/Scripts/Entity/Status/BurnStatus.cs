@@ -20,7 +20,7 @@ public class BurnStatus : AEntityStatus
 	public override void PerformStatusEffectAtBeginingOfRound ( Tile _tile )
 	{
 		base.PerformStatusEffectAtBeginingOfRound(_tile);
-		if (_tile.currentContent.entity != null)
-			_tile.currentContent.entity.AddStatus(enumID);
+		if (_tile.GetEntity(true) != null)
+			_tile.GetEntity(true).AddStatus(enumID);
 	}
 }

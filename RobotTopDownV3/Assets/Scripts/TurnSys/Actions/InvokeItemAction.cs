@@ -17,14 +17,26 @@ public class InvokeItemAction : SpecialAction
 
 	public override bool TileInteractPredicate ( Tile _tile )
 	{
-		return Data.invocatedItem.InvokeItemPredicate(PerformingEntity.Equipment.Tools[linkedEquipmentId], Data) && _tile.GetItem(true) == null && base.TileInteractPredicate(_tile);
+		return Data.invocatedItem.InvokeItemPredicate(PerformingEntity.Equipment.Tools[linkedEquipmentId], Data) && _tile.GetItem(true) == null && _tile.GetPlannedItemAt(timeAtStart) == null && base.TileInteractPredicate(_tile);
 	}
 
 	public override void RegisterInteraction ( Tile _tile )
 	{
-		//_tile.GetTilePlannedContent(timeAtStart).item = 
+		targetTileID = _tile.coordinates.ID;
+		Item invokedItem = GameManager.Instance.PreSpawnItem(Data.invocatedItem, PerformingEntity, PerformingEntity.Equipment.Tools[linkedEquipmentId], GridManager.Instance.Tiles[targetTileID].coordinates);
+		_tile.SetPlannedItemAt(invokedItem, timeAtStart);
 
 		base.RegisterInteraction(_tile);
+	}
+
+	public override void CancelAction ()
+	{
+		Tile targetTile = GridManager.Instance.Tiles[targetTileID];
+		targetTile.SetPlannedItemAt(null, timeAtStart);
+		/*targetTile.plannedContentsPerTick[timeAtStart].item.Cancel();
+		targetTile.plannedContentsPerTick[timeAtStart].item = null;*/
+
+		base.CancelAction();
 	}
 
 	public override void Prepare ( Entity.EntityState _state )
@@ -43,7 +55,7 @@ public class InvokeItemAction : SpecialAction
 		bool doesSelfHaveConflict = false;
 		bool doesOtherHaveConflict = false;
 
-		if (_otherAction is MoveToNeighborAction _otherNeighborMoveAction && _otherNeighborMoveAction.finalTargetTileID == targetTileID)
+		/*if (_otherAction is MoveToNeighborAction _otherNeighborMoveAction && _otherNeighborMoveAction.finalTargetTileID == targetTileID)
 		{
 			if (result == EntityActionData.PFCResultType.FirstWins)
 			{
@@ -71,7 +83,7 @@ public class InvokeItemAction : SpecialAction
 			}
 
 		}
-		else if (_otherAction is MoveToTargetAction _otherMoveToTargetAction && _otherMoveToTargetAction.thisActionDestinationIDArray.Contains(targetTileID))
+		else */if (_otherAction is MoveToTargetAction _otherMoveToTargetAction && _otherMoveToTargetAction.thisActionDestinationIDArray.Contains(targetTileID))
 		{
 			if (result == EntityActionData.PFCResultType.FirstWins)
 			{
@@ -106,11 +118,14 @@ public class InvokeItemAction : SpecialAction
 	{
 		if (isActionCanceled)
 		{
+			CancelAction();
 			EndTick();
 			return;
 		}
-
-		GameManager.Instance.SpawnItem(Data.invocatedItem, PerformingEntity, PerformingEntity.Equipment.Tools[linkedEquipmentId], GridManager.Instance.Tiles[targetTileID].coordinates);
+		Tile targetTile = GridManager.Instance.Tiles[targetTileID];
+		Item item = targetTile.GetPlannedItemAt(timeAtStart);
+		targetTile.SetItem(item, true);
+		item.transform.position = targetTile.transform.position;
 
 		base.Perform(_state);
 		DG.Tweening.DOVirtual.DelayedCall(GameConfig.current.game.actionDuration, EndTick);

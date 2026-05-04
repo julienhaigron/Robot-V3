@@ -13,8 +13,12 @@ public class Item : MonoBehaviour
     private Tile m_currentPosition;
     public Tile CurrentPosition => m_currentPosition;
 
-    public void Init( AItemData _itemData, AItemLinkedData _linkedData, Entity _invocatorEntity, Tile _position )
+    private int m_id;
+    public int ID => m_id;
+
+    public void Init( int _id, AItemData _itemData, AItemLinkedData _linkedData, Entity _invocatorEntity, Tile _position )
 	{
+        m_id = _id;
         m_data = _itemData;
         m_linkedData = _linkedData;
         m_invocator = _invocatorEntity;
@@ -25,5 +29,10 @@ public class Item : MonoBehaviour
 	{
         m_data.OnWalkThrough(_enteringEntity, m_linkedData, this, null, _isFromTeleportation);
     }
+
+    public void Cancel ()
+	{
+        Destroy(gameObject);
+	}
 
 }

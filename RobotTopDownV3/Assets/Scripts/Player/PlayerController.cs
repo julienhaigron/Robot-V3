@@ -250,52 +250,55 @@ public class PlayerController : Singleton<PlayerController>
 				}
 			}
 		}
+		else if(m_selectedEntity != null)
+		{
+			//unselect entity
+			m_selectedEntity.Deselect();
+			m_selectedEntity = null;
+			onEntitySelected?.Invoke(null);
+		}
 	}
 
 	private void OnTileHovered ( Tile _tile )
 	{
-		if (m_selectedEntity == null)
+		if (m_selectedEntity == null || _tile == m_hoveredTile)
 			return;
 
-		if (_tile != m_hoveredTile)
+		ClearGhostActionOnTileDisplay();
+
+		int totalCostSpend = 0;
+		bool didContainTile = false;
+
+		//wrong way of calculating
+		//must check each actions
+		if (m_actionDisplays.ContainsKey(m_selectedEntity.ID))
 		{
-
-			ClearGhostActionOnTileDisplay();
-
-			int totalCostSpend = 0;
-			bool didContainTile = false;
-			if (m_actionDisplays.ContainsKey(m_selectedEntity.ID))
+			foreach (ActionDisplayOnTile display in m_actionDisplays[m_selectedEntity.ID])
 			{
-				foreach (ActionDisplayOnTile display in m_actionDisplays[m_selectedEntity.ID])
+				if (display.DestinationTile == _tile)
 				{
-					totalCostSpend += display.RecordedAction.action.Data.GetTokenTotalCost(display.RecordedAction.action, m_selectedEntity, m_selectedEntity.AI.TargetedEntity);
-					if (display.DestinationTile == _tile)
-					{
-						didContainTile = true;
-						break;
-					}
+					totalCostSpend = display.RecordedAction.action.TimeAtEnd;
+					didContainTile = true;
+					break;
 				}
 			}
-
-			bool isTargetValid = TurnManager.Instance.currentPhase == TurnManager.TurnPhase.Recording
-				&& (TurnManager.Instance.CurrentActionTypeSelected == EntityActionEnumID.NeighborMove || TurnManager.Instance.CurrentActionTypeSelected == EntityActionEnumID.TargetTileMove)
-				&& TurnManager.Instance.CurrentActionSelected.TileInteractPredicate(_tile);
-
-			Tile from = GridManager.Instance.Tiles[TurnManager.Instance.GetLastRegisteredPositionOfEntity(m_selectedEntity.ID)];
-			int distanceToTarget = isTargetValid ? GridManager.Instance.GetDistanceBetween(from, _tile) : 0; 
-			TurnManager.Instance.RefreshActionDisplay(m_selectedEntity.ID
-				, didContainTile ? totalCostSpend : (GameConfig.current.game.actionTokenPerRound - TurnManager.Instance.RemainingActionToken[m_selectedEntity.ID]) + distanceToTarget);
-			if (isTargetValid)
-			{
-				TurnManager.Instance.CurrentActionSelected.positionAtActionEndID = _tile.coordinates.ID;
-				TurnManager.Instance.CurrentActionSelected.GhostDisplay(TurnManager.Instance.CurrentStateTypeSelected);
-			}
-
-
-
-			m_hoveredTile = _tile;
-
 		}
+
+		bool isTargetValid = TurnManager.Instance.currentPhase == TurnManager.TurnPhase.Recording
+			&& (TurnManager.Instance.CurrentActionTypeSelected == EntityActionEnumID.NeighborMove || TurnManager.Instance.CurrentActionTypeSelected == EntityActionEnumID.TargetTileMove)
+			&& TurnManager.Instance.CurrentActionSelected.TileInteractPredicate(_tile);
+
+		Tile from = GridManager.Instance.Tiles[TurnManager.Instance.GetLastRegisteredPositionOfEntity(m_selectedEntity.ID)];
+		int distanceToTarget = isTargetValid ? GridManager.Instance.GetDistanceBetween(from, _tile) : 0;
+		TurnManager.Instance.RefreshActionDisplay(m_selectedEntity.ID
+			, didContainTile ? totalCostSpend : (GameConfig.current.game.actionTokenPerRound - TurnManager.Instance.RemainingActionToken[m_selectedEntity.ID]) + distanceToTarget);
+		if (isTargetValid)
+		{
+			TurnManager.Instance.CurrentActionSelected.positionAtActionEndID = _tile.coordinates.ID;
+			TurnManager.Instance.CurrentActionSelected.GhostDisplay(TurnManager.Instance.CurrentStateTypeSelected);
+		}
+
+		m_hoveredTile = _tile;
 	}
 
 	#region Ghost
@@ -376,7 +379,7 @@ public class PlayerController : Singleton<PlayerController>
 		}
 	}
 
-	private void OnAnyEntityDeath(Entity _entity )
+	private void OnAnyEntityDeath ( Entity _entity )
 	{
 		m_ghostEntities.Remove(_entity.ID);
 	}

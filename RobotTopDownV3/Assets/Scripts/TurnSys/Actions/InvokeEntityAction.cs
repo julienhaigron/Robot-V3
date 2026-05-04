@@ -32,7 +32,7 @@ public class InvokeEntityAction : SpecialAction
 		bool doesSelfHaveConflict = false;
 		bool doesOtherHaveConflict = false;
 
-		if (_otherAction is MoveToNeighborAction _otherNeighborMoveAction && _otherNeighborMoveAction.finalTargetTileID == targetTileID)
+		/*if (_otherAction is MoveToNeighborAction _otherNeighborMoveAction && _otherNeighborMoveAction.finalTargetTileID == targetTileID)
 		{
 			if (result == EntityActionData.PFCResultType.FirstWins)
 			{
@@ -60,7 +60,7 @@ public class InvokeEntityAction : SpecialAction
 			}
 
 		}
-		else if (_otherAction is MoveToTargetAction _otherMoveToTargetAction && _otherMoveToTargetAction.thisActionDestinationIDArray.Contains(targetTileID))
+		else */if (_otherAction is MoveToTargetAction _otherMoveToTargetAction && _otherMoveToTargetAction.thisActionDestinationIDArray.Contains(targetTileID))
 		{
 			if (result == EntityActionData.PFCResultType.FirstWins)
 			{

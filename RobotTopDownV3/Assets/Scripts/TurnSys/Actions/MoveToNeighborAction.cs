@@ -5,7 +5,7 @@ using System;
 using Unity.Netcode;
 using System.Linq;
 
-public class MoveToNeighborAction : AEntityAction
+/*public class MoveToNeighborAction : AEntityAction
 {
 	public int targetEntityID;
 	public int targetTileID;
@@ -54,7 +54,7 @@ public class MoveToNeighborAction : AEntityAction
 		base.Perform(_state);
 
 		//move to targetTile
-		if (finalTargetTileID != -1/* && finalTargetTile.GetEntity(false) == null*/)
+		if (finalTargetTileID != -1*//* && finalTargetTile.GetEntity(false) == null*//*)
 			GameManager.Instance.GetEntityFromID(performingEntityID).Displacement.MoveToTile((int)finalTargetTileID, EndTick);
 		else
 			DG.Tweening.DOVirtual.DelayedCall(GameConfig.current.game.actionDuration, () => EndTick());
@@ -130,8 +130,8 @@ public class MoveToNeighborAction : AEntityAction
 			doesSelfHaveConflict = true;
 			RefreshDestinatedTile();
 
-			/*if (finalTargetTile != null)
-				finalTargetTile.SetEntity(performingEntity, _isThisTurn: false);*/
+			*//*if (finalTargetTile != null)
+				finalTargetTile.SetEntity(performingEntity, _isThisTurn: false);*//*
 		}
 		//check if tile too far
 		else if (finalTargetTileID != -1 && GridManager.Instance.GetDistanceBetween(PerformingEntity.Displacement.Coordinates.GetTile(), GridManager.Instance.Tiles[(int)finalTargetTileID], false) > 1)
@@ -199,4 +199,4 @@ public class MoveToNeighborAction : AEntityAction
 
 		PlayerController.Instance.AddActionDisplay(arrow, performingEntityID, true);
 	}
-}
+}*/
