@@ -10,6 +10,8 @@ public class PlayerController : Singleton<PlayerController>
 {
 	public static Action<int?> onEntitySelected;
 
+	[SerializeField] private FogOfWarRenderer m_fogRenderer;
+
 	[Header("Camera Limits")]
 	private Vector2 xLimits
 	{
@@ -46,16 +48,14 @@ public class PlayerController : Singleton<PlayerController>
 	public Entity SelectedEntity => m_selectedEntity;
 
 
-	//public List<ActionDisplayOnTile> arrows = new();
 	private SerializableDictionary<int, List<ActionDisplayOnTile>> m_actionDisplays = new();
-	//public SerializableDictionary<int, List<ActionDisplayOnTile>> ActionDisplays => m_actionDisplays;
-	//public List<ActionDisplayOnTile> tempArrows = new();
 	private SerializableDictionary<int, List<ActionDisplayOnTile>> m_tempActionDisplays = new();
-	//public SerializableDictionary<int, List<ActionDisplayOnTile>> TempActionDisplays => m_tempActionDisplays;
 	private SerializableDictionary<int, GhostEntity> m_ghostEntities = new();
+	private SerializableDictionary<int, GhostItem> m_ghostItems = new();
 
-	private void Start ()
+	public override void Awake ()
 	{
+		base.Awake();
 		InputManager.onTileleftClick += OnTileLeftClick;
 		InputManager.onTileRightClick += OnTileRightClick;
 		InputManager.onTileHovered += OnTileHovered;
@@ -117,6 +117,9 @@ public class PlayerController : Singleton<PlayerController>
 		targetPos.z = Mathf.Clamp(targetPos.z, zLimits.x - GameConfig.current.game.cameraMovementBoundsOffset.y, zLimits.y + GameConfig.current.game.cameraMovementBoundsOffset.y);
 
 		CameraManager.Instance.CameraParent.transform.position = targetPos;
+
+		if (moveZ != 0 && moveX != 0)
+			m_fogRenderer.MarkDirty();
 	}
 
 	private void HandleCameraRotation ()
@@ -140,6 +143,8 @@ public class PlayerController : Singleton<PlayerController>
 			m_cameraRotationTween.Kill();
 
 		m_cameraRotationTween = CameraManager.Instance.CameraParent.transform.DOLocalRotateQuaternion(m_targetRotation, GameConfig.current.game.cameraRotationDuration).SetEase(Ease.OutQuad);
+		m_fogRenderer.MarkDirty();
+
 	}
 
 	private void HandleCameraZoom ()
@@ -154,6 +159,9 @@ public class PlayerController : Singleton<PlayerController>
 		m_currentZoomDistance = Mathf.Clamp(m_currentZoomDistance, GameConfig.current.game.cameraZoomBounds.x, GameConfig.current.game.cameraZoomBounds.y);
 
 		CameraManager.Instance.CameraParent.transform.position = new Vector3(CameraManager.Instance.CameraParent.transform.position.x, m_currentZoomDistance, CameraManager.Instance.CameraParent.transform.position.z);
+		if (zoomMovement != 0)
+			m_fogRenderer.MarkDirty();
+
 	}
 
 	private void OnTileLeftClick ( Tile _tile )
@@ -284,17 +292,18 @@ public class PlayerController : Singleton<PlayerController>
 			}
 		}
 
-		bool isTargetValid = TurnManager.Instance.currentPhase == TurnManager.TurnPhase.Recording
-			&& (TurnManager.Instance.CurrentActionTypeSelected == EntityActionEnumID.NeighborMove || TurnManager.Instance.CurrentActionTypeSelected == EntityActionEnumID.TargetTileMove)
-			&& TurnManager.Instance.CurrentActionSelected.TileInteractPredicate(_tile);
+		bool isTargetValid = TurnManager.Instance.currentPhase == TurnManager.TurnPhase.Recording && _tile.CanInteract;
+			/*&& (TurnManager.Instance.CurrentActionSelected.Data.codeType == EntityActionData.ActionCodeType.MoveThenAttack || TurnManager.Instance.CurrentActionSelected.Data.codeType == EntityActionData.ActionCodeType.TargetTileMove)*/
+			//&& TurnManager.Instance.CurrentActionSelected.TileInteractPredicate(_tile);
 
-		Tile from = GridManager.Instance.Tiles[TurnManager.Instance.GetLastRegisteredPositionOfEntity(m_selectedEntity.ID)];
-		int distanceToTarget = isTargetValid ? GridManager.Instance.GetDistanceBetween(from, _tile) : 0;
+		//Tile from = GridManager.Instance.Tiles[TurnManager.Instance.GetLastRegisteredPositionOfEntity(m_selectedEntity.ID)];
+		int distanceToTarget = /*isTargetValid ? GridManager.Instance.GetDistanceBetween(from, _tile, 99999) : 0;*/ isTargetValid ? _tile.Distance : 0;
 		TurnManager.Instance.RefreshActionDisplay(m_selectedEntity.ID
 			, didContainTile ? totalCostSpend : (GameConfig.current.game.actionTokenPerRound - TurnManager.Instance.RemainingActionToken[m_selectedEntity.ID]) + distanceToTarget);
 		if (isTargetValid)
 		{
-			TurnManager.Instance.CurrentActionSelected.positionAtActionEndID = _tile.coordinates.ID;
+			if(TurnManager.Instance.CurrentActionSelected.Data.codeType == EntityActionData.ActionCodeType.MoveThenAttack || TurnManager.Instance.CurrentActionSelected.Data.codeType == EntityActionData.ActionCodeType.TargetTileMove)
+				TurnManager.Instance.CurrentActionSelected.positionAtActionEndID = _tile.coordinates.ID;
 			TurnManager.Instance.CurrentActionSelected.GhostDisplay(TurnManager.Instance.CurrentStateTypeSelected);
 		}
 
@@ -308,7 +317,7 @@ public class PlayerController : Singleton<PlayerController>
 		m_selectedEntity = null;
 		ClearActionOnTileDisplay();
 		ClearGhostActionOnTileDisplay();
-		ClearGhostEntities();
+		ClearGhostEntitiesAndItems();
 	}
 
 	private void OnEndLevel ()
@@ -316,7 +325,7 @@ public class PlayerController : Singleton<PlayerController>
 		m_selectedEntity = null;
 		ClearActionOnTileDisplay();
 		ClearGhostActionOnTileDisplay();
-		ClearGhostEntities();
+		ClearGhostEntitiesAndItems();
 	}
 
 	public void AddActionDisplay ( ActionDisplayOnTile _display, int _performingEntityID, bool _isTemp )
@@ -335,7 +344,7 @@ public class PlayerController : Singleton<PlayerController>
 		}
 	}
 
-	public void AddGhostAt ( Entity _entity, Tile _position, int _orientation )
+	public void AddGhostEntityAt ( Entity _entity, Tile _position, int _orientation )
 	{
 		if (!m_ghostEntities.ContainsKey(_entity.ID))
 		{
@@ -347,9 +356,26 @@ public class PlayerController : Singleton<PlayerController>
 		m_ghostEntities[_entity.ID].ShowAtPositionAndOrientation(_position, _orientation);
 	}
 
-	public void ClearGhostEntities ()
+	public void AddGhostItemAt ( AItemData _itemData, Tile _position, int _orientation, int _id )
+	{
+		if (!m_ghostItems.ContainsKey(_id))
+		{
+			GhostItem newGhost = Instantiate(GameAssets.current.game.baseItem /*, GameManager.Instance.transform*/);
+			newGhost.Init(_itemData);
+			m_ghostItems.Add(_id, newGhost);
+		}
+
+		m_ghostItems[_id].ShowAtPositionAndOrientation(_position, _orientation);
+	}
+
+	public void ClearGhostEntitiesAndItems ()
 	{
 		foreach (GhostEntity ghost in m_ghostEntities.Values)
+		{
+			ghost.Hide();
+		}
+		
+		foreach (GhostItem ghost in m_ghostItems.Values)
 		{
 			ghost.Hide();
 		}

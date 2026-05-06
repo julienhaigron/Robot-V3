@@ -7,12 +7,14 @@ using System.Linq;
 public class InvokeItemAction : SpecialAction
 {
 	public bool isActionCanceled;
+	public int itemID;
 
 	public override void NetworkSerialize<T> ( BufferSerializer<T> serializer )
 	{
 		base.NetworkSerialize(serializer);
 		//serializer.SerializeValue(ref newEntityID);
 		serializer.SerializeValue(ref isActionCanceled);
+		serializer.SerializeValue(ref itemID);
 	}
 
 	public override bool TileInteractPredicate ( Tile _tile )
@@ -25,6 +27,7 @@ public class InvokeItemAction : SpecialAction
 		targetTileID = _tile.coordinates.ID;
 		Item invokedItem = GameManager.Instance.PreSpawnItem(Data.invocatedItem, PerformingEntity, PerformingEntity.Equipment.Tools[linkedEquipmentId], GridManager.Instance.Tiles[targetTileID].coordinates);
 		_tile.SetPlannedItemAt(invokedItem, timeAtStart);
+		itemID = invokedItem.ID;
 
 		base.RegisterInteraction(_tile);
 	}
@@ -133,11 +136,12 @@ public class InvokeItemAction : SpecialAction
 
 	public override void Display ( TurnManager.RecordedAction _recordedAction )
 	{
-		//TODO ?
+		PlayerController.Instance.AddGhostItemAt(Data.invocatedItem, GridManager.Instance.Tiles[targetTileID], 0, itemID);
 	}
 
 	public override void GhostDisplay ( Entity.EntityState _state )
 	{
-
+		PlayerController.Instance.AddGhostItemAt(Data.invocatedItem, GridManager.Instance.Tiles[targetTileID], 0, itemID);
 	}
+
 }

@@ -36,6 +36,8 @@ public class TurnManager : Singleton<TurnManager>
 	private SerializableDictionary<int, int> m_remainingActionToken = new();
 	public SerializableDictionary<int, int> RemainingActionToken => m_remainingActionToken;
 
+	private SerializableDictionary<int, RecordedAction> m_lastRecordedAction = new();
+
 	private List<RecordedAction> m_recordedConflict;
 
 	private AEntityAction m_currentEntityAction;
@@ -300,6 +302,11 @@ public class TurnManager : Singleton<TurnManager>
 
 		m_remainingActionToken[_entityID] -= GameAssets.current.game.entityActionsData[_action.enumID].GetTokenTotalCost(_action, GameManager.Instance.GetEntityFromID(_entityID), null);
 
+		if (!m_lastRecordedAction.ContainsKey(_entityID))
+			m_lastRecordedAction.Add(_entityID, recordedAction);
+		else
+			m_lastRecordedAction[_entityID] = recordedAction;
+
 		TrackedEventCheck();
 
 		LogConsole.AddLog("Add " + _action.ToString() + " action to queue.", LogConsole.LogEventType.InputPhase);
@@ -344,12 +351,10 @@ public class TurnManager : Singleton<TurnManager>
 
 	public int GetLastRegisteredPositionOfEntity ( int _entityID )
 	{
-		if (m_recordedActionInput.ContainsKey(_entityID) == false
-			|| m_recordedActionInput[_entityID] == null || m_recordedActionInput[_entityID].Count == 0)
+		if (m_lastRecordedAction.ContainsKey(_entityID) == false)
 			return GameManager.Instance.GetEntityFromID(_entityID).Displacement.Coordinates.ID;
 
-		RecordedAction lastRecordedAction = m_recordedActionInput[_entityID].ToArray()[^1];
-		return lastRecordedAction.action.positionAtActionEndID;
+		return m_lastRecordedAction[_entityID].action.positionAtActionEndID;
 	}
 
 	public int GetPositionOfEntityAtEndOfRound ( int _entityID )
@@ -392,7 +397,7 @@ public class TurnManager : Singleton<TurnManager>
 	{
 		PlayerController.Instance.ClearActionOnTileDisplay();
 		PlayerController.Instance.ClearGhostActionOnTileDisplay();
-		PlayerController.Instance.ClearGhostEntities();
+		PlayerController.Instance.ClearGhostEntitiesAndItems();
 
 
 		if (_selectedEntityID.HasValue && m_recordedActionInput.ContainsKey(_selectedEntityID.Value)
@@ -423,7 +428,7 @@ public class TurnManager : Singleton<TurnManager>
 			}
 
 			if (_selectedEntityID.HasValue)
-				PlayerController.Instance.AddGhostAt(entity, lastRecordedPosition, lastRecordedOrientation);
+				PlayerController.Instance.AddGhostEntityAt(entity, lastRecordedPosition, lastRecordedOrientation);
 		}
 	}
 

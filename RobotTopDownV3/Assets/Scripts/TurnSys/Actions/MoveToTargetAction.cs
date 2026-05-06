@@ -100,8 +100,13 @@ public class MoveToTargetAction : AEntityAction
 
 	public override bool TileInteractPredicate ( Tile _tile )
 	{
+		Tile from = GridManager.Instance.Tiles[TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntityID)];
 		int maxDistance = TurnManager.Instance.RemainingActionToken[performingEntityID] * Data.movementSpeed;
-		int distance = GridManager.Instance.GetDistanceBetween(GridManager.Instance.Tiles[TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntityID)], _tile, true);
+		//for all tiles overall distance calculation
+		if (GridManager.Instance.LastBFSOriginTile != from && GridManager.Instance.LastBFSMaxDistance >= maxDistance)
+			GridManager.Instance.BFS(from, maxDistance, null, true);
+
+		int distance = GridManager.Instance.GetDistanceBetween(from, _tile, maxDistance, true);
 
 		if (_tile.IsObstacle(true) || distance > maxDistance || distance < 1)
 			return false;
@@ -170,7 +175,7 @@ public class MoveToTargetAction : AEntityAction
 					doesSelfHaveConflict = true;
 			}
 		}
-		else if (thisActionDestinationIDArray != null && GridManager.Instance.GetDistanceBetween(PerformingEntity.Displacement.Coordinates.GetTile(), GridManager.Instance.Tiles[thisActionDestinationIDArray[^1]], false) > Data.movementSpeed)
+		else if (thisActionDestinationIDArray != null && GridManager.Instance.GetDistanceBetween(PerformingEntity.Displacement.Coordinates.GetTile(), GridManager.Instance.Tiles[thisActionDestinationIDArray[^1]], Data.movementSpeed, false) > Data.movementSpeed)
 		{
 			//check if tile too far
 			doesSelfHaveConflict = true;

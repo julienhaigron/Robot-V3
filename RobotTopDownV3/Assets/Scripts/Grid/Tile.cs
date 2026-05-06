@@ -76,7 +76,6 @@ public class Tile : MonoBehaviour
 		set
 		{
 			m_distance = value;
-			m_ui.UpdateDistanceLabel(value);
 		}
 	}
 

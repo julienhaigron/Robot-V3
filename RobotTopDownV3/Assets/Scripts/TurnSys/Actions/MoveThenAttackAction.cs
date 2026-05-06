@@ -83,7 +83,7 @@ public class MoveThenAttackAction : AttackAction
 				finalTargetTile.SetEntity(performingEntity, _isThisTurn: false);*/
 		}
 		//check if tile too far
-		else if (positionAfterMovementID != -1 && GridManager.Instance.GetDistanceBetween(GridManager.Instance.Tiles[supposedPositionAtActionStartID], GridManager.Instance.Tiles[(int)positionAfterMovementID], false) > maxDist)
+		else if (positionAfterMovementID != -1 && GridManager.Instance.GetDistanceBetween(GridManager.Instance.Tiles[supposedPositionAtActionStartID], GridManager.Instance.Tiles[(int)positionAfterMovementID], Data.movementSpeed, false) > maxDist)
 		{
 			doesSelfHaveConflict = true;
 			isActionCanceled = false;

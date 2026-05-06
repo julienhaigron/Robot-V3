@@ -16,6 +16,7 @@ public class InputManager : MonoBehaviour
 	private Vector3 m_mousePosition;
 
 	private bool m_isLogConsoleOpen = false;
+	private Tile m_lastHoveredTile;
 
 	public static bool IsPointerOverBlockingUI ()
 	{
@@ -82,7 +83,7 @@ public class InputManager : MonoBehaviour
 		}
 	}
 
-	private void FixedUpdate ()
+	private void Update ()
 	{
 		if (Input.GetKeyDown(KeyCode.C))
 		{
@@ -95,7 +96,7 @@ public class InputManager : MonoBehaviour
 		}
 
 
-		if (m_mousePosition != null && Input.mousePosition == m_mousePosition)
+		if (Input.mousePosition == m_mousePosition)
 			return;
 
 		m_mousePosition = Input.mousePosition;
@@ -105,7 +106,11 @@ public class InputManager : MonoBehaviour
 		{
 			if (hitInfo.transform.parent.TryGetComponent(out Tile tile))
 			{
-				onTileHovered?.Invoke(tile);
+				if (tile != m_lastHoveredTile)
+				{
+					m_lastHoveredTile = tile;
+					onTileHovered?.Invoke(tile);
+				}
 			}
 		}
 

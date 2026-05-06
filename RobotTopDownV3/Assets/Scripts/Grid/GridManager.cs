@@ -20,9 +20,6 @@ public class GridManager : Singleton<GridManager>
 	[SerializeField] private int m_width;
 	public int Width => m_width;
 
-	/*public Texture2D fogTexture;
-	[SerializeField] private MeshRenderer m_fowRenderer;*/
-
 	private struct PlayerVisionRangeInfo
 	{
 		public Dictionary<Entity, List<Tile>> entitiesVisionRange;
@@ -44,6 +41,11 @@ public class GridManager : Singleton<GridManager>
 		new Vector2Int(-1,  0), // 4
 		new Vector2Int(-1,  1), // 5
 	};
+
+	private Tile m_lastBFSOriginTile;
+	public Tile LastBFSOriginTile => m_lastBFSOriginTile;
+	private int m_lastBFSMaxDistance;
+	public int LastBFSMaxDistance => m_lastBFSMaxDistance;
 
 	#region Editor
 #if UNITY_EDITOR
@@ -823,35 +825,36 @@ public class GridManager : Singleton<GridManager>
 		}
 	}
 
-	public void BFS ( Tile cell, int _maxDistance = -1, Tile _to = null, bool _isThisTurn = false, bool _ignoreObstacles = false )
+	public void BFS ( Tile _from, int _maxDistance = -1, Tile _to = null, bool _isThisTurn = false, bool _ignoreObstacles = false )
 	{
+		m_lastBFSOriginTile = _from;
+		m_lastBFSMaxDistance = _maxDistance;
 		for (int i = 0; i < m_tiles.Length; i++)
 		{
 			m_tiles[i].Distance = int.MaxValue;
-			//m_tiles[i].UI.ResetOutline();
 		}
 
 		Queue<Tile> frontier = new Queue<Tile>();
-		cell.Distance = 0;
-		frontier.Enqueue(cell);
+		_from.Distance = 0;
+		frontier.Enqueue(_from);
 		bool isDestinationReached = false;
+		bool isDestinationNotNull = _to != null;
 
 		while (frontier.Count > 0 && isDestinationReached == false)
 		{
 			Tile current = frontier.Dequeue();
 			for (int i = 0; i < 6; i++)
 			{
-				//yield return new WaitForSeconds(1 / 60f);
 				Tile neighbor = current.GetNeighbor((HexDirection)i);
-
-				//destination reached
-				if (_to != null && neighbor == _to)
-					isDestinationReached = true;
 
 				if (neighbor == null || neighbor.Distance != int.MaxValue)
 				{
 					continue;
 				}
+
+				//destination reached
+				if (isDestinationNotNull && neighbor.coordinates.ID == _to.coordinates.ID)
+					isDestinationReached = true;
 
 				//max distance
 				if (_maxDistance != -1 && current.Distance + 1 > _maxDistance)
@@ -860,7 +863,7 @@ public class GridManager : Singleton<GridManager>
 				}
 
 				//obstacle
-				if (!_ignoreObstacles && (neighbor.IsObstacle(_isThisTurn) || (neighbor.GetEntity(_isThisTurn) != null && neighbor != _to)))
+				if (!_ignoreObstacles && (neighbor.IsObstacle(_isThisTurn) || (isDestinationNotNull && neighbor.GetEntity(_isThisTurn) != null && neighbor.coordinates.ID != _to.coordinates.ID)))
 				{
 					continue;
 				}
@@ -893,9 +896,13 @@ public class GridManager : Singleton<GridManager>
 		return angle;
 	}
 
-	public int GetDistanceBetween ( Tile _from, Tile _to, bool _isThisTurn = false )
+	public int GetDistanceBetween ( Tile _from, Tile _to, int _maxDistance, bool _isThisTurn = false )
 	{
-		BFS(_from, _to: _to, _isThisTurn: _isThisTurn);
+		//record last BFS done and avaid doing one if last one is valid
+		if (m_lastBFSOriginTile == _from && m_lastBFSMaxDistance >= _maxDistance)
+			return _to.Distance;
+
+		BFS(_from, _maxDistance, _to: _to, _isThisTurn: _isThisTurn);
 
 		return _to.Distance;
 	}
@@ -915,22 +922,6 @@ public class GridManager : Singleton<GridManager>
 	#endregion
 
 	#region FOW
-
-	/*public void InitFOW ( )
-	{
-		fogTexture = new Texture2D(m_width, m_height, TextureFormat.RGBA32, false);
-		fogTexture.filterMode = FilterMode.Point;
-
-		// Tout noir = full fog
-		Color[] colors = new Color[m_width * m_height];
-		for (int i = 0; i < colors.Length; i++)
-			colors[i] = Color.black;
-
-		fogTexture.SetPixels(colors);
-		fogTexture.Apply();
-		//Shader.SetGlobalTexture("_FogTex", fogTexture);
-		m_fowRenderer.material.SetTexture("_FogTex", fogTexture);
-	}*/
 
 	public void OnNewEntity ( Entity _entity )
 	{
@@ -952,7 +943,7 @@ public class GridManager : Singleton<GridManager>
 
 		m_entitiesVisions[_entity.OwnerID].entitiesVisionRange.Add(_entity, tileInEntityRange);
 
-		//m_fowRenderer.material.SetTexture("_FogTex", fogTexture);
+		FogOfWarRenderer.Instance.MarkDirty();
 	}
 
 	public void OnEntityDeath ( Entity _entity )
@@ -979,7 +970,7 @@ public class GridManager : Singleton<GridManager>
 
 		m_entitiesVisions[_entity.OwnerID].entitiesVisionRange.Remove(_entity);
 
-		//m_fowRenderer.material.SetTexture("_FogTex", fogTexture);
+		FogOfWarRenderer.Instance.MarkDirty();
 	}
 
 	public void OnEntityMovement ( Entity _entity )
@@ -1032,7 +1023,7 @@ public class GridManager : Singleton<GridManager>
 				previousTile.SetActiveFOW(true, false);
 		}
 
-		//m_fowRenderer.material.SetTexture("_FogTex", fogTexture);
+		FogOfWarRenderer.Instance.MarkDirty();
 	}
 
 	#endregion
