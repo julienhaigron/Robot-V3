@@ -20,7 +20,7 @@ public class PushOrPullPassiveEffect : AEntityPassiveEffect
 			case TargetType.ConeOnSelf:
 			case TargetType.ConeOnTarget:
 				Entity entityTargetted = _effectContainer.targetType == TargetType.ConeOnSelf ? _entity : _targetEntity;
-				List<Tile> tilesInRange = GridManager.Instance.GetTilesInVisionRange(entityTargetted.Displacement.Coordinates.GetTile(), _effectContainer.effectRange, true);
+				List<Tile> tilesInRange = GridManager.Instance.GetTilesInVisionRange(entityTargetted.Displacement.Coordinates.GetTile(), _effectContainer.effectRange, false, true);
 				foreach (Tile tile in tilesInRange)
 				{
 					if (tile.GetEntity(true) != null)

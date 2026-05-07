@@ -291,15 +291,14 @@ public class PlayerController : Singleton<PlayerController>
 				}
 			}
 		}
+		if (!didContainTile)
+			GridManager.Instance.BFS(GridManager.Instance.Tiles[TurnManager.Instance.GetLastRegisteredPositionOfEntity(m_selectedEntity.ID)]
+				, TurnManager.Instance.RemainingActionToken[m_selectedEntity.ID] * TurnManager.Instance.CurrentActionSelected.Data.movementSpeed, null, true, false);
 
 		bool isTargetValid = TurnManager.Instance.currentPhase == TurnManager.TurnPhase.Recording && _tile.CanInteract;
-			/*&& (TurnManager.Instance.CurrentActionSelected.Data.codeType == EntityActionData.ActionCodeType.MoveThenAttack || TurnManager.Instance.CurrentActionSelected.Data.codeType == EntityActionData.ActionCodeType.TargetTileMove)*/
-			//&& TurnManager.Instance.CurrentActionSelected.TileInteractPredicate(_tile);
-
-		//Tile from = GridManager.Instance.Tiles[TurnManager.Instance.GetLastRegisteredPositionOfEntity(m_selectedEntity.ID)];
-		int distanceToTarget = /*isTargetValid ? GridManager.Instance.GetDistanceBetween(from, _tile, 99999) : 0;*/ isTargetValid ? _tile.Distance : 0;
-		TurnManager.Instance.RefreshActionDisplay(m_selectedEntity.ID
-			, didContainTile ? totalCostSpend : (GameConfig.current.game.actionTokenPerRound - TurnManager.Instance.RemainingActionToken[m_selectedEntity.ID]) + distanceToTarget);
+		int distanceToTarget = isTargetValid ? _tile.Distance : 0;
+		int specificTokenCount = didContainTile ? totalCostSpend : (GameConfig.current.game.actionTokenPerRound - TurnManager.Instance.RemainingActionToken[m_selectedEntity.ID]) + distanceToTarget;
+		TurnManager.Instance.RefreshActionDisplay(m_selectedEntity.ID, specificTokenCount);
 		if (isTargetValid)
 		{
 			if(TurnManager.Instance.CurrentActionSelected.Data.codeType == EntityActionData.ActionCodeType.MoveThenAttack || TurnManager.Instance.CurrentActionSelected.Data.codeType == EntityActionData.ActionCodeType.TargetTileMove)

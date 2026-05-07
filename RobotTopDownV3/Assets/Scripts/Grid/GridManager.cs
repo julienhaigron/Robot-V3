@@ -335,7 +335,7 @@ public class GridManager : Singleton<GridManager>
 	{
 		List<Entity> entitiesInRange = new();
 
-		List<Tile> tilesInRange = GetTilesInVisionRange(_from, _maxDist, _isThisTurn);
+		List<Tile> tilesInRange = GetTilesInVisionRange(_from, _maxDist, false, _isThisTurn);
 		foreach (Tile tile in tilesInRange)
 		{
 			Entity entity = tile.GetEntity(_isThisTurn);
@@ -393,7 +393,7 @@ public class GridManager : Singleton<GridManager>
 		return entitiesInRange;
 	}*/
 
-	public List<Tile> GetTilesInRange ( Tile _from, int _maxDist, bool _ignoreObsacles, bool _isThisTurn )
+	/*public List<Tile> GetTilesInRange ( Tile _from, int _maxDist, bool _ignoreObsacles, bool _isThisTurn )
 	{
 		List<Tile> tilesInRange = new();
 
@@ -438,9 +438,9 @@ public class GridManager : Singleton<GridManager>
 		}
 
 		return tilesInRange;
-	}
+	}*/
 
-	public List<Tile> GetTilesInVisionRange ( Tile _from, int _maxDist, bool _isThisTurn )
+	public List<Tile> GetTilesInVisionRange ( Tile _from, int _maxDist, bool _ignoreObstacles, bool _isThisTurn )
 	{
 		List<Tile> tilesInRange = new();
 		tilesInRange.Add(_from);
@@ -475,7 +475,7 @@ public class GridManager : Singleton<GridManager>
 				}
 
 				//obstacle
-				if (IsVisionLineClear(_from, neighbor, _isThisTurn))
+				if (!_ignoreObstacles && IsVisionLineClear(_from, neighbor, _isThisTurn))
 				{
 					tilesInRange.Add(neighbor);
 				}
@@ -934,7 +934,7 @@ public class GridManager : Singleton<GridManager>
 
 		Tile from = _entity.Displacement.Coordinates.GetTile();
 		from.SetActiveFOW(false, true);
-		List<Tile> tileInEntityRange = GetTilesInVisionRange(from, _entity.Data.NeuronalMembraneData.visionRange, true);
+		List<Tile> tileInEntityRange = GetTilesInVisionRange(from, _entity.Data.NeuronalMembraneData.visionRange, false, true);
 
 		foreach (Tile tile in tileInEntityRange)
 		{
@@ -983,7 +983,7 @@ public class GridManager : Singleton<GridManager>
 		}
 
 		List<Tile> previousTilesInRangeList = new(m_entitiesVisions[_entity.OwnerID].entitiesVisionRange[_entity]);
-		List<Tile> newTilesInRangeList = GetTilesInVisionRange(_entity.Displacement.Coordinates.GetTile(), _entity.Data.NeuronalMembraneData.visionRange, true);
+		List<Tile> newTilesInRangeList = GetTilesInVisionRange(_entity.Displacement.Coordinates.GetTile(), _entity.Data.NeuronalMembraneData.visionRange, false, true);
 		m_entitiesVisions[_entity.OwnerID].entitiesVisionRange[_entity] = new(newTilesInRangeList);
 
 		foreach (Tile tile in newTilesInRangeList)

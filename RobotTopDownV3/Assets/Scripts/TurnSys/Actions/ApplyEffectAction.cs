@@ -21,7 +21,7 @@ public class ApplyEffectAction : SpecialAction
 			int maxDist = PerformingEntity.Equipment.Weapons.ContainsKey(linkedEquipmentId) ?
 				PerformingEntity.Equipment.Weapons[linkedEquipmentId].Data.range
 				: PerformingEntity.Equipment.Tools[linkedEquipmentId].Data.range;
-			List<Tile> tilesInEffectRange = GridManager.Instance.GetTilesInVisionRange(GridManager.Instance.Tiles[TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntityID)], maxDist, true);
+			List<Tile> tilesInEffectRange = GridManager.Instance.GetTilesInVisionRange(GridManager.Instance.Tiles[TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntityID)], maxDist, false, true);
 			foreach(Tile tile in tilesInEffectRange)
 			{
 				if(Data.targetType == EntityActionData.TargetType.Tile)

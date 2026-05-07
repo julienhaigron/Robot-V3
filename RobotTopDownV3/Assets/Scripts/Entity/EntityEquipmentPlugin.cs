@@ -279,7 +279,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 		{
 			case EntityActionData.AOEType.Circle:
 
-				tilesInRange.AddRange(GridManager.Instance.GetTilesInVisionRange(_action.TargetTile, attackData.circleRange, _isThisTurn));
+				tilesInRange.AddRange(GridManager.Instance.GetTilesInVisionRange(_action.TargetTile, attackData.circleRange, false, _isThisTurn));
 				break;
 			case EntityActionData.AOEType.Ray:
 

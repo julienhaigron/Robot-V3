@@ -17,7 +17,7 @@ public class DamageOnDeathPassiveEffect : AEntityPassiveEffect
 	public override void OnDeathTrigger ( Entity _deadEntity )
 	{
 		base.OnDeathTrigger(_deadEntity);
-		List<Tile> tilesInRange = GridManager.Instance.GetTilesInVisionRange(_deadEntity.Displacement.Coordinates.GetTile(), explosionRange, true);
+		List<Tile> tilesInRange = GridManager.Instance.GetTilesInVisionRange(_deadEntity.Displacement.Coordinates.GetTile(), explosionRange, false, true);
 
 		foreach(Tile tile in tilesInRange)
 		{
