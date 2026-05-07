@@ -148,6 +148,10 @@ public class BulletWeapon : Weapon
 		}
 
 		yield return m_shootCooldownDurationWFS;
+		
+		if (!_attackAction.isAttackSuccessfull)
+			EndAttack(m_lastPerformedAction);
+
 		m_shootCR = null;
 	}
 
