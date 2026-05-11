@@ -57,6 +57,7 @@ public class GameAssets : ScriptableObject
         public Material flyingDamageFontAsset;
         public Material flyingDamageCritFontAsset;
         public Sprite critIcon;
+        public EntityStatusDisplay statusDisplayPrefab;
 
         [Title("Tile")]
         public SerializableDictionary<TileGroundType, Material> tileGroundMaterials = new();

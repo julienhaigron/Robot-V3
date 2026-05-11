@@ -49,6 +49,7 @@ public class GameManager : SingletonPersistant<GameManager>
 	}
 
 	private List<Item> m_items = new();
+	public List<Item> Items => m_items;
 
 	private void Start ()
 	{

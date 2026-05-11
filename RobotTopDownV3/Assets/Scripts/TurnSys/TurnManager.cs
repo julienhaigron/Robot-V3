@@ -517,7 +517,6 @@ public class TurnManager : Singleton<TurnManager>
 
 	private void StartNextRoundTick ()
 	{
-		currentTick++;
 		LogConsole.AddLog("Start tick", LogConsole.LogEventType.Main);
 
 		//1 - calculate phase
@@ -550,6 +549,12 @@ public class TurnManager : Singleton<TurnManager>
 
 		currentPhase = TurnPhase.Calculating;
 		GridManager.Instance.StartNewPhase();
+
+		//call GameManager.Items => item.OnActyionTIck
+		foreach(Item item in GameManager.Instance.Items)
+		{
+			item.Data.OnActionTickStart(currentTick, item.LinkedData, item);
+		}
 
 		//1- register action (like movement in grid)
 		//   => checks at this moment if action changes in another
@@ -645,6 +650,9 @@ public class TurnManager : Singleton<TurnManager>
 			}
 			m_networkedTurnSystem.StartPlayPhaseClientRPC(actionsToSend.ToArray());
 		}
+
+
+		currentTick++;
 	}
 
 	private List<RecordedAction> CheckForConflicts ()

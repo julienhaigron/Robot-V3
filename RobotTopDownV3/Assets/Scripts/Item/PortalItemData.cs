@@ -35,11 +35,10 @@ public class PortalItemData : AItemData
             && (_isThisTurn && destination.GetEntity(true) == null || !_isThisTurn && destination.GetEntity(false) == null);
     }
 
-    public override void OnWalkThrough ( Entity _walkingEntityn, AItemLinkedData _linkedData, Item _usedItem, Action _onEndUse, bool _isFromTeleportation )
+    public override void OnWalkThrough ( Entity _walkingEntityn, AItemLinkedData _linkedData, Item _usedItem, bool _isFromTeleportation )
 	{
         if (_linkedData is not PortalItemLinkedData portalLinkedData)
         {
-            _onEndUse?.Invoke();
             return;
         }
 

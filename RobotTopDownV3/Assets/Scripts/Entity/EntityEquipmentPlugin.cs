@@ -36,10 +36,31 @@ public class EntityEquipmentPlugin : EntityPlugin
 
 	[Title("Stats")]
 	private float m_generalDamageBuff = 0f;
-	public float GeneralDamageBuff => m_generalDamageBuff;
+	public float GeneralDamageBuff
+	{
+
+		get
+		{
+			return m_generalDamageBuff;
+		}
+		set
+		{
+			m_generalDamageBuff = value;
+		}
+	}
 
 	private float m_generalDamageResistance = 0f;
-	public float GeneralDamageResistance => m_generalDamageResistance;
+	public float GeneralDamageResistance {
+
+		get
+		{
+			return m_generalDamageResistance;
+		}
+		set
+		{
+			m_generalDamageResistance = value;
+		}
+	}
 
 	private SerializableDictionary<WeaponEquipmentData.DamageType, float> m_applyedDamageTypeBuffs = new();
 	public SerializableDictionary<WeaponEquipmentData.DamageType, float> ApplyedDamageTypeBuffs => m_applyedDamageTypeBuffs;

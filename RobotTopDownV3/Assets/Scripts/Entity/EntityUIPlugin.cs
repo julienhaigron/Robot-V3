@@ -6,16 +6,24 @@ public class EntityUIPlugin : EntityPlugin
 {
     [SerializeField] private HealthBar m_healthBar;
 	[SerializeField] private FlyingNumberManager m_flyingNumberManagerDamage;
+	[SerializeField] private Transform m_statusDisplayParent;
 
+	[SerializeField] private int m_statusPrefabSpawnAtInitCount;
+
+	private List<EntityStatusDisplay> m_statusDisplays = new();
 
 	private void Awake ()
 	{
 		m_linkedEntity.Equipment.onHealthChangeDamage += OnTakeDamage;
+		m_linkedEntity.onStatusAdded += OnStatusAdded;
+		m_linkedEntity.onStatusRemoved += OnStatusRemoved;
 	}
 
 	private void OnDestroy ()
 	{
 		m_linkedEntity.Equipment.onHealthChangeDamage -= OnTakeDamage;
+		m_linkedEntity.onStatusAdded -= OnStatusAdded;
+		m_linkedEntity.onStatusRemoved -= OnStatusRemoved;
 	}
 
 	public override void Init ( EntitySavedData _entityData )
@@ -23,6 +31,10 @@ public class EntityUIPlugin : EntityPlugin
 		base.Init(_entityData);
 
 		m_healthBar.SetHealth(m_linkedEntity.Equipment.CurrentHealth, m_linkedEntity.Equipment.MaxHealth);
+
+		for(int i = 0; i < m_statusPrefabSpawnAtInitCount; i++)
+			AddStatusDisplay();
+
 	}
 
 	private void OnTakeDamage( EntityEquipmentPlugin.TakeDamageCallback _damageInfo )
@@ -46,6 +58,52 @@ public class EntityUIPlugin : EntityPlugin
 		if (m_linkedEntity.Equipment.CurrentHealth <= 0)
 			HideUI();
 	}
+
+#region Status
+
+	private void OnStatusAdded ( EntityStatusEnumID _statusID )
+	{
+		EntityStatusDisplay newStatusDisplay = GetUnactiveStatusDisplay();
+		newStatusDisplay.SetStatus(_statusID);
+	}
+
+	private void OnStatusRemoved ( EntityStatusEnumID _statusID )
+	{
+		foreach(EntityStatusDisplay display in m_statusDisplays)
+		{
+			if (display.IsActive && display.StatusID == _statusID)
+			{
+				display.Hide();
+				return;
+			}
+		}
+
+		Debug.LogError("ERROR : no status display with ID " + _statusID + " found");
+	}
+
+	private EntityStatusDisplay AddStatusDisplay ()
+	{
+		EntityStatusDisplay statusDisplay = Instantiate(GameAssets.current.ui.statusDisplayPrefab);
+		m_statusDisplays.Add(statusDisplay);
+		statusDisplay.Hide();
+
+		return statusDisplay;
+	}
+
+	private EntityStatusDisplay GetUnactiveStatusDisplay ()
+	{
+		foreach(EntityStatusDisplay display in m_statusDisplays)
+		{
+			if (!display.IsActive)
+				return display;
+		}
+
+		return AddStatusDisplay();
+	}
+
+	#endregion
+
+
 
 	public void HideUI ()
 	{
