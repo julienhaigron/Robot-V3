@@ -65,9 +65,7 @@ public class SpecialAction : AEntityAction
 			return true;
 
 		Entity user = GameManager.Instance.GetEntityFromID(performingEntityID);
-		int maxDist = PerformingEntity.Equipment.Weapons.ContainsKey(linkedEquipmentId) ?
-			PerformingEntity.Equipment.Weapons[linkedEquipmentId].Data.range
-			: PerformingEntity.Equipment.Tools[linkedEquipmentId].Data.range;
+		int maxDist = Data.maxDistance;
 		bool isInRange = GridManager.Instance.GetTilesInVisionRange(GridManager.Instance.Tiles[TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntityID)], maxDist, false, true).Contains(_tile);
 
 		if (Data.targetType == EntityActionData.TargetType.Tile && isInRange)

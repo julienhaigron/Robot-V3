@@ -340,7 +340,7 @@ public class TurnManager : Singleton<TurnManager>
 
 	public int GetLastRegisteredPositionOfEntity ( int _entityID )
 	{
-		if (!m_recordedActionInput.ContainsKey(_entityID) && m_recordedActionInput[_entityID].Count > 0)
+		if (!m_recordedActionInput.ContainsKey(_entityID) || m_recordedActionInput[_entityID].Count > 0)
 			return GameManager.Instance.GetEntityFromID(_entityID).Displacement.Coordinates.ID;
 
 		return m_recordedActionInput[_entityID].ToArray()[^1].action.positionAtActionEndID;
@@ -558,21 +558,21 @@ public class TurnManager : Singleton<TurnManager>
 				//    => cone range trigger is in EntityUILogic.cs
 
 				EntityAIPlugin.CheckActionResultInfo resultInfo = GameManager.Instance.GetEntityFromID(entityID).AI.CheckAction(recordedAction);
+				
+				if(resultInfo.isActionChanging)
+					LogConsole.AddLog(resultInfo.replacementReasonTxt + ", action " + recordedAction.action + " replaced to " + resultInfo.replacedAction, LogConsole.LogEventType.AICheck);
 
 				if (recordedAction.action.lifetime > 0 || !resultInfo.isActionChanging)
 				{
-					if (recordedAction.action.lifetime >= recordedAction.action.TimeAtStartPerform 
-						&& recordedAction.action.lifetime < recordedAction.action.TimeAtStartPerform + recordedAction.action.actualDuration)
+					if (recordedAction.action.lifetime == recordedAction.action.preparationDuration)
 					{
 						recordedAction.action.Prepare(recordedAction.entityState);
-						//LogConsole.AddLog("Succesfully add " + resultInfo.replacedAction + " action to queue", LogConsole.LogEventType.AICheck);
 					}
 					returnActionToPlayThisRound.Enqueue(recordedAction);
 				}
 				else
 				{
-					if (recordedAction.action.lifetime >= recordedAction.action.TimeAtStartPerform
-						&& recordedAction.action.lifetime < recordedAction.action.TimeAtStartPerform + recordedAction.action.actualDuration)
+					if (resultInfo.replacedAction.lifetime == resultInfo.replacedAction.preparationDuration)
 					{
 						resultInfo.replacedFreeAction.OnModActionAdded(resultInfo.replacedAction);
 						resultInfo.replacedAction.Prepare(recordedAction.entityState);
@@ -580,7 +580,6 @@ public class TurnManager : Singleton<TurnManager>
 						recordedAction.action.CancelAction();
 						recordedAction.freeAction.CancelAction();
 
-						LogConsole.AddLog(resultInfo.replacementReasonTxt + ", action " + recordedAction.action + " replaced to " + resultInfo.replacedAction, LogConsole.LogEventType.AICheck);
 					}
 					returnActionToPlayThisRound.Enqueue(new RecordedAction()
 					{

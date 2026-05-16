@@ -133,7 +133,7 @@ public class AttackAction : AEntityAction
 		Entity user = GameManager.Instance.GetEntityFromID(performingEntityID);
 		Weapon attackingWeapon = user.Equipment.Weapons[linkedEquipmentId];
 		Tile from = GridManager.Instance.Tiles[TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntityID)];
-		List<Tile> tilesInRange = GridManager.Instance.GetTilesInVisionRange(from, attackingWeapon.Data.range, attackIgnoresObstacles, true);
+		List<Tile> tilesInRange = GridManager.Instance.GetTilesInVisionRange(from, Data.maxDistance, attackIgnoresObstacles, true);
 		bool isInRange = tilesInRange.Contains(_tile);
 
 		if (Data.targetType == EntityActionData.TargetType.Tile && isInRange)

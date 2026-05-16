@@ -23,12 +23,14 @@ public class EntityAIPlugin : EntityPlugin
 		{
 			isActionChanging = true;
 			replacedAction = _replacedAction;
+			replacementReasonTxt = _reasonTxt;
 		}
 
 		public void ReplaceFreeAction ( AEntityAction _replacedFreeAction, string _reasonTxt )
 		{
 			isActionChanging = true;
 			replacedFreeAction = _replacedFreeAction;
+			replacementReasonTxt = _reasonTxt;
 		}
 	}
 
@@ -270,12 +272,15 @@ public class EntityAIPlugin : EntityPlugin
 
 		GridManager.Instance.BFS(m_linkedEntity.Displacement.Coordinates.GetTile(), -1, _entity.Displacement.Coordinates.GetTile(), _isThisTurn);
 
-		foreach (string weaponId in m_linkedEntity.Equipment.Weapons.Keys)
+		foreach (Weapon weapon in m_linkedEntity.Equipment.Weapons.Values)
 		{
-			if (m_linkedEntity.Equipment.Weapons[weaponId].Data.range >= _entity.Displacement.Coordinates.GetTile().Distance)
+			foreach(EntityActionEnumID actionID in weapon.Data.knownedActions)
 			{
-				_weapon = weaponId;
-				return true;
+				if (GameAssets.current.game.entityActionsData[actionID].maxDistance >= _entity.Displacement.Coordinates.GetTile().Distance)
+				{
+					_weapon = weapon.ID;
+					return true;
+				}
 			}
 		}
 

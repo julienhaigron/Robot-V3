@@ -258,7 +258,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 
 			float radians = rayAngle * Mathf.Deg2Rad;
 			Vector3 aimedPosition = new Vector3(Mathf.Sin(radians), 0, Mathf.Cos(radians));
-			RaycastHit[] hits = Physics.RaycastAll(m_linkedEntity.Displacement.Coordinates.GetTile().transform.position, aimedPosition * usedWeapon.Data.range, usedWeapon.Data.range * (2 * Tile.innerRadius), GameConfig.current.input.tileInternRayCastLayer);
+			RaycastHit[] hits = Physics.RaycastAll(m_linkedEntity.Displacement.Coordinates.GetTile().transform.position, aimedPosition * _action.Data.maxDistance, _action.Data.maxDistance * (2 * Tile.innerRadius), GameConfig.current.input.tileInternRayCastLayer);
 			foreach (RaycastHit hitInfo in hits)
 			{
 				if (hitInfo.transform.TryGetComponent(out Tile tile) && !tilesInRange.Contains(tile)
@@ -309,7 +309,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 			case EntityActionData.AOEType.Cone:
 
 				tilesInRange.AddRange(GridManager.Instance.GetTilesInCone(m_linkedEntity.Displacement.Coordinates.GetTile()
-						, usedWeapon.Data.range, m_linkedEntity.Displacement.CurrentOrientation, attackData.coneType, _isThisTurn));
+						, attackData.maxDistance, m_linkedEntity.Displacement.CurrentOrientation, attackData.coneType, _isThisTurn));
 				break;
 			case EntityActionData.AOEType.Arc:
 
@@ -328,7 +328,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 
 					float radians = rayAngle * Mathf.Deg2Rad;
 					Vector3 aimedPosition = new Vector3(Mathf.Sin(radians), 0, Mathf.Cos(radians));
-					RaycastHit[] hits = Physics.RaycastAll(m_linkedEntity.Displacement.Coordinates.GetTile().transform.position, aimedPosition * usedWeapon.Data.range, usedWeapon.Data.range * (2 * Tile.innerRadius), GameConfig.current.input.tileInternRayCastLayer);
+					RaycastHit[] hits = Physics.RaycastAll(m_linkedEntity.Displacement.Coordinates.GetTile().transform.position, aimedPosition * attackData.maxDistance, attackData.maxDistance * (2 * Tile.innerRadius), GameConfig.current.input.tileInternRayCastLayer);
 					foreach (RaycastHit hitInfo in hits)
 					{
 						if (hitInfo.transform.TryGetComponent(out Tile tile) && !tilesInRange.Contains(tile)
@@ -355,8 +355,8 @@ public class EntityEquipmentPlugin : EntityPlugin
 		float targetCamo = targetEntity.Data.GetStaticStealthBonus(true);
 		float evationRatio = _attackAction.Data.type == EntityActionData.ActionType.DistanceAttack ? targetEntity.Data.BrainData.distanceEvasion : targetEntity.Data.BrainData.meleeEvasion;
 		float coverRatio = GridManager.Instance.IsThereCoverBeween(_attackAction.PerformingEntity, targetEntity, doesWinPFC) ? GameConfig.current.game.entityCoverBonus : 0;
-		float distanceRatio = m_weapons[_attackAction.attackingWeaponId].Data.distanceAccuracyBonus[GetWeaponDistanceTypeFrom(targetEntity, usedWeapon, doesWinPFC)];
-		float targetEvasionScore = targetCamo + evationRatio + coverRatio + distanceRatio;
+		//float distanceRatio = m_weapons[_attackAction.attackingWeaponId].Data.distanceAccuracyBonus[GetWeaponDistanceTypeFrom(targetEntity, usedWeapon, doesWinPFC)];
+		float targetEvasionScore = targetCamo + evationRatio + coverRatio /*+ distanceRatio*/;
 
 		float userPerception = m_linkedEntity.Data.GetStaticPerceptionBonus(true);
 		float userAim = _attackAction.Data.type == EntityActionData.ActionType.DistanceAttack ? m_linkedEntity.Data.BrainData.distanceAccuracy : m_linkedEntity.Data.BrainData.agility;
@@ -381,16 +381,18 @@ public class EntityEquipmentPlugin : EntityPlugin
 		int attackerPosition = _didAttackerWinPFC ? TurnManager.Instance.GetPositionOfEntityAtEndOfRound(_target.ID) : TurnManager.Instance.GetPositionOfEntityAtEndOfRound(_target.ID);
 		int defenderPosition = !_didAttackerWinPFC ? TurnManager.Instance.GetPositionOfEntityAtEndOfRound(_target.ID) : TurnManager.Instance.GetPositionOfEntityAtEndOfRound(_target.ID);
 		float actualDistanceFromTarget = Vector3.Distance(GridManager.Instance.Tiles[attackerPosition].transform.position, GridManager.Instance.Tiles[defenderPosition].transform.position) / (Tile.outerRadius * 2f);
-		float distanceRelativeToWeaponRangePercentage = actualDistanceFromTarget / (float)_weaponData.range;
+		
+		//what to do with this?
+		//float distanceRelativeToWeaponRangePercentage = actualDistanceFromTarget / (float)_weaponData.range;
 
-		float currentTotal = 0;
+		/*float currentTotal = 0;
 		for (int i = 0; i < GameConfig.current.game.distanceTypeSpreadEvaluation.Keys.Count; i++)
 		{
 			if (distanceRelativeToWeaponRangePercentage < currentTotal + GameConfig.current.game.distanceTypeSpreadEvaluation[(WeaponEquipmentData.DistanceType)i])
 				return (WeaponEquipmentData.DistanceType)i;
 
 			currentTotal += GameConfig.current.game.distanceTypeSpreadEvaluation[(WeaponEquipmentData.DistanceType)i];
-		}
+		}*/
 		return WeaponEquipmentData.DistanceType.Long;
 	}
 

@@ -53,6 +53,7 @@ public class LogConsole : SingletonPersistant<LogConsole>
 		onLogAdded?.Invoke(newLog);
 	}
 
+	[System.Serializable]
 	public class Log
 	{
 		public string message;
