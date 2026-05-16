@@ -81,6 +81,7 @@ public class AttackAction : AEntityAction
 		PerformingEntity.AI.DOAllPrewarmCheck(this);
 		if (targetedEntityID == -1)
 		{
+			Debug.LogError("No target error");
 			//TODO : add no target feedback
 			base.Perform(_state);
 			EndTick();
@@ -111,6 +112,7 @@ public class AttackAction : AEntityAction
 			// => find new target or wait (or move to previous target if in sight?)
 			//Debug.Log("target not in range");
 			//DG.Tweening.DOVirtual.DelayedCall(GameConfig.current.game.actionDuration, () => EndPerform());
+			Debug.LogError("No target error");
 			base.Perform(_state);
 			EndTick();
 		}

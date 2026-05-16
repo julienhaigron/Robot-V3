@@ -6,24 +6,15 @@ using Unity.Netcode;
 using System.Linq;
 using System;
 
-//1) record robots action in order for a single turn
-
-//2) calculate conflict
-
-//3) resolve action conflict (two entity actions happening at the same time and involving the same entities
-//   => store result in a "final" action list
-
-//4) play final action list
-
 public class TurnManager : Singleton<TurnManager>
 {
-	public static System.Action<RecordedAction> onActionAdded;
-	public static System.Action<RecordedAction> onActionRemoved;
-	public static System.Action<AEntityAction> onActionSelected;
-	public static System.Action onStartInputPhase;
-	public static System.Action onEndInputPhase;
-	public static System.Action onNewRoundStart;
-	public static System.Action onEndLevel;
+	public static Action<RecordedAction> onActionAdded;
+	public static Action<RecordedAction> onActionRemoved;
+	public static Action<AEntityAction> onActionSelected;
+	public static Action onStartInputPhase;
+	public static Action onEndInputPhase;
+	public static Action onNewRoundStart;
+	public static Action onEndLevel;
 
 	[SerializeField] private NetworkedTurnSystem m_networkedTurnSystem;
 
@@ -35,8 +26,6 @@ public class TurnManager : Singleton<TurnManager>
 
 	private SerializableDictionary<int, int> m_remainingActionToken = new();
 	public SerializableDictionary<int, int> RemainingActionToken => m_remainingActionToken;
-
-	private SerializableDictionary<int, RecordedAction> m_lastRecordedAction = new();
 
 	private List<RecordedAction> m_recordedConflict;
 
@@ -302,10 +291,10 @@ public class TurnManager : Singleton<TurnManager>
 
 		m_remainingActionToken[_entityID] -= GameAssets.current.game.entityActionsData[_action.enumID].GetTokenTotalCost(_action, GameManager.Instance.GetEntityFromID(_entityID), null);
 
-		if (!m_lastRecordedAction.ContainsKey(_entityID))
+		/*if (!m_lastRecordedAction.ContainsKey(_entityID))
 			m_lastRecordedAction.Add(_entityID, recordedAction);
 		else
-			m_lastRecordedAction[_entityID] = recordedAction;
+			m_lastRecordedAction[_entityID] = recordedAction;*/
 
 		TrackedEventCheck();
 
@@ -351,10 +340,10 @@ public class TurnManager : Singleton<TurnManager>
 
 	public int GetLastRegisteredPositionOfEntity ( int _entityID )
 	{
-		if (m_lastRecordedAction.ContainsKey(_entityID) == false)
+		if (!m_recordedActionInput.ContainsKey(_entityID) && m_recordedActionInput[_entityID].Count > 0)
 			return GameManager.Instance.GetEntityFromID(_entityID).Displacement.Coordinates.ID;
 
-		return m_lastRecordedAction[_entityID].action.positionAtActionEndID;
+		return m_recordedActionInput[_entityID].ToArray()[^1].action.positionAtActionEndID;
 	}
 
 	public int GetPositionOfEntityAtEndOfRound ( int _entityID )
@@ -438,7 +427,7 @@ public class TurnManager : Singleton<TurnManager>
 		currentTick = 0;
 		currentPhase = TurnPhase.Recording;
 		//UIManager.Instance.OpenPanel<InGamePanel>();
-		LogConsole.AddLog("Start Input phase", LogConsole.LogEventType.Main);
+		LogConsole.AddLog("Start Input phase", LogConsole.LogEventType.DebugSys);
 
 		//reset RemainingActionToken
 		m_remainingActionToken.Clear();
@@ -507,7 +496,7 @@ public class TurnManager : Singleton<TurnManager>
 	[Button]
 	public void StartTurn ()
 	{
-		LogConsole.AddLog("Start turn", LogConsole.LogEventType.Main);
+		LogConsole.AddLog("Start turn", LogConsole.LogEventType.DebugSys);
 		m_actionsToPlay.Clear();
 		m_actionsBeingDone.Clear();
 		currentTick = 0;
@@ -517,7 +506,7 @@ public class TurnManager : Singleton<TurnManager>
 
 	private void StartNextRoundTick ()
 	{
-		LogConsole.AddLog("Start tick", LogConsole.LogEventType.Main);
+		LogConsole.AddLog("Start tick", LogConsole.LogEventType.DebugSys);
 
 		//1 - calculate phase
 
@@ -556,8 +545,7 @@ public class TurnManager : Singleton<TurnManager>
 			item.Data.OnActionTickStart(currentTick, item.LinkedData, item);
 		}
 
-		//1- register action (like movement in grid)
-		//   => checks at this moment if action changes in another
+		//AI Check
 		List<int> entityIDs = new(m_actionsToPlay.Keys);
 
 		foreach (int entityID in entityIDs)
@@ -577,7 +565,7 @@ public class TurnManager : Singleton<TurnManager>
 						&& recordedAction.action.lifetime < recordedAction.action.TimeAtStartPerform + recordedAction.action.actualDuration)
 					{
 						recordedAction.action.Prepare(recordedAction.entityState);
-						LogConsole.AddLog("Succesfully add " + resultInfo.replacedAction + " action to queue", LogConsole.LogEventType.PlayPhase);
+						//LogConsole.AddLog("Succesfully add " + resultInfo.replacedAction + " action to queue", LogConsole.LogEventType.AICheck);
 					}
 					returnActionToPlayThisRound.Enqueue(recordedAction);
 				}
@@ -592,7 +580,7 @@ public class TurnManager : Singleton<TurnManager>
 						recordedAction.action.CancelAction();
 						recordedAction.freeAction.CancelAction();
 
-						LogConsole.AddLog("Action replaced to " + resultInfo.replacedAction, LogConsole.LogEventType.PlayPhase);
+						LogConsole.AddLog(resultInfo.replacementReasonTxt + ", action " + recordedAction.action + " replaced to " + resultInfo.replacedAction, LogConsole.LogEventType.AICheck);
 					}
 					returnActionToPlayThisRound.Enqueue(new RecordedAction()
 					{
@@ -673,12 +661,12 @@ public class TurnManager : Singleton<TurnManager>
 						AEntityAction.ActionConflictResultInfo resultInfo = action.action.CheckConflict(otherAction.action);
 						if (resultInfo.isFirstActionConflicted)
 						{
-							LogConsole.AddLog("Conflict detected: [" + action.action.ToString() + "]", LogConsole.LogEventType.PlayPhase);
+							LogConsole.AddLog("Conflict detected: [" + action.action.ToString() + "]", LogConsole.LogEventType.ActionConflict);
 							conflicts.Add(action);
 						}
 						else if (resultInfo.isSecondActionConflicted)
 						{
-							LogConsole.AddLog("Conflict detected: [" + otherAction.action.ToString() + "]", LogConsole.LogEventType.PlayPhase);
+							LogConsole.AddLog("Conflict detected: [" + otherAction.action.ToString() + "]", LogConsole.LogEventType.ActionConflict);
 							conflicts.Add(otherAction);
 						}
 					}
@@ -705,12 +693,12 @@ public class TurnManager : Singleton<TurnManager>
 					AEntityAction.ActionConflictResultInfo resultInfo = conflictedAction.action.CheckConflict(otherAction.action, false);
 					if (resultInfo.isFirstActionConflicted)
 					{
-						LogConsole.AddLog("Conflict detected: [" + conflictedAction.action.ToString() + "]", LogConsole.LogEventType.PlayPhase);
+						LogConsole.AddLog("Conflict detected: [" + conflictedAction.action.ToString() + "]", LogConsole.LogEventType.ActionConflict);
 						remainingConflict.Add(conflictedAction);
 					}
 					else if (resultInfo.isSecondActionConflicted)
 					{
-						LogConsole.AddLog("Conflict detected: [" + otherAction.action.ToString() + "]", LogConsole.LogEventType.PlayPhase);
+						LogConsole.AddLog("Conflict detected: [" + otherAction.action.ToString() + "]", LogConsole.LogEventType.ActionConflict);
 						remainingConflict.Add(otherAction);
 					}
 				}
@@ -761,7 +749,7 @@ public class TurnManager : Singleton<TurnManager>
 		else
 			_recordedAction.action.onEndTick += OnActionEndTick;
 
-		LogConsole.AddLog("Action performed: " + _recordedAction.action.ToString(), LogConsole.LogEventType.PlayPhase);
+		LogConsole.AddLog("Action performed: " + _recordedAction.action.ToString(), LogConsole.LogEventType.DebugSys);
 		_recordedAction.action.PerformTick(_recordedAction.entityState);
 	}
 
@@ -809,7 +797,7 @@ public class TurnManager : Singleton<TurnManager>
 			}
 			else
 			{
-				LogConsole.AddLog("Client ended tick", LogConsole.LogEventType.PlayPhase);
+				LogConsole.AddLog("Client ended tick", LogConsole.LogEventType.DebugSys);
 				NetworkTaskOrchestrator.Instance.NotifyTaskEndToServerRPC("PlayPhase");
 			}
 		}
@@ -829,7 +817,7 @@ public class TurnManager : Singleton<TurnManager>
 
 	private void EndRoundTick ()
 	{
-		LogConsole.AddLog("Server ended tick", LogConsole.LogEventType.PlayPhase);
+		LogConsole.AddLog("Server ended tick", LogConsole.LogEventType.DebugSys);
 		if (m_recordedActionInput.Keys.Count == 0 || currentTick >= GameConfig.current.game.actionTokenPerRound)
 			EndTurn(); //end turn
 		else
@@ -852,7 +840,7 @@ public class TurnManager : Singleton<TurnManager>
 
 	private void EndTurn ()
 	{
-		LogConsole.AddLog("EndRound", LogConsole.LogEventType.Main);
+		LogConsole.AddLog("EndRound", LogConsole.LogEventType.DebugSys);
 
 		//check if finish level condition (all enemy killed || all ally killed)
 		GameManager.Instance.LevelCompletionCheck(out bool _isPlayerOneDead, out bool _isPlayerTwoDead);

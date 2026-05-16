@@ -37,6 +37,11 @@ public class EntityUIPlugin : EntityPlugin
 
 	}
 
+	public void HideUI ()
+	{
+		gameObject.SetActive(false);
+	}
+
 	private void OnTakeDamage( EntityEquipmentPlugin.TakeDamageCallback _damageInfo )
 	{
 		foreach(KeyValuePair<WeaponEquipmentData.DamageType, int> pair in _damageInfo.damages)
@@ -59,7 +64,7 @@ public class EntityUIPlugin : EntityPlugin
 			HideUI();
 	}
 
-#region Status
+	#region Status
 
 	private void OnStatusAdded ( EntityStatusEnumID _statusID )
 	{
@@ -103,10 +108,4 @@ public class EntityUIPlugin : EntityPlugin
 
 	#endregion
 
-
-
-	public void HideUI ()
-	{
-		gameObject.SetActive(false);
-	}
 }

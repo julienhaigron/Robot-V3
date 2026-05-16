@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using TMPro;
+using UnityEngine.UI;
+using DG.Tweening;
 
 public sealed class InGamePanel : AUIPanel
 {
@@ -13,6 +15,18 @@ public sealed class InGamePanel : AUIPanel
 	[SerializeField] private BaseButton m_endPhaseButton;
 	[SerializeField] private TextMeshProUGUI m_phaseTitleTmp;
 
+	[SerializeField] private RectTransform m_consoleParent;
+	[SerializeField] private TextMeshProUGUI m_consoleTMP;
+	[SerializeField] private ScrollRect m_scrollRect;
+	[SerializeField] private BaseButton m_toggleDisplayConsoleBtn;
+	[SerializeField] private float m_consoleExpandedHeight = 400f;
+	[SerializeField] private float m_consoleCollapsedHeight = 80f;
+	[SerializeField] private float m_duration = 0.3f;
+	[SerializeField] private List<LogConsole.LogEventType> m_visibleEventType;
+
+	private bool m_isConsoleExpanded = true;
+	private Tween m_currentToggleConsoleBtnTween;
+
 	#region MonoBehaviour & Init
 
 	private void Awake ()
@@ -20,6 +34,9 @@ public sealed class InGamePanel : AUIPanel
 		TurnManager.onStartInputPhase += OnStartInputPhase;
 		TurnManager.onEndInputPhase += OnEndInputPhase;
 		m_endPhaseButton.onClick += OnClickEndPhaseBtn;
+
+		LogConsole.onLogAdded += OnLogAdded;
+		m_toggleDisplayConsoleBtn.onClick += OnClickToggleDisplayConsoleBtn;
 	}
 
 	private void OnDestroy ()
@@ -27,6 +44,8 @@ public sealed class InGamePanel : AUIPanel
 		TurnManager.onStartInputPhase = OnStartInputPhase;
 		TurnManager.onEndInputPhase = OnEndInputPhase;
 		m_endPhaseButton.onClick -= OnClickEndPhaseBtn;
+		m_toggleDisplayConsoleBtn.onClick -= OnClickToggleDisplayConsoleBtn;
+		LogConsole.onLogAdded -= OnLogAdded;
 	}
 
 	public void Init () //add param
@@ -77,9 +96,36 @@ public sealed class InGamePanel : AUIPanel
 	{
 		base.OnHideFinished();
 	}*/
+
+	protected override void OnHideStarted ()
+	{
+		if (m_currentToggleConsoleBtnTween.IsActive())
+			m_currentToggleConsoleBtnTween.Kill();
+		base.OnHideStarted();
+	}
+
 	#endregion
 
 	#region Callbacks
+
+	private void OnLogAdded ( LogConsole.Log _newLog )
+	{
+		if(m_visibleEventType.Contains(_newLog.eventType))
+			m_consoleTMP.text += _newLog.ToString();
+	}
+
+	private void OnClickToggleDisplayConsoleBtn ()
+	{
+		m_isConsoleExpanded = !m_isConsoleExpanded;
+		float targetHeight = m_isConsoleExpanded
+			? m_consoleExpandedHeight
+			: m_consoleCollapsedHeight;
+
+		m_currentToggleConsoleBtnTween?.Kill();
+
+		m_currentToggleConsoleBtnTween = m_consoleParent.DOSizeDelta(new Vector2(m_consoleParent.sizeDelta.x, targetHeight), m_duration)
+			.SetEase(Ease.OutCubic);
+	}
 
 	private void OnStartInputPhase ()
 	{

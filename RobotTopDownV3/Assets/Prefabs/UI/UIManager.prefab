@@ -50,8 +50,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_tooltipPanel: {fileID: 8665665317996799427}
-  m_tooltipTitleTMP: {fileID: 0}
-  m_tooltipDescriptionTMP: {fileID: 0}
+  m_tooltipTitleTMP: {fileID: 2001197516152918771}
+  m_tooltipDescriptionTMP: {fileID: 1489385022888156229}
   m_backgroundRect: {fileID: 4129883615463464548}
   m_offset: {x: 15, y: -15}
   m_fadeDuration: 0.2
@@ -585,6 +585,28 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 2085863394632114787, guid: ee68b42770717e74cbc24828a44e68e2, type: 3}
   m_PrefabInstance: {fileID: 1128299932020603995}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1489385022888156229 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1946642485805998110, guid: ee68b42770717e74cbc24828a44e68e2, type: 3}
+  m_PrefabInstance: {fileID: 1128299932020603995}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &2001197516152918771 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1471876937212178088, guid: ee68b42770717e74cbc24828a44e68e2, type: 3}
+  m_PrefabInstance: {fileID: 1128299932020603995}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &4129883615463464548 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 3961141869412917823, guid: ee68b42770717e74cbc24828a44e68e2, type: 3}

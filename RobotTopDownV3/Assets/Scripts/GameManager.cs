@@ -128,7 +128,7 @@ public class GameManager : SingletonPersistant<GameManager>
 
 		if (m_currentGameMode == GameMode.Offline)
 		{
-			LogConsole.AddLog("Start OfflineGame", LogConsole.LogEventType.Main);
+			LogConsole.AddLog("Start OfflineGame", LogConsole.LogEventType.DebugSys);
 			m_playersEntityAnchor[0].Init(GameDatas.current.currentPlayerSave.squadUnits, 0);
 			List<EntitySavedData> ennemies = new();
 			foreach (UnitPreset ennemi in m_currentLevel.enemies)
@@ -139,7 +139,7 @@ public class GameManager : SingletonPersistant<GameManager>
 		}
 		else if (m_currentGameMode == GameMode.Online)
 		{
-			LogConsole.AddLog("Start OnlineGame", LogConsole.LogEventType.Main);
+			LogConsole.AddLog("Start OnlineGame", LogConsole.LogEventType.DebugSys);
 			//TODO send player info if online
 			m_playersEntityAnchor[0].Init(m_playerOneEntityDatas, 0);
 			m_playersEntityAnchor[1].Init(m_playerTwoEntityDatas, 1);
@@ -215,9 +215,9 @@ public class GameManager : SingletonPersistant<GameManager>
 	public void EndGame ( bool _isSuccessfull )
 	{
 		if (_isSuccessfull)
-			LogConsole.AddLog("Victory", LogConsole.LogEventType.Main);
+			LogConsole.AddLog("Victory", LogConsole.LogEventType.DebugSys);
 		else
-			LogConsole.AddLog("Defeat", LogConsole.LogEventType.Main);
+			LogConsole.AddLog("Defeat", LogConsole.LogEventType.DebugSys);
 
 		UIManager.Instance.ClosePanel<InGamePanel>(true);
 		UIManager.Instance.OpenPopup<EndLevelPopup>().Init(_isSuccessfull);

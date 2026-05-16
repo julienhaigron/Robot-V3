@@ -55,7 +55,7 @@ public class MoveToTargetAction : AEntityAction
 		base.Perform(_state);
 
 		//move to targetTile
-		if (thisActionDestinationIDArray != null/* && thisActionDestination.GetEntity(false) == null*/)
+		if (thisActionDestinationIDArray != null && thisActionDestinationIDArray.Length > 0 && finalTargetTileID != -1/* && thisActionDestination.GetEntity(false) == null*/)
 		{
 			GameManager.Instance.StartCoroutine(PerformCR());
 		}
@@ -269,6 +269,7 @@ public class MoveToTargetAction : AEntityAction
 		if (pathToTile == null || pathToTile.Count < 2)
 		{
 			finalTargetTileID = -1;
+			positionAtActionEndID = GameManager.Instance.GetEntityFromID(performingEntityID).Displacement.Coordinates.ID;
 			return;
 		}
 

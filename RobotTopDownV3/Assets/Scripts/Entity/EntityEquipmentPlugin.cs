@@ -365,20 +365,15 @@ public class EntityEquipmentPlugin : EntityPlugin
 		float userHitScore = userPerception + userAim + flankBonus + modAction;
 
 		float finalScore = userHitScore - targetEvasionScore;
+		float roll = Random.Range(0f, 1f);
+		bool isAttackSuccessful = finalScore >= 1 || finalScore >= roll;
 
-		if (finalScore >= 1)
-		{
-			LogConsole.AddLog("Attack Roll [AUTOMATIC SUCESS] : targetEvasionScore = " + targetEvasionScore + " and userHitScore = " + userHitScore, LogConsole.LogEventType.PlayPhase);
-			return true;
-		}
-		else
-		{
-			float roll = Random.Range(0f, 1f);
-			bool isAttackSuccessful = finalScore >= roll;
-			//bool isAttackSuccessful = roll + finalScore > 1;
-			LogConsole.AddLog("Attack Roll " + (isAttackSuccessful ? "[SUCESS]" : "[FAILURE]") + " : targetEvasionScore = " + targetEvasionScore + ", roll = " + roll + " and userHitScore = " + userHitScore, LogConsole.LogEventType.PlayPhase);
-			return isAttackSuccessful;
-		}
+		string detailsDescription = "User hit score = " + userHitScore + " and target evasion score = " + targetEvasionScore+"\n"
+									+ (finalScore < 1 ? "Roll = " + roll +"\n" : "");
+		LogConsole.LogDetails details = new("attack_" + LogConsole.Instance.LogsDetails.Keys.Count, "Attack Details", detailsDescription);
+		LogConsole.AddLog(m_linkedEntity.ID + (isAttackSuccessful ? "succeeds" : "fails")+ _attackAction.ToString() + " against " + targetEntity.ID, LogConsole.LogEventType.AttackResolution, details);
+
+		return isAttackSuccessful;
 	}
 
 	public WeaponEquipmentData.DistanceType GetWeaponDistanceTypeFrom ( Entity _target, WeaponEquipmentData _weaponData, bool _didAttackerWinPFC )
