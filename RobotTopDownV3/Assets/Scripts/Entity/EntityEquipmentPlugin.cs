@@ -371,7 +371,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 		string detailsDescription = "User hit score = " + userHitScore + " and target evasion score = " + targetEvasionScore+"\n"
 									+ (finalScore < 1 ? "Roll = " + roll +"\n" : "");
 		LogConsole.LogDetails details = new("attack_" + LogConsole.Instance.LogsDetails.Keys.Count, "Attack Details", detailsDescription);
-		LogConsole.AddLog(m_linkedEntity.ID + (isAttackSuccessful ? "succeeds" : "fails")+ _attackAction.ToString() + " against " + targetEntity.ID, LogConsole.LogEventType.AttackResolution, details);
+		LogConsole.AddLog(m_linkedEntity.ID + (isAttackSuccessful ? " succeeds " : " fails ")+ _attackAction.ToString() + " against " + targetEntity.ID, LogConsole.LogEventType.AttackResolution, details);
 
 		return isAttackSuccessful;
 	}

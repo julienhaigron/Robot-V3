@@ -104,7 +104,6 @@ public class TurnManager : Singleton<TurnManager>
 				action.NetworkSerialize(serializer);
 			}
 
-
 			serializer.SerializeValue(ref freeActionType);
 			if (serializer.IsWriter)
 			{
@@ -112,7 +111,8 @@ public class TurnManager : Singleton<TurnManager>
 			}
 			else
 			{
-				freeAction = Instance.GetAction(GameAssets.current.game.entityActionsData[freeActionType], performingEntityID, linkedEquipmentID, timeAtStart);
+				freeAction = Instance.GetAction(GameAssets.current.game.entityActionsData[freeActionType]
+					, performingEntityID, linkedEquipmentID, timeAtStart);
 
 				if (freeAction == null)
 				{
@@ -134,7 +134,6 @@ public class TurnManager : Singleton<TurnManager>
 	{
 		public int entityId;
 		public RecordedAction[] actions;
-
 		public void NetworkSerialize<T> ( BufferSerializer<T> serializer ) where T : IReaderWriter
 		{
 			serializer.SerializeValue(ref entityId);
@@ -387,7 +386,6 @@ public class TurnManager : Singleton<TurnManager>
 		PlayerController.Instance.ClearActionOnTileDisplay();
 		PlayerController.Instance.ClearGhostActionOnTileDisplay();
 		PlayerController.Instance.ClearGhostEntitiesAndItems();
-
 
 		if (_selectedEntityID.HasValue && m_recordedActionInput.ContainsKey(_selectedEntityID.Value)
 			&& m_remainingActionToken[_selectedEntityID.Value] >= GameAssets.current.game.entityActionsData[m_currentActionTypeSelected].GetTokenTotalCost(m_currentEntityAction, GameManager.Instance.GetEntityFromID(_selectedEntityID.Value), null))

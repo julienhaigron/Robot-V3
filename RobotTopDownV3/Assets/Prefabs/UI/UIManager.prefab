@@ -53,7 +53,7 @@ MonoBehaviour:
   m_tooltipTitleTMP: {fileID: 2001197516152918771}
   m_tooltipDescriptionTMP: {fileID: 1489385022888156229}
   m_backgroundRect: {fileID: 4129883615463464548}
-  m_offset: {x: 15, y: -15}
+  m_offset: {x: 0, y: 0}
   m_fadeDuration: 0.2
 --- !u!1 &4146429540296258342
 GameObject:
@@ -519,61 +519,9 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 3843985081077340458, guid: ee68b42770717e74cbc24828a44e68e2, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3843985081077340458, guid: ee68b42770717e74cbc24828a44e68e2, type: 3}
-      propertyPath: m_AnchorMin.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3843985081077340458, guid: ee68b42770717e74cbc24828a44e68e2, type: 3}
-      propertyPath: m_SizeDelta.x
-      value: 100
-      objectReference: {fileID: 0}
-    - target: {fileID: 3843985081077340458, guid: ee68b42770717e74cbc24828a44e68e2, type: 3}
-      propertyPath: m_SizeDelta.y
-      value: 69.104996
-      objectReference: {fileID: 0}
-    - target: {fileID: 3843985081077340458, guid: ee68b42770717e74cbc24828a44e68e2, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 50
-      objectReference: {fileID: 0}
-    - target: {fileID: 3843985081077340458, guid: ee68b42770717e74cbc24828a44e68e2, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: -34.552498
-      objectReference: {fileID: 0}
-    - target: {fileID: 7552904686989858583, guid: ee68b42770717e74cbc24828a44e68e2, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7552904686989858583, guid: ee68b42770717e74cbc24828a44e68e2, type: 3}
-      propertyPath: m_AnchorMin.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7552904686989858583, guid: ee68b42770717e74cbc24828a44e68e2, type: 3}
-      propertyPath: m_SizeDelta.x
-      value: 100
-      objectReference: {fileID: 0}
-    - target: {fileID: 7552904686989858583, guid: ee68b42770717e74cbc24828a44e68e2, type: 3}
-      propertyPath: m_SizeDelta.y
-      value: 30.895
-      objectReference: {fileID: 0}
-    - target: {fileID: 7552904686989858583, guid: ee68b42770717e74cbc24828a44e68e2, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 50
-      objectReference: {fileID: 0}
-    - target: {fileID: 7552904686989858583, guid: ee68b42770717e74cbc24828a44e68e2, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: -84.5525
-      objectReference: {fileID: 0}
     - target: {fileID: 8640761160988121496, guid: ee68b42770717e74cbc24828a44e68e2, type: 3}
       propertyPath: m_Name
       value: ToolTIp
-      objectReference: {fileID: 0}
-    - target: {fileID: 8640761160988121496, guid: ee68b42770717e74cbc24828a44e68e2, type: 3}
-      propertyPath: m_IsActive
-      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

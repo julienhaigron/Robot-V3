@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System.Collections;
+using Sirenix.OdinInspector;
 
 public class ToolTipManager : Singleton<ToolTipManager>
 {
@@ -71,15 +72,16 @@ public class ToolTipManager : Singleton<ToolTipManager>
         m_tooltipPanel.transform.localPosition = anchoredPosition;
     }
 
+    [Button]
     public void Show ( string _title, string _description )
     {
         m_isActive = true;
         m_tooltipTitleTMP.text = _title;
         m_tooltipDescriptionTMP.text = _description;
 
-        // Resize background selon le texte
+        /*// Resize background selon le texte
         Vector2 textSize = m_tooltipTitleTMP.GetPreferredValues(_title) + m_tooltipDescriptionTMP.GetPreferredValues(_description);
-        m_backgroundRect.sizeDelta = textSize + new Vector2(10, 10); // padding
+        m_backgroundRect.sizeDelta = textSize + new Vector2(10, 10); // padding*/
 
         m_tooltipPanel.SetActive(true);
 

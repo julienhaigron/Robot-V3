@@ -37,6 +37,7 @@ public class AttackAction : AEntityAction
 		if (targetedEntityID != -1 || (targetedEntityID == -1 && PerformingEntity.AI.TargetedEntity != null)
 			|| (Data.isAoe && targetTileID != -1))
 		{
+
 			targetedEntityID = PerformingEntity.AI.TargetedEntity.ID;
 			isAttackSuccessfull = Data.isAoe ? true : PerformingEntity.Equipment.AttackRoll(this);
 
