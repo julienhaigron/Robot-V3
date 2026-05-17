@@ -33,6 +33,7 @@ public sealed class InGamePanel : AUIPanel
 	{
 		TurnManager.onStartInputPhase += OnStartInputPhase;
 		TurnManager.onEndInputPhase += OnEndInputPhase;
+		TurnManager.onEndLevel += OnEndLevel;
 		m_endPhaseButton.onClick += OnClickEndPhaseBtn;
 
 		LogConsole.onLogAdded += OnLogAdded;
@@ -44,6 +45,7 @@ public sealed class InGamePanel : AUIPanel
 		TurnManager.onStartInputPhase = OnStartInputPhase;
 		TurnManager.onEndInputPhase = OnEndInputPhase;
 		m_endPhaseButton.onClick -= OnClickEndPhaseBtn;
+		TurnManager.onEndLevel -= OnEndLevel;
 		m_toggleDisplayConsoleBtn.onClick -= OnClickToggleDisplayConsoleBtn;
 		LogConsole.onLogAdded -= OnLogAdded;
 	}
@@ -112,6 +114,11 @@ public sealed class InGamePanel : AUIPanel
 	{
 		if(m_visibleEventType.Contains(_newLog.eventType))
 			m_consoleTMP.text += _newLog.ToString();
+	}
+
+	private void OnEndLevel ()
+	{
+		m_consoleTMP.text = "";
 	}
 
 	private void OnClickToggleDisplayConsoleBtn ()

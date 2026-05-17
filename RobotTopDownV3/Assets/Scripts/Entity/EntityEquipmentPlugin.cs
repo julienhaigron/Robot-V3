@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using Sirenix.OdinInspector;
-
+using System.Text;
 public class EntityEquipmentPlugin : EntityPlugin
 {
 	public static System.Action<Entity> onAnyEntityDeath;
@@ -353,26 +353,88 @@ public class EntityEquipmentPlugin : EntityPlugin
 		bool doesWinPFC = _attackAction.pfcResult == (int)EntityActionData.PFCResultType.FirstWins;
 
 		float targetCamo = targetEntity.Data.GetStaticStealthBonus(true);
-		float evationRatio = _attackAction.Data.type == EntityActionData.ActionType.DistanceAttack ? targetEntity.Data.BrainData.distanceEvasion : targetEntity.Data.BrainData.meleeEvasion;
-		float coverRatio = GridManager.Instance.IsThereCoverBeween(_attackAction.PerformingEntity, targetEntity, doesWinPFC) ? GameConfig.current.game.entityCoverBonus : 0;
-		//float distanceRatio = m_weapons[_attackAction.attackingWeaponId].Data.distanceAccuracyBonus[GetWeaponDistanceTypeFrom(targetEntity, usedWeapon, doesWinPFC)];
-		float targetEvasionScore = targetCamo + evationRatio + coverRatio /*+ distanceRatio*/;
+		float evationRatio = _attackAction.Data.type == EntityActionData.ActionType.DistanceAttack
+				? targetEntity.Data.BrainData.distanceEvasion
+				: targetEntity.Data.BrainData.meleeEvasion;
+		float coverRatio = GridManager.Instance.IsThereCoverBeween(_attackAction.PerformingEntity, targetEntity, doesWinPFC )
+				? GameConfig.current.game.entityCoverBonus
+				: 0f;
+		// float distanceRatio = usedWeapon.distanceAccuracyBonus[GetWeaponDistanceTypeFrom(targetEntity, usedWeapon, doesWinPFC)];
+
+		float targetEvasionScore =
+			targetCamo
+			+ evationRatio
+			+ coverRatio;
+		//  + distanceRatio;
 
 		float userPerception = m_linkedEntity.Data.GetStaticPerceptionBonus(true);
-		float userAim = _attackAction.Data.type == EntityActionData.ActionType.DistanceAttack ? m_linkedEntity.Data.BrainData.distanceAccuracy : m_linkedEntity.Data.BrainData.agility;
-		float flankBonus = GameConfig.current.game.entityFlankRatio[GridManager.Instance.GetHitTileSide(m_linkedEntity, targetEntity, doesWinPFC)];
+		float userAim = _attackAction.Data.type == EntityActionData.ActionType.DistanceAttack
+				? m_linkedEntity.Data.BrainData.distanceAccuracy
+				: m_linkedEntity.Data.BrainData.agility;
+		float flankBonus = GameConfig.current.game.entityFlankRatio[
+			GridManager.Instance.GetHitTileSide(m_linkedEntity, targetEntity, doesWinPFC )];
 		float modAction = m_linkedEntity.LastActionPerformedData.previousActionAttackModificator;
-		float userHitScore = userPerception + userAim + flankBonus + modAction;
+
+		float userHitScore =
+			userPerception
+			+ userAim
+			+ flankBonus
+			+ modAction;
 
 		float finalScore = userHitScore - targetEvasionScore;
+
 		float roll = Random.Range(0f, 1f);
-		bool isAttackSuccessful = finalScore >= 1 || finalScore >= roll;
+		bool isAttackSuccessful = finalScore >= 1f || finalScore >= roll;
 
-		string detailsDescription = "User hit score = " + userHitScore + " and target evasion score = " + targetEvasionScore+"\n"
-									+ (finalScore < 1 ? "Roll = " + roll +"\n" : "");
+		StringBuilder detailsBuilder = new();
+		detailsBuilder.AppendLine( $"<b>{m_linkedEntity.ID}</b> attacks <b>{targetEntity.ID}</b>");
+		detailsBuilder.AppendLine();
+		detailsBuilder.AppendLine("<b>Attacker Hit Score</b>");
+		detailsBuilder.AppendLine($"Perception: {userPerception:+0.##;-0.##;0}");
+		detailsBuilder.AppendLine($"Aim: {userAim:+0.##;-0.##;0}");
+
+		if (flankBonus != 0)
+			detailsBuilder.AppendLine($"Flank Bonus: {flankBonus:+0.##;-0.##;0}");
+
+		if (modAction != 0)
+			detailsBuilder.AppendLine($"Action Modifier: {modAction:+0.##;-0.##;0}");
+
+		detailsBuilder.AppendLine($"<b>Total Hit Score: {userHitScore:F2}</b>");
+		detailsBuilder.AppendLine();
+		detailsBuilder.AppendLine("<b>Target Evasion Score</b>");
+		detailsBuilder.AppendLine($"Camouflage: {targetCamo:+0.##;-0.##;0}");
+		detailsBuilder.AppendLine($"Evasion: {evationRatio:+0.##;-0.##;0}");
+
+		if (coverRatio > 0)
+			detailsBuilder.AppendLine($"Cover Bonus: +{coverRatio:0.##}");
+
+		// if (distanceRatio != 0)
+		//		detailsBuilder.AppendLine($"Distance Modifier: {distanceRatio:+0.##;-0.##;0}");
+
+		detailsBuilder.AppendLine($"<b>Total Evasion: {targetEvasionScore:F2}</b>");
+		detailsBuilder.AppendLine();
+		detailsBuilder.AppendLine($"Final Score = {userHitScore:F2} - {targetEvasionScore:F2}");
+
+		if (finalScore >= 1f)
+			detailsBuilder.AppendLine($"<color=green><b>Guaranteed Hit ({finalScore:F2})</b></color>");
+		else
+		{
+			detailsBuilder.AppendLine($"Hit Chance: {(finalScore * 100f):F0}%");
+			detailsBuilder.AppendLine($"Roll: {roll:F2}");
+			detailsBuilder.AppendLine( isAttackSuccessful ? "<color=green><b>Hit Success</b></color>" : "<color=red><b>Hit Failed</b></color>");
+		}
+
+		string detailsDescription = detailsBuilder.ToString();
 		LogConsole.LogDetails details = new("attack_" + LogConsole.Instance.LogsDetails.Keys.Count, "Attack Details", detailsDescription);
-		LogConsole.AddLog(m_linkedEntity.ID + (isAttackSuccessful ? " succeeds " : " fails ")+ _attackAction.ToString() + " against " + targetEntity.ID, LogConsole.LogEventType.AttackResolution, details);
-
+		LogConsole.AddLog(
+			m_linkedEntity.ID
+			+ (isAttackSuccessful ? " succeeds " : " fails ")
+			+ _attackAction.ToString()
+			+ " against "
+			+ targetEntity.ID,
+			LogConsole.LogEventType.AttackResolution,
+			details
+		);
 		return isAttackSuccessful;
 	}
 
