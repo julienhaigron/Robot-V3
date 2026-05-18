@@ -35,11 +35,10 @@ public class PortalItemData : AItemData
             && (_isThisTurn && destination.GetEntity(true) == null || !_isThisTurn && destination.GetEntity(false) == null);
     }
 
-    public override void OnWalkThrough ( Entity _walkingEntityn, AItemLinkedData _linkedData, Item _usedItem, Action _onEndUse, bool _isFromTeleportation )
+    public override void OnWalkThrough ( Entity _walkingEntityn, AItemLinkedData _linkedData, Item _usedItem, bool _isFromTeleportation )
 	{
         if (_linkedData is not PortalItemLinkedData portalLinkedData)
         {
-            _onEndUse?.Invoke();
             return;
         }
 
@@ -68,7 +67,7 @@ public class PortalItemData : AItemData
 
 	public override void OnRegisterInteraction ( AEntityAction _action, Item _itemOnTile )
 	{
-        if (_itemOnTile.LinkedData is not PortalItemLinkedData portalData || portalData.portalATile == null || portalData.portalBTile == null)
+        if (_itemOnTile.CurrentPosition.coordinates.ID != _action.positionAtActionEndID || _itemOnTile.LinkedData is not PortalItemLinkedData portalData || portalData.portalATile == null || portalData.portalBTile == null)
             return;
         _action.positionAtActionEndID = _itemOnTile.CurrentPosition == portalData.portalATile ? portalData.portalBTile.coordinates.ID : portalData.portalATile.coordinates.ID;
 

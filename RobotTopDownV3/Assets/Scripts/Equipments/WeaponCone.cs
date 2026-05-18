@@ -22,7 +22,7 @@ public class WeaponCone : MonoBehaviour
 		m_data = _data;
 		AimAtAngle(_isFirstSide ? 90 : -90f, true, null);
 
-		transform.localScale = _data.range * Vector3.one;
+		//transform.localScale = _data.range * Vector3.one;
 		DisableAllCones();
 	}
 

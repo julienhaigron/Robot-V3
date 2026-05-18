@@ -17,17 +17,20 @@ public class EntityAIPlugin : EntityPlugin
 		public bool isActionChanging;
 		public AEntityAction replacedAction;
 		public AEntityAction replacedFreeAction;
+		public string replacementReasonTxt;
 
-		public void ReplaceAction ( AEntityAction _replacedAction )
+		public void ReplaceAction ( AEntityAction _replacedAction, string _reasonTxt )
 		{
 			isActionChanging = true;
 			replacedAction = _replacedAction;
+			replacementReasonTxt = _reasonTxt;
 		}
 
-		public void ReplaceFreeAction ( AEntityAction _replacedFreeAction )
+		public void ReplaceFreeAction ( AEntityAction _replacedFreeAction, string _reasonTxt )
 		{
 			isActionChanging = true;
 			replacedFreeAction = _replacedFreeAction;
+			replacementReasonTxt = _reasonTxt;
 		}
 	}
 
@@ -46,7 +49,7 @@ public class EntityAIPlugin : EntityPlugin
 		{
 			WaitAction waitAction = (TurnManager.Instance.GetAction(EntityActionEnumID.Wait, m_linkedEntity.ID, null, _recordedAction.timeAtStart) as WaitAction);
 			waitAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.Wait], null, m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID, _recordedAction.action.timeAtStart);
-			resultInfo.ReplaceAction(waitAction);
+			resultInfo.ReplaceAction(waitAction, "Unit is stun");
 		}
 		else if (HasEnemyWeaponInRange() && availableAttackAction != null /* && _recordedAction.entityState == Entity.EntityState.Patroling*/)
 		{
@@ -59,7 +62,7 @@ public class EntityAIPlugin : EntityPlugin
 			attackAction.targetedEntityID = m_lastEntityTargeted.ID;
 			attackAction.targetTileID = m_lastEntityTargeted.Displacement.Coordinates.ID;
 			attackAction.Init(GameAssets.current.game.entityActionsData[availableAttackAction.enumID], availableEquipment, m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID, _recordedAction.action.timeAtStart);
-			resultInfo.ReplaceAction(attackAction);
+			resultInfo.ReplaceAction(attackAction, "Has enemy in range");
 		}
 		else if (canMove && HasEnemyInVisionRange() && !HasEnemyWeaponInRange())
 		{
@@ -84,7 +87,7 @@ public class EntityAIPlugin : EntityPlugin
 						RotateEntityAction rotateAction = (TurnManager.Instance.GetAction(EntityActionEnumID.RotateEntity, m_linkedEntity.ID, null, _recordedAction.timeAtStart) as RotateEntityAction);
 						rotateAction.targetedOrientationID = GridManager.Instance.GetClosestOrientation(m_linkedEntity.Displacement.Coordinates.GetTile(), closestEntity.Displacement.Coordinates.GetTile());
 						rotateAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.RotateEntity], null, m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID, _recordedAction.action.timeAtStart);
-						resultInfo.ReplaceFreeAction(rotateAction);
+						resultInfo.ReplaceFreeAction(rotateAction, "Unit in vision but not in correct orientation");
 					}
 				}
 				else
@@ -103,14 +106,14 @@ public class EntityAIPlugin : EntityPlugin
 					moveToAction.targetEntiyID = closestEntity.ID;
 					moveToAction.thisActionDestinationIDArray = tileIDs.ToArray();
 					moveToAction.Init(GameAssets.current.game.entityActionsData[movementAction.enumID], null, m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID, _recordedAction.action.timeAtStart);
-					resultInfo.ReplaceAction(moveToAction);
+					resultInfo.ReplaceAction(moveToAction, "Gets closer to entity");
 
 					if (!isAtCorrectOrientation)
 					{
 						RotateEntityAction rotateAction = (TurnManager.Instance.GetAction(EntityActionEnumID.RotateEntity, m_linkedEntity.ID, null, _recordedAction.timeAtStart) as RotateEntityAction);
 						rotateAction.targetedOrientationID = GridManager.Instance.GetClosestOrientation(m_linkedEntity.Displacement.Coordinates.GetTile(), closestEntity.Displacement.Coordinates.GetTile());
 						rotateAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.RotateEntity], null, m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID, _recordedAction.action.timeAtStart);
-						resultInfo.ReplaceFreeAction(rotateAction);
+						resultInfo.ReplaceFreeAction(rotateAction, "Unit in vision but not in correct orientation");
 					}
 				}
 			}
@@ -123,7 +126,7 @@ public class EntityAIPlugin : EntityPlugin
 					RotateEntityAction rotateAction = (TurnManager.Instance.GetAction(EntityActionEnumID.RotateEntity, m_linkedEntity.ID, null, _recordedAction.timeAtStart) as RotateEntityAction);
 					rotateAction.targetedOrientationID = GridManager.Instance.GetClosestOrientation(m_linkedEntity.Displacement.Coordinates.GetTile(), closestEntity.Displacement.Coordinates.GetTile());
 					rotateAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.RotateEntity], null, m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID, _recordedAction.action.timeAtStart);
-					resultInfo.ReplaceFreeAction(rotateAction);
+					resultInfo.ReplaceFreeAction(rotateAction, "Unit in vision but not in correct orientation");
 				}
 
 				if (!isEntityInRangeWeaponsPossibleRange)
@@ -136,7 +139,7 @@ public class EntityAIPlugin : EntityPlugin
 		{
 			WaitAction waitAction = (TurnManager.Instance.GetAction(EntityActionEnumID.Wait, m_linkedEntity.ID, null, _recordedAction.timeAtStart) as WaitAction);
 			waitAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.Wait], null, m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID, _recordedAction.action.timeAtStart);
-			resultInfo.ReplaceAction(waitAction);
+			resultInfo.ReplaceAction(waitAction, "Unit cannot move");
 		}
 
 		return resultInfo;
@@ -269,12 +272,15 @@ public class EntityAIPlugin : EntityPlugin
 
 		GridManager.Instance.BFS(m_linkedEntity.Displacement.Coordinates.GetTile(), -1, _entity.Displacement.Coordinates.GetTile(), _isThisTurn);
 
-		foreach (string weaponId in m_linkedEntity.Equipment.Weapons.Keys)
+		foreach (Weapon weapon in m_linkedEntity.Equipment.Weapons.Values)
 		{
-			if (m_linkedEntity.Equipment.Weapons[weaponId].Data.range >= _entity.Displacement.Coordinates.GetTile().Distance)
+			foreach(EntityActionEnumID actionID in weapon.Data.knownedActions)
 			{
-				_weapon = weaponId;
-				return true;
+				if (GameAssets.current.game.entityActionsData[actionID].maxDistance >= _entity.Displacement.Coordinates.GetTile().Distance)
+				{
+					_weapon = weapon.ID;
+					return true;
+				}
 			}
 		}
 

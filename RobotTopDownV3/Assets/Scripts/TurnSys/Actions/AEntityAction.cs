@@ -148,6 +148,6 @@ public abstract class AEntityAction : INetworkSerializable
 
 	public override string ToString ()
 	{
-		return PerformingEntity.Data.name + "," + enumID.ToString();
+		return /*PerformingEntity.Data.name + "," + */enumID.ToString();
 	}
 }

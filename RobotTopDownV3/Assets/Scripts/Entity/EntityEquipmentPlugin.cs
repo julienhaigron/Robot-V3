@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using Sirenix.OdinInspector;
-
+using System.Text;
 public class EntityEquipmentPlugin : EntityPlugin
 {
 	public static System.Action<Entity> onAnyEntityDeath;
@@ -36,10 +36,31 @@ public class EntityEquipmentPlugin : EntityPlugin
 
 	[Title("Stats")]
 	private float m_generalDamageBuff = 0f;
-	public float GeneralDamageBuff => m_generalDamageBuff;
+	public float GeneralDamageBuff
+	{
+
+		get
+		{
+			return m_generalDamageBuff;
+		}
+		set
+		{
+			m_generalDamageBuff = value;
+		}
+	}
 
 	private float m_generalDamageResistance = 0f;
-	public float GeneralDamageResistance => m_generalDamageResistance;
+	public float GeneralDamageResistance {
+
+		get
+		{
+			return m_generalDamageResistance;
+		}
+		set
+		{
+			m_generalDamageResistance = value;
+		}
+	}
 
 	private SerializableDictionary<WeaponEquipmentData.DamageType, float> m_applyedDamageTypeBuffs = new();
 	public SerializableDictionary<WeaponEquipmentData.DamageType, float> ApplyedDamageTypeBuffs => m_applyedDamageTypeBuffs;
@@ -237,7 +258,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 
 			float radians = rayAngle * Mathf.Deg2Rad;
 			Vector3 aimedPosition = new Vector3(Mathf.Sin(radians), 0, Mathf.Cos(radians));
-			RaycastHit[] hits = Physics.RaycastAll(m_linkedEntity.Displacement.Coordinates.GetTile().transform.position, aimedPosition * usedWeapon.Data.range, usedWeapon.Data.range * (2 * Tile.innerRadius), GameConfig.current.input.tileInternRayCastLayer);
+			RaycastHit[] hits = Physics.RaycastAll(m_linkedEntity.Displacement.Coordinates.GetTile().transform.position, aimedPosition * _action.Data.maxDistance, _action.Data.maxDistance * (2 * Tile.innerRadius), GameConfig.current.input.tileInternRayCastLayer);
 			foreach (RaycastHit hitInfo in hits)
 			{
 				if (hitInfo.transform.TryGetComponent(out Tile tile) && !tilesInRange.Contains(tile)
@@ -279,7 +300,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 		{
 			case EntityActionData.AOEType.Circle:
 
-				tilesInRange.AddRange(GridManager.Instance.GetTilesInVisionRange(_action.TargetTile, attackData.circleRange, _isThisTurn));
+				tilesInRange.AddRange(GridManager.Instance.GetTilesInVisionRange(_action.TargetTile, attackData.circleRange, false, _isThisTurn));
 				break;
 			case EntityActionData.AOEType.Ray:
 
@@ -288,7 +309,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 			case EntityActionData.AOEType.Cone:
 
 				tilesInRange.AddRange(GridManager.Instance.GetTilesInCone(m_linkedEntity.Displacement.Coordinates.GetTile()
-						, usedWeapon.Data.range, m_linkedEntity.Displacement.CurrentOrientation, attackData.coneType, _isThisTurn));
+						, attackData.maxDistance, m_linkedEntity.Displacement.CurrentOrientation, attackData.coneType, _isThisTurn));
 				break;
 			case EntityActionData.AOEType.Arc:
 
@@ -307,7 +328,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 
 					float radians = rayAngle * Mathf.Deg2Rad;
 					Vector3 aimedPosition = new Vector3(Mathf.Sin(radians), 0, Mathf.Cos(radians));
-					RaycastHit[] hits = Physics.RaycastAll(m_linkedEntity.Displacement.Coordinates.GetTile().transform.position, aimedPosition * usedWeapon.Data.range, usedWeapon.Data.range * (2 * Tile.innerRadius), GameConfig.current.input.tileInternRayCastLayer);
+					RaycastHit[] hits = Physics.RaycastAll(m_linkedEntity.Displacement.Coordinates.GetTile().transform.position, aimedPosition * attackData.maxDistance, attackData.maxDistance * (2 * Tile.innerRadius), GameConfig.current.input.tileInternRayCastLayer);
 					foreach (RaycastHit hitInfo in hits)
 					{
 						if (hitInfo.transform.TryGetComponent(out Tile tile) && !tilesInRange.Contains(tile)
@@ -332,32 +353,89 @@ public class EntityEquipmentPlugin : EntityPlugin
 		bool doesWinPFC = _attackAction.pfcResult == (int)EntityActionData.PFCResultType.FirstWins;
 
 		float targetCamo = targetEntity.Data.GetStaticStealthBonus(true);
-		float evationRatio = _attackAction.Data.type == EntityActionData.ActionType.DistanceAttack ? targetEntity.Data.BrainData.distanceEvasion : targetEntity.Data.BrainData.meleeEvasion;
-		float coverRatio = GridManager.Instance.IsThereCoverBeween(_attackAction.PerformingEntity, targetEntity, doesWinPFC) ? GameConfig.current.game.entityCoverBonus : 0;
-		float distanceRatio = m_weapons[_attackAction.attackingWeaponId].Data.distanceAccuracyBonus[GetWeaponDistanceTypeFrom(targetEntity, usedWeapon, doesWinPFC)];
-		float targetEvasionScore = targetCamo + evationRatio + coverRatio + distanceRatio;
+		float evationRatio = _attackAction.Data.type == EntityActionData.ActionType.DistanceAttack
+				? targetEntity.Data.BrainData.distanceEvasion
+				: targetEntity.Data.BrainData.meleeEvasion;
+		float coverRatio = GridManager.Instance.IsThereCoverBeween(_attackAction.PerformingEntity, targetEntity, doesWinPFC )
+				? GameConfig.current.game.entityCoverBonus
+				: 0f;
+		// float distanceRatio = usedWeapon.distanceAccuracyBonus[GetWeaponDistanceTypeFrom(targetEntity, usedWeapon, doesWinPFC)];
+
+		float targetEvasionScore =
+			targetCamo
+			+ evationRatio
+			+ coverRatio;
+		//  + distanceRatio;
 
 		float userPerception = m_linkedEntity.Data.GetStaticPerceptionBonus(true);
-		float userAim = _attackAction.Data.type == EntityActionData.ActionType.DistanceAttack ? m_linkedEntity.Data.BrainData.distanceAccuracy : m_linkedEntity.Data.BrainData.agility;
-		float flankBonus = GameConfig.current.game.entityFlankRatio[GridManager.Instance.GetHitTileSide(m_linkedEntity, targetEntity, doesWinPFC)];
+		float userAim = _attackAction.Data.type == EntityActionData.ActionType.DistanceAttack
+				? m_linkedEntity.Data.BrainData.distanceAccuracy
+				: m_linkedEntity.Data.BrainData.agility;
+		float flankBonus = GameConfig.current.game.entityFlankRatio[
+			GridManager.Instance.GetHitTileSide(m_linkedEntity, targetEntity, doesWinPFC )];
 		float modAction = m_linkedEntity.LastActionPerformedData.previousActionAttackModificator;
-		float userHitScore = userPerception + userAim + flankBonus + modAction;
+
+		float userHitScore =
+			userPerception
+			+ userAim
+			+ flankBonus
+			+ modAction;
 
 		float finalScore = userHitScore - targetEvasionScore;
 
-		if (finalScore >= 1)
-		{
-			LogConsole.AddLog("Attack Roll [AUTOMATIC SUCESS] : targetEvasionScore = " + targetEvasionScore + " and userHitScore = " + userHitScore, LogConsole.LogEventType.PlayPhase);
-			return true;
-		}
+		float roll = Random.Range(0f, 1f);
+		bool isAttackSuccessful = finalScore >= 1f || finalScore >= roll;
+
+		StringBuilder detailsBuilder = new();
+		detailsBuilder.AppendLine( $"<b>{m_linkedEntity.ID}</b> attacks <b>{targetEntity.ID}</b>");
+		detailsBuilder.AppendLine();
+		detailsBuilder.AppendLine("<b>Attacker Hit Score</b>");
+		detailsBuilder.AppendLine($"Perception: {userPerception:+0.##;-0.##;0}");
+		detailsBuilder.AppendLine($"Aim: {userAim:+0.##;-0.##;0}");
+
+		if (flankBonus != 0)
+			detailsBuilder.AppendLine($"Flank Bonus: {flankBonus:+0.##;-0.##;0}");
+
+		if (modAction != 0)
+			detailsBuilder.AppendLine($"Action Modifier: {modAction:+0.##;-0.##;0}");
+
+		detailsBuilder.AppendLine($"<b>Total Hit Score: {userHitScore:F2}</b>");
+		detailsBuilder.AppendLine();
+		detailsBuilder.AppendLine("<b>Target Evasion Score</b>");
+		detailsBuilder.AppendLine($"Camouflage: {targetCamo:+0.##;-0.##;0}");
+		detailsBuilder.AppendLine($"Evasion: {evationRatio:+0.##;-0.##;0}");
+
+		if (coverRatio > 0)
+			detailsBuilder.AppendLine($"Cover Bonus: +{coverRatio:0.##}");
+
+		// if (distanceRatio != 0)
+		//		detailsBuilder.AppendLine($"Distance Modifier: {distanceRatio:+0.##;-0.##;0}");
+
+		detailsBuilder.AppendLine($"<b>Total Evasion: {targetEvasionScore:F2}</b>");
+		detailsBuilder.AppendLine();
+		detailsBuilder.AppendLine($"Final Score = {userHitScore:F2} - {targetEvasionScore:F2}");
+
+		if (finalScore >= 1f)
+			detailsBuilder.AppendLine($"<color=green><b>Guaranteed Hit ({finalScore:F2})</b></color>");
 		else
 		{
-			float roll = Random.Range(0f, 1f);
-			bool isAttackSuccessful = finalScore >= roll;
-			//bool isAttackSuccessful = roll + finalScore > 1;
-			LogConsole.AddLog("Attack Roll " + (isAttackSuccessful ? "[SUCESS]" : "[FAILURE]") + " : targetEvasionScore = " + targetEvasionScore + ", roll = " + roll + " and userHitScore = " + userHitScore, LogConsole.LogEventType.PlayPhase);
-			return isAttackSuccessful;
+			detailsBuilder.AppendLine($"Hit Chance: {(finalScore * 100f):F0}%");
+			detailsBuilder.AppendLine($"Roll: {roll:F2}");
+			detailsBuilder.AppendLine( isAttackSuccessful ? "<color=green><b>Hit Success</b></color>" : "<color=red><b>Hit Failed</b></color>");
 		}
+
+		string detailsDescription = detailsBuilder.ToString();
+		LogConsole.LogDetails details = new("attack_" + LogConsole.Instance.LogsDetails.Keys.Count, "Attack Details", detailsDescription);
+		LogConsole.AddLog(
+			m_linkedEntity.ID
+			+ (isAttackSuccessful ? " succeeds " : " fails ")
+			+ _attackAction.ToString()
+			+ " against "
+			+ targetEntity.ID,
+			LogConsole.LogEventType.AttackResolution,
+			details
+		);
+		return isAttackSuccessful;
 	}
 
 	public WeaponEquipmentData.DistanceType GetWeaponDistanceTypeFrom ( Entity _target, WeaponEquipmentData _weaponData, bool _didAttackerWinPFC )
@@ -365,16 +443,18 @@ public class EntityEquipmentPlugin : EntityPlugin
 		int attackerPosition = _didAttackerWinPFC ? TurnManager.Instance.GetPositionOfEntityAtEndOfRound(_target.ID) : TurnManager.Instance.GetPositionOfEntityAtEndOfRound(_target.ID);
 		int defenderPosition = !_didAttackerWinPFC ? TurnManager.Instance.GetPositionOfEntityAtEndOfRound(_target.ID) : TurnManager.Instance.GetPositionOfEntityAtEndOfRound(_target.ID);
 		float actualDistanceFromTarget = Vector3.Distance(GridManager.Instance.Tiles[attackerPosition].transform.position, GridManager.Instance.Tiles[defenderPosition].transform.position) / (Tile.outerRadius * 2f);
-		float distanceRelativeToWeaponRangePercentage = actualDistanceFromTarget / (float)_weaponData.range;
+		
+		//what to do with this?
+		//float distanceRelativeToWeaponRangePercentage = actualDistanceFromTarget / (float)_weaponData.range;
 
-		float currentTotal = 0;
+		/*float currentTotal = 0;
 		for (int i = 0; i < GameConfig.current.game.distanceTypeSpreadEvaluation.Keys.Count; i++)
 		{
 			if (distanceRelativeToWeaponRangePercentage < currentTotal + GameConfig.current.game.distanceTypeSpreadEvaluation[(WeaponEquipmentData.DistanceType)i])
 				return (WeaponEquipmentData.DistanceType)i;
 
 			currentTotal += GameConfig.current.game.distanceTypeSpreadEvaluation[(WeaponEquipmentData.DistanceType)i];
-		}
+		}*/
 		return WeaponEquipmentData.DistanceType.Long;
 	}
 

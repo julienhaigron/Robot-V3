@@ -27,7 +27,7 @@ public class Item : MonoBehaviour
 
     public void OnTileEnter(Entity _enteringEntity, bool _isFromTeleportation )
 	{
-        m_data.OnWalkThrough(_enteringEntity, m_linkedData, this, null, _isFromTeleportation);
+        m_data.OnWalkThrough(_enteringEntity, m_linkedData, this, _isFromTeleportation);
     }
 
     public void Cancel ()

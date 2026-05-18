@@ -34,6 +34,7 @@ public class GameAssets : ScriptableObject
         [Title("Entity")]
         public Entity defaultEntity;
         public GhostEntity baseGhost;
+        public GhostItem baseItem;
         public List<FrameEquipmentData> frames = new();
 
         public WeaponCone weaponCone;
@@ -56,6 +57,7 @@ public class GameAssets : ScriptableObject
         public Material flyingDamageFontAsset;
         public Material flyingDamageCritFontAsset;
         public Sprite critIcon;
+        public EntityStatusDisplay statusDisplayPrefab;
 
         [Title("Tile")]
         public SerializableDictionary<TileGroundType, Material> tileGroundMaterials = new();

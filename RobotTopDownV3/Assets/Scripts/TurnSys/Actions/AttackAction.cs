@@ -37,6 +37,7 @@ public class AttackAction : AEntityAction
 		if (targetedEntityID != -1 || (targetedEntityID == -1 && PerformingEntity.AI.TargetedEntity != null)
 			|| (Data.isAoe && targetTileID != -1))
 		{
+
 			targetedEntityID = PerformingEntity.AI.TargetedEntity.ID;
 			isAttackSuccessfull = Data.isAoe ? true : PerformingEntity.Equipment.AttackRoll(this);
 
@@ -81,6 +82,7 @@ public class AttackAction : AEntityAction
 		PerformingEntity.AI.DOAllPrewarmCheck(this);
 		if (targetedEntityID == -1)
 		{
+			Debug.LogError("No target error");
 			//TODO : add no target feedback
 			base.Perform(_state);
 			EndTick();
@@ -111,6 +113,7 @@ public class AttackAction : AEntityAction
 			// => find new target or wait (or move to previous target if in sight?)
 			//Debug.Log("target not in range");
 			//DG.Tweening.DOVirtual.DelayedCall(GameConfig.current.game.actionDuration, () => EndPerform());
+			Debug.LogError("No target error");
 			base.Perform(_state);
 			EndTick();
 		}
@@ -131,8 +134,7 @@ public class AttackAction : AEntityAction
 		Entity user = GameManager.Instance.GetEntityFromID(performingEntityID);
 		Weapon attackingWeapon = user.Equipment.Weapons[linkedEquipmentId];
 		Tile from = GridManager.Instance.Tiles[TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntityID)];
-		List<Tile> tilesInRange = attackIgnoresObstacles ? GridManager.Instance.GetTilesInVisionRange(from, attackingWeapon.Data.range, true)
-			: GridManager.Instance.GetTilesInRange(from, attackingWeapon.Data.range, true, true);
+		List<Tile> tilesInRange = GridManager.Instance.GetTilesInVisionRange(from, Data.maxDistance, attackIgnoresObstacles, true);
 		bool isInRange = tilesInRange.Contains(_tile);
 
 		if (Data.targetType == EntityActionData.TargetType.Tile && isInRange)

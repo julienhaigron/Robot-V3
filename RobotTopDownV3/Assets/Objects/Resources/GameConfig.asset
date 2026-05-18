@@ -62,15 +62,18 @@ MonoBehaviour:
       m_Bits: 4096
   meta:
     colorsPerType:
-      keys: 00000000010000000200000003000000
+      keys: 000000000100000002000000030000000400000005000000
       values:
       - {r: 1, g: 0.7921569, b: 0, a: 1}
       - {r: 0.4755483, g: 0.8679245, b: 0.045033824, a: 1}
       - {r: 0, g: 0.38887525, b: 0.6509434, a: 1}
       - {r: 1, g: 0.10208976, b: 0, a: 1}
+      - {r: 1, g: 0, b: 0, a: 1}
+      - {r: 0.8156863, g: 0.1254902, b: 0.5647059, a: 1}
   ui:
     wallLayerMask:
       serializedVersion: 2
       m_Bits: 4096
+    doubleClickDelay: 0.25
   datas:
     editorLoadDatasFromGamedatasFile: 1

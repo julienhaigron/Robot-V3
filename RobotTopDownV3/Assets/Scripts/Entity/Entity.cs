@@ -11,6 +11,8 @@ public class Entity : MonoBehaviour
 	public Action<AEntityAction> onStartPerformAction;
 	public Action onEndPerformAction;
 	public Action onNewRoundBegin;
+	public Action<EntityStatusEnumID> onStatusAdded;
+	public Action<EntityStatusEnumID> onStatusRemoved;
 
 	[Title("Depedencies")]
 	[SerializeField] private GameObject m_skinParent;
@@ -203,12 +205,12 @@ public class Entity : MonoBehaviour
 		foreach (EntityStatusEnumID status in m_status.ToArray())
 		{
 			if (m_remainingDurationToActiveEffects.ContainsKey(GameAssets.current.game.entityStatus[status])
-				&& --m_remainingDurationToActiveEffects[GameAssets.current.game.entityStatus[status]] <= 0)
+				&& m_remainingDurationToActiveEffects[GameAssets.current.game.entityStatus[status]] <= 0)
 			{
 				RemoveStatus(status);
 			}
 
-			GameAssets.current.game.entityStatus[status].ApplyStatusEffect(this);
+			GameAssets.current.game.entityStatus[status].ApplyStatusEffect(m_remainingDurationToActiveEffects[GameAssets.current.game.entityStatus[status]]--, this);
 		}
 	}
 
@@ -262,12 +264,17 @@ public class Entity : MonoBehaviour
 			m_remainingDurationToActiveEffects[GameAssets.current.game.entityStatus[_statusID]] = GameAssets.current.game.entityStatus[_statusID].duration;
 		else
 			m_remainingDurationToActiveEffects.Add(GameAssets.current.game.entityStatus[_statusID], GameAssets.current.game.entityStatus[_statusID].duration);
+
+		onStatusAdded?.Invoke(_statusID);
 	}
 
 	public void RemoveStatus ( EntityStatusEnumID _statusID )
 	{
+		GameAssets.current.game.entityStatus[_statusID].OnRemoveStatusEffect(this);
 		m_status.Remove(_statusID);
 		m_remainingDurationToActiveEffects.Remove(GameAssets.current.game.entityStatus[_statusID]);
+
+		onStatusRemoved?.Invoke(_statusID);
 	}
 
 }

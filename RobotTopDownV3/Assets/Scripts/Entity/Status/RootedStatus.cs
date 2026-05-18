@@ -6,9 +6,9 @@ using System.Collections.Generic;
 public class RootedStatus : AEntityStatus
 {
 
-	public override void ApplyStatusEffect ( Entity _entity )
+	public override void ApplyStatusEffect ( int _remainingDuration, Entity _entity )
 	{
-		base.ApplyStatusEffect(_entity);
+		base.ApplyStatusEffect(_remainingDuration, _entity);
 	}
 
 	public override void PerformStatusEffectAtBeginingOfRound ( Tile _tile )

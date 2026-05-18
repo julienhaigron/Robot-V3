@@ -1,35 +1,43 @@
 using UnityEngine;
 
-public class FogOfWarRenderer : MonoBehaviour
+public class FogOfWarRenderer : Singleton<FogOfWarRenderer>
 {
     public Camera fogCamera;
     public Material fogApplyMaterial;
 
-    private RenderTexture m_fogMask; 
+    private RenderTexture m_fogMask;
+    private Shader m_fogShader; 
+    private bool m_dirty = true;
 
     void Start ()
     {
-        /*if (fogCamera == null)
-        {
-            GameObject camObj = new GameObject("FogCamera");
-            fogCamera = camObj.AddComponent<Camera>();
-            fogCamera.enabled = false;
-        }*/
-
         // Crée la RT
-        m_fogMask = new RenderTexture(Screen.width, Screen.height, 16, RenderTextureFormat.ARGB32);
+        int scale = 2;
+        m_fogMask = new RenderTexture(Screen.width / scale, Screen.height / scale, 16);
         fogCamera.targetTexture = m_fogMask;
 
         // Injecte le mask dans le shader d’application
         fogApplyMaterial.SetTexture("_FogMask", m_fogMask);
+
+        m_fogShader = Shader.Find("Custom/FogOfWar_Mask");
+    }
+
+    public void MarkDirty ()
+    {
+        m_dirty = true;
     }
 
     void LateUpdate ()
     {
+        if (!m_dirty)
+            return;
+
+        m_dirty = false;
+
         // On rend les meshes de fog dans le mask
         if (fogCamera.targetTexture == null)
             return;
 
-        fogCamera.RenderWithShader(Shader.Find("Custom/FogOfWar_Mask"), "");
+        fogCamera.RenderWithShader(m_fogShader, "");
     }
 }

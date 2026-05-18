@@ -10,7 +10,7 @@ public class WeaponEquipmentData : EntityEquipmentData
     //public int accuracy;
     public SerializableDictionary<DamageType, int> baseDamages;
     public DamageCategory damageCategory;
-    public int range;
+    //public int range;
     public int visionConeRange;
     public enum DistanceType
 	{

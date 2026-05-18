@@ -658,20 +658,38 @@ MonoBehaviour:
   m_onlineMap: {fileID: 0}
   m_playerOneEntityDatas:
   - name: 
-    frameID: 
-    reactorID: 
-    brainID: 
-    armsIds: []
-    auxiliarIds: []
-    chipsetsIds: []
+    frame:
+      ID: 
+      dataID: 
+    reactor:
+      ID: 
+      dataID: 
+    neuronalMembrane:
+      ID: 
+      dataID: 
+    brain:
+      ID: 
+      dataID: 
+    arms: []
+    auxiliar: []
+    chipsets: []
   m_playerTwoEntityDatas:
   - name: 
-    frameID: 
-    reactorID: 
-    brainID: 
-    armsIds: []
-    auxiliarIds: []
-    chipsetsIds: []
+    frame:
+      ID: 
+      dataID: 
+    reactor:
+      ID: 
+      dataID: 
+    neuronalMembrane:
+      ID: 
+      dataID: 
+    brain:
+      ID: 
+      dataID: 
+    arms: []
+    auxiliar: []
+    chipsets: []
 --- !u!114 &6329207692699311254
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -820,6 +838,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8fb5f8303f4426146afd8c7ac6d779b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_fogRenderer: {fileID: 5089135159799770867}
 --- !u!114 &2601377726672517245
 MonoBehaviour:
   m_ObjectHideFlags: 0

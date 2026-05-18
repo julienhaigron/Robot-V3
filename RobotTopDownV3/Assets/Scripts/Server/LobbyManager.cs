@@ -44,7 +44,7 @@ public class LobbyManager : NetworkBehaviour
     {
         if (connectedClients.Count >= nbOfPlayer)
         {
-            LogConsole.AddLog("[Server] Tous les clients sont connectés. Lancement de la partie dans 1 seconde...", LogConsole.LogEventType.Main);
+            LogConsole.AddLog("[Server] Tous les clients sont connectés. Lancement de la partie dans 1 seconde...", LogConsole.LogEventType.DebugSys);
             StartCoroutine(DelayedStart());
         }
     }

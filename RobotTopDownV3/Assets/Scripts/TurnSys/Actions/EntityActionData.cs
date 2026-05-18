@@ -131,7 +131,7 @@ public class EntityActionData : ScriptableObject
 	[ShowIf("@codeType == ActionCodeType.InvokeEntity")] public UnitPreset invocatedEntity;
 	[ShowIf("@codeType == ActionCodeType.InvokeItem")] public AItemData invocatedItem;
 	[ShowIf("@codeType == ActionCodeType.InvokeEntity || codeType == ActionCodeType.InvokeItem")] public int invocationCountLimit = 1;
-	[ShowIf("@type == ActionType.Movement")] public int movementSpeed = 1;
+	[ShowIf("@type == ActionType.Movement || codeType == ActionCodeType.MoveThenAttack ")] public int movementSpeed = 1;
 
 	public enum PFCResultType
 	{

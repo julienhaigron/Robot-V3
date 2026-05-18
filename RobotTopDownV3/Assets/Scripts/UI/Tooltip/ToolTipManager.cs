@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System.Collections;
+using Sirenix.OdinInspector;
 
 public class ToolTipManager : Singleton<ToolTipManager>
 {
@@ -15,6 +16,7 @@ public class ToolTipManager : Singleton<ToolTipManager>
     [SerializeField] private Vector2 m_offset = new Vector2(15, -15);
     [SerializeField] private float m_fadeDuration = 0.2f;
 
+    private bool m_isActive = false;
     private CanvasGroup m_canvasGroup;
     private Coroutine m_fadeCoroutine;
 
@@ -25,12 +27,22 @@ public class ToolTipManager : Singleton<ToolTipManager>
         if (m_canvasGroup == null)
             m_canvasGroup = m_tooltipPanel.AddComponent<CanvasGroup>();
 
+        m_isActive = false;
         m_tooltipPanel.SetActive(false);
+
+        InputManager.onTMPLinkHovered += OnTMPHover;
+        InputManager.onTMPLinkUnhovered += OnTMPUnhover;
     }
 
-    private void Update ()
+	private void OnDestroy ()
     {
-        if (!m_tooltipPanel.activeSelf) return;
+        InputManager.onTMPLinkHovered -= OnTMPHover;
+        InputManager.onTMPLinkUnhovered -= OnTMPUnhover;
+    }
+
+	private void Update ()
+    {
+        if (!m_isActive) return;
 
         Vector2 anchoredPosition;
         RectTransformUtility.ScreenPointToLocalPointInRectangle(
@@ -60,14 +72,16 @@ public class ToolTipManager : Singleton<ToolTipManager>
         m_tooltipPanel.transform.localPosition = anchoredPosition;
     }
 
+    [Button]
     public void Show ( string _title, string _description )
     {
+        m_isActive = true;
         m_tooltipTitleTMP.text = _title;
         m_tooltipDescriptionTMP.text = _description;
 
-        // Resize background selon le texte
+        /*// Resize background selon le texte
         Vector2 textSize = m_tooltipTitleTMP.GetPreferredValues(_title) + m_tooltipDescriptionTMP.GetPreferredValues(_description);
-        m_backgroundRect.sizeDelta = textSize + new Vector2(10, 10); // padding
+        m_backgroundRect.sizeDelta = textSize + new Vector2(10, 10); // padding*/
 
         m_tooltipPanel.SetActive(true);
 
@@ -78,6 +92,7 @@ public class ToolTipManager : Singleton<ToolTipManager>
 
     public void Hide ()
     {
+        m_isActive = false;
         if (m_fadeCoroutine != null)
             StopCoroutine(m_fadeCoroutine);
         m_fadeCoroutine = StartCoroutine(FadeCanvas(0f, true));
@@ -97,5 +112,15 @@ public class ToolTipManager : Singleton<ToolTipManager>
 
         m_canvasGroup.alpha = _targetAlpha;
         if (_deactivateOnEnd) m_tooltipPanel.SetActive(false);
+    }
+
+    private void OnTMPHover ( string id )
+    {
+        Show(LogConsole.Instance.LogsDetails[id].title, LogConsole.Instance.LogsDetails[id].description);
+    }
+
+    private void OnTMPUnhover ()
+    {
+        Hide();
     }
 }

@@ -6,9 +6,9 @@ using System.Collections.Generic;
 public class SmokedStatus : AEntityStatus
 {
 
-	public override void ApplyStatusEffect ( Entity _entity )
+	public override void ApplyStatusEffect ( int _remainingDuration, Entity _entity )
 	{
-		base.ApplyStatusEffect(_entity);
+		base.ApplyStatusEffect(_remainingDuration, _entity);
 
 		/*Dictionary<WeaponEquipmentData.DamageType, int> damage = new();
 		damage.Add(WeaponEquipmentData.DamageType.Feu, damageAmount);

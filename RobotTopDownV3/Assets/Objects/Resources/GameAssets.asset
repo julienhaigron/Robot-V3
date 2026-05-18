@@ -37,6 +37,7 @@ MonoBehaviour:
       - {fileID: 11400000, guid: 8463f427f2e71a5448135f40294b8ede, type: 2}
     defaultEntity: {fileID: 4673310249167116355, guid: 206cf16509b1846479a1f553fd6add2d, type: 3}
     baseGhost: {fileID: 7839904307103858393, guid: bee3bc7545f82b54babded2b3df64c96, type: 3}
+    baseItem: {fileID: 831952569120969770, guid: f125b6baae3a1ab4c9203e208c4db9f3, type: 3}
     frames:
     - {fileID: 11400000, guid: 11de9230c09867747908272f3310089f, type: 2}
     - {fileID: 11400000, guid: d1ff8cefde9698646866f7c141843e06, type: 2}
@@ -121,7 +122,7 @@ MonoBehaviour:
       - {fileID: 11400000, guid: 46ae190248476e842af4b57ea6a3cda0, type: 2}
       - {fileID: 11400000, guid: 3b473382b8f8fe741b6c4aaa3f78564f, type: 2}
     entityStatus:
-      keys: 00000000010000000200000003000000040000000500000006000000
+      keys: 0000000001000000020000000300000004000000050000000600000007000000
       values:
       - {fileID: 0}
       - {fileID: 11400000, guid: 7af3cbb2fb9300d4c8a9b333e8a5b7a4, type: 2}
@@ -130,6 +131,7 @@ MonoBehaviour:
       - {fileID: 11400000, guid: 76af4e2f09571714081bb9cb6f83c0a3, type: 2}
       - {fileID: 11400000, guid: c751ea5480127c74fab9380a7b894335, type: 2}
       - {fileID: 11400000, guid: 089f5b6503687a44ca2eb812dcd04d46, type: 2}
+      - {fileID: 11400000, guid: 3b43fd75a7bed1d409bae48e0a88fa7c, type: 2}
     arrowPoolData: {fileID: 11400000, guid: 64f7846c9740e524a979a96964270b2f, type: 2}
   ui:
     baseComponentDisplay: {fileID: 6816767632338375938, guid: 6e102cf7754096846b421344887ef18e, type: 3}
@@ -138,6 +140,7 @@ MonoBehaviour:
     flyingDamageFontAsset: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
     flyingDamageCritFontAsset: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
     critIcon: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
+    statusDisplayPrefab: {fileID: 4648805977819339727, guid: a644c3a9cc6d76d49933b728bcd7e368, type: 3}
     tileGroundMaterials:
       keys: 000000000100000002000000030000000400000005000000
       values:
