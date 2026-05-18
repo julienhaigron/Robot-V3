@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 6534208298994374191}
   - component: {fileID: 3787346691824432866}
   m_Layer: 5
-  m_Name: Test
+  m_Name: MissionPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

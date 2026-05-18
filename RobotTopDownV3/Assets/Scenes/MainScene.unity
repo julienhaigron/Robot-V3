@@ -270,14 +270,14 @@ Light:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 705507993}
   m_Enabled: 1
-  serializedVersion: 11
+  serializedVersion: 12
   m_Type: 1
   m_Color: {r: 1, g: 0.95686275, b: 0.8392157, a: 1}
   m_Intensity: 1
   m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
-  m_CookieSize: 10
+  m_CookieSize2D: {x: 10, y: 10}
   m_Shadows:
     m_Type: 2
     m_Resolution: -1
@@ -515,6 +515,14 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 725994800540239176, guid: eae536bd8400d134eab9a71e46db670f, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 725994800540239176, guid: eae536bd8400d134eab9a71e46db670f, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1752049526825165665, guid: eae536bd8400d134eab9a71e46db670f, type: 3}
       propertyPath: m_Pivot.x
       value: 0
@@ -673,6 +681,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7127382860238066339, guid: eae536bd8400d134eab9a71e46db670f, type: 3}
       propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7240999253425215837, guid: eae536bd8400d134eab9a71e46db670f, type: 3}
+      propertyPath: m_SizeDelta.y
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8522642414582645558, guid: eae536bd8400d134eab9a71e46db670f, type: 3}

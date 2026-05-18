@@ -5,7 +5,7 @@ using Sirenix.OdinInspector;
 using UnityEngine.UI;
 using TMPro;
 
-public class Test : AUIPanel
+public class MissionPanel : AUIPanel
 {
 	[SerializeField] private Image m_returnBtn;
 	[SerializeField] private TextMeshProUGUI m_title;
