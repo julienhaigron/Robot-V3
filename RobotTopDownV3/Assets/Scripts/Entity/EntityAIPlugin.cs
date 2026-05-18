@@ -276,7 +276,7 @@ public class EntityAIPlugin : EntityPlugin
 		{
 			foreach(EntityActionEnumID actionID in weapon.Data.knownedActions)
 			{
-				if (GameAssets.current.game.entityActionsData[actionID].maxDistance >= _entity.Displacement.Coordinates.GetTile().Distance)
+				if (GameAssets.current.game.entityActionsData[actionID].GetMaxRange(TurnManager.Instance.GetAction(actionID, m_linkedEntity.ID, weapon.ID, TurnManager.Instance.currentTick), m_linkedEntity, _entity) >= _entity.Displacement.Coordinates.GetTile().Distance)
 				{
 					_weapon = weapon.ID;
 					return true;

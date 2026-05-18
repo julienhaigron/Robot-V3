@@ -64,8 +64,7 @@ public class SpecialAction : AEntityAction
 		if (Data.targetType == EntityActionData.TargetType.Self && _tile.coordinates.ID == TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntityID))
 			return true;
 
-		Entity user = GameManager.Instance.GetEntityFromID(performingEntityID);
-		int maxDist = Data.maxDistance;
+		int maxDist = Data.GetMaxRange(this, PerformingEntity, null);
 		bool isInRange = GridManager.Instance.GetTilesInVisionRange(GridManager.Instance.Tiles[TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntityID)], maxDist, false, true).Contains(_tile);
 
 		if (Data.targetType == EntityActionData.TargetType.Tile && isInRange)

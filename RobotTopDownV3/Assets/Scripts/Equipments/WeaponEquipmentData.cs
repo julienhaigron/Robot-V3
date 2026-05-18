@@ -18,7 +18,7 @@ public class WeaponEquipmentData : EntityEquipmentData
         Mid,
         Long
 	}
-    public SerializableDictionary<DistanceType, float> distanceAccuracyBonus;
+    //public SerializableDictionary<DistanceType, float> distanceAccuracyBonus;
 
     //animation
     public string attackAnimationSuccessId;

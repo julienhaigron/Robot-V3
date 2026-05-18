@@ -258,7 +258,8 @@ public class EntityEquipmentPlugin : EntityPlugin
 
 			float radians = rayAngle * Mathf.Deg2Rad;
 			Vector3 aimedPosition = new Vector3(Mathf.Sin(radians), 0, Mathf.Cos(radians));
-			RaycastHit[] hits = Physics.RaycastAll(m_linkedEntity.Displacement.Coordinates.GetTile().transform.position, aimedPosition * _action.Data.maxDistance, _action.Data.maxDistance * (2 * Tile.innerRadius), GameConfig.current.input.tileInternRayCastLayer);
+			int maxDistance = _action.Data.GetMaxRange(_action, m_linkedEntity, null);
+			RaycastHit[] hits = Physics.RaycastAll(m_linkedEntity.Displacement.Coordinates.GetTile().transform.position, aimedPosition * maxDistance, maxDistance * (2 * Tile.innerRadius), GameConfig.current.input.tileInternRayCastLayer);
 			foreach (RaycastHit hitInfo in hits)
 			{
 				if (hitInfo.transform.TryGetComponent(out Tile tile) && !tilesInRange.Contains(tile)
@@ -277,6 +278,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 	{
 		List<Tile> tilesInRange = new();
 		EntityActionData attackData = GameAssets.current.game.entityActionsData[_action.enumID];
+		int maxDistance = _action.Data.GetMaxRange(_action, m_linkedEntity, null);
 
 		Weapon usedWeapon = null;
 		foreach (string weaponID in m_weapons.Keys)
@@ -309,7 +311,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 			case EntityActionData.AOEType.Cone:
 
 				tilesInRange.AddRange(GridManager.Instance.GetTilesInCone(m_linkedEntity.Displacement.Coordinates.GetTile()
-						, attackData.maxDistance, m_linkedEntity.Displacement.CurrentOrientation, attackData.coneType, _isThisTurn));
+						, maxDistance, m_linkedEntity.Displacement.CurrentOrientation, attackData.coneType, _isThisTurn));
 				break;
 			case EntityActionData.AOEType.Arc:
 
@@ -328,7 +330,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 
 					float radians = rayAngle * Mathf.Deg2Rad;
 					Vector3 aimedPosition = new Vector3(Mathf.Sin(radians), 0, Mathf.Cos(radians));
-					RaycastHit[] hits = Physics.RaycastAll(m_linkedEntity.Displacement.Coordinates.GetTile().transform.position, aimedPosition * attackData.maxDistance, attackData.maxDistance * (2 * Tile.innerRadius), GameConfig.current.input.tileInternRayCastLayer);
+					RaycastHit[] hits = Physics.RaycastAll(m_linkedEntity.Displacement.Coordinates.GetTile().transform.position, aimedPosition * maxDistance, maxDistance * (2 * Tile.innerRadius), GameConfig.current.input.tileInternRayCastLayer);
 					foreach (RaycastHit hitInfo in hits)
 					{
 						if (hitInfo.transform.TryGetComponent(out Tile tile) && !tilesInRange.Contains(tile)
@@ -359,13 +361,13 @@ public class EntityEquipmentPlugin : EntityPlugin
 		float coverRatio = GridManager.Instance.IsThereCoverBeween(_attackAction.PerformingEntity, targetEntity, doesWinPFC )
 				? GameConfig.current.game.entityCoverBonus
 				: 0f;
-		// float distanceRatio = usedWeapon.distanceAccuracyBonus[GetWeaponDistanceTypeFrom(targetEntity, usedWeapon, doesWinPFC)];
+		 float distanceRatio = GameConfig.current.game.distanceTypeSpreadEvaluation[GetWeaponDistanceTypeFrom(targetEntity, _attackAction, doesWinPFC)];
 
 		float targetEvasionScore =
 			targetCamo
 			+ evationRatio
-			+ coverRatio;
-		//  + distanceRatio;
+			+ coverRatio
+		    + distanceRatio;
 
 		float userPerception = m_linkedEntity.Data.GetStaticPerceptionBonus(true);
 		float userAim = _attackAction.Data.type == EntityActionData.ActionType.DistanceAttack
@@ -408,8 +410,8 @@ public class EntityEquipmentPlugin : EntityPlugin
 		if (coverRatio > 0)
 			detailsBuilder.AppendLine($"Cover Bonus: +{coverRatio:0.##}");
 
-		// if (distanceRatio != 0)
-		//		detailsBuilder.AppendLine($"Distance Modifier: {distanceRatio:+0.##;-0.##;0}");
+		 if (distanceRatio != 0)
+			detailsBuilder.AppendLine($"Distance Modifier: {distanceRatio:+0.##;-0.##;0}");
 
 		detailsBuilder.AppendLine($"<b>Total Evasion: {targetEvasionScore:F2}</b>");
 		detailsBuilder.AppendLine();
@@ -438,32 +440,58 @@ public class EntityEquipmentPlugin : EntityPlugin
 		return isAttackSuccessful;
 	}
 
-	public WeaponEquipmentData.DistanceType GetWeaponDistanceTypeFrom ( Entity _target, WeaponEquipmentData _weaponData, bool _didAttackerWinPFC )
+	public WeaponEquipmentData.DistanceType GetWeaponDistanceTypeFrom ( Entity _target, AEntityAction _action, bool _didAttackerWinPFC )
 	{
 		int attackerPosition = _didAttackerWinPFC ? TurnManager.Instance.GetPositionOfEntityAtEndOfRound(_target.ID) : TurnManager.Instance.GetPositionOfEntityAtEndOfRound(_target.ID);
-		int defenderPosition = !_didAttackerWinPFC ? TurnManager.Instance.GetPositionOfEntityAtEndOfRound(_target.ID) : TurnManager.Instance.GetPositionOfEntityAtEndOfRound(_target.ID);
+		int defenderPosition = !_didAttackerWinPFC ? TurnManager.Instance.GetPositionOfEntityAtEndOfRound(m_linkedEntity.ID) : TurnManager.Instance.GetPositionOfEntityAtEndOfRound(m_linkedEntity.ID);
 		float actualDistanceFromTarget = Vector3.Distance(GridManager.Instance.Tiles[attackerPosition].transform.position, GridManager.Instance.Tiles[defenderPosition].transform.position) / (Tile.outerRadius * 2f);
-		
-		//what to do with this?
-		//float distanceRelativeToWeaponRangePercentage = actualDistanceFromTarget / (float)_weaponData.range;
 
-		/*float currentTotal = 0;
+		int maxDistance = _action.Data.GetMaxRange(_action, m_linkedEntity, _target);
+		float distanceRelativeToWeaponRangePercentage = actualDistanceFromTarget / (float)maxDistance;
+
+		float currentTotal = 0;
 		for (int i = 0; i < GameConfig.current.game.distanceTypeSpreadEvaluation.Keys.Count; i++)
 		{
 			if (distanceRelativeToWeaponRangePercentage < currentTotal + GameConfig.current.game.distanceTypeSpreadEvaluation[(WeaponEquipmentData.DistanceType)i])
 				return (WeaponEquipmentData.DistanceType)i;
 
 			currentTotal += GameConfig.current.game.distanceTypeSpreadEvaluation[(WeaponEquipmentData.DistanceType)i];
-		}*/
+		}
 		return WeaponEquipmentData.DistanceType.Long;
 	}
 
-	public bool StatusRoll ( Entity _entity, AEntityStatus _effect )
+	public bool StatusRoll ( Entity _target, AEntityStatus _effect, EntityActionData _actionData, EntityEquipmentData _equipmentData )
 	{
-		bool isAttackSuccessful = Random.Range(0, 100) > _effect.hitProbability;
+		float actionProbability = _actionData.statusHitProbability;
+		float equipmentProbability = _equipmentData.statusHitProbability;
+		float userStatusChance = m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.StatBonus.StatType.StatusChance);
+		float targetResistance =_target.Data.GetStatBonusFromAll(EntityEquipmentData.StatBonus.StatType.StatusResistance);
+		float hitProba = actionProbability+ equipmentProbability+ userStatusChance- targetResistance;
+		float roll = Random.Range(0f, 1f);
+		bool isAttackSuccessful = hitProba >= 1f || roll <= hitProba;
 
-		//TODO
-		//take possible build buff into acount
+		StringBuilder detailsBuilder = new();
+		detailsBuilder.AppendLine($"<b>{m_linkedEntity.ID}</b> tries to apply <b>{_effect.GetType().Name}</b> on <b>{_target.ID}</b>");
+		detailsBuilder.AppendLine();
+		detailsBuilder.AppendLine("<b>Status Chance Calculation</b>");
+		detailsBuilder.AppendLine($"Base Chance: {actionProbability:+0.##%;-0.##%;0%}");
+		detailsBuilder.AppendLine($"Equipment Bonus: {equipmentProbability:+0.##%;-0.##%;0%}");
+		detailsBuilder.AppendLine($"Status Chance Bonus: {userStatusChance:+0.##%;-0.##%;0%}");
+		detailsBuilder.AppendLine($"Target Resistance: -{targetResistance:0.##%}");
+		detailsBuilder.AppendLine();
+		detailsBuilder.AppendLine($"<b>Final Chance: {Mathf.Clamp01(hitProba):P0}</b>");
+		if (hitProba >= 1f)
+			detailsBuilder.AppendLine("<color=green><b>Guaranteed Apply</b></color>");
+		else 
+		{
+			detailsBuilder.AppendLine($"Roll: {roll:F2}");
+			detailsBuilder.AppendLine(isAttackSuccessful ? "<color=green><b>Status Applied</b></color>" : "<color=red><b>Status Resisted</b></color>");
+		}
+
+		string detailsDescription = detailsBuilder.ToString();
+		LogConsole.LogDetails details = new("status_" + LogConsole.Instance.LogsDetails.Keys.Count, "Status Details", detailsDescription);
+		LogConsole.AddLog(m_linkedEntity.ID + (isAttackSuccessful ? " applies " : " fails to apply ")
+			+ _effect.GetType().Name + " on " + _target.ID, LogConsole.LogEventType.AttackResolution, details);
 
 		return isAttackSuccessful;
 	}

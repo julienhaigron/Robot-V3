@@ -18,6 +18,10 @@ public class EntityEquipmentData : ScriptableObject
     public EntityActionEnumID[] knownedActions;
     [BoxGroup(GroupID ="PassiveEffects")]
     public AEntityPassiveEffect.PassiveEffectContainer[] passiveEffects;
+    [BoxGroup(GroupID ="Status")]
+    [Range(0f, 1f)] public float statusHitProbability = .5f;
+
+
 
     public enum EquipmentType { Frame, Brain, Reactor, Occultor, NeuronalMembrane, Weapon, Tool, Armor, Chipset }
 

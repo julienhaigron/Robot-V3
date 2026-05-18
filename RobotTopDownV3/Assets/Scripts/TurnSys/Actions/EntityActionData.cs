@@ -23,7 +23,6 @@ public class EntityActionData : ScriptableObject
 	public string afterPerformAnimationKey;
 
 	[Title("Condition")]
-
 	public enum ConditionType { Noone, DidNotMoveThisTurn, DidNotAttackThisTurn/*, IsTargetMarked*/ }
 	public ConditionType conditionType = ConditionType.Noone;
 
@@ -124,7 +123,8 @@ public class EntityActionData : ScriptableObject
 	public WeaponEquipmentData.DamageType[] usedDamageChannels;
 
 	[Title("Effect")]
-	//public AEntityStatus[] appliableStatus;
+	public AEntityStatus[] appliableStatus;
+	public float statusHitProbability;
 	public AEntityPassiveEffect.PassiveEffectContainer[] passiveEffects;
 
 	[Title("Misc")]

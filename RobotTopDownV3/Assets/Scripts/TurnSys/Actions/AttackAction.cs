@@ -15,6 +15,7 @@ public class AttackAction : AEntityAction
 	
 	//damages
 	public bool[] areStatusesSuccess;
+	public short[] statusIds;
 	public int[] damages;
 	public short[] damageTypes;
 	public int pfcResult = (int)EntityActionData.PFCResultType.Failure;
@@ -43,11 +44,15 @@ public class AttackAction : AEntityAction
 
 			if (isAttackSuccessfull)
 			{
-				/*areStatusesSuccess = new bool[statusIds.Length];
+				statusIds = new short[Data.appliableStatus.Length];
+				for (int i = 0; i < Data.appliableStatus.Length; i++)
+					statusIds[i] = (short)Data.appliableStatus[i].enumID;
+				areStatusesSuccess = new bool[statusIds.Length];
 				for (int i = 0; i < statusIds.Length; i++)
 				{
-					areStatusesSuccess[i] = PerformingEntity.Equipment.StatusRoll(TargetEntity, GameAssets.current.game.entityStatus[(EntityStatusEnumID)statusIds[i]]);
-				}*/
+					areStatusesSuccess[i] = PerformingEntity.Equipment.StatusRoll(TargetEntity, GameAssets.current.game.entityStatus[(EntityStatusEnumID)statusIds[i]]
+						, Data, GameAssets.current.equipments[linkedEquipmentId]);
+				}
 
 				Dictionary<WeaponEquipmentData.DamageType, int> damagesDealt =
 					PerformingEntity.Equipment.Weapons[attackingWeaponId].GetDamages(PerformingEntity, TargetEntity, this, (EntityActionData.PFCResultType)pfcResult);
@@ -134,7 +139,8 @@ public class AttackAction : AEntityAction
 		Entity user = GameManager.Instance.GetEntityFromID(performingEntityID);
 		Weapon attackingWeapon = user.Equipment.Weapons[linkedEquipmentId];
 		Tile from = GridManager.Instance.Tiles[TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntityID)];
-		List<Tile> tilesInRange = GridManager.Instance.GetTilesInVisionRange(from, Data.maxDistance, attackIgnoresObstacles, true);
+		int maxDist = Data.GetMaxRange(this, PerformingEntity, null);
+		List<Tile> tilesInRange = GridManager.Instance.GetTilesInVisionRange(from, maxDist, attackIgnoresObstacles, true);
 		bool isInRange = tilesInRange.Contains(_tile);
 
 		if (Data.targetType == EntityActionData.TargetType.Tile && isInRange)

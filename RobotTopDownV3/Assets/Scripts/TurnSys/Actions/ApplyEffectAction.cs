@@ -18,9 +18,7 @@ public class ApplyEffectAction : SpecialAction
 		if (Data.isAoe)
 		{
 			Entity user = GameManager.Instance.GetEntityFromID(performingEntityID);
-			int maxDist = PerformingEntity.Equipment.Weapons.ContainsKey(linkedEquipmentId) ?
-				Data.maxDistance
-				: PerformingEntity.Equipment.Tools[linkedEquipmentId].Data.range;
+			int maxDist = Data.GetMaxRange(this, PerformingEntity, null);
 			List<Tile> tilesInEffectRange = GridManager.Instance.GetTilesInVisionRange(GridManager.Instance.Tiles[TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntityID)], maxDist, false, true);
 			foreach(Tile tile in tilesInEffectRange)
 			{
