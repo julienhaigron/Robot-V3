@@ -305,6 +305,20 @@ public class Tile : MonoBehaviour
 			return m_nextTurnActionContent.Entity;
 	}
 
+	public bool TryGetEntity ( bool _isThisTurn, out Entity _entity )
+	{
+		if (_isThisTurn)
+		{
+			_entity = m_currentContent.Entity;
+			return m_currentContent.Entity != null;
+		}
+		else
+		{
+			_entity = m_nextTurnActionContent.Entity;
+			return m_nextTurnActionContent.Entity != null;
+		}
+	}
+
 	public void SetItem(Item _item, bool _isThisTurn )
 	{
 		if (_isThisTurn)

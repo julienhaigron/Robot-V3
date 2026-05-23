@@ -7,120 +7,141 @@ using System.Linq;
 public class AttackAction : AEntityAction
 {
 	public string attackingWeaponId;
-	public int targetedEntityID = -1;
-	public Entity TargetEntity => GameManager.Instance.GetEntityFromID(targetedEntityID);
-	public int targetTileID = -1;
-	public Tile TargetTile => GridManager.Instance.Tiles[targetTileID];
-	public bool isAttackSuccessfull = false;
-	
-	//damages
-	public bool[] areStatusesSuccess;
-	public short[] statusIds;
-	public int[] damages;
-	public short[] damageTypes;
-	public int pfcResult = (int)EntityActionData.PFCResultType.Failure;
+	public SingleAttackInfo[] attacksInfos;
+
+	public class SingleAttackInfo : INetworkSerializable
+	{
+		public bool isAttackSuccessfull;
+		public bool[] areStatusesSuccess;
+		public short[] statusIds;
+		public int[] damages;
+		public short[] damageTypes;
+		public int pfcResult;
+		public void NetworkSerialize<T> ( BufferSerializer<T> serializer ) where T : IReaderWriter
+		{
+			serializer.SerializeValue(ref isAttackSuccessfull);
+			serializer.SerializeValue(ref areStatusesSuccess);
+			serializer.SerializeValue(ref statusIds);
+			serializer.SerializeValue(ref damages);
+			serializer.SerializeValue(ref damageTypes);
+			serializer.SerializeValue(ref pfcResult);
+		}
+	}
 
 	public override void NetworkSerialize<T> ( BufferSerializer<T> serializer )
 	{
 		base.NetworkSerialize(serializer);
 		serializer.SerializeValue(ref attackingWeaponId);
-		serializer.SerializeValue(ref targetedEntityID);
-		serializer.SerializeValue(ref targetTileID);
-		serializer.SerializeValue(ref isAttackSuccessfull);
-		serializer.SerializeValue(ref areStatusesSuccess);
-		serializer.SerializeValue(ref damages);
-		serializer.SerializeValue(ref damageTypes);
-		serializer.SerializeValue(ref pfcResult);
+		serializer.SerializeValue(ref attacksInfos);
+	}
+
+	public override void ConflictCheckPrewarm ()
+	{
+		base.ConflictCheckPrewarm();
+
+		attacksInfos = new SingleAttackInfo[targetedEntityIDs.Length];
+		for (int i = 0; i < attacksInfos.Length; i++)
+			attacksInfos[i] = new();
+	}
+
+	public override ActionConflictResultInfo CheckConflict ( AEntityAction _otherAction, bool _isCheck = true )
+	{
+		for (int i = 0; i < targetedEntityIDs.Length; i++)
+		{
+			if (targetedEntityIDs[i] == _otherAction.performingEntityID)
+				attacksInfos[i].pfcResult = (int)EntityActionData.PFC(Data, _otherAction.Data);
+		}
+
+		return new() { isFirstActionConflicted = false, isSecondActionConflicted = false };
 	}
 
 	public override void Prepare ( Entity.EntityState _state )
 	{
-		if (targetedEntityID != -1 || (targetedEntityID == -1 && PerformingEntity.AI.TargetedEntity != null)
-			|| (Data.isAoe && targetTileID != -1))
+		if (targetedEntityIDs != null || (Data.isAoe && targetTileIDs != null))
 		{
-
-			targetedEntityID = PerformingEntity.AI.TargetedEntity.ID;
-			isAttackSuccessfull = Data.isAoe ? true : PerformingEntity.Equipment.AttackRoll(this);
-
-			if (isAttackSuccessfull)
+			//targetedEntityID = PerformingEntity.AI.TargetedEntity.ID;
+			for (int attackCount = 0; attackCount < attacksInfos.Length; attackCount++)
 			{
-				statusIds = new short[Data.appliableStatus.Length];
-				for (int i = 0; i < Data.appliableStatus.Length; i++)
-					statusIds[i] = (short)Data.appliableStatus[i].enumID;
-				areStatusesSuccess = new bool[statusIds.Length];
-				for (int i = 0; i < statusIds.Length; i++)
-				{
-					areStatusesSuccess[i] = PerformingEntity.Equipment.StatusRoll(TargetEntity, GameAssets.current.game.entityStatus[(EntityStatusEnumID)statusIds[i]]
-						, Data, GameAssets.current.equipments[linkedEquipmentId]);
-				}
+				SingleAttackInfo attackInfo = attacksInfos[attackCount];
+				Entity targetEntity = GameManager.Instance.GetEntityFromID(targetedEntityIDs[attackCount]);
+				attackInfo.isAttackSuccessfull = Data.isAoe ? true : PerformingEntity.Equipment.AttackRoll(this, attackInfo, targetEntity);
 
-				Dictionary<WeaponEquipmentData.DamageType, int> damagesDealt =
-					PerformingEntity.Equipment.Weapons[attackingWeaponId].GetDamages(PerformingEntity, TargetEntity, this, (EntityActionData.PFCResultType)pfcResult);
-
-				List<int> tmpDamages = new();
-				List<short> tmpDamageTypes = new();
-				foreach (KeyValuePair<WeaponEquipmentData.DamageType, int> pair in damagesDealt)
+				if (attackInfo.isAttackSuccessfull)
 				{
-					tmpDamages.Add(pair.Value);
-					tmpDamageTypes.Add((short)pair.Key);
+					attackInfo.statusIds = new short[Data.appliableStatus.Length];
+					for (int i = 0; i < Data.appliableStatus.Length; i++)
+						attackInfo.statusIds[i] = (short)Data.appliableStatus[i].enumID;
+					attackInfo.areStatusesSuccess = new bool[attackInfo.statusIds.Length];
+					for (int i = 0; i < attackInfo.statusIds.Length; i++)
+					{
+						attackInfo.areStatusesSuccess[i] = PerformingEntity.Equipment.StatusRoll(targetEntity, GameAssets.current.game.entityStatus[(EntityStatusEnumID)attackInfo.statusIds[i]]
+							, this, GameAssets.current.equipments[linkedEquipmentId]);
+					}
+
+					Dictionary<WeaponEquipmentData.DamageType, int> damagesDealt =
+						PerformingEntity.Equipment.Weapons[attackingWeaponId].GetDamages(PerformingEntity, targetEntity, this, (EntityActionData.PFCResultType)attackInfo.pfcResult);
+
+					List<int> tmpDamages = new();
+					List<short> tmpDamageTypes = new();
+					foreach (KeyValuePair<WeaponEquipmentData.DamageType, int> pair in damagesDealt)
+					{
+						tmpDamages.Add(pair.Value);
+						tmpDamageTypes.Add((short)pair.Key);
+					}
+					attackInfo.damages = tmpDamages.ToArray();
+					attackInfo.damageTypes = tmpDamageTypes.ToArray();
 				}
-				damages = tmpDamages.ToArray();
-				damageTypes = tmpDamageTypes.ToArray();
 			}
 		}
-		else if (targetedEntityID == -1)
+		else if (targetedEntityIDs != null)
 		{
 			//TODO : handle this situation
 			Debug.Log("ERROR : no available target");
 		}
 	}
 
-	public override ActionConflictResultInfo CheckConflict ( AEntityAction _otherAction, bool _isCheck = true )
-	{
-		pfcResult = (int)EntityActionData.PFC(Data, _otherAction.Data);
-		//no conflict ?
-		return new() { isFirstActionConflicted = false, isSecondActionConflicted = false};
-	}
-
 	protected override void Perform ( Entity.EntityState _state )
 	{
 		PerformingEntity.AI.DOAllPrewarmCheck(this);
-		if (targetedEntityID == -1)
+		if (targetedEntityIDs == null)
 		{
 			Debug.LogError("No target error");
-			//TODO : add no target feedback
 			base.Perform(_state);
 			EndTick();
 		}
 
-		//if enemy is in weapon range
-		bool isEnemyInWeaponRange = PerformingEntity.AI.IsEntityInWeaponRange(TargetEntity, attackingWeaponId);
-
-		if (isEnemyInWeaponRange || (Data.isAoe && targetTileID != -1))
+		for (int attackCount = 0; attackCount < attacksInfos.Length; attackCount++)
 		{
-			List<Tile> tilesInWeaponRange = Data.isAoe ? PerformingEntity.Equipment.GetTilesInAoERange(this, true) : PerformingEntity.Equipment.GetTilesInWeaponRange(this, attackingWeaponId, true);
-			base.Perform(_state);
-			foreach (Tile tile in tilesInWeaponRange)
+			//if enemy is in weapon range
+			Entity targetEntity = GameManager.Instance.GetEntityFromID(targetedEntityIDs[attackCount]);
+			bool isEnemyInWeaponRange = PerformingEntity.AI.IsEntityInWeaponRange(targetEntity, attackingWeaponId);
+
+			if (isEnemyInWeaponRange || (Data.isAoe && targetTileIDs != null))
 			{
-				tile.UI.SetOutlineColor(Color.red);
-			}
-			PerformingEntity.Equipment.Weapons[attackingWeaponId].PerformAttack(this, () =>
-			{
+				List<Tile> tilesInWeaponRange = Data.isAoe ? PerformingEntity.Equipment.GetTilesInAoERange(this, GridManager.Instance.Tiles[targetTileIDs[attackCount]], true) : PerformingEntity.Equipment.GetTilesInWeaponRange(this, attackingWeaponId, true);
+				base.Perform(_state);
 				foreach (Tile tile in tilesInWeaponRange)
 				{
-					tile.UI.ResetOutline();
+					tile.UI.SetOutlineColor(Color.red);
 				}
+				PerformingEntity.Equipment.Weapons[attackingWeaponId].PerformAttack(this, () =>
+				{
+					foreach (Tile tile in tilesInWeaponRange)
+					{
+						tile.UI.ResetOutline();
+					}
+					EndTick();
+				});
+			}
+			else
+			{
+				// => find new target or wait (or move to previous target if in sight?)
+				//Debug.Log("target not in range");
+				//DG.Tweening.DOVirtual.DelayedCall(GameConfig.current.game.actionDuration, () => EndPerform());
+				Debug.LogError("No target error");
+				base.Perform(_state);
 				EndTick();
-			});
-		}
-		else
-		{
-			// => find new target or wait (or move to previous target if in sight?)
-			//Debug.Log("target not in range");
-			//DG.Tweening.DOVirtual.DelayedCall(GameConfig.current.game.actionDuration, () => EndPerform());
-			Debug.LogError("No target error");
-			base.Perform(_state);
-			EndTick();
+			}
 		}
 	}
 
@@ -134,7 +155,7 @@ public class AttackAction : AEntityAction
 		if (Data.targetType == EntityActionData.TargetType.Self && _tile.coordinates.ID == TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntityID))
 			return true;
 
-		bool attackIgnoresObstacles = (Data.type == EntityActionData.ActionType.DistanceAttack && effects.Any(e => e.enumID == EntityPassiveEffectEnumID.TrajectoryControl)) 
+		bool attackIgnoresObstacles = (Data.type == EntityActionData.ActionType.DistanceAttack && effects.Any(e => e.enumID == EntityPassiveEffectEnumID.TrajectoryControl))
 			|| Data.targetType == EntityActionData.TargetType.Mortar;
 		Entity user = GameManager.Instance.GetEntityFromID(performingEntityID);
 		Weapon attackingWeapon = user.Equipment.Weapons[linkedEquipmentId];
@@ -145,17 +166,9 @@ public class AttackAction : AEntityAction
 
 		if (Data.targetType == EntityActionData.TargetType.Tile && isInRange)
 			return true;
-		
+
 		Entity entity = _tile.GetEntity(true);
 		return entity != null && isInRange && !entity.IsAlliedTo(GameManager.Instance.GetEntityFromID(performingEntityID).OwnerID);
-	}
-
-	public override void RegisterInteraction ( Tile _tile )
-	{
-		if (_tile.GetEntity(true))
-			targetedEntityID = _tile.GetEntity(true).ID;
-		targetTileID = _tile.coordinates.ID;
-		base.RegisterInteraction(_tile);
 	}
 
 	public override void GhostDisplay ( Entity.EntityState _state )

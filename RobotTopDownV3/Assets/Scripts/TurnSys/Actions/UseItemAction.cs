@@ -18,7 +18,7 @@ public class UseItemAction : SpecialAction
 
 	public override bool TileInteractPredicate ( Tile _tile )
 	{
-		Item usedItem = GridManager.Instance.Tiles[targetTileID].GetItem(true);
+		Item usedItem = _tile.GetItem(true);
 		return usedItem.Data.InteractPredicate(PerformingEntity, usedItem.LinkedData, usedItem) && base.TileInteractPredicate(_tile);
 	}
 
@@ -38,10 +38,13 @@ public class UseItemAction : SpecialAction
 		bool doesSelfHaveConflict = false;
 		bool doesOtherHaveConflict = false;
 
-		Item usedItem = GridManager.Instance.Tiles[targetTileID].GetItem(true);
-		if (!usedItem.Data.InteractPredicate(PerformingEntity, usedItem.LinkedData, usedItem))
+		foreach (int tileID in targetTileIDs)
 		{
-			isActionCanceled = true;
+			Item usedItem = GridManager.Instance.Tiles[tileID].GetItem(true);
+			if (!usedItem.Data.InteractPredicate(PerformingEntity, usedItem.LinkedData, usedItem))
+			{
+				isActionCanceled = true;
+			}
 		}
 
 		return new() { isFirstActionConflicted = doesSelfHaveConflict, isSecondActionConflicted = doesOtherHaveConflict };
@@ -55,8 +58,11 @@ public class UseItemAction : SpecialAction
 			return;
 		}
 
-		Item usedItem = GridManager.Instance.Tiles[targetTileID].GetItem(true);
-		usedItem.Data.Interract(PerformingEntity, usedItem.LinkedData, usedItem, EndTick);
+		foreach (int tileID in targetTileIDs)
+		{
+			Item usedItem = GridManager.Instance.Tiles[tileID].GetItem(true);
+			usedItem.Data.Interract(PerformingEntity, usedItem.LinkedData, usedItem, EndTick);
+		}
 
 		base.Perform(_state);
 		//DG.Tweening.DOVirtual.DelayedCall(GameConfig.current.game.actionDuration, EndTick);

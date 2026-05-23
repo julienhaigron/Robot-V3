@@ -14,4 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enumID: 4
   duration: 1
-  hitProbability: 50
+  icon: {fileID: 0}

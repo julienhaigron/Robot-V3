@@ -9,8 +9,8 @@ public class EntityAIPlugin : EntityPlugin
 	private List<Entity> m_entitiesInVisionRange = new();
 	private Dictionary<string, List<Entity>> m_entitiesInWeaponRange = new();
 
-	private Entity m_lastEntityTargeted;
-	public Entity TargetedEntity => m_lastEntityTargeted;
+	private List<Entity> m_lastEntitiesTargeted;
+	public List<Entity> LastTargetedEntities => m_lastEntitiesTargeted;
 
 	public struct CheckActionResultInfo
 	{
@@ -55,12 +55,21 @@ public class EntityAIPlugin : EntityPlugin
 		{
 			// if eneemy in weapon range
 			//  => shoot directly
-			m_lastEntityTargeted = GetClosestEnemyInWeaponRange(out string _weaponId, true);
-
+			m_lastEntitiesTargeted = GetEnemiesInWeaponRangeSortedByDistance(out string _weaponId, true);
 			AttackAction attackAction = (TurnManager.Instance.GetAction(availableAttackAction, m_linkedEntity.ID, availableEquipment, _recordedAction.timeAtStart) as AttackAction);
+
+			int maxAmount = Mathf.Min(availableAttackAction.GetMaxTargetAmount(attackAction, m_linkedEntity, null), m_lastEntitiesTargeted.Count);
+			int[] targetTilesID = new int[maxAmount];
+			int[] targetEntitiesID = new int[maxAmount];
+			for(int i = 0; i < maxAmount; i++)
+			{
+				targetTilesID[i] = m_lastEntitiesTargeted[i].Displacement.Coordinates.ID;
+				targetEntitiesID[i] = m_lastEntitiesTargeted[i].ID;
+			}
+
 			attackAction.attackingWeaponId = _weaponId;
-			attackAction.targetedEntityID = m_lastEntityTargeted.ID;
-			attackAction.targetTileID = m_lastEntityTargeted.Displacement.Coordinates.ID;
+			attackAction.targetedEntityIDs = targetEntitiesID;
+			attackAction.targetTileIDs = targetTilesID;
 			attackAction.Init(GameAssets.current.game.entityActionsData[availableAttackAction.enumID], availableEquipment, m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID, _recordedAction.action.timeAtStart);
 			resultInfo.ReplaceAction(attackAction, "Has enemy in range");
 		}
@@ -287,27 +296,21 @@ public class EntityAIPlugin : EntityPlugin
 		return false;
 	}
 
-	public Entity GetClosestEnemyInWeaponRange ( out string _weaponId, bool _isThisTurn = true )
+	public List<Entity> GetEnemiesInWeaponRangeSortedByDistance ( out string _weaponId, bool _isThisTurn = true )
 	{
 		GridManager.Instance.BFS(m_linkedEntity.Displacement.Coordinates.GetTile(), -1, null, _isThisTurn);
 
-		Entity closestEntity = null;
 		_weaponId = "";
 		foreach (string weaponId in m_entitiesInWeaponRange.Keys)
 		{
-			foreach (Entity entity in m_entitiesInWeaponRange[weaponId])
-			{
-				if (entity.IsAlliedTo(m_linkedEntity.OwnerID)) continue;
-
-				if (closestEntity == null || entity.Displacement.Coordinates.GetTile().Distance < closestEntity.Displacement.Coordinates.GetTile().Distance)
-				{
-					_weaponId = weaponId;
-					closestEntity = entity;
-				}
-			}
+			_weaponId = weaponId;
+			if (m_entitiesInWeaponRange[weaponId] == null || m_entitiesInWeaponRange[weaponId].Count == 0)
+				continue;
+			
+			return m_entitiesInWeaponRange[weaponId].OrderBy(e => e.Displacement.Coordinates.GetTile().Distance).ToList();
 		}
 
-		return closestEntity;
+		return new();
 	}
 
 	public Entity GetClosestEnemyInVisionRange ( bool _isThisTurn = true )
@@ -331,7 +334,7 @@ public class EntityAIPlugin : EntityPlugin
 
 	public void TargetEntity ( Entity _targetedEntity )
 	{
-		m_lastEntityTargeted = _targetedEntity;
+		m_lastEntitiesTargeted = new() { _targetedEntity };
 	}
 
 	#endregion

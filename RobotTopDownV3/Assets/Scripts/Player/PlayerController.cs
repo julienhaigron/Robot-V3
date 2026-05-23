@@ -298,7 +298,7 @@ public class PlayerController : Singleton<PlayerController>
 		bool isTargetValid = TurnManager.Instance.currentPhase == TurnManager.TurnPhase.Recording && _tile.CanInteract;
 		int distanceToTarget = isTargetValid ? _tile.Distance : 0;
 		int specificTokenCount = didContainTile ? totalCostSpend : (GameConfig.current.game.actionTokenPerRound - TurnManager.Instance.RemainingActionToken[m_selectedEntity.ID]) + distanceToTarget;
-		TurnManager.Instance.RefreshActionDisplay(m_selectedEntity.ID, specificTokenCount);
+		TurnManager.Instance.RefreshActionDisplay(m_selectedEntity.ID, false, specificTokenCount);
 		if (isTargetValid)
 		{
 			if(TurnManager.Instance.CurrentActionSelected.Data.codeType == EntityActionData.ActionCodeType.MoveThenAttack || TurnManager.Instance.CurrentActionSelected.Data.codeType == EntityActionData.ActionCodeType.TargetTileMove)

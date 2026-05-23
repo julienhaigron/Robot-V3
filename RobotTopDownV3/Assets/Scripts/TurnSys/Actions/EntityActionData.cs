@@ -97,7 +97,8 @@ public class EntityActionData : ScriptableObject
 		Circle,
 		Ray,
 		Cone,
-		Arc
+		Arc,
+		Chain
 	}
 	[ShowIf("@isAoe")]
 	public AOEType aoeType = AOEType.Circle;
@@ -107,7 +108,11 @@ public class EntityActionData : ScriptableObject
 	public int arcRadius = 1;
 	[ShowIf("@isAoe && aoeType == AOEType.Ray"), Min(1)]
 	public int rayDiameter = 1;
-	
+	[ShowIf("@isAoe && aoeType == AOEType.Chain"), Min(1)]
+	public int maxChainedTarget = 1;
+	[ShowIf("@isAoe && aoeType == AOEType.Chain"), Min(1)]
+	public float damageRecutionOnChain = .1f;
+
 	public enum ConeType
 	{
 		Thin,
@@ -135,10 +140,10 @@ public class EntityActionData : ScriptableObject
 
 	public enum PFCResultType
 	{
+		Failure,
 		FirstWins,
 		SecondWins,
-		Equal,
-		Failure
+		Equal
 	}
 
 	public static PFCResultType PFC ( EntityActionData _firstAction, EntityActionData _secondAction )

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
+using System.Linq;
 
 public class BulletWeapon : Weapon
 {
@@ -54,19 +55,48 @@ public class BulletWeapon : Weapon
 		m_onPerformAttackEnd = _onPerformEnd;
 		//m_entitiesHitByLastShot.Clear();
 
-		Entity performingEntity = GameManager.Instance.GetEntityFromID(_attackAction.performingEntityID);
-		Entity targetEntity = GameManager.Instance.GetEntityFromID((int)_attackAction.targetedEntityID);
-		Vector3 targetPosition = targetEntity.Skin.Center.position;
+		if (m_shootCR != null)
+			StopCoroutine(m_shootCR);
+		m_shootCR = StartCoroutine(ShootCR(_attackAction));
+	}
 
-		//1) aim at position
-		if (_attackAction.isAttackSuccessfull)
+
+	private IEnumerator ShootCR ( AttackAction _attackAction )
+	{
+		int lastSuccessfullAttackIndex = -1;
+		for(int i = 0; i < _attackAction.attacksInfos.Length; i++)
 		{
+			if (_attackAction.attacksInfos[i].isAttackSuccessfull)
+				lastSuccessfullAttackIndex = i;
+		}
+		for (int attackCount = 0; attackCount < _attackAction.attacksInfos.Length; attackCount++)
+		{
+			AttackAction.SingleAttackInfo attackInfo = _attackAction.attacksInfos[attackCount];
+			Entity targetEntity = GameManager.Instance.GetEntityFromID((int)_attackAction.targetedEntityIDs[attackCount]);
+			Vector3 targetPosition = targetEntity.Skin.Center.position;
 			List<Entity> targetEntities = new();
 			EntityActionData attackData = GameAssets.current.game.entityActionsData[_attackAction.enumID];
 
+			//1) aim at position
+			if (attackInfo.isAttackSuccessfull)
+			{
+				m_user.Skin.VisualyAimAt(_attackAction.attackingWeaponId, targetPosition);
+			}
+			else
+			{
+				//show failure
+				Vector3 OT = (targetPosition - m_bulletPoint.position).normalized;
+				Vector3 perpendicular = Vector3.Cross(OT, Vector3.up).normalized;
+				float distance = 1f;
+				Vector3 adjacentPos = UnityEngine.Random.Range(0, 2) == 0 ? targetPosition + perpendicular * distance : targetPosition - perpendicular * distance;
+				m_user.Skin.VisualyAimAt(_attackAction.attackingWeaponId, adjacentPos);
+			}
+
+			yield return m_aimDurationWFS;
+
 			if (attackData.isAoe)
 			{
-				List<Tile> tilesInRange = m_user.Equipment.GetTilesInAoERange(_attackAction, true);
+				List<Tile> tilesInRange = m_user.Equipment.GetTilesInAoERange(_attackAction, GridManager.Instance.Tiles[_attackAction.targetTileIDs[attackCount]], true);
 				foreach (Tile tile in tilesInRange)
 				{
 					Entity entityOnTIle = tile.GetEntity(true);
@@ -75,9 +105,9 @@ public class BulletWeapon : Weapon
 				}
 
 				Dictionary<WeaponEquipmentData.DamageType, int> damages = new Dictionary<WeaponEquipmentData.DamageType, int>();
-				for (int i = 0; i < m_lastPerformedAction.damageTypes.Length; i++)
+				for (int i = 0; i < attackInfo.damageTypes.Length; i++)
 				{
-					damages.Add((WeaponEquipmentData.DamageType)m_lastPerformedAction.damageTypes[i], m_lastPerformedAction.damages[i]);
+					damages.Add((WeaponEquipmentData.DamageType)attackInfo.damageTypes[i], attackInfo.damages[i]);
 				}
 
 				foreach (Entity entity in targetEntities)
@@ -86,12 +116,11 @@ public class BulletWeapon : Weapon
 					{
 						entity.Equipment.TakeDamage(new EntityEquipmentPlugin.TakeDamageCallback() { damages = damages });
 
-						/*//aplly status here
-						for (int i = 0; i < _attackAction.areStatusesSuccess.Length; i++)
+						for (int j = 0; j < attackInfo.areStatusesSuccess.Length; j++)
 						{
-							if (_attackAction.areStatusesSuccess[i])
-								GameAssets.current.game.entityStatus[(EntityStatusEnumID)_attackAction.statusIds[i]].ApplyStatus(entity);
-						}*/
+							if (attackInfo.areStatusesSuccess[j])
+								entity.AddStatus((EntityStatusEnumID)attackInfo.statusIds[j]);
+						}
 
 						foreach (AEntityPassiveEffect.PassiveEffectContainer passiveEffectID in m_lastPerformedAction.effects)
 						{
@@ -111,84 +140,65 @@ public class BulletWeapon : Weapon
 
 				//TODO : add aoe damage anim/viosual/effect here
 				DOVirtual.DelayedCall(1f, () => EndAttack(_attackAction));
-				return;
 			}
 			else
-				GameManager.Instance.GetEntityFromID(_attackAction.targetedEntityID);
-
-			performingEntity.Skin.VisualyAimAt(_attackAction.attackingWeaponId, targetPosition);
-		}
-		else
-		{
-			//show failure
-			Vector3 OT = (targetPosition - m_bulletPoint.position).normalized;
-			Vector3 perpendicular = Vector3.Cross(OT, Vector3.up).normalized;
-			float distance = 1f;
-			Vector3 adjacentPos = UnityEngine.Random.Range(0, 2) == 0 ? targetPosition + perpendicular * distance : targetPosition - perpendicular * distance;
-			performingEntity.Skin.VisualyAimAt(_attackAction.attackingWeaponId, adjacentPos);
-		}
-
-		//2) shoot at aimed position
-		if (m_shootCR != null)
-			StopCoroutine(m_shootCR);
-		m_shootCR = StartCoroutine(ShootCR(_attackAction));
-	}
-
-
-	private IEnumerator ShootCR ( AttackAction _attackAction )
-	{
-		yield return m_aimDurationWFS;
-		Entity targetEntity = GameManager.Instance.GetEntityFromID((int)_attackAction.targetedEntityID);
-		int hitAmount = _attackAction.Data.GetHitAmount(_attackAction, m_user, targetEntity);
-		for (int i = 0; i < hitAmount; i++)
-		{
-			m_bulletPool.Get<Projectile>(m_bulletPoint.transform.position, m_bulletPoint.rotation).SetProjectileDataAndLaunch(m_bulletData,(Entity entity) => OnBulletHit(entity, i == hitAmount-1));
-
-			yield return m_timeBetweenBulletsWFS;
+			{
+				int hitAmount = _attackAction.Data.GetHitAmount(_attackAction, m_user, targetEntity);
+				bool hasTrajectoryProjectileBuff = m_lastPerformedAction.effects.Any(e => e.enumID == EntityPassiveEffectEnumID.TrajectoryControl);
+				for (int i = 0; i < hitAmount; i++)
+				{
+					bool isLastBullet = i == hitAmount - 1 && attackCount == lastSuccessfullAttackIndex;
+					m_bulletPool.Get<Projectile>(m_bulletPoint.transform.position, m_bulletPoint.rotation).SetProjectileDataAndLaunch(
+						m_bulletData
+						, ( Entity entity ) => OnBulletHit(entity, isLastBullet, attackInfo)
+						, () => OnBulletDespawn(isLastBullet)
+						, hasTrajectoryProjectileBuff);
+					yield return m_timeBetweenBulletsWFS;
+				}
+			}
 		}
 
 		yield return m_shootCooldownDurationWFS;
-		
-		if (!_attackAction.isAttackSuccessfull)
+
+		if (lastSuccessfullAttackIndex == -1)
 			EndAttack(m_lastPerformedAction);
 
 		m_shootCR = null;
 	}
 
-	private void OnBulletHit ( Entity _entityHit, bool _isLastBullet )
+	private void OnBulletHit ( Entity _entityHit, bool _isLastBullet, AttackAction.SingleAttackInfo _attackInfo )
 	{
-		if (/*m_entitiesHitByLastShot.Contains(_entityHit) ||*/ m_lastPerformedAction == null || m_lastPerformedAction.damageTypes == null)
+		if (_attackInfo.damageTypes == null || !_attackInfo.isAttackSuccessfull)
 			return;
 
-		//m_entitiesHitByLastShot.Add(_entityHit);
-		//apply damage
 		Dictionary<WeaponEquipmentData.DamageType, int> damages = new Dictionary<WeaponEquipmentData.DamageType, int>();
-		for (int i = 0; i < m_lastPerformedAction.damageTypes.Length; i++)
-		{
-			damages.Add((WeaponEquipmentData.DamageType)m_lastPerformedAction.damageTypes[i], m_lastPerformedAction.damages[i]);
-		}
+		for (int i = 0; i < _attackInfo.damageTypes.Length; i++)
+			damages.Add((WeaponEquipmentData.DamageType)_attackInfo.damageTypes[i], _attackInfo.damages[i]);
 
 		_entityHit.Equipment.TakeDamage(new EntityEquipmentPlugin.TakeDamageCallback() { damages = damages });
 
-		//aplly effects
-		/*for (int i = 0; i < m_lastPerformedAction.areStatusesSuccess.Length; i++)
+		for (int i = 0; i < _attackInfo.areStatusesSuccess.Length; i++)
 		{
-			if (m_lastPerformedAction.areStatusesSuccess[i])
-				GameAssets.current.game.entityStatus[(EntityStatusEnumID)m_lastPerformedAction.statusIds[i]].ApplyStatus(_entityHit);
-		}*/
-
-		foreach (AEntityPassiveEffect.PassiveEffectContainer passiveEffectID in m_lastPerformedAction.effects)
-		{
-			GameAssets.current.game.entityEffects[passiveEffectID.enumID].ApplyEffect(m_user, _entityHit, passiveEffectID);
+			if (_attackInfo.areStatusesSuccess[i])
+				_entityHit.AddStatus((EntityStatusEnumID)_attackInfo.statusIds[i]);
 		}
 
+		foreach (AEntityPassiveEffect.PassiveEffectContainer passiveEffectID in m_lastPerformedAction.effects)
+			GameAssets.current.game.entityEffects[passiveEffectID.enumID].ApplyEffect(m_user, _entityHit, passiveEffectID);
+
+		if (_isLastBullet)
+			EndAttack(m_lastPerformedAction);
+	}
+
+	private void OnBulletDespawn(bool _isLastBullet )
+	{
 		if (_isLastBullet)
 			EndAttack(m_lastPerformedAction);
 	}
 
 	private void EndAttack ( AttackAction _attackAction )
 	{
-		GameManager.Instance.GetEntityFromID(_attackAction.performingEntityID).Skin.ReleaseAim(_attackAction.attackingWeaponId);
+		m_user.Skin.ReleaseAim(_attackAction.attackingWeaponId);
 		m_onPerformAttackEnd?.Invoke();
 	}
 }

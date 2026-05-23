@@ -36,7 +36,11 @@ public partial class GameConfig : ScriptableObject
 		public float entityMovementEvasionBonus = 2;
 		public float entityCoverBonus = 2;
 		public SerializableDictionary<WeaponEquipmentData.DistanceType, float> distanceTypeSpreadEvaluation;
-		public SerializableDictionary<WeaponEquipmentData.DamageType, WeaponEquipmentData.DamageCategory> damageCateforyPerDamageType;
+		public SerializableDictionary<WeaponEquipmentData.DamageType, WeaponEquipmentData.DamageCategory> damageCategoryPerDamageType;
+		public SerializableDictionary<WeaponEquipmentData.DamageCategory, EntityEquipmentData.StatBonus.StatType> statTypePerDamageCategory;
+		public SerializableDictionary<WeaponEquipmentData.DamageCategory, EntityEquipmentData.StatBonus.StatType> statTypePerResistanceCategory;
+		public SerializableDictionary<WeaponEquipmentData.DamageType, EntityEquipmentData.StatBonus.StatType> statTypePerDamageType;
+		public SerializableDictionary<WeaponEquipmentData.DamageType, EntityEquipmentData.StatBonus.StatType> statTypePerDamageResistanceType;
 
 		[Title("Hub")]
 		public string hubSceneName;

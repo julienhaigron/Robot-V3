@@ -24,8 +24,7 @@ public class InvokeItemAction : SpecialAction
 
 	public override void RegisterInteraction ( Tile _tile )
 	{
-		targetTileID = _tile.coordinates.ID;
-		Item invokedItem = GameManager.Instance.PreSpawnItem(Data.invocatedItem, PerformingEntity, PerformingEntity.Equipment.Tools[linkedEquipmentId], GridManager.Instance.Tiles[targetTileID].coordinates);
+		Item invokedItem = GameManager.Instance.PreSpawnItem(Data.invocatedItem, PerformingEntity, PerformingEntity.Equipment.Tools[linkedEquipmentId], _tile.coordinates);
 		_tile.SetPlannedItemAt(invokedItem, timeAtStart);
 		itemID = invokedItem.ID;
 
@@ -34,10 +33,13 @@ public class InvokeItemAction : SpecialAction
 
 	public override void CancelAction ()
 	{
-		Tile targetTile = GridManager.Instance.Tiles[targetTileID];
-		targetTile.SetPlannedItemAt(null, timeAtStart);
-		/*targetTile.plannedContentsPerTick[timeAtStart].item.Cancel();
-		targetTile.plannedContentsPerTick[timeAtStart].item = null;*/
+		foreach (int tileID in targetTileIDs)
+		{
+			Tile targetTile = GridManager.Instance.Tiles[tileID];
+			targetTile.SetPlannedItemAt(null, timeAtStart);
+			/*targetTile.plannedContentsPerTick[timeAtStart].item.Cancel();
+			targetTile.plannedContentsPerTick[timeAtStart].item = null;*/
+		}
 
 		base.CancelAction();
 	}
@@ -58,35 +60,7 @@ public class InvokeItemAction : SpecialAction
 		bool doesSelfHaveConflict = false;
 		bool doesOtherHaveConflict = false;
 
-		/*if (_otherAction is MoveToNeighborAction _otherNeighborMoveAction && _otherNeighborMoveAction.finalTargetTileID == targetTileID)
-		{
-			if (result == EntityActionData.PFCResultType.FirstWins)
-			{
-				_otherNeighborMoveAction.finalTargetTileID = -1;
-				doesOtherHaveConflict = true;
-			}
-			else if (result == EntityActionData.PFCResultType.SecondWins)
-			{
-				isActionCanceled = true;
-				doesSelfHaveConflict = true;
-			}
-			else
-			{
-				int roll = UnityEngine.Random.Range((int)0, 2);
-				if (roll == 0)
-				{
-					_otherNeighborMoveAction.finalTargetTileID = -1;
-					doesOtherHaveConflict = true;
-				}
-				else
-				{
-					isActionCanceled = true;
-					doesSelfHaveConflict = true;
-				}
-			}
-
-		}
-		else */if (_otherAction is MoveToTargetAction _otherMoveToTargetAction && _otherMoveToTargetAction.thisActionDestinationIDArray.Contains(targetTileID))
+		if (_otherAction is MoveToTargetAction _otherMoveToTargetAction && _otherMoveToTargetAction.thisActionDestinationIDArray.Any(e => targetTileIDs.Contains(e)))
 		{
 			if (result == EntityActionData.PFCResultType.FirstWins)
 			{
@@ -125,10 +99,13 @@ public class InvokeItemAction : SpecialAction
 			EndTick();
 			return;
 		}
-		Tile targetTile = GridManager.Instance.Tiles[targetTileID];
-		Item item = targetTile.GetPlannedItemAt(timeAtStart);
-		targetTile.SetItem(item, true);
-		item.transform.position = targetTile.transform.position;
+		foreach (int tileID in targetTileIDs)
+		{
+			Tile targetTile = GridManager.Instance.Tiles[tileID];
+			Item item = targetTile.GetPlannedItemAt(timeAtStart);
+			targetTile.SetItem(item, true);
+			item.transform.position = targetTile.transform.position;
+		}
 
 		base.Perform(_state);
 		DG.Tweening.DOVirtual.DelayedCall(GameConfig.current.game.actionDuration, EndTick);
@@ -136,12 +113,14 @@ public class InvokeItemAction : SpecialAction
 
 	public override void Display ( TurnManager.RecordedAction _recordedAction )
 	{
-		PlayerController.Instance.AddGhostItemAt(Data.invocatedItem, GridManager.Instance.Tiles[targetTileID], 0, itemID);
+		foreach (int tileID in targetTileIDs)
+			PlayerController.Instance.AddGhostItemAt(Data.invocatedItem, GridManager.Instance.Tiles[tileID], 0, itemID);
 	}
 
 	public override void GhostDisplay ( Entity.EntityState _state )
 	{
-		PlayerController.Instance.AddGhostItemAt(Data.invocatedItem, GridManager.Instance.Tiles[targetTileID], 0, itemID);
+		foreach (int tileID in targetTileIDs)
+			PlayerController.Instance.AddGhostItemAt(Data.invocatedItem, GridManager.Instance.Tiles[tileID], 0, itemID);
 	}
 
 }

@@ -10,6 +10,8 @@ public class Projectile : PoolElement
 	protected ProjectileData m_projectileData;
 	private bool m_isInit;
 	private Action<Entity> m_onHitEntity;
+	private Action m_onDespawnNoHit;
+	private bool m_didHitSomething = false;
 
 	private void Reset ()
 	{
@@ -55,6 +57,8 @@ public class Projectile : PoolElement
 			return;
 
 		m_onHitEntity?.Invoke(_entity);
+		
+		m_didHitSomething = true;
 		Discard();
 		/*if (_entity.TryGetModule(out DestructibleEM destructibleEM) && destructibleEM.DestroyBulletOnHit)
 		{
@@ -75,6 +79,7 @@ public class Projectile : PoolElement
 
 			selector.LinkedWall.TakeDamage(damages);
 
+			m_didHitSomething = true;
 			Discard();
 		}
 
@@ -87,21 +92,31 @@ public class Projectile : PoolElement
 		m_isInit = true;
 	}
 
-	public virtual void Launch ( Action<Entity> _onHitEntity )
+	public virtual void Launch ( Action<Entity> _onHitEntity, Action _onProjectileDespawn, bool _hasTrajectoryControl )
 	{
+		//TODO : use this var
+		//_hasTrajectoryControl
+
+		m_didHitSomething = false;
 		m_rb.isKinematic = false;
 		m_rb.AddForce((transform.forward * m_projectileData.speed.x) + (transform.up * m_projectileData.speed.y), ForceMode.VelocityChange);
 		m_onHitEntity = _onHitEntity;
+		m_onDespawnNoHit = _onProjectileDespawn;
 	}
 
-	public void SetProjectileDataAndLaunch ( ProjectileData _projectileData, Action<Entity> _onHitEntity )
+	public void SetProjectileDataAndLaunch ( ProjectileData _projectileData, Action<Entity> _onHitEntity, Action _onProjectileDespawn, bool _hasTrajectoryControl )
 	{
 		SetProjectileData(_projectileData);
-		Launch(_onHitEntity);
+		Launch(_onHitEntity, _onProjectileDespawn, _hasTrajectoryControl);
 	}
 
 	public override void Discard ()
 	{
+		if (!m_didHitSomething)
+			m_onDespawnNoHit?.Invoke();
+		m_onDespawnNoHit = null;
+		m_onHitEntity = null;
+
 		if (!m_rb.isKinematic)
 		{
 			m_rb.linearVelocity = Vector3.zero;

@@ -145,7 +145,7 @@ public class MoveToTargetAction : AEntityAction
 			TurnManager.Instance.AddAction(performingEntityID, action, TurnManager.Instance.CurrentStateTypeSelected);
 		}
 
-		TurnManager.Instance.RefreshActionDisplay(performingEntityID);
+		TurnManager.Instance.RefreshActionDisplay(performingEntityID, true);
 	}
 
 	public override ActionConflictResultInfo CheckConflict ( AEntityAction _otherAction, bool _isCheck = true )

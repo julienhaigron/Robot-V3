@@ -62,7 +62,7 @@ public class ActionButton : BaseButton
 
 	protected override void OnClick ()
 	{
-		TurnManager.Instance.SetCurrentActionSelected(m_actionType, m_linkedEquipmentData);
+		TurnManager.Instance.SetCurrentActionSelected(m_actionType, m_linkedEquipmentData, true);
 		base.OnClick();
 	}
 

@@ -4,10 +4,13 @@ using System;
 using System.Collections.Generic;
 
 [CreateAssetMenu(fileName = "ApplyEffectItemData", menuName = "ScriptableObject/Item/ApplyEffectItemData")]
-public class ApplyStatusItemData : AItemData
+public class ApplyEffectItemData : AItemData
 {
+	public enum EffectType { Status, StatBuff }
+	public EffectType type;
 	[SerializeField] public int range = 1;
-	[SerializeField] public AEntityStatus givenStatus;
+	[SerializeField, ShowIf("@type == EffectType.Status")] public AEntityStatus givenStatus;
+	[SerializeField, ShowIf("@type == EffectType.StatBuff")] public EntityEquipmentData.StatBonusBuff givenStatBonus;
 
 	public override AItemLinkedData GetNewLinkedData ()
 	{
@@ -35,7 +38,7 @@ public class ApplyStatusItemData : AItemData
 
 	public override void OnWalkThrough ( Entity _walkingEntity, AItemLinkedData _linkedData, Item _usedItem, bool _isFromTeleportation )
 	{
-		
+
 	}
 
 	public override bool InteractPredicate ( Entity _interactingEntity, AItemLinkedData _linkedData, Item _usedItem )
@@ -65,9 +68,11 @@ public class ApplyStatusItemData : AItemData
 
 		foreach (Entity entity in entities)
 		{
-			entity.AddStatus(givenStatus.enumID);
+			if (type == EffectType.Status)
+				entity.AddStatus(givenStatus.enumID);
+			else
+				entity.AddAdditionaryStatBonus(givenStatBonus);
 		}
-
 	}
 
 }

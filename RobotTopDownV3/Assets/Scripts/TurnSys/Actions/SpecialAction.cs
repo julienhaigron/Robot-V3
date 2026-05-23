@@ -5,25 +5,6 @@ using Unity.Netcode;
 
 public class SpecialAction : AEntityAction
 {
-	public int targetedEntityID;
-	public int targetTileID;
-
-	public override void NetworkSerialize<T> ( BufferSerializer<T> serializer )
-	{
-		base.NetworkSerialize(serializer);
-		serializer.SerializeValue(ref targetedEntityID);
-		serializer.SerializeValue(ref targetTileID);
-	}
-
-	public override void RegisterInteraction ( Tile _tile )
-	{
-		//linkedEquipmentId = PerformingEntity.ComponentLinkedToAction[enumID];
-		if (_tile.GetEntity(true))
-			targetedEntityID = _tile.GetEntity(true).ID;
-		targetTileID = _tile.coordinates.ID;
-
-		base.RegisterInteraction(_tile);
-	}
 
 	public override void Prepare ( Entity.EntityState _state )
 	{

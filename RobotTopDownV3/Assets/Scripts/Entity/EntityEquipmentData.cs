@@ -117,11 +117,23 @@ public class EntityEquipmentData : ScriptableObject
             PhysicalDamageResistance,
             ElementalDamageResistance,
 
-            FinalDamageBonus
+            FinalDamageBonus,
+
+            DistanceEvasion,
+            MeleeEvasion,
+            DistanceAccuracy,
+            MeleeAccuracy
         }
 
         public StatType type;
         public float value;
+	}
+
+    [System.Serializable, ShowOdinSerializedPropertiesInInspector]
+    public class StatBonusBuff
+	{
+        public StatBonus statBonus;
+        public int duration;
 	}
 
 #if UNITY_EDITOR

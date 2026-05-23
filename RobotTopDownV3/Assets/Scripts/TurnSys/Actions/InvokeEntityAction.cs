@@ -20,7 +20,8 @@ public class InvokeEntityAction : SpecialAction
 	{
 		isActionCanceled = false;
 		newEntityID = GameManager.Instance.PlayersEntityAnchor[GameManager.Instance.PlayerID].Entities[^1].ID + 1;
-		GridManager.Instance.Tiles[targetTileID].SetEntity(GameManager.Instance.GetEntityFromID(newEntityID), false);
+		foreach(int tileID in targetTileIDs)
+			GridManager.Instance.Tiles[tileID].SetEntity(GameManager.Instance.GetEntityFromID(newEntityID), false);
 	}
 
 	public override ActionConflictResultInfo CheckConflict ( AEntityAction _otherAction, bool _isCheck = true )
@@ -32,35 +33,7 @@ public class InvokeEntityAction : SpecialAction
 		bool doesSelfHaveConflict = false;
 		bool doesOtherHaveConflict = false;
 
-		/*if (_otherAction is MoveToNeighborAction _otherNeighborMoveAction && _otherNeighborMoveAction.finalTargetTileID == targetTileID)
-		{
-			if (result == EntityActionData.PFCResultType.FirstWins)
-			{
-				_otherNeighborMoveAction.finalTargetTileID = -1;
-				doesOtherHaveConflict = true;
-			}
-			else if (result == EntityActionData.PFCResultType.SecondWins)
-			{
-				isActionCanceled = true;
-				doesSelfHaveConflict = true;
-			}
-			else
-			{
-				int roll = UnityEngine.Random.Range((int)0, 2);
-				if (roll == 0)
-				{
-					_otherNeighborMoveAction.finalTargetTileID = -1;
-					doesOtherHaveConflict = true;
-				}
-				else
-				{
-					isActionCanceled = true;
-					doesSelfHaveConflict = true;
-				}
-			}
-
-		}
-		else */if (_otherAction is MoveToTargetAction _otherMoveToTargetAction && _otherMoveToTargetAction.thisActionDestinationIDArray.Contains(targetTileID))
+		if (_otherAction is MoveToTargetAction _otherMoveToTargetAction && _otherMoveToTargetAction.thisActionDestinationIDArray.Any(e => targetTileIDs.Contains(e)))
 		{
 			if (result == EntityActionData.PFCResultType.FirstWins)
 			{
@@ -99,8 +72,9 @@ public class InvokeEntityAction : SpecialAction
 			return;
 		}
 
-		GameManager.Instance.PlayersEntityAnchor[GameManager.Instance.GetEntityFromID(performingEntityID).OwnerID]
-			.SpawnEntityDuringPlay(Data.invocatedEntity.GetSavedData(), newEntityID, GameManager.Instance.GetEntityFromID(performingEntityID).OwnerID, targetTileID, EndTick);
+		foreach(int tileID in targetTileIDs)
+			GameManager.Instance.PlayersEntityAnchor[GameManager.Instance.GetEntityFromID(performingEntityID).OwnerID]
+				.SpawnEntityDuringPlay(Data.invocatedEntity.GetSavedData(), newEntityID, GameManager.Instance.GetEntityFromID(performingEntityID).OwnerID, tileID, EndTick);
 
 		base.Perform(_state);
 		//DG.Tweening.DOVirtual.DelayedCall(GameConfig.current.game.actionDuration, EndTick);
