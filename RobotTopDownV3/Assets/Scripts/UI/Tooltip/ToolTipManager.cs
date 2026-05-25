@@ -54,7 +54,7 @@ public class ToolTipManager : Singleton<ToolTipManager>
 
         anchoredPosition += m_offset;
 
-        // Clamp dans l'écran
+        /*// Clamp dans l'écran
         Vector2 size = m_backgroundRect.sizeDelta;
         RectTransform parentRect = m_tooltipPanel.transform.parent as RectTransform;
 
@@ -67,7 +67,7 @@ public class ToolTipManager : Singleton<ToolTipManager>
             anchoredPosition.y,
             -parentRect.rect.height / 2 + size.y / 2,
             parentRect.rect.height / 2 - size.y / 2
-        );
+        );*/
 
         m_tooltipPanel.transform.localPosition = anchoredPosition;
     }

@@ -278,7 +278,7 @@ public class GridManager : Singleton<GridManager>
 		return path;
 	}
 
-	public List<Tile> GetLine ( Tile _from, Tile _to )
+	/*public List<Tile> GetLine ( Tile _from, Tile _to )
 	{
 		List<Tile> results = new();
 
@@ -300,7 +300,7 @@ public class GridManager : Singleton<GridManager>
 		}
 
 		return results;
-	}
+	}*/
 	public CubeF CubeLerp ( TileCoordinates a, TileCoordinates b, float t )
 	{
 		return new CubeF(
@@ -329,7 +329,6 @@ public class GridManager : Singleton<GridManager>
 
 		return new TileCoordinates(rx, rz, -1);
 	}
-
 
 	public List<Entity> GetEntitiesInRange ( Tile _from, int _maxDist, bool _isThisTurn )
 	{
