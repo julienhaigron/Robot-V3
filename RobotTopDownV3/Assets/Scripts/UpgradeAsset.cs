@@ -241,7 +241,7 @@ public class UpgradeAsset : ScriptableObject
         {
             GameDatas.current.currentPlayerSave.upgradeLevels.Add(m_saveKey, 0);
         }
-        string assetPath = AssetDatabase.GetAssetPath(GetInstanceID());
+        string assetPath = AssetDatabase.GetAssetPath(GetEntityId());
         AssetDatabase.RenameAsset(assetPath, GenerateAssetName());
         EditorUtility.SetDirty(this);
         EditorUtility.SetDirty(GameAssets.current);
