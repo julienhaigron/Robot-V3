@@ -35,4 +35,9 @@ public class Item : MonoBehaviour
         Destroy(gameObject);
 	}
 
+    public void Kill ()
+    {
+        Destroy(gameObject);
+    }
+
 }

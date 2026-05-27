@@ -50,6 +50,8 @@ public class MineItemData : AItemData
 			});
 		}
 
+
+		_usedItem.Kill();
 		//TODO : explosion anim
 		/*TurnManager.InPlayEvent explosionEvent = new();
 		TurnManager.Instance.AddGameEvent(explosionEvent);

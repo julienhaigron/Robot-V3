@@ -25,7 +25,7 @@ MonoBehaviour:
   previousActionAttackModificator: 0
   type: 4
   subType: 7
-  codeType: 6
+  codeType: 10
   targetType: 3
   minDistance: 1
   maxDistance: 1
@@ -36,12 +36,16 @@ MonoBehaviour:
   circleRange: 1
   arcRadius: 1
   rayDiameter: 1
+  maxChainedTarget: 1
+  damageRecutionOnChain: 0.1
   coneType: 1
   hitAmount: 1
   damageFactor: 1
   usedDamageChannels: 02000000
+  appliableStatus: []
+  statusHitProbability: 0
   passiveEffects: []
   invocatedEntity: {fileID: 0}
-  invocatedItem: {fileID: 0}
+  invocatedItem: {fileID: 11400000, guid: 1f9868f8e19a7824ab72a40eb51db31e, type: 2}
   invocationCountLimit: 1
   movementSpeed: 0

@@ -237,16 +237,18 @@ public class EntityEquipmentPlugin : EntityPlugin
 		Weapon usedWeapon = m_weapons[_weaponID];
 
 		float angle = GridManager.Instance.FromOrientationToAngle(m_linkedEntity.Displacement.CurrentOrientation);
+		int maxDistance = _action.Data.GetMaxRange(_action, m_linkedEntity, null);
+		int minDistance = _action.Data.minDistance;
+		Tile from = _isThisTurn ? m_linkedEntity.Displacement.Coordinates.GetTile() : GridManager.Instance.Tiles[_action.supposedPositionAtActionStartID];
 
-		bool ignoreObstacles = _action == null || _action.effects == null;
-		if (!ignoreObstacles)
+		bool ignoreObstacles = false;
+		foreach (AEntityPassiveEffect.PassiveEffectContainer passiveContainer in _action.effects)
 		{
-			foreach (AEntityPassiveEffect.PassiveEffectContainer passiveContainer in _action.effects)
-			{
-				ignoreObstacles = passiveContainer.enumID == EntityPassiveEffectEnumID.TrajectoryControl;
-				break;
-			}
+			ignoreObstacles = passiveContainer.enumID == EntityPassiveEffectEnumID.TrajectoryControl;
+			break;
 		}
+
+		GridManager.Instance.BFS(from, maxDistance, null, _isThisTurn, ignoreObstacles);
 
 		int nbOfRayPerAngle = 1;
 		int totalNbOfRay = usedWeapon.Data.visionConeRange * nbOfRayPerAngle;
@@ -261,12 +263,12 @@ public class EntityEquipmentPlugin : EntityPlugin
 
 			float radians = rayAngle * Mathf.Deg2Rad;
 			Vector3 aimedPosition = new Vector3(Mathf.Sin(radians), 0, Mathf.Cos(radians));
-			int maxDistance = _action.Data.GetMaxRange(_action, m_linkedEntity, null);
 			RaycastHit[] hits = Physics.RaycastAll(m_linkedEntity.Displacement.Coordinates.GetTile().transform.position, aimedPosition * maxDistance, maxDistance * (2 * Tile.innerRadius), GameConfig.current.input.tileInternRayCastLayer);
 			foreach (RaycastHit hitInfo in hits)
 			{
 				if (hitInfo.transform.TryGetComponent(out Tile tile) && !tilesInRange.Contains(tile)
-					&& (ignoreObstacles || GridManager.Instance.IsVisionLineClear(m_linkedEntity.Displacement.Coordinates.GetTile(), tile, _isThisTurn)))
+					&& (ignoreObstacles || GridManager.Instance.IsVisionLineClear(m_linkedEntity.Displacement.Coordinates.GetTile(), tile, _isThisTurn))
+					&& tile.Distance > minDistance)
 				{
 					tilesInRange.Add(tile);
 				}
@@ -276,12 +278,12 @@ public class EntityEquipmentPlugin : EntityPlugin
 		return tilesInRange;
 	}
 
-
 	public List<Tile> GetTilesInAoERange ( AttackAction _action, Tile _targetTile, bool _isThisTurn = false )
 	{
 		List<Tile> tilesInRange = new();
 		EntityActionData attackData = GameAssets.current.game.entityActionsData[_action.enumID];
 		int maxDistance = _action.Data.GetMaxRange(_action, m_linkedEntity, null);
+		int minDistance = _action.Data.minDistance;
 
 		Weapon usedWeapon = null;
 		foreach (string weaponID in m_weapons.Keys)
@@ -348,7 +350,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 				List<Tile> tilesInVisionRange = GridManager.Instance.GetTilesInVisionRange(m_linkedEntity.Displacement.Coordinates.GetTile(), maxDistance, false, _isThisTurn);
 				foreach(Tile tile in tilesInVisionRange)
 				{
-					if (!tile.GetEntity(_isThisTurn).IsAlliedTo(m_linkedEntity.OwnerID))
+					if (!tile.GetEntity(_isThisTurn).IsAlliedTo(m_linkedEntity.OwnerID) && tile.Distance < minDistance)
 						tilesInRange.Add(tile);
 
 					if (tilesInRange.Count >= _action.Data.maxChainedTarget + 1)
@@ -357,6 +359,11 @@ public class EntityEquipmentPlugin : EntityPlugin
 				break;
 		}
 
+		foreach(Tile tile in tilesInRange.ToArray())
+		{
+			if (tile.Distance < minDistance)
+				tilesInRange.Remove(tile);
+		}
 
 		return tilesInRange;
 	}

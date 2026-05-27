@@ -77,7 +77,7 @@ public class Entity : MonoBehaviour
 	{
 		Guarding,
 		Patroling,
-		Special //to add
+		Fleeing //to add
 	}
 
 	private void Awake ()

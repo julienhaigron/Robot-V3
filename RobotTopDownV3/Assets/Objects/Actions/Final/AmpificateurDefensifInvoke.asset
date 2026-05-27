@@ -36,6 +36,8 @@ MonoBehaviour:
   circleRange: 1
   arcRadius: 1
   rayDiameter: 1
+  maxChainedTarget: 1
+  damageRecutionOnChain: 0.1
   coneType: 1
   hitAmount: 1
   damageFactor: 1
@@ -44,6 +46,6 @@ MonoBehaviour:
   statusHitProbability: 0
   passiveEffects: []
   invocatedEntity: {fileID: 0}
-  invocatedItem: {fileID: 0}
+  invocatedItem: {fileID: 11400000, guid: 6b0d259bf1ad80745ba803916e56e9ec, type: 2}
   invocationCountLimit: 1
   movementSpeed: 0
