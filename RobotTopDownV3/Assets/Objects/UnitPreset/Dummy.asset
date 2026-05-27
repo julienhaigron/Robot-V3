@@ -13,19 +13,13 @@ MonoBehaviour:
   m_Name: Dummy
   m_EditorClassIdentifier: 
   displayName: Dummy
-  frame: {fileID: 11400000, guid: a3e7c26a1fd560541a94a1ec30820110, type: 2}
-  reactor: {fileID: 11400000, guid: 72eb56ac0197e1144a3cd4bd0c3819ea, type: 2}
-  brain: {fileID: 11400000, guid: 573535521dc3abb4a822374062aed86b, type: 2}
-  neuronalMembrane: {fileID: 11400000, guid: abba24f3693db0648846aa53c2757d3b, type: 2}
-  arms:
-  - {fileID: 11400000, guid: 6c474e29198641b42addf44d6449f588, type: 2}
-  - {fileID: 11400000, guid: e9a747965c146cc45839d6a4e9632e6b, type: 2}
-  auxiliary:
-  - {fileID: 11400000, guid: 80c151b23c81a824eb52ac271f7ddb56, type: 2}
-  - {fileID: 11400000, guid: ebdfa3c8fc2e36647b90d0a3d19624b6, type: 2}
-  - {fileID: 11400000, guid: 28da51fc5fc9f6f44895bc8c77a683ff, type: 2}
-  chipsets:
-  - {fileID: 11400000, guid: 413afd951faf0e544b2cd83d0ce95a1d, type: 2}
+  frame: {fileID: 11400000, guid: 9d4218543c7d1d546a340ed92f98c08a, type: 2}
+  reactor: {fileID: 11400000, guid: 12b55974368649d449c104fbb70defa7, type: 2}
+  brain: {fileID: 11400000, guid: 1c0aa955379f1604f9c85b8aa4dc06d0, type: 2}
+  neuronalMembrane: {fileID: 11400000, guid: 784bffc355a2b644294c78cac8a1a5fc, type: 2}
+  arms: []
+  auxiliary: []
+  chipsets: []
   isInvocation: 0
   isTangible: 1
-  m_totalEnergyCostRemaining: 35
+  m_totalEnergyCostRemaining: 140
