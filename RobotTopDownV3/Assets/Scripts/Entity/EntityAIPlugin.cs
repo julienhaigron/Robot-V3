@@ -36,11 +36,13 @@ public class EntityAIPlugin : EntityPlugin
 
 	public CheckActionResultInfo CheckAction ( TurnManager.RecordedAction _recordedAction )
 	{
-		CheckActionResultInfo resultInfo = new CheckActionResultInfo() { isActionChanging = false, replacedAction = _recordedAction.action, replacedFreeAction = _recordedAction.freeAction };
-		// 1) Do all prewarm check (enemyInSeight, weaponRange, ...)
 		DOAllPrewarmCheck(_recordedAction.action);
-		// 2) react depending on those factor
 
+		//TODO:
+		//1) dont change movement target if distance is the same
+		//2) no action change if in guard
+
+		CheckActionResultInfo resultInfo = new CheckActionResultInfo() { isActionChanging = false, replacedAction = _recordedAction.action, replacedFreeAction = _recordedAction.freeAction };
 		EntityActionData movementAction = GetMovementAction();
 		bool canMove = !m_linkedEntity.Status.Contains(EntityStatusEnumID.Stun) && !m_linkedEntity.Status.Contains(EntityStatusEnumID.Rooted) && movementAction != null;
 		EntityActionData availableAttackAction = GetAvailableAttackAction(out string availableEquipment);
