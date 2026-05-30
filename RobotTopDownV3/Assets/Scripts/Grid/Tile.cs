@@ -41,6 +41,8 @@ public class Tile : MonoBehaviour
 	private List<EntityStatusEnumID> m_status = new();
 	public List<EntityStatusEnumID> Status => m_status;
 	private Dictionary<AEntityStatus, int> m_remainingDurationToActiveEffects = new();
+	[SerializeField] private Transform m_statusVisualsParent;
+	private Dictionary<EntityStatusEnumID, GameObject> m_statusVisuals = new();
 
 	//Content on tile
 	private TileContent m_currentContent = new() { itemID = -1, entityID = -1 };
@@ -374,9 +376,14 @@ public class Tile : MonoBehaviour
 
 	public void AddStatus ( EntityStatusEnumID _statusID )
 	{
-		GameAssets.current.game.entityStatus[_statusID].ApplyStatus(this);
+		AEntityStatus statusData = GameAssets.current.game.entityStatus[_statusID];
+		statusData.ApplyStatus(this);
 		m_status.Add(_statusID);
 		m_remainingDurationToActiveEffects.Add(GameAssets.current.game.entityStatus[_statusID], GameAssets.current.game.entityStatus[_statusID].duration);
+
+		//spawn visual
+		if (statusData.groundPrefab != null && !m_statusVisuals.ContainsKey(_statusID))
+			m_statusVisuals.Add(_statusID, Instantiate(statusData.groundPrefab, m_statusVisualsParent));
 	}
 
 	public void RemoveStatus ( EntityStatusEnumID _statusID )
@@ -384,6 +391,12 @@ public class Tile : MonoBehaviour
 		GameAssets.current.game.entityStatus[_statusID].RemoveStatus(this);
 		m_status.Remove(_statusID);
 		m_remainingDurationToActiveEffects.Remove(GameAssets.current.game.entityStatus[_statusID]);
+
+		if (m_statusVisuals.ContainsKey(_statusID))
+		{
+			Destroy(m_statusVisuals[_statusID]);
+			m_statusVisuals.Remove(_statusID);
+		}
 	}
 
 	public void SetActiveFOW ( bool _isActive = false, bool _isInstant = false )

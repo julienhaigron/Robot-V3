@@ -24,6 +24,7 @@ public class WeaponEquipmentData : EntityEquipmentData
     public string attackAnimationSuccessId;
     public string attackAnimationFailureId;
     public bool isTwoHanded = false;
+    public float singleAttackAnimationDuration;
 
     public enum DamageType
 	{

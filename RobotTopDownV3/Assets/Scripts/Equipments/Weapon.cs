@@ -5,10 +5,12 @@ using DG.Tweening;
 using System;
 using System.Text;
 using System.Linq;
+using Sirenix.OdinInspector;
 
 public class Weapon : MonoBehaviour
 {
 
+	[Title("Dependencies")]
 	protected WeaponEquipmentData m_data;
 	public WeaponEquipmentData Data => m_data;
 
@@ -17,78 +19,195 @@ public class Weapon : MonoBehaviour
 	protected Entity m_user;
 	private string m_id;
 	public string ID => m_id;
+	protected Coroutine m_attackCR;
+	protected AttackAction m_lastPerformedAction;
+	protected Action m_onPerformAttackEnd;
+	private WaitForSeconds m_singleAttackDuration;
 
 	public virtual void Init ( Entity _user, WeaponEquipmentData _data, bool _isFirstSide )
 	{
 		m_user = _user;
 		m_data = _data;
 		m_id = _data.name + _user.Equipment.Tools.Values.Count;
+
+		m_singleAttackDuration = new WaitForSeconds(_data.singleAttackAnimationDuration);
+	}
+
+	private void OnDestroy ()
+	{
+		if (m_attackCR != null)
+			StopCoroutine(m_attackCR);
 	}
 
 	public virtual void PerformAttack ( AttackAction _attackAction, Action _onPerformEnd )
 	{
-		for (int attackCount = 0; attackCount < _attackAction.attacksInfos.Length; attackCount++)
+		m_lastPerformedAction = _attackAction;
+		m_onPerformAttackEnd = _onPerformEnd;
+
+		if (m_attackCR != null)
+			StopCoroutine(m_attackCR);
+
+		m_attackCR = StartCoroutine(PerformAttackCR(_attackAction));
+	}
+	
+	protected virtual IEnumerator PerformAttackCR ( AttackAction _attackAction )
+	{
+		int lastSuccessfullAttackIndex = -1;
+		for (int i = 0; i < _attackAction.attacksInfos.Length; i++)
 		{
-			AttackAction.SingleAttackInfo attackInfo = _attackAction.attacksInfos[attackCount];
-			if (attackInfo.isAttackSuccessfull)
-			{
-				List<Entity> targetEntities = new();
-				EntityActionData attackData = GameAssets.current.game.entityActionsData[_attackAction.enumID];
+			if (_attackAction.attacksInfos[i].isAttackSuccessfull)
+				lastSuccessfullAttackIndex = i;
+		}
+		OnStartAttacking(_attackAction);
 
-				if (attackData.isAoe)
-				{
-					foreach (Tile tile in m_user.Equipment.GetTilesInAoERange(_attackAction, GridManager.Instance.Tiles[_attackAction.targetTileIDs[attackCount]]))
-					{
-						Entity entityOnTIle = tile.GetEntity(true);
-						if (entityOnTIle != null /*&& !entityOnTIle.IsAlliedTo(m_user.OwnerID)*/)
-							targetEntities.Add(entityOnTIle);
-					}
-				}
-				else
-					targetEntities.Add(GameManager.Instance.GetEntityFromID(_attackAction.targetedEntityIDs[attackCount]));
+		for (int attackIndex = 0; attackIndex < _attackAction.attacksInfos.Length; attackIndex++)
+		{
+			AttackAction.SingleAttackInfo attackInfo = _attackAction.attacksInfos[attackIndex];
 
-				//apply damage
-				Dictionary<WeaponEquipmentData.DamageType, int> damages = new Dictionary<WeaponEquipmentData.DamageType, int>();
-				for (int i = 0; i < attackInfo.damageTypes.Length; i++)
-				{
-					damages.Add((WeaponEquipmentData.DamageType)attackInfo.damageTypes[i], attackInfo.damages[i]);
-				}
+			OnStartSingleAttack(_attackAction, attackIndex, attackInfo);
 
-				m_user.Skin.OverrideAnimation(m_data.attackAnimationSuccessId);
+			yield return AimTargetCR(_attackAction, attackIndex, attackInfo);
 
-				foreach (Entity entity in targetEntities)
-				{
-					for (int i = 0; i < _attackAction.Data.GetHitAmount(_attackAction, m_user, entity); i++)
-					{
-						entity.Equipment.TakeDamage(new EntityEquipmentPlugin.TakeDamageCallback() { damages = damages });
+			yield return PerformSingleAttackCR(_attackAction, attackIndex, attackInfo, lastSuccessfullAttackIndex);
 
-						//aplly effects here
-						for (int j = 0; j < attackInfo.areStatusesSuccess.Length; j++)
-						{
-							if (attackInfo.areStatusesSuccess[j])
-								entity.AddStatus((EntityStatusEnumID)attackInfo.statusIds[j]);
-						}
-
-						foreach (AEntityPassiveEffect.PassiveEffectContainer passiveEffectID in _attackAction.effects)
-						{
-							GameAssets.current.game.entityEffects[passiveEffectID.enumID].ApplyEffect(m_user, entity, passiveEffectID);
-						}
-					}
-				}
-
-				foreach (ParticleSystem ps in m_onPerformPS)
-				{
-					ps.Play();
-				}
-			}
-			else
-			{
-				//show failure
-				m_user.Skin.OverrideAnimation(m_data.attackAnimationFailureId);
-			}
+			OnEndSingleAttack(_attackAction, attackIndex, attackInfo);
 		}
 
-		DOVirtual.DelayedCall(GameConfig.current.game.actionDuration, () => _onPerformEnd?.Invoke());
+		yield return OnEndAttackingCR(_attackAction);
+
+		if(lastSuccessfullAttackIndex == -1)
+			EndAttack(_attackAction);
+
+		m_attackCR = null;
+	}
+
+	#region ATTACK FLOW
+
+	protected virtual void OnStartAttacking ( AttackAction _attackAction )
+	{
+			
+	}
+
+	protected virtual void OnStartSingleAttack ( AttackAction _attackAction, int _attackIndex, AttackAction.SingleAttackInfo _attackInfo )
+	{
+
+	}
+
+	protected virtual IEnumerator AimTargetCR ( AttackAction _attackAction, int _attackIndex, AttackAction.SingleAttackInfo _attackInfo )
+	{
+		yield return null;
+	}
+
+	protected virtual IEnumerator PerformSingleAttackCR (AttackAction _attackAction, int _attackIndex, AttackAction.SingleAttackInfo _attackInfo, int _lastSuccessfullAttackIndex )
+	{
+		if (_attackInfo.isAttackSuccessfull)
+			m_user.Skin.OverrideAnimation(m_data.attackAnimationSuccessId);
+		else
+			m_user.Skin.OverrideAnimation(m_data.attackAnimationFailureId);
+
+		ApplyAttack(_attackAction, _attackIndex, _attackInfo);
+
+		foreach (ParticleSystem ps in m_onPerformPS)
+			ps.Play();
+
+		yield return m_singleAttackDuration;
+
+		if (_attackIndex == _lastSuccessfullAttackIndex)
+			EndAttack(m_lastPerformedAction);
+	}
+
+	protected virtual void OnEndSingleAttack ( AttackAction _attackAction, int _attackIndex, AttackAction.SingleAttackInfo _attackInfo )
+	{
+
+	}
+
+	protected virtual IEnumerator OnEndAttackingCR ( AttackAction _attackAction )
+	{
+		yield return null;
+	}
+
+	#endregion
+
+	#region DAMAGE LOGIC
+
+	protected virtual void ApplyAttack ( AttackAction _attackAction, int _attackIndex, AttackAction.SingleAttackInfo _attackInfo )
+	{
+		if (!_attackInfo.isAttackSuccessfull)
+			return;
+
+		List<Entity> targets = GetTargets(_attackAction, _attackIndex);
+
+		Dictionary<WeaponEquipmentData.DamageType, int> damages = BuildDamageDictionary(_attackInfo);
+
+		foreach (Entity entity in targets)
+		{
+			int hitAmount = _attackAction.Data.GetHitAmount(_attackAction, m_user, entity);
+
+			for (int i = 0; i < hitAmount; i++)
+			{
+				entity.Equipment.TakeDamage(new EntityEquipmentPlugin.TakeDamageCallback()
+				{
+					damages = damages
+				});
+
+				ApplyStatuses(entity, _attackInfo);
+				ApplyEffects(entity);
+			}
+		}
+	}
+
+	protected virtual List<Entity> GetTargets (AttackAction _attackAction, int _attackIndex )
+	{
+		List<Entity> targets = new();
+		EntityActionData attackData = GameAssets.current.game.entityActionsData[_attackAction.enumID];
+
+		if (attackData.isAoe)
+		{
+			foreach (Tile tile in m_user.Equipment.GetTilesInAoERange(_attackAction, GridManager.Instance.Tiles[_attackAction.targetTileIDs[_attackIndex]]))
+			{
+				Entity entity = tile.GetEntity(true);
+
+				if (entity != null)
+					targets.Add(entity);
+			}
+		}
+		else
+			targets.Add(GameManager.Instance.GetEntityFromID(_attackAction.targetedEntityIDs[_attackIndex]));
+
+		return targets;
+	}
+
+	protected virtual Dictionary<WeaponEquipmentData.DamageType, int> BuildDamageDictionary ( AttackAction.SingleAttackInfo _attackInfo )
+	{
+		Dictionary<WeaponEquipmentData.DamageType, int> damages = new();
+
+		for (int i = 0; i < _attackInfo.damageTypes.Length; i++)
+			damages.Add( (WeaponEquipmentData.DamageType)_attackInfo.damageTypes[i], _attackInfo.damages[i]);
+
+		return damages;
+	}
+
+	protected virtual void ApplyStatuses ( Entity _target, AttackAction.SingleAttackInfo _attackInfo )
+	{
+		for (int i = 0; i < _attackInfo.areStatusesSuccess.Length; i++)
+		{
+			if (_attackInfo.areStatusesSuccess[i])
+				_target.AddStatus((EntityStatusEnumID)_attackInfo.statusIds[i]);
+		}
+	}
+
+	protected virtual void ApplyEffects ( Entity _target )
+	{
+		foreach (AEntityPassiveEffect.PassiveEffectContainer passiveEffectID in m_lastPerformedAction.effects)
+			GameAssets.current.game.entityEffects[passiveEffectID.enumID].ApplyEffect(m_user, _target, passiveEffectID);
+
+	}
+
+	#endregion
+
+	protected virtual void EndAttack ( AttackAction _attackAction )
+	{
+		m_onPerformAttackEnd?.Invoke();
 	}
 
 	public virtual Dictionary<WeaponEquipmentData.DamageType, int> GetDamages ( Entity _user, Entity _target, AEntityAction _action, EntityActionData.PFCResultType _pfcResultType )
@@ -108,9 +227,7 @@ public class Weapon : MonoBehaviour
 
 			int baseDamage = pair.Value;
 
-			float actionFactor =
-				_action.Data.damageFactor +
-				_action.Data.GetDamageFactorAmountForType(
+			float actionFactor = _action.Data.damageFactor + _action.Data.GetDamageFactorAmountForType(
 					_action,
 					_user,
 					_target,
@@ -128,7 +245,6 @@ public class Weapon : MonoBehaviour
 				- (_target.Equipment.ApplyedDamageTypeResistance.ContainsKey(pair.Key)
 					? _target.Equipment.ApplyedDamageTypeResistance[pair.Key]
 					: 0f);
-
 			typeBuff = Mathf.Max(typeBuff, -1f);
 
 			var category = GameConfig.current.game.damageCategoryPerDamageType[pair.Key];
@@ -196,7 +312,7 @@ public class Weapon : MonoBehaviour
 		LogConsole.LogDetails details = new("damage_" + LogConsole.Instance.LogsDetails.Keys.Count, "Damage Details", detailsDescription);
 		LogConsole.AddLog(_target.ID + " takes damages from " + _user.ID, LogConsole.LogEventType.AttackResolution, details);
 
-
 		return damages;
 	}
+
 }

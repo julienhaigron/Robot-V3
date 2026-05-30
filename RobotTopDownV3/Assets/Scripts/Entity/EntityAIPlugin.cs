@@ -38,10 +38,6 @@ public class EntityAIPlugin : EntityPlugin
 	{
 		DOAllPrewarmCheck(_recordedAction.action);
 
-		//TODO:
-		//1) dont change movement target if distance is the same
-		//2) no action change if in guard
-
 		CheckActionResultInfo resultInfo = new CheckActionResultInfo() { isActionChanging = false, replacedAction = _recordedAction.action, replacedFreeAction = _recordedAction.freeAction };
 		EntityActionData movementAction = GetMovementAction();
 		bool canMove = !m_linkedEntity.Status.Contains(EntityStatusEnumID.Stun) && !m_linkedEntity.Status.Contains(EntityStatusEnumID.Rooted) && movementAction != null;
@@ -52,6 +48,10 @@ public class EntityAIPlugin : EntityPlugin
 			WaitAction waitAction = (TurnManager.Instance.GetAction(EntityActionEnumID.Wait, m_linkedEntity.ID, null, _recordedAction.timeAtStart) as WaitAction);
 			waitAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.Wait], null, m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID, _recordedAction.action.timeAtStart);
 			resultInfo.ReplaceAction(waitAction, "Unit is stun");
+		}
+		else if(_recordedAction.entityState == Entity.EntityState.Guarding)
+		{
+			//no action change if in guard
 		}
 		else if (HasEnemyWeaponInRange() && availableAttackAction != null /* && _recordedAction.entityState == Entity.EntityState.Patroling*/)
 		{
@@ -106,6 +106,9 @@ public class EntityAIPlugin : EntityPlugin
 					List<Tile> pathToEnemy = GridManager.Instance.GetPath(closestEntity.Displacement.Coordinates.GetTile(), m_linkedEntity.Displacement.Coordinates.GetTile(), true);
 					if (pathToEnemy == null || pathToEnemy.Count < 2)
 						return resultInfo;
+
+					//do not change movement target if current target is as close as new one
+
 					pathToEnemy.Reverse();
 
 					List<int> tileIDs = new();

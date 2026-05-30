@@ -1,36 +1,28 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
-using DG.Tweening;
+using System.Collections;
 using System.Linq;
+using DG.Tweening;
+using UnityEngine;
+using Sirenix.OdinInspector;
 
 public class BulletWeapon : Weapon
 {
+	[Title("Dependencies")]
 	[SerializeField] private Transform m_bulletPoint;
-	[SerializeField] private Transform m_leftHandTarget;
+	[SerializeField] private PoolData m_bulletPool;
 
+	[Title("Parameters")]
 	[SerializeField] private float m_speed;
 	[SerializeField] private float m_timeBetweenEachBullet = .5f;
 	[SerializeField] private float m_aimDuration = 1f;
 	[SerializeField] private float m_shootCooldownDuration = .3f;
-	[SerializeField] private PoolData m_bulletPool;
 
 	private ProjectileData m_bulletData;
+
 	private WaitForSeconds m_timeBetweenBulletsWFS;
 	private WaitForSeconds m_aimDurationWFS;
 	private WaitForSeconds m_shootCooldownDurationWFS;
-	private Coroutine m_shootCR;
-
-	//private List<Entity> m_entitiesHitByLastShot = new();
-	private AttackAction m_lastPerformedAction;
-	private Action m_onPerformAttackEnd;
-
-	private void OnDestroy ()
-	{
-		if (m_shootCR != null)
-			StopCoroutine(m_shootCR);
-	}
 
 	public override void Init ( Entity _user, WeaponEquipmentData _data, bool _isFirstSide )
 	{
@@ -38,7 +30,6 @@ public class BulletWeapon : Weapon
 
 		m_bulletData = new()
 		{
-			//gravityMultiplier = gravityMultiplier,
 			owner = _user,
 			speed = Vector2.right * m_speed,
 			weapon = _data
@@ -49,156 +40,74 @@ public class BulletWeapon : Weapon
 		m_shootCooldownDurationWFS = new WaitForSeconds(m_shootCooldownDuration);
 	}
 
-	public override void PerformAttack ( AttackAction _attackAction, Action _onPerformEnd )
+	protected override IEnumerator AimTargetCR ( AttackAction _attackAction, int _attackIndex, AttackAction.SingleAttackInfo _attackInfo )
 	{
-		m_lastPerformedAction = _attackAction;
-		m_onPerformAttackEnd = _onPerformEnd;
-		//m_entitiesHitByLastShot.Clear();
+		Entity targetEntity = GameManager.Instance.GetEntityFromID((int)_attackAction.targetedEntityIDs[_attackIndex]);
+		Vector3 targetPosition = targetEntity.Skin.Center.position;
 
-		if (m_shootCR != null)
-			StopCoroutine(m_shootCR);
-		m_shootCR = StartCoroutine(ShootCR(_attackAction));
+		if (_attackInfo.isAttackSuccessfull)
+			m_user.Skin.VisualyAimAt(_attackAction.attackingWeaponId, targetPosition);
+		else
+		{
+			Vector3 OT = (targetPosition - m_bulletPoint.position).normalized;
+			Vector3 perpendicular = Vector3.Cross(OT, Vector3.up).normalized;
+			float distance = 1f;
+
+			Vector3 adjacentPos = UnityEngine.Random.Range(0, 2) == 0
+				? targetPosition + perpendicular * distance
+				: targetPosition - perpendicular * distance;
+
+			m_user.Skin.VisualyAimAt( _attackAction.attackingWeaponId, adjacentPos);
+		}
+
+		yield return m_aimDurationWFS;
 	}
 
-
-	private IEnumerator ShootCR ( AttackAction _attackAction )
+	protected override IEnumerator PerformSingleAttackCR ( AttackAction _attackAction, int _attackIndex, AttackAction.SingleAttackInfo _attackInfo, int _lastSuccessfullAttackIndex )
 	{
-		int lastSuccessfullAttackIndex = -1;
-		for(int i = 0; i < _attackAction.attacksInfos.Length; i++)
+		if (!_attackInfo.isAttackSuccessfull)
+			yield break;
+
+		Entity targetEntity = GameManager.Instance.GetEntityFromID((int)_attackAction.targetedEntityIDs[_attackIndex]);
+		int hitAmount = _attackAction.Data.GetHitAmount(_attackAction, m_user, targetEntity);
+		bool hasTrajectoryProjectileBuff = m_lastPerformedAction.effects.Any(e => e.enumID == EntityPassiveEffectEnumID.TrajectoryControl);
+
+		for (int i = 0; i < hitAmount; i++)
 		{
-			if (_attackAction.attacksInfos[i].isAttackSuccessfull)
-				lastSuccessfullAttackIndex = i;
+			bool isLastBullet = i == hitAmount - 1 && _attackIndex == _lastSuccessfullAttackIndex;
+			m_bulletPool.Get<Projectile>(m_bulletPoint.position, m_bulletPoint.rotation)
+				.SetProjectileDataAndLaunch(m_bulletData
+				, ( entity ) => ApplyBulletHit(entity, _attackInfo, isLastBullet), () => OnProjectileDespawn(isLastBullet), hasTrajectoryProjectileBuff);
+
+			yield return m_timeBetweenBulletsWFS;
 		}
-		for (int attackCount = 0; attackCount < _attackAction.attacksInfos.Length; attackCount++)
+	}
+
+	private void ApplyBulletHit ( Entity _entity, AttackAction.SingleAttackInfo _attackInfo, bool _isLastBullet )
+	{
+		Dictionary<WeaponEquipmentData.DamageType, int> damages = BuildDamageDictionary(_attackInfo);
+		_entity.Equipment.TakeDamage(new EntityEquipmentPlugin.TakeDamageCallback()
 		{
-			AttackAction.SingleAttackInfo attackInfo = _attackAction.attacksInfos[attackCount];
-			Entity targetEntity = GameManager.Instance.GetEntityFromID((int)_attackAction.targetedEntityIDs[attackCount]);
-			Vector3 targetPosition = targetEntity.Skin.Center.position;
-			List<Entity> targetEntities = new();
-			EntityActionData attackData = GameAssets.current.game.entityActionsData[_attackAction.enumID];
+			damages = damages
+		});
 
-			//1) aim at position
-			if (attackInfo.isAttackSuccessfull)
-			{
-				m_user.Skin.VisualyAimAt(_attackAction.attackingWeaponId, targetPosition);
-			}
-			else
-			{
-				//show failure
-				Vector3 OT = (targetPosition - m_bulletPoint.position).normalized;
-				Vector3 perpendicular = Vector3.Cross(OT, Vector3.up).normalized;
-				float distance = 1f;
-				Vector3 adjacentPos = UnityEngine.Random.Range(0, 2) == 0 ? targetPosition + perpendicular * distance : targetPosition - perpendicular * distance;
-				m_user.Skin.VisualyAimAt(_attackAction.attackingWeaponId, adjacentPos);
-			}
+		ApplyStatuses(_entity, _attackInfo);
+		ApplyEffects(_entity);
 
-			yield return m_aimDurationWFS;
+		if (_isLastBullet)
+			EndAttack(m_lastPerformedAction);
+	}
 
-			if (attackData.isAoe)
-			{
-				List<Tile> tilesInRange = m_user.Equipment.GetTilesInAoERange(_attackAction, GridManager.Instance.Tiles[_attackAction.targetTileIDs[attackCount]], true);
-				foreach (Tile tile in tilesInRange)
-				{
-					Entity entityOnTIle = tile.GetEntity(true);
-					if (entityOnTIle != null /*&& !entityOnTIle.IsAlliedTo(m_user.OwnerID)*/)
-						targetEntities.Add(entityOnTIle);
-				}
+	private void OnProjectileDespawn (bool _isLastBullet)
+	{
+		if (_isLastBullet)
+			EndAttack(m_lastPerformedAction);
+	}
 
-				Dictionary<WeaponEquipmentData.DamageType, int> damages = new Dictionary<WeaponEquipmentData.DamageType, int>();
-				for (int i = 0; i < attackInfo.damageTypes.Length; i++)
-				{
-					damages.Add((WeaponEquipmentData.DamageType)attackInfo.damageTypes[i], attackInfo.damages[i]);
-				}
-
-				foreach (Entity entity in targetEntities)
-				{
-					for (int i = 0; i < _attackAction.Data.GetHitAmount(_attackAction, m_user, entity); i++)
-					{
-						entity.Equipment.TakeDamage(new EntityEquipmentPlugin.TakeDamageCallback() { damages = damages });
-
-						for (int j = 0; j < attackInfo.areStatusesSuccess.Length; j++)
-						{
-							if (attackInfo.areStatusesSuccess[j])
-								entity.AddStatus((EntityStatusEnumID)attackInfo.statusIds[j]);
-						}
-
-						foreach (AEntityPassiveEffect.PassiveEffectContainer passiveEffectID in m_lastPerformedAction.effects)
-						{
-							GameAssets.current.game.entityEffects[passiveEffectID.enumID].ApplyEffect(m_user, entity, passiveEffectID);
-						}
-					}
-				}
-
-				foreach (AEntityPassiveEffect.PassiveEffectContainer passiveEffectID in m_lastPerformedAction.effects)
-				{
-					if (GameAssets.current.game.entityEffects[passiveEffectID.enumID] is ApplyStatusPassiveEffect applyStatus && passiveEffectID.targetType == AEntityPassiveEffect.TargetType.Tile)
-					{
-						foreach (Tile tile in tilesInRange)
-							applyStatus.ApplyEffect(tile);
-					}
-				}
-
-				//TODO : add aoe damage anim/viosual/effect here
-				DOVirtual.DelayedCall(1f, () => EndAttack(_attackAction));
-			}
-			else
-			{
-				int hitAmount = _attackAction.Data.GetHitAmount(_attackAction, m_user, targetEntity);
-				bool hasTrajectoryProjectileBuff = m_lastPerformedAction.effects.Any(e => e.enumID == EntityPassiveEffectEnumID.TrajectoryControl);
-				for (int i = 0; i < hitAmount; i++)
-				{
-					bool isLastBullet = i == hitAmount - 1 && attackCount == lastSuccessfullAttackIndex;
-					m_bulletPool.Get<Projectile>(m_bulletPoint.transform.position, m_bulletPoint.rotation).SetProjectileDataAndLaunch(
-						m_bulletData
-						, ( Entity entity ) => OnBulletHit(entity, isLastBullet, attackInfo)
-						, () => OnBulletDespawn(isLastBullet)
-						, hasTrajectoryProjectileBuff);
-					yield return m_timeBetweenBulletsWFS;
-				}
-			}
-		}
-
+	protected override IEnumerator OnEndAttackingCR ( AttackAction _attackAction )
+	{
 		yield return m_shootCooldownDurationWFS;
 
-		if (lastSuccessfullAttackIndex == -1)
-			EndAttack(m_lastPerformedAction);
-
-		m_shootCR = null;
-	}
-
-	private void OnBulletHit ( Entity _entityHit, bool _isLastBullet, AttackAction.SingleAttackInfo _attackInfo )
-	{
-		if (_attackInfo.damageTypes == null || !_attackInfo.isAttackSuccessfull)
-			return;
-
-		Dictionary<WeaponEquipmentData.DamageType, int> damages = new Dictionary<WeaponEquipmentData.DamageType, int>();
-		for (int i = 0; i < _attackInfo.damageTypes.Length; i++)
-			damages.Add((WeaponEquipmentData.DamageType)_attackInfo.damageTypes[i], _attackInfo.damages[i]);
-
-		_entityHit.Equipment.TakeDamage(new EntityEquipmentPlugin.TakeDamageCallback() { damages = damages });
-
-		for (int i = 0; i < _attackInfo.areStatusesSuccess.Length; i++)
-		{
-			if (_attackInfo.areStatusesSuccess[i])
-				_entityHit.AddStatus((EntityStatusEnumID)_attackInfo.statusIds[i]);
-		}
-
-		foreach (AEntityPassiveEffect.PassiveEffectContainer passiveEffectID in m_lastPerformedAction.effects)
-			GameAssets.current.game.entityEffects[passiveEffectID.enumID].ApplyEffect(m_user, _entityHit, passiveEffectID);
-
-		if (_isLastBullet)
-			EndAttack(m_lastPerformedAction);
-	}
-
-	private void OnBulletDespawn(bool _isLastBullet )
-	{
-		if (_isLastBullet)
-			EndAttack(m_lastPerformedAction);
-	}
-
-	private void EndAttack ( AttackAction _attackAction )
-	{
 		m_user.Skin.ReleaseAim(_attackAction.attackingWeaponId);
-		m_onPerformAttackEnd?.Invoke();
 	}
 }

@@ -7,6 +7,7 @@ public abstract class AEntityStatus : ScriptableEnum<EntityStatusEnumID>
     public int duration = 1;
 
     public Sprite icon;
+    public GameObject groundPrefab;
 
     //called each action tick
     public virtual void ApplyStatusEffect ( int _remainingDuration, Entity _entity )
