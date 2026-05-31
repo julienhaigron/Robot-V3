@@ -18,7 +18,7 @@ public class GameManager : SingletonPersistant<GameManager>
 	[SerializeField] private LoadingElement m_mainLoadingElement;
 
 	[Title("Offline")]
-	[SerializeField] private LevelData m_currentLevel;
+	[SerializeField] private MissionData m_currentMission;
 	/*[SerializeField] private List<EntitySavedData> m_playerEntityDatas;
 	[SerializeField] private List<EntitySavedData> m_ennemiEntityDatas;*/
 
@@ -69,7 +69,7 @@ public class GameManager : SingletonPersistant<GameManager>
 		{
 			UIManager.Instance.OpenPanel<StartMenuPanel>();
 		}
-		else if (m_currentLevel != null)
+		else if (m_currentMission != null)
 			StartGame();
 	}
 
@@ -82,21 +82,21 @@ public class GameManager : SingletonPersistant<GameManager>
 		SceneManager.LoadSceneAsync(GameConfig.current.game.hubSceneName);
 	}
 
-	public void SetupLevel ( LevelData _level )
+	public void SetupLevel ( MissionData _mission )
 	{
-		m_currentLevel = _level;
+		m_currentMission = _mission;
 		m_playerTwoEntityDatas = new();
-		foreach (UnitPreset ennemi in _level.enemies)
+		foreach (UnitPreset ennemi in _mission.levelMission.enemies)
 		{
 			m_playerTwoEntityDatas.Add(ennemi.GetSavedData());
 		}
 
-		SceneManager.LoadSceneAsync(_level.map.name);
+		SceneManager.LoadSceneAsync(_mission.levelMission.map.name);
 	}
 
 	public void GoBackToHub ()
 	{
-		m_currentLevel = null;
+		m_currentMission = null;
 		foreach (EntityAnchor anchor in m_playersEntityAnchor)
 		{
 			foreach (Entity entity in anchor.Entities)
@@ -131,7 +131,7 @@ public class GameManager : SingletonPersistant<GameManager>
 			LogConsole.AddLog("Start OfflineGame", LogConsole.LogEventType.DebugSys);
 			m_playersEntityAnchor[0].Init(GameDatas.current.currentPlayerSave.squadUnits, 0);
 			List<EntitySavedData> ennemies = new();
-			foreach (UnitPreset ennemi in m_currentLevel.enemies)
+			foreach (UnitPreset ennemi in m_currentMission.levelMission.enemies)
 			{
 				ennemies.Add(ennemi.GetSavedData());
 			}
@@ -222,6 +222,8 @@ public class GameManager : SingletonPersistant<GameManager>
 		UIManager.Instance.ClosePanel<InGamePanel>(true);
 		UIManager.Instance.OpenPopup<EndLevelPopup>().Init(_isSuccessfull);
 		m_fogCanvas.gameObject.SetActive(false);
+
+		GameDatas.current.currentPlayerSave.dayData.NewDay();
 	}
 
 	//hub

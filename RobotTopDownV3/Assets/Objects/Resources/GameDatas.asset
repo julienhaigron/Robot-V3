@@ -196,3 +196,6 @@ MonoBehaviour:
       - hangarstructure
       - shopstructure
       values: 0000000000000000
+    dayData:
+      missionsIds: 00000000000000000000000000000000000000000000000000000000
+      itemsInShop: []

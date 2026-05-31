@@ -23,10 +23,11 @@ public abstract class ScriptableEnum<TEnum> : ScriptableObject, IScriptableEnum 
 		return enumID.ToString();
 	}
 
-	private void OnValidate ()
+	protected virtual void OnValidate ()
 	{
 		if (Enum.TryParse<TEnum>(name, true, out var parsed))
 			enumID = parsed;
+
 	}
 #endif
 }

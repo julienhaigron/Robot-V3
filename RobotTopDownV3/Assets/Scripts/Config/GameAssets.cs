@@ -29,6 +29,7 @@ public class GameAssets : ScriptableObject
 
         public List<GridData> maps = new();
         public List<LevelData> levels = new();
+        public SerializableDictionary<MissionDataEnumID, MissionData> missions = new();
         public SerializableDictionary<StructureUpgradePopup.StructureType, StructureUpgrade> structureUpgrades = new();
 
         [Title("Entity")]
