@@ -781,7 +781,7 @@ public class TurnManager : Singleton<TurnManager>
 		else
 			_recordedAction.action.onEndTick += OnActionEndTick;
 
-		LogConsole.AddLog("Action performed: " + _recordedAction.action.ToString(), LogConsole.LogEventType.DebugSys);
+		LogConsole.AddLog(_recordedAction.performingEntityID + " performes " + _recordedAction.action.ToString() + " in state " + _recordedAction.entityState, LogConsole.LogEventType.DebugSys);
 		_recordedAction.action.PerformTick(_recordedAction.entityState);
 	}
 

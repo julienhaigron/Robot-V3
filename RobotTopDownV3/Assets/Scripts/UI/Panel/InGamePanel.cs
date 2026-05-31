@@ -151,10 +151,10 @@ public sealed class InGamePanel : AUIPanel
 		{
 			if (entity.Equipment.IsDead)
 				continue;
-
-			for (int i = TurnManager.Instance.RemainingActionToken[entity.ID]; i < GameConfig.current.game.actionTokenPerRound; i++)
+			int remainingToken = TurnManager.Instance.RemainingActionToken[entity.ID];
+			for (int i = 0; i < remainingToken; i++)
 			{
-				TurnManager.Instance.AddAction(entity.ID, EntityActionEnumID.Wait, Entity.EntityState.Guarding, null);
+				TurnManager.Instance.AddAction(entity.ID, EntityActionEnumID.Wait, Entity.EntityState.Patroling, null);
 			}
 		}
 

@@ -140,7 +140,7 @@ public abstract class AEntityAction : INetworkSerializable
 
 	public virtual void OnStartPerform ( Entity.EntityState _state )
 	{
-		PerformingEntity.StartPerformAction(this);
+		PerformingEntity.StartPerformAction(this, _state);
 	}
 
 	protected virtual void EndTick ()

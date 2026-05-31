@@ -324,7 +324,17 @@ public class PlayerController : Singleton<PlayerController>
 		m_selectedEntity = null;
 		ClearActionOnTileDisplay();
 		ClearGhostActionOnTileDisplay();
-		ClearGhostEntitiesAndItems();
+
+		foreach (GhostEntity ghost in m_ghostEntities.Values)
+		{
+			Destroy(ghost.gameObject);
+		}
+		m_ghostEntities.Clear();
+		foreach (GhostItem ghost in m_ghostItems.Values)
+		{
+			Destroy(ghost.gameObject);
+		}
+		m_ghostItems.Clear();
 	}
 
 	public void AddActionDisplay ( ActionDisplayOnTile _display, int _performingEntityID, bool _isTemp )

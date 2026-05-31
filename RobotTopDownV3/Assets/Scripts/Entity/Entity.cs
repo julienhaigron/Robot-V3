@@ -73,6 +73,7 @@ public class Entity : MonoBehaviour
 	public int ID;
 	public int PlayerOwnerID;
 
+	[Serializable]
 	public enum EntityState
 	{
 		Guarding,
@@ -226,11 +227,12 @@ public class Entity : MonoBehaviour
 		}
 	}
 
-	public void StartPerformAction ( AEntityAction _action )
+	public void StartPerformAction ( AEntityAction _action, EntityState _state )
 	{
 		if (_action.Data.type != EntityActionData.ActionType.Rotation)
 			m_lastActionPerformed = _action.Data;
 
+		m_state = _state;
 		onStartPerformAction?.Invoke(_action);
 	}
 
