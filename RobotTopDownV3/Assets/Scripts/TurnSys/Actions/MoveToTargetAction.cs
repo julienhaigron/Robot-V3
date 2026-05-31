@@ -45,7 +45,8 @@ public class MoveToTargetAction : AEntityAction
 	public override void Prepare ( Entity.EntityState _state )
 	{
 		//check here if can do movement and where to exactly
-		RefreshDestinatedTile();
+		if(IsDestinationOccupiedOnNextTurnAction())
+			RefreshDestinatedTile();
 
 		GameManager.Instance.GetEntityFromID(performingEntityID).Displacement.Coordinates.GetTile().SetEntity(null, _isThisTurn: false);
 	}
@@ -175,7 +176,7 @@ public class MoveToTargetAction : AEntityAction
 					doesSelfHaveConflict = true;
 			}
 		}
-		else if (thisActionDestinationIDArray != null && GridManager.Instance.GetDistanceBetween(PerformingEntity.Displacement.Coordinates.GetTile(), GridManager.Instance.Tiles[thisActionDestinationIDArray[^1]], Data.movementSpeed, false) > Data.movementSpeed)
+		else if (thisActionDestinationIDArray != null && GridManager.Instance.GetDistanceBetween(PerformingEntity.Displacement.Coordinates.GetTile(), GridManager.Instance.Tiles[thisActionDestinationIDArray[0]], Data.movementSpeed, false) > 1)
 		{
 			//check if tile too far
 			doesSelfHaveConflict = true;
@@ -201,32 +202,19 @@ public class MoveToTargetAction : AEntityAction
 				thisActionDestinationIDArray = null;
 			}
 		}*/
-		else if (_otherAction is MoveToTargetAction _otherMoveToTargetAction && _otherMoveToTargetAction.thisActionDestinationIDArray == thisActionDestinationIDArray)
+		else if (_otherAction is MoveToTargetAction _otherMoveToTargetAction && _otherMoveToTargetAction.thisActionDestinationIDArray.Any(tileID => thisActionDestinationIDArray.Contains(tileID)))
 		{
-			bool doesHaveCollision = false;
-			foreach (int ourID in thisActionDestinationIDArray)
+			int roll = UnityEngine.Random.Range((int)0, 2);
+			if (roll == 0)
 			{
-				if (_otherMoveToTargetAction.thisActionDestinationIDArray.Contains(ourID))
-				{
-					doesHaveCollision = true;
-					break;
-				}
+				//performing entity wins roll
+				_otherMoveToTargetAction.thisActionDestinationIDArray = null;
+				doesOtherHaveConflict = true;
 			}
-			if (doesHaveCollision)
+			else
 			{
-
-				int roll = UnityEngine.Random.Range((int)0, 2);
-				if (roll == 0)
-				{
-					//performing entity wins roll
-					_otherMoveToTargetAction.thisActionDestinationIDArray = null;
-					doesOtherHaveConflict = true;
-				}
-				else
-				{
-					doesSelfHaveConflict = true;
-					thisActionDestinationIDArray = null;
-				}
+				doesSelfHaveConflict = true;
+				thisActionDestinationIDArray = null;
 			}
 		}
 

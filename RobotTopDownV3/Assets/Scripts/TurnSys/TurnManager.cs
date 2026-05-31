@@ -342,7 +342,11 @@ public class TurnManager : Singleton<TurnManager>
 			actionQueue.RemoveAt(i);
 		}
 		//actionQueue.RemoveRange(_recordedActionPositionInQueue, actionQueue.Count - _recordedActionPositionInQueue);
-		m_recordedActionInput[_actionToStartRemoveFrom.performingEntityID] = new Queue<RecordedAction>(actionQueue);
+		if (actionQueue.Count > 0)
+			m_recordedActionInput[_actionToStartRemoveFrom.performingEntityID] = new Queue<RecordedAction>(actionQueue);
+		else
+			m_recordedActionInput.Remove(_actionToStartRemoveFrom.performingEntityID);
+
 		onActionRemoved?.Invoke(_actionToStartRemoveFrom);
 
 		TrackedEventCheck();
@@ -365,7 +369,7 @@ public class TurnManager : Singleton<TurnManager>
 
 	public int GetLastRegisteredPositionOfEntity ( int _entityID )
 	{
-		if (!m_recordedActionInput.ContainsKey(_entityID) || m_recordedActionInput[_entityID].Count > 0)
+		if (!m_recordedActionInput.ContainsKey(_entityID) || m_recordedActionInput[_entityID] == null || m_recordedActionInput[_entityID].Count > 0)
 			return GameManager.Instance.GetEntityFromID(_entityID).Displacement.Coordinates.ID;
 
 		return m_recordedActionInput[_entityID].ToArray()[^1].action.positionAtActionEndID;
@@ -589,22 +593,19 @@ public class TurnManager : Singleton<TurnManager>
 				if (recordedAction.action.lifetime > 0 || !resultInfo.isActionChanging)
 				{
 					if (recordedAction.action.lifetime == recordedAction.action.preparationDuration)
-					{
 						recordedAction.action.ConflictCheckPrewarm();
-					}
+
 					returnActionToPlayThisRound.Enqueue(recordedAction);
 				}
-				else
+				else if (resultInfo.isActionChanging)
 				{
+					recordedAction.action.CancelAction();
+					recordedAction.freeAction.CancelAction();
+					resultInfo.replacedFreeAction.OnModActionAdded(resultInfo.replacedAction);
+
 					if (resultInfo.replacedAction.lifetime == resultInfo.replacedAction.preparationDuration)
-					{
-						resultInfo.replacedFreeAction.OnModActionAdded(resultInfo.replacedAction);
 						resultInfo.replacedAction.ConflictCheckPrewarm();
 
-						recordedAction.action.CancelAction();
-						recordedAction.freeAction.CancelAction();
-
-					}
 					returnActionToPlayThisRound.Enqueue(new RecordedAction()
 					{
 						timeAtStart = recordedAction.action.timeAtStart,
