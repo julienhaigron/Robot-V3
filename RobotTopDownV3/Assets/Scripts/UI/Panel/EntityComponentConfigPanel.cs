@@ -44,7 +44,7 @@ public class EntityComponentConfigPanel : AUIPanel
 
 				for (int i = 0; i < m_slots.Length; i++)
 				{
-					if (chassisData.auxiliarSlotAvailable > i)
+					if (chassisData.armoringSlotAvailable > i)
 					{
 						m_slots[i].gameObject.SetActive(true);
 						m_slots[i].Init(m_subPartGrid, _data, _data.auxiliar.Length <= i ? null : _data.auxiliar[i]

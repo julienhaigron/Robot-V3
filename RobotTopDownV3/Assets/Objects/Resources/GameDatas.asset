@@ -181,7 +181,9 @@ MonoBehaviour:
       dataID: Armor_CD1
     - ID: Armor_CD1145
       dataID: Armor_CD1
-    equipmentCounter: 146
+    - ID: Frame_Assault146
+      dataID: Frame_Assault
+    equipmentCounter: 147
     currencies:
       keys: 01000000
       values: 0000000000000000

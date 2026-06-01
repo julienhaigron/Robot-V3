@@ -4,12 +4,13 @@ using Sirenix.OdinInspector;
 using UnityEditor;
 #endif
 
-public class EntityEquipmentData : ScriptableObject
+public class EntityEquipmentData : AParsableScriptableObject
 {
+    [Parsing("Faction")]
     public EntityFaction faction;
-
     //public EquipmentType type;
     public Sprite icon;
+    [Parsing("Name")]
     public string displayName = "default";
 
     [BoxGroup(GroupID ="Stat")]
@@ -20,7 +21,6 @@ public class EntityEquipmentData : ScriptableObject
     public AEntityPassiveEffect.PassiveEffectContainer[] passiveEffects;
     [BoxGroup(GroupID ="Status")]
     [Range(0f, 1f)] public float statusHitProbability = .5f;
-
 
 
     public enum EquipmentType { Frame, Brain, Reactor, Occultor, NeuronalMembrane, Weapon, Tool, Armor, Chipset }
@@ -145,5 +145,6 @@ public class EntityEquipmentData : ScriptableObject
         
         EditorUtility.SetDirty(GameDatas.current);
     }
+
 #endif
 }

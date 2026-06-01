@@ -11,12 +11,14 @@ public class FrameEquipmentData : EntityEquipmentData
 {
 	public Entity prefab;
 
-	[BoxGroup(GroupID = "Stat")]
+	[BoxGroup(GroupID = "Stat"), Parsing("HP")]
 	public int maxHealth;
 	/*[BoxGroup(GroupID = "Stat")]
 	public int armSlotAvailable = 2;*/
-	[BoxGroup(GroupID = "Stat")]
-	public int auxiliarSlotAvailable = 2;
+	[BoxGroup(GroupID = "Stat"), Parsing("Armouring Slot")]
+	public int armoringSlotAvailable = 2;
+	[BoxGroup(GroupID = "Stat"), Parsing("Occultor Slot")]
+	public int occultorSlotAvailable = 2;
 	[BoxGroup(GroupID = "Stat")]
 	public StatBonus[] statBonuses;
 

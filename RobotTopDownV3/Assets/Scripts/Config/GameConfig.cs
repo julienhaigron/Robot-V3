@@ -13,6 +13,7 @@ public partial class GameConfig : ScriptableObject
 	public Meta meta = new Meta();
 	public UI ui = new UI();
 	public DatasConfigs datas = new DatasConfigs();
+	public Parsing parsing = new Parsing();
 
 	[System.Serializable]
 	public partial class GameSettings
@@ -77,6 +78,13 @@ public partial class GameConfig : ScriptableObject
 		public LayerMask tileInternRayCastLayer;
 		public LayerMask wallRayCastLayer;
 
+	}
+	
+	[System.Serializable]
+	public class Parsing
+	{
+		public string componentsSpreadSheetID = "1AeQujaBf6YdyVQRD2gBNWazoosesi46DpAoY5b6hrt8";
+		public SerializableDictionary<EntityEquipmentData.EquipmentType, string> componentGUIDPerPage;
 	}
 
 	public void Initialize ()

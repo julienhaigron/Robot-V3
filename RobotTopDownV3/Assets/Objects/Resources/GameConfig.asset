@@ -55,6 +55,7 @@ MonoBehaviour:
       values: 0e0000000f00000010000000080000000a000000060000000b0000000700000009000000
     hubSceneName: HubScene
     startScreenSceneName: MainScene
+    missionAmountInSoloPanel: 7
   input:
     interactionRayCastLength: 100
     uiLayer:
@@ -89,3 +90,17 @@ MonoBehaviour:
     doubleClickDelay: 0.25
   datas:
     editorLoadDatasFromGamedatasFile: 1
+  parsing:
+    componentsSpreadSheetID: 1AeQujaBf6YdyVQRD2gBNWazoosesi46DpAoY5b6hrt8
+    componentGUIDPerPage:
+      keys: 000000000100000002000000030000000400000005000000060000000700000008000000
+      values:
+      - 0
+      - 1473852370
+      - 207332797
+      - 1085589491
+      - 916485654
+      - 1562946535
+      - 1532817546
+      - 286759946
+      - 1887781930
