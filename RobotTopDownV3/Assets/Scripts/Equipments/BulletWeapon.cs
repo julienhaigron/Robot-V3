@@ -18,8 +18,6 @@ public class BulletWeapon : Weapon
 	[SerializeField] private float m_aimDuration = 1f;
 	[SerializeField] private float m_shootCooldownDuration = .3f;
 
-	private ProjectileData m_bulletData;
-
 	private WaitForSeconds m_timeBetweenBulletsWFS;
 	private WaitForSeconds m_aimDurationWFS;
 	private WaitForSeconds m_shootCooldownDurationWFS;
@@ -27,13 +25,6 @@ public class BulletWeapon : Weapon
 	public override void Init ( Entity _user, WeaponEquipmentData _data, bool _isFirstSide )
 	{
 		base.Init(_user, _data, _isFirstSide);
-
-		m_bulletData = new()
-		{
-			owner = _user,
-			speed = Vector2.right * m_speed,
-			weapon = _data
-		};
 
 		m_timeBetweenBulletsWFS = new WaitForSeconds(m_timeBetweenEachBullet);
 		m_aimDurationWFS = new WaitForSeconds(m_aimDuration);
@@ -72,11 +63,22 @@ public class BulletWeapon : Weapon
 		int hitAmount = _attackAction.Data.GetHitAmount(_attackAction, m_user, targetEntity);
 		bool hasTrajectoryProjectileBuff = m_lastPerformedAction.effects.Any(e => e.enumID == EntityPassiveEffectEnumID.TrajectoryControl);
 
+		ProjectileData bulletData = new()
+		{
+			owner = m_user,
+			speed = Vector2.right * m_speed,
+			attackData = _attackAction.Data,
+			weapon = m_data
+		};
+		
 		for (int i = 0; i < hitAmount; i++)
 		{
+			foreach (ParticleSystem ps in m_onPerformPS)
+				ps.Play();
+
 			bool isLastBullet = i == hitAmount - 1 && _attackIndex == _lastSuccessfullAttackIndex;
 			m_bulletPool.Get<Projectile>(m_bulletPoint.position, m_bulletPoint.rotation)
-				.SetProjectileDataAndLaunch(m_bulletData
+				.SetProjectileDataAndLaunch(bulletData
 				, ( entity ) => ApplyBulletHit(entity, _attackInfo, isLastBullet), () => OnProjectileDespawn(isLastBullet), hasTrajectoryProjectileBuff);
 
 			yield return m_timeBetweenBulletsWFS;

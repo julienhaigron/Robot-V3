@@ -79,6 +79,15 @@ public class EntityActionData : ScriptableObject
 		Tile
 	}
 	public TargetType targetType = TargetType.OtherEntity;
+	public enum TrajectoryType
+	{
+		Direct,
+		Mortar,
+		Grenade,
+		Underground,
+		Throw
+	}
+	public TrajectoryType trajectoryType = TrajectoryType.Direct;
 	[ShowIf("@targetType != TargetType.Self")]
 	public int minDistance;
 	[ShowIf("@targetType != TargetType.Self")]
