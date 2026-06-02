@@ -23,12 +23,12 @@ public abstract class AParsableScriptableObject : ScriptableObject, IParsingImpo
     public string Id => name;
     [BoxGroup("Parsing")]
     public string spreadsheetId;
-    [BoxGroup("Parsing")]
-    public string sheetName;
+
+    protected abstract string GetSheetID ();
 
     public string GetUrl ()
     {
-        return "https://docs.google.com/spreadsheets/d/" + spreadsheetId +"/export?format=csv&gid=" + sheetName;
+        return "https://docs.google.com/spreadsheets/d/" + spreadsheetId +"/export?format=csv&gid=" + GetSheetID();
     }
 
     [BoxGroup("Parsing"), Button]

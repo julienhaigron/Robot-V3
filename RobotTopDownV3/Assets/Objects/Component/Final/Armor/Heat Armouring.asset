@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73da1a7b01684d94b9134ed939d3e96f, type: 3}
+  m_Name: Heat Armouring
+  m_EditorClassIdentifier: RTD::ArmorEquipmentData
+  spreadsheetId: https://docs.google.com/spreadsheets/d/1AeQujaBf6YdyVQRD2gBNWazoosesi46DpAoY5b6hrt8/export?format=csv&gid=286759946
+  faction: 3
+  icon: {fileID: 0}
+  displayName: Heat Armouring
+  energyCost: 0
+  knownedActions: 
+  passiveEffects: []
+  statusHitProbability: 0.5
+  statBonuses: []

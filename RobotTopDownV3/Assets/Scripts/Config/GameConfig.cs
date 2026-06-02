@@ -83,6 +83,7 @@ public partial class GameConfig : ScriptableObject
 	[System.Serializable]
 	public class Parsing
 	{
+		public SerializableDictionary<string, AParsableScriptableObject> baseParsableScriptablePerType = new();
 		public string componentsSpreadSheetID = "1AeQujaBf6YdyVQRD2gBNWazoosesi46DpAoY5b6hrt8";
 		public SerializableDictionary<EntityEquipmentData.EquipmentType, string> componentGUIDPerPage;
 	}

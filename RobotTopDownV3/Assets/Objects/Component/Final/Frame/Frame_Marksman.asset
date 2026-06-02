@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e340e03f272314442a53b80f2350e240, type: 3}
+  m_Name: Frame_Marksman
+  m_EditorClassIdentifier: RTD::FrameEquipmentData
+  spreadsheetId: https://docs.google.com/spreadsheets/d/1AeQujaBf6YdyVQRD2gBNWazoosesi46DpAoY5b6hrt8/export?format=csv&gid=0
+  faction: 2
+  icon: {fileID: 0}
+  displayName: Marksman
+  energyCost: 0
+  knownedActions: 
+  passiveEffects: []
+  statusHitProbability: 0.5
+  prefab: {fileID: 0}
+  maxHealth: 200
+  armoringSlotAvailable: 2
+  occultorSlotAvailable: 4
+  statBonuses: []

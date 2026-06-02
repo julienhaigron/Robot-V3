@@ -29,23 +29,23 @@ public class GameToolboxWindow : EditorWindow
 		if (GUILayout.Button("Parse all components", group))
 		{
 			CsvImporter.ImportFromUrl<FrameEquipmentData>(MakeUrl(GameConfig.current.parsing.componentsSpreadSheetID, GameConfig.current.parsing.componentGUIDPerPage[EntityEquipmentData.EquipmentType.Frame])
-				, "Assets/Objects/Component/Final");
+				, "Assets/Objects/Component/Final/Frame");
 			CsvImporter.ImportFromUrl<ReactorEquipmentData>(MakeUrl(GameConfig.current.parsing.componentsSpreadSheetID, GameConfig.current.parsing.componentGUIDPerPage[EntityEquipmentData.EquipmentType.Reactor])
-				, "Assets/Objects/Component/Final");
+				, "Assets/Objects/Component/Final/Reactor");
 			CsvImporter.ImportFromUrl<BrainEquipmentData>(MakeUrl(GameConfig.current.parsing.componentsSpreadSheetID, GameConfig.current.parsing.componentGUIDPerPage[EntityEquipmentData.EquipmentType.Brain])
-				, "Assets/Objects/Component/Final");
+				, "Assets/Objects/Component/Final/Brain");
 			CsvImporter.ImportFromUrl<WeaponEquipmentData>(MakeUrl(GameConfig.current.parsing.componentsSpreadSheetID, GameConfig.current.parsing.componentGUIDPerPage[EntityEquipmentData.EquipmentType.Weapon])
-				, "Assets/Objects/Component/Final");
+				, "Assets/Objects/Component/Final/Weapon");
 			CsvImporter.ImportFromUrl<NeuronalMembraneEquipmentData>(MakeUrl(GameConfig.current.parsing.componentsSpreadSheetID, GameConfig.current.parsing.componentGUIDPerPage[EntityEquipmentData.EquipmentType.NeuronalMembrane])
-				, "Assets/Objects/Component/Final");
+				, "Assets/Objects/Component/Final/NeuronalMembrane");
 			CsvImporter.ImportFromUrl<ToolEquipmentData>(MakeUrl(GameConfig.current.parsing.componentsSpreadSheetID, GameConfig.current.parsing.componentGUIDPerPage[EntityEquipmentData.EquipmentType.Tool])
-				, "Assets/Objects/Component/Final");
+				, "Assets/Objects/Component/Final/Tool");
 			CsvImporter.ImportFromUrl<ArmorEquipmentData>(MakeUrl(GameConfig.current.parsing.componentsSpreadSheetID, GameConfig.current.parsing.componentGUIDPerPage[EntityEquipmentData.EquipmentType.Armor])
-				, "Assets/Objects/Component/Final");
+				, "Assets/Objects/Component/Final/Armor");
 			CsvImporter.ImportFromUrl<OccultorEquipmentData>(MakeUrl(GameConfig.current.parsing.componentsSpreadSheetID, GameConfig.current.parsing.componentGUIDPerPage[EntityEquipmentData.EquipmentType.Occultor])
-				, "Assets/Objects/Component/Final");
+				, "Assets/Objects/Component/Final/Occultor");
 			CsvImporter.ImportFromUrl<ChipsetEquipmentData>(MakeUrl(GameConfig.current.parsing.componentsSpreadSheetID, GameConfig.current.parsing.componentGUIDPerPage[EntityEquipmentData.EquipmentType.Chipset])
-				, "Assets/Objects/Component/Final");
+				, "Assets/Objects/Component/Final/Chipset");
 		}
 		EditorGUILayout.EndVertical();
 

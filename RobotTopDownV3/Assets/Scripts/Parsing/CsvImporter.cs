@@ -154,7 +154,7 @@ public static class CsvImporter
         }
     }
 
-    private static T CreateOrLoadAsset<T> ( string _id, string _folder ) where T : ScriptableObject
+    private static T CreateOrLoadAsset<T> ( string _id, string _folder ) where T : AParsableScriptableObject
     {
         string path = $"{_folder}/{_id}.asset";
 
@@ -163,7 +163,12 @@ public static class CsvImporter
         if (asset != null)
             return asset;
 
-        asset = ScriptableObject.CreateInstance<T>();
+        string typeName = typeof(T).Name;
+        Debug.Log(typeName);
+        if (GameConfig.current.parsing.baseParsableScriptablePerType.ContainsKey(typeName))
+            asset = AParsableScriptableObject.Instantiate(GameConfig.current.parsing.baseParsableScriptablePerType[typeName]) as T;
+        else
+            asset = ScriptableObject.CreateInstance<T>();
         AssetDatabase.CreateAsset(asset, path);
 
         return asset;
