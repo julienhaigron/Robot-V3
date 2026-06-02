@@ -109,6 +109,7 @@ public class Weapon : MonoBehaviour
 
 		foreach (ParticleSystem ps in m_onPerformPS)
 			ps.Play();
+		SoundManager.Instance.Play(_attackAction.Data.onPerformSingleAttackSFXID);
 
 		yield return m_singleAttackDuration;
 

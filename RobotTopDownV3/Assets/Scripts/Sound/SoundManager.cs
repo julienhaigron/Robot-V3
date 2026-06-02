@@ -2,10 +2,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-public class SoundManager : MonoBehaviour
+public class SoundManager : SingletonPersistant<SoundManager>
 {
-	public static SoundManager Instance { get; private set; }
-
 	[SerializeField]
 	private SfxDatabase database;
 	[SerializeField]
@@ -14,16 +12,9 @@ public class SoundManager : MonoBehaviour
 	private readonly List<AudioSource> pool = new();
 	private readonly Dictionary<SfxId, SfxData> lookup = new();
 
-	private void Awake ()
+	public override void Awake ()
 	{
-		if (Instance != null)
-		{
-			Destroy(gameObject);
-			return;
-		}
-
-		Instance = this;
-
+		base.Awake();
 		BuildLookup();
 		CreatePool();
 	}

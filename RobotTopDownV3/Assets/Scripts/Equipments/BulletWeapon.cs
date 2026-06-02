@@ -67,14 +67,19 @@ public class BulletWeapon : Weapon
 		{
 			owner = m_user,
 			speed = Vector2.right * m_speed,
+			destination = _attackAction.Data.isAoe
+				? GridManager.Instance.Tiles[_attackAction.targetTileIDs[_attackIndex]].coordinates.GetTile().transform.position
+				: GameManager.Instance.GetEntityFromID(_attackAction.targetedEntityIDs[_attackIndex]).Displacement.Coordinates.GetTile().transform.position,
 			attackData = _attackAction.Data,
-			weapon = m_data
+			weapon = m_data,
+			onHitSFXID = _attackAction.Data.onSingleAttackHitSFXID
 		};
 		
 		for (int i = 0; i < hitAmount; i++)
 		{
 			foreach (ParticleSystem ps in m_onPerformPS)
 				ps.Play();
+			SoundManager.Instance.Play(_attackAction.Data.onPerformSingleAttackSFXID);
 
 			bool isLastBullet = i == hitAmount - 1 && _attackIndex == _lastSuccessfullAttackIndex;
 			m_bulletPool.Get<Projectile>(m_bulletPoint.position, m_bulletPoint.rotation)

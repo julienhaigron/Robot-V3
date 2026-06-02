@@ -21,6 +21,8 @@ public class EntityActionData : ScriptableObject
 	[Title("Animation")]
 	public string preparationAnimationKey;
 	public string afterPerformAnimationKey;
+	public SfxId onPerformSingleAttackSFXID;
+	public SfxId onSingleAttackHitSFXID;
 
 	[Title("Condition")]
 	public enum ConditionType { Noone, DidNotMoveThisTurn, DidNotAttackThisTurn/*, IsTargetMarked*/ }

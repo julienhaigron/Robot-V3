@@ -7,6 +7,7 @@ public class MissionPanel : AUIPanel
 {
 	[SerializeField] private BaseButton m_returnBtn;
 	[SerializeField] private Transform m_missionBtnsParent;
+	[SerializeField] private MissionButton m_tutoBtn;
 	[SerializeField] private MissionButton m_baseMissionBtn;
 	
 	private List<MissionButton> m_levelBtns = new();
@@ -14,6 +15,7 @@ public class MissionPanel : AUIPanel
 	private void Awake ()
 	{
 		m_returnBtn.onClick += OnClickReturn;
+		m_tutoBtn.Init(MissionDataEnumID.Tuto);
 	}
 
 	protected override void OnShowStarted ()

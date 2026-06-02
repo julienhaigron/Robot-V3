@@ -254,7 +254,7 @@ public class MoveToTargetAction : AEntityAction
 
 		List<Tile> pathToTile = GridManager.Instance.GetPath(GameManager.Instance.GetEntityFromID(performingEntityID).Displacement.Coordinates.GetTile(), GridManager.Instance.Tiles[(int)finalTargetTileID], _isThisTurn: false);
 
-		if (pathToTile == null || pathToTile.Count < 2)
+		if (pathToTile == null || pathToTile.Count < Data.movementSpeed + 1)
 		{
 			finalTargetTileID = -1;
 			positionAtActionEndID = GameManager.Instance.GetEntityFromID(performingEntityID).Displacement.Coordinates.ID;
@@ -262,6 +262,7 @@ public class MoveToTargetAction : AEntityAction
 		}
 
 		pathToTile.Reverse();
+		thisActionDestinationIDArray = new int[Data.movementSpeed];
 		for (int i = 0; i < Data.movementSpeed; i++)
 		{
 			thisActionDestinationIDArray[i] = pathToTile[i + 1].coordinates.ID;

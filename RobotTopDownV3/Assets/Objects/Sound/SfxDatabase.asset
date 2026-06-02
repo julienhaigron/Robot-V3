@@ -23,3 +23,33 @@ MonoBehaviour:
     Clip: {fileID: 8300000, guid: 5cd691c7632755d499fbbb55bc1f0fac, type: 3}
     Volume: 1
     Pitch: 1
+  - Id: etfx_explosion_grenade
+    Category: 1
+    Clip: {fileID: 8300000, guid: 79c3cb7a26813d146b07c293b0324039, type: 3}
+    Volume: 1
+    Pitch: 1
+  - Id: etfx_explosion_poof
+    Category: 1
+    Clip: {fileID: 8300000, guid: 96bbf34d7aee725449bb8a5f1a46bfbb, type: 3}
+    Volume: 1
+    Pitch: 1
+  - Id: etfx_explosion_rocket
+    Category: 1
+    Clip: {fileID: 8300000, guid: 8dfcae34791b3a447b81d6653208f596, type: 3}
+    Volume: 1
+    Pitch: 1
+  - Id: etfx_shoot_laser
+    Category: 1
+    Clip: {fileID: 8300000, guid: b45b19776b2e15e48947a75b76ccca86, type: 3}
+    Volume: 1
+    Pitch: 1
+  - Id: etfx_shoot_pistol02
+    Category: 1
+    Clip: {fileID: 8300000, guid: c922c34f559ead440a273a13a924cfc7, type: 3}
+    Volume: 1
+    Pitch: 1
+  - Id: etfx_shoot_rocket03
+    Category: 1
+    Clip: {fileID: 8300000, guid: 31d4354cef3a92a4481b8c1464e22afd, type: 3}
+    Volume: 1
+    Pitch: 1

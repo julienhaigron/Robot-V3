@@ -634,6 +634,7 @@ Transform:
   - {fileID: 2602406168588584456}
   - {fileID: 7273707021534605587}
   - {fileID: 6807961408405058028}
+  - {fileID: 3410856023377398780}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &9152403339332330190
@@ -878,6 +879,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: a252f0d10d1073d4d8b13868267c748d, type: 2}
   - {fileID: 11400000, guid: 8b811996c2199ba4abd49242e01a6d56, type: 2}
   - {fileID: 11400000, guid: dd2a378f66213fb4182ff44e937dd00a, type: 2}
+  - {fileID: 11400000, guid: 6ec7c3bd1e4016444801a97fe18cc21a, type: 2}
 --- !u!114 &1994310452173458588
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1027,3 +1029,49 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_spawnCoordinates: []
+--- !u!1 &9106128514747867737
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3410856023377398780}
+  - component: {fileID: 5768773148616930351}
+  m_Layer: 0
+  m_Name: SoundManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3410856023377398780
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9106128514747867737}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1001864918258139889}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5768773148616930351
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9106128514747867737}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dfb7c45579826f94182e671805d6c3fc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: RTD::SoundManager
+  database: {fileID: 11400000, guid: 201b7202e52098b4780b2f11a6f3e399, type: 2}
+  poolSize: 16

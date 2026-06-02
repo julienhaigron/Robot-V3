@@ -20,11 +20,10 @@ MonoBehaviour:
   knownedActions: 09000000
   passiveEffects: []
   statusHitProbability: 0.5
-  prefab: {fileID: 4024176136403563100, guid: 66812f69ad78b734dbdc05849c6752ae, type: 3}
+  prefab: {fileID: 3050370552699964755, guid: dd0a64f5756259b41a3f0a0816904467, type: 3}
   baseDamages:
     keys: 000000000500000002000000
     values: 050000000500000005000000
-  damageCategory: 1
   visionConeRange: 60
   attackAnimationSuccessId: 
   attackAnimationFailureId: 

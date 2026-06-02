@@ -35,6 +35,7 @@ Transform:
   - {fileID: 4865218571543126600}
   - {fileID: 7503774099887763590}
   - {fileID: 5152870357302224447}
+  - {fileID: 2105563599160006451}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &9190299420879906313
@@ -53,6 +54,7 @@ MonoBehaviour:
   m_discardAfter: 20
   m_rb: {fileID: 5478765675733972146}
   m_trail: {fileID: 3295257863744513318}
+  m_onHitPS: {fileID: 2105563599140624843}
 --- !u!54 &5478765675733972146
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -4955,7 +4957,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &7503774099887763590
 Transform:
   m_ObjectHideFlags: 0
@@ -5090,6 +5092,81 @@ TrailRenderer:
   m_Autodestruct: 0
   m_Emitting: 1
   m_ApplyActiveColorSpace: 1
+--- !u!1001 &2105563599159904309
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 5537131122029428267}
+    m_Modifications:
+    - target: {fileID: 109416, guid: 1cbea70b4874c49458ec188e4527dfa7, type: 3}
+      propertyPath: m_Name
+      value: LaserMeshMissileBlue
+      objectReference: {fileID: 0}
+    - target: {fileID: 499462, guid: 1cbea70b4874c49458ec188e4527dfa7, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 499462, guid: 1cbea70b4874c49458ec188e4527dfa7, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 499462, guid: 1cbea70b4874c49458ec188e4527dfa7, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 499462, guid: 1cbea70b4874c49458ec188e4527dfa7, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 499462, guid: 1cbea70b4874c49458ec188e4527dfa7, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 499462, guid: 1cbea70b4874c49458ec188e4527dfa7, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 499462, guid: 1cbea70b4874c49458ec188e4527dfa7, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 499462, guid: 1cbea70b4874c49458ec188e4527dfa7, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 499462, guid: 1cbea70b4874c49458ec188e4527dfa7, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 499462, guid: 1cbea70b4874c49458ec188e4527dfa7, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 19812862, guid: 1cbea70b4874c49458ec188e4527dfa7, type: 3}
+      propertyPath: moveWithTransform
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 19812862, guid: 1cbea70b4874c49458ec188e4527dfa7, type: 3}
+      propertyPath: moveWithCustomTransform
+      value: 
+      objectReference: {fileID: 5537131122029428267}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 1cbea70b4874c49458ec188e4527dfa7, type: 3}
+--- !u!198 &2105563599140624843 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 19812862, guid: 1cbea70b4874c49458ec188e4527dfa7, type: 3}
+  m_PrefabInstance: {fileID: 2105563599159904309}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &2105563599160006451 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 499462, guid: 1cbea70b4874c49458ec188e4527dfa7, type: 3}
+  m_PrefabInstance: {fileID: 2105563599159904309}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &4903861437900473763
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5161,6 +5238,10 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: 19c9bcb035d8724458fec758f4fdac67, type: 3}
       propertyPath: m_Name
       value: Bullet
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 19c9bcb035d8724458fec758f4fdac67, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

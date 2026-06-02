@@ -62,8 +62,14 @@ public class Projectile : PoolElement
 		
 		m_didHitSomething = true;
 
-		m_onHitPS.Play();
-		DiscardIn(m_onHitPS.main.duration);
+		SoundManager.Instance.Play(m_projectileData.onHitSFXID);
+		if (m_onHitPS != null)
+		{
+			m_onHitPS.Play();
+			DiscardIn(m_onHitPS.main.duration);
+		}
+		else
+			Discard();
 	}
 
 	public virtual void OnCollideWithOther ( int _collidedLayer, Collider _other )
@@ -78,8 +84,14 @@ public class Projectile : PoolElement
 
 			m_didHitSomething = true;
 
-			m_onHitPS.Play();
-			DiscardIn(m_onHitPS.main.duration);
+			SoundManager.Instance.Play(m_projectileData.onHitSFXID);
+			if (m_onHitPS != null)
+			{
+				m_onHitPS.Play();
+				DiscardIn(m_onHitPS.main.duration);
+			}
+			else
+				Discard();
 		}
 	}
 
@@ -89,6 +101,43 @@ public class Projectile : PoolElement
 
 		m_isInit = true;
 	}
+
+	public void SetProjectileDataAndLaunch ( ProjectileData _projectileData, Action<Entity> _onHitEntity, Action _onProjectileDespawn, bool _hasTrajectoryControl )
+	{
+		SetProjectileData(_projectileData);
+
+		if (_hasTrajectoryControl)
+		{
+			LaunchMortar(_onHitEntity, _onProjectileDespawn);
+			return;
+		}
+
+		switch (_projectileData.attackData.trajectoryType)
+		{
+			case EntityActionData.TrajectoryType.Direct:
+				Launch(_onHitEntity, _onProjectileDespawn);
+				break;
+
+			case EntityActionData.TrajectoryType.Mortar:
+				LaunchMortar(_onHitEntity, _onProjectileDespawn);
+				break;
+
+			case EntityActionData.TrajectoryType.Grenade:
+				LaunchGrenade(_onHitEntity, _onProjectileDespawn);
+				break;
+
+			case EntityActionData.TrajectoryType.Throw:
+				LaunchThrow(_onHitEntity, _onProjectileDespawn);
+				break;
+
+			case EntityActionData.TrajectoryType.Underground:
+				LaunchUnderground(_onHitEntity, _onProjectileDespawn);
+				break;
+		}
+
+	}
+
+	#region Launch
 
 	public virtual void Launch ( Action<Entity> _onHitEntity, Action _onProjectileDespawn )
 	{
@@ -137,7 +186,7 @@ public class Projectile : PoolElement
 
 		float gravity = Mathf.Abs(Physics.gravity.y);
 		Vector3 displacement = target - start;
-		Vector3 displacementXZ = new Vector3( displacement.x, 0f, displacement.z);
+		Vector3 displacementXZ = new Vector3(displacement.x, 0f, displacement.z);
 		float time = displacementXZ.magnitude / Mathf.Max(1f, m_projectileData.speed.x);
 		Vector3 velocityXZ = displacementXZ / time;
 		float velocityY = (displacement.y + 0.5f * gravity * time * time) / time;
@@ -177,40 +226,7 @@ public class Projectile : PoolElement
 		});
 	}
 
-	public void SetProjectileDataAndLaunch ( ProjectileData _projectileData, Action<Entity> _onHitEntity, Action _onProjectileDespawn, bool _hasTrajectoryControl )
-	{
-		SetProjectileData(_projectileData);
-
-		if (_hasTrajectoryControl)
-		{
-			LaunchMortar(_onHitEntity, _onProjectileDespawn);
-			return;
-		}
-
-		switch (_projectileData.attackData.trajectoryType)
-		{
-			case EntityActionData.TrajectoryType.Direct:
-				Launch(_onHitEntity, _onProjectileDespawn);
-				break;
-
-			case EntityActionData.TrajectoryType.Mortar:
-				LaunchMortar(_onHitEntity, _onProjectileDespawn);
-				break;
-
-			case EntityActionData.TrajectoryType.Grenade:
-				LaunchGrenade(_onHitEntity, _onProjectileDespawn);
-				break;
-
-			case EntityActionData.TrajectoryType.Throw:
-				LaunchThrow(_onHitEntity, _onProjectileDespawn);
-				break;
-
-			case EntityActionData.TrajectoryType.Underground:
-				LaunchUnderground(_onHitEntity, _onProjectileDespawn);
-				break;
-		}
-
-	}
+	#endregion
 
 	public void DiscardIn(float _sec )
 	{
@@ -254,4 +270,5 @@ public struct ProjectileData
 	public Vector3 destination;
 	public EntityActionData attackData;
 	public WeaponEquipmentData weapon;
+	public SfxId onHitSFXID;
 }

@@ -31,9 +31,10 @@ MonoBehaviour:
     levels:
     - {fileID: 11400000, guid: 77e7909ebb1819744bb079624e2fd522, type: 2}
     missions:
-      keys: 00000000
+      keys: 0000000001000000
       values:
       - {fileID: 11400000, guid: 3fb3d43f3aa477a4fbbe9607ba1aca88, type: 2}
+      - {fileID: 11400000, guid: 35214ca16ad0015409672f6bba860636, type: 2}
     structureUpgrades:
       keys: 0000000002000000
       values:
