@@ -95,13 +95,13 @@ public partial class GameDatas : ScriptableObject
 
 		public SerializableDictionary<string, int> upgradeLevels = new SerializableDictionary<string, int>();
 
-		public DayData dayData;
+		public DayData dayData = new();
 
 		[Serializable]
 		public class DayData
 		{
-			public List<MissionDataEnumID> missionsIds;
-			public List<Equipment> itemsInShop;
+			public List<MissionDataEnumID> missionsIds = new();
+			public List<Equipment> itemsInShop = new();
 
 			public void NewDay ()
 			{

@@ -17,14 +17,13 @@ MonoBehaviour:
   icon: {fileID: 21300000, guid: a2a851d73a7f86e49b369f6f737b5601, type: 3}
   displayName: Rapier
   energyCost: 30
-  knownedActions: 09000000
+  knownedActions: 210000002200000024000000
   passiveEffects: []
   statusHitProbability: 0.5
   prefab: {fileID: 4024176136403563100, guid: 66812f69ad78b734dbdc05849c6752ae, type: 3}
   baseDamages:
     keys: 000000000500000002000000
     values: 050000000500000005000000
-  damageCategory: 1
   visionConeRange: 60
   attackAnimationSuccessId: 
   attackAnimationFailureId: 

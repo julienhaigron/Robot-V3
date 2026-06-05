@@ -17,3 +17,4 @@ MonoBehaviour:
   map: {fileID: 11400000, guid: 96bdcbe1a80e5c04bb71dc4c4aed43a9, type: 2}
   enemies:
   - {fileID: 11400000, guid: d26ed967dd7a392478f3f1c6bb46449f, type: 2}
+  - {fileID: 11400000, guid: d26ed967dd7a392478f3f1c6bb46449f, type: 2}

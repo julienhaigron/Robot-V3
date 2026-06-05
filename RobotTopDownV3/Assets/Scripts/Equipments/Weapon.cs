@@ -148,6 +148,8 @@ public class Weapon : MonoBehaviour
 			{
 				entity.Equipment.TakeDamage(new EntityEquipmentPlugin.TakeDamageCallback()
 				{
+					entityAttacker = m_user,
+					entityTargeted = entity,
 					damages = damages
 				});
 
@@ -166,9 +168,7 @@ public class Weapon : MonoBehaviour
 		{
 			foreach (Tile tile in m_user.Equipment.GetTilesInAoERange(_attackAction, GridManager.Instance.Tiles[_attackAction.targetTileIDs[_attackIndex]]))
 			{
-				Entity entity = tile.GetEntity(true);
-
-				if (entity != null)
+				if (tile.TryGetEntity(true, out Entity entity))
 					targets.Add(entity);
 			}
 		}
@@ -183,7 +183,7 @@ public class Weapon : MonoBehaviour
 		Dictionary<WeaponEquipmentData.DamageType, int> damages = new();
 
 		for (int i = 0; i < _attackInfo.damageTypes.Length; i++)
-			damages.Add( (WeaponEquipmentData.DamageType)_attackInfo.damageTypes[i], _attackInfo.damages[i]);
+			damages.Add( (WeaponEquipmentData.DamageType) _attackInfo.damageTypes[i], _attackInfo.damages[i]);
 
 		return damages;
 	}

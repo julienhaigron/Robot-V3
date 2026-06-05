@@ -40,6 +40,8 @@ MonoBehaviour:
       arms:
       - ID: Weapon_Psy_GlaiveDeSivir4
         dataID: Weapon_Psy_GlaiveDeSivir
+      - ID: Missil array232
+        dataID: Missil array
       auxiliar:
       - ID: Armor_CD16
         dataID: Armor_CD1
@@ -66,6 +68,8 @@ MonoBehaviour:
       arms:
       - ID: Weapon_Psy_GlaiveDeSivir14
         dataID: Weapon_Psy_GlaiveDeSivir
+      - ID: Minigun233
+        dataID: Minigun
       auxiliar:
       - ID: Armor_CD116
         dataID: Armor_CD1
@@ -179,7 +183,29 @@ MonoBehaviour:
       dataID: Armor_CD1
     - ID: Frame_Assault146
       dataID: Frame_Assault
-    equipmentCounter: 155
+    - ID: Flail223
+      dataID: Flail
+    - ID: Railgun224
+      dataID: Railgun
+    - ID: Spear225
+      dataID: Spear
+    - ID: Sniper226
+      dataID: Sniper
+    - ID: FlameThrower227
+      dataID: FlameThrower
+    - ID: Flail228
+      dataID: Flail
+    - ID: Gauntlet229
+      dataID: Gauntlet
+    - ID: Hammer230
+      dataID: Hammer
+    - ID: Glaive231
+      dataID: Glaive
+    - ID: Rapier234
+      dataID: Rapier
+    - ID: Grenade launcher235
+      dataID: Grenade launcher
+    equipmentCounter: 236
     currencies:
       keys: 01000000
       values: 0000000000000000

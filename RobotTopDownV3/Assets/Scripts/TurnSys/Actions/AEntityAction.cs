@@ -26,12 +26,17 @@ public abstract class AEntityAction : INetworkSerializable
 	public int preparationDuration = 0;
 	public int actualDuration = 1;
 	public int cooldownDuration = 0;
-	public int TotalCost => preparationDuration + actualDuration + cooldownDuration;
+	public int TotalDuration => preparationDuration + actualDuration + cooldownDuration;
 
 	public int lifetime = 0;
 	public int timeAtStart = 0;
 	public int TimeAtStartPerform => timeAtStart + preparationDuration;
-	public int TimeAtEnd => timeAtStart + TotalCost;
+	public int TimeAtEnd => timeAtStart + TotalDuration;
+
+	public bool IsPerformingAtTick ( int _tick )
+	{
+		return _tick >= timeAtStart + preparationDuration && _tick <= timeAtStart + preparationDuration + actualDuration;
+	}
 
 	public virtual void NetworkSerialize<T> ( BufferSerializer<T> serializer ) where T : IReaderWriter
 	{
@@ -121,7 +126,8 @@ public abstract class AEntityAction : INetworkSerializable
 
 		lifetime++;
 
-		if (lifetime == preparationDuration + 1)
+		//if (lifetime == preparationDuration + 1)
+		if (IsPerformingAtTick(timeAtStart + lifetime - 1))
 		{
 			Perform(_state);
 			return true;

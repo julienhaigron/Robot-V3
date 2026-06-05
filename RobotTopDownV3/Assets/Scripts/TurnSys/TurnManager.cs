@@ -338,7 +338,8 @@ public class TurnManager : Singleton<TurnManager>
 		List<RecordedAction> actionQueue = m_recordedActionInput[_actionToStartRemoveFrom.performingEntityID].ToList();
 		for (int i = actionQueue.Count - 1; i >= _recordedActionPositionInQueue; i--)
 		{
-			m_remainingActionToken[_actionToStartRemoveFrom.performingEntityID] += actionQueue[i].action.TotalCost;
+			actionQueue[i].action.CancelAction();
+			m_remainingActionToken[_actionToStartRemoveFrom.performingEntityID] += actionQueue[i].action.TotalDuration;
 			actionQueue.RemoveAt(i);
 		}
 		//actionQueue.RemoveRange(_recordedActionPositionInQueue, actionQueue.Count - _recordedActionPositionInQueue);
@@ -347,29 +348,18 @@ public class TurnManager : Singleton<TurnManager>
 		else
 			m_recordedActionInput.Remove(_actionToStartRemoveFrom.performingEntityID);
 
+		CurrentActionSelected.timeAtStart = m_recordedActionInput.ContainsKey(_actionToStartRemoveFrom.performingEntityID) && m_recordedActionInput[_actionToStartRemoveFrom.performingEntityID].Count > 0
+			? m_recordedActionInput[_actionToStartRemoveFrom.performingEntityID].ToArray()[^1].action.TimeAtEnd : 0;
+
 		onActionRemoved?.Invoke(_actionToStartRemoveFrom);
 
 		TrackedEventCheck();
 		RefreshActionDisplay(_actionToStartRemoveFrom.performingEntityID, false);
 	}
 
-	/*public void RemoveAction ( RecordedAction _removedRecordedAction )
-	{
-		if (!m_recordedActionInput.ContainsKey(_removedRecordedAction.performingEntityID))
-			return;
-
-		List<RecordedAction> actionQueue = m_recordedActionInput[_removedRecordedAction.performingEntityID].ToList();
-		actionQueue.Remove(_removedRecordedAction);
-		m_recordedActionInput[_removedRecordedAction.performingEntityID] = new Queue<RecordedAction>(actionQueue);
-		onActionRemoved?.Invoke(_removedRecordedAction);
-
-		TrackedEventCheck();
-		RefreshActionDisplay(_removedRecordedAction.performingEntityID);
-	}*/
-
 	public int GetLastRegisteredPositionOfEntity ( int _entityID )
 	{
-		if (!m_recordedActionInput.ContainsKey(_entityID) || m_recordedActionInput[_entityID] == null || m_recordedActionInput[_entityID].Count > 0)
+		if (!m_recordedActionInput.ContainsSerializedKey(_entityID) || m_recordedActionInput[_entityID] == null || m_recordedActionInput[_entityID].Count == 0)
 			return GameManager.Instance.GetEntityFromID(_entityID).Displacement.Coordinates.ID;
 
 		return m_recordedActionInput[_entityID].ToArray()[^1].action.positionAtActionEndID;
@@ -431,7 +421,7 @@ public class TurnManager : Singleton<TurnManager>
 
 			foreach (RecordedAction recordedAction in m_recordedActionInput[entityID].ToArray())
 			{
-				totalCost += recordedAction.action.TotalCost;
+				totalCost += recordedAction.action.TotalDuration;
 				recordedAction.action.Display(recordedAction);
 
 				if (_specificTokenCount != -1 && totalCost <= _specificTokenCount)
@@ -553,7 +543,7 @@ public class TurnManager : Singleton<TurnManager>
 			{
 				RecordedAction recordedAction = recordedActions[entityID].Dequeue();
 				m_actionsToPlay[entityID].Enqueue(recordedAction);
-				totalCost += recordedAction.action.TotalCost;
+				totalCost += recordedAction.action.TotalDuration;
 			}
 
 			if (m_recordedActionInput[entityID].Count == 0)
@@ -592,18 +582,18 @@ public class TurnManager : Singleton<TurnManager>
 
 				if (recordedAction.action.lifetime > 0 || !resultInfo.isActionChanging)
 				{
-					if (recordedAction.action.lifetime == recordedAction.action.preparationDuration)
+					if (recordedAction.action.IsPerformingAtTick(currentTick))
 						recordedAction.action.ConflictCheckPrewarm();
 
 					returnActionToPlayThisRound.Enqueue(recordedAction);
 				}
-				else if (resultInfo.isActionChanging)
+				else
 				{
 					recordedAction.action.CancelAction();
 					recordedAction.freeAction.CancelAction();
 					resultInfo.replacedFreeAction.OnModActionAdded(resultInfo.replacedAction);
 
-					if (resultInfo.replacedAction.lifetime == resultInfo.replacedAction.preparationDuration)
+					if (resultInfo.replacedAction.IsPerformingAtTick(currentTick))
 						resultInfo.replacedAction.ConflictCheckPrewarm();
 
 					returnActionToPlayThisRound.Enqueue(new RecordedAction()
@@ -641,6 +631,8 @@ public class TurnManager : Singleton<TurnManager>
 		{
 			foreach (RecordedAction recordedAction in m_actionsToPlay[entityID])
 			{
+				if (!recordedAction.action.IsPerformingAtTick(currentTick))
+					continue;
 				recordedAction.action.Prepare(recordedAction.entityState);
 			}
 		}
@@ -683,6 +675,9 @@ public class TurnManager : Singleton<TurnManager>
 			Queue<RecordedAction> actionsPlayedThisRound = m_actionsToPlay[entity];
 			foreach (RecordedAction action in actionsPlayedThisRound.ToArray())
 			{
+				if (!action.action.IsPerformingAtTick(currentTick))
+					continue;
+
 				foreach (int otherEntity in m_actionsToPlay.Keys)
 				{
 					if (entity == otherEntity) continue;
@@ -690,6 +685,9 @@ public class TurnManager : Singleton<TurnManager>
 					Queue<RecordedAction> otherEntityActionsPlayedThisRound = m_actionsToPlay[otherEntity];
 					foreach (RecordedAction otherAction in otherEntityActionsPlayedThisRound.ToArray())
 					{
+						if (!otherAction.action.IsPerformingAtTick(currentTick))
+							continue;
+
 						AEntityAction.ActionConflictResultInfo resultInfo = action.action.CheckConflict(otherAction.action);
 						if (resultInfo.isFirstActionConflicted)
 						{
@@ -803,11 +801,15 @@ public class TurnManager : Singleton<TurnManager>
 				m_actionsBeingDone.Remove(_performingEntityID);
 			}
 			else
+			{
+				if (!m_actionsToPlay.ContainsKey(_performingEntityID))
+					m_actionsToPlay.Add(_performingEntityID, new());
+				m_actionsToPlay[_performingEntityID].Enqueue(m_actionsBeingDone[_performingEntityID].Item1);
 				m_actionsBeingDone[_performingEntityID] = new(m_actionsBeingDone[_performingEntityID].Item1, true);
+			}
 
 			TryEndRoundTick();
 		}
-
 	}
 
 	private void TryEndRoundTick ()
@@ -849,6 +851,11 @@ public class TurnManager : Singleton<TurnManager>
 
 	private void EndRoundTick ()
 	{
+		if(currentPhase != TurnPhase.Playing)
+		{
+			Debug.Log("Server ended tick " + currentTick);
+			return; //error is here
+		}
 		LogConsole.AddLog("Server ended tick", LogConsole.LogEventType.DebugSys);
 		if (m_recordedActionInput.Keys.Count == 0 || currentTick >= GameConfig.current.game.actionTokenPerRound)
 			EndTurn(); //end turn

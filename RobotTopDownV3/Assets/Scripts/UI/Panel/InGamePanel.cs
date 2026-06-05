@@ -42,6 +42,8 @@ public sealed class InGamePanel : AUIPanel
 		LogConsole.onLogAdded += OnLogAdded;
 		m_toggleDisplayConsoleBtn.onClick += OnClickToggleDisplayConsoleBtn;
 		m_validateTargetsBtn.onClick += OnClickValidateTargets;
+
+		m_validateTargetsBtn.SetVisible(false, true);
 	}
 
 	private void OnDestroy ()

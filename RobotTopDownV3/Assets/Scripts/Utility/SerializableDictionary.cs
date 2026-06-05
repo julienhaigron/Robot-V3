@@ -12,6 +12,11 @@ public class SerializableDictionary<TKey, TValue> : Dictionary<TKey, TValue>, IS
 	[SerializeField]
 	private List<TValue> values = new List<TValue>();
 
+	public bool ContainsSerializedKey( TKey _key )
+	{
+		return keys.Contains(_key) || ContainsKey(_key);
+	}
+
 	public SerializableDictionary ()
 	{
 	}

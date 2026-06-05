@@ -82,8 +82,7 @@ public class BulletWeapon : Weapon
 			SoundManager.Instance.Play(_attackAction.Data.onPerformSingleAttackSFXID);
 
 			bool isLastBullet = i == hitAmount - 1 && _attackIndex == _lastSuccessfullAttackIndex;
-			m_bulletPool.Get<Projectile>(m_bulletPoint.position, m_bulletPoint.rotation)
-				.SetProjectileDataAndLaunch(bulletData
+			m_bulletPool.Get<Projectile>(m_bulletPoint.position, m_bulletPoint.rotation).SetProjectileDataAndLaunch(bulletData
 				, ( entity ) => ApplyBulletHit(entity, _attackInfo, isLastBullet), () => OnProjectileDespawn(isLastBullet), hasTrajectoryProjectileBuff);
 
 			yield return m_timeBetweenBulletsWFS;
