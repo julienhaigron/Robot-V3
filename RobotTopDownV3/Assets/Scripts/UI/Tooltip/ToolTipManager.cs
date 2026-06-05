@@ -62,6 +62,8 @@ public class ToolTipManager : Singleton<ToolTipManager>
     [Button]
     public void Show ( string _title, string _description )
     {
+        if (m_isActive)
+            return;
         m_isActive = true;
         m_tooltipTitleTMP.text = _title;
         m_tooltipDescriptionTMP.text = _description;

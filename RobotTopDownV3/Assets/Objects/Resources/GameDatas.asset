@@ -40,8 +40,6 @@ MonoBehaviour:
       arms:
       - ID: Weapon_Psy_GlaiveDeSivir4
         dataID: Weapon_Psy_GlaiveDeSivir
-      - ID: Tool_Psy_Teleportation5
-        dataID: Tool_Psy_Teleportation
       auxiliar:
       - ID: Armor_CD16
         dataID: Armor_CD1
@@ -68,8 +66,6 @@ MonoBehaviour:
       arms:
       - ID: Weapon_Psy_GlaiveDeSivir14
         dataID: Weapon_Psy_GlaiveDeSivir
-      - ID: Tool_Psy_Teleportation15
-        dataID: Tool_Psy_Teleportation
       auxiliar:
       - ID: Armor_CD116
         dataID: Armor_CD1
@@ -183,7 +179,7 @@ MonoBehaviour:
       dataID: Armor_CD1
     - ID: Frame_Assault146
       dataID: Frame_Assault
-    equipmentCounter: 147
+    equipmentCounter: 155
     currencies:
       keys: 01000000
       values: 0000000000000000

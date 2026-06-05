@@ -441,6 +441,7 @@ GameObject:
   - component: {fileID: 9127272587812408599}
   - component: {fileID: 6816767632338375938}
   - component: {fileID: 2193921125457550762}
+  - component: {fileID: 2613554097575196159}
   m_Layer: 0
   m_Name: ComponentDisplay
   m_TagString: Untagged
@@ -487,6 +488,7 @@ MonoBehaviour:
   m_componentIcon: {fileID: 7191509894469378144}
   m_priceTMP: {fileID: 4758915025133466046}
   m_descriptionTMP: {fileID: 324957359373003063}
+  m_tooltipTrigger: {fileID: 2613554097575196159}
   CurrentContainer: {fileID: 0}
 --- !u!225 &2193921125457550762
 CanvasGroup:
@@ -500,6 +502,20 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
+--- !u!114 &2613554097575196159
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4089922822629665861}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1cce4a6ea3f14a44cbfe6ccb093c1399, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: RTD::ToolTipTrigger
+  m_tooltipTitle: 
+  m_tooltipDescription: 
 --- !u!1 &4778453732012105621
 GameObject:
   m_ObjectHideFlags: 0

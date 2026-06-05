@@ -13,6 +13,7 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 	[SerializeField] private Image m_componentIcon;
 	[SerializeField] private TextMeshProUGUI m_priceTMP;
 	[SerializeField] private TextMeshProUGUI m_descriptionTMP;
+	[SerializeField] private ToolTipTrigger m_tooltipTrigger;
 
 	private EntityEquipmentData m_componentData;
 	public EntityEquipmentData ComponentData => m_componentData;
@@ -84,6 +85,9 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 				break;
 		}
 
+		string title = "Title";
+		string description = "Description";
+		m_tooltipTrigger.Init(title, description);
 	}
 
 	#region Interactions

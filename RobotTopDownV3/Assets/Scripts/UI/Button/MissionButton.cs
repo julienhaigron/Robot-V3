@@ -9,6 +9,7 @@ public class MissionButton : BaseButton
 {
 	[SerializeField] private Image m_icon;
 	[SerializeField] private TextMeshProUGUI m_name;
+	//[SerializeField] private ToolTipTrigger m_tooltipTrigger;
 
 	private MissionData m_missionData;
 
@@ -17,6 +18,10 @@ public class MissionButton : BaseButton
 		m_missionData = GameAssets.current.game.missions[_missionID];
 		m_name.text = m_missionData.missionName;
 		m_icon.sprite = m_missionData.icon;
+
+		string title = "Title";
+		string description = "Description";
+		//m_tooltipTrigger.Init(title, description);
 	}
 
 	protected override void OnClick ()

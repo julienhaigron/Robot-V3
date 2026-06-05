@@ -21,12 +21,15 @@ MonoBehaviour:
   tokenDuration: 1
   preparationAnimationKey: 
   afterPerformAnimationKey: 
+  onPerformSingleAttackSFXID: 0
+  onSingleAttackHitSFXID: 0
   conditionType: 0
   previousActionAttackModificator: 0
   type: 4
   subType: 7
   codeType: 10
   targetType: 3
+  trajectoryType: 0
   minDistance: 1
   maxDistance: 1
   minTargetAmount: 1
