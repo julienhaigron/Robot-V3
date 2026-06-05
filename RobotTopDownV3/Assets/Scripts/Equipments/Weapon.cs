@@ -17,11 +17,12 @@ public class Weapon : MonoBehaviour
 	[SerializeField] protected List<ParticleSystem> m_onPerformPS;
 
 	protected Entity m_user;
-	private string m_id;
+	protected string m_id;
 	public string ID => m_id;
 	protected Coroutine m_attackCR;
 	protected AttackAction m_lastPerformedAction;
 	protected Action m_onPerformAttackEnd;
+
 	private WaitForSeconds m_singleAttackDuration;
 
 	public virtual void Init ( Entity _user, WeaponEquipmentData _data, bool _isFirstSide )
@@ -105,13 +106,7 @@ public class Weapon : MonoBehaviour
 		else if (!string.IsNullOrEmpty(m_data.attackAnimationFailureId))
 			m_user.Skin.OverrideAnimation(m_data.attackAnimationFailureId);
 
-		ApplyAttack(_attackAction, _attackIndex, _attackInfo);
-
-		foreach (ParticleSystem ps in m_onPerformPS)
-			ps.Play();
-		SoundManager.Instance.Play(_attackAction.Data.onPerformSingleAttackSFXID);
-
-		yield return m_singleAttackDuration;
+		yield return ApplyAttackCR (_attackAction, _attackIndex, _attackInfo);
 
 		if (_attackIndex == _lastSuccessfullAttackIndex)
 			EndAttack(m_lastPerformedAction);
@@ -131,14 +126,17 @@ public class Weapon : MonoBehaviour
 
 	#region DAMAGE LOGIC
 
-	protected virtual void ApplyAttack ( AttackAction _attackAction, int _attackIndex, AttackAction.SingleAttackInfo _attackInfo )
+	protected virtual IEnumerator ApplyAttackCR ( AttackAction _attackAction, int _attackIndex, AttackAction.SingleAttackInfo _attackInfo )
 	{
 		if (!_attackInfo.isAttackSuccessfull)
-			return;
+			yield break;
 
 		List<Entity> targets = GetTargets(_attackAction, _attackIndex);
-
 		Dictionary<WeaponEquipmentData.DamageType, int> damages = BuildDamageDictionary(_attackInfo);
+
+		foreach (ParticleSystem ps in m_onPerformPS)
+			ps.Play();
+		SoundManager.Instance.Play(_attackAction.Data.onPerformSingleAttackSFXID);
 
 		foreach (Entity entity in targets)
 		{
@@ -157,6 +155,8 @@ public class Weapon : MonoBehaviour
 				ApplyEffects(entity);
 			}
 		}
+
+		yield return m_singleAttackDuration;
 	}
 
 	protected virtual List<Entity> GetTargets (AttackAction _attackAction, int _attackIndex )

@@ -48,7 +48,7 @@ public class BulletWeapon : Weapon
 				? targetPosition + perpendicular * distance
 				: targetPosition - perpendicular * distance;
 
-			m_user.Skin.VisualyAimAt( _attackAction.attackingWeaponId, adjacentPos);
+			m_user.Skin.VisualyAimAt(_attackAction.attackingWeaponId, adjacentPos);
 		}
 
 		yield return m_aimDurationWFS;
@@ -59,8 +59,6 @@ public class BulletWeapon : Weapon
 		if (!_attackInfo.isAttackSuccessfull)
 			yield break;
 
-		Entity targetEntity = GameManager.Instance.GetEntityFromID((int)_attackAction.targetedEntityIDs[_attackIndex]);
-		int hitAmount = _attackAction.Data.GetHitAmount(_attackAction, m_user, targetEntity);
 		bool hasTrajectoryProjectileBuff = m_lastPerformedAction.effects.Any(e => e.enumID == EntityPassiveEffectEnumID.TrajectoryControl);
 
 		ProjectileData bulletData = new()
@@ -74,18 +72,50 @@ public class BulletWeapon : Weapon
 			weapon = m_data,
 			onHitSFXID = _attackAction.Data.onSingleAttackHitSFXID
 		};
-		
-		for (int i = 0; i < hitAmount; i++)
+
+		if (_attackAction.Data.isAoe)
 		{
+			List<Entity> targets = GetTargets(_attackAction, _attackIndex);
+			Dictionary<WeaponEquipmentData.DamageType, int> damages = BuildDamageDictionary(_attackInfo);
+
 			foreach (ParticleSystem ps in m_onPerformPS)
 				ps.Play();
 			SoundManager.Instance.Play(_attackAction.Data.onPerformSingleAttackSFXID);
 
-			bool isLastBullet = i == hitAmount - 1 && _attackIndex == _lastSuccessfullAttackIndex;
-			m_bulletPool.Get<Projectile>(m_bulletPoint.position, m_bulletPoint.rotation).SetProjectileDataAndLaunch(bulletData
-				, ( entity ) => ApplyBulletHit(entity, _attackInfo, isLastBullet), () => OnProjectileDespawn(isLastBullet), hasTrajectoryProjectileBuff);
+			foreach (Entity entity in targets)
+			{
+				int hitAmount = _attackAction.Data.GetHitAmount(_attackAction, m_user, entity);
+				for (int i = 0; i < hitAmount; i++)
+				{
+					entity.Equipment.TakeDamage(new EntityEquipmentPlugin.TakeDamageCallback()
+					{
+						entityAttacker = m_user,
+						entityTargeted = entity,
+						damages = damages
+					});
 
-			yield return m_timeBetweenBulletsWFS;
+					ApplyStatuses(entity, _attackInfo);
+					ApplyEffects(entity);
+				}
+			}
+		}
+		else
+		{
+			Entity targetEntity = GameManager.Instance.GetEntityFromID((int)_attackAction.targetedEntityIDs[_attackIndex]);
+			int hitAmount = _attackAction.Data.GetHitAmount(_attackAction, m_user, targetEntity);
+
+			for (int i = 0; i < hitAmount; i++)
+			{
+				foreach (ParticleSystem ps in m_onPerformPS)
+					ps.Play();
+				SoundManager.Instance.Play(_attackAction.Data.onPerformSingleAttackSFXID);
+
+				bool isLastBullet = i == hitAmount - 1 && _attackIndex == _lastSuccessfullAttackIndex;
+				m_bulletPool.Get<Projectile>(m_bulletPoint.position, m_bulletPoint.rotation).SetProjectileDataAndLaunch(bulletData
+					, ( entity ) => ApplyBulletHit(entity, _attackInfo, isLastBullet), () => OnProjectileDespawn(isLastBullet), hasTrajectoryProjectileBuff);
+
+				yield return m_timeBetweenBulletsWFS;
+			}
 		}
 	}
 
@@ -104,7 +134,7 @@ public class BulletWeapon : Weapon
 			EndAttack(m_lastPerformedAction);
 	}
 
-	private void OnProjectileDespawn (bool _isLastBullet)
+	private void OnProjectileDespawn ( bool _isLastBullet )
 	{
 		if (_isLastBullet)
 			EndAttack(m_lastPerformedAction);
