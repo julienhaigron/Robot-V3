@@ -101,11 +101,6 @@ public class Weapon : MonoBehaviour
 
 	protected virtual IEnumerator PerformSingleAttackCR (AttackAction _attackAction, int _attackIndex, AttackAction.SingleAttackInfo _attackInfo, int _lastSuccessfullAttackIndex )
 	{
-		if (_attackInfo.isAttackSuccessfull && !string.IsNullOrEmpty(m_data.attackAnimationSuccessId))
-			m_user.Skin.OverrideAnimation(m_data.attackAnimationSuccessId);
-		else if (!string.IsNullOrEmpty(m_data.attackAnimationFailureId))
-			m_user.Skin.OverrideAnimation(m_data.attackAnimationFailureId);
-
 		yield return ApplyAttackCR (_attackAction, _attackIndex, _attackInfo);
 
 		if (_attackIndex == _lastSuccessfullAttackIndex)
@@ -128,6 +123,11 @@ public class Weapon : MonoBehaviour
 
 	protected virtual IEnumerator ApplyAttackCR ( AttackAction _attackAction, int _attackIndex, AttackAction.SingleAttackInfo _attackInfo )
 	{
+		if (_attackInfo.isAttackSuccessfull && !string.IsNullOrEmpty(m_data.attackAnimationSuccessId))
+			m_user.Skin.OverrideAnimation(m_data.attackAnimationSuccessId);
+		else if (!string.IsNullOrEmpty(m_data.attackAnimationFailureId))
+			m_user.Skin.OverrideAnimation(m_data.attackAnimationFailureId);
+
 		if (!_attackInfo.isAttackSuccessfull)
 			yield break;
 

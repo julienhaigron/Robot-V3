@@ -75,6 +75,11 @@ public abstract class AEntityAction : INetworkSerializable
 		timeAtStart = _timeAtStart;
 	}
 
+	public virtual void OnSelectActionTileInteractPredicatePrewarm ()
+	{
+
+	}
+
 	public abstract bool TileInteractPredicate ( Tile _tile );
 
 	public virtual void RegisterInteraction ( Tile _tile )

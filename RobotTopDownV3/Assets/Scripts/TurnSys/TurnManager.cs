@@ -200,6 +200,7 @@ public class TurnManager : Singleton<TurnManager>
 		{
 			m_currentEntityAction = GetAction(GameAssets.current.game.entityActionsData[_action], performingEntityID, _linkedEquipmentID, timeAtStart);
 			m_currentActionTargetTiles.Clear();
+			m_currentEntityAction.OnSelectActionTileInteractPredicatePrewarm();
 		}
 		m_currentActionTypeSelected = _action;
 		m_currentEquipmentLinkedToActionTypeSelected = _linkedEquipmentID;

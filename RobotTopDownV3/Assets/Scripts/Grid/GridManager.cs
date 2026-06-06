@@ -57,7 +57,7 @@ public class GridManager : Singleton<GridManager>
 	{
 		get
 		{
-			if(m_gridData == null)
+			if (m_gridData == null)
 			{
 				Debug.LogError("Missing GridData ScriptableObject in the GridManager of this scene");
 				return null;
@@ -245,6 +245,20 @@ public class GridManager : Singleton<GridManager>
 		return _from.Neighbors[_orientation];
 	}
 
+	public List<Tile> GetTilesAtDistance ( Tile _center, int _distance, bool _isThisTurn = false )
+	{
+		List<Tile> result = new();
+		List<Tile> candidates = GetTilesInVisionRange(_center, _distance, false, _isThisTurn);
+
+		foreach (Tile tile in candidates)
+		{
+			if (_center.Distance == _distance)
+				result.Add(tile);
+		}
+
+		return result;
+	}
+
 	public List<Tile> GetPath ( Tile _from, Tile _to, bool _isThisTurn, bool _ignoreObstacles = false )
 	{
 		BFS(_from, _to: _to, _isThisTurn: _isThisTurn, _ignoreObstacles: _ignoreObstacles);
@@ -380,10 +394,13 @@ public class GridManager : Singleton<GridManager>
 				}
 
 				//obstacle
-				if (!_ignoreObstacles && IsVisionLineClear(_from, neighbor, _isThisTurn))
+				if (_ignoreObstacles || IsVisionLineClear(_from, neighbor, _isThisTurn))
 				{
 					tilesInRange.Add(neighbor);
+					neighbor.IsVisibleFromSelectedEntity = true;
 				}
+				else
+					neighbor.IsVisibleFromSelectedEntity = false;
 
 				neighbor.Distance = current.Distance + 1;
 				frontier.Enqueue(neighbor);
@@ -812,6 +829,52 @@ public class GridManager : Singleton<GridManager>
 		return _to.Distance;
 	}
 
+	public bool IsInArc ( Tile _origin, Tile _target, HexDirection _facing, bool _largeArc )
+	{
+		int dx = _target.coordinates.X - _origin.coordinates.X;
+		int dy = _target.coordinates.Y - _origin.coordinates.Y;
+		int dz = _target.coordinates.Z - _origin.coordinates.Z;
+
+		var forward = TileCoordinates.ForwardVectors[(int)_facing];
+		int forwardValue =
+			dx * forward.x +
+			dy * forward.y +
+			dz * forward.z;
+
+		if (forwardValue <= 0)
+			return false;
+
+		int distance = _origin.coordinates.DistanceTo(_target.coordinates);
+
+		int sideA;
+		int sideB;
+
+		switch (_facing)
+		{
+			case HexDirection.NE:
+			case HexDirection.SW:
+				sideA = Mathf.Abs(dy);
+				sideB = Mathf.Abs(dz);
+				break;
+
+			case HexDirection.E:
+			case HexDirection.W:
+				sideA = Mathf.Abs(dx);
+				sideB = Mathf.Abs(dy);
+				break;
+
+			default: // SE / NW
+				sideA = Mathf.Abs(dx);
+				sideB = Mathf.Abs(dz);
+				break;
+		}
+
+		int lateral = Mathf.Max(sideA, sideB);
+		int maxLateral = _largeArc ? distance : distance / 2;
+
+		return lateral <= maxLateral;
+	}
+
 	#endregion
 
 	#region Turn sys
@@ -1022,6 +1085,23 @@ public struct TileCoordinates
 	public Entity IsOccupied ( bool _isThisTurn )
 	{
 		return GetTile().GetEntity(_isThisTurn: _isThisTurn);
+	}
+
+	public static readonly (int x, int y, int z)[] ForwardVectors =
+	{
+		( 1,-1, 0), // NE
+		( 1, 0,-1), // E
+		( 0, 1,-1), // SE
+		(-1, 1, 0), // SW
+		(-1, 0, 1), // W
+		( 0,-1, 1), // NW
+	};
+
+	public int Dot ((int x, int y, int z) _a, (int x, int y, int z) _b )
+	{
+		return _a.x * _b.x +
+			   _a.y * _b.y +
+			   _a.z * _b.z;
 	}
 
 }

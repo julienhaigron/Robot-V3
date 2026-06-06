@@ -82,7 +82,7 @@ public class EntityAIPlugin : EntityPlugin
 				targetEntitiesID[i] = m_lastEntitiesTargeted[i].ID;
 			}
 
-			attackAction.attackingWeaponId = equipmentID;
+			attackAction.linkedEquipmentId = equipmentID;
 			attackAction.targetedEntityIDs = targetEntitiesID;
 			attackAction.targetTileIDs = targetTilesID;
 			attackAction.Init(GameAssets.current.game.entityActionsData[attackAction.enumID], equipmentID, m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID, _recordedAction.action.timeAtStart);

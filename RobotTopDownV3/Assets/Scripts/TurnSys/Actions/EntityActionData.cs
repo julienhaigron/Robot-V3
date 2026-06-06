@@ -95,9 +95,9 @@ public class EntityActionData : ScriptableObject
 	[ShowIf("@targetType != TargetType.Self")]
 	public int maxDistance;
 
-	[ShowIf("@!isAoe")]
+	[ShowIf("@!isAoe || (aoeType == AOEType.Circle && targetType != TargetType.Self)")]
 	public int minTargetAmount = 1;
-	[ShowIf("@!isAoe")]
+	[ShowIf("@!isAoe || (aoeType == AOEType.Circle && targetType != TargetType.Self)")]
 	public int maxTargetAmount = 1;
 	#endregion
 
@@ -115,8 +115,10 @@ public class EntityActionData : ScriptableObject
 	public AOEType aoeType = AOEType.Circle;
 	[ShowIf("@isAoe && aoeType == AOEType.Circle"), Min(1)]
 	public int circleRange = 1;
-	[ShowIf("@isAoe && aoeType == AOEType.Arc"), Min(1)]
-	public int arcRadius = 1;
+	[ShowIf("@isAoe && aoeType == AOEType.Arc")]
+	public ArcType arcType = ArcType.Small;
+	public enum ArcType { Small, Large }
+
 	[ShowIf("@isAoe && aoeType == AOEType.Ray"), Min(1)]
 	public int rayDiameter = 1;
 	[ShowIf("@isAoe && aoeType == AOEType.Chain"), Min(1)]

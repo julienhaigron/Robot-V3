@@ -99,15 +99,21 @@ public class MoveToTargetAction : AEntityAction
 		EndTick();
 	}
 
-	public override bool TileInteractPredicate ( Tile _tile )
+	public override void OnSelectActionTileInteractPredicatePrewarm ()
 	{
-		Tile from = GridManager.Instance.Tiles[TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntityID)];
-		int maxDistance = TurnManager.Instance.RemainingActionToken[performingEntityID] * Data.movementSpeed;
+		base.OnSelectActionTileInteractPredicatePrewarm();
+
 		//for all tiles overall distance calculation
+		int maxDistance = TurnManager.Instance.RemainingActionToken[performingEntityID] * Data.movementSpeed;
+		Tile from = GridManager.Instance.Tiles[TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntityID)];
 		if (GridManager.Instance.LastBFSOriginTile != from && GridManager.Instance.LastBFSMaxDistance >= maxDistance)
 			GridManager.Instance.BFS(from, maxDistance, null, true);
+	}
 
-		int distance = GridManager.Instance.GetDistanceBetween(from, _tile, maxDistance, true);
+	public override bool TileInteractPredicate ( Tile _tile )
+	{
+		int maxDistance = TurnManager.Instance.RemainingActionToken[performingEntityID] * Data.movementSpeed;
+		int distance = _tile.Distance;
 
 		if (_tile.IsObstacle(true) || distance > maxDistance || distance < 1)
 			return false;

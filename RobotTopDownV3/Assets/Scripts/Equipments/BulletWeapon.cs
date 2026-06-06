@@ -33,48 +33,56 @@ public class BulletWeapon : Weapon
 
 	protected override IEnumerator AimTargetCR ( AttackAction _attackAction, int _attackIndex, AttackAction.SingleAttackInfo _attackInfo )
 	{
-		Entity targetEntity = GameManager.Instance.GetEntityFromID((int)_attackAction.targetedEntityIDs[_attackIndex]);
-		Vector3 targetPosition = targetEntity.Skin.Center.position;
-
-		if (_attackInfo.isAttackSuccessfull)
-			m_user.Skin.VisualyAimAt(_attackAction.attackingWeaponId, targetPosition);
+		if (!_attackAction.Data.isAoe || (_attackAction.Data.aoeType == EntityActionData.AOEType.Circle && _attackAction.Data.targetType != EntityActionData.TargetType.Self))
+		{
+			Entity targetEntity = GameManager.Instance.GetEntityFromID((int)_attackAction.targetedEntityIDs[_attackIndex]);
+			Vector3 targetPosition = targetEntity.Skin.Center.position;
+			yield return AimSingleTargetAnim(_attackAction, _attackInfo, targetPosition);
+		}
 		else
 		{
-			Vector3 OT = (targetPosition - m_bulletPoint.position).normalized;
+			//handle aoe aim anims
+		}
+
+	}
+
+	#region Aim Animations
+
+	private IEnumerator AimSingleTargetAnim ( AttackAction _attackAction, AttackAction.SingleAttackInfo _attackInfo, Vector3 _targetPosition )
+	{
+		if (_attackInfo.isAttackSuccessfull)
+			m_user.Skin.VisualyAimAt(_attackAction.linkedEquipmentId, _targetPosition);
+		else
+		{
+			Vector3 OT = (_targetPosition - m_bulletPoint.position).normalized;
 			Vector3 perpendicular = Vector3.Cross(OT, Vector3.up).normalized;
 			float distance = 1f;
 
 			Vector3 adjacentPos = UnityEngine.Random.Range(0, 2) == 0
-				? targetPosition + perpendicular * distance
-				: targetPosition - perpendicular * distance;
+				? _targetPosition + perpendicular * distance
+				: _targetPosition - perpendicular * distance;
 
-			m_user.Skin.VisualyAimAt(_attackAction.attackingWeaponId, adjacentPos);
+			m_user.Skin.VisualyAimAt(_attackAction.linkedEquipmentId, adjacentPos);
 		}
 
 		yield return m_aimDurationWFS;
 	}
 
+	#endregion
+
 	protected override IEnumerator PerformSingleAttackCR ( AttackAction _attackAction, int _attackIndex, AttackAction.SingleAttackInfo _attackInfo, int _lastSuccessfullAttackIndex )
 	{
 		if (!_attackInfo.isAttackSuccessfull)
 			yield break;
-
-		bool hasTrajectoryProjectileBuff = m_lastPerformedAction.effects.Any(e => e.enumID == EntityPassiveEffectEnumID.TrajectoryControl);
-
-		ProjectileData bulletData = new()
+		
+		if (!_attackAction.Data.isAoe || (_attackAction.Data.aoeType == EntityActionData.AOEType.Circle && _attackAction.Data.targetType != EntityActionData.TargetType.Self))
 		{
-			owner = m_user,
-			speed = Vector2.right * m_speed,
-			destination = _attackAction.Data.isAoe
-				? GridManager.Instance.Tiles[_attackAction.targetTileIDs[_attackIndex]].coordinates.GetTile().transform.position
-				: GameManager.Instance.GetEntityFromID(_attackAction.targetedEntityIDs[_attackIndex]).Displacement.Coordinates.GetTile().transform.position,
-			attackData = _attackAction.Data,
-			weapon = m_data,
-			onHitSFXID = _attackAction.Data.onSingleAttackHitSFXID
-		};
-
-		if (_attackAction.Data.isAoe)
+			Entity targetEntity = GameManager.Instance.GetEntityFromID((int)_attackAction.targetedEntityIDs[_attackIndex]);
+			yield return ShootAtEntityAnim(_attackAction, _attackIndex, _attackInfo, _lastSuccessfullAttackIndex, targetEntity);
+		}
+		else
 		{
+			//handle aoe perform anims
 			List<Entity> targets = GetTargets(_attackAction, _attackIndex);
 			Dictionary<WeaponEquipmentData.DamageType, int> damages = BuildDamageDictionary(_attackInfo);
 
@@ -99,25 +107,41 @@ public class BulletWeapon : Weapon
 				}
 			}
 		}
-		else
+	}
+
+	#region Shoot Animations
+
+	private IEnumerator ShootAtEntityAnim ( AttackAction _attackAction, int _attackIndex, AttackAction.SingleAttackInfo _attackInfo, int _lastSuccessfullAttackIndex, Entity _targetEntity)
+	{
+		bool hasTrajectoryProjectileBuff = m_lastPerformedAction.effects.Any(e => e.enumID == EntityPassiveEffectEnumID.TrajectoryControl);
+		int hitAmount = _attackAction.Data.GetHitAmount(_attackAction, m_user, _targetEntity);
+		ProjectileData bulletData = new()
 		{
-			Entity targetEntity = GameManager.Instance.GetEntityFromID((int)_attackAction.targetedEntityIDs[_attackIndex]);
-			int hitAmount = _attackAction.Data.GetHitAmount(_attackAction, m_user, targetEntity);
+			owner = m_user,
+			speed = Vector2.right * m_speed,
+			destination = _attackAction.Data.isAoe
+				? GridManager.Instance.Tiles[_attackAction.targetTileIDs[_attackIndex]].coordinates.GetTile().transform.position
+				: GameManager.Instance.GetEntityFromID(_attackAction.targetedEntityIDs[_attackIndex]).Displacement.Coordinates.GetTile().transform.position,
+			attackData = _attackAction.Data,
+			weapon = m_data,
+			onHitSFXID = _attackAction.Data.onSingleAttackHitSFXID
+		};
 
-			for (int i = 0; i < hitAmount; i++)
-			{
-				foreach (ParticleSystem ps in m_onPerformPS)
-					ps.Play();
-				SoundManager.Instance.Play(_attackAction.Data.onPerformSingleAttackSFXID);
+		for (int i = 0; i < hitAmount; i++)
+		{
+			foreach (ParticleSystem ps in m_onPerformPS)
+				ps.Play();
+			SoundManager.Instance.Play(_attackAction.Data.onPerformSingleAttackSFXID);
 
-				bool isLastBullet = i == hitAmount - 1 && _attackIndex == _lastSuccessfullAttackIndex;
-				m_bulletPool.Get<Projectile>(m_bulletPoint.position, m_bulletPoint.rotation).SetProjectileDataAndLaunch(bulletData
-					, ( entity ) => ApplyBulletHit(entity, _attackInfo, isLastBullet), () => OnProjectileDespawn(isLastBullet), hasTrajectoryProjectileBuff);
+			bool isLastBullet = i == hitAmount - 1 && _attackIndex == _lastSuccessfullAttackIndex;
+			m_bulletPool.Get<Projectile>(m_bulletPoint.position, m_bulletPoint.rotation).SetProjectileDataAndLaunch(bulletData
+				, ( entity ) => ApplyBulletHit(entity, _attackInfo, isLastBullet), () => OnProjectileDespawn(isLastBullet), hasTrajectoryProjectileBuff);
 
-				yield return m_timeBetweenBulletsWFS;
-			}
+			yield return m_timeBetweenBulletsWFS;
 		}
 	}
+
+	#endregion
 
 	private void ApplyBulletHit ( Entity _entity, AttackAction.SingleAttackInfo _attackInfo, bool _isLastBullet )
 	{
@@ -144,6 +168,6 @@ public class BulletWeapon : Weapon
 	{
 		yield return m_shootCooldownDurationWFS;
 
-		m_user.Skin.ReleaseAim(_attackAction.attackingWeaponId);
+		m_user.Skin.ReleaseAim(_attackAction.linkedEquipmentId);
 	}
 }

@@ -6,7 +6,6 @@ using System.Linq;
 
 public class AttackAction : AEntityAction
 {
-	public string attackingWeaponId;
 	public SingleAttackInfo[] attacksInfos;
 
 	public class SingleAttackInfo : INetworkSerializable
@@ -31,7 +30,6 @@ public class AttackAction : AEntityAction
 	public override void NetworkSerialize<T> ( BufferSerializer<T> serializer )
 	{
 		base.NetworkSerialize(serializer);
-		serializer.SerializeValue(ref attackingWeaponId);
 		serializer.SerializeValue(ref attacksInfos);
 	}
 
@@ -105,7 +103,7 @@ public class AttackAction : AEntityAction
 					}
 
 					Dictionary<WeaponEquipmentData.DamageType, int> damagesDealt =
-						PerformingEntity.Equipment.Weapons[attackingWeaponId].GetDamages(PerformingEntity, targetEntity, this, (EntityActionData.PFCResultType)attackInfo.pfcResult);
+						PerformingEntity.Equipment.Weapons[linkedEquipmentId].GetDamages(PerformingEntity, targetEntity, this, (EntityActionData.PFCResultType)attackInfo.pfcResult);
 
 					List<int> tmpDamages = new();
 					List<short> tmpDamageTypes = new();
@@ -140,17 +138,17 @@ public class AttackAction : AEntityAction
 		{
 			//if enemy is in weapon range
 			Entity targetEntity = GameManager.Instance.GetEntityFromID(targetedEntityIDs[attackCount]);
-			bool isEnemyInWeaponRange = PerformingEntity.AI.IsEntityInWeaponRange(targetEntity, attackingWeaponId);
+			bool isEnemyInWeaponRange = PerformingEntity.AI.IsEntityInWeaponRange(targetEntity, linkedEquipmentId);
 
 			if (isEnemyInWeaponRange || (Data.isAoe && targetTileIDs != null))
 			{
-				List<Tile> tilesInWeaponRange = Data.isAoe ? PerformingEntity.Equipment.GetTilesInAoERange(this, GridManager.Instance.Tiles[targetTileIDs[attackCount]], true) : PerformingEntity.Equipment.GetTilesInWeaponRange(this, attackingWeaponId, true);
+				List<Tile> tilesInWeaponRange = Data.isAoe ? PerformingEntity.Equipment.GetTilesInAoERange(this, GridManager.Instance.Tiles[targetTileIDs[attackCount]], true) : PerformingEntity.Equipment.GetTilesInWeaponRange(this, linkedEquipmentId, true);
 				base.Perform(_state);
 				foreach (Tile tile in tilesInWeaponRange)
 				{
 					tile.UI.SetOutlineColor(Color.red);
 				}
-				PerformingEntity.Equipment.Weapons[attackingWeaponId].PerformAttack(this, () =>
+				PerformingEntity.Equipment.Weapons[linkedEquipmentId].PerformAttack(this, () =>
 				{
 					foreach (Tile tile in tilesInWeaponRange)
 					{
@@ -176,25 +174,30 @@ public class AttackAction : AEntityAction
 		//TODO ?
 	}
 
-	public override bool TileInteractPredicate ( Tile _tile )
+	public override void OnSelectActionTileInteractPredicatePrewarm ()
 	{
-		if (Data.targetType == EntityActionData.TargetType.Self && _tile.coordinates.ID == TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntityID))
-			return true;
+		base.OnSelectActionTileInteractPredicatePrewarm();
 
+		//for all tiles overall distance calculation
 		bool attackIgnoresObstacles = (Data.type == EntityActionData.ActionType.DistanceAttack && effects.Any(e => e.enumID == EntityPassiveEffectEnumID.TrajectoryControl))
 			|| Data.targetType == EntityActionData.TargetType.Mortar;
 		Entity user = GameManager.Instance.GetEntityFromID(performingEntityID);
 		Weapon attackingWeapon = user.Equipment.Weapons[linkedEquipmentId];
 		Tile from = GridManager.Instance.Tiles[TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntityID)];
 		int maxDist = Data.GetMaxRange(this, PerformingEntity, null);
-		List<Tile> tilesInRange = GridManager.Instance.GetTilesInVisionRange(from, maxDist, attackIgnoresObstacles, true);
-		bool isInRange = tilesInRange.Contains(_tile);
+		GridManager.Instance.GetTilesInVisionRange(from, maxDist, attackIgnoresObstacles, true);
+	}
 
-		if (Data.targetType == EntityActionData.TargetType.Tile && isInRange)
+	public override bool TileInteractPredicate ( Tile _tile )
+	{
+		if (Data.targetType == EntityActionData.TargetType.Self && _tile.coordinates.ID == TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntityID))
+			return true;
+
+		if (Data.targetType == EntityActionData.TargetType.Tile && _tile.IsVisibleFromSelectedEntity)
 			return true;
 
 		Entity entity = _tile.GetEntity(true);
-		return entity != null && isInRange && !entity.IsAlliedTo(GameManager.Instance.GetEntityFromID(performingEntityID).OwnerID);
+		return entity != null && _tile.IsVisibleFromSelectedEntity && !entity.IsAlliedTo(GameManager.Instance.GetEntityFromID(performingEntityID).OwnerID);
 	}
 
 	public override void GhostDisplay ( Entity.EntityState _state )

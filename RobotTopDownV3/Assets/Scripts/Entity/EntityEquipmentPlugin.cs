@@ -319,29 +319,16 @@ public class EntityEquipmentPlugin : EntityPlugin
 				break;
 			case EntityActionData.AOEType.Arc:
 
-				float angle = GridManager.Instance.FromOrientationToAngle(m_linkedEntity.Displacement.CurrentOrientation);
+				Tile origin = m_linkedEntity.Displacement.Coordinates.GetTile();
+				bool largeArc = attackData.arcType == EntityActionData.ArcType.Large;
 
-				int nbOfRayPerAngle = 1;
-				int totalNbOfRay = usedWeapon.Data.visionConeRange * nbOfRayPerAngle;
-				for (int i = 0; i < totalNbOfRay; i++)
+				for (int d = minDistance; d <= maxDistance; d++)
 				{
-					//calculate angle
-					float rayAngle = Mathf.LerpAngle(angle - (usedWeapon.Data.visionConeRange / 2), angle + (usedWeapon.Data.visionConeRange / 2), (float)i / (float)totalNbOfRay);
-					rayAngle += 90f;
-					//get position in at angle Y at distance X from linkedEntity
-					if (rayAngle < 0)
-						rayAngle += 360;
-
-					float radians = rayAngle * Mathf.Deg2Rad;
-					Vector3 aimedPosition = new Vector3(Mathf.Sin(radians), 0, Mathf.Cos(radians));
-					RaycastHit[] hits = Physics.RaycastAll(m_linkedEntity.Displacement.Coordinates.GetTile().transform.position, aimedPosition * maxDistance, maxDistance * (2 * Tile.innerRadius), GameConfig.current.input.tileInternRayCastLayer);
-					foreach (RaycastHit hitInfo in hits)
+					List<Tile> ring = GridManager.Instance.GetTilesAtDistance( origin, d, _isThisTurn);
+					foreach (Tile tile in ring)
 					{
-						if (hitInfo.transform.TryGetComponent(out Tile tile) && !tilesInRange.Contains(tile)
-							&& GridManager.Instance.IsVisionLineClear(m_linkedEntity.Displacement.Coordinates.GetTile(), tile, _isThisTurn))
-						{
-							tilesInRange.Add(tile);
-						}
+						if (GridManager.Instance.IsInArc( origin, tile, (HexDirection) m_linkedEntity.Displacement.CurrentOrientation, largeArc))
+							tilesInRange.Add(tile);	
 					}
 				}
 
@@ -370,7 +357,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 
 	public bool AttackRoll ( AttackAction _attackAction, AttackAction.SingleAttackInfo _singleAttackInfo, Entity _targetEntity )
 	{
-		WeaponEquipmentData usedWeapon = m_weapons[_attackAction.attackingWeaponId].Data;
+		WeaponEquipmentData usedWeapon = m_weapons[_attackAction.linkedEquipmentId].Data;
 		bool doesWinPFC = _singleAttackInfo.pfcResult == (int)EntityActionData.PFCResultType.FirstWins;
 
 		float targetCamo = _targetEntity.Data.GetStaticStealthBonus(true) + _targetEntity.GetAdditionaryStatBonus(EntityEquipmentData.StatBonus.StatType.VisualCamo, null);

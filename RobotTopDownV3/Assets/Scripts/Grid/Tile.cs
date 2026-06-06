@@ -81,6 +81,19 @@ public class Tile : MonoBehaviour
 		}
 	}
 
+	private bool m_IsVisibleFromSelectedEntity;
+	public bool IsVisibleFromSelectedEntity
+	{
+		get
+		{
+			return m_IsVisibleFromSelectedEntity;
+		}
+		set
+		{
+			m_IsVisibleFromSelectedEntity = value;
+		}
+	}
+
 	#endregion
 
 	/*private void Awake ()
