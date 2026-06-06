@@ -63,32 +63,8 @@ public class AttackAction : AEntityAction
 				SingleAttackInfo attackInfo = attacksInfos[attackCount];
 				Entity targetEntity = GameManager.Instance.GetEntityFromID(targetedEntityIDs[attackCount]);
 				attackInfo.isAttackSuccessfull = Data.isAoe ? true : PerformingEntity.Equipment.AttackRoll(this, attackInfo, targetEntity);
-
-				/*if (Data.isAoe)
-				{
-					StringBuilder detailsBuilder = new();
-					detailsBuilder.AppendLine($"<b>{m_linkedEntity.ID}</b> tries to apply <b>{_effect.GetType().Name}</b> on <b>{_target.ID}</b>");
-					detailsBuilder.AppendLine();
-					detailsBuilder.AppendLine("<b>Status Chance Calculation</b>");
-					detailsBuilder.AppendLine($"Base Chance: {actionProbability:+0.##%;-0.##%;0%}");
-					detailsBuilder.AppendLine($"Equipment Bonus: {equipmentProbability:+0.##%;-0.##%;0%}");
-					detailsBuilder.AppendLine($"Status Chance Bonus: {userStatusChance:+0.##%;-0.##%;0%}");
-					detailsBuilder.AppendLine($"Target Resistance: -{targetResistance:0.##%}");
-					detailsBuilder.AppendLine();
-					detailsBuilder.AppendLine($"<b>Final Chance: {Mathf.Clamp01(hitProba):P0}</b>");
-					if (hitProba >= 1f)
-						detailsBuilder.AppendLine("<color=green><b>Guaranteed Apply</b></color>");
-					else
-					{
-						detailsBuilder.AppendLine($"Roll: {roll:F2}");
-						detailsBuilder.AppendLine(isAttackSuccessful ? "<color=green><b>Status Applied</b></color>" : "<color=red><b>Status Resisted</b></color>");
-					}
-
-					string detailsDescription = detailsBuilder.ToString();
-					LogConsole.LogDetails details = new("status_" + LogConsole.Instance.LogsDetails.Keys.Count, "Status Details", detailsDescription);
-					LogConsole.AddLog(m_linkedEntity.ID + (isAttackSuccessful ? " applies " : " fails to apply ")
-						+ _effect.GetType().Name + " on " + _target.ID, LogConsole.LogEventType.AttackResolution, details);
-				}*/
+				if (Data.isAoe)
+					LogConsole.AddLog("Automatic hit on targets due to AoE type", LogConsole.LogEventType.AttackResolution);
 
 				if (attackInfo.isAttackSuccessfull)
 				{
@@ -143,7 +119,6 @@ public class AttackAction : AEntityAction
 			if (isEnemyInWeaponRange || (Data.isAoe && targetTileIDs != null))
 			{
 				List<Tile> tilesInWeaponRange = Data.isAoe ? PerformingEntity.Equipment.GetTilesInAoERange(this, GridManager.Instance.Tiles[targetTileIDs[attackCount]], true) : PerformingEntity.Equipment.GetTilesInWeaponRange(this, linkedEquipmentId, true);
-				base.Perform(_state);
 				foreach (Tile tile in tilesInWeaponRange)
 				{
 					tile.UI.SetOutlineColor(Color.red);
@@ -154,6 +129,7 @@ public class AttackAction : AEntityAction
 					{
 						tile.UI.ResetOutline();
 					}
+					base.Perform(_state);
 					EndTick();
 				});
 			}

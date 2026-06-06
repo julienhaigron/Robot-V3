@@ -35,8 +35,9 @@ public class BulletWeapon : Weapon
 	{
 		if (!_attackAction.Data.isAoe || (_attackAction.Data.aoeType == EntityActionData.AOEType.Circle && _attackAction.Data.targetType != EntityActionData.TargetType.Self))
 		{
-			Entity targetEntity = GameManager.Instance.GetEntityFromID((int)_attackAction.targetedEntityIDs[_attackIndex]);
-			Vector3 targetPosition = targetEntity.Skin.Center.position;
+			Entity targetEntity = GameManager.Instance.GetEntityFromID(_attackAction.targetedEntityIDs[_attackIndex]);
+			Tile targetTile = GridManager.Instance.Tiles[_attackAction.targetTileIDs[_attackIndex]];
+			Vector3 targetPosition = _attackAction.Data.targetType == EntityActionData.TargetType.Tile ? targetTile.transform.position : targetEntity.Skin.Center.position;
 			yield return AimSingleTargetAnim(_attackAction, _attackInfo, targetPosition);
 		}
 		else
@@ -119,7 +120,7 @@ public class BulletWeapon : Weapon
 		{
 			owner = m_user,
 			speed = Vector2.right * m_speed,
-			destination = _attackAction.Data.isAoe
+			destination = _attackAction.Data.targetType == EntityActionData.TargetType.Tile
 				? GridManager.Instance.Tiles[_attackAction.targetTileIDs[_attackIndex]].coordinates.GetTile().transform.position
 				: GameManager.Instance.GetEntityFromID(_attackAction.targetedEntityIDs[_attackIndex]).Displacement.Coordinates.GetTile().transform.position,
 			attackData = _attackAction.Data,
@@ -166,8 +167,8 @@ public class BulletWeapon : Weapon
 
 	protected override IEnumerator OnEndAttackingCR ( AttackAction _attackAction )
 	{
-		yield return m_shootCooldownDurationWFS;
-
 		m_user.Skin.ReleaseAim(_attackAction.linkedEquipmentId);
+
+		yield return m_shootCooldownDurationWFS;
 	}
 }

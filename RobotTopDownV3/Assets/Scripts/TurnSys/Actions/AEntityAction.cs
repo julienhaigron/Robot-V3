@@ -35,7 +35,7 @@ public abstract class AEntityAction : INetworkSerializable
 
 	public bool IsPerformingAtTick ( int _tick )
 	{
-		return _tick >= timeAtStart + preparationDuration && _tick <= timeAtStart + preparationDuration + actualDuration;
+		return _tick >= timeAtStart + preparationDuration && _tick < timeAtStart + preparationDuration + actualDuration;
 	}
 
 	public virtual void NetworkSerialize<T> ( BufferSerializer<T> serializer ) where T : IReaderWriter
@@ -134,6 +134,7 @@ public abstract class AEntityAction : INetworkSerializable
 		//if (lifetime == preparationDuration + 1)
 		if (IsPerformingAtTick(timeAtStart + lifetime - 1))
 		{
+			LogConsole.AddLog(performingEntityID + " performes " + ToString(), LogConsole.LogEventType.AttackResolution);
 			Perform(_state);
 			return true;
 		}
@@ -157,9 +158,13 @@ public abstract class AEntityAction : INetworkSerializable
 	protected virtual void EndTick ()
 	{
 		bool didEndAction = lifetime >= preparationDuration + actualDuration + cooldownDuration;
-
 		if (didEndAction)
+		{
+			LogConsole.AddLog("end " + ToString() + " with lifetime at " + lifetime, LogConsole.LogEventType.AttackResolution);
 			EndAction();
+		}
+		else
+			LogConsole.AddLog(performingEntityID + " in " + (lifetime <= preparationDuration ? "preparation " : "cooldown ") + ToString(), LogConsole.LogEventType.AttackResolution);
 
 		onEndTick?.Invoke(performingEntityID, didEndAction);
 	}

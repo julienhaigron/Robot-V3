@@ -301,6 +301,7 @@ public class TurnManager : Singleton<TurnManager>
 			_action.targetedEntityIDs = entitiesIds.ToArray();
 			_action.targetTileIDs = tilesIds.ToArray();
 		}
+		m_currentActionTargetTiles.Clear();
 
 		RecordedAction recordedAction = new RecordedAction
 		{
@@ -312,10 +313,9 @@ public class TurnManager : Singleton<TurnManager>
 			freeAction = new WaitAction(), //default is wait action
 			freeActionType = EntityActionEnumID.Wait
 		};
+
 		m_recordedActionInput[_entityID].Enqueue(recordedAction);
-
-
-		m_remainingActionToken[_entityID] -= GameAssets.current.game.entityActionsData[_action.enumID].GetTokenTotalCost(_action, GameManager.Instance.GetEntityFromID(_entityID), null);
+		m_remainingActionToken[_entityID] -= _action.TotalDuration;
 
 		/*if (!m_lastRecordedAction.ContainsKey(_entityID))
 			m_lastRecordedAction.Add(_entityID, recordedAction);
@@ -343,7 +343,7 @@ public class TurnManager : Singleton<TurnManager>
 			m_remainingActionToken[_actionToStartRemoveFrom.performingEntityID] += actionQueue[i].action.TotalDuration;
 			actionQueue.RemoveAt(i);
 		}
-		//actionQueue.RemoveRange(_recordedActionPositionInQueue, actionQueue.Count - _recordedActionPositionInQueue);
+
 		if (actionQueue.Count > 0)
 			m_recordedActionInput[_actionToStartRemoveFrom.performingEntityID] = new Queue<RecordedAction>(actionQueue);
 		else
@@ -525,7 +525,7 @@ public class TurnManager : Singleton<TurnManager>
 
 	private void StartNextRoundTick ()
 	{
-		LogConsole.AddLog("Start tick", LogConsole.LogEventType.DebugSys);
+		LogConsole.AddLog("Start tick " + currentTick, LogConsole.LogEventType.DebugSys);
 
 		//1 - calculate phase
 
@@ -663,9 +663,6 @@ public class TurnManager : Singleton<TurnManager>
 			}
 			m_networkedTurnSystem.StartPlayPhaseClientRPC(actionsToSend.ToArray());
 		}
-
-
-		currentTick++;
 	}
 
 	private List<RecordedAction> CheckForConflicts ()
@@ -775,7 +772,6 @@ public class TurnManager : Singleton<TurnManager>
 				_recordedAction.freeAction.onEndTick += OnActionEndTick;
 				_recordedAction.freeAction.PerformTick(_recordedAction.entityState);
 			};
-
 		}
 		else
 			_recordedAction.action.onEndTick += OnActionEndTick;
@@ -805,6 +801,14 @@ public class TurnManager : Singleton<TurnManager>
 			{
 				if (!m_actionsToPlay.ContainsKey(_performingEntityID))
 					m_actionsToPlay.Add(_performingEntityID, new());
+
+				if (!m_actionsBeingDone.ContainsKey(_performingEntityID))
+				{
+					Debug.Log("error here with entity " + _performingEntityID);
+					TryEndRoundTick();
+					return;
+				}
+
 				m_actionsToPlay[_performingEntityID].Enqueue(m_actionsBeingDone[_performingEntityID].Item1);
 				m_actionsBeingDone[_performingEntityID] = new(m_actionsBeingDone[_performingEntityID].Item1, true);
 			}
@@ -824,8 +828,6 @@ public class TurnManager : Singleton<TurnManager>
 
 		if (areAllActionPerformed && m_inPlayEventBeingDone.Count == 0)
 		{
-			//m_actionsToPlay.Clear();
-
 			if (!GameManager.Instance.IsOnline)
 			{
 				EndRoundTick();
@@ -857,11 +859,14 @@ public class TurnManager : Singleton<TurnManager>
 			Debug.Log("Server ended tick " + currentTick);
 			return; //error is here
 		}
-		LogConsole.AddLog("Server ended tick", LogConsole.LogEventType.DebugSys);
-		if (m_recordedActionInput.Keys.Count == 0 || currentTick >= GameConfig.current.game.actionTokenPerRound)
+		LogConsole.AddLog("Server ended tick " + currentTick, LogConsole.LogEventType.DebugSys);
+		if (m_recordedActionInput.Keys.Count == 0 || currentTick >= GameConfig.current.game.actionTokenPerRound - 1)
 			EndTurn(); //end turn
 		else
+		{
+			currentTick++;
 			StartNextRoundTick(); //end this phase
+		}
 	}
 
 	private void OnEntityDeath ( int _entityID )
@@ -872,6 +877,7 @@ public class TurnManager : Singleton<TurnManager>
 		{
 			GameAssets.current.game.entityEffects[effetID.enumID].OnDeathTrigger(deadEntity);
 		}
+		LogConsole.AddLog("Entity " + _entityID + " died", LogConsole.LogEventType.DebugSys);
 
 		m_recordedActionInput.Remove(_entityID);
 		m_actionsToPlay.Remove(_entityID);

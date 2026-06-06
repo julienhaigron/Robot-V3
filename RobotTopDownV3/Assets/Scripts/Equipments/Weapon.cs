@@ -208,6 +208,7 @@ public class Weapon : MonoBehaviour
 
 	protected virtual void EndAttack ( AttackAction _attackAction )
 	{
+		LogConsole.AddLog("End attack", LogConsole.LogEventType.AttackResolution);
 		m_onPerformAttackEnd?.Invoke();
 	}
 
