@@ -185,16 +185,17 @@ public class PlayerController : Singleton<PlayerController>
 				else if (m_selectedEntity == null)
 				{
 					m_selectedEntity = _tile.GetEntity(true);
-					onEntitySelected?.Invoke(m_selectedEntity == null ? null : m_selectedEntity.ID);
-
 					if (m_selectedEntity != null)
+					{
+						onEntitySelected?.Invoke(m_selectedEntity.ID);
 						m_selectedEntity.Select();
+					}
 					return;
 				}
 				else
 				{
 					m_selectedEntity.Deselect();
-					onEntitySelected?.Invoke(null);
+					//onEntitySelected?.Invoke(null);
 					m_selectedEntity = _tile.GetEntity(true);
 					onEntitySelected?.Invoke(m_selectedEntity.ID);
 					m_selectedEntity.Select();

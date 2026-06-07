@@ -106,8 +106,8 @@ public class MoveToTargetAction : AEntityAction
 		//for all tiles overall distance calculation
 		int maxDistance = TurnManager.Instance.RemainingActionToken[performingEntityID] * Data.movementSpeed;
 		Tile from = GridManager.Instance.Tiles[TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntityID)];
-		if (GridManager.Instance.LastBFSOriginTile != from && GridManager.Instance.LastBFSMaxDistance >= maxDistance)
-			GridManager.Instance.BFS(from, maxDistance, null, true);
+		//if (GridManager.Instance.LastBFSOriginTile != from && GridManager.Instance.LastBFSMaxDistance >= maxDistance)
+		GridManager.Instance.BFS(from, maxDistance, null, true);
 	}
 
 	public override bool TileInteractPredicate ( Tile _tile )

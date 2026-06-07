@@ -157,21 +157,12 @@ public class Projectile : PoolElement
 		Vector3 target = m_projectileData.destination;
 
 		float gravity = Mathf.Abs(Physics.gravity.y);
+		float verticalVelocity = m_projectileData.speed.y;
+		Vector3 planarDisplacement = new Vector3( target.x - start.x, 0, target.z - start.z);
+		float time = (verticalVelocity + Mathf.Sqrt( verticalVelocity * verticalVelocity + 2 * gravity * (start.y - target.y))) / gravity;
+		Vector3 planarVelocity = planarDisplacement / time;
 
-		Vector3 planarTarget = new Vector3(target.x, 0f, target.z);
-		Vector3 planarPosition = new Vector3(start.x, 0f, start.z);
-
-		float distance = Vector3.Distance(planarPosition, planarTarget);
-		float maxHeight = Mathf.Max(start.y, target.y) + m_projectileData.speed.y;
-		float verticalVelocity = Mathf.Sqrt(2f * gravity * (maxHeight - start.y));
-		float timeUp = verticalVelocity / gravity;
-		float timeDown = Mathf.Sqrt(2f * (maxHeight - target.y) / gravity);
-		float totalTime = timeUp + timeDown;
-
-		Vector3 planarVelocity = (planarTarget - planarPosition) / totalTime;
-		Vector3 velocity = planarVelocity + Vector3.up * verticalVelocity;
-
-		m_rb.linearVelocity = velocity;
+		m_rb.linearVelocity = planarVelocity + Vector3.up * verticalVelocity;
 		m_onHitEntity = _onHitEntity;
 		m_onDespawnNoEntityHit = _onProjectileDespawn;
 	}

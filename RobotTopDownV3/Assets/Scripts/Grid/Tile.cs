@@ -48,7 +48,7 @@ public class Tile : MonoBehaviour
 	private TileContent m_currentContent = new() { itemID = -1, entityID = -1 };
 	private TileContent m_nextTurnActionContent = new() { itemID = -1, entityID = -1 };
 	private TileContent[] m_plannedContentsPerTick;
-	
+
 	[Serializable]
 	public class TileContent
 	{
@@ -130,9 +130,9 @@ public class Tile : MonoBehaviour
 	{
 		m_neighbors = new Tile[6];
 		m_plannedContentsPerTick = new TileContent[GameConfig.current.game.actionTokenPerRound];
-		for(int i = 0; i < GameConfig.current.game.actionTokenPerRound; i++)
+		for (int i = 0; i < GameConfig.current.game.actionTokenPerRound; i++)
 		{
-			m_plannedContentsPerTick[i] = new() { entityID = -1, itemID = -1 } ;
+			m_plannedContentsPerTick[i] = new() { entityID = -1, itemID = -1 };
 		}
 		m_currentContent = new() { entityID = -1, itemID = -1 };
 		m_nextTurnActionContent = new() { entityID = -1, itemID = -1 };
@@ -160,11 +160,11 @@ public class Tile : MonoBehaviour
 		UnityEditor.EditorUtility.SetDirty(this);
 	}
 
-	public void SetupWall ( Wall.WallType _wallType, int _orientation)
+	public void SetupWall ( Wall.WallType _wallType, int _orientation )
 	{
 		if (m_wall == null)
 			m_wall = gameObject.AddComponent<Wall>();
-			//m_wall = UnityEditor.Undo.AddComponent<Wall>(gameObject);
+		//m_wall = UnityEditor.Undo.AddComponent<Wall>(gameObject);
 
 		m_wall.LinkWithTile(this);
 		m_wall.SetWallType(_wallType);
@@ -203,7 +203,7 @@ public class Tile : MonoBehaviour
 		_tile.Neighbors[(int)_direction.Opposite()] = this;
 	}
 
-	public bool IsObstacle (bool _isThisTurn)
+	public bool IsObstacle ( bool _isThisTurn )
 	{
 		if (m_groundType == TileGroundType.Wall && m_wall.Health > 0)
 			return true;
@@ -228,7 +228,7 @@ public class Tile : MonoBehaviour
 		return true;
 	}
 
-	public void OnEntityEnter(Entity _enteringEntity, bool _isFromTeleportation )
+	public void OnEntityEnter ( Entity _enteringEntity, bool _isFromTeleportation )
 	{
 		if (m_groundType == TileGroundType.Void && !_enteringEntity.Status.Contains(EntityStatusEnumID.Flying))
 		{
@@ -248,8 +248,11 @@ public class Tile : MonoBehaviour
 
 	private void OnEntitySelected ( int? _entityID )
 	{
-		UI.ResetOutline();
-		m_canInteract = false;
+		if (!_entityID.HasValue)
+		{
+			UI.ResetOutline();
+			m_canInteract = false;
+		}
 	}
 
 	private void OnActionSelected ( AEntityAction _action )
@@ -277,7 +280,7 @@ public class Tile : MonoBehaviour
 		m_plannedContentsPerTick = new TileContent[GameConfig.current.game.actionTokenPerRound];
 		for (int i = 0; i < GameConfig.current.game.actionTokenPerRound; i++)
 		{
-			m_plannedContentsPerTick[i] = new() { entityID = -1, itemID = -1};
+			m_plannedContentsPerTick[i] = new() { entityID = -1, itemID = -1 };
 		}
 	}
 
@@ -334,7 +337,7 @@ public class Tile : MonoBehaviour
 		}
 	}
 
-	public void SetItem(Item _item, bool _isThisTurn )
+	public void SetItem ( Item _item, bool _isThisTurn )
 	{
 		if (_isThisTurn)
 			m_currentContent.itemID = _item == null ? -1 : _item.ID;
@@ -342,7 +345,7 @@ public class Tile : MonoBehaviour
 			m_nextTurnActionContent.itemID = _item == null ? -1 : _item.ID;
 	}
 
-	public bool TryGetItem(bool _isThisTurn, out Item _item )
+	public bool TryGetItem ( bool _isThisTurn, out Item _item )
 	{
 		if (_isThisTurn)
 		{
@@ -370,9 +373,9 @@ public class Tile : MonoBehaviour
 		return _item != null;
 	}
 
-	public void SetPlannedItemAt(Item _item, int _time )
+	public void SetPlannedItemAt ( Item _item, int _time )
 	{
-		for(int i = _time; i < m_plannedContentsPerTick.Length; i++)
+		for (int i = _time; i < m_plannedContentsPerTick.Length; i++)
 		{
 			if (_item == null && m_plannedContentsPerTick[i].Item != null)
 				m_plannedContentsPerTick[i].Item.Cancel();

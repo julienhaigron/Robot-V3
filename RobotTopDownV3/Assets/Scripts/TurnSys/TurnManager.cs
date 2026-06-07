@@ -165,7 +165,7 @@ public class TurnManager : Singleton<TurnManager>
 			SetCurrentActionSelected(selectedEntity.AI.GetMovementAction().enumID, null, true);
 			SetCurrentStateSelected(selectedEntity.KnownedStates[0]);
 		}
-		RefreshActionDisplay(_selectedEntity, true);
+		RefreshActionDisplay(_selectedEntity, false);
 	}
 
 	public void OnEntityAdded ( Entity _entity )
@@ -196,16 +196,16 @@ public class TurnManager : Singleton<TurnManager>
 		int timeAtStart = m_recordedActionInput.ContainsKey(performingEntityID) && m_recordedActionInput[performingEntityID].Count > 0
 			? m_recordedActionInput[performingEntityID].ToArray()[^1].action.TimeAtEnd : currentTick;
 
-		if (_isResetingAction)
-		{
-			m_currentEntityAction = GetAction(GameAssets.current.game.entityActionsData[_action], performingEntityID, _linkedEquipmentID, timeAtStart);
-			m_currentActionTargetTiles.Clear();
-			m_currentEntityAction.OnSelectActionTileInteractPredicatePrewarm();
-		}
 		m_currentActionTypeSelected = _action;
 		m_currentEquipmentLinkedToActionTypeSelected = _linkedEquipmentID;
+		if (_isResetingAction)
+		{
+			m_currentActionTargetTiles.Clear();
+			m_currentEntityAction = GetAction(GameAssets.current.game.entityActionsData[_action], performingEntityID, _linkedEquipmentID, timeAtStart);
 
-		onActionSelected?.Invoke(m_currentEntityAction);
+			m_currentEntityAction.OnSelectActionTileInteractPredicatePrewarm();
+			onActionSelected?.Invoke(m_currentEntityAction);
+		}
 	}
 
 	public void AddTargetTileInCurrentAction ( Tile _tile )
@@ -355,7 +355,7 @@ public class TurnManager : Singleton<TurnManager>
 		onActionRemoved?.Invoke(_actionToStartRemoveFrom);
 
 		TrackedEventCheck();
-		RefreshActionDisplay(_actionToStartRemoveFrom.performingEntityID, false);
+		RefreshActionDisplay(_actionToStartRemoveFrom.performingEntityID, true);
 	}
 
 	public int GetLastRegisteredPositionOfEntity ( int _entityID )
@@ -408,7 +408,7 @@ public class TurnManager : Singleton<TurnManager>
 		PlayerController.Instance.ClearGhostActionOnTileDisplay();
 		PlayerController.Instance.ClearGhostEntitiesAndItems();
 
-		if (_selectedEntityID.HasValue && m_recordedActionInput.ContainsKey(_selectedEntityID.Value)
+		if (_selectedEntityID.HasValue && _isResetingAction 
 			&& m_remainingActionToken[_selectedEntityID.Value] >= GameAssets.current.game.entityActionsData[m_currentActionTypeSelected].GetTokenTotalCost(m_currentEntityAction, GameManager.Instance.GetEntityFromID(_selectedEntityID.Value), null))
 			SetCurrentActionSelected(m_currentActionTypeSelected, m_currentEquipmentLinkedToActionTypeSelected, _isResetingAction);
 

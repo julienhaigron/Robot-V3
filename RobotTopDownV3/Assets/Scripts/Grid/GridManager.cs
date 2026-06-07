@@ -42,10 +42,10 @@ public class GridManager : Singleton<GridManager>
 		new Vector2Int(-1,  1), // 5
 	};
 
-	private Tile m_lastBFSOriginTile;
+	/*private Tile m_lastBFSOriginTile;
 	public Tile LastBFSOriginTile => m_lastBFSOriginTile;
 	private int m_lastBFSMaxDistance;
-	public int LastBFSMaxDistance => m_lastBFSMaxDistance;
+	public int LastBFSMaxDistance => m_lastBFSMaxDistance;*/
 
 	#region Editor
 #if UNITY_EDITOR
@@ -749,8 +749,8 @@ public class GridManager : Singleton<GridManager>
 
 	public void BFS ( Tile _from, int _maxDistance = -1, Tile _to = null, bool _isThisTurn = false, bool _ignoreObstacles = false )
 	{
-		m_lastBFSOriginTile = _from;
-		m_lastBFSMaxDistance = _maxDistance;
+		/*m_lastBFSOriginTile = _from;
+		m_lastBFSMaxDistance = _maxDistance;*/
 		for (int i = 0; i < m_tiles.Length; i++)
 		{
 			m_tiles[i].Distance = int.MaxValue;
@@ -821,8 +821,8 @@ public class GridManager : Singleton<GridManager>
 	public int GetDistanceBetween ( Tile _from, Tile _to, int _maxDistance, bool _isThisTurn = false )
 	{
 		//record last BFS done and avaid doing one if last one is valid
-		if (m_lastBFSOriginTile == _from && m_lastBFSMaxDistance >= _maxDistance)
-			return _to.Distance;
+		/*if (m_lastBFSOriginTile == _from && m_lastBFSMaxDistance >= _maxDistance)
+			return _to.Distance;*/
 
 		BFS(_from, _maxDistance, _to: _to, _isThisTurn: _isThisTurn);
 
