@@ -111,39 +111,21 @@ public class AttackAction : AEntityAction
 			EndTick();
 		}
 
-		for (int attackCount = 0; attackCount < attacksInfos.Length; attackCount++)
+		/*List<Tile> tilesInWeaponRange = Data.isAoe ? PerformingEntity.Equipment.GetTilesInAoERange(this, GridManager.Instance.Tiles[targetTileIDs[attackCount]], true) : PerformingEntity.Equipment.GetTilesInWeaponRange(this, linkedEquipmentId, true);
+		foreach (Tile tile in tilesInWeaponRange)
 		{
-			//if enemy is in weapon range
-			Entity targetEntity = GameManager.Instance.GetEntityFromID(targetedEntityIDs[attackCount]);
-			bool isEnemyInWeaponRange = PerformingEntity.AI.IsEntityInWeaponRange(targetEntity, linkedEquipmentId);
+			tile.UI.SetOutlineColor(Color.red);
+		}*/
+		PerformingEntity.Equipment.Weapons[linkedEquipmentId].PerformAttack(this, () =>
+		{
+			/*foreach (Tile tile in tilesInWeaponRange)
+			{
+				tile.UI.ResetOutline();
+			}*/
+			base.Perform(_state);
+			EndTick();
+		});
 
-			if (isEnemyInWeaponRange || (Data.isAoe && targetTileIDs != null))
-			{
-				List<Tile> tilesInWeaponRange = Data.isAoe ? PerformingEntity.Equipment.GetTilesInAoERange(this, GridManager.Instance.Tiles[targetTileIDs[attackCount]], true) : PerformingEntity.Equipment.GetTilesInWeaponRange(this, linkedEquipmentId, true);
-				foreach (Tile tile in tilesInWeaponRange)
-				{
-					tile.UI.SetOutlineColor(Color.red);
-				}
-				PerformingEntity.Equipment.Weapons[linkedEquipmentId].PerformAttack(this, () =>
-				{
-					foreach (Tile tile in tilesInWeaponRange)
-					{
-						tile.UI.ResetOutline();
-					}
-					base.Perform(_state);
-					EndTick();
-				});
-			}
-			else
-			{
-				// => find new target or wait (or move to previous target if in sight?)
-				//Debug.Log("target not in range");
-				//DG.Tweening.DOVirtual.DelayedCall(GameConfig.current.game.actionDuration, () => EndPerform());
-				Debug.LogError("No target error");
-				base.Perform(_state);
-				EndTick();
-			}
-		}
 	}
 
 	public override void Display ( TurnManager.RecordedAction _recordedAction )

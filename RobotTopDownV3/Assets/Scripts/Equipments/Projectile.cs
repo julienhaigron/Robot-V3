@@ -12,7 +12,7 @@ public class Projectile : PoolElement
 	protected ProjectileData m_projectileData;
 	private bool m_isInit;
 	private Action<Entity> m_onHitEntity;
-	private Action m_onDespawnNoHit;
+	private Action m_onDespawnNoEntityHit;
 	private bool m_didHitSomething = false;
 
 	private void Reset ()
@@ -82,7 +82,7 @@ public class Projectile : PoolElement
 
 			selector.LinkedWall.TakeDamage(damages);
 
-			m_didHitSomething = true;
+			//m_didHitSomething = true;
 
 			SoundManager.Instance.Play(m_projectileData.onHitSFXID);
 			if (m_onHitPS != null)
@@ -145,7 +145,7 @@ public class Projectile : PoolElement
 		m_rb.isKinematic = false;
 		m_rb.AddForce((transform.forward * m_projectileData.speed.x) + (transform.up * m_projectileData.speed.y), ForceMode.VelocityChange);
 		m_onHitEntity = _onHitEntity;
-		m_onDespawnNoHit = _onProjectileDespawn;
+		m_onDespawnNoEntityHit = _onProjectileDespawn;
 	}
 
 	private void LaunchMortar ( Action<Entity> _onHitEntity, Action _onProjectileDespawn )
@@ -173,7 +173,7 @@ public class Projectile : PoolElement
 
 		m_rb.linearVelocity = velocity;
 		m_onHitEntity = _onHitEntity;
-		m_onDespawnNoHit = _onProjectileDespawn;
+		m_onDespawnNoEntityHit = _onProjectileDespawn;
 	}
 
 	private void LaunchGrenade ( Action<Entity> _onHitEntity, Action _onProjectileDespawn )
@@ -193,7 +193,7 @@ public class Projectile : PoolElement
 
 		m_rb.linearVelocity = velocityXZ + Vector3.up * velocityY;
 		m_onHitEntity = _onHitEntity;
-		m_onDespawnNoHit = _onProjectileDespawn;
+		m_onDespawnNoEntityHit = _onProjectileDespawn;
 	}
 
 	private void LaunchThrow ( Action<Entity> _onHitEntity, Action _onProjectileDespawn )
@@ -205,7 +205,7 @@ public class Projectile : PoolElement
 		m_rb.linearVelocity = dir * m_projectileData.speed.x + Vector3.up * m_projectileData.speed.y;
 
 		m_onHitEntity = _onHitEntity;
-		m_onDespawnNoHit = _onProjectileDespawn;
+		m_onDespawnNoEntityHit = _onProjectileDespawn;
 	}
 
 	private void LaunchUnderground ( Action<Entity> _onHitEntity, Action _onProjectileDespawn )
@@ -213,7 +213,7 @@ public class Projectile : PoolElement
 		m_didHitSomething = false;
 		m_rb.isKinematic = true;
 		m_onHitEntity = _onHitEntity;
-		m_onDespawnNoHit = _onProjectileDespawn;
+		m_onDespawnNoEntityHit = _onProjectileDespawn;
 
 		Vector3 destination = m_projectileData.destination;
 		float duration = Vector3.Distance(transform.position, destination) / m_projectileData.speed.x;
@@ -221,7 +221,7 @@ public class Projectile : PoolElement
 		transform.LookAt(destination);
 		transform.DOMove(destination, duration).SetEase(Ease.Linear).OnComplete(() =>
 		{
-			m_onDespawnNoHit?.Invoke();
+			m_onDespawnNoEntityHit?.Invoke();
 			Discard();
 		});
 	}
@@ -245,8 +245,8 @@ public class Projectile : PoolElement
 	private void Deactivate ()
 	{
 		if (!m_didHitSomething)
-			m_onDespawnNoHit?.Invoke();
-		m_onDespawnNoHit = null;
+			m_onDespawnNoEntityHit?.Invoke();
+		m_onDespawnNoEntityHit = null;
 		m_onHitEntity = null;
 
 		if (!m_rb.isKinematic)
