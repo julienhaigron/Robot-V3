@@ -58,9 +58,9 @@ public class Projectile : PoolElement
 		if (_entity == m_projectileData.owner)
 			return;
 
-		m_onHitEntity?.Invoke(_entity);
-		
 		m_didHitSomething = true;
+		
+		m_onHitEntity?.Invoke(_entity);
 
 		SoundManager.Instance.Play(m_projectileData.onHitSFXID);
 		if (m_onHitPS != null)

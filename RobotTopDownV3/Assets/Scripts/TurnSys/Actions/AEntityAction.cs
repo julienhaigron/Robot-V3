@@ -129,12 +129,11 @@ public abstract class AEntityAction : INetworkSerializable
 		if (lifetime == 0)
 			OnStartPerform(_state);
 
-		lifetime++;
-
 		//if (lifetime == preparationDuration + 1)
-		if (IsPerformingAtTick(timeAtStart + lifetime - 1))
+		if (IsPerformingAtTick(timeAtStart + lifetime))
 		{
-			LogConsole.AddLog(performingEntityID + " performes " + ToString(), LogConsole.LogEventType.AttackResolution);
+			if(enumID != EntityActionEnumID.Unknowned && enumID != EntityActionEnumID.Wait)
+				LogConsole.AddLog(performingEntityID + " performes " + ToString(), LogConsole.LogEventType.AttackResolution);
 			Perform(_state);
 			return true;
 		}
@@ -157,13 +156,16 @@ public abstract class AEntityAction : INetworkSerializable
 
 	protected virtual void EndTick ()
 	{
-		bool didEndAction = lifetime >= preparationDuration + actualDuration + cooldownDuration;
+		lifetime++;
+
+		bool didEndAction = lifetime >= TotalDuration;
 		if (didEndAction)
 		{
-			LogConsole.AddLog("end " + ToString() + " with lifetime at " + lifetime, LogConsole.LogEventType.AttackResolution);
+			if (enumID != EntityActionEnumID.Unknowned && enumID != EntityActionEnumID.Wait)
+				LogConsole.AddLog("end " + ToString() + " with lifetime at " + lifetime, LogConsole.LogEventType.AttackResolution);
 			EndAction();
 		}
-		else
+		else if (enumID != EntityActionEnumID.Unknowned && enumID != EntityActionEnumID.Wait)
 			LogConsole.AddLog(performingEntityID + " in " + (lifetime <= preparationDuration ? "preparation " : "cooldown ") + ToString(), LogConsole.LogEventType.AttackResolution);
 
 		onEndTick?.Invoke(performingEntityID, didEndAction);

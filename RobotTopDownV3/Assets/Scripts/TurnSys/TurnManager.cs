@@ -543,6 +543,7 @@ public class TurnManager : Singleton<TurnManager>
 			while (totalCost < 1 && recordedActions[entityID].Count > 0)
 			{
 				RecordedAction recordedAction = recordedActions[entityID].Dequeue();
+				LogConsole.AddLog(entityID + " will play new action this tick " + recordedAction.action.ToString(), LogConsole.LogEventType.AttackResolution);
 				m_actionsToPlay[entityID].Enqueue(recordedAction);
 				totalCost += recordedAction.action.TotalDuration;
 			}
@@ -740,19 +741,17 @@ public class TurnManager : Singleton<TurnManager>
 	{
 		onNewRoundStart?.Invoke();
 		currentPhase = TurnPhase.Playing;
-		//m_actionsBeingDone.Clear();
 		List<int> entityIDs = new(m_actionsToPlay.Keys);
+
 		foreach (int entityID in entityIDs)
 		{
-			//GameManager.Instance.GetEntityFromID(entityID).OnPhaseStart();
-
-			if (m_actionsBeingDone.ContainsKey(entityID))
-				continue;
-
-			if (m_actionsToPlay.ContainsKey(entityID) && m_actionsToPlay[entityID] != null && m_actionsToPlay[entityID].Count != 0)
+			if (m_actionsToPlay.ContainsKey(entityID) && m_actionsToPlay[entityID] != null && m_actionsToPlay[entityID].Count > 0)
 			{
 				RecordedAction action = m_actionsToPlay[entityID].Dequeue();
-				m_actionsBeingDone.Add(entityID, new(action, false));
+				if (!m_actionsBeingDone.ContainsKey(entityID))
+					m_actionsBeingDone.Add(entityID, new Tuple<RecordedAction, bool>(action, false));
+				else
+					m_actionsBeingDone[entityID] = new Tuple<RecordedAction, bool>(action, false);
 			}
 		}
 
@@ -767,16 +766,16 @@ public class TurnManager : Singleton<TurnManager>
 		if (_recordedAction.freeActionType != EntityActionEnumID.Wait
 			&& _recordedAction.freeActionType != EntityActionEnumID.Unknowned)
 		{
-			_recordedAction.action.onEndTick += ( performingEntity, didEndAction ) =>
+			_recordedAction.action.onEndTick = ( performingEntity, didEndAction ) =>
 			{
-				_recordedAction.freeAction.onEndTick += OnActionEndTick;
+				_recordedAction.freeAction.onEndTick = OnActionEndTick;
 				_recordedAction.freeAction.PerformTick(_recordedAction.entityState);
 			};
 		}
 		else
-			_recordedAction.action.onEndTick += OnActionEndTick;
+			_recordedAction.action.onEndTick = OnActionEndTick;
 
-		LogConsole.AddLog(_recordedAction.performingEntityID + " performes " + _recordedAction.action.ToString() + " in state " + _recordedAction.entityState, LogConsole.LogEventType.DebugSys);
+		//LogConsole.AddLog(_recordedAction.performingEntityID + " performes " + _recordedAction.action.ToString() + " in state " + _recordedAction.entityState, LogConsole.LogEventType.DebugSys);
 		_recordedAction.action.PerformTick(_recordedAction.entityState);
 	}
 
@@ -786,6 +785,7 @@ public class TurnManager : Singleton<TurnManager>
 		{
 			//performing entity still has actions this phase to do
 			RecordedAction action = m_actionsToPlay[_performingEntityID].Dequeue();
+			Debug.Log("has other actions to do " + action.action.ToString());
 			m_actionsBeingDone[_performingEntityID] = new(action, false);
 			PlayActionTick(action);
 		}
@@ -799,18 +799,23 @@ public class TurnManager : Singleton<TurnManager>
 			}
 			else
 			{
-				if (!m_actionsToPlay.ContainsKey(_performingEntityID))
-					m_actionsToPlay.Add(_performingEntityID, new());
-
 				if (!m_actionsBeingDone.ContainsKey(_performingEntityID))
 				{
+					//here
 					Debug.Log("error here with entity " + _performingEntityID);
+					LogConsole.AddLog("error here with entity " + _performingEntityID, LogConsole.LogEventType.AttackResolution);
 					TryEndRoundTick();
 					return;
 				}
 
-				m_actionsToPlay[_performingEntityID].Enqueue(m_actionsBeingDone[_performingEntityID].Item1);
-				m_actionsBeingDone[_performingEntityID] = new(m_actionsBeingDone[_performingEntityID].Item1, true);
+				if (!m_actionsToPlay.ContainsKey(_performingEntityID))
+					m_actionsToPlay.Add(_performingEntityID, new());
+				else
+					m_actionsToPlay[_performingEntityID].Clear();
+
+				RecordedAction action = m_actionsBeingDone[_performingEntityID].Item1;
+				m_actionsToPlay[_performingEntityID].Enqueue(action);
+				m_actionsBeingDone[_performingEntityID] = new(action, true);
 			}
 
 			TryEndRoundTick();

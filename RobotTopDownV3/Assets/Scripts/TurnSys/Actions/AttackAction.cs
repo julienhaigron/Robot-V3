@@ -58,13 +58,14 @@ public class AttackAction : AEntityAction
 		if (targetedEntityIDs != null || (Data.isAoe && targetTileIDs != null))
 		{
 			//targetedEntityID = PerformingEntity.AI.TargetedEntity.ID;
+			if (Data.isAoe)
+				LogConsole.AddLog("Automatic hit on targets due to AoE type", LogConsole.LogEventType.AttackResolution);
+			
 			for (int attackCount = 0; attackCount < attacksInfos.Length; attackCount++)
 			{
 				SingleAttackInfo attackInfo = attacksInfos[attackCount];
 				Entity targetEntity = GameManager.Instance.GetEntityFromID(targetedEntityIDs[attackCount]);
 				attackInfo.isAttackSuccessfull = Data.isAoe ? true : PerformingEntity.Equipment.AttackRoll(this, attackInfo, targetEntity);
-				if (Data.isAoe)
-					LogConsole.AddLog("Automatic hit on targets due to AoE type", LogConsole.LogEventType.AttackResolution);
 
 				if (attackInfo.isAttackSuccessfull)
 				{
