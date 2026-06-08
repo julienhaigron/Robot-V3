@@ -151,10 +151,6 @@ public class EntityEquipmentPlugin : EntityPlugin
 
 	private void OnEntitySelected ()
 	{
-		/*//yes this line is a duplicate to the one in TurnManager
-		//but for some reason removing this call makes targeting not working
-		TurnManager.Instance.SetCurrentActionSelected(m_linkedEntity.AI.GetMovementAction().enumID, null, true);*/
-
 		foreach (WeaponCone weaponCone in m_weaponConeDictionary.Values)
 		{
 			weaponCone.ActivateActiveCone();
