@@ -40,8 +40,8 @@ MonoBehaviour:
       arms:
       - ID: Weapon_Psy_GlaiveDeSivir4
         dataID: Weapon_Psy_GlaiveDeSivir
-      - ID: Tool_Psy_Teleportation5
-        dataID: Tool_Psy_Teleportation
+      - ID: Missil array232
+        dataID: Missil array
       auxiliar:
       - ID: Armor_CD16
         dataID: Armor_CD1
@@ -68,8 +68,8 @@ MonoBehaviour:
       arms:
       - ID: Weapon_Psy_GlaiveDeSivir14
         dataID: Weapon_Psy_GlaiveDeSivir
-      - ID: Tool_Psy_Teleportation15
-        dataID: Tool_Psy_Teleportation
+      - ID: Minigun233
+        dataID: Minigun
       auxiliar:
       - ID: Armor_CD116
         dataID: Armor_CD1
@@ -80,19 +80,146 @@ MonoBehaviour:
       chipsets:
       - ID: Chipset_ZB-3819
         dataID: Chipset_ZB-38
-    equipmentInventory: []
-    equipmentCounter: 40
+    equipmentInventory:
+    - ID: Armor_CD180
+      dataID: Armor_CD1
+    - ID: Armor_CD181
+      dataID: Armor_CD1
+    - ID: Armor_CD182
+      dataID: Armor_CD1
+    - ID: Armor_CD183
+      dataID: Armor_CD1
+    - ID: Armor_CD184
+      dataID: Armor_CD1
+    - ID: Armor_CD185
+      dataID: Armor_CD1
+    - ID: Armor_CD186
+      dataID: Armor_CD1
+    - ID: Armor_CD187
+      dataID: Armor_CD1
+    - ID: Armor_CD188
+      dataID: Armor_CD1
+    - ID: Armor_CD189
+      dataID: Armor_CD1
+    - ID: Armor_CD190
+      dataID: Armor_CD1
+    - ID: Armor_CD191
+      dataID: Armor_CD1
+    - ID: Armor_CD192
+      dataID: Armor_CD1
+    - ID: Armor_CD193
+      dataID: Armor_CD1
+    - ID: Armor_CD194
+      dataID: Armor_CD1
+    - ID: Armor_CD195
+      dataID: Armor_CD1
+    - ID: Armor_CD196
+      dataID: Armor_CD1
+    - ID: Armor_CD197
+      dataID: Armor_CD1
+    - ID: Armor_CD199
+      dataID: Armor_CD1
+    - ID: Armor_CD198
+      dataID: Armor_CD1
+    - ID: Armor_CD1116
+      dataID: Armor_CD1
+    - ID: Armor_CD1117
+      dataID: Armor_CD1
+    - ID: Armor_CD1118
+      dataID: Armor_CD1
+    - ID: Armor_CD1119
+      dataID: Armor_CD1
+    - ID: Armor_CD1120
+      dataID: Armor_CD1
+    - ID: Armor_CD1121
+      dataID: Armor_CD1
+    - ID: Armor_CD1122
+      dataID: Armor_CD1
+    - ID: Armor_CD1123
+      dataID: Armor_CD1
+    - ID: Armor_CD1124
+      dataID: Armor_CD1
+    - ID: Armor_CD1125
+      dataID: Armor_CD1
+    - ID: Armor_CD1126
+      dataID: Armor_CD1
+    - ID: Armor_CD1127
+      dataID: Armor_CD1
+    - ID: Armor_CD1128
+      dataID: Armor_CD1
+    - ID: Armor_CD1129
+      dataID: Armor_CD1
+    - ID: Armor_CD1130
+      dataID: Armor_CD1
+    - ID: Armor_CD1131
+      dataID: Armor_CD1
+    - ID: Armor_CD1132
+      dataID: Armor_CD1
+    - ID: Armor_CD1133
+      dataID: Armor_CD1
+    - ID: Armor_CD1134
+      dataID: Armor_CD1
+    - ID: Armor_CD1135
+      dataID: Armor_CD1
+    - ID: Armor_CD1136
+      dataID: Armor_CD1
+    - ID: Armor_CD1137
+      dataID: Armor_CD1
+    - ID: Armor_CD1138
+      dataID: Armor_CD1
+    - ID: Armor_CD1139
+      dataID: Armor_CD1
+    - ID: Armor_CD1140
+      dataID: Armor_CD1
+    - ID: Armor_CD1141
+      dataID: Armor_CD1
+    - ID: Armor_CD1142
+      dataID: Armor_CD1
+    - ID: Armor_CD1143
+      dataID: Armor_CD1
+    - ID: Armor_CD1144
+      dataID: Armor_CD1
+    - ID: Armor_CD1145
+      dataID: Armor_CD1
+    - ID: Frame_Assault146
+      dataID: Frame_Assault
+    - ID: Flail223
+      dataID: Flail
+    - ID: Railgun224
+      dataID: Railgun
+    - ID: Spear225
+      dataID: Spear
+    - ID: Sniper226
+      dataID: Sniper
+    - ID: FlameThrower227
+      dataID: FlameThrower
+    - ID: Flail228
+      dataID: Flail
+    - ID: Gauntlet229
+      dataID: Gauntlet
+    - ID: Hammer230
+      dataID: Hammer
+    - ID: Glaive231
+      dataID: Glaive
+    - ID: Rapier234
+      dataID: Rapier
+    - ID: Grenade launcher235
+      dataID: Grenade launcher
+    equipmentCounter: 236
     currencies:
       keys: 01000000
       values: 0000000000000000
     totalCurrenciesGot:
       keys: 01000000
-      values: 0000000000000000
+      values: 0a00000000000000
     totalCurrenciesSpent:
       keys: 01000000
-      values: 0000000000000000
+      values: 0a00000000000000
     upgradeLevels:
       keys:
       - hangarstructure
       - shopstructure
       values: 0000000000000000
+    dayData:
+      missionsIds: 00000000000000000000000000000000000000000000000000000000
+      itemsInShop: []

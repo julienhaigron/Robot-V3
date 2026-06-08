@@ -54,20 +54,7 @@ public class ToolTipManager : Singleton<ToolTipManager>
 
         anchoredPosition += m_offset;
 
-        // Clamp dans l'écran
-        Vector2 size = m_backgroundRect.sizeDelta;
-        RectTransform parentRect = m_tooltipPanel.transform.parent as RectTransform;
-
-        anchoredPosition.x = Mathf.Clamp(
-            anchoredPosition.x,
-            -parentRect.rect.width / 2 + size.x / 2,
-            parentRect.rect.width / 2 - size.x / 2
-        );
-        anchoredPosition.y = Mathf.Clamp(
-            anchoredPosition.y,
-            -parentRect.rect.height / 2 + size.y / 2,
-            parentRect.rect.height / 2 - size.y / 2
-        );
+        //todo add swap tooltip anchor left/right depending on mouse position (so tooltips is always fully visible on screen
 
         m_tooltipPanel.transform.localPosition = anchoredPosition;
     }
@@ -75,6 +62,8 @@ public class ToolTipManager : Singleton<ToolTipManager>
     [Button]
     public void Show ( string _title, string _description )
     {
+        if (m_isActive)
+            return;
         m_isActive = true;
         m_tooltipTitleTMP.text = _title;
         m_tooltipDescriptionTMP.text = _description;

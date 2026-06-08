@@ -39,7 +39,7 @@ public class EntitySkinPlugin : EntityPlugin
 
 	public void OnEndActionPerform ()
 	{
-		m_animator.speed = 0;
+		//m_animator.speed = 0;
 		//freeze body anim
 		//m_animator.SetTrigger("OnEndAction");
 	}

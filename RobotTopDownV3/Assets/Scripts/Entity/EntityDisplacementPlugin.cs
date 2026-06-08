@@ -67,7 +67,7 @@ public class EntityDisplacementPlugin : EntityPlugin
 			m_coordinate.GetTile().SetEntity(null, _isThisTurn: true);
 		Tile tile = GridManager.Instance.Tiles[_tileID];
 
-		if(m_linkedEntity.AI.TargetedEntity == null)
+		if(m_linkedEntity.AI.LastTargetedEntities == null)
 			Rotate(tile, GameConfig.current.game.actionDuration);
 			//Rotate(tile, Mathf.Max(GameConfig.current.game.entityRotationDuration, GameConfig.current.game.actionDuration));
 
@@ -95,7 +95,7 @@ public class EntityDisplacementPlugin : EntityPlugin
 			m_coordinate.GetTile().SetEntity(null, _isThisTurn: true);
 		Tile tile = GridManager.Instance.Tiles[_tileID];
 
-		if (m_linkedEntity.AI.TargetedEntity == null)
+		if (m_linkedEntity.AI.LastTargetedEntities == null)
 			Rotate(tile, GameConfig.current.game.actionDuration);
 		//Rotate(tile, Mathf.Max(GameConfig.current.game.entityRotationDuration, GameConfig.current.game.actionDuration));
 

@@ -7,5 +7,4 @@ public enum EntityStatusEnumID
     Rooted = 4,
     Smoked = 5,
     Stun = 6,
-    GeneralResitanceUp = 7,
 }

@@ -18,10 +18,17 @@ MonoBehaviour:
   energyCost: 15
   knownedActions: 
   passiveEffects: []
+  statusHitProbability: 0.5
   statBonuses:
-  - type: 18
-    value: 0.3
-  - type: 19
-    value: 5
-  - type: 4
-    value: 0.6
+  - conditionType: 0
+    bonus:
+      type: 5
+      value: 0.3
+  - conditionType: 0
+    bonus:
+      type: 0
+      value: 0
+  - conditionType: 0
+    bonus:
+      type: 0
+      value: 0

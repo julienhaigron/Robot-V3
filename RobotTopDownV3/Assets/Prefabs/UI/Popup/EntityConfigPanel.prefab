@@ -1203,6 +1203,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 8685159715400837432}
     m_Modifications:
+    - target: {fileID: 864956830718926311, guid: 3971d36e323501d4b9c8d413d4be646d, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7709168879267836390, guid: 3971d36e323501d4b9c8d413d4be646d, type: 3}
       propertyPath: m_Name
       value: Frame ComponentDisplayGrid
@@ -1429,6 +1433,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 8685159715400837432}
     m_Modifications:
+    - target: {fileID: 864956830718926311, guid: 3971d36e323501d4b9c8d413d4be646d, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7709168879267836390, guid: 3971d36e323501d4b9c8d413d4be646d, type: 3}
       propertyPath: m_Name
       value: Brain ComponentDisplayGrid
@@ -1542,6 +1550,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 8685159715400837432}
     m_Modifications:
+    - target: {fileID: 864956830718926311, guid: 3971d36e323501d4b9c8d413d4be646d, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7709168879267836390, guid: 3971d36e323501d4b9c8d413d4be646d, type: 3}
       propertyPath: m_Name
       value: NeuronalMembrane ComponentDisplayGrid
@@ -1781,6 +1793,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 8685159715400837432}
     m_Modifications:
+    - target: {fileID: 864956830718926311, guid: 3971d36e323501d4b9c8d413d4be646d, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7709168879267836390, guid: 3971d36e323501d4b9c8d413d4be646d, type: 3}
       propertyPath: m_Name
       value: Reactor ComponentDisplayGrid

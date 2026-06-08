@@ -56,14 +56,14 @@ public class LobbyManager : NetworkBehaviour
         StartClientsGameServerRPC();
     }
 
-    [ServerRpc(RequireOwnership = false)]
+    [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
     private void StartClientsGameServerRPC ()
     {
         StartClientsGameClientRPC();
     }
 
-    [ClientRpc(RequireOwnership = false)]
-	private void StartClientsGameClientRPC ()
+    [Rpc(SendTo.Everyone, InvokePermission = RpcInvokePermission.Server)]
+    private void StartClientsGameClientRPC ()
 	{
 		GameManager.Instance.StartGame();
 	}

@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ad2385ef5a8a3b24598497e853df4222, type: 3}
+  m_Name: Chip_Pal_Cool
+  m_EditorClassIdentifier: RTD::ChipsetEquipmentData
+  spreadsheetId: https://docs.google.com/spreadsheets/d/1AeQujaBf6YdyVQRD2gBNWazoosesi46DpAoY5b6hrt8/export?format=csv&gid=1887781930
+  faction: 3
+  icon: {fileID: 0}
+  displayName: Cool Chipset
+  energyCost: 0
+  knownedActions: 
+  passiveEffects: []
+  statusHitProbability: 0.5
+  statBonuses: []

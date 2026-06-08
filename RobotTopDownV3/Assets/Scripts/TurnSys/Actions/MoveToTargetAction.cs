@@ -45,7 +45,8 @@ public class MoveToTargetAction : AEntityAction
 	public override void Prepare ( Entity.EntityState _state )
 	{
 		//check here if can do movement and where to exactly
-		RefreshDestinatedTile();
+		if(IsDestinationOccupiedOnNextTurnAction())
+			RefreshDestinatedTile();
 
 		GameManager.Instance.GetEntityFromID(performingEntityID).Displacement.Coordinates.GetTile().SetEntity(null, _isThisTurn: false);
 	}
@@ -98,15 +99,21 @@ public class MoveToTargetAction : AEntityAction
 		EndTick();
 	}
 
+	public override void OnSelectActionTileInteractPredicatePrewarm ()
+	{
+		base.OnSelectActionTileInteractPredicatePrewarm();
+
+		//for all tiles overall distance calculation
+		int maxDistance = TurnManager.Instance.RemainingActionToken[performingEntityID] * Data.movementSpeed;
+		Tile from = GridManager.Instance.Tiles[TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntityID)];
+		//if (GridManager.Instance.LastBFSOriginTile != from && GridManager.Instance.LastBFSMaxDistance >= maxDistance)
+		GridManager.Instance.BFS(from, maxDistance, null, true);
+	}
+
 	public override bool TileInteractPredicate ( Tile _tile )
 	{
-		Tile from = GridManager.Instance.Tiles[TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntityID)];
 		int maxDistance = TurnManager.Instance.RemainingActionToken[performingEntityID] * Data.movementSpeed;
-		//for all tiles overall distance calculation
-		if (GridManager.Instance.LastBFSOriginTile != from && GridManager.Instance.LastBFSMaxDistance >= maxDistance)
-			GridManager.Instance.BFS(from, maxDistance, null, true);
-
-		int distance = GridManager.Instance.GetDistanceBetween(from, _tile, maxDistance, true);
+		int distance = _tile.Distance;
 
 		if (_tile.IsObstacle(true) || distance > maxDistance || distance < 1)
 			return false;
@@ -145,7 +152,7 @@ public class MoveToTargetAction : AEntityAction
 			TurnManager.Instance.AddAction(performingEntityID, action, TurnManager.Instance.CurrentStateTypeSelected);
 		}
 
-		TurnManager.Instance.RefreshActionDisplay(performingEntityID);
+		TurnManager.Instance.RefreshActionDisplay(performingEntityID, true);
 	}
 
 	public override ActionConflictResultInfo CheckConflict ( AEntityAction _otherAction, bool _isCheck = true )
@@ -175,7 +182,7 @@ public class MoveToTargetAction : AEntityAction
 					doesSelfHaveConflict = true;
 			}
 		}
-		else if (thisActionDestinationIDArray != null && GridManager.Instance.GetDistanceBetween(PerformingEntity.Displacement.Coordinates.GetTile(), GridManager.Instance.Tiles[thisActionDestinationIDArray[^1]], Data.movementSpeed, false) > Data.movementSpeed)
+		else if (thisActionDestinationIDArray != null && GridManager.Instance.GetDistanceBetween(PerformingEntity.Displacement.Coordinates.GetTile(), GridManager.Instance.Tiles[thisActionDestinationIDArray[0]], Data.movementSpeed, false) > 1)
 		{
 			//check if tile too far
 			doesSelfHaveConflict = true;
@@ -201,32 +208,19 @@ public class MoveToTargetAction : AEntityAction
 				thisActionDestinationIDArray = null;
 			}
 		}*/
-		else if (_otherAction is MoveToTargetAction _otherMoveToTargetAction && _otherMoveToTargetAction.thisActionDestinationIDArray == thisActionDestinationIDArray)
+		else if (_otherAction is MoveToTargetAction _otherMoveToTargetAction && _otherMoveToTargetAction.thisActionDestinationIDArray.Any(tileID => thisActionDestinationIDArray.Contains(tileID)))
 		{
-			bool doesHaveCollision = false;
-			foreach (int ourID in thisActionDestinationIDArray)
+			int roll = UnityEngine.Random.Range((int)0, 2);
+			if (roll == 0)
 			{
-				if (_otherMoveToTargetAction.thisActionDestinationIDArray.Contains(ourID))
-				{
-					doesHaveCollision = true;
-					break;
-				}
+				//performing entity wins roll
+				_otherMoveToTargetAction.thisActionDestinationIDArray = null;
+				doesOtherHaveConflict = true;
 			}
-			if (doesHaveCollision)
+			else
 			{
-
-				int roll = UnityEngine.Random.Range((int)0, 2);
-				if (roll == 0)
-				{
-					//performing entity wins roll
-					_otherMoveToTargetAction.thisActionDestinationIDArray = null;
-					doesOtherHaveConflict = true;
-				}
-				else
-				{
-					doesSelfHaveConflict = true;
-					thisActionDestinationIDArray = null;
-				}
+				doesSelfHaveConflict = true;
+				thisActionDestinationIDArray = null;
 			}
 		}
 
@@ -266,7 +260,7 @@ public class MoveToTargetAction : AEntityAction
 
 		List<Tile> pathToTile = GridManager.Instance.GetPath(GameManager.Instance.GetEntityFromID(performingEntityID).Displacement.Coordinates.GetTile(), GridManager.Instance.Tiles[(int)finalTargetTileID], _isThisTurn: false);
 
-		if (pathToTile == null || pathToTile.Count < 2)
+		if (pathToTile == null || pathToTile.Count < Data.movementSpeed + 1)
 		{
 			finalTargetTileID = -1;
 			positionAtActionEndID = GameManager.Instance.GetEntityFromID(performingEntityID).Displacement.Coordinates.ID;
@@ -274,6 +268,7 @@ public class MoveToTargetAction : AEntityAction
 		}
 
 		pathToTile.Reverse();
+		thisActionDestinationIDArray = new int[Data.movementSpeed];
 		for (int i = 0; i < Data.movementSpeed; i++)
 		{
 			thisActionDestinationIDArray[i] = pathToTile[i + 1].coordinates.ID;

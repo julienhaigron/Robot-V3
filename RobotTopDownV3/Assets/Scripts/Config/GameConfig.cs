@@ -13,6 +13,7 @@ public partial class GameConfig : ScriptableObject
 	public Meta meta = new Meta();
 	public UI ui = new UI();
 	public DatasConfigs datas = new DatasConfigs();
+	public Parsing parsing = new Parsing();
 
 	[System.Serializable]
 	public partial class GameSettings
@@ -36,11 +37,16 @@ public partial class GameConfig : ScriptableObject
 		public float entityMovementEvasionBonus = 2;
 		public float entityCoverBonus = 2;
 		public SerializableDictionary<WeaponEquipmentData.DistanceType, float> distanceTypeSpreadEvaluation;
-		public SerializableDictionary<WeaponEquipmentData.DamageType, WeaponEquipmentData.DamageCategory> damageCateforyPerDamageType;
+		public SerializableDictionary<WeaponEquipmentData.DamageType, WeaponEquipmentData.DamageCategory> damageCategoryPerDamageType;
+		public SerializableDictionary<WeaponEquipmentData.DamageCategory, EntityEquipmentData.StatBonus.StatType> statTypePerDamageCategory;
+		public SerializableDictionary<WeaponEquipmentData.DamageCategory, EntityEquipmentData.StatBonus.StatType> statTypePerResistanceCategory;
+		public SerializableDictionary<WeaponEquipmentData.DamageType, EntityEquipmentData.StatBonus.StatType> statTypePerDamageType;
+		public SerializableDictionary<WeaponEquipmentData.DamageType, EntityEquipmentData.StatBonus.StatType> statTypePerDamageResistanceType;
 
 		[Title("Hub")]
 		public string hubSceneName;
 		public string startScreenSceneName;
+		public int missionAmountInSoloPanel = 7;
 	}
 
 	[System.Serializable]
@@ -72,6 +78,14 @@ public partial class GameConfig : ScriptableObject
 		public LayerMask tileInternRayCastLayer;
 		public LayerMask wallRayCastLayer;
 
+	}
+	
+	[System.Serializable]
+	public class Parsing
+	{
+		public SerializableDictionary<string, AParsableScriptableObject> baseParsableScriptablePerType = new();
+		public string componentsSpreadSheetID = "1AeQujaBf6YdyVQRD2gBNWazoosesi46DpAoY5b6hrt8";
+		public SerializableDictionary<EntityEquipmentData.EquipmentType, string> componentGUIDPerPage;
 	}
 
 	public void Initialize ()

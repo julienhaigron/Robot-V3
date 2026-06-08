@@ -9,8 +9,6 @@ public class WeaponEquipmentData : EntityEquipmentData
 
     //public int accuracy;
     public SerializableDictionary<DamageType, int> baseDamages;
-    public DamageCategory damageCategory;
-    //public int range;
     public int visionConeRange;
     public enum DistanceType
 	{
@@ -18,12 +16,13 @@ public class WeaponEquipmentData : EntityEquipmentData
         Mid,
         Long
 	}
-    public SerializableDictionary<DistanceType, float> distanceAccuracyBonus;
+    //public SerializableDictionary<DistanceType, float> distanceAccuracyBonus;
 
     //animation
     public string attackAnimationSuccessId;
     public string attackAnimationFailureId;
     public bool isTwoHanded = false;
+    public float singleAttackAnimationDuration;
 
     public enum DamageType
 	{

@@ -41,12 +41,14 @@ public class Tile : MonoBehaviour
 	private List<EntityStatusEnumID> m_status = new();
 	public List<EntityStatusEnumID> Status => m_status;
 	private Dictionary<AEntityStatus, int> m_remainingDurationToActiveEffects = new();
+	[SerializeField] private Transform m_statusVisualsParent;
+	private Dictionary<EntityStatusEnumID, GameObject> m_statusVisuals = new();
 
 	//Content on tile
 	private TileContent m_currentContent = new() { itemID = -1, entityID = -1 };
 	private TileContent m_nextTurnActionContent = new() { itemID = -1, entityID = -1 };
 	private TileContent[] m_plannedContentsPerTick;
-	
+
 	[Serializable]
 	public class TileContent
 	{
@@ -76,6 +78,19 @@ public class Tile : MonoBehaviour
 		set
 		{
 			m_distance = value;
+		}
+	}
+
+	private bool m_IsVisibleFromSelectedEntity;
+	public bool IsVisibleFromSelectedEntity
+	{
+		get
+		{
+			return m_IsVisibleFromSelectedEntity;
+		}
+		set
+		{
+			m_IsVisibleFromSelectedEntity = value;
 		}
 	}
 
@@ -115,9 +130,9 @@ public class Tile : MonoBehaviour
 	{
 		m_neighbors = new Tile[6];
 		m_plannedContentsPerTick = new TileContent[GameConfig.current.game.actionTokenPerRound];
-		for(int i = 0; i < GameConfig.current.game.actionTokenPerRound; i++)
+		for (int i = 0; i < GameConfig.current.game.actionTokenPerRound; i++)
 		{
-			m_plannedContentsPerTick[i] = new() { entityID = -1, itemID = -1 } ;
+			m_plannedContentsPerTick[i] = new() { entityID = -1, itemID = -1 };
 		}
 		m_currentContent = new() { entityID = -1, itemID = -1 };
 		m_nextTurnActionContent = new() { entityID = -1, itemID = -1 };
@@ -145,11 +160,11 @@ public class Tile : MonoBehaviour
 		UnityEditor.EditorUtility.SetDirty(this);
 	}
 
-	public void SetupWall ( Wall.WallType _wallType, int _orientation)
+	public void SetupWall ( Wall.WallType _wallType, int _orientation )
 	{
 		if (m_wall == null)
 			m_wall = gameObject.AddComponent<Wall>();
-			//m_wall = UnityEditor.Undo.AddComponent<Wall>(gameObject);
+		//m_wall = UnityEditor.Undo.AddComponent<Wall>(gameObject);
 
 		m_wall.LinkWithTile(this);
 		m_wall.SetWallType(_wallType);
@@ -188,7 +203,7 @@ public class Tile : MonoBehaviour
 		_tile.Neighbors[(int)_direction.Opposite()] = this;
 	}
 
-	public bool IsObstacle (bool _isThisTurn)
+	public bool IsObstacle ( bool _isThisTurn )
 	{
 		if (m_groundType == TileGroundType.Wall && m_wall.Health > 0)
 			return true;
@@ -213,7 +228,7 @@ public class Tile : MonoBehaviour
 		return true;
 	}
 
-	public void OnEntityEnter(Entity _enteringEntity, bool _isFromTeleportation )
+	public void OnEntityEnter ( Entity _enteringEntity, bool _isFromTeleportation )
 	{
 		if (m_groundType == TileGroundType.Void && !_enteringEntity.Status.Contains(EntityStatusEnumID.Flying))
 		{
@@ -233,8 +248,11 @@ public class Tile : MonoBehaviour
 
 	private void OnEntitySelected ( int? _entityID )
 	{
-		UI.ResetOutline();
-		m_canInteract = false;
+		if (!_entityID.HasValue)
+		{
+			UI.ResetOutline();
+			m_canInteract = false;
+		}
 	}
 
 	private void OnActionSelected ( AEntityAction _action )
@@ -262,7 +280,7 @@ public class Tile : MonoBehaviour
 		m_plannedContentsPerTick = new TileContent[GameConfig.current.game.actionTokenPerRound];
 		for (int i = 0; i < GameConfig.current.game.actionTokenPerRound; i++)
 		{
-			m_plannedContentsPerTick[i] = new() { entityID = -1, itemID = -1};
+			m_plannedContentsPerTick[i] = new() { entityID = -1, itemID = -1 };
 		}
 	}
 
@@ -305,7 +323,21 @@ public class Tile : MonoBehaviour
 			return m_nextTurnActionContent.Entity;
 	}
 
-	public void SetItem(Item _item, bool _isThisTurn )
+	public bool TryGetEntity ( bool _isThisTurn, out Entity _entity )
+	{
+		if (_isThisTurn)
+		{
+			_entity = m_currentContent.Entity;
+			return m_currentContent.Entity != null;
+		}
+		else
+		{
+			_entity = m_nextTurnActionContent.Entity;
+			return m_nextTurnActionContent.Entity != null;
+		}
+	}
+
+	public void SetItem ( Item _item, bool _isThisTurn )
 	{
 		if (_isThisTurn)
 			m_currentContent.itemID = _item == null ? -1 : _item.ID;
@@ -313,7 +345,7 @@ public class Tile : MonoBehaviour
 			m_nextTurnActionContent.itemID = _item == null ? -1 : _item.ID;
 	}
 
-	public bool TryGetItem(bool _isThisTurn, out Item _item )
+	public bool TryGetItem ( bool _isThisTurn, out Item _item )
 	{
 		if (_isThisTurn)
 		{
@@ -337,13 +369,13 @@ public class Tile : MonoBehaviour
 
 	public bool TryGetPlannedItemAt ( int _time, out Item _item )
 	{
-		_item = m_plannedContentsPerTick[_time].Item;
+		_item = m_plannedContentsPerTick.Length < _time ? m_plannedContentsPerTick[_time].Item : null;
 		return _item != null;
 	}
 
-	public void SetPlannedItemAt(Item _item, int _time )
+	public void SetPlannedItemAt ( Item _item, int _time )
 	{
-		for(int i = _time; i < m_plannedContentsPerTick.Length; i++)
+		for (int i = _time; i < m_plannedContentsPerTick.Length; i++)
 		{
 			if (_item == null && m_plannedContentsPerTick[i].Item != null)
 				m_plannedContentsPerTick[i].Item.Cancel();
@@ -360,9 +392,14 @@ public class Tile : MonoBehaviour
 
 	public void AddStatus ( EntityStatusEnumID _statusID )
 	{
-		GameAssets.current.game.entityStatus[_statusID].ApplyStatus(this);
+		AEntityStatus statusData = GameAssets.current.game.entityStatus[_statusID];
+		statusData.ApplyStatus(this);
 		m_status.Add(_statusID);
 		m_remainingDurationToActiveEffects.Add(GameAssets.current.game.entityStatus[_statusID], GameAssets.current.game.entityStatus[_statusID].duration);
+
+		//spawn visual
+		if (statusData.groundPrefab != null && !m_statusVisuals.ContainsKey(_statusID))
+			m_statusVisuals.Add(_statusID, Instantiate(statusData.groundPrefab, m_statusVisualsParent));
 	}
 
 	public void RemoveStatus ( EntityStatusEnumID _statusID )
@@ -370,6 +407,12 @@ public class Tile : MonoBehaviour
 		GameAssets.current.game.entityStatus[_statusID].RemoveStatus(this);
 		m_status.Remove(_statusID);
 		m_remainingDurationToActiveEffects.Remove(GameAssets.current.game.entityStatus[_statusID]);
+
+		if (m_statusVisuals.ContainsKey(_statusID))
+		{
+			Destroy(m_statusVisuals[_statusID]);
+			m_statusVisuals.Remove(_statusID);
+		}
 	}
 
 	public void SetActiveFOW ( bool _isActive = false, bool _isInstant = false )

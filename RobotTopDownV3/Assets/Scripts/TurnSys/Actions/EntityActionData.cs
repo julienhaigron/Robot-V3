@@ -21,9 +21,10 @@ public class EntityActionData : ScriptableObject
 	[Title("Animation")]
 	public string preparationAnimationKey;
 	public string afterPerformAnimationKey;
+	public SfxId onPerformSingleAttackSFXID;
+	public SfxId onSingleAttackHitSFXID;
 
 	[Title("Condition")]
-
 	public enum ConditionType { Noone, DidNotMoveThisTurn, DidNotAttackThisTurn/*, IsTargetMarked*/ }
 	public ConditionType conditionType = ConditionType.Noone;
 
@@ -80,14 +81,23 @@ public class EntityActionData : ScriptableObject
 		Tile
 	}
 	public TargetType targetType = TargetType.OtherEntity;
+	public enum TrajectoryType
+	{
+		Direct,
+		Mortar,
+		Grenade,
+		Underground,
+		Throw
+	}
+	public TrajectoryType trajectoryType = TrajectoryType.Direct;
 	[ShowIf("@targetType != TargetType.Self")]
 	public int minDistance;
 	[ShowIf("@targetType != TargetType.Self")]
 	public int maxDistance;
 
-	[ShowIf("@!isAoe")]
+	[ShowIf("@!isAoe || (aoeType == AOEType.Circle && targetType != TargetType.Self)")]
 	public int minTargetAmount = 1;
-	[ShowIf("@!isAoe")]
+	[ShowIf("@!isAoe || (aoeType == AOEType.Circle && targetType != TargetType.Self)")]
 	public int maxTargetAmount = 1;
 	#endregion
 
@@ -98,17 +108,24 @@ public class EntityActionData : ScriptableObject
 		Circle,
 		Ray,
 		Cone,
-		Arc
+		Arc,
+		Chain
 	}
 	[ShowIf("@isAoe")]
 	public AOEType aoeType = AOEType.Circle;
 	[ShowIf("@isAoe && aoeType == AOEType.Circle"), Min(1)]
 	public int circleRange = 1;
-	[ShowIf("@isAoe && aoeType == AOEType.Arc"), Min(1)]
-	public int arcRadius = 1;
+	[ShowIf("@isAoe && aoeType == AOEType.Arc")]
+	public ArcType arcType = ArcType.Small;
+	public enum ArcType { Small, Large }
+
 	[ShowIf("@isAoe && aoeType == AOEType.Ray"), Min(1)]
 	public int rayDiameter = 1;
-	
+	[ShowIf("@isAoe && aoeType == AOEType.Chain"), Min(1)]
+	public int maxChainedTarget = 1;
+	[ShowIf("@isAoe && aoeType == AOEType.Chain"), Min(1)]
+	public float damageRecutionOnChain = .1f;
+
 	public enum ConeType
 	{
 		Thin,
@@ -124,7 +141,8 @@ public class EntityActionData : ScriptableObject
 	public WeaponEquipmentData.DamageType[] usedDamageChannels;
 
 	[Title("Effect")]
-	//public AEntityStatus[] appliableStatus;
+	public AEntityStatus[] appliableStatus;
+	public float statusHitProbability;
 	public AEntityPassiveEffect.PassiveEffectContainer[] passiveEffects;
 
 	[Title("Misc")]
@@ -135,10 +153,10 @@ public class EntityActionData : ScriptableObject
 
 	public enum PFCResultType
 	{
+		Failure,
 		FirstWins,
 		SecondWins,
-		Equal,
-		Failure
+		Equal
 	}
 
 	public static PFCResultType PFC ( EntityActionData _firstAction, EntityActionData _secondAction )

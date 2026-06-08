@@ -5,6 +5,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine;
 using System.Collections.Generic;
 using System.Collections;
+using System.Linq;
 using Unity.Netcode;
 #if UNITY_EDITOR
 using UnityEditor;
@@ -12,7 +13,7 @@ using UnityEditor;
 
 
 [CreateAssetMenu(fileName = "GameDatas", menuName = "ScriptableObject/GameDatas")]
-public class GameDatas : ScriptableObject
+public partial class GameDatas : ScriptableObject
 {
 	public static GameDatas current => ApplicationManager.datas;
 	private static string m_defaultSaveFile = "product.sav";
@@ -93,6 +94,25 @@ public class GameDatas : ScriptableObject
 		public SerializableDictionary<CurrencyType, ulong> totalCurrenciesSpent = new SerializableDictionary<CurrencyType, ulong>();
 
 		public SerializableDictionary<string, int> upgradeLevels = new SerializableDictionary<string, int>();
+
+		public DayData dayData = new();
+
+		[Serializable]
+		public class DayData
+		{
+			public List<MissionDataEnumID> missionsIds = new();
+			public List<Equipment> itemsInShop = new();
+
+			public void NewDay ()
+			{
+				//missions
+				missionsIds.Clear();
+				for(int i = 0; i < GameConfig.current.game.missionAmountInSoloPanel; i++)
+				{
+					missionsIds.Add(GameAssets.current.game.missions.Keys.ToList().RandomElement());
+				}
+			}
+		}
 
 		public Equipment AddEquipmentToInventory ( EntityEquipmentData _data )
 		{
@@ -189,6 +209,8 @@ public class GameDatas : ScriptableObject
 					upgradeLevels.Add(upgrade.saveKey, 0);
 				}
 			}
+
+			dayData.NewDay();
 		}
 
 	}

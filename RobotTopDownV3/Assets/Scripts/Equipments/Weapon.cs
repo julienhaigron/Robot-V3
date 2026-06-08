@@ -5,88 +5,210 @@ using DG.Tweening;
 using System;
 using System.Text;
 using System.Linq;
+using Sirenix.OdinInspector;
 
 public class Weapon : MonoBehaviour
 {
 
+	[Title("Dependencies")]
 	protected WeaponEquipmentData m_data;
 	public WeaponEquipmentData Data => m_data;
 
 	[SerializeField] protected List<ParticleSystem> m_onPerformPS;
 
 	protected Entity m_user;
-	private string m_id;
+	protected string m_id;
 	public string ID => m_id;
+	protected Coroutine m_attackCR;
+	protected AttackAction m_lastPerformedAction;
+	protected Action m_onPerformAttackEnd;
+
+	private WaitForSeconds m_singleAttackDuration;
 
 	public virtual void Init ( Entity _user, WeaponEquipmentData _data, bool _isFirstSide )
 	{
 		m_user = _user;
 		m_data = _data;
 		m_id = _data.name + _user.Equipment.Tools.Values.Count;
+
+		m_singleAttackDuration = new WaitForSeconds(_data.singleAttackAnimationDuration);
+	}
+
+	private void OnDestroy ()
+	{
+		if (m_attackCR != null)
+			StopCoroutine(m_attackCR);
 	}
 
 	public virtual void PerformAttack ( AttackAction _attackAction, Action _onPerformEnd )
 	{
-		if (_attackAction.isAttackSuccessfull)
+		m_lastPerformedAction = _attackAction;
+		m_onPerformAttackEnd = _onPerformEnd;
+
+		if (m_attackCR != null)
+			StopCoroutine(m_attackCR);
+
+		m_attackCR = StartCoroutine(PerformAttackCR(_attackAction));
+	}
+	
+	protected virtual IEnumerator PerformAttackCR ( AttackAction _attackAction )
+	{
+		int lastSuccessfullAttackIndex = -1;
+		for (int i = 0; i < _attackAction.attacksInfos.Length; i++)
 		{
-			List<Entity> targetEntities = new();
-			EntityActionData attackData = GameAssets.current.game.entityActionsData[_attackAction.enumID];
+			if (_attackAction.attacksInfos[i].isAttackSuccessfull)
+				lastSuccessfullAttackIndex = i;
+		}
+		OnStartAttacking(_attackAction);
 
-			if (attackData.isAoe)
-			{
-				foreach (Tile tile in m_user.Equipment.GetTilesInAoERange(_attackAction, true))
-				{
-					Entity entityOnTIle = tile.GetEntity(true);
-					if (entityOnTIle != null /*&& !entityOnTIle.IsAlliedTo(m_user.OwnerID)*/)
-						targetEntities.Add(entityOnTIle);
-				}
-			}
-			else
-				targetEntities.Add(GameManager.Instance.GetEntityFromID(_attackAction.targetedEntityID));
+		for (int attackIndex = 0; attackIndex < _attackAction.attacksInfos.Length; attackIndex++)
+		{
+			AttackAction.SingleAttackInfo attackInfo = _attackAction.attacksInfos[attackIndex];
 
-			//apply damage
-			Dictionary<WeaponEquipmentData.DamageType, int> damages = new Dictionary<WeaponEquipmentData.DamageType, int>();
-			for (int i = 0; i < _attackAction.damageTypes.Length; i++)
-			{
-				damages.Add((WeaponEquipmentData.DamageType)_attackAction.damageTypes[i], _attackAction.damages[i]);
-			}
+			OnStartSingleAttack(_attackAction, attackIndex, attackInfo);
 
+			yield return AimTargetCR(_attackAction, attackIndex, attackInfo);
+
+			yield return PerformSingleAttackCR(_attackAction, attackIndex, attackInfo, lastSuccessfullAttackIndex);
+
+			OnEndSingleAttack(_attackAction, attackIndex, attackInfo);
+		}
+
+		yield return OnEndAttackingCR(_attackAction);
+
+		if(lastSuccessfullAttackIndex == -1)
+			EndAttack(_attackAction);
+
+		m_attackCR = null;
+	}
+
+	#region ATTACK FLOW
+
+	protected virtual void OnStartAttacking ( AttackAction _attackAction )
+	{
+			
+	}
+
+	protected virtual void OnStartSingleAttack ( AttackAction _attackAction, int _attackIndex, AttackAction.SingleAttackInfo _attackInfo )
+	{
+
+	}
+
+	protected virtual IEnumerator AimTargetCR ( AttackAction _attackAction, int _attackIndex, AttackAction.SingleAttackInfo _attackInfo )
+	{
+		yield return null;
+	}
+
+	protected virtual IEnumerator PerformSingleAttackCR (AttackAction _attackAction, int _attackIndex, AttackAction.SingleAttackInfo _attackInfo, int _lastSuccessfullAttackIndex )
+	{
+		yield return ApplyAttackCR (_attackAction, _attackIndex, _attackInfo);
+
+		if (_attackIndex == _lastSuccessfullAttackIndex)
+			EndAttack(m_lastPerformedAction);
+	}
+
+	protected virtual void OnEndSingleAttack ( AttackAction _attackAction, int _attackIndex, AttackAction.SingleAttackInfo _attackInfo )
+	{
+
+	}
+
+	protected virtual IEnumerator OnEndAttackingCR ( AttackAction _attackAction )
+	{
+		yield return null;
+	}
+
+	#endregion
+
+	#region DAMAGE LOGIC
+
+	protected virtual IEnumerator ApplyAttackCR ( AttackAction _attackAction, int _attackIndex, AttackAction.SingleAttackInfo _attackInfo )
+	{
+		if (_attackInfo.isAttackSuccessfull && !string.IsNullOrEmpty(m_data.attackAnimationSuccessId))
 			m_user.Skin.OverrideAnimation(m_data.attackAnimationSuccessId);
+		else if (!string.IsNullOrEmpty(m_data.attackAnimationFailureId))
+			m_user.Skin.OverrideAnimation(m_data.attackAnimationFailureId);
 
-			foreach (Entity entity in targetEntities)
+		if (!_attackInfo.isAttackSuccessfull)
+			yield break;
+
+		List<Entity> targets = GetTargets(_attackAction, _attackIndex);
+		Dictionary<WeaponEquipmentData.DamageType, int> damages = BuildDamageDictionary(_attackInfo);
+
+		foreach (ParticleSystem ps in m_onPerformPS)
+			ps.Play();
+		SoundManager.Instance.Play(_attackAction.Data.onPerformSingleAttackSFXID);
+
+		foreach (Entity entity in targets)
+		{
+			int hitAmount = _attackAction.Data.GetHitAmount(_attackAction, m_user, entity);
+
+			for (int i = 0; i < hitAmount; i++)
 			{
-				for (int i = 0; i < _attackAction.Data.GetHitAmount(_attackAction, m_user, entity); i++)
+				entity.Equipment.TakeDamage(new EntityEquipmentPlugin.TakeDamageCallback()
 				{
-					entity.Equipment.TakeDamage(new EntityEquipmentPlugin.TakeDamageCallback() { damages = damages });
+					entityAttacker = m_user,
+					entityTargeted = entity,
+					damages = damages
+				});
 
-
-					//aplly effects here
-					/*for (int i = 0; i < _attackAction.areStatusesSuccess.Length; i++)
-					{
-						if (_attackAction.areStatusesSuccess[i])
-							GameAssets.current.game.entityStatus[(EntityStatusEnumID)_attackAction.statusIds[i]].ApplyStatus(entity);
-					}*/
-
-					foreach (AEntityPassiveEffect.PassiveEffectContainer passiveEffectID in _attackAction.effects)
-					{
-						GameAssets.current.game.entityEffects[passiveEffectID.enumID].ApplyEffect(m_user, entity, passiveEffectID);
-					}
-				}
+				ApplyStatuses(entity, _attackInfo);
+				ApplyEffects(entity);
 			}
+		}
 
-			foreach (ParticleSystem ps in m_onPerformPS)
+		yield return m_singleAttackDuration;
+	}
+
+	protected virtual List<Entity> GetTargets (AttackAction _attackAction, int _attackIndex )
+	{
+		List<Entity> targets = new();
+		EntityActionData attackData = GameAssets.current.game.entityActionsData[_attackAction.enumID];
+
+		if (attackData.isAoe)
+		{
+			foreach (Tile tile in m_user.Equipment.GetTilesInAoERange(_attackAction, GridManager.Instance.Tiles[_attackAction.targetTileIDs[_attackIndex]]))
 			{
-				ps.Play();
+				if (tile.TryGetEntity(true, out Entity entity))
+					targets.Add(entity);
 			}
-
-			DOVirtual.DelayedCall(GameConfig.current.game.actionDuration, () => _onPerformEnd?.Invoke());
 		}
 		else
+			targets.Add(GameManager.Instance.GetEntityFromID(_attackAction.targetedEntityIDs[_attackIndex]));
+
+		return targets;
+	}
+
+	protected virtual Dictionary<WeaponEquipmentData.DamageType, int> BuildDamageDictionary ( AttackAction.SingleAttackInfo _attackInfo )
+	{
+		Dictionary<WeaponEquipmentData.DamageType, int> damages = new();
+
+		for (int i = 0; i < _attackInfo.damageTypes.Length; i++)
+			damages.Add( (WeaponEquipmentData.DamageType) _attackInfo.damageTypes[i], _attackInfo.damages[i]);
+
+		return damages;
+	}
+
+	protected virtual void ApplyStatuses ( Entity _target, AttackAction.SingleAttackInfo _attackInfo )
+	{
+		for (int i = 0; i < _attackInfo.areStatusesSuccess.Length; i++)
 		{
-			//show failure
-			m_user.Skin.OverrideAnimation(m_data.attackAnimationFailureId);
-			DOVirtual.DelayedCall(GameConfig.current.game.actionDuration, () => _onPerformEnd?.Invoke());
+			if (_attackInfo.areStatusesSuccess[i])
+				_target.AddStatus((EntityStatusEnumID)_attackInfo.statusIds[i]);
 		}
+	}
+
+	protected virtual void ApplyEffects ( Entity _target )
+	{
+		foreach (AEntityPassiveEffect.PassiveEffectContainer passiveEffectID in m_lastPerformedAction.effects)
+			GameAssets.current.game.entityEffects[passiveEffectID.enumID].ApplyEffect(m_user, _target, passiveEffectID);
+
+	}
+
+	#endregion
+
+	protected virtual void EndAttack ( AttackAction _attackAction )
+	{
+		m_onPerformAttackEnd?.Invoke();
 	}
 
 	public virtual Dictionary<WeaponEquipmentData.DamageType, int> GetDamages ( Entity _user, Entity _target, AEntityAction _action, EntityActionData.PFCResultType _pfcResultType )
@@ -106,34 +228,36 @@ public class Weapon : MonoBehaviour
 
 			int baseDamage = pair.Value;
 
-			float actionFactor =
-				_action.Data.damageFactor +
-				_action.Data.GetDamageFactorAmountForType(
+			float actionFactor = _action.Data.damageFactor + _action.Data.GetDamageFactorAmountForType(
 					_action,
 					_user,
 					_target,
 					pair.Key
 				);
 
-			float typeBuff =
-				(_user.Equipment.ApplyedDamageTypeBuffs.ContainsKey(pair.Key)
+			EntityEquipmentData.StatBonus.StatType damageTypeStatType = GameConfig.current.game.statTypePerDamageType[pair.Key];
+			EntityEquipmentData.StatBonus.StatType resistanceTypeStatType = GameConfig.current.game.statTypePerDamageResistanceType[pair.Key];
+
+			float typeBuff = _user.GetAdditionaryStatBonus(damageTypeStatType, _action)
+				 + (_user.Equipment.ApplyedDamageTypeBuffs.ContainsKey(pair.Key)
 					? _user.Equipment.ApplyedDamageTypeBuffs[pair.Key]
 					: 0f)
-				-
-				(_target.Equipment.ApplyedDamageTypeResistance.ContainsKey(pair.Key)
+				- _target.GetAdditionaryStatBonus(resistanceTypeStatType, null)
+				- (_target.Equipment.ApplyedDamageTypeResistance.ContainsKey(pair.Key)
 					? _target.Equipment.ApplyedDamageTypeResistance[pair.Key]
 					: 0f);
-
 			typeBuff = Mathf.Max(typeBuff, -1f);
 
-			var category = GameConfig.current.game.damageCateforyPerDamageType[pair.Key];
+			var category = GameConfig.current.game.damageCategoryPerDamageType[pair.Key];
+			EntityEquipmentData.StatBonus.StatType damageCategoryStatType = GameConfig.current.game.statTypePerDamageCategory[category];
+			EntityEquipmentData.StatBonus.StatType resistanceCategoryStatType = GameConfig.current.game.statTypePerDamageCategory[category];
 
-			float categoryBuff =
-				(_user.Equipment.ApplyedDamageCategoryBuffs.ContainsKey(category)
+			float categoryBuff = _user.GetAdditionaryStatBonus(damageCategoryStatType, _action)
+				+ (_user.Equipment.ApplyedDamageCategoryBuffs.ContainsKey(category)
 					? _user.Equipment.ApplyedDamageCategoryBuffs[category]
 					: 0f)
-				-
-				(_target.Equipment.ApplyedDamageTypeCategoryResitance.ContainsKey(category)
+				- _target.GetAdditionaryStatBonus(resistanceCategoryStatType, null)
+				- (_target.Equipment.ApplyedDamageTypeCategoryResitance.ContainsKey(category)
 					? _target.Equipment.ApplyedDamageTypeCategoryResitance[category]
 					: 0f);
 
@@ -141,22 +265,22 @@ public class Weapon : MonoBehaviour
 
 			float generalDamage =
 				Mathf.Max(
-					_user.Equipment.GeneralDamageBuff
-					- _target.Equipment.GeneralDamageResistance,
+					_user.Equipment.GeneralDamageBuff + _user.GetAdditionaryStatBonus(EntityEquipmentData.StatBonus.StatType.GeneralDamageBonus, _action)
+					- _target.Equipment.GeneralDamageResistance - _target.GetAdditionaryStatBonus(EntityEquipmentData.StatBonus.StatType.GeneralDamageResistance, null),
 					-1f
 				);
 
 			float flankBonus =
 				Mathf.Max(
 					flankMod
-					+ _user.Data.GetStatBonusFromAll(EntityEquipmentData.StatBonus.StatType.FlankBonus)
-					- _target.Data.GetStatBonusFromAll(EntityEquipmentData.StatBonus.StatType.FlankResistance),
+					+ _user.Data.GetStatBonusFromAll(EntityEquipmentData.StatBonus.StatType.FlankBonus) + _user.GetAdditionaryStatBonus(EntityEquipmentData.StatBonus.StatType.FlankBonus, _action)
+					- _target.Data.GetStatBonusFromAll(EntityEquipmentData.StatBonus.StatType.FlankResistance) - _target.GetAdditionaryStatBonus(EntityEquipmentData.StatBonus.StatType.FlankResistance, null),
 					-1f
 				);
 
 			float finalBonus =
 				Mathf.Max(
-					_user.Data.GetStatBonusFromAll(EntityEquipmentData.StatBonus.StatType.FinalDamageBonus),
+					_user.Data.GetStatBonusFromAll(EntityEquipmentData.StatBonus.StatType.FinalDamageBonus) + _user.GetAdditionaryStatBonus(EntityEquipmentData.StatBonus.StatType.FinalDamageBonus, _action),
 					-1f
 				);
 
@@ -189,7 +313,7 @@ public class Weapon : MonoBehaviour
 		LogConsole.LogDetails details = new("damage_" + LogConsole.Instance.LogsDetails.Keys.Count, "Damage Details", detailsDescription);
 		LogConsole.AddLog(_target.ID + " takes damages from " + _user.ID, LogConsole.LogEventType.AttackResolution, details);
 
-
 		return damages;
 	}
+
 }

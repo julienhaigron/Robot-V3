@@ -185,16 +185,17 @@ public class PlayerController : Singleton<PlayerController>
 				else if (m_selectedEntity == null)
 				{
 					m_selectedEntity = _tile.GetEntity(true);
-					onEntitySelected?.Invoke(m_selectedEntity == null ? null : m_selectedEntity.ID);
-
 					if (m_selectedEntity != null)
+					{
+						onEntitySelected?.Invoke(m_selectedEntity.ID);
 						m_selectedEntity.Select();
+					}
 					return;
 				}
 				else
 				{
 					m_selectedEntity.Deselect();
-					onEntitySelected?.Invoke(null);
+					//onEntitySelected?.Invoke(null);
 					m_selectedEntity = _tile.GetEntity(true);
 					onEntitySelected?.Invoke(m_selectedEntity.ID);
 					m_selectedEntity.Select();
@@ -298,7 +299,7 @@ public class PlayerController : Singleton<PlayerController>
 		bool isTargetValid = TurnManager.Instance.currentPhase == TurnManager.TurnPhase.Recording && _tile.CanInteract;
 		int distanceToTarget = isTargetValid ? _tile.Distance : 0;
 		int specificTokenCount = didContainTile ? totalCostSpend : (GameConfig.current.game.actionTokenPerRound - TurnManager.Instance.RemainingActionToken[m_selectedEntity.ID]) + distanceToTarget;
-		TurnManager.Instance.RefreshActionDisplay(m_selectedEntity.ID, specificTokenCount);
+		TurnManager.Instance.RefreshActionDisplay(m_selectedEntity.ID, false, specificTokenCount);
 		if (isTargetValid)
 		{
 			if(TurnManager.Instance.CurrentActionSelected.Data.codeType == EntityActionData.ActionCodeType.MoveThenAttack || TurnManager.Instance.CurrentActionSelected.Data.codeType == EntityActionData.ActionCodeType.TargetTileMove)
@@ -324,7 +325,17 @@ public class PlayerController : Singleton<PlayerController>
 		m_selectedEntity = null;
 		ClearActionOnTileDisplay();
 		ClearGhostActionOnTileDisplay();
-		ClearGhostEntitiesAndItems();
+
+		foreach (GhostEntity ghost in m_ghostEntities.Values)
+		{
+			Destroy(ghost.gameObject);
+		}
+		m_ghostEntities.Clear();
+		foreach (GhostItem ghost in m_ghostItems.Values)
+		{
+			Destroy(ghost.gameObject);
+		}
+		m_ghostItems.Clear();
 	}
 
 	public void AddActionDisplay ( ActionDisplayOnTile _display, int _performingEntityID, bool _isTemp )

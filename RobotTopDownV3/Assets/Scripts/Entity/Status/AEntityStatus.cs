@@ -5,9 +5,9 @@ using System;
 public abstract class AEntityStatus : ScriptableEnum<EntityStatusEnumID>
 {
     public int duration = 1;
-    [Range(0, 100)] public float hitProbability = 50f;
 
     public Sprite icon;
+    public GameObject groundPrefab;
 
     //called each action tick
     public virtual void ApplyStatusEffect ( int _remainingDuration, Entity _entity )

@@ -21,12 +21,15 @@ MonoBehaviour:
   tokenDuration: 1
   preparationAnimationKey: 
   afterPerformAnimationKey: 
+  onPerformSingleAttackSFXID: 8
+  onSingleAttackHitSFXID: 5
   conditionType: 0
   previousActionAttackModificator: 0
   type: 0
   subType: 1
   codeType: 1
   targetType: 3
+  trajectoryType: 1
   minDistance: 5
   maxDistance: 10
   minTargetAmount: 1
@@ -34,12 +37,16 @@ MonoBehaviour:
   isAoe: 1
   aoeType: 0
   circleRange: 1
-  arcRadius: 1
+  arcType: 0
   rayDiameter: 1
+  maxChainedTarget: 1
+  damageRecutionOnChain: 0.1
   coneType: 1
   hitAmount: 1
   damageFactor: 1.2
   usedDamageChannels: 0200000005000000
+  appliableStatus: []
+  statusHitProbability: 0
   passiveEffects:
   - enumID: 9
     conditionType: 1

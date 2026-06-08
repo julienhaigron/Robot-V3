@@ -1,15 +1,19 @@
 using UnityEngine;
 using System;
 using System.Collections.Generic;
+using DG.Tweening;
 
 public class Projectile : PoolElement
 {
 	[SerializeField] protected Rigidbody m_rb;
 	[SerializeField] protected TrailRenderer m_trail;
+	[SerializeField] private ParticleSystem m_onHitPS;
 
 	protected ProjectileData m_projectileData;
 	private bool m_isInit;
 	private Action<Entity> m_onHitEntity;
+	private Action m_onDespawnNoEntityHit;
+	private bool m_didHitSomething = false;
 
 	private void Reset ()
 	{
@@ -54,30 +58,41 @@ public class Projectile : PoolElement
 		if (_entity == m_projectileData.owner)
 			return;
 
+		m_didHitSomething = true;
+		
 		m_onHitEntity?.Invoke(_entity);
-		Discard();
-		/*if (_entity.TryGetModule(out DestructibleEM destructibleEM) && destructibleEM.DestroyBulletOnHit)
+
+		SoundManager.Instance.Play(m_projectileData.onHitSFXID);
+		if (m_onHitPS != null)
 		{
+			m_onHitPS.Play();
+			DiscardIn(m_onHitPS.main.duration);
+		}
+		else
 			Discard();
-		}*/
 	}
 
 	public virtual void OnCollideWithOther ( int _collidedLayer, Collider _other )
 	{
-		//spawn bullet impact
-		//GameAssets.current.effects.punchLightFx.Get(transform.position).transform.localScale = Vector3.one * .5f;
 		if(_collidedLayer == 12 
 			&& _other.transform.TryGetComponent(out WallSelector selector) && selector.LinkedWall != null)
 		{
-			//TODO : not flat damage
 			Dictionary<WeaponEquipmentData.DamageType, int> damages = new();
 			damages.Add(WeaponEquipmentData.DamageType.Contendant, 1);
 
 			selector.LinkedWall.TakeDamage(damages);
 
-			Discard();
-		}
+			//m_didHitSomething = true;
 
+			SoundManager.Instance.Play(m_projectileData.onHitSFXID);
+			if (m_onHitPS != null)
+			{
+				m_onHitPS.Play();
+				DiscardIn(m_onHitPS.main.duration);
+			}
+			else
+				Discard();
+		}
 	}
 
 	public virtual void SetProjectileData ( ProjectileData _projectileData )
@@ -87,21 +102,144 @@ public class Projectile : PoolElement
 		m_isInit = true;
 	}
 
-	public virtual void Launch ( Action<Entity> _onHitEntity )
+	public void SetProjectileDataAndLaunch ( ProjectileData _projectileData, Action<Entity> _onHitEntity, Action _onProjectileDespawn, bool _hasTrajectoryControl )
 	{
+		SetProjectileData(_projectileData);
+
+		if (_hasTrajectoryControl)
+		{
+			LaunchMortar(_onHitEntity, _onProjectileDespawn);
+			return;
+		}
+
+		switch (_projectileData.attackData.trajectoryType)
+		{
+			case EntityActionData.TrajectoryType.Direct:
+				Launch(_onHitEntity, _onProjectileDespawn);
+				break;
+
+			case EntityActionData.TrajectoryType.Mortar:
+				LaunchMortar(_onHitEntity, _onProjectileDespawn);
+				break;
+
+			case EntityActionData.TrajectoryType.Grenade:
+				LaunchGrenade(_onHitEntity, _onProjectileDespawn);
+				break;
+
+			case EntityActionData.TrajectoryType.Throw:
+				LaunchThrow(_onHitEntity, _onProjectileDespawn);
+				break;
+
+			case EntityActionData.TrajectoryType.Underground:
+				LaunchUnderground(_onHitEntity, _onProjectileDespawn);
+				break;
+		}
+
+	}
+
+	#region Launch
+
+	public virtual void Launch ( Action<Entity> _onHitEntity, Action _onProjectileDespawn )
+	{
+		m_didHitSomething = false;
 		m_rb.isKinematic = false;
 		m_rb.AddForce((transform.forward * m_projectileData.speed.x) + (transform.up * m_projectileData.speed.y), ForceMode.VelocityChange);
 		m_onHitEntity = _onHitEntity;
+		m_onDespawnNoEntityHit = _onProjectileDespawn;
 	}
 
-	public void SetProjectileDataAndLaunch ( ProjectileData _projectileData, Action<Entity> _onHitEntity )
+	private void LaunchMortar ( Action<Entity> _onHitEntity, Action _onProjectileDespawn )
 	{
-		SetProjectileData(_projectileData);
-		Launch(_onHitEntity);
+		m_didHitSomething = false;
+		m_rb.isKinematic = false;
+
+		Vector3 start = transform.position;
+		Vector3 target = m_projectileData.destination;
+
+		float gravity = Mathf.Abs(Physics.gravity.y);
+		float verticalVelocity = m_projectileData.speed.y;
+		Vector3 planarDisplacement = new Vector3( target.x - start.x, 0, target.z - start.z);
+		float time = (verticalVelocity + Mathf.Sqrt( verticalVelocity * verticalVelocity + 2 * gravity * (start.y - target.y))) / gravity;
+		Vector3 planarVelocity = planarDisplacement / time;
+
+		m_rb.linearVelocity = planarVelocity + Vector3.up * verticalVelocity;
+		m_onHitEntity = _onHitEntity;
+		m_onDespawnNoEntityHit = _onProjectileDespawn;
+	}
+
+	private void LaunchGrenade ( Action<Entity> _onHitEntity, Action _onProjectileDespawn )
+	{
+		m_didHitSomething = false;
+		m_rb.isKinematic = false;
+
+		Vector3 start = transform.position;
+		Vector3 target = m_projectileData.destination;
+
+		float gravity = Mathf.Abs(Physics.gravity.y);
+		Vector3 displacement = target - start;
+		Vector3 displacementXZ = new Vector3(displacement.x, 0f, displacement.z);
+		float time = displacementXZ.magnitude / Mathf.Max(1f, m_projectileData.speed.x);
+		Vector3 velocityXZ = displacementXZ / time;
+		float velocityY = (displacement.y + 0.5f * gravity * time * time) / time;
+
+		m_rb.linearVelocity = velocityXZ + Vector3.up * velocityY;
+		m_onHitEntity = _onHitEntity;
+		m_onDespawnNoEntityHit = _onProjectileDespawn;
+	}
+
+	private void LaunchThrow ( Action<Entity> _onHitEntity, Action _onProjectileDespawn )
+	{
+		m_didHitSomething = false;
+		m_rb.isKinematic = false;
+
+		Vector3 dir = (m_projectileData.destination - transform.position).normalized;
+		m_rb.linearVelocity = dir * m_projectileData.speed.x + Vector3.up * m_projectileData.speed.y;
+
+		m_onHitEntity = _onHitEntity;
+		m_onDespawnNoEntityHit = _onProjectileDespawn;
+	}
+
+	private void LaunchUnderground ( Action<Entity> _onHitEntity, Action _onProjectileDespawn )
+	{
+		m_didHitSomething = false;
+		m_rb.isKinematic = true;
+		m_onHitEntity = _onHitEntity;
+		m_onDespawnNoEntityHit = _onProjectileDespawn;
+
+		Vector3 destination = m_projectileData.destination;
+		float duration = Vector3.Distance(transform.position, destination) / m_projectileData.speed.x;
+
+		transform.LookAt(destination);
+		transform.DOMove(destination, duration).SetEase(Ease.Linear).OnComplete(() =>
+		{
+			m_onDespawnNoEntityHit?.Invoke();
+			Discard();
+		});
+	}
+
+	#endregion
+
+	public void DiscardIn(float _sec )
+	{
+		Deactivate();
+
+		DOVirtual.DelayedCall(_sec, Discard);
 	}
 
 	public override void Discard ()
 	{
+		Deactivate();
+
+		base.Discard();
+	}
+
+	private void Deactivate ()
+	{
+		if (!m_didHitSomething)
+			m_onDespawnNoEntityHit?.Invoke();
+		m_onDespawnNoEntityHit = null;
+		m_onHitEntity = null;
+
 		if (!m_rb.isKinematic)
 		{
 			m_rb.linearVelocity = Vector3.zero;
@@ -112,7 +250,6 @@ public class Projectile : PoolElement
 			m_trail.emitting = false;
 
 		m_isInit = false;
-		base.Discard();
 	}
 }
 
@@ -121,6 +258,8 @@ public struct ProjectileData
 {
 	public Entity owner;
 	public Vector2 speed;
+	public Vector3 destination;
+	public EntityActionData attackData;
 	public WeaponEquipmentData weapon;
-	//public float gravityMultiplier;
+	public SfxId onHitSFXID;
 }

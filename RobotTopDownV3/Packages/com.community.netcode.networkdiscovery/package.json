@@ -1,0 +1,15 @@
+{
+  "name": "com.community.netcode.networkdiscovery",
+  "displayName": "Netcode for GameObjects Community Extensions - Network Discovery",
+  "version": "1.1.2",
+  "unity": "2019.4",
+  "description": "The Netcode for GameObjects Community Extensions package is a package containing extensions to Netcode for GameObjects. This is a fork of the Network Discovery Extension",
+  "author": "",
+  "dependencies": {
+    "com.unity.netcode.gameobjects": "1.7.0"
+  },
+  "publishConfig": {
+    "registry": "https://package.openupm.com"
+  },
+  "_fingerprint": "bd8ac9c1a8f8d5b4926ca6f6ed7d75b34374aa2c"
+}

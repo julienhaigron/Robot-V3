@@ -15,6 +15,7 @@ public class BaseButton : MonoBehaviour
 
     private void Start()
     {
+        m_isVisible = gameObject.activeSelf;
         m_button.onClick.AddListener(OnClick);
     }
 

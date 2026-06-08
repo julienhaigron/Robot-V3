@@ -11,12 +11,14 @@ public class FrameEquipmentData : EntityEquipmentData
 {
 	public Entity prefab;
 
-	[BoxGroup(GroupID = "Stat")]
+	[BoxGroup(GroupID = "Stat"), Parsing("HP")]
 	public int maxHealth;
 	/*[BoxGroup(GroupID = "Stat")]
 	public int armSlotAvailable = 2;*/
-	[BoxGroup(GroupID = "Stat")]
-	public int auxiliarSlotAvailable = 2;
+	[BoxGroup(GroupID = "Stat"), Parsing("Armouring Slot")]
+	public int armoringSlotAvailable = 2;
+	[BoxGroup(GroupID = "Stat"), Parsing("Occultor Slot")]
+	public int occultorSlotAvailable = 2;
 	[BoxGroup(GroupID = "Stat")]
 	public StatBonus[] statBonuses;
 
@@ -134,7 +136,7 @@ public class EntitySavedData : INetworkSerializable
 				}
 			}
 		}
-		if (_chipsets && chipsets != null)
+		/*if (_chipsets && chipsets != null)
 		{
 			foreach (GameDatas.PlayerSave.Equipment container in chipsets)
 			{
@@ -147,7 +149,7 @@ public class EntitySavedData : INetworkSerializable
 					}
 				}
 			}
-		}
+		}*/
 
 		return totalBonus;
 	}
@@ -222,7 +224,7 @@ public class EntitySavedData : INetworkSerializable
 				}
 			}
 		}
-		foreach (GameDatas.PlayerSave.Equipment container in chipsets)
+		/*foreach (GameDatas.PlayerSave.Equipment container in chipsets)
 		{
 			if (GameAssets.current.equipments[container.dataID] is ChipsetEquipmentData chipset)
 			{
@@ -234,7 +236,7 @@ public class EntitySavedData : INetworkSerializable
 						result += statBonus.value;
 				}
 			}
-		}
+		}*/
 		return result;
 	}
 
@@ -259,7 +261,7 @@ public class EntitySavedData : INetworkSerializable
 				}
 			}
 		}
-		foreach (GameDatas.PlayerSave.Equipment container in chipsets)
+		/*foreach (GameDatas.PlayerSave.Equipment container in chipsets)
 		{
 			if (GameAssets.current.equipments[container.dataID] is ChipsetEquipmentData chipset)
 			{
@@ -271,7 +273,7 @@ public class EntitySavedData : INetworkSerializable
 						result += statBonus.value;
 				}
 			}
-		}
+		}*/
 		return result;
 
 	}

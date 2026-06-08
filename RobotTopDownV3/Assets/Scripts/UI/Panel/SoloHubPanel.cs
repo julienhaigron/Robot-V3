@@ -44,8 +44,7 @@ public class SoloHubPanel : AUIPanel
 	
 	private void OnClickMissionBtn ()
 	{
-		LevelData rndLvl = GameManager.Instance.GetRandomLevel();
-		GameManager.Instance.SetupLevel(rndLvl);
+		UIManager.Instance.OpenPanel<MissionPanel>();
 	}
 	
 	private void OnClickReturnBtn ()

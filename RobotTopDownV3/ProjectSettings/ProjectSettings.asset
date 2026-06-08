@@ -861,9 +861,11 @@ PlayerSettings:
     EmbeddedLinux: DOTWEEN
     GameCoreScarlett: DOTWEEN
     GameCoreXboxOne: DOTWEEN
+    Kepler: DOTWEEN
     LinuxHeadlessSimulation: DOTWEEN
     Lumin: DOTWEEN
     Nintendo Switch: DOTWEEN
+    Nintendo Switch 2: DOTWEEN
     PS4: DOTWEEN
     PS5: DOTWEEN
     QNX: DOTWEEN
@@ -988,11 +990,11 @@ PlayerSettings:
   captureStartupLogs: {}
   activeInputHandler: 2
   windowsGamepadBackendHint: 0
-  cloudProjectId: 
+  cloudProjectId: ea0802e8-315a-48ca-85b9-66ee39ac5e77
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
-  projectName: 
-  organizationId: 
+  projectName: RobotTopDownV3
+  organizationId: unity_hc745kfrzahweq
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0
   hmiLoadingImage: {fileID: 0}

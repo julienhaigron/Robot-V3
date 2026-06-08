@@ -1,4 +1,4 @@
-//GENERATED 2
+//GENERATED 4
 public enum CurrencyType
 {
 	Unknown,

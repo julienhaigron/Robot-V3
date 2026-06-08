@@ -13,5 +13,11 @@ MonoBehaviour:
   m_Name: AmplificateurDefensif
   m_EditorClassIdentifier: RTD::ApplyStatusItemData
   itemPrefab: {fileID: 3511140373742308496, guid: 77c47a297043c8447af4208d7f6c8b3b, type: 3}
+  type: 1
   range: 7
   givenStatus: {fileID: 11400000, guid: 3b43fd75a7bed1d409bae48e0a88fa7c, type: 2}
+  givenStatBonus:
+    statBonus:
+      type: 22
+      value: 0.1
+    duration: 1

@@ -23,6 +23,7 @@ public sealed class InGamePanel : AUIPanel
 	[SerializeField] private float m_consoleCollapsedHeight = 80f;
 	[SerializeField] private float m_duration = 0.3f;
 	[SerializeField] private List<LogConsole.LogEventType> m_visibleEventType;
+	[SerializeField] private BaseButton m_validateTargetsBtn;
 
 	private bool m_isConsoleExpanded = true;
 	private Tween m_currentToggleConsoleBtnTween;
@@ -34,20 +35,28 @@ public sealed class InGamePanel : AUIPanel
 		TurnManager.onStartInputPhase += OnStartInputPhase;
 		TurnManager.onEndInputPhase += OnEndInputPhase;
 		TurnManager.onEndLevel += OnEndLevel;
+		TurnManager.onActionSelected += OnActionSelected;
+		PlayerController.onEntitySelected += OnEntitySelected;
 		m_endPhaseButton.onClick += OnClickEndPhaseBtn;
 
 		LogConsole.onLogAdded += OnLogAdded;
 		m_toggleDisplayConsoleBtn.onClick += OnClickToggleDisplayConsoleBtn;
+		m_validateTargetsBtn.onClick += OnClickValidateTargets;
+
+		m_validateTargetsBtn.SetVisible(false, true);
 	}
 
 	private void OnDestroy ()
 	{
 		TurnManager.onStartInputPhase = OnStartInputPhase;
 		TurnManager.onEndInputPhase = OnEndInputPhase;
+		TurnManager.onActionSelected -= OnActionSelected;
+		PlayerController.onEntitySelected -= OnEntitySelected;
 		m_endPhaseButton.onClick -= OnClickEndPhaseBtn;
 		TurnManager.onEndLevel -= OnEndLevel;
 		m_toggleDisplayConsoleBtn.onClick -= OnClickToggleDisplayConsoleBtn;
 		LogConsole.onLogAdded -= OnLogAdded;
+		m_validateTargetsBtn.onClick -= OnClickValidateTargets;
 	}
 
 	public void Init () //add param
@@ -121,6 +130,17 @@ public sealed class InGamePanel : AUIPanel
 		m_consoleTMP.text = "";
 	}
 
+	private void OnActionSelected (AEntityAction _selectedAction)
+	{
+		m_validateTargetsBtn.SetVisible(_selectedAction != null && _selectedAction.Data.GetMaxTargetAmount(_selectedAction, PlayerController.Instance.SelectedEntity, null) > 1, true);
+	}
+
+	private void OnEntitySelected ( int? _entityID )
+	{
+		AEntityAction selectedAction = TurnManager.Instance.CurrentActionSelected;
+		m_validateTargetsBtn.SetVisible(_entityID.HasValue && selectedAction != null && selectedAction.Data.GetMaxTargetAmount(selectedAction, PlayerController.Instance.SelectedEntity, null) > 1, true);
+	}
+
 	private void OnClickToggleDisplayConsoleBtn ()
 	{
 		m_isConsoleExpanded = !m_isConsoleExpanded;
@@ -151,10 +171,10 @@ public sealed class InGamePanel : AUIPanel
 		{
 			if (entity.Equipment.IsDead)
 				continue;
-
-			for (int i = TurnManager.Instance.RemainingActionToken[entity.ID]; i < GameConfig.current.game.actionTokenPerRound; i++)
+			int remainingToken = TurnManager.Instance.RemainingActionToken[entity.ID];
+			for (int i = 0; i < remainingToken; i++)
 			{
-				TurnManager.Instance.AddAction(entity.ID, EntityActionEnumID.Wait, Entity.EntityState.Guarding, null);
+				TurnManager.Instance.AddAction(entity.ID, EntityActionEnumID.Wait, Entity.EntityState.Patroling, null);
 			}
 		}
 
@@ -177,6 +197,17 @@ public sealed class InGamePanel : AUIPanel
 
 			OnlinePlayerInstance.Self.EndInputPhaseServerRPC(OnlinePlayerInstance.Self.OwnerClientId, actionsToSend.ToArray());
 		}
+	}
+
+	private void OnClickValidateTargets ()
+	{
+		if (TurnManager.Instance.CurrentActionSelected == null)
+			return;
+
+		int performingEntityID = TurnManager.Instance.CurrentActionSelected.performingEntityID;
+		TurnManager.Instance.AddAction(performingEntityID, TurnManager.Instance.CurrentActionSelected, TurnManager.Instance.CurrentStateTypeSelected);
+
+		TurnManager.Instance.RefreshActionDisplay(performingEntityID, true);
 	}
 
 	#endregion

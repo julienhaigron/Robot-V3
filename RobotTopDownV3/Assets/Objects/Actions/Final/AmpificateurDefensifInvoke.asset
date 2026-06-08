@@ -21,12 +21,15 @@ MonoBehaviour:
   tokenDuration: 1
   preparationAnimationKey: 
   afterPerformAnimationKey: 
+  onPerformSingleAttackSFXID: 0
+  onSingleAttackHitSFXID: 0
   conditionType: 0
   previousActionAttackModificator: 0
   type: 4
   subType: 7
-  codeType: 6
+  codeType: 10
   targetType: 3
+  trajectoryType: 0
   minDistance: 1
   maxDistance: 1
   minTargetAmount: 1
@@ -36,12 +39,16 @@ MonoBehaviour:
   circleRange: 1
   arcRadius: 1
   rayDiameter: 1
+  maxChainedTarget: 1
+  damageRecutionOnChain: 0.1
   coneType: 1
   hitAmount: 1
   damageFactor: 1
   usedDamageChannels: 02000000
+  appliableStatus: []
+  statusHitProbability: 0
   passiveEffects: []
   invocatedEntity: {fileID: 0}
-  invocatedItem: {fileID: 0}
+  invocatedItem: {fileID: 11400000, guid: 6b0d259bf1ad80745ba803916e56e9ec, type: 2}
   invocationCountLimit: 1
   movementSpeed: 0
