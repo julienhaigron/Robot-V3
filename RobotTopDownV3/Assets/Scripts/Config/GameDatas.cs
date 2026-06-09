@@ -96,6 +96,13 @@ public partial class GameDatas : ScriptableObject
 		public SerializableDictionary<string, int> upgradeLevels = new SerializableDictionary<string, int>();
 
 		public DayData dayData = new();
+		public CycleData cycleData = new();
+		public int cycleCount = 0;
+		public int dayCount = 0;
+
+		//tutos
+		public bool IsInTuto => cycleCount == 0;
+		public bool[] tutoProgression = { false, false, false, false, false };
 
 		[Serializable]
 		public class DayData
@@ -105,12 +112,28 @@ public partial class GameDatas : ScriptableObject
 
 			public void NewDay ()
 			{
+				current.currentPlayerSave.dayCount++;
+				if (current.currentPlayerSave.dayCount >= GameConfig.current.game.nbOfDayInCycle)
+					current.currentPlayerSave.cycleData.NewCycle();
+
 				//missions
 				missionsIds.Clear();
 				for(int i = 0; i < GameConfig.current.game.missionAmountInSoloPanel; i++)
 				{
 					missionsIds.Add(GameAssets.current.game.missions.Keys.ToList().RandomElement());
 				}
+			}
+
+		}
+
+		[Serializable]
+		public class CycleData
+		{
+
+			public void NewCycle ()
+			{
+				current.currentPlayerSave.cycleCount++;
+
 			}
 		}
 
@@ -209,8 +232,6 @@ public partial class GameDatas : ScriptableObject
 					upgradeLevels.Add(upgrade.saveKey, 0);
 				}
 			}
-
-			dayData.NewDay();
 		}
 
 	}

@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 216642337410610055}
   - component: {fileID: 1173951268231750926}
   - component: {fileID: 1155012189743850741}
+  - component: {fileID: 6791726630538330527}
   m_Layer: 5
   m_Name: TopLayer
   m_TagString: Untagged
@@ -75,6 +76,18 @@ MonoBehaviour:
   m_dialogueImg: {fileID: 4974535075059911252}
   m_shipDialogueButton: {fileID: 7052321130854980224}
   m_charactersPerSecond: 30
+--- !u!114 &6791726630538330527
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8364345404157484499}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b45006602da968a4185587837b1dd109, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: RTD::FTUEManager
 --- !u!1001 &2198895286629886590
 PrefabInstance:
   m_ObjectHideFlags: 0

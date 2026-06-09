@@ -609,6 +609,7 @@ GameObject:
   - component: {fileID: 2803097033680005190}
   - component: {fileID: 8023675843807254108}
   - component: {fileID: 4885885894120997569}
+  - component: {fileID: 5995867978105048443}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -950,6 +951,18 @@ MonoBehaviour:
   m_FirstSelected: {fileID: 0}
   m_sendNavigationEvents: 1
   m_DragThreshold: 10
+--- !u!114 &5995867978105048443
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8375078075185135005}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9523266e86a4e604291e37c8fe622c6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: RTD::TaskManager
 --- !u!1 &8827588866973903840
 GameObject:
   m_ObjectHideFlags: 0

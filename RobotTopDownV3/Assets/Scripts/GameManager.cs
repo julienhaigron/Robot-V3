@@ -7,6 +7,8 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : SingletonPersistant<GameManager>
 {
+	public static Action onStartLevel;
+
 	[SerializeField] private Canvas m_fogCanvas;
 
 	[SerializeField] private EntityAnchor[] m_playersEntityAnchor;
@@ -19,6 +21,7 @@ public class GameManager : SingletonPersistant<GameManager>
 
 	[Title("Offline")]
 	[SerializeField] private MissionData m_currentMission;
+	public MissionData CurrentMission => m_currentMission;
 	/*[SerializeField] private List<EntitySavedData> m_playerEntityDatas;
 	[SerializeField] private List<EntitySavedData> m_ennemiEntityDatas;*/
 
@@ -144,6 +147,8 @@ public class GameManager : SingletonPersistant<GameManager>
 			m_playersEntityAnchor[0].Init(m_playerOneEntityDatas, 0);
 			m_playersEntityAnchor[1].Init(m_playerTwoEntityDatas, 1);
 		}
+
+		onStartLevel.Invoke();
 
 		m_fogCanvas.gameObject.SetActive(true);
 		TurnManager.Instance.StartInputPhase();

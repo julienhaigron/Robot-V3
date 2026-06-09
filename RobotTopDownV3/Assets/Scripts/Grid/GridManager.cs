@@ -1076,6 +1076,11 @@ public struct TileCoordinates
 			  + Mathf.Abs(Z - other.Z)) / 2;
 	}
 
+	public bool IsEqualTo(TileCoordinates _otherCoordinates )
+	{
+		return _otherCoordinates.X == X && _otherCoordinates.Y == Y && _otherCoordinates.Z == Z;
+	}
+
 	public override string ToString ()
 	{
 		return "(" +

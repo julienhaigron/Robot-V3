@@ -18,6 +18,9 @@ public partial class GameConfig : ScriptableObject
 	[System.Serializable]
 	public partial class GameSettings
 	{
+		[Title("Macro")]
+		public int nbOfDayInCycle = 7;
+
 		[Title("Actions")]
 		public EntityActionData defaultStartAction;
 		public float actionDuration = 1f;
