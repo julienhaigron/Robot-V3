@@ -29,9 +29,23 @@ public class EndLevelPopup : AUIPopup
 		base.OnHideFinished();
 	}
 
-	public void Init (bool _didWin = false)
+	public void Init ( bool _didWin, MissionData _missionData )
 	{
 		m_texte.text = _didWin ? "You win" : "You loose";
+
+		//TODO : display rewards
+		if (_didWin)
+		{
+			foreach (CurrencyType currencyType in _missionData.currencyRewards.Keys)
+			{
+				GameDatas.current.currentPlayerSave.AddCurrency(currencyType, _missionData.currencyRewards[currencyType]);
+			}
+
+			foreach (EntityEquipmentData equipmentData in _missionData.equipmentRewards)
+			{
+				GameDatas.current.currentPlayerSave.AddEquipmentToInventory(equipmentData);
+			}
+		}
 	}
 
 	private void OnClickContinue ()

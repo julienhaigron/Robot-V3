@@ -273,7 +273,7 @@ public class Weapon : MonoBehaviour
 			float flankBonus =
 				Mathf.Max(
 					flankMod
-					+ _user.Data.GetStatBonusFromAll(EntityEquipmentData.StatBonus.StatType.FlankBonus) + _user.GetAdditionaryStatBonus(EntityEquipmentData.StatBonus.StatType.FlankBonus, _action)
+					+ _user.Data.GetStatBonusFromAll(EntityEquipmentData.StatBonus.StatType.FlankDamageBonus) + _user.GetAdditionaryStatBonus(EntityEquipmentData.StatBonus.StatType.FlankDamageBonus, _action)
 					- _target.Data.GetStatBonusFromAll(EntityEquipmentData.StatBonus.StatType.FlankResistance) - _target.GetAdditionaryStatBonus(EntityEquipmentData.StatBonus.StatType.FlankResistance, null),
 					-1f
 				);

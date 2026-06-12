@@ -93,7 +93,7 @@ public class GridManager : Singleton<GridManager>
 			}
 			else
 			{
-				m_tiles[i].SetActiveFOW(true, true);
+				m_tiles[i].SetActiveFOW(NeuronalMembraneEquipmentData.VisionTypes.Optical, true, true);
 
 				if (groundType == TileGroundType.PlayerSpawn)
 					GameManager.Instance.PlayersEntityAnchor[0].AddSpawn(m_tiles[i].coordinates, true);
@@ -671,12 +671,16 @@ public class GridManager : Singleton<GridManager>
 		// Orientation depuis l’attaquant vers la cible
 		int attackerPosition = _didAttackerWinPFC ? TurnManager.Instance.GetPositionOfEntityAtEndOfRound(_attacker.ID) : TurnManager.Instance.GetPositionOfEntityAtEndOfRound(_attacker.ID);
 		int defenderPosition = !_didAttackerWinPFC ? TurnManager.Instance.GetPositionOfEntityAtEndOfRound(_target.ID) : TurnManager.Instance.GetPositionOfEntityAtEndOfRound(_target.ID);
-		int attackOrientation = GetClosestOrientation(m_tiles[attackerPosition], m_tiles[defenderPosition]);
+		//int attackOrientation = GetClosestOrientation(m_tiles[attackerPosition], m_tiles[defenderPosition]);
 
-		// Tile potentielle de couvert
-		Tile potentialCover = GetTileAtOrientation(m_tiles[attackerPosition], attackOrientation);
+		List<Tile> tilesInLine = GetTilesInRay(Tiles[attackerPosition], Tiles[defenderPosition], _didAttackerWinPFC);
+		foreach(Tile tile in tilesInLine)
+		{
+			if (tile.GroundType == TileGroundType.Wall)
+				return true;
+		}
 
-		return potentialCover != null && potentialCover.GroundType == TileGroundType.Wall;
+		return false;
 	}
 
 	public Tile.TileDirectionType GetHitTileSide ( Entity _from, Entity _to, bool _didAttackerWinPFC )
@@ -896,17 +900,17 @@ public class GridManager : Singleton<GridManager>
 		int playerId = !GameManager.Instance.IsOnline ? 0 : OnlinePlayerInstance.Self.connectionIndex;
 		if (!_entity.IsAlliedTo(playerId))
 		{
-			_entity.SetVisibility(false);
+			_entity.SetVisibility(false, NeuronalMembraneEquipmentData.VisionTypes.Optical);
 			return;
 		}
 
 		Tile from = _entity.Displacement.Coordinates.GetTile();
-		from.SetActiveFOW(false, true);
+		from.SetActiveFOW(_entity.Data.NeuronalMembraneData.visionType, false, true);
 		List<Tile> tileInEntityRange = GetTilesInVisionRange(from, _entity.Data.NeuronalMembraneData.visionRange, false, true);
 
 		foreach (Tile tile in tileInEntityRange)
 		{
-			tile.SetActiveFOW(false, true);
+			tile.SetActiveFOW(_entity.Data.NeuronalMembraneData.visionType, false, true);
 		}
 
 		m_entitiesVisions[_entity.OwnerID].entitiesVisionRange.Add(_entity, tileInEntityRange);
@@ -933,7 +937,7 @@ public class GridManager : Singleton<GridManager>
 			}
 
 			if (!isInAnotherEntityVisionRange)
-				tile.SetActiveFOW(false, false);
+				tile.SetActiveFOW(_entity.Data.NeuronalMembraneData.visionType, false);
 		}
 
 		m_entitiesVisions[_entity.OwnerID].entitiesVisionRange.Remove(_entity);
@@ -946,7 +950,7 @@ public class GridManager : Singleton<GridManager>
 		int playerId = !GameManager.Instance.IsOnline ? 0 : OnlinePlayerInstance.Self.connectionIndex;
 		if (!_entity.IsAlliedTo(playerId))
 		{
-			_entity.SetVisibility(_entity.Displacement.Coordinates.GetTile().IsVisible);
+			_entity.SetVisibility(_entity.Displacement.Coordinates.GetTile().IsVisible, NeuronalMembraneEquipmentData.VisionTypes.Optical);
 			return;
 		}
 
@@ -971,7 +975,7 @@ public class GridManager : Singleton<GridManager>
 				}
 
 				if (!isInAnotherEntityVisionRange)
-					tile.SetActiveFOW(false, false);
+					tile.SetActiveFOW(NeuronalMembraneEquipmentData.VisionTypes.Optical, false, false);
 			}
 		}
 
@@ -988,7 +992,7 @@ public class GridManager : Singleton<GridManager>
 			}
 
 			if (!isInAnotherEntityVisionRange)
-				previousTile.SetActiveFOW(true, false);
+				previousTile.SetActiveFOW(_entity.Data.NeuronalMembraneData.visionType, true, false);
 		}
 
 		FogOfWarRenderer.Instance.MarkDirty();

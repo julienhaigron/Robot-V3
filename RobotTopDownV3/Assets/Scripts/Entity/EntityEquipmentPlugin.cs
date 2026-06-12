@@ -112,7 +112,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 
 		//init health
 		m_maxHealth = m_linkedEntity.Data.GetMaxHealth();
-		m_currentHealth = m_maxHealth;
+		m_currentHealth = _entityData.currentHp;
 		m_isDead = false;
 
 		//resistance
@@ -356,32 +356,36 @@ public class EntityEquipmentPlugin : EntityPlugin
 		WeaponEquipmentData usedWeapon = m_weapons[_attackAction.linkedEquipmentId].Data;
 		bool doesWinPFC = _singleAttackInfo.pfcResult == (int)EntityActionData.PFCResultType.FirstWins;
 
-		float targetCamo = _targetEntity.Data.GetStaticStealthBonus(true) + _targetEntity.GetAdditionaryStatBonus(EntityEquipmentData.StatBonus.StatType.VisualCamo, null);
+		float targetCamo = _targetEntity.Data.GetStaticStealthBonus(true)
+			+ (_targetEntity.HowIsUnitVisible == NeuronalMembraneEquipmentData.VisionTypes.Optical ? _targetEntity.GetAdditionaryStatBonus(EntityEquipmentData.StatBonus.StatType.VisualCamo, null)
+			: _targetEntity.HowIsUnitVisible == NeuronalMembraneEquipmentData.VisionTypes.Radar ? _targetEntity.GetAdditionaryStatBonus(EntityEquipmentData.StatBonus.StatType.RadarCamo, null)
+			: _targetEntity.GetAdditionaryStatBonus(EntityEquipmentData.StatBonus.StatType.ThermalCamo, null));
+
 		float evationRatio = _attackAction.Data.type == EntityActionData.ActionType.DistanceAttack
 				? _targetEntity.Data.BrainData.distanceEvasion + _targetEntity.GetAdditionaryStatBonus(EntityEquipmentData.StatBonus.StatType.DistanceEvasion, null)
 				: _targetEntity.Data.BrainData.meleeEvasion + _targetEntity.GetAdditionaryStatBonus(EntityEquipmentData.StatBonus.StatType.MeleeEvasion, null);
 		float coverRatio = GridManager.Instance.IsThereCoverBeween(_attackAction.PerformingEntity, _targetEntity, doesWinPFC)
 				? GameConfig.current.game.entityCoverBonus
 				: 0f;
-		float distanceRatio = GameConfig.current.game.distanceTypeSpreadEvaluation[GetWeaponDistanceTypeFrom(_targetEntity, _attackAction, doesWinPFC)];
+		//float distanceRatio = GameConfig.current.game.distanceTypeSpreadEvaluation[GetWeaponDistanceTypeFrom(_targetEntity, _attackAction, doesWinPFC)];
 
 		float targetEvasionScore =
 			targetCamo
 			+ evationRatio
-			+ coverRatio
-			+ distanceRatio;
+			+ coverRatio;
+			//+ distanceRatio;
 
-		float userPerception = m_linkedEntity.Data.GetStaticPerceptionBonus(true) + m_linkedEntity.GetAdditionaryStatBonus(EntityEquipmentData.StatBonus.StatType.VisualPerception, _attackAction);
+		//float userPerception = m_linkedEntity.Data.GetStaticPerceptionBonus(true) + m_linkedEntity.GetAdditionaryStatBonus(EntityEquipmentData.StatBonus.StatType.VisualPerception, _attackAction);
 		float userAim = _attackAction.Data.type == EntityActionData.ActionType.DistanceAttack
 				? m_linkedEntity.Data.BrainData.distanceAccuracy + m_linkedEntity.GetAdditionaryStatBonus(EntityEquipmentData.StatBonus.StatType.DistanceAccuracy, _attackAction)
 				: m_linkedEntity.Data.BrainData.agility + m_linkedEntity.GetAdditionaryStatBonus(EntityEquipmentData.StatBonus.StatType.MeleeAccuracy, _attackAction);
-		float flankBonus = GameConfig.current.game.entityFlankRatio[
-			GridManager.Instance.GetHitTileSide(m_linkedEntity, _targetEntity, doesWinPFC)];
+		float flankBonus = GameConfig.current.game.entityFlankRatio[GridManager.Instance.GetHitTileSide(m_linkedEntity, _targetEntity, doesWinPFC)]
+			+ m_linkedEntity.GetAdditionaryStatBonus(EntityEquipmentData.StatBonus.StatType.FlankBonus, _attackAction);
 		float modAction = m_linkedEntity.LastActionPerformedData.previousActionAttackModificator;
 
 		float userHitScore =
-			userPerception
-			+ userAim
+			//userPerception
+			userAim
 			+ flankBonus
 			+ modAction;
 
@@ -394,7 +398,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 		detailsBuilder.AppendLine($"<b>{m_linkedEntity.ID}</b> attacks <b>{_targetEntity.ID}</b>");
 		detailsBuilder.AppendLine();
 		detailsBuilder.AppendLine("<b>Attacker Hit Score</b>");
-		detailsBuilder.AppendLine($"Perception: {userPerception:+0.##;-0.##;0}");
+		//detailsBuilder.AppendLine($"Perception: {userPerception:+0.##;-0.##;0}");
 		detailsBuilder.AppendLine($"Aim: {userAim:+0.##;-0.##;0}");
 
 		if (flankBonus != 0)
@@ -412,8 +416,8 @@ public class EntityEquipmentPlugin : EntityPlugin
 		if (coverRatio > 0)
 			detailsBuilder.AppendLine($"Cover Bonus: +{coverRatio:0.##}");
 
-		if (distanceRatio != 0)
-			detailsBuilder.AppendLine($"Distance Modifier: {distanceRatio:+0.##;-0.##;0}");
+		/*if (distanceRatio != 0)
+			detailsBuilder.AppendLine($"Distance Modifier: {distanceRatio:+0.##;-0.##;0}");*/
 
 		detailsBuilder.AppendLine($"<b>Total Evasion: {targetEvasionScore:F2}</b>");
 		detailsBuilder.AppendLine();

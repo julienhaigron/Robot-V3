@@ -56,7 +56,7 @@ public class ShopPanel : AUIPanel
 		GameDatas.current.currentPlayerSave.equipmentInventory.Remove(_display.SavedData);
 
 		System.Tuple<CurrencyType, ulong> price = _display.ComponentData.GetPrice();
-		GameDatas.current.AddCurrency(price.Item1, price.Item2);
+		GameDatas.current.currentPlayerSave.AddCurrency(price.Item1, price.Item2);
 	}
 	
 	private void BuyItem(ComponentDisplay _display )
@@ -64,7 +64,7 @@ public class ShopPanel : AUIPanel
 		GameDatas.current.currentPlayerSave.equipmentInventory.Add(_display.SavedData);
 
 		System.Tuple<CurrencyType, ulong> price = _display.ComponentData.GetPrice();
-		GameDatas.current.RemoveCurrency(price.Item1, price.Item2, GameDatas.CurrencyRemoveMode.Spent);
+		GameDatas.current.currentPlayerSave.RemoveCurrency(price.Item1, price.Item2, GameDatas.PlayerSave.CurrencyRemoveMode.Spent);
 	}
 
 	private void OnClickReturn ()

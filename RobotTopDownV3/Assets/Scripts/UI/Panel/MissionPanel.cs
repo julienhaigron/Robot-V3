@@ -42,6 +42,21 @@ public class MissionPanel : AUIPanel
 		}
 	}
 
+	private void EnterTournament ()
+	{
+		//pay tournament price
+		//create 7 bots (8 players total)
+		//randomize bots list and display all 4 matches (separate panel?)
+		
+		//Tournament loop:
+		  // display next match info
+		  // start match
+		  // if player lost
+		  //   give reward depending on amount of game won 
+		  // else
+		  //   player continue
+	}
+
 	private void OnClickReturn ()
 	{
 		UIManager.Instance.OpenPanel<SoloHubPanel>();

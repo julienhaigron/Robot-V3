@@ -69,6 +69,8 @@ public class UnitPreset : ScriptableObject
             chipstetsContainer.Add(new() { ID = arm.name + GameDatas.current.currentPlayerSave.equipmentCounter++, dataID = arm.name });
         newUnit.chipsets = chipstetsContainer.ToArray();
 
+        newUnit.currentHp = newUnit.GetMaxHealth();
+
         return newUnit;
     }
 

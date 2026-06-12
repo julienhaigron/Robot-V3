@@ -219,16 +219,42 @@ public class GameManager : SingletonPersistant<GameManager>
 
 	public void EndGame ( bool _isSuccessfull )
 	{
+		GameDatas.current.currentPlayerSave.dayData.NewDay();
+		SaveMacroChanges();
+
 		if (_isSuccessfull)
 			LogConsole.AddLog("Victory", LogConsole.LogEventType.DebugSys);
 		else
 			LogConsole.AddLog("Defeat", LogConsole.LogEventType.DebugSys);
 
 		UIManager.Instance.ClosePanel<InGamePanel>(true);
-		UIManager.Instance.OpenPopup<EndLevelPopup>().Init(_isSuccessfull);
+		UIManager.Instance.OpenPopup<EndLevelPopup>().Init(_isSuccessfull, m_currentMission);
 		m_fogCanvas.gameObject.SetActive(false);
+	}
 
-		GameDatas.current.currentPlayerSave.dayData.NewDay();
+	private void SaveMacroChanges ()
+	{
+#if UNITY_EDITOR
+		if (!GameConfig.current.debug.saveEntityDeathAndDamages)
+			return;
+#endif
+		//units hp and death
+		foreach(Entity entity in m_playersEntityAnchor[0].Entities)
+		{
+			int index = GameDatas.current.currentPlayerSave.squadUnits.FindIndex(d => d == entity.Data);
+			if (index == -1)
+			{
+				//Debug.LogError("Unit not find in squad in game datas", entity.gameObject);
+				continue;
+			}
+
+			if (entity.Equipment.IsDead)
+				GameDatas.current.currentPlayerSave.squadUnits.Remove(entity.Data);
+			else
+				GameDatas.current.currentPlayerSave.squadUnits[index].currentHp = entity.Equipment.CurrentHealth;
+		}
+
+		//
 	}
 
 	//hub

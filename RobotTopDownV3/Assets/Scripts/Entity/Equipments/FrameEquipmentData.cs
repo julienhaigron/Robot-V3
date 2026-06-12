@@ -39,6 +39,8 @@ public class EntitySavedData : INetworkSerializable
 	public GameDatas.PlayerSave.Equipment[] auxiliar;
 	public GameDatas.PlayerSave.Equipment[] chipsets;
 
+	public int currentHp;
+
 	public FrameEquipmentData FrameData => frame == null || string.IsNullOrEmpty(frame.dataID) ? null : GameAssets.current.equipments[frame.dataID] as FrameEquipmentData;
 	public ReactorEquipmentData ReactorData => reactor == null || string.IsNullOrEmpty(reactor.dataID) ? null : GameAssets.current.equipments[reactor.dataID] as ReactorEquipmentData;
 	public NeuronalMembraneEquipmentData NeuronalMembraneData => neuronalMembrane == null || string.IsNullOrEmpty(neuronalMembrane.dataID) ? null : GameAssets.current.equipments[neuronalMembrane.dataID] as NeuronalMembraneEquipmentData;
@@ -54,6 +56,7 @@ public class EntitySavedData : INetworkSerializable
 		serializer.SerializeValue(ref arms);
 		serializer.SerializeValue(ref auxiliar);
 		serializer.SerializeValue(ref chipsets);
+		serializer.SerializeValue(ref currentHp);
 	}
 
 	public bool IsUnitValid ()
@@ -256,7 +259,7 @@ public class EntitySavedData : INetworkSerializable
 				{
 					if (statBonus.type == EntityEquipmentData.StatBonus.StatType.VisualCamo && _isVisual)
 						result += statBonus.value;
-					else if (statBonus.type == EntityEquipmentData.StatBonus.StatType.SoundCamo && !_isVisual)
+					else if (statBonus.type == EntityEquipmentData.StatBonus.StatType.RadarCamo && !_isVisual)
 						result += statBonus.value;
 				}
 			}

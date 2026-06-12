@@ -8,12 +8,19 @@ public partial class GameConfig : ScriptableObject
 {
 	public static GameConfig current => ApplicationManager.config;
 
+	public DebugSettings debug = new DebugSettings();
 	public GameSettings game = new GameSettings();
 	public Input input = new Input();
 	public Meta meta = new Meta();
 	public UI ui = new UI();
 	public DatasConfigs datas = new DatasConfigs();
 	public Parsing parsing = new Parsing();
+
+	[System.Serializable]
+	public class DebugSettings
+	{
+		public bool saveEntityDeathAndDamages = true;
+	}
 
 	[System.Serializable]
 	public partial class GameSettings

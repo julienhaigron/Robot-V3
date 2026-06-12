@@ -26,7 +26,7 @@ public partial class GameDatas : ScriptableObject
 
 	public static Action<CurrencyType> onCurrencyChanged;
 	public static Action<CurrencyType, ulong> onCurrencyAdded;
-	public static Action<CurrencyType, ulong, CurrencyRemoveMode> onCurrencyRemoved;
+	public static Action<CurrencyType, ulong, PlayerSave.CurrencyRemoveMode> onCurrencyRemoved;
 
 #if UNITY_EDITOR
 	[TitleGroup("Quick Settings")]
@@ -159,6 +159,7 @@ public partial class GameDatas : ScriptableObject
 		{
 			EntitySavedData newEntity = new();
 			newEntity.frame = new() { ID = _frame.name + equipmentCounter++, dataID = _frame.name };
+			newEntity.currentHp = newEntity.GetMaxHealth();
 			squadUnits.Add(newEntity);
 
 			return newEntity;
@@ -234,63 +235,67 @@ public partial class GameDatas : ScriptableObject
 			}
 		}
 
-	}
+		#region Currencies
 
-	public enum CurrencyRemoveMode
-	{
-		Spent,
-		Lost,
-	}
-
-	public void AddCurrency ( CurrencyType _type, ulong _amount, string eventID )
-	{
-		if (_amount <= 0ul)
-			return;
-
-		AddCurrency(_type, _amount);
-	}
-
-	public void RemoveCurrency ( CurrencyType _type, ulong _amount, string eventID, CurrencyRemoveMode _currencyRemoveMode = CurrencyRemoveMode.Spent )
-	{
-		if (_amount <= 0ul)
-			return;
-
-		RemoveCurrency(_type, _amount, _currencyRemoveMode);
-	}
-
-	public void AddCurrency ( CurrencyType _type, ulong _amount)
-	{
-		if (_amount <= 0ul)
-			return;
-
-		//GameConfig.current.feedbacks.addCurrencyFeedback.PlayQueue(0, feedback);
-		currentPlayerSave.currencies[_type] += _amount;
-		currentPlayerSave.totalCurrenciesGot[_type] += _amount;
-
-		onCurrencyChanged?.Invoke(_type);
-		onCurrencyAdded?.Invoke(_type, _amount);
-	}
-
-	public void RemoveCurrency ( CurrencyType _type, ulong _amount, CurrencyRemoveMode _currencyRemoveMode = CurrencyRemoveMode.Spent )
-	{
-		if (_amount <= 0ul)
-			return;
-
-		//GameConfig.current.feedbacks.removeCurrencyFeedback.Play(feedback);
-		if (_amount > currentPlayerSave.currencies[_type])
+		public enum CurrencyRemoveMode
 		{
-			Debug.LogWarning("TRIED TO REMOVE MORE CURRENCY " + _type.ToString() + " THAN POSSESSED (" + currentPlayerSave.currencies[_type] + " - " + _amount + ")");
-			currentPlayerSave.totalCurrenciesSpent[_type] += currentPlayerSave.currencies[_type];
-			onCurrencyRemoved?.Invoke(_type, currentPlayerSave.currencies[_type], _currencyRemoveMode);
-			currentPlayerSave.currencies[_type] = 0;
+			Spent,
+			Lost,
 		}
-		else
+
+		public void AddCurrency ( CurrencyType _type, ulong _amount, string eventID )
 		{
-			currentPlayerSave.currencies[_type] -= _amount;
-			currentPlayerSave.totalCurrenciesSpent[_type] += _amount;
-			onCurrencyRemoved?.Invoke(_type, _amount, _currencyRemoveMode);
+			if (_amount <= 0ul)
+				return;
+
+			AddCurrency(_type, _amount);
 		}
-		onCurrencyChanged?.Invoke(_type);
+
+		public void RemoveCurrency ( CurrencyType _type, ulong _amount, string eventID, CurrencyRemoveMode _currencyRemoveMode = CurrencyRemoveMode.Spent )
+		{
+			if (_amount <= 0ul)
+				return;
+
+			RemoveCurrency(_type, _amount, _currencyRemoveMode);
+		}
+
+		public void AddCurrency ( CurrencyType _type, ulong _amount )
+		{
+			if (_amount <= 0ul)
+				return;
+
+			//GameConfig.current.feedbacks.addCurrencyFeedback.PlayQueue(0, feedback);
+			currencies[_type] += _amount;
+			totalCurrenciesGot[_type] += _amount;
+
+			onCurrencyChanged?.Invoke(_type);
+			onCurrencyAdded?.Invoke(_type, _amount);
+		}
+
+		public void RemoveCurrency ( CurrencyType _type, ulong _amount, CurrencyRemoveMode _currencyRemoveMode = CurrencyRemoveMode.Spent )
+		{
+			if (_amount <= 0ul)
+				return;
+
+			//GameConfig.current.feedbacks.removeCurrencyFeedback.Play(feedback);
+			if (_amount > currencies[_type])
+			{
+				Debug.LogWarning("TRIED TO REMOVE MORE CURRENCY " + _type.ToString() + " THAN POSSESSED (" + currencies[_type] + " - " + _amount + ")");
+				totalCurrenciesSpent[_type] += currencies[_type];
+				onCurrencyRemoved?.Invoke(_type, currencies[_type], _currencyRemoveMode);
+				currencies[_type] = 0;
+			}
+			else
+			{
+				currencies[_type] -= _amount;
+				totalCurrenciesSpent[_type] += _amount;
+				onCurrencyRemoved?.Invoke(_type, _amount, _currencyRemoveMode);
+			}
+			onCurrencyChanged?.Invoke(_type);
+		}
+
+		#endregion
+
 	}
 
 	#region Saving

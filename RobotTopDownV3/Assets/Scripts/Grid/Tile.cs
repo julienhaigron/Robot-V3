@@ -415,12 +415,12 @@ public class Tile : MonoBehaviour
 		}
 	}
 
-	public void SetActiveFOW ( bool _isActive = false, bool _isInstant = false )
+	public void SetActiveFOW ( NeuronalMembraneEquipmentData.VisionTypes _visionType, bool _isActive = false, bool _isInstant = false )
 	{
 		m_isVisible = !_isActive;
 		m_ui.SetActiveFOW(!m_isVisible, _isInstant);
 
 		if (m_currentContent.Entity != null)
-			m_currentContent.Entity.SetVisibility(m_isVisible);
+			m_currentContent.Entity.SetVisibility(m_isVisible, _visionType);
 	}
 }

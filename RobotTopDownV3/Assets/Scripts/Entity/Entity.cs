@@ -73,6 +73,11 @@ public class Entity : MonoBehaviour
 	public int ID;
 	public int PlayerOwnerID;
 
+	private bool m_isVisible = false;
+	public bool IsVisible => m_isVisible;
+	private NeuronalMembraneEquipmentData.VisionTypes m_howIsUnitVisible;
+	public NeuronalMembraneEquipmentData.VisionTypes HowIsUnitVisible => m_howIsUnitVisible;
+
 	[Serializable]
 	public enum EntityState
 	{
@@ -262,8 +267,11 @@ public class Entity : MonoBehaviour
 		onDeselect?.Invoke();
 	}
 
-	public void SetVisibility ( bool _isVisible )
+	public void SetVisibility ( bool _isVisible, NeuronalMembraneEquipmentData.VisionTypes _visionType)
 	{
+		m_isVisible = _isVisible;
+		m_howIsUnitVisible = _visionType;
+
 		m_ui.gameObject.SetActive(_isVisible);
 		if (_isVisible)
 			m_skin.Show();

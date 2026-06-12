@@ -48,12 +48,12 @@ public class FTUEManager : SingletonPersistant<FTUEManager>
 		if (!GameDatas.current.currentPlayerSave.IsInTuto)
 			return;
 
-		MicroTuto1();
+		/*MicroTuto1();
 		MicroTuto2();
 		MicroTuto3();
 		MacroTuto1();
 		MacroTuto2();
-		MacroTuto3();
+		MacroTuto3();*/
 	}
 
 	#region Tutos
@@ -79,7 +79,7 @@ public class FTUEManager : SingletonPersistant<FTUEManager>
 		TaskSequence tutoSequence = new();
 
 		tutoSequence.Append(new DialogueTask("Introduction", false, m_firstTutoDialogue));
-		tutoSequence.Append(new ClickButtonTask("Open Deck", false, deckButton));
+		//tutoSequence.Append(new ClickButtonTask("Open Deck", false, deckButton));
 		tutoSequence.Append(new DialogueHighlightTask("Look here", false, m_firstTutoDialogue, registerdTutorialHighlightZones["deckHighlight"]));
 		tutoSequence.Append(new MoveEntityToTileTask("Move to tile", false, new TileCoordinates(4, 7, 3))).onCompleted += ( Task t ) =>
 		{
@@ -105,7 +105,7 @@ public class FTUEManager : SingletonPersistant<FTUEManager>
 		TaskSequence tutoSequence = new();
 
 		tutoSequence.Append(new DialogueTask("Introduction", false, m_firstTutoDialogue));
-		tutoSequence.Append(new ClickButtonTask("Open Deck", false, deckButton));
+		//tutoSequence.Append(new ClickButtonTask("Open Deck", false, deckButton));
 		tutoSequence.Append(new DialogueHighlightTask("Look here", false, m_firstTutoDialogue, registerdTutorialHighlightZones["deckHighlight"]));
 		tutoSequence.Append(new MoveEntityToTileTask("Move to tile", false, new TileCoordinates(4, 7, 3))).onCompleted += ( Task t ) =>
 		{
@@ -143,7 +143,7 @@ public class FTUEManager : SingletonPersistant<FTUEManager>
 		TaskSequence tutoSequence = new();
 
 		tutoSequence.Append(new DialogueTask("Introduction", false, m_firstTutoDialogue));
-		tutoSequence.Append(new ClickButtonTask("Open Deck", false, deckButton));
+		//tutoSequence.Append(new ClickButtonTask("Open Deck", false, deckButton));
 		tutoSequence.Append(new DialogueHighlightTask("Look here", false, m_firstTutoDialogue, registerdTutorialHighlightZones["deckHighlight"]));
 		tutoSequence.Append(new MoveEntityToTileTask("Move to tile", false, new TileCoordinates(4, 7, 3))).onCompleted += ( Task t ) =>
 		{
@@ -168,7 +168,7 @@ public class FTUEManager : SingletonPersistant<FTUEManager>
 		TaskSequence tutoSequence = new();
 
 		tutoSequence.Append(new DialogueTask("Introduction", false, m_firstTutoDialogue));
-		tutoSequence.Append(new ClickButtonTask("Open Deck", false, deckButton));
+		//tutoSequence.Append(new ClickButtonTask("Open Deck", false, deckButton));
 		tutoSequence.Append(new DialogueHighlightTask("Look here", false, m_firstTutoDialogue, registerdTutorialHighlightZones["deckHighlight"]));
 		tutoSequence.Append(new MoveEntityToTileTask("Move to tile", false, new TileCoordinates(4, 7, 3))).onCompleted += ( Task t ) =>
 		{
@@ -195,7 +195,7 @@ public class FTUEManager : SingletonPersistant<FTUEManager>
 		TaskSequence tutoSequence = new();
 
 		tutoSequence.Append(new DialogueTask("Introduction", false, m_firstTutoDialogue));
-		tutoSequence.Append(new ClickButtonTask("Open Deck", false, deckButton));
+		//tutoSequence.Append(new ClickButtonTask("Open Deck", false, deckButton));
 		tutoSequence.Append(new DialogueHighlightTask("Look here", false, m_firstTutoDialogue, registerdTutorialHighlightZones["deckHighlight"]));
 		tutoSequence.Append(new MoveEntityToTileTask("Move to tile", false, new TileCoordinates(4, 7, 3))).onCompleted += ( Task t ) =>
 		{
@@ -219,7 +219,7 @@ public class FTUEManager : SingletonPersistant<FTUEManager>
 		TaskSequence tutoSequence = new();
 
 		tutoSequence.Append(new DialogueTask("Introduction", false, m_firstTutoDialogue));
-		tutoSequence.Append(new ClickButtonTask("Open Deck", false, deckButton));
+		//tutoSequence.Append(new ClickButtonTask("Open Deck", false, deckButton));
 		tutoSequence.Append(new DialogueHighlightTask("Look here", false, m_firstTutoDialogue, registerdTutorialHighlightZones["deckHighlight"]));
 		tutoSequence.Append(new MoveEntityToTileTask("Move to tile", false, new TileCoordinates(4, 7, 3))).onCompleted += ( Task t ) =>
 		{
@@ -245,7 +245,7 @@ public class FTUEManager : SingletonPersistant<FTUEManager>
 		TaskSequence tutoSequence = new();
 
 		tutoSequence.Append(new DialogueTask("Introduction", false, m_firstTutoDialogue));
-		tutoSequence.Append(new ClickButtonTask("Open Deck", false, deckButton));
+		//tutoSequence.Append(new ClickButtonTask("Open Deck", false, deckButton));
 		tutoSequence.Append(new DialogueHighlightTask("Look here", false, m_firstTutoDialogue, registerdTutorialHighlightZones["deckHighlight"]));
 		tutoSequence.Append(new MoveEntityToTileTask("Move to tile", false, new TileCoordinates(4, 7, 3))).onCompleted += ( Task t ) =>
 		{

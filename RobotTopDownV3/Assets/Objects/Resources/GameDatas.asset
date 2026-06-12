@@ -52,6 +52,7 @@ MonoBehaviour:
       chipsets:
       - ID: Chipset_ZB-389
         dataID: Chipset_ZB-38
+      currentHp: 10
     - name: Fire Bat
       frame:
         ID: Frame_Paladin_Knight10
@@ -80,6 +81,7 @@ MonoBehaviour:
       chipsets:
       - ID: Chipset_ZB-3819
         dataID: Chipset_ZB-38
+      currentHp: 10
     equipmentInventory:
     - ID: Armor_CD180
       dataID: Armor_CD1
@@ -223,3 +225,6 @@ MonoBehaviour:
     dayData:
       missionsIds: 00000000000000000000000000000000000000000000000000000000
       itemsInShop: []
+    cycleCount: 0
+    dayCount: 0
+    tutoProgression: 0000000000

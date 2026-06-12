@@ -12,5 +12,12 @@ public class NeuronalMembraneEquipmentData : EntityEquipmentData
     public int visionRange = 8;
 
     [BoxGroup(GroupID = "AI")]
-    public EntityCapacityAsset.EntityCapacityType[] visionTypes;
+    public VisionTypes visionType;
+
+    public enum VisionTypes
+    {
+        Optical,
+        Thermal,
+        Radar
+    }
 }
