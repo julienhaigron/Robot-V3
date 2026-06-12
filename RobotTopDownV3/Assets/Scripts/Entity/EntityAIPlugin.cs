@@ -253,12 +253,7 @@ public class EntityAIPlugin : EntityPlugin
 
 	private List<Entity> VisionCheck ( AEntityAction _action, bool _isThisTurn = true )
 	{
-		m_entitiesInVisionRange = new();
-		if (m_linkedEntity.Data.BrainData.capacities.Contains(EntityCapacityAsset.EntityCapacityType.VisualSensor)
-			|| m_linkedEntity.Data.BrainData.capacities.Contains(EntityCapacityAsset.EntityCapacityType.RadarSensor))
-		{
-			m_entitiesInVisionRange = GridManager.Instance.GetEntitiesInRange(m_linkedEntity.Displacement.Coordinates.GetTile(), m_linkedEntity.Data.NeuronalMembraneData.visionRange, _isThisTurn);
-		}
+		m_entitiesInVisionRange = GridManager.Instance.GetEntitiesInRange(m_linkedEntity.Displacement.Coordinates.GetTile(), m_linkedEntity.Data.NeuronalMembraneData.visionRange, _isThisTurn);
 
 		return m_entitiesInVisionRange;
 	}

@@ -249,12 +249,6 @@ public class Entity : MonoBehaviour
 	public bool IsAlliedTo ( int _playerOwnerId )
 	{
 		return m_ownerID == _playerOwnerId;
-		/*if (!GameManager.Instance.IsOnline && m_data.FrameData.faction == EntityFaction.Scout)
-            return true;
-        else if (GameManager.Instance.IsOnline && m_ownerID == _playerOwnerId)
-            return true;
-        else
-            return false;*/
 	}
 
 	public void Select ()

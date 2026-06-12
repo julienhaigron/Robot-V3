@@ -147,7 +147,7 @@ public class Tile : MonoBehaviour
 				RemoveWall();
 		}
 
-		SetActiveFOW(false, true);
+		SetActiveFOW(NeuronalMembraneEquipmentData.VisionTypes.Optical, false, true);
 	}
 
 	public void SetGroundType ( TileGroundType _groundType )

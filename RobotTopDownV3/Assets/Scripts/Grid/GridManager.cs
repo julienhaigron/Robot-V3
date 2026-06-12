@@ -975,7 +975,7 @@ public class GridManager : Singleton<GridManager>
 				}
 
 				if (!isInAnotherEntityVisionRange)
-					tile.SetActiveFOW(NeuronalMembraneEquipmentData.VisionTypes.Optical, false, false);
+					tile.SetActiveFOW(_entity.Data.NeuronalMembraneData.visionType, false, false);
 			}
 		}
 

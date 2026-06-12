@@ -20,7 +20,7 @@ public class SmokedStatus : AEntityStatus
 	{
 		base.ApplyStatus(_tile);
 
-		_tile.SetActiveFOW(true, false);
+		_tile.SetActiveFOW(NeuronalMembraneEquipmentData.VisionTypes.Optical, true, false);
 	}
 
 	/*public override void ApplyStatus ( Tile _tile )
