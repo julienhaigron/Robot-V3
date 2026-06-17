@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9e73bc741ebbdc840b41c9a3b0e4d4b6, type: 3}
   m_Name: NeuronalMembrane_Dummy
   m_EditorClassIdentifier: 
+  spreadsheetId: 
   faction: 0
-  icon: {fileID: 0}
+  icon: {fileID: 1366701266, guid: b6a6397b98d67304fa94b8144e1fb5dd, type: 3}
   displayName: default
   energyCost: 0
   knownedActions: 
@@ -21,4 +22,4 @@ MonoBehaviour:
   statusHitProbability: 0.5
   equipmentSlotAvailable: 2
   visionRange: 1
-  visionTypes: 0000000001000000
+  visionType: 0

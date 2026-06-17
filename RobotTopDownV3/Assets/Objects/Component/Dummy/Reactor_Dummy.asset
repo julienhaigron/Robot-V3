@@ -12,10 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 087fdcb19e35df443b5ddfcf9bf4957f, type: 3}
   m_Name: Reactor_Dummy
   m_EditorClassIdentifier: RTD::ReactorEquipmentData
+  spreadsheetId: 
   faction: 0
-  icon: {fileID: 21300000, guid: 03da9b037a0d27b4db02f45130a6cb28, type: 3}
+  icon: {fileID: 1366701266, guid: b6a6397b98d67304fa94b8144e1fb5dd, type: 3}
   displayName: reactor B99
   energyCost: 0
   knownedActions: 
   passiveEffects: []
+  statusHitProbability: 0.5
   energyProduced: 160

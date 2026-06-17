@@ -9,7 +9,9 @@ public class BaseButton : MonoBehaviour
     public System.Action onClick;
 
     [SerializeField] protected Button m_button;
+    [SerializeField] protected Image m_image;
     public Button Button => m_button;
+    public Image Image => m_image;
 
     protected bool m_isVisible = false;
 

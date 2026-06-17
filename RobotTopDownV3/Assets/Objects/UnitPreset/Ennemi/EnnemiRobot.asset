@@ -12,14 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e340e03f272314442a53b80f2350e240, type: 3}
   m_Name: EnnemiRobot
   m_EditorClassIdentifier: 
-  icon: {fileID: 0}
+  spreadsheetId: 
+  faction: 1
+  icon: {fileID: -1360359492, guid: b61920d2917644949a125f8a6af0e45c, type: 3}
+  displayName: default
   energyCost: 0
   knownedActions: 000000000200000004000000010000000300000000000000
   passiveEffects: []
-  faction: 1
+  statusHitProbability: 0.5
   prefab: {fileID: 4673310249167116355, guid: 206cf16509b1846479a1f553fd6add2d, type: 3}
-  visibilityRange: 8
   maxHealth: 5
-  armSlotAvailable: 2
-  auxiliarSlotAvailable: 2
+  armoringSlotAvailable: 2
+  occultorSlotAvailable: 2
   statBonuses: []

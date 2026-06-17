@@ -12,25 +12,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 377ca2099ac4b6147bf777f681302f03, type: 3}
   m_Name: Weapon_Commando_LanceFlamme
   m_EditorClassIdentifier: 
+  spreadsheetId: 
   faction: 0
-  icon: {fileID: 21300000, guid: 8d975594a4401564fb22687ded98d40a, type: 3}
+  icon: {fileID: 1366701266, guid: b6a6397b98d67304fa94b8144e1fb5dd, type: 3}
   displayName: default
   energyCost: 30
   knownedActions: 1a00000019000000
   passiveEffects: []
+  statusHitProbability: 0.5
   prefab: {fileID: 7856189691443182411, guid: 3c486e26f7821614791b716f5411b97f, type: 3}
   baseDamages:
     keys: 0100000005000000
     values: 0500000005000000
-  damageCategory: 1
-  range: 5
   visionConeRange: 60
-  distanceAccuracyBonus:
-    keys: 000000000100000002000000
-    values:
-    - 0.2
-    - 0.2
-    - 0.2
   attackAnimationSuccessId: 
   attackAnimationFailureId: 
   isTwoHanded: 0
+  singleAttackAnimationDuration: 0

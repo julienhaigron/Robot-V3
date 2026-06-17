@@ -51,6 +51,7 @@ public class GameAssets : ScriptableObject
     [System.Serializable]
     public class UI
 	{
+        public Sprite baseEquipmentSprite;
         public ComponentDisplay baseComponentDisplay;
         public LobbyDisplay baseLobbyDisplay;
         public EntityActionDisplay baseEntityActionDisplay;

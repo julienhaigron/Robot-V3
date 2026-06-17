@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using Sirenix.OdinInspector;
+using System.Linq;
 
 public class EntityConfigPanel : AUIPanel
 {
@@ -11,30 +13,71 @@ public class EntityConfigPanel : AUIPanel
 	[SerializeField] private BaseButton m_closeBtn;
 	[SerializeField] private BaseButton m_upgradeHangarBtn;
 
-	[SerializeField] private SerializableDictionary<EntityEquipmentData.EquipmentType, ComponentSlot> componentSlotDictionary;
-	[SerializeField] private SerializableDictionary<EntityEquipmentData.EquipmentType, ComponentDisplayGrid> gridDictionary;
+	[SerializeField] private SerializableDictionary<EntityEquipmentData.EquipmentType, ComponentSlot> m_mainComponentSlotDictionary;
+	[SerializeField] private SerializableDictionary<EntityEquipmentData.EquipmentType, SubSlotContainer> m_subComponentSlotDictionary;
 
+	[Title("Inventory")]
+	[SerializeField] private ComponentDisplayGrid m_inventoryGrid;
+	[SerializeField] private SerializableDictionary<EntityEquipmentData.EquipmentType, BaseButton> m_componentTypeFilterBtnDictionary = new();
+
+	private List<EntityEquipmentData.EquipmentType> m_displayedEquipmentTypes = new();
 	private EntitySavedData m_entityData;
+
+	private System.Func<GameDatas.PlayerSave.Equipment, bool> InventoryGridPredicate => item => item != null && item.TryGetData(out EntityEquipmentData _data) 
+		&& m_displayedEquipmentTypes.Contains(_data.GetEquipmentType());
+
+	[System.Serializable]
+	public class SubSlotContainer
+	{
+		public List<ComponentSlot> slots = new();
+	}
 
 	private void Awake ()
 	{
 		m_closeBtn.onClick += OnClickClose;
 		m_upgradeHangarBtn.onClick += OnClickOpenUpgradePopup;
 
-		componentSlotDictionary[EntityEquipmentData.EquipmentType.Frame].onItemAdded += item => m_entityData.frame = item.SavedData;
-		componentSlotDictionary[EntityEquipmentData.EquipmentType.Frame].onItemRemoved += item => m_entityData.frame = null;
-		componentSlotDictionary[EntityEquipmentData.EquipmentType.Reactor].onItemAdded += item => m_entityData.reactor = item.SavedData;
-		componentSlotDictionary[EntityEquipmentData.EquipmentType.Reactor].onItemRemoved += item => m_entityData.reactor = null;
-		componentSlotDictionary[EntityEquipmentData.EquipmentType.Brain].onItemAdded += item => m_entityData.brain = item.SavedData;
-		componentSlotDictionary[EntityEquipmentData.EquipmentType.Brain].onItemRemoved += item => m_entityData.brain = null;
-		componentSlotDictionary[EntityEquipmentData.EquipmentType.NeuronalMembrane].onItemAdded += item => m_entityData.neuronalMembrane = item.SavedData;
-		componentSlotDictionary[EntityEquipmentData.EquipmentType.NeuronalMembrane].onItemRemoved += item => m_entityData.neuronalMembrane = null;
+		m_mainComponentSlotDictionary[EntityEquipmentData.EquipmentType.Frame].onItemAdded += item => m_entityData.frame = item.SavedData;
+		m_mainComponentSlotDictionary[EntityEquipmentData.EquipmentType.Frame].onItemRemoved += item => m_entityData.frame = null;
+		m_mainComponentSlotDictionary[EntityEquipmentData.EquipmentType.Reactor].onItemAdded += item => m_entityData.reactor = item.SavedData;
+		m_mainComponentSlotDictionary[EntityEquipmentData.EquipmentType.Reactor].onItemRemoved += item => m_entityData.reactor = null;
+		m_mainComponentSlotDictionary[EntityEquipmentData.EquipmentType.Brain].onItemAdded += item => m_entityData.brain = item.SavedData;
+		m_mainComponentSlotDictionary[EntityEquipmentData.EquipmentType.Brain].onItemRemoved += item => m_entityData.brain = null;
+		m_mainComponentSlotDictionary[EntityEquipmentData.EquipmentType.NeuronalMembrane].onItemAdded += item => m_entityData.neuronalMembrane = item.SavedData;
+		m_mainComponentSlotDictionary[EntityEquipmentData.EquipmentType.NeuronalMembrane].onItemRemoved += item => m_entityData.neuronalMembrane = null;
 
-		foreach (ComponentDisplayGrid grid in gridDictionary.Values)
+		for(int i = 0; i < m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Frame].slots.Count; i++)
 		{
-			grid.onItemAdded += item => GameDatas.current.currentPlayerSave.AddEquipmentToInventory(item.ComponentData);
-			grid.onItemRemoved += item => GameDatas.current.currentPlayerSave.RemoveEquipmentFromInventory(item.SavedData);
+			ComponentSlot slot = m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Frame].slots[i];
+			slot.onItemAdded += (ComponentDisplay display) => OnItemAddedOnSlot(display, EntityEquipmentData.EquipmentType.Frame);
+			slot.onItemRemoved += ( ComponentDisplay display ) => OnItemRemovedOnSlot(display, EntityEquipmentData.EquipmentType.Frame);
 		}
+		for (int i = 0; i < m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Brain].slots.Count; i++)
+		{
+			ComponentSlot slot = m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Brain].slots[i];
+			slot.onItemAdded += ( ComponentDisplay display ) => OnItemAddedOnSlot(display, EntityEquipmentData.EquipmentType.Brain);
+			slot.onItemRemoved += ( ComponentDisplay display ) => OnItemRemovedOnSlot(display, EntityEquipmentData.EquipmentType.Brain);
+		}
+		for (int i = 0; i < m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.NeuronalMembrane].slots.Count; i++)
+		{
+			ComponentSlot slot = m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.NeuronalMembrane].slots[i];
+			slot.onItemAdded += ( ComponentDisplay display ) => OnItemAddedOnSlot(display, EntityEquipmentData.EquipmentType.NeuronalMembrane);
+			slot.onItemRemoved += ( ComponentDisplay display ) => OnItemRemovedOnSlot(display, EntityEquipmentData.EquipmentType.NeuronalMembrane);
+		}
+		/*for (int i = 0; i < m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Reactor].Count; i++)
+		{
+			ComponentSlot slot = m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Reactor][i];
+			slot.onItemAdded += ( ComponentDisplay display ) => OnItemAddedOnSlot(display, EntityEquipmentData.EquipmentType.Reactor);
+			slot.onItemRemoved += ( ComponentDisplay display ) => OnItemRemovedOnSlot(display, EntityEquipmentData.EquipmentType.Reactor);
+		}*/
+
+		m_inventoryGrid.onItemAdded += item => GameDatas.current.currentPlayerSave.AddEquipmentToInventory(item.ComponentData);
+		m_inventoryGrid.onItemRemoved += item => GameDatas.current.currentPlayerSave.RemoveEquipmentFromInventory(item.SavedData);
+
+		foreach (KeyValuePair<EntityEquipmentData.EquipmentType, BaseButton> pair in m_componentTypeFilterBtnDictionary)
+			pair.Value.onClick = () => OnToggleComponentType(pair.Key);
+
+		m_displayedEquipmentTypes.AddRange(m_componentTypeFilterBtnDictionary.Keys);
 	}
 
 	protected override void OnShowStarted ()
@@ -48,33 +91,146 @@ public class EntityConfigPanel : AUIPanel
 		m_entityData = _entity;
 		m_texte.text = _entity.name;
 
-		componentSlotDictionary[EntityEquipmentData.EquipmentType.Frame].Init(gridDictionary[EntityEquipmentData.EquipmentType.Frame], _entity, _entity.frame
+		m_mainComponentSlotDictionary[EntityEquipmentData.EquipmentType.Frame].Init(m_inventoryGrid, _entity, _entity.frame
 			, item => item != null && item.TryGetData(out EntityEquipmentData _data) && _data.GetEquipmentType() == EntityEquipmentData.EquipmentType.Frame, ComponentDisplay.DisplayMode.Hangar);
-		componentSlotDictionary[EntityEquipmentData.EquipmentType.Reactor].Init(gridDictionary[EntityEquipmentData.EquipmentType.Reactor], _entity, _entity.reactor
-			, item => item != null && item.TryGetData(out EntityEquipmentData _data) && _data.GetEquipmentType() == EntityEquipmentData.EquipmentType.Reactor, ComponentDisplay.DisplayMode.Hangar);
-		componentSlotDictionary[EntityEquipmentData.EquipmentType.Brain].Init(gridDictionary[EntityEquipmentData.EquipmentType.Brain], _entity, _entity.brain
+		m_mainComponentSlotDictionary[EntityEquipmentData.EquipmentType.Brain].Init(m_inventoryGrid, _entity, _entity.brain
 			, item => item != null && item.TryGetData(out EntityEquipmentData _data) && _data.GetEquipmentType() == EntityEquipmentData.EquipmentType.Brain, ComponentDisplay.DisplayMode.Hangar);
-		componentSlotDictionary[EntityEquipmentData.EquipmentType.NeuronalMembrane].Init(gridDictionary[EntityEquipmentData.EquipmentType.NeuronalMembrane], _entity, _entity.neuronalMembrane
+		m_mainComponentSlotDictionary[EntityEquipmentData.EquipmentType.NeuronalMembrane].Init(m_inventoryGrid, _entity, _entity.neuronalMembrane
 			, item => item != null && item.TryGetData(out EntityEquipmentData _data) && _data.GetEquipmentType() == EntityEquipmentData.EquipmentType.NeuronalMembrane, ComponentDisplay.DisplayMode.Hangar);
+		m_mainComponentSlotDictionary[EntityEquipmentData.EquipmentType.Reactor].Init(m_inventoryGrid, _entity, _entity.reactor
+			, item => item != null && item.TryGetData(out EntityEquipmentData _data) && _data.GetEquipmentType() == EntityEquipmentData.EquipmentType.Reactor, ComponentDisplay.DisplayMode.Hangar);
 
-		gridDictionary[EntityEquipmentData.EquipmentType.Frame].Init(componentSlotDictionary[EntityEquipmentData.EquipmentType.Frame], _entity
-			, null, item => item != null && item.TryGetData(out EntityEquipmentData _data) && _data.GetEquipmentType() == EntityEquipmentData.EquipmentType.Frame, ComponentDisplay.DisplayMode.Hangar);
-		gridDictionary[EntityEquipmentData.EquipmentType.Reactor].Init(componentSlotDictionary[EntityEquipmentData.EquipmentType.Reactor], _entity
-			, null, item => item != null && item.TryGetData(out EntityEquipmentData _data) && _data.GetEquipmentType() == EntityEquipmentData.EquipmentType.Reactor, ComponentDisplay.DisplayMode.Hangar);
-		gridDictionary[EntityEquipmentData.EquipmentType.Brain].Init(componentSlotDictionary[EntityEquipmentData.EquipmentType.Brain], _entity
-			, null, item => item != null && item.TryGetData(out EntityEquipmentData _data) && _data.GetEquipmentType() == EntityEquipmentData.EquipmentType.Brain, ComponentDisplay.DisplayMode.Hangar);
-		gridDictionary[EntityEquipmentData.EquipmentType.NeuronalMembrane].Init(componentSlotDictionary[EntityEquipmentData.EquipmentType.NeuronalMembrane], _entity
-			, null, item => item != null && item.TryGetData(out EntityEquipmentData _data) && _data.GetEquipmentType() == EntityEquipmentData.EquipmentType.NeuronalMembrane, ComponentDisplay.DisplayMode.Hangar);
+		for (int i = 0; i < m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Frame].slots.Count; i++)
+		{
+			if (_entity.FrameData.armoringSlotAvailable > i)
+			{
+				m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Frame].slots[i].gameObject.SetActive(true);
+				m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Frame].slots[i].Init(m_inventoryGrid, _entity, _entity.auxiliar.Length <= i ? null : _entity.auxiliar[i],
+					item => item != null && item.TryGetData(out EntityEquipmentData _data) && _data.TryGetEquipmentType(out EntityEquipmentData.EquipmentType type) 
+					&& (type == EntityEquipmentData.EquipmentType.Armor || type == EntityEquipmentData.EquipmentType.Occultor), ComponentDisplay.DisplayMode.Hangar);
+			}
+			else
+				m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Frame].slots[i].gameObject.SetActive(false);
+		}
+		for (int i = 0; i < m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Brain].slots.Count; i++)
+		{
+			if (_entity.BrainData.chipsetSlotAvailable > i)
+			{
+				m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Brain].slots[i].gameObject.SetActive(true);
+				m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Brain].slots[i].Init(m_inventoryGrid, _entity, _entity.chipsets.Length <= i ? null : _entity.chipsets[i],
+					item => item != null && item.TryGetData(out EntityEquipmentData _data) && _data.GetEquipmentType() == EntityEquipmentData.EquipmentType.Chipset, ComponentDisplay.DisplayMode.Hangar);
+			}
+			else
+				m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Brain].slots[i].gameObject.SetActive(false);
+		}
+		for (int i = 0; i < m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.NeuronalMembrane].slots.Count; i++)
+		{
+			if (_entity.NeuronalMembraneData.equipmentSlotAvailable > i)
+			{
+				m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.NeuronalMembrane].slots[i].gameObject.SetActive(true);
+				m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.NeuronalMembrane].slots[i].Init(m_inventoryGrid, _entity, _entity.arms.Length <= i ? null : _entity.arms[i],
+					item => item != null && item.TryGetData(out EntityEquipmentData _data) && _data.TryGetEquipmentType(out EntityEquipmentData.EquipmentType type)
+					&& (type == EntityEquipmentData.EquipmentType.Weapon || type == EntityEquipmentData.EquipmentType.Tool), ComponentDisplay.DisplayMode.Hangar);
+			}
+			else
+				m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.NeuronalMembrane].slots[i].gameObject.SetActive(false);
+		}
+		/*for (int i = 0; i < m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Reactor].Count; i++)
+		{
+			if (_entity.FrameData.armoringSlotAvailable > i)
+			{
+				m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Reactor][i].gameObject.SetActive(true);
+				m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Reactor][i].Init(m_inventoryGrid, _entity, _entity.auxiliar.Length <= i ? null : _entity.auxiliar[i],
+					item => item != null && item.TryGetData(out EntityEquipmentData _data) && _data.TryGetEquipmentType(out EntityEquipmentData.EquipmentType type)
+					&& (type == EntityEquipmentData.EquipmentType.Armor || type == EntityEquipmentData.EquipmentType.Occultor), ComponentDisplay.DisplayMode.Hangar);
+			}
+			else
+				m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Reactor][i].gameObject.SetActive(false);
+		}*/
+
+
+		m_inventoryGrid.Init(null, _entity, null, InventoryGridPredicate , ComponentDisplay.DisplayMode.Hangar);
 	}
+
+	public ComponentContainer GetFreeContainer( EntityEquipmentData.EquipmentType _type )
+	{
+		if (!m_subComponentSlotDictionary.ContainsKey(_type))
+			return null;
+
+		foreach(ComponentSlot slot in m_subComponentSlotDictionary[_type].slots)
+		{
+			if (slot.CurrentDisplay == null)
+				return slot;
+		}
+
+		return null;
+	}
+
+	private void RefreshVisual ()
+	{
+
+	}
+
+
+	#region Callbacks
 
 	private void OnClickClose ()
 	{
-		foreach (ComponentDisplayGrid grid in gridDictionary.Values)
-			grid.Cleanup();
-		foreach (ComponentSlot slot in componentSlotDictionary.Values)
+		m_inventoryGrid.Cleanup();
+		foreach (ComponentSlot slot in m_mainComponentSlotDictionary.Values)
 			slot.Cleanup();
-		
+
 		UIManager.Instance.OpenPanel<HangarPanel>();
+	}
+
+	private void OnItemAddedOnSlot ( ComponentDisplay _display, EntityEquipmentData.EquipmentType _type )
+	{
+		switch (_type)
+		{
+			case EntityEquipmentData.EquipmentType.Frame:
+				List<GameDatas.PlayerSave.Equipment> newArray = m_entityData.auxiliar.ToList();
+				newArray.Add(_display.SavedData);
+				m_entityData.auxiliar = newArray.ToArray();
+				break;
+			case EntityEquipmentData.EquipmentType.Brain:
+				List<GameDatas.PlayerSave.Equipment> newArray2 = m_entityData.chipsets.ToList();
+				newArray2.Add(_display.SavedData);
+				m_entityData.chipsets = newArray2.ToArray();
+				break;
+			case EntityEquipmentData.EquipmentType.Reactor:
+				//no interaction possible
+				break;
+			case EntityEquipmentData.EquipmentType.NeuronalMembrane:
+				List<GameDatas.PlayerSave.Equipment> newArray3 = m_entityData.arms.ToList();
+				newArray3.Add(_display.SavedData);
+				m_entityData.arms = newArray3.ToArray();
+				break;
+		}
+	}
+
+	private void OnItemRemovedOnSlot ( ComponentDisplay _display, EntityEquipmentData.EquipmentType _type )
+	{
+		switch (_type)
+		{
+			case EntityEquipmentData.EquipmentType.Frame:
+				List<GameDatas.PlayerSave.Equipment> newArray = m_entityData.auxiliar.ToList();
+				newArray.Remove(_display.SavedData);
+				m_entityData.auxiliar = newArray.ToArray();
+				break;
+			case EntityEquipmentData.EquipmentType.Brain:
+				List<GameDatas.PlayerSave.Equipment> newArray2 = m_entityData.chipsets.ToList();
+				newArray2.Remove(_display.SavedData);
+				m_entityData.chipsets = newArray2.ToArray();
+				break;
+			case EntityEquipmentData.EquipmentType.Reactor:
+				//no interaction possible
+				break;
+			case EntityEquipmentData.EquipmentType.NeuronalMembrane:
+				List<GameDatas.PlayerSave.Equipment> newArray3 = m_entityData.arms.ToList();
+				newArray3.Remove(_display.SavedData);
+				m_entityData.arms = newArray3.ToArray();
+				break;
+		}
 	}
 
 	private void OnClickOpenUpgradePopup ()
@@ -82,9 +238,22 @@ public class EntityConfigPanel : AUIPanel
 		UIManager.Instance.OpenPopup<StructureUpgradePopup>().Init(StructureUpgradePopup.StructureType.Hangar);
 	}
 
-	private void RefreshVisual ()
+	private void OnToggleComponentType ( EntityEquipmentData.EquipmentType _type )
 	{
-		
+		if (m_displayedEquipmentTypes.Contains(_type))
+		{
+			m_componentTypeFilterBtnDictionary[_type].Image.color = Color.red;
+			m_displayedEquipmentTypes.Remove(_type);
+		}
+		else
+		{
+			m_componentTypeFilterBtnDictionary[_type].Image.color = Color.white;
+			m_displayedEquipmentTypes.Add(_type);
+		}
+
+		m_inventoryGrid.RefreshPredicate(InventoryGridPredicate);
 	}
+
+	#endregion
 
 }

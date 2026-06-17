@@ -12,15 +12,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e340e03f272314442a53b80f2350e240, type: 3}
   m_Name: Frame_A-7
   m_EditorClassIdentifier: 
+  spreadsheetId: 
   faction: 0
-  icon: {fileID: 21300000, guid: 3ab256982cae8674388ec2dcdc0a1743, type: 3}
+  icon: {fileID: -1360359492, guid: b61920d2917644949a125f8a6af0e45c, type: 3}
   displayName: A-7
   energyCost: 10
   knownedActions: 0a0000002c000000
   passiveEffects: []
+  statusHitProbability: 0.5
   prefab: {fileID: 4673310249167116355, guid: 206cf16509b1846479a1f553fd6add2d, type: 3}
   maxHealth: 5
-  auxiliarSlotAvailable: 3
+  armoringSlotAvailable: 2
+  occultorSlotAvailable: 2
   statBonuses:
   - type: 3
     value: 0.3

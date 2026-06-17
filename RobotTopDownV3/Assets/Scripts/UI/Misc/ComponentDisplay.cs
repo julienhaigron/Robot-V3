@@ -126,11 +126,22 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 
 	private void OnDoubleClick ()
 	{
+		if (m_componentData == null)
+			return;
+
 		if (CurrentContainer != null && CurrentContainer.LinkedContainer != null && CurrentContainer.LinkedContainer.IsValid(this))
 		{
 			CurrentContainer.RemoveFromOrigin(this);
-
 			CurrentContainer.LinkedContainer.RegisterInteraction(this);
+		}
+		else if(CurrentContainer != null && CurrentContainer.LinkedContainer == null && UIManager.Instance.currentPanel is EntityConfigPanel entityConfigPanel)
+		{
+			ComponentContainer appropriateContainer = entityConfigPanel.GetFreeContainer(m_componentData.GetEquipmentType());
+			if (appropriateContainer == null)
+				return;
+
+			appropriateContainer.RemoveFromOrigin(this);
+			appropriateContainer.LinkedContainer.RegisterInteraction(this);
 		}
 	}
 

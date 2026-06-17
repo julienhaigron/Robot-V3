@@ -146,6 +146,7 @@ MonoBehaviour:
       - {fileID: 11400000, guid: 089f5b6503687a44ca2eb812dcd04d46, type: 2}
     arrowPoolData: {fileID: 11400000, guid: 64f7846c9740e524a979a96964270b2f, type: 2}
   ui:
+    baseEquipmentSprite: {fileID: -1360359492, guid: b61920d2917644949a125f8a6af0e45c, type: 3}
     baseComponentDisplay: {fileID: 6816767632338375938, guid: 6e102cf7754096846b421344887ef18e, type: 3}
     baseLobbyDisplay: {fileID: 2566041125526859700, guid: cc5b4c04e157c914381ced09bd279f76, type: 3}
     baseEntityActionDisplay: {fileID: 1776869416438720975, guid: 43cde6fde6a65d04c81939ddc6df829d, type: 3}
@@ -183,23 +184,23 @@ MonoBehaviour:
     componentIcons:
       keys: 000000000100000002000000030000000400000005000000060000000700000008000000
       values:
-      - {fileID: 21300000, guid: 03da9b037a0d27b4db02f45130a6cb28, type: 3}
-      - {fileID: 21300000, guid: 03da9b037a0d27b4db02f45130a6cb28, type: 3}
-      - {fileID: 21300000, guid: 03da9b037a0d27b4db02f45130a6cb28, type: 3}
-      - {fileID: 21300000, guid: 03da9b037a0d27b4db02f45130a6cb28, type: 3}
-      - {fileID: 21300000, guid: 03da9b037a0d27b4db02f45130a6cb28, type: 3}
-      - {fileID: 21300000, guid: 03da9b037a0d27b4db02f45130a6cb28, type: 3}
-      - {fileID: 21300000, guid: 03da9b037a0d27b4db02f45130a6cb28, type: 3}
-      - {fileID: 21300000, guid: 03da9b037a0d27b4db02f45130a6cb28, type: 3}
-      - {fileID: 21300000, guid: 03da9b037a0d27b4db02f45130a6cb28, type: 3}
+      - {fileID: -993449852, guid: b61920d2917644949a125f8a6af0e45c, type: 3}
+      - {fileID: -1647299402, guid: b61920d2917644949a125f8a6af0e45c, type: 3}
+      - {fileID: 397337216, guid: b61920d2917644949a125f8a6af0e45c, type: 3}
+      - {fileID: 868420700, guid: b61920d2917644949a125f8a6af0e45c, type: 3}
+      - {fileID: 1614285456, guid: b61920d2917644949a125f8a6af0e45c, type: 3}
+      - {fileID: -2079826707, guid: b61920d2917644949a125f8a6af0e45c, type: 3}
+      - {fileID: 1580341951, guid: b61920d2917644949a125f8a6af0e45c, type: 3}
+      - {fileID: -1771133569, guid: b61920d2917644949a125f8a6af0e45c, type: 3}
+      - {fileID: -1160498796, guid: b61920d2917644949a125f8a6af0e45c, type: 3}
     corporationsIcons:
       keys: 0000000001000000020000000300000004000000
       values:
       - {fileID: 21300000, guid: 03da9b037a0d27b4db02f45130a6cb28, type: 3}
-      - {fileID: 21300000, guid: 03da9b037a0d27b4db02f45130a6cb28, type: 3}
-      - {fileID: 21300000, guid: 03da9b037a0d27b4db02f45130a6cb28, type: 3}
-      - {fileID: 21300000, guid: 03da9b037a0d27b4db02f45130a6cb28, type: 3}
-      - {fileID: 21300000, guid: 03da9b037a0d27b4db02f45130a6cb28, type: 3}
+      - {fileID: 1022364126, guid: 31cee7fbc7dacf5449ac2bd80b7b4b88, type: 3}
+      - {fileID: -527731599, guid: 31cee7fbc7dacf5449ac2bd80b7b4b88, type: 3}
+      - {fileID: -723296476, guid: 31cee7fbc7dacf5449ac2bd80b7b4b88, type: 3}
+      - {fileID: 1717960602, guid: 31cee7fbc7dacf5449ac2bd80b7b4b88, type: 3}
   currencies:
     keys: 01000000
     values:

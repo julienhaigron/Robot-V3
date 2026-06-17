@@ -5,7 +5,7 @@ using System;
 
 public class ComponentSlot : ComponentContainer
 {
-    [SerializeField] private BaseButton m_openEntityConfigBtn;
+    [SerializeField] private ComponentSlot[] m_subSlots;
 
     protected ComponentDisplay m_currentDisplay;
     public ComponentDisplay CurrentDisplay
@@ -20,11 +20,11 @@ public class ComponentSlot : ComponentContainer
         }
     }
 
-    private EntitySavedData m_unitData;
     private EntityEquipmentData m_equipmentData;
     private GameDatas.PlayerSave.Equipment m_equipmentSavedData;
 
-    public override void Init ( ComponentContainer _container, EntitySavedData _unitData, GameDatas.PlayerSave.Equipment _componentSavedData, Func<GameDatas.PlayerSave.Equipment, bool> _predicate, ComponentDisplay.DisplayMode _displayMode )
+    public override void Init ( ComponentContainer _container, EntitySavedData _unitData, GameDatas.PlayerSave.Equipment _componentSavedData, Func<GameDatas.PlayerSave.Equipment, bool> _predicate
+        , ComponentDisplay.DisplayMode _displayMode )
     {
         base.Init(_container, _unitData, _componentSavedData, _predicate, _displayMode);
         m_unitData = _unitData;
@@ -32,11 +32,7 @@ public class ComponentSlot : ComponentContainer
         if (m_predicate != null && m_predicate(_componentSavedData))
         {
             m_equipmentSavedData = _componentSavedData;
-            m_openEntityConfigBtn.onClick = null;
             m_equipmentData = _componentSavedData.GetData<EntityEquipmentData>();
-            m_openEntityConfigBtn.onClick += OnClickOpenEntityConfigBtn;
-            m_openEntityConfigBtn.gameObject.SetActive(m_equipmentData != null && (m_equipmentData.GetEquipmentType() == EntityEquipmentData.EquipmentType.Frame
-                || m_equipmentData.GetEquipmentType() == EntityEquipmentData.EquipmentType.Brain || m_equipmentData.GetEquipmentType() == EntityEquipmentData.EquipmentType.NeuronalMembrane));
 
             ComponentDisplay newDisplay = Instantiate(GameAssets.current.ui.baseComponentDisplay, m_displayParent);
             newDisplay.Init(_unitData, _componentSavedData, _displayMode);
@@ -46,19 +42,21 @@ public class ComponentSlot : ComponentContainer
             newDisplay.transform.SetParent(m_displayParent);
             newDisplay.transform.localPosition = Vector3.zero;
         }
-        else
-            m_openEntityConfigBtn.gameObject.SetActive(false);
+
+        if(_displayMode == ComponentDisplay.DisplayMode.Hangar)
+		{
+            //handle sub slot => done in EntityConfigPanel
+		}
+        else if (_displayMode == ComponentDisplay.DisplayMode.ShopSelling)
+		{
+            //TODO : handle reroll btn
+		}
     }
 
 	public override bool IsValid ( ComponentDisplay _display )
 	{
 		return m_currentDisplay != _display && base.IsValid(_display);
 	}
-
-	private void OnClickOpenEntityConfigBtn ()
-    {
-        UIManager.Instance.OpenPanel<EntityComponentConfigPanel>().Init(m_unitData, m_equipmentSavedData);
-    }
 
     public void Cleanup ()
     {

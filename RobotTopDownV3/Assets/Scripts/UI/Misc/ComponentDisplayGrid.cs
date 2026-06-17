@@ -11,13 +11,12 @@ public class ComponentDisplayGrid : ComponentContainer
     private List<ComponentDisplay> m_items = new();
     public List<ComponentDisplay> Items => m_items;
 
-    public override void Init ( ComponentContainer _container, EntitySavedData _unitData, GameDatas.PlayerSave.Equipment _componentSavedData, Func<GameDatas.PlayerSave.Equipment, bool> _predicate, ComponentDisplay.DisplayMode _displayMode )
+    public override void Init ( ComponentContainer _container, EntitySavedData _unitData, GameDatas.PlayerSave.Equipment _componentSavedData, Func<GameDatas.PlayerSave.Equipment, bool> _predicate
+        , ComponentDisplay.DisplayMode _displayMode )
     {
         base.Init(_container, _unitData, _componentSavedData, _predicate, _displayMode);
 
-        foreach (GameDatas.PlayerSave.Equipment eq in GameDatas.current.currentPlayerSave.equipmentInventory)
-			if (m_predicate != null && m_predicate(eq))
-                CreateNewDisplay(_unitData, eq, _displayMode);
+        RefreshPredicate(_predicate);
     }
 
     public void CreateNewDisplay( EntitySavedData _unitData, GameDatas.PlayerSave.Equipment _componentSavedData, ComponentDisplay.DisplayMode _displayMode )
@@ -30,13 +29,31 @@ public class ComponentDisplayGrid : ComponentContainer
         newDisplay.transform.localPosition = Vector3.zero;
     }
 
-	public void Cleanup ()
+    public void RefreshPredicate ( Func<GameDatas.PlayerSave.Equipment, bool> _newPredicate )
+	{
+        m_predicate = _newPredicate;
+
+        foreach (ComponentDisplay display in m_items.ToArray())
+		{
+            if(m_predicate != null && !m_predicate(display.SavedData))
+			{
+                m_items.Remove(display);
+                Destroy(display.gameObject);
+			}
+		}
+
+        foreach (GameDatas.PlayerSave.Equipment eq in GameDatas.current.currentPlayerSave.equipmentInventory)
+            if (m_predicate != null && m_predicate(eq) && !m_items.Any(item => string.Equals(item.SavedData.ID, eq)))
+                CreateNewDisplay(m_unitData, eq, m_displayMode);
+    }
+
+
+    public void Cleanup ()
 	{
         foreach (ComponentDisplay display in m_items)
             Destroy(display.gameObject);
 
         m_items.Clear();
-
     }
 
     #region DnD

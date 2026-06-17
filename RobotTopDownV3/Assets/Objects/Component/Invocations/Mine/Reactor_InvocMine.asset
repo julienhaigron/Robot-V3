@@ -12,6 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 087fdcb19e35df443b5ddfcf9bf4957f, type: 3}
   m_Name: Reactor_InvocMine
   m_EditorClassIdentifier: RTD::ReactorEquipmentData
-  icon: {fileID: 0}
+  spreadsheetId: 
+  faction: 0
+  icon: {fileID: 1366701266, guid: b6a6397b98d67304fa94b8144e1fb5dd, type: 3}
+  displayName: default
   energyCost: 0
+  knownedActions: 
+  passiveEffects: []
+  statusHitProbability: 0.5
   energyProduced: 160

@@ -22,6 +22,7 @@ public class EntityEquipmentData : AParsableScriptableObject
     [BoxGroup(GroupID ="Status")]
     [Range(0f, 1f)] public float statusHitProbability = .5f;
 
+    [System.Serializable]
     public enum EquipmentType { Frame, Brain, Reactor, Occultor, NeuronalMembrane, Weapon, Tool, Armor, Chipset }
 
 	protected override string GetSheetID ()
@@ -61,6 +62,12 @@ public class EntityEquipmentData : AParsableScriptableObject
 
         return EquipmentType.Frame;
     }
+
+    public bool TryGetEquipmentType(out EquipmentType _type )
+	{
+        _type = GetEquipmentType();
+        return true;
+	}
 
     public System.Tuple<CurrencyType, ulong> GetPrice ()
 	{
@@ -149,6 +156,16 @@ public class EntityEquipmentData : AParsableScriptableObject
             GameDatas.current.currentPlayerSave.AddEquipmentToInventory(this);
         
         EditorUtility.SetDirty(GameDatas.current);
+    }
+
+    [Button]
+    private void RefreshIcons ()
+    {
+        icon = GameAssets.current.ui.baseEquipmentSprite;
+        EditorUtility.SetDirty(this);
+
+        AssetDatabase.SaveAssets();
+        AssetDatabase.Refresh();
     }
 
 #endif

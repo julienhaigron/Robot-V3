@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: RTD::OccultorEquipmentData
   spreadsheetId: https://docs.google.com/spreadsheets/d/1AeQujaBf6YdyVQRD2gBNWazoosesi46DpAoY5b6hrt8/export?format=csv&gid=1085589491
   faction: 4
-  icon: {fileID: 0}
+  icon: {fileID: 1366701266, guid: b6a6397b98d67304fa94b8144e1fb5dd, type: 3}
   displayName: Thermic Occ
   energyCost: 0
   knownedActions: 

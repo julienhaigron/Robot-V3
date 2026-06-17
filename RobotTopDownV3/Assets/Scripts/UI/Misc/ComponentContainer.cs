@@ -4,21 +4,26 @@ using System;
 
 public abstract class ComponentContainer : MonoBehaviour, IDropHandler
 {
-    public event Action<ComponentDisplay> onItemAdded;
-    public event Action<ComponentDisplay> onItemRemoved;
+    public Action<ComponentDisplay> onItemAdded;
+    public Action<ComponentDisplay> onItemRemoved;
 
     [SerializeField] protected Transform m_displayParent;
     public Transform DisplayParent => m_displayParent;
 
     protected Func<GameDatas.PlayerSave.Equipment, bool> m_predicate;
+    protected EntitySavedData m_unitData;
+    protected ComponentDisplay.DisplayMode m_displayMode;
 
     protected ComponentContainer m_linkedContainer;
     public ComponentContainer LinkedContainer => m_linkedContainer;
 
-    public virtual void Init ( ComponentContainer _container, EntitySavedData _unitData, GameDatas.PlayerSave.Equipment _componentSavedData, Func<GameDatas.PlayerSave.Equipment, bool> _predicate, ComponentDisplay.DisplayMode _displayMode )
+    public virtual void Init ( ComponentContainer _container, EntitySavedData _unitData, GameDatas.PlayerSave.Equipment _componentSavedData, Func<GameDatas.PlayerSave.Equipment, bool> _predicate
+        , ComponentDisplay.DisplayMode _displayMode )
     {
         m_linkedContainer = _container;
         m_predicate = _predicate;
+        m_unitData = _unitData;
+        m_displayMode = _displayMode;
     }
 
     public virtual bool IsValid ( ComponentDisplay _display )
