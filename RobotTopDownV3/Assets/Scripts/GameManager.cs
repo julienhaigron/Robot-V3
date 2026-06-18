@@ -66,6 +66,7 @@ public class GameManager : SingletonPersistant<GameManager>
 	{
 		if (string.Equals(_scene.name, GameConfig.current.game.hubSceneName))
 		{
+			UIManager.Instance.ShowTopCanvas<HubTopCanvas>();
 			UIManager.Instance.OpenPanel<SoloHubPanel>();
 		}
 		else if (string.Equals(_scene.name, GameConfig.current.game.startScreenSceneName))
@@ -114,6 +115,7 @@ public class GameManager : SingletonPersistant<GameManager>
 
 	public void GoToStartScreen ()
 	{
+		UIManager.Instance.HideTopCanvas<HubTopCanvas>();
 		SceneManager.LoadSceneAsync(GameConfig.current.game.startScreenSceneName);
 	}
 
@@ -127,6 +129,7 @@ public class GameManager : SingletonPersistant<GameManager>
 	{
 		TurnManager.Instance.Init();
 		GridManager.Instance.LoadGrid();
+		UIManager.Instance.HideTopCanvas<HubTopCanvas>();
 		UIManager.Instance.OpenPanel<InGamePanel>();
 
 		if (m_currentGameMode == GameMode.Offline)

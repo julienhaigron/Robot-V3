@@ -5,23 +5,22 @@ using System.Linq;
 
 public class ShopPanel : AUIPanel
 {
-	[SerializeField] private BaseButton m_returnBtn;
-	[SerializeField] private BaseButton m_upgradeBtn;
-
 	[SerializeField] private ComponentDisplayGrid m_shopGrid;
 	[SerializeField] private ComponentDisplayGrid m_inventoryGrid;
 
+	private EntityEquipmentData.EntityFaction m_currentFaction;
+	public EntityEquipmentData.EntityFaction CurrentFaction => m_currentFaction;
+
 	private void Awake ()
 	{
-		m_returnBtn.onClick += OnClickReturn;
-		m_upgradeBtn.onClick += OnClickOpenUpgradePopup;
-
 		m_shopGrid.onItemAdded += SellItem;
 		m_inventoryGrid.onItemAdded += BuyItem;
 	}
 
-	public void Init ()
+	public void Init ( EntityEquipmentData.EntityFaction _faction)
 	{
+		m_currentFaction = _faction;
+
 		m_shopGrid.Init(m_inventoryGrid, null, null, item => true, ComponentDisplay.DisplayMode.ShopBuying);
 		m_shopGrid.Cleanup();
 
@@ -67,13 +66,4 @@ public class ShopPanel : AUIPanel
 		GameDatas.current.currentPlayerSave.RemoveCurrency(price.Item1, price.Item2, GameDatas.PlayerSave.CurrencyRemoveMode.Spent);
 	}
 
-	private void OnClickReturn ()
-	{
-		UIManager.Instance.OpenPanel<SoloHubPanel>();
-	}
-
-	private void OnClickOpenUpgradePopup ()
-	{
-		UIManager.Instance.OpenPopup<StructureUpgradePopup>().Init(StructureUpgradePopup.StructureType.Shop);
-	}
 }

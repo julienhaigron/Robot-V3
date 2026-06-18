@@ -10,15 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a842159a352f3c34ab830222a40a593a, type: 3}
-  m_Name: SoftCurrency
-  m_EditorClassIdentifier: 
-  enumID: 1
-  displayName: Soft Currency
+  m_Name: PaladinCredit
+  m_EditorClassIdentifier: RTD::Currency
+  enumID: 3
+  displayName: PaladinCredit
   onlyVisibleWhenGreaterThanZero: 1
   affectedByCurrencyHistory: 0
   showOnPlayerWhenCurrencyAdded: 1
-  icon: {fileID: 2021431193, guid: c31e3a869a87af840896fadfabb217b5, type: 3}
-  iconWithOutline: {fileID: 2021431193, guid: c31e3a869a87af840896fadfabb217b5, type: 3}
+  icon: {fileID: 1717960602, guid: 31cee7fbc7dacf5449ac2bd80b7b4b88, type: 3}
+  iconWithOutline: {fileID: 1717960602, guid: 31cee7fbc7dacf5449ac2bd80b7b4b88, type: 3}
   model: {fileID: 0}
   baseCurrency: 0
   showOnlyIfUpgradeOneTime: 0

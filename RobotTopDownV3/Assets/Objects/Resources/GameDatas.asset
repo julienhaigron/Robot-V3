@@ -207,10 +207,10 @@ MonoBehaviour:
       dataID: Rapier
     - ID: Grenade launcher235
       dataID: Grenade launcher
-    equipmentCounter: 236
+    equipmentCounter: 244
     currencies:
-      keys: 01000000
-      values: 0000000000000000
+      keys: 01000000020000000300000004000000
+      values: 0000000000000000000000000000000000000000000000000000000000000000
     totalCurrenciesGot:
       keys: 01000000
       values: 0a00000000000000

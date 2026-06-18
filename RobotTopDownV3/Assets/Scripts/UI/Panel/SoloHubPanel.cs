@@ -10,7 +10,6 @@ public class SoloHubPanel : AUIPanel
 	[SerializeField] private BaseButton m_recycleShopBtn;
 	[SerializeField] private BaseButton m_repairBtn;
 	[SerializeField] private BaseButton m_missionBtn;
-	[SerializeField] private BaseButton m_returnBtn;
 
 	private void Awake ()
 	{
@@ -19,7 +18,6 @@ public class SoloHubPanel : AUIPanel
 		m_recycleShopBtn.onClick += OnClickOpenRecycleBtn;
 		m_repairBtn.onClick += OnClickOpenRepairBtn;
 		m_missionBtn.onClick += OnClickMissionBtn;
-		m_returnBtn.onClick += OnClickReturnBtn;
 	}
 
 	private void OnClickChangeSquadBtn ()
@@ -34,7 +32,7 @@ public class SoloHubPanel : AUIPanel
 
 	private void OnClickOpenShopBtn ()
 	{
-		UIManager.Instance.OpenPanel<ShopPanel>().Init();
+		UIManager.Instance.OpenPanel<ShopPanel>().Init(EntityEquipmentData.EntityFaction.Psy);
 	}
 
 	private void OnClickOpenRepairBtn ()
@@ -45,12 +43,6 @@ public class SoloHubPanel : AUIPanel
 	private void OnClickMissionBtn ()
 	{
 		UIManager.Instance.OpenPanel<MissionPanel>();
-	}
-	
-	private void OnClickReturnBtn ()
-	{
-		Close();
-		GameManager.Instance.GoToStartScreen();
 	}
 
 	protected override void OnShowStarted ()

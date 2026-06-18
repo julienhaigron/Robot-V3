@@ -1,4 +1,4 @@
-//GENERATED 22
+//GENERATED 23
 public enum EntityPassiveEffectEnumID
 {
 	Unknown,

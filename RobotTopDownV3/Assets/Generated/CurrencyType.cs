@@ -1,9 +1,12 @@
-//GENERATED 4
+//GENERATED 5
 public enum CurrencyType
 {
 	Unknown,
 	//#START#CURRENCYTYPE#//
 	SoftCurrency,
 
+	CommandoCredit,
+	PaladinCredit,
+	PsyCredit,
 	//#END#CURRENCYTYPE#//
 }

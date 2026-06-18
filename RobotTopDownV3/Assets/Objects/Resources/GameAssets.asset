@@ -202,9 +202,12 @@ MonoBehaviour:
       - {fileID: -723296476, guid: 31cee7fbc7dacf5449ac2bd80b7b4b88, type: 3}
       - {fileID: 1717960602, guid: 31cee7fbc7dacf5449ac2bd80b7b4b88, type: 3}
   currencies:
-    keys: 01000000
+    keys: 01000000020000000300000004000000
     values:
     - {fileID: 11400000, guid: 20677c04df8070340a210167399ab1c7, type: 2}
+    - {fileID: 11400000, guid: 673e1b0fa3929b74e90111fff102e481, type: 2}
+    - {fileID: 11400000, guid: 2295ac0ebbdcc504da10d1d97850e8ff, type: 2}
+    - {fileID: 11400000, guid: 7ac244aa0e10c0d4aaad75716875e0be, type: 2}
   equipments:
     keys:
     - Armor_CD1

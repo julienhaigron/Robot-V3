@@ -28,6 +28,8 @@ public partial class GameDatas : ScriptableObject
 	public static Action<CurrencyType, ulong> onCurrencyAdded;
 	public static Action<CurrencyType, ulong, PlayerSave.CurrencyRemoveMode> onCurrencyRemoved;
 
+	public static Action onNewDay;
+
 #if UNITY_EDITOR
 	[TitleGroup("Quick Settings")]
 	[InfoBox("PreventSave is ignored in builds.")]
@@ -122,6 +124,8 @@ public partial class GameDatas : ScriptableObject
 				{
 					missionsIds.Add(GameAssets.current.game.missions.Keys.ToList().RandomElement());
 				}
+
+				onNewDay?.Invoke();
 			}
 
 		}

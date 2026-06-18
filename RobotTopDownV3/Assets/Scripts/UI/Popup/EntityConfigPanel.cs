@@ -10,8 +10,6 @@ public class EntityConfigPanel : AUIPanel
 {
 
 	[SerializeField] private TextMeshProUGUI m_texte;
-	[SerializeField] private BaseButton m_closeBtn;
-	[SerializeField] private BaseButton m_upgradeHangarBtn;
 
 	[SerializeField] private SerializableDictionary<EntityEquipmentData.EquipmentType, ComponentSlot> m_mainComponentSlotDictionary;
 	[SerializeField] private SerializableDictionary<EntityEquipmentData.EquipmentType, SubSlotContainer> m_subComponentSlotDictionary;
@@ -34,9 +32,6 @@ public class EntityConfigPanel : AUIPanel
 
 	private void Awake ()
 	{
-		m_closeBtn.onClick += OnClickClose;
-		m_upgradeHangarBtn.onClick += OnClickOpenUpgradePopup;
-
 		m_mainComponentSlotDictionary[EntityEquipmentData.EquipmentType.Frame].onItemAdded += item => m_entityData.frame = item.SavedData;
 		m_mainComponentSlotDictionary[EntityEquipmentData.EquipmentType.Frame].onItemRemoved += item => m_entityData.frame = null;
 		m_mainComponentSlotDictionary[EntityEquipmentData.EquipmentType.Reactor].onItemAdded += item => m_entityData.reactor = item.SavedData;
@@ -84,6 +79,19 @@ public class EntityConfigPanel : AUIPanel
 	{
 		base.OnShowStarted();
 		RefreshVisual();
+	}
+
+	protected override void OnHideFinished ()
+	{
+		m_inventoryGrid.Cleanup();
+		foreach (ComponentSlot slot in m_mainComponentSlotDictionary.Values)
+			slot.Cleanup();
+
+		foreach (SubSlotContainer slotContainer in m_subComponentSlotDictionary.Values)
+			foreach (ComponentSlot slot in slotContainer.slots)
+				slot.Cleanup();
+			
+		base.OnHideFinished();
 	}
 
 	public void Init ( EntitySavedData _entity )
@@ -173,15 +181,6 @@ public class EntityConfigPanel : AUIPanel
 
 
 	#region Callbacks
-
-	private void OnClickClose ()
-	{
-		m_inventoryGrid.Cleanup();
-		foreach (ComponentSlot slot in m_mainComponentSlotDictionary.Values)
-			slot.Cleanup();
-
-		UIManager.Instance.OpenPanel<HangarPanel>();
-	}
 
 	private void OnItemAddedOnSlot ( ComponentDisplay _display, EntityEquipmentData.EquipmentType _type )
 	{

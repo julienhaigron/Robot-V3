@@ -20,9 +20,6 @@ public class Currency : ScriptableEnum<CurrencyType>
 	[PreviewField(ObjectFieldAlignment.Center, Height = 100f)]
 	public Sprite iconWithOutline;//used for flying Particle Image
 	[Space]
-	[AssetsOnly]
-	[PreviewField(ObjectFieldAlignment.Left, Height = 100f)]
-	public Mesh model;
 
 	public ulong baseCurrency;
 
