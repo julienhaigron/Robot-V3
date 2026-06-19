@@ -39,6 +39,11 @@ public class EntityEquipmentData : AParsableScriptableObject
         Commando
     }
 
+    public string GetDesciption ()
+	{
+        return "description";
+	}
+
     public EquipmentType GetEquipmentType ()
 	{
         if (this is FrameEquipmentData)

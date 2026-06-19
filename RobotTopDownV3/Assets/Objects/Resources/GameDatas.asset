@@ -207,7 +207,7 @@ MonoBehaviour:
       dataID: Rapier
     - ID: Grenade launcher235
       dataID: Grenade launcher
-    equipmentCounter: 244
+    equipmentCounter: 252
     currencies:
       keys: 01000000020000000300000004000000
       values: 0000000000000000000000000000000000000000000000000000000000000000
@@ -223,8 +223,24 @@ MonoBehaviour:
       - shopstructure
       values: 0000000000000000
     dayData:
-      missionsIds: 00000000000000000000000000000000000000000000000000000000
-      itemsInShop: []
+      missionsIds: 01000000000000000000000000000000010000000000000000000000
+      itemsInShop:
+      - ID: Weapon_Paladin_Minigun244
+        dataID: Weapon_Paladin_Minigun
+      - ID: Tool_Psy_Teleportation245
+        dataID: Tool_Psy_Teleportation
+      - ID: NeuronalMembrane_Dummy246
+        dataID: NeuronalMembrane_Dummy
+      - ID: "Magn\xE9tique Armouring247"
+        dataID: "Magn\xE9tique Armouring"
+      - ID: Mine kit248
+        dataID: Mine kit
+      - ID: Frame_Assault249
+        dataID: Frame_Assault
+      - ID: Tool_Paladin_PhysicalShield250
+        dataID: Tool_Paladin_PhysicalShield
+      - ID: Armor_CD1251
+        dataID: Armor_CD1
     cycleCount: 0
-    dayCount: 0
+    dayCount: 1
     tutoProgression: 0000000000

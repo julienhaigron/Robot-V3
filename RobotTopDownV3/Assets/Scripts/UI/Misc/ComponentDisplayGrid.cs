@@ -16,12 +16,16 @@ public class ComponentDisplayGrid : ComponentContainer
     {
         base.Init(_container, _unitData, _componentSavedData, _predicate, _displayMode);
 
-        RefreshPredicate(_predicate);
+        if (_predicate != null)
+            RefreshPredicate(_predicate);
+        else
+            m_predicate = null;
     }
 
     public void CreateNewDisplay( EntitySavedData _unitData, GameDatas.PlayerSave.Equipment _componentSavedData, ComponentDisplay.DisplayMode _displayMode )
 	{
-        ComponentDisplay newDisplay = Instantiate(GameAssets.current.ui.baseComponentDisplay, m_displayParent);
+        ComponentDisplay newDisplay = Instantiate(_displayMode == ComponentDisplay.DisplayMode.ShopBuying 
+            ? GameAssets.current.ui.shopComponentDisplay : GameAssets.current.ui.baseComponentDisplay, m_displayParent);
         newDisplay.Init(_unitData, _componentSavedData, _displayMode);
 
         m_items.Add(newDisplay);

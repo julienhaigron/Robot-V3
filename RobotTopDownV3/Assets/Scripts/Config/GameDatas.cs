@@ -112,6 +112,7 @@ public partial class GameDatas : ScriptableObject
 			public List<MissionDataEnumID> missionsIds = new();
 			public List<Equipment> itemsInShop = new();
 
+			[Button]
 			public void NewDay ()
 			{
 				current.currentPlayerSave.dayCount++;
@@ -123,6 +124,13 @@ public partial class GameDatas : ScriptableObject
 				for(int i = 0; i < GameConfig.current.game.missionAmountInSoloPanel; i++)
 				{
 					missionsIds.Add(GameAssets.current.game.missions.Keys.ToList().RandomElement());
+				}
+
+				//new items in shop
+				for (int i = 0; i < (GameAssets.current.game.structureUpgrades[StructureUpgradePopup.StructureType.Shop] as ShopStructureUpgrade).GetMaxItemAmount(); i++)
+				{
+					EntityEquipmentData equipmentData = GameAssets.current.equipments.Values.ToArray().RandomElement();
+					itemsInShop.Add(new() { ID = equipmentData.name + GameDatas.current.currentPlayerSave.equipmentCounter++, dataID = equipmentData.name });
 				}
 
 				onNewDay?.Invoke();

@@ -56,7 +56,7 @@ MonoBehaviour:
   m_tooltipTitleTMP: {fileID: 5156995696289117262}
   m_tooltipDescriptionTMP: {fileID: 5260099924271217400}
   m_backgroundRect: {fileID: 7279138125162510553}
-  m_offset: {x: 0, y: 0}
+  m_offset: {x: -10, y: 10}
   m_fadeDuration: 0.2
 --- !u!114 &1155012189743850741
 MonoBehaviour:

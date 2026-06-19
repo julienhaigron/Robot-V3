@@ -148,6 +148,7 @@ MonoBehaviour:
   ui:
     baseEquipmentSprite: {fileID: -1360359492, guid: b61920d2917644949a125f8a6af0e45c, type: 3}
     baseComponentDisplay: {fileID: 6816767632338375938, guid: 6e102cf7754096846b421344887ef18e, type: 3}
+    shopComponentDisplay: {fileID: 238999215012183287, guid: 6f453533517bae141a49dd4045d68209, type: 3}
     baseLobbyDisplay: {fileID: 2566041125526859700, guid: cc5b4c04e157c914381ced09bd279f76, type: 3}
     baseEntityActionDisplay: {fileID: 1776869416438720975, guid: 43cde6fde6a65d04c81939ddc6df829d, type: 3}
     flyingDamageFontAsset: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}

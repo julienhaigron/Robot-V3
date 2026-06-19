@@ -13,6 +13,7 @@ public class EntityConfigPanel : AUIPanel
 
 	[SerializeField] private SerializableDictionary<EntityEquipmentData.EquipmentType, ComponentSlot> m_mainComponentSlotDictionary;
 	[SerializeField] private SerializableDictionary<EntityEquipmentData.EquipmentType, SubSlotContainer> m_subComponentSlotDictionary;
+	[SerializeField] private ComponentFullDisplay m_hoveredComponentFullInfoDisplay;
 
 	[Title("Inventory")]
 	[SerializeField] private ComponentDisplayGrid m_inventoryGrid;
