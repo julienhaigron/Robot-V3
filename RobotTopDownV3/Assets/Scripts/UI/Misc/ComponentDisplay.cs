@@ -13,6 +13,7 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 	[SerializeField] private TextMeshProUGUI m_titleTMP;
 	[SerializeField] private Image m_corpIcon;
 	[SerializeField] private Image m_componentIcon;
+	[SerializeField] private GameObject m_priceBackground;
 	[SerializeField] private TextMeshProUGUI m_priceTMP;
 	[SerializeField] private TextMeshProUGUI m_descriptionTMP;
 	[SerializeField] private BaseButton m_rerollBtn;
@@ -48,6 +49,7 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 				m_corpIcon.gameObject.SetActive(true);
 				m_priceTMP.gameObject.SetActive(false);
 				m_descriptionTMP.gameObject.SetActive(false);
+				m_priceBackground.gameObject.SetActive(false);
 				if (m_rerollBtn != null)
 					m_rerollBtn.gameObject.SetActive(false);
 				break;
@@ -56,8 +58,9 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 				m_titleTMP.gameObject.SetActive(true);
 				m_componentIcon.gameObject.SetActive(false);
 				m_corpIcon.gameObject.SetActive(true);
+				m_priceBackground.gameObject.SetActive(true);
 				m_priceTMP.gameObject.SetActive(true);
-				m_priceTMP.text = m_componentData == null ? null : m_componentData.GetPrice().Item1.ToString();
+				m_priceTMP.text = m_componentData == null ? null : m_componentData.GetPrice().Item2.ToString();
 				m_descriptionTMP.gameObject.SetActive(true);
 				m_descriptionTMP.text = "Réparer Composant";
 				if (m_rerollBtn != null)
@@ -68,8 +71,9 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 				m_titleTMP.gameObject.SetActive(true);
 				m_componentIcon.gameObject.SetActive(false);
 				m_corpIcon.gameObject.SetActive(true);
+				m_priceBackground.gameObject.SetActive(true);
 				m_priceTMP.gameObject.SetActive(true);
-				m_priceTMP.text = m_componentData == null ? null : m_componentData.GetSellingPrice().Item1.ToString();
+				m_priceTMP.text = m_componentData == null ? null : m_componentData.GetSellingPrice().Item2.ToString();
 				m_descriptionTMP.gameObject.SetActive(true);
 				m_descriptionTMP.text = "Recycler Composant";
 				if (m_rerollBtn != null)
@@ -80,8 +84,9 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 				m_titleTMP.gameObject.SetActive(true);
 				m_componentIcon.gameObject.SetActive(true);
 				m_corpIcon.gameObject.SetActive(true);
+				m_priceBackground.gameObject.SetActive(true);
 				m_priceTMP.gameObject.SetActive(true);
-				m_priceTMP.text = m_componentData == null ? null : m_componentData.GetPrice().Item1.ToString();
+				m_priceTMP.text = m_componentData == null ? null : m_componentData.GetPrice().Item2.ToString();
 				m_descriptionTMP.gameObject.SetActive(true);
 				m_descriptionTMP.text = "Acheter Composant";
 				if (m_rerollBtn != null)
@@ -89,11 +94,13 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 				break;
 			case DisplayMode.ShopSelling:
 				m_titleTMP.text = m_componentData == null ? null : m_componentData.displayName;
-				m_titleTMP.gameObject.SetActive(true);
-				m_componentIcon.gameObject.SetActive(true);
-				m_corpIcon.gameObject.SetActive(true);
+				m_titleTMP.gameObject.SetActive(false);
+				m_componentIcon.gameObject.SetActive(false);
+				m_corpIcon.gameObject.SetActive(false);
+				m_priceBackground.gameObject.SetActive(true);
+				m_priceBackground.gameObject.SetActive(false);
 				m_priceTMP.gameObject.SetActive(true);
-				m_priceTMP.text = m_componentData == null ? null : m_componentData.GetSellingPrice().Item1.ToString();
+				m_priceTMP.text = m_componentData == null ? null : m_componentData.GetSellingPrice().Item2.ToString();
 				m_descriptionTMP.gameObject.SetActive(false);
 				if (m_rerollBtn != null)
 					m_rerollBtn.gameObject.SetActive(false);

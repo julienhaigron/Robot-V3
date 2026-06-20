@@ -485,9 +485,9 @@ MonoBehaviour:
   m_titleTMP: {fileID: 8711913412624370913}
   m_corpIcon: {fileID: 6890882406316987311}
   m_componentIcon: {fileID: 7191509894469378144}
+  m_priceBackground: {fileID: 2407912802454250105}
   m_priceTMP: {fileID: 4758915025133466046}
   m_descriptionTMP: {fileID: 324957359373003063}
-  m_tooltipTrigger: {fileID: 0}
   m_rerollBtn: {fileID: 0}
   CurrentContainer: {fileID: 0}
 --- !u!225 &2193921125457550762
