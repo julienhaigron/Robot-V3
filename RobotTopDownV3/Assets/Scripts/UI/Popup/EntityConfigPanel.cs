@@ -9,7 +9,7 @@ using System.Linq;
 public class EntityConfigPanel : AUIPanel
 {
 
-	[SerializeField] private TextMeshProUGUI m_unitName;
+	[SerializeField] private TMP_InputField m_unitNameInputField;
 
 	[SerializeField] private SerializableDictionary<EntityEquipmentData.EquipmentType, ComponentSlot> m_mainComponentSlotDictionary;
 	[SerializeField] private SerializableDictionary<EntityEquipmentData.EquipmentType, SubSlotContainer> m_subComponentSlotDictionary;
@@ -64,20 +64,18 @@ public class EntityConfigPanel : AUIPanel
 			slot.onItemAdded += ( ComponentDisplay display ) => OnItemAddedOnSlot(display, EntityEquipmentData.EquipmentType.NeuronalMembrane);
 			slot.onItemRemoved += ( ComponentDisplay display ) => OnItemRemovedOnSlot(display, EntityEquipmentData.EquipmentType.NeuronalMembrane);
 		}
-		/*for (int i = 0; i < m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Reactor].Count; i++)
-		{
-			ComponentSlot slot = m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Reactor][i];
-			slot.onItemAdded += ( ComponentDisplay display ) => OnItemAddedOnSlot(display, EntityEquipmentData.EquipmentType.Reactor);
-			slot.onItemRemoved += ( ComponentDisplay display ) => OnItemRemovedOnSlot(display, EntityEquipmentData.EquipmentType.Reactor);
-		}*/
+		
 
 		m_inventoryGrid.onItemAdded += item => GameDatas.current.currentPlayerSave.AddEquipmentToInventory(item.ComponentData);
 		m_inventoryGrid.onItemRemoved += item => GameDatas.current.currentPlayerSave.RemoveEquipmentFromInventory(item.SavedData);
 
 		foreach (KeyValuePair<EntityEquipmentData.EquipmentType, BaseButton> pair in m_componentTypeFilterBtnDictionary)
 			pair.Value.onClick = () => OnToggleComponentType(pair.Key);
-
 		m_displayedEquipmentTypes.AddRange(m_componentTypeFilterBtnDictionary.Keys);
+
+		m_unitNameInputField.onSubmit.AddListener((string s) => OnInputFieldChange());
+		m_unitNameInputField.onEndTextSelection.AddListener((string s, int i, int j) => OnInputFieldChange());
+		m_renameBtn.onClick += OnClickRenameBtn;
 	}
 
 	protected override void OnShowStarted ()
@@ -101,7 +99,7 @@ public class EntityConfigPanel : AUIPanel
 	public void Init ( EntitySavedData _entity )
 	{
 		m_entityData = _entity;
-		m_unitName.text = _entity.name;
+		m_unitNameInputField.text = _entity.name;
 
 		m_mainComponentSlotDictionary[EntityEquipmentData.EquipmentType.Frame].Init(m_inventoryGrid, _entity, _entity.frame
 			, item => item != null && item.TryGetData(out EntityEquipmentData _data) && _data.GetEquipmentType() == EntityEquipmentData.EquipmentType.Frame, ComponentDisplay.DisplayMode.Hangar);
@@ -236,11 +234,6 @@ public class EntityConfigPanel : AUIPanel
 		}
 	}
 
-	private void OnClickOpenUpgradePopup ()
-	{
-		UIManager.Instance.OpenPopup<StructureUpgradePopup>().Init(StructureUpgradePopup.StructureType.Hangar);
-	}
-
 	private void OnToggleComponentType ( EntityEquipmentData.EquipmentType _type )
 	{
 		if (m_displayedEquipmentTypes.Contains(_type))
@@ -255,6 +248,16 @@ public class EntityConfigPanel : AUIPanel
 		}
 
 		m_inventoryGrid.RefreshPredicate(InventoryGridPredicate);
+	}
+
+	private void OnInputFieldChange ()
+	{
+		m_entityData.name = m_unitNameInputField.text;
+	}
+
+	private void OnClickRenameBtn ()
+	{
+		m_unitNameInputField.Select();
 	}
 
 	#endregion
