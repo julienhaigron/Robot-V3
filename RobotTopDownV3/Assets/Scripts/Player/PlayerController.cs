@@ -82,7 +82,8 @@ public class PlayerController : Singleton<PlayerController>
 
 	private void FixedUpdate ()
 	{
-		if (TurnManager.Instance.currentPhase == TurnManager.TurnPhase.Off)
+		if (TurnManager.Instance.currentPhase == TurnManager.TurnPhase.Off
+			|| UIManager.Instance.currentPanel is not InGamePanel)
 			return;
 
 		HandleCameraMovement();

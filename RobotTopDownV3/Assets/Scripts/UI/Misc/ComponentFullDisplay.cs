@@ -10,6 +10,7 @@ public class ComponentFullDisplay : MonoBehaviour
 	[SerializeField] private Image m_corpIcon;
 	[SerializeField] private Image m_componentTypeIcon;
 	[SerializeField] private TextMeshProUGUI m_priceTMP;
+	[SerializeField] private StatDisplay[] m_statDisplays;
 
 	private ComponentDisplay m_currentDisplayedComponent;
 
@@ -26,6 +27,18 @@ public class ComponentFullDisplay : MonoBehaviour
 		//m_icon.sprite = componentData.icon;
 		m_titleTMP.text = componentData == null ? null : componentData.displayName;
 		m_priceTMP.text = componentData == null ? null : componentData.GetSellingPrice().Item2.ToString();
+
+		EntityEquipmentData.StatDescription[] statsDescriptions = componentData.GetDesciption();
+		for (int i = 0; i < m_statDisplays.Length; i++)
+		{
+			if (statsDescriptions.Length <= i)
+				m_statDisplays[i].gameObject.SetActive(false);
+			else
+			{
+				m_statDisplays[i].gameObject.SetActive(true);
+				m_statDisplays[i].Init(statsDescriptions[i]);
+			}
+		}
 	}
 
 	private void OnComponentHovered (ComponentDisplay _display)

@@ -1,177 +1,299 @@
 using UnityEngine;
 using Sirenix.OdinInspector;
+using System.Collections;
+using System.Collections.Generic;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 
 public class EntityEquipmentData : AParsableScriptableObject
 {
-    [Parsing("Faction")]
-    public EntityFaction faction;
-    //public EquipmentType type;
-    public Sprite icon;
-    [Parsing("Name")]
-    public string displayName = "default";
+	[Parsing("Faction")]
+	public EntityFaction faction;
+	//public EquipmentType type;
+	public Sprite icon;
+	[Parsing("Name")]
+	public string displayName = "default";
 
-    [BoxGroup(GroupID ="Stat")]
-    public int energyCost;
-    [BoxGroup(GroupID ="Actions")]
-    public EntityActionEnumID[] knownedActions;
-    [BoxGroup(GroupID ="PassiveEffects")]
-    public AEntityPassiveEffect.PassiveEffectContainer[] passiveEffects;
-    [BoxGroup(GroupID ="Status")]
-    [Range(0f, 1f)] public float statusHitProbability = .5f;
+	[BoxGroup(GroupID = "Stat")]
+	public int energyCost;
+	[BoxGroup(GroupID = "Actions")]
+	public EntityActionEnumID[] knownedActions;
+	[BoxGroup(GroupID = "PassiveEffects")]
+	public AEntityPassiveEffect.PassiveEffectContainer[] passiveEffects;
+	[BoxGroup(GroupID = "Status")]
+	[Range(0f, 1f)] public float statusHitProbability = .5f;
 
-    [System.Serializable]
-    public enum EquipmentType { Frame, Brain, Reactor, Occultor, NeuronalMembrane, Weapon, Tool, Armor, Chipset }
+	[System.Serializable]
+	public enum EquipmentType { Frame, Brain, Reactor, Occultor, NeuronalMembrane, Weapon, Tool, Armor, Chipset }
 
 	protected override string GetSheetID ()
 	{
-        return GameConfig.current.parsing.componentGUIDPerPage[GetEquipmentType()];
+		return GameConfig.current.parsing.componentGUIDPerPage[GetEquipmentType()];
 	}
 
 	public enum EntityFaction
-    {
-        Noone,
-        Scout,
-        Psy,
-        Paladin,
-        Commando
-    }
-
-    public string GetDesciption ()
 	{
-        return "description";
+		Noone,
+		Scout,
+		Psy,
+		Paladin,
+		Commando
 	}
 
-    public EquipmentType GetEquipmentType ()
+	[System.Serializable]
+	public class StatDescription
 	{
-        if (this is FrameEquipmentData)
-            return EquipmentType.Frame;
-        else if (this is BrainEquipmentData)
-            return EquipmentType.Brain;
-        else if (this is ReactorEquipmentData)
-            return EquipmentType.Reactor;
-        else if (this is OccultorEquipmentData)
-            return EquipmentType.Occultor;
-        else if (this is NeuronalMembraneEquipmentData)
-            return EquipmentType.NeuronalMembrane;
-        else if (this is WeaponEquipmentData)
-            return EquipmentType.Weapon;
-        else if (this is ToolEquipmentData)
-            return EquipmentType.Tool;
-        else if (this is ArmorEquipmentData)
-            return EquipmentType.Armor;
-        else if (this is ChipsetEquipmentData)
-            return EquipmentType.Chipset;
+		public StatBonus.StatType ID;
+		public string title;
+		public string stringValue;
+		public float floatValue;
 
-        return EquipmentType.Frame;
-    }
-
-    public bool TryGetEquipmentType(out EquipmentType _type )
-	{
-        _type = GetEquipmentType();
-        return true;
-	}
-
-    public System.Tuple<CurrencyType, ulong> GetPrice ()
-	{
-        return new System.Tuple<CurrencyType, ulong>(CurrencyType.SoftCurrency, 10ul);
-	}
-    
-    public System.Tuple<CurrencyType, ulong> GetSellingPrice ()
-	{
-        return new System.Tuple<CurrencyType, ulong>(CurrencyType.SoftCurrency, 5ul);
-	}
-
-    [System.Serializable, ShowOdinSerializedPropertiesInInspector]
-    public class StatBonus
-	{
-        public enum StatType
+		public void Add(StatDescription _statDescription )
 		{
-            VisualCamo,
-            RadarCamo,
-            Camo,
-            Hp,
-            VisualPerception,
-            SoundPerception,
+			switch (GameConfig.current.meta.formatPerStartTypeDictionary[ID])
+			{
+				case StatBonus.StatTypeFormat.Int:
+					floatValue += _statDescription.floatValue;
+					if(string.IsNullOrEmpty(stringValue))
+						stringValue = null;
+					else
+						stringValue = floatValue.ToString();
+					break;
+				case StatBonus.StatTypeFormat.Percentage:
+					floatValue += _statDescription.floatValue;
+					stringValue = (floatValue*100) + " %";
+					break;
+				case StatBonus.StatTypeFormat.Cell:
+					floatValue += _statDescription.floatValue;
+					stringValue = floatValue + " C";
+					break;
+				case StatBonus.StatTypeFormat.String:
+					if(!string.IsNullOrEmpty(_statDescription.stringValue))
+						stringValue += ", " + _statDescription.stringValue;
+					break;
+			}
+		}
 
-            FireResitance,
-            ElectricResitance,
-            LaserResitance,
-            MagneticResitance,
-            PlasmaResitance,
-            RadiationResitance,
-            FlankResistance,
-            StatusResistance,
-            SlashResitance,
-            PiercingResitance,
-            BludgeoningResitance,
+		public void Remove(StatDescription _statDescription )
+		{
+			switch (GameConfig.current.meta.formatPerStartTypeDictionary[ID])
+			{
+				case StatBonus.StatTypeFormat.Int:
+					floatValue -= _statDescription.floatValue;
+					stringValue = null;
+					break;
+				case StatBonus.StatTypeFormat.Percentage:
+					floatValue -= _statDescription.floatValue;
+					stringValue = (floatValue * 100) + " %";
+					break;
+				case StatBonus.StatTypeFormat.Cell:
+					floatValue -= _statDescription.floatValue;
+					stringValue = floatValue + " C";
+					break;
+				case StatBonus.StatTypeFormat.String:
+					if (!string.IsNullOrEmpty(_statDescription.stringValue))
+						stringValue.Replace(_statDescription.stringValue, "");
+					break;
+			}
+		}
 
-            StatusDurationReduction,
-            StatusChance,
-            StatusAppliedDurationRaise,
-            FlankBonus,
-            GeneralDamageBonus,
-            GeneralDamageResistance,
+		public StatDescription Compare (StatDescription _statDescription )
+		{
+			StatDescription result = new() { ID = ID, title = title, floatValue = floatValue, stringValue = stringValue };
 
-            FireDamageBonus,
-            ElectricDamageBonus,
-            LaserDamageBonus,
-            MagneticDamageBonus,
-            PlasmaDamageBonus,
-            RadiationDamageBonus,
-            FlankDamageBonus,
-            StatusDamageBonus,
-            SlashDamageBonus,
-            PiercingDamageBonus,
-            BludgeoningDamageBonus,
 
-            PhysicalDamageBonus,
-            ElementalDamageBonus,
-
-            PhysicalDamageResistance,
-            ElementalDamageResistance,
-
-            FinalDamageBonus,
-
-            DistanceEvasion,
-            MeleeEvasion,
-            DistanceAccuracy,
-            MeleeAccuracy,
-            ThermalCamo
-        }
-
-        public StatType type;
-        public float value;
+			return result;
+		}
 	}
 
-    [System.Serializable, ShowOdinSerializedPropertiesInInspector]
-    public class StatBonusBuff
+	public virtual StatDescription[] GetDesciption ()
 	{
-        public StatBonus statBonus;
-        public int duration;
+		List<StatDescription> description = new();
+		description.Add(new() { ID = StatBonus.StatType.EnergyCost, title = "Energy Cost", floatValue = energyCost, stringValue = energyCost.ToString() });
+
+		if (passiveEffects != null && passiveEffects.Length > 0)
+		{
+			string allStatesInString = "";
+			for (int i = 0; i < passiveEffects.Length; i++)
+				allStatesInString += GameAssets.current.game.entityEffects[passiveEffects[i].enumID].displayName + (i + 1 < passiveEffects.Length ? ", " : "");
+			description.Add(new() { ID = StatBonus.StatType.PassiveEffect, title = "Passive Effects", floatValue = 0, stringValue = allStatesInString });
+		}
+		if (knownedActions != null && knownedActions.Length > 0)
+		{
+			string allActionsInString = "";
+			for (int i = 0; i < knownedActions.Length; i++)
+				allActionsInString += GameAssets.current.game.entityActionsData[knownedActions[i]].displayName + (i + 1 < knownedActions.Length ? ", " : "");
+			description.Add(new() { ID = StatBonus.StatType.Action, title = "Actions", floatValue = 0, stringValue = allActionsInString });
+		}
+
+		return description.ToArray();
+	}
+
+	public EquipmentType GetEquipmentType ()
+	{
+		if (this is FrameEquipmentData)
+			return EquipmentType.Frame;
+		else if (this is BrainEquipmentData)
+			return EquipmentType.Brain;
+		else if (this is ReactorEquipmentData)
+			return EquipmentType.Reactor;
+		else if (this is OccultorEquipmentData)
+			return EquipmentType.Occultor;
+		else if (this is NeuronalMembraneEquipmentData)
+			return EquipmentType.NeuronalMembrane;
+		else if (this is WeaponEquipmentData)
+			return EquipmentType.Weapon;
+		else if (this is ToolEquipmentData)
+			return EquipmentType.Tool;
+		else if (this is ArmorEquipmentData)
+			return EquipmentType.Armor;
+		else if (this is ChipsetEquipmentData)
+			return EquipmentType.Chipset;
+
+		return EquipmentType.Frame;
+	}
+
+	public bool TryGetEquipmentType ( out EquipmentType _type )
+	{
+		_type = GetEquipmentType();
+		return true;
+	}
+
+	public System.Tuple<CurrencyType, ulong> GetPrice ()
+	{
+		return new System.Tuple<CurrencyType, ulong>(CurrencyType.SoftCurrency, 10ul);
+	}
+
+	public System.Tuple<CurrencyType, ulong> GetSellingPrice ()
+	{
+		return new System.Tuple<CurrencyType, ulong>(CurrencyType.SoftCurrency, 5ul);
+	}
+
+	[System.Serializable, ShowOdinSerializedPropertiesInInspector]
+	public class StatBonus
+	{
+		public enum StatType
+		{
+			VisualCamo,
+			RadarCamo,
+			Camo,
+			Hp,
+			VisualPerception,
+			SoundPerception,
+
+			FireResitance,
+			ElectricResitance,
+			LaserResitance,
+			MagneticResitance,
+			PlasmaResitance,
+			RadiationResitance,
+			FlankResistance,
+			StatusResistance,
+			SlashResitance,
+			PiercingResitance,
+			BludgeoningResitance,
+
+			StatusDurationReduction,
+			StatusChance,
+			StatusAppliedDurationRaise,
+			FlankBonus,
+			GeneralDamageBonus,
+			GeneralDamageResistance,
+
+			FireDamageBonus,
+			ElectricDamageBonus,
+			LaserDamageBonus,
+			MagneticDamageBonus,
+			PlasmaDamageBonus,
+			RadiationDamageBonus,
+			FlankDamageBonus,
+			StatusDamageBonus,
+			SlashDamageBonus,
+			PiercingDamageBonus,
+			BludgeoningDamageBonus,
+
+			PhysicalDamageBonus,
+			ElementalDamageBonus,
+
+			PhysicalDamageResistance,
+			ElementalDamageResistance,
+
+			FinalDamageBonus,
+
+			DistanceEvasion,
+			MeleeEvasion,
+			DistanceAccuracy,
+			MeleeAccuracy,
+			ThermalCamo,
+
+			EnergyCost,
+			EnergyProduced,
+			BaseHp,
+			BaseDamage,
+			VisionRange,
+			VisionType,
+			Action,
+			PassiveEffect,
+			States,
+			ChipsetSlot,
+			EquipmentSlot,
+			AuxiliarSlot,
+
+		}
+
+		public StatType type;
+		public float value;
+
+		public enum StatTypeFormat { Int, Percentage, Cell, String }
+
+		public StatDescription GetDescription ()
+		{
+			string stringFormatedValue = null;
+			switch (GameConfig.current.meta.formatPerStartTypeDictionary[type])
+			{
+				case StatTypeFormat.Int:
+					stringFormatedValue = value.ToString();
+					break;
+				case StatTypeFormat.Percentage:
+					stringFormatedValue = value * 100f + " %";
+					break;
+				case StatTypeFormat.Cell:
+					stringFormatedValue = value + " C";
+					break;
+			}
+
+			return new() {ID = type, title = type.ToString(), floatValue = value, stringValue = stringFormatedValue };
+		}
+
+	}
+
+	[System.Serializable, ShowOdinSerializedPropertiesInInspector]
+	public class StatBonusBuff
+	{
+		public StatBonus statBonus;
+		public int duration;
 	}
 
 #if UNITY_EDITOR
-    [Button]
-    private void AddToInventory ()
+	[Button]
+	private void AddToInventory ()
 	{
-        if (GameDatas.current.currentPlayerSave != null)
-            GameDatas.current.currentPlayerSave.AddEquipmentToInventory(this);
-        
-        EditorUtility.SetDirty(GameDatas.current);
-    }
+		if (GameDatas.current.currentPlayerSave != null)
+			GameDatas.current.currentPlayerSave.AddEquipmentToInventory(this);
 
-    [Button]
-    private void RefreshIcons ()
-    {
-        icon = GameAssets.current.ui.baseEquipmentSprite;
-        EditorUtility.SetDirty(this);
+		EditorUtility.SetDirty(GameDatas.current);
+	}
 
-        AssetDatabase.SaveAssets();
-        AssetDatabase.Refresh();
-    }
+	[Button]
+	private void RefreshIcons ()
+	{
+		icon = GameAssets.current.ui.baseEquipmentSprite;
+		EditorUtility.SetDirty(this);
+
+		AssetDatabase.SaveAssets();
+		AssetDatabase.Refresh();
+	}
 
 #endif
 }

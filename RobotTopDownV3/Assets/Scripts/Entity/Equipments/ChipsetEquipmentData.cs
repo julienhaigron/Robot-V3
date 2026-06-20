@@ -2,12 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Sirenix.OdinInspector;
+using System.Linq;
 
 [CreateAssetMenu(fileName = "ChipsetData", menuName = "ScriptableObject/Equipment/ChipsetData", order = 1)]
 public class ChipsetEquipmentData : EntityEquipmentData
 {
-    [BoxGroup(GroupID = "Stat")]
-    public ConditionalStatBonus[] statBonuses;
+	[BoxGroup(GroupID = "Stat")]
+	public ConditionalStatBonus[] statBonuses;
 
 
 	[System.Serializable, ShowOdinSerializedPropertiesInInspector]
@@ -42,5 +43,17 @@ public class ChipsetEquipmentData : EntityEquipmentData
 					return _targetEntity != null && _targetEntity.Status.Contains(EntityStatusEnumID.Marked);
 			}
 		}
+
+	}
+
+	public override StatDescription[] GetDesciption ()
+	{
+		List<StatDescription> description = base.GetDesciption().ToList();
+		foreach (ConditionalStatBonus bonus in statBonuses)
+		{
+			description.Add(bonus.bonus.GetDescription());
+		}
+
+		return description.ToArray();
 	}
 }

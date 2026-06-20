@@ -9,7 +9,7 @@ using System.Linq;
 public class EntityConfigPanel : AUIPanel
 {
 
-	[SerializeField] private TextMeshProUGUI m_texte;
+	[SerializeField] private TextMeshProUGUI m_unitName;
 
 	[SerializeField] private SerializableDictionary<EntityEquipmentData.EquipmentType, ComponentSlot> m_mainComponentSlotDictionary;
 	[SerializeField] private SerializableDictionary<EntityEquipmentData.EquipmentType, SubSlotContainer> m_subComponentSlotDictionary;
@@ -18,6 +18,10 @@ public class EntityConfigPanel : AUIPanel
 	[Title("Inventory")]
 	[SerializeField] private ComponentDisplayGrid m_inventoryGrid;
 	[SerializeField] private SerializableDictionary<EntityEquipmentData.EquipmentType, BaseButton> m_componentTypeFilterBtnDictionary = new();
+
+	[Title("Unit")]
+	[SerializeField] private BaseButton m_renameBtn;
+	[SerializeField] private StatDisplay[] m_unitStatDisplays;
 
 	private List<EntityEquipmentData.EquipmentType> m_displayedEquipmentTypes = new();
 	private EntitySavedData m_entityData;
@@ -79,7 +83,6 @@ public class EntityConfigPanel : AUIPanel
 	protected override void OnShowStarted ()
 	{
 		base.OnShowStarted();
-		RefreshVisual();
 	}
 
 	protected override void OnHideFinished ()
@@ -98,7 +101,7 @@ public class EntityConfigPanel : AUIPanel
 	public void Init ( EntitySavedData _entity )
 	{
 		m_entityData = _entity;
-		m_texte.text = _entity.name;
+		m_unitName.text = _entity.name;
 
 		m_mainComponentSlotDictionary[EntityEquipmentData.EquipmentType.Frame].Init(m_inventoryGrid, _entity, _entity.frame
 			, item => item != null && item.TryGetData(out EntityEquipmentData _data) && _data.GetEquipmentType() == EntityEquipmentData.EquipmentType.Frame, ComponentDisplay.DisplayMode.Hangar);
@@ -111,7 +114,7 @@ public class EntityConfigPanel : AUIPanel
 
 		for (int i = 0; i < m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Frame].slots.Count; i++)
 		{
-			if (_entity.FrameData.armoringSlotAvailable > i)
+			if (_entity.FrameData.auxiliarSlotAvailable > i)
 			{
 				m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Frame].slots[i].gameObject.SetActive(true);
 				m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Frame].slots[i].Init(m_inventoryGrid, _entity, _entity.auxiliar.Length <= i ? null : _entity.auxiliar[i],
@@ -144,21 +147,9 @@ public class EntityConfigPanel : AUIPanel
 			else
 				m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.NeuronalMembrane].slots[i].gameObject.SetActive(false);
 		}
-		/*for (int i = 0; i < m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Reactor].Count; i++)
-		{
-			if (_entity.FrameData.armoringSlotAvailable > i)
-			{
-				m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Reactor][i].gameObject.SetActive(true);
-				m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Reactor][i].Init(m_inventoryGrid, _entity, _entity.auxiliar.Length <= i ? null : _entity.auxiliar[i],
-					item => item != null && item.TryGetData(out EntityEquipmentData _data) && _data.TryGetEquipmentType(out EntityEquipmentData.EquipmentType type)
-					&& (type == EntityEquipmentData.EquipmentType.Armor || type == EntityEquipmentData.EquipmentType.Occultor), ComponentDisplay.DisplayMode.Hangar);
-			}
-			else
-				m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Reactor][i].gameObject.SetActive(false);
-		}*/
-
 
 		m_inventoryGrid.Init(null, _entity, null, InventoryGridPredicate , ComponentDisplay.DisplayMode.Hangar);
+		RefreshVisual();
 	}
 
 	public ComponentContainer GetFreeContainer( EntityEquipmentData.EquipmentType _type )
@@ -177,7 +168,19 @@ public class EntityConfigPanel : AUIPanel
 
 	private void RefreshVisual ()
 	{
-
+		//set unit stats
+		SerializableDictionary<EntityEquipmentData.StatBonus.StatType, EntityEquipmentData.StatDescription> statsDescriptions = m_entityData.GetStatsDesciptions();
+		List<EntityEquipmentData.StatBonus.StatType> keys = statsDescriptions.Keys.ToList();
+		for (int i = 0; i < m_unitStatDisplays.Length; i++)
+		{
+			if (keys.Count <= i)
+				m_unitStatDisplays[i].gameObject.SetActive(false);
+			else
+			{
+				m_unitStatDisplays[i].gameObject.SetActive(true);
+				m_unitStatDisplays[i].Init(statsDescriptions[keys[i]]);
+			}
+		}
 	}
 
 

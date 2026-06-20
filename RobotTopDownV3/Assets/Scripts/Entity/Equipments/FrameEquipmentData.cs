@@ -13,18 +13,25 @@ public class FrameEquipmentData : EntityEquipmentData
 
 	[BoxGroup(GroupID = "Stat"), Parsing("HP")]
 	public int maxHealth;
-	/*[BoxGroup(GroupID = "Stat")]
-	public int armSlotAvailable = 2;*/
 	[BoxGroup(GroupID = "Stat"), Parsing("Armouring Slot")]
-	public int armoringSlotAvailable = 2;
-	[BoxGroup(GroupID = "Stat"), Parsing("Occultor Slot")]
-	public int occultorSlotAvailable = 2;
+	public int auxiliarSlotAvailable = 2;
+	/*[BoxGroup(GroupID = "Stat"), Parsing("Occultor Slot")]
+	public int occultorSlotAvailable = 2;*/
 	[BoxGroup(GroupID = "Stat")]
 	public StatBonus[] statBonuses;
 
-	//public float hpBonus = .3f; //is this stat variable?
-	/*public float evasion = 2;
-    public float camo = 2;*/
+	public override StatDescription[] GetDesciption ()
+	{
+		List<StatDescription> description = base.GetDesciption().ToList();
+		description.Add(new() { ID = StatBonus.StatType.BaseHp, title = "HP", floatValue = maxHealth, stringValue = maxHealth.ToString() });
+		description.Add(new() { ID = StatBonus.StatType.AuxiliarSlot, title = "AuxiliarSlot", floatValue = auxiliarSlotAvailable, stringValue = null });
+		foreach (StatBonus bonus in statBonuses)
+		{
+			description.Add(bonus.GetDescription());
+		}
+
+		return description.ToArray();
+	}
 }
 
 [System.Serializable]
@@ -280,6 +287,123 @@ public class EntitySavedData : INetworkSerializable
 		return result;
 
 	}
+
+	public SerializableDictionary<EntityEquipmentData.StatBonus.StatType, EntityEquipmentData.StatDescription> GetStatsDesciptions ()
+	{
+		SerializableDictionary<EntityEquipmentData.StatBonus.StatType, EntityEquipmentData.StatDescription> statsDictionary = new();
+		if(FrameData != null)
+		{
+			foreach(EntityEquipmentData.StatDescription stat in FrameData.GetDesciption())
+			{
+				if (statsDictionary.ContainsKey(stat.ID))
+					statsDictionary[stat.ID].Add(stat);
+				else
+					statsDictionary.Add(stat.ID, stat);
+			}
+		}
+		if(ReactorData != null)
+		{
+			foreach (EntityEquipmentData.StatDescription stat in ReactorData.GetDesciption())
+			{
+				if (statsDictionary.ContainsKey(stat.ID))
+					statsDictionary[stat.ID].Add(stat);
+				else
+					statsDictionary.Add(stat.ID, stat);
+			}
+		}
+		if (NeuronalMembraneData != null)
+		{
+			foreach (EntityEquipmentData.StatDescription stat in NeuronalMembraneData.GetDesciption())
+			{
+				if (statsDictionary.ContainsKey(stat.ID))
+					statsDictionary[stat.ID].Add(stat);
+				else
+					statsDictionary.Add(stat.ID, stat);
+			}
+		}
+		if (BrainData != null)
+		{
+			foreach (EntityEquipmentData.StatDescription stat in BrainData.GetDesciption())
+			{
+				if (statsDictionary.ContainsKey(stat.ID))
+					statsDictionary[stat.ID].Add(stat);
+				else
+					statsDictionary.Add(stat.ID, stat);
+			}
+		}
+
+		if (auxiliar != null)
+		{
+			foreach (GameDatas.PlayerSave.Equipment container in auxiliar)
+			{
+				if (GameAssets.current.equipments[container.dataID] is OccultorEquipmentData occultor)
+				{
+					foreach (EntityEquipmentData.StatDescription stat in occultor.GetDesciption())
+					{
+						if (statsDictionary.ContainsKey(stat.ID))
+							statsDictionary[stat.ID].Add(stat);
+						else
+							statsDictionary.Add(stat.ID, stat);
+					}
+				}
+				else if (GameAssets.current.equipments[container.dataID] is ArmorEquipmentData armor)
+				{
+					foreach (EntityEquipmentData.StatDescription stat in armor.GetDesciption())
+					{
+						if (statsDictionary.ContainsKey(stat.ID))
+							statsDictionary[stat.ID].Add(stat);
+						else
+							statsDictionary.Add(stat.ID, stat);
+					}
+				}
+			}
+		}
+		if (arms != null)
+		{
+			foreach (GameDatas.PlayerSave.Equipment container in arms)
+			{
+				if (GameAssets.current.equipments[container.dataID] is WeaponEquipmentData weapon)
+				{
+					foreach (EntityEquipmentData.StatDescription stat in weapon.GetDesciption())
+					{
+						if (statsDictionary.ContainsKey(stat.ID))
+							statsDictionary[stat.ID].Add(stat);
+						else
+							statsDictionary.Add(stat.ID, stat);
+					}
+				}
+				else if (GameAssets.current.equipments[container.dataID] is ToolEquipmentData tool)
+				{
+					foreach (EntityEquipmentData.StatDescription stat in tool.GetDesciption())
+					{
+						if (statsDictionary.ContainsKey(stat.ID))
+							statsDictionary[stat.ID].Add(stat);
+						else
+							statsDictionary.Add(stat.ID, stat);
+					}
+				}
+			}
+		}
+		if (chipsets != null)
+		{
+			foreach (GameDatas.PlayerSave.Equipment container in chipsets)
+			{
+				if (GameAssets.current.equipments[container.dataID] is ChipsetEquipmentData chipset)
+				{
+					foreach (EntityEquipmentData.StatDescription stat in chipset.GetDesciption())
+					{
+						if (statsDictionary.ContainsKey(stat.ID))
+							statsDictionary[stat.ID].Add(stat);
+						else
+							statsDictionary.Add(stat.ID, stat);
+					}
+				}
+			}
+		}
+
+		return statsDictionary;
+	}
+
 }
 
 /*[System.Serializable]

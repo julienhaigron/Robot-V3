@@ -6,6 +6,8 @@ using Sirenix.OdinInspector;
 [Serializable]
 public abstract class AEntityPassiveEffect : ScriptableEnum<EntityPassiveEffectEnumID>
 {
+	public string displayName;
+
 	[Serializable]
 	public struct PassiveEffectContainer : INetworkSerializable
 	{

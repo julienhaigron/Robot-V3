@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 [CreateAssetMenu(fileName = "WeaponData", menuName = "ScriptableObject/Equipment/WeaponData", order = 1)]
 public class WeaponEquipmentData : EntityEquipmentData
@@ -41,6 +42,25 @@ public class WeaponEquipmentData : EntityEquipmentData
 	{
         Physic,
         Elemental
+	}
+
+	public override StatDescription[] GetDesciption ()
+    {
+        List<StatDescription> description = base.GetDesciption().ToList();
+        string value = "";
+        int count = 0;
+        foreach (KeyValuePair<DamageType, int> pair in baseDamages)
+		{
+            value += pair.Key.ToString() + ": " + pair.Value;
+            if (count + 1 < baseDamages.Keys.Count)
+                value += ", ";
+
+            count++;
+        }
+
+        description.Add(new() { ID = StatBonus.StatType.BaseDamage, title = "BaseDamage", floatValue = 0, stringValue = value });
+
+		return description.ToArray();
 	}
 
 }

@@ -63,6 +63,7 @@ public partial class GameConfig : ScriptableObject
 	public class Meta
 	{
 		public SerializableDictionary<LogConsole.LogEventType, Color> colorsPerType = new();
+		public SerializableDictionary<EntityEquipmentData.StatBonus.StatType, EntityEquipmentData.StatBonus.StatTypeFormat> formatPerStartTypeDictionary = new();
 	}
 	
 	[System.Serializable]

@@ -177,14 +177,12 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 	public void OnPointerEnter ( PointerEventData eventData )
 	{ 
 		onDisplayHovered?.Invoke(this);
-		ToolTipManager.Instance.Show(m_componentData.displayName, m_componentData.GetDesciption());
-		Debug.Log("enter");
+		ToolTipManager.Instance.Show(m_componentData.displayName, null);
 	}
 
 	public void OnPointerExit ( PointerEventData eventData )
 	{
 		ToolTipManager.Instance.Hide();
-		Debug.Log("exit");
 	}
 
 	#endregion
