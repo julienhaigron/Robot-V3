@@ -10,15 +10,13 @@ public class SaveButton : BaseButton
 	[SerializeField] private Image m_icon;
 	[SerializeField] private TextMeshProUGUI m_name;
 
-	[ReadOnly, SerializeField] private GameDatas.PlayerSave m_save;
 	[ReadOnly, SerializeField] private int m_id;
 
-	public void Init( GameDatas.PlayerSave _save, int _saveID)
+	public void Init(bool _hasSave, int _saveID)
 	{
-		m_save = _save;
 		m_id = _saveID;
 
-		if (_save == null)
+		if (!_hasSave)
 		{
 			SetInteractability(false);
 			m_name.text = "Empty save slot";
@@ -26,15 +24,12 @@ public class SaveButton : BaseButton
 		else
 		{
 			SetInteractability(true);
-			m_name.text = _save.saveName;
+			m_name.text = GameDatas.current.playerSaves[_saveID].saveName;
 		}
 	}
 
 	protected override void OnClick ()
 	{
-		if (m_save == null)
-			return;
-
 		GameDatas.current.game.lastPlayerSaveSelectedID = m_id;
 		GameManager.Instance.LoadSaveAndGoToHub(m_id);
 		base.OnClick();

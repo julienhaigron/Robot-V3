@@ -51,6 +51,8 @@ public class GameManager : SingletonPersistant<GameManager>
 		}
 	}
 
+	private bool m_returnFromMatch = false;
+
 	private List<Item> m_items = new();
 	public List<Item> Items => m_items;
 
@@ -68,6 +70,9 @@ public class GameManager : SingletonPersistant<GameManager>
 		{
 			UIManager.Instance.ShowTopCanvas<HubTopCanvas>();
 			UIManager.Instance.OpenPanel<SoloHubPanel>();
+
+			if (m_returnFromMatch)
+				UIManager.Instance.OpenPopup<ReturnToHubPopup>().Init();
 		}
 		else if (string.Equals(_scene.name, GameConfig.current.game.startScreenSceneName))
 		{
@@ -81,7 +86,6 @@ public class GameManager : SingletonPersistant<GameManager>
 	{
 		GameDatas.current.game.lastPlayerSaveSelectedID = _saveID;
 		m_currentGameMode = GameMode.Offline;
-		//UIManager.Instance.GetPanel<StartMenuPanel>().Close();
 
 		SceneManager.LoadSceneAsync(GameConfig.current.game.hubSceneName);
 	}
@@ -100,6 +104,7 @@ public class GameManager : SingletonPersistant<GameManager>
 
 	public void GoBackToHub ()
 	{
+		m_returnFromMatch = true;
 		m_currentMission = null;
 		foreach (EntityAnchor anchor in m_playersEntityAnchor)
 		{

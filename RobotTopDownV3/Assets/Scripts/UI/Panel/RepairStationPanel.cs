@@ -69,8 +69,8 @@ public class RepairStationPanel : AUIPanel
 	private void OnItemRemovedOnSlot ( ComponentContainer _container, ComponentDisplay _display)
 	{
 		GameDatas.current.currentPlayerSave.dayData.repairingEntities[_container.Index] = null;
-		_display.SavedData.isDamaged = false;
 		GameDatas.current.currentPlayerSave.equipmentInventory.Add(_display.SavedData);
+		m_repairingSlots[_container.Index].Cleanup();
 	}
 
 }

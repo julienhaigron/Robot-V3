@@ -29,7 +29,7 @@ public class RecyclePanel : AUIPanel
 		for (int i = 0; i < m_recyclingSlots.Length; i++)
 		{
 			GameDatas.PlayerSave.DayData.RecyclingComponentData recyclingComponent = maxSlotAmount > i
-				? GameDatas.current.currentPlayerSave.dayData.currentlyRecyclingComponent[i] : null;
+				? GameDatas.current.currentPlayerSave.dayData.currentlyRecyclingComponents[i] : null;
 
 			if (i >= maxSlotAmount)
 			{
@@ -61,16 +61,16 @@ public class RecyclePanel : AUIPanel
 
 	private void OnItemAddedOnSlot (ComponentContainer _container, ComponentDisplay _display )
 	{
-		GameDatas.current.currentPlayerSave.dayData.currentlyRecyclingComponent[_container.Index] = new() { component = _display.SavedData, remainingTime = _display.ComponentData.recyclingDurationAmount };
+		GameDatas.current.currentPlayerSave.dayData.currentlyRecyclingComponents[_container.Index] = new() { component = _display.SavedData, remainingTime = _display.ComponentData.recyclingDurationAmount };
 		GameDatas.current.currentPlayerSave.equipmentInventory.Remove(_display.SavedData);
-		m_recyclingSlots[_container.Index].InitRecyclingData(GameDatas.current.currentPlayerSave.dayData.currentlyRecyclingComponent[_container.Index]);
+		m_recyclingSlots[_container.Index].InitRecyclingData(GameDatas.current.currentPlayerSave.dayData.currentlyRecyclingComponents[_container.Index]);
 	}
 
 	private void OnItemRemovedOnSlot ( ComponentContainer _container, ComponentDisplay _display )
 	{
-		GameDatas.current.currentPlayerSave.dayData.currentlyRecyclingComponent[_container.Index] = null;
-		System.Tuple<CurrencyType, ulong> sellingPrice = _display.ComponentData.GetSellingPrice();
-		GameDatas.current.currentPlayerSave.AddCurrency(sellingPrice.Item1, sellingPrice.Item2);
+		GameDatas.current.currentPlayerSave.dayData.currentlyRecyclingComponents[_container.Index] = null;
+		GameDatas.current.currentPlayerSave.equipmentInventory.Add(_display.SavedData);
+		m_recyclingSlots[_container.Index].Cleanup();
 	}
 
 }

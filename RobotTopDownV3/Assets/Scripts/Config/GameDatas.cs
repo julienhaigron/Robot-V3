@@ -15,6 +15,7 @@ using UnityEditor;
 [CreateAssetMenu(fileName = "GameDatas", menuName = "ScriptableObject/GameDatas")]
 public partial class GameDatas : ScriptableObject
 {
+	public GameAssets gameAssets;
 	public static GameDatas current => ApplicationManager.datas;
 	private static string m_defaultSaveFile = "product.sav";
 	public static string defaultSaveFile => m_defaultSaveFile;
@@ -82,7 +83,7 @@ public partial class GameDatas : ScriptableObject
 	}
 	
 	[System.Serializable]
-	public partial class PlayerSave
+	public class PlayerSave
 	{
 		public string saveName;
 		public List<string> knownedFrames = new();
@@ -111,16 +112,9 @@ public partial class GameDatas : ScriptableObject
 		{
 			public List<MissionDataEnumID> missionsIds = new();
 			public List<Equipment> itemsInShop = new();
-			public RecyclingComponentData[] currentlyRecyclingComponent;
-			public RepairingComponentData[] repairingEntities;
+			public RecyclingComponentData[] currentlyRecyclingComponents = new RecyclingComponentData[3];
+			public RepairingComponentData[] repairingEntities = new RepairingComponentData[3];
 
-			public DayData ()
-			{
-				currentlyRecyclingComponent = new RecyclingComponentData
-					[(GameAssets.current.game.structureUpgrades[StructureUpgradePopup.StructureType.Recycler] as RecyclerStructureUpgrade).GetCurrentMaxRecyclingSlotAmount()];
-				repairingEntities = new RepairingComponentData
-					[(GameAssets.current.game.structureUpgrades[StructureUpgradePopup.StructureType.RepairStation] as RepairStationStructureUpgrade).GetCurrentMaxRepairedComponentSlotAmountPerLevel()];
-			}
 
 			[Serializable]
 			public class RecyclingComponentData
@@ -154,11 +148,11 @@ public partial class GameDatas : ScriptableObject
 				for (int i = 0; i < (GameAssets.current.game.structureUpgrades[StructureUpgradePopup.StructureType.Shop] as ShopStructureUpgrade).GetMaxItemAmount(); i++)
 				{
 					EntityEquipmentData equipmentData = GameAssets.current.equipments.Values.ToArray().RandomElement();
-					itemsInShop.Add(new() { ID = equipmentData.name + GameDatas.current.currentPlayerSave.equipmentCounter++, dataID = equipmentData.name });
+					itemsInShop.Add(new() { ID = equipmentData.name + current.currentPlayerSave.equipmentCounter++, dataID = equipmentData.name });
 				}
 
 				//recycling component
-				foreach(RecyclingComponentData data in currentlyRecyclingComponent)
+				foreach(RecyclingComponentData data in currentlyRecyclingComponents)
 				{
 					data.remainingTime--;
 					if (data.remainingTime < 0)

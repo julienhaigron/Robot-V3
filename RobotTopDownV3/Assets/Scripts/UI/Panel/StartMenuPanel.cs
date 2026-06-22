@@ -72,7 +72,7 @@ public class StartMenuPanel : AUIPanel
 					if (GameDatas.current.playerSaves.Count > i)
 					{
 						m_savesBtns[i].gameObject.SetActive(true);
-						m_savesBtns[i].Init(GameDatas.current.playerSaves[i], i);
+						m_savesBtns[i].Init(GameDatas.current.playerSaves[i] != null, i);
 					}
 					else
 						m_savesBtns[i].gameObject.SetActive(false);

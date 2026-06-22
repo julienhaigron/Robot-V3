@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 981045e478386cb49abf7ac83a4ac935, type: 3}
   m_Name: GameDatas
   m_EditorClassIdentifier: 
+  gameAssets: {fileID: 11400000, guid: 7630443fdfbd3ae43980db85f8104018, type: 2}
   preventSave: 0
   app:
     hapticEnabled: 1
@@ -393,7 +394,7 @@ MonoBehaviour:
       - ID: Frame_Assault275
         dataID: Frame_Assault
         isDamaged: 0
-      currentlyRecyclingComponent:
+      currentlyRecyclingComponents:
       - component:
           ID: 
           dataID: 
