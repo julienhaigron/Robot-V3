@@ -33,17 +33,27 @@ public class EndLevelPopup : AUIPopup
 	{
 		m_texte.text = _didWin ? "You win" : "You loose";
 
+		//TODO: display squad entities dead or alive status
+		//+ register destroied stuff
+
 		//TODO : display rewards
 		if (_didWin)
 		{
-			foreach (CurrencyType currencyType in _missionData.currencyRewards.Keys)
+			if (!_missionData.areRewardsRandom)
 			{
-				GameDatas.current.currentPlayerSave.AddCurrency(currencyType, _missionData.currencyRewards[currencyType]);
-			}
+				foreach (CurrencyType currencyType in _missionData.currencyRewards.Keys)
+				{
+					GameDatas.current.currentPlayerSave.AddCurrency(currencyType, _missionData.currencyRewards[currencyType]);
+				}
 
-			foreach (EntityEquipmentData equipmentData in _missionData.equipmentRewards)
+				foreach (EntityEquipmentData equipmentData in _missionData.equipmentRewards)
+				{
+					GameDatas.current.currentPlayerSave.AddEquipmentToInventory(equipmentData);
+				}
+			}
+			else
 			{
-				GameDatas.current.currentPlayerSave.AddEquipmentToInventory(equipmentData);
+				//TODO : design rng rules
 			}
 		}
 	}

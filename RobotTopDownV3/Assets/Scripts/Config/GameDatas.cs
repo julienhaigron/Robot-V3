@@ -111,6 +111,30 @@ public partial class GameDatas : ScriptableObject
 		{
 			public List<MissionDataEnumID> missionsIds = new();
 			public List<Equipment> itemsInShop = new();
+			public RecyclingComponentData[] currentlyRecyclingComponent;
+			public RepairingComponentData[] repairingEntities;
+
+			public DayData ()
+			{
+				currentlyRecyclingComponent = new RecyclingComponentData
+					[(GameAssets.current.game.structureUpgrades[StructureUpgradePopup.StructureType.Recycler] as RecyclerStructureUpgrade).GetCurrentMaxRecyclingSlotAmount()];
+				repairingEntities = new RepairingComponentData
+					[(GameAssets.current.game.structureUpgrades[StructureUpgradePopup.StructureType.RepairStation] as RepairStationStructureUpgrade).GetCurrentMaxRepairedComponentSlotAmountPerLevel()];
+			}
+
+			[Serializable]
+			public class RecyclingComponentData
+			{
+				public Equipment component;
+				public int remainingTime;
+			}
+
+			[Serializable]
+			public class RepairingComponentData
+			{
+				public Equipment component;
+				public int remainingTime;
+			}
 
 			[Button]
 			public void NewDay ()
@@ -131,6 +155,22 @@ public partial class GameDatas : ScriptableObject
 				{
 					EntityEquipmentData equipmentData = GameAssets.current.equipments.Values.ToArray().RandomElement();
 					itemsInShop.Add(new() { ID = equipmentData.name + GameDatas.current.currentPlayerSave.equipmentCounter++, dataID = equipmentData.name });
+				}
+
+				//recycling component
+				foreach(RecyclingComponentData data in currentlyRecyclingComponent)
+				{
+					data.remainingTime--;
+					if (data.remainingTime < 0)
+						data.remainingTime = 0;
+				}
+
+				//repairing units
+				foreach (RepairingComponentData data in repairingEntities)
+				{
+					data.remainingTime--;
+					if (data.remainingTime < 0)
+						data.remainingTime = 0;
 				}
 
 				onNewDay?.Invoke();
@@ -182,11 +222,13 @@ public partial class GameDatas : ScriptableObject
 		{
 			public string ID;
 			public string dataID;
+			public bool isDamaged = false;
 
 			public void NetworkSerialize<T> ( BufferSerializer<T> serializer ) where T : IReaderWriter
 			{
 				serializer.SerializeValue(ref ID);
 				serializer.SerializeValue(ref dataID);
+				serializer.SerializeValue(ref isDamaged);
 			}
 
 			public T GetData<T> () where T : EntityEquipmentData

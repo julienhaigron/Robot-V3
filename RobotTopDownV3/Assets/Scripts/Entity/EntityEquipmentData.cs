@@ -24,6 +24,9 @@ public class EntityEquipmentData : AParsableScriptableObject
 	[BoxGroup(GroupID = "Status")]
 	[Range(0f, 1f)] public float statusHitProbability = .5f;
 
+	public int recyclingDurationAmount = 1;
+	public int reparingDurationAmount = 1;
+
 	[System.Serializable]
 	public enum EquipmentType { Frame, Brain, Reactor, Occultor, NeuronalMembrane, Weapon, Tool, Armor, Chipset }
 

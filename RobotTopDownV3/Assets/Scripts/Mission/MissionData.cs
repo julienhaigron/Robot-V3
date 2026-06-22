@@ -21,6 +21,8 @@ public class MissionData : ScriptableEnum<MissionDataEnumID>
         CapturePosition,
         DestroyItem
 	}
+
+    public bool areRewardsRandom = false;
     public SerializableDictionary<CurrencyType, ulong> currencyRewards;
     public List<EntityEquipmentData> equipmentRewards;
 

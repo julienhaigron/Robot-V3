@@ -28,192 +28,262 @@ MonoBehaviour:
       frame:
         ID: Frame_Paladin_Knight0
         dataID: Frame_Paladin_Knight
+        isDamaged: 0
       reactor:
         ID: Reactor_B-991
         dataID: Reactor_B-99
+        isDamaged: 0
       neuronalMembrane:
         ID: NeuronalMembraneTest12
         dataID: NeuronalMembraneTest1
+        isDamaged: 0
       brain:
         ID: Brain_Z-13
         dataID: Brain_Z-1
+        isDamaged: 0
       arms:
       - ID: Weapon_Psy_GlaiveDeSivir4
         dataID: Weapon_Psy_GlaiveDeSivir
+        isDamaged: 0
       - ID: Missil array232
         dataID: Missil array
+        isDamaged: 0
       auxiliar:
       - ID: Armor_CD16
         dataID: Armor_CD1
+        isDamaged: 0
       - ID: Armor_CD27
         dataID: Armor_CD2
+        isDamaged: 0
       - ID: Occultor_SF-58
         dataID: Occultor_SF-5
+        isDamaged: 0
       chipsets:
       - ID: Chipset_ZB-389
         dataID: Chipset_ZB-38
+        isDamaged: 0
       currentHp: 10
     - name: Fire Bat
       frame:
         ID: Frame_Paladin_Knight10
         dataID: Frame_Paladin_Knight
+        isDamaged: 0
       reactor:
         ID: Reactor_B-9911
         dataID: Reactor_B-99
+        isDamaged: 0
       neuronalMembrane:
         ID: NeuronalMembraneTest112
         dataID: NeuronalMembraneTest1
+        isDamaged: 0
       brain:
         ID: Brain_Z-113
         dataID: Brain_Z-1
+        isDamaged: 0
       arms:
       - ID: Weapon_Psy_GlaiveDeSivir14
         dataID: Weapon_Psy_GlaiveDeSivir
+        isDamaged: 0
       - ID: Minigun233
         dataID: Minigun
+        isDamaged: 0
       auxiliar:
       - ID: Armor_CD116
         dataID: Armor_CD1
+        isDamaged: 0
       - ID: Armor_CD217
         dataID: Armor_CD2
+        isDamaged: 0
       - ID: Occultor_SF-518
         dataID: Occultor_SF-5
+        isDamaged: 0
       chipsets:
       - ID: Chipset_ZB-3819
         dataID: Chipset_ZB-38
+        isDamaged: 0
       currentHp: 10
     equipmentInventory:
     - ID: Armor_CD180
       dataID: Armor_CD1
+      isDamaged: 0
     - ID: Armor_CD181
       dataID: Armor_CD1
+      isDamaged: 0
     - ID: Armor_CD182
       dataID: Armor_CD1
+      isDamaged: 0
     - ID: Armor_CD183
       dataID: Armor_CD1
+      isDamaged: 0
     - ID: Armor_CD184
       dataID: Armor_CD1
+      isDamaged: 0
     - ID: Armor_CD185
       dataID: Armor_CD1
+      isDamaged: 0
     - ID: Armor_CD186
       dataID: Armor_CD1
+      isDamaged: 0
     - ID: Armor_CD187
       dataID: Armor_CD1
+      isDamaged: 0
     - ID: Armor_CD188
       dataID: Armor_CD1
+      isDamaged: 0
     - ID: Armor_CD189
       dataID: Armor_CD1
+      isDamaged: 0
     - ID: Armor_CD190
       dataID: Armor_CD1
+      isDamaged: 0
     - ID: Armor_CD191
       dataID: Armor_CD1
+      isDamaged: 0
     - ID: Armor_CD192
       dataID: Armor_CD1
+      isDamaged: 0
     - ID: Armor_CD193
       dataID: Armor_CD1
+      isDamaged: 0
     - ID: Armor_CD194
       dataID: Armor_CD1
+      isDamaged: 0
     - ID: Armor_CD195
       dataID: Armor_CD1
+      isDamaged: 0
     - ID: Armor_CD196
       dataID: Armor_CD1
+      isDamaged: 0
     - ID: Armor_CD197
       dataID: Armor_CD1
+      isDamaged: 0
     - ID: Armor_CD199
       dataID: Armor_CD1
+      isDamaged: 0
     - ID: Armor_CD198
       dataID: Armor_CD1
+      isDamaged: 0
     - ID: Armor_CD1116
       dataID: Armor_CD1
+      isDamaged: 0
     - ID: Armor_CD1117
       dataID: Armor_CD1
+      isDamaged: 0
     - ID: Armor_CD1118
       dataID: Armor_CD1
+      isDamaged: 0
     - ID: Armor_CD1119
       dataID: Armor_CD1
-    - ID: Armor_CD1120
-      dataID: Armor_CD1
-    - ID: Armor_CD1121
-      dataID: Armor_CD1
-    - ID: Armor_CD1122
-      dataID: Armor_CD1
+      isDamaged: 0
     - ID: Armor_CD1123
       dataID: Armor_CD1
+      isDamaged: 0
     - ID: Armor_CD1124
       dataID: Armor_CD1
+      isDamaged: 0
     - ID: Armor_CD1125
       dataID: Armor_CD1
+      isDamaged: 0
     - ID: Armor_CD1126
       dataID: Armor_CD1
+      isDamaged: 0
     - ID: Armor_CD1127
       dataID: Armor_CD1
+      isDamaged: 0
     - ID: Armor_CD1128
       dataID: Armor_CD1
+      isDamaged: 0
     - ID: Armor_CD1129
       dataID: Armor_CD1
+      isDamaged: 0
     - ID: Armor_CD1130
       dataID: Armor_CD1
+      isDamaged: 0
     - ID: Armor_CD1131
       dataID: Armor_CD1
+      isDamaged: 0
     - ID: Armor_CD1132
       dataID: Armor_CD1
+      isDamaged: 0
     - ID: Armor_CD1133
       dataID: Armor_CD1
+      isDamaged: 0
     - ID: Armor_CD1134
       dataID: Armor_CD1
+      isDamaged: 0
     - ID: Armor_CD1135
       dataID: Armor_CD1
+      isDamaged: 0
     - ID: Armor_CD1136
       dataID: Armor_CD1
+      isDamaged: 0
     - ID: Armor_CD1137
       dataID: Armor_CD1
+      isDamaged: 0
     - ID: Armor_CD1138
       dataID: Armor_CD1
+      isDamaged: 0
     - ID: Armor_CD1139
       dataID: Armor_CD1
+      isDamaged: 0
     - ID: Armor_CD1140
       dataID: Armor_CD1
+      isDamaged: 0
     - ID: Armor_CD1141
       dataID: Armor_CD1
+      isDamaged: 0
     - ID: Armor_CD1142
       dataID: Armor_CD1
+      isDamaged: 0
     - ID: Armor_CD1143
       dataID: Armor_CD1
+      isDamaged: 0
     - ID: Armor_CD1144
       dataID: Armor_CD1
+      isDamaged: 0
     - ID: Armor_CD1145
       dataID: Armor_CD1
+      isDamaged: 0
     - ID: Frame_Assault146
       dataID: Frame_Assault
+      isDamaged: 0
     - ID: Flail223
       dataID: Flail
+      isDamaged: 0
     - ID: Railgun224
       dataID: Railgun
+      isDamaged: 0
     - ID: Spear225
       dataID: Spear
+      isDamaged: 0
     - ID: Sniper226
       dataID: Sniper
+      isDamaged: 0
     - ID: FlameThrower227
       dataID: FlameThrower
+      isDamaged: 0
     - ID: Flail228
       dataID: Flail
-    - ID: Gauntlet229
-      dataID: Gauntlet
+      isDamaged: 0
     - ID: Hammer230
       dataID: Hammer
+      isDamaged: 0
     - ID: Glaive231
       dataID: Glaive
+      isDamaged: 0
     - ID: Rapier234
       dataID: Rapier
+      isDamaged: 0
     - ID: Grenade launcher235
       dataID: Grenade launcher
-    equipmentCounter: 252
+      isDamaged: 0
+    equipmentCounter: 276
     currencies:
       keys: 01000000020000000300000004000000
-      values: 0000000000000000000000000000000000000000000000000000000000000000
+      values: 0f00000000000000000000000000000000000000000000000000000000000000
     totalCurrenciesGot:
       keys: 01000000
-      values: 0a00000000000000
+      values: 1900000000000000
     totalCurrenciesSpent:
       keys: 01000000
       values: 0a00000000000000
@@ -221,26 +291,145 @@ MonoBehaviour:
       keys:
       - hangarstructure
       - shopstructure
-      values: 0000000000000000
+      - recyclingstructure
+      - repairstationstructure
+      values: 00000000000000000000000000000000
     dayData:
-      missionsIds: 01000000000000000000000000000000010000000000000000000000
+      missionsIds: 01000000000000000000000001000000010000000000000000000000
       itemsInShop:
       - ID: Weapon_Paladin_Minigun244
         dataID: Weapon_Paladin_Minigun
+        isDamaged: 0
       - ID: Tool_Psy_Teleportation245
         dataID: Tool_Psy_Teleportation
+        isDamaged: 0
       - ID: NeuronalMembrane_Dummy246
         dataID: NeuronalMembrane_Dummy
+        isDamaged: 0
       - ID: "Magn\xE9tique Armouring247"
         dataID: "Magn\xE9tique Armouring"
+        isDamaged: 0
       - ID: Mine kit248
         dataID: Mine kit
+        isDamaged: 0
       - ID: Frame_Assault249
         dataID: Frame_Assault
+        isDamaged: 0
       - ID: Tool_Paladin_PhysicalShield250
         dataID: Tool_Paladin_PhysicalShield
+        isDamaged: 0
       - ID: Armor_CD1251
         dataID: Armor_CD1
+        isDamaged: 0
+      - ID: Radar Occ252
+        dataID: Radar Occ
+        isDamaged: 0
+      - ID: Defense Amplifier253
+        dataID: Defense Amplifier
+        isDamaged: 0
+      - ID: Brain_Z-1254
+        dataID: Brain_Z-1
+        isDamaged: 0
+      - ID: Flail255
+        dataID: Flail
+        isDamaged: 0
+      - ID: Radar256
+        dataID: Radar
+        isDamaged: 0
+      - ID: Safe Chipset257
+        dataID: Safe Chipset
+        isDamaged: 0
+      - ID: Reactor_InvocMine258
+        dataID: Reactor_InvocMine
+        isDamaged: 0
+      - ID: Reactor_InvocMine259
+        dataID: Reactor_InvocMine
+        isDamaged: 0
+      - ID: Weapon_FlamingSaber260
+        dataID: Weapon_FlamingSaber
+        isDamaged: 0
+      - ID: AIM_Sho261
+        dataID: AIM_Sho
+        isDamaged: 0
+      - ID: Frame_TankV1262
+        dataID: Frame_TankV1
+        isDamaged: 0
+      - ID: Frame_Invoc_PiegeChoc263
+        dataID: Frame_Invoc_PiegeChoc
+        isDamaged: 0
+      - ID: Spear264
+        dataID: Spear
+        isDamaged: 0
+      - ID: Frame_Dummy265
+        dataID: Frame_Dummy
+        isDamaged: 0
+      - ID: Weapon_Commando_LanceFlamme266
+        dataID: Weapon_Commando_LanceFlamme
+        isDamaged: 0
+      - ID: NeuronalMembrane_Dummy267
+        dataID: NeuronalMembrane_Dummy
+        isDamaged: 0
+      - ID: Repulsor268
+        dataID: Repulsor
+        isDamaged: 0
+      - ID: Weapon_Commando_LanceFlamme269
+        dataID: Weapon_Commando_LanceFlamme
+        isDamaged: 0
+      - ID: Brain_Z-1270
+        dataID: Brain_Z-1
+        isDamaged: 0
+      - ID: Hammer271
+        dataID: Hammer
+        isDamaged: 0
+      - ID: NeuronalMembraneTest1272
+        dataID: NeuronalMembraneTest1
+        isDamaged: 0
+      - ID: AIM_Chi273
+        dataID: AIM_Chi
+        isDamaged: 0
+      - ID: Frame_Dummy274
+        dataID: Frame_Dummy
+        isDamaged: 0
+      - ID: Frame_Assault275
+        dataID: Frame_Assault
+        isDamaged: 0
+      currentlyRecyclingComponent:
+      - component:
+          ID: 
+          dataID: 
+          isDamaged: 0
+        remainingTime: 0
+      - component:
+          ID: 
+          dataID: 
+          isDamaged: 0
+        remainingTime: 0
+      - component:
+          ID: 
+          dataID: 
+          isDamaged: 0
+        remainingTime: 0
+      repairingEntities:
+      - component:
+          ID: 
+          dataID: 
+          isDamaged: 0
+        remainingTime: 0
+      - component:
+          ID: 
+          dataID: 
+          isDamaged: 0
+        remainingTime: 0
+      - component:
+          ID: 
+          dataID: 
+          isDamaged: 0
+        remainingTime: 0
+      - component:
+          ID: 
+          dataID: 
+          isDamaged: 0
+        remainingTime: 0
     cycleCount: 0
-    dayCount: 1
+    dayCount: 4
     tutoProgression: 0000000000

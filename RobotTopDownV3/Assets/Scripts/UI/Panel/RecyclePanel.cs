@@ -5,30 +5,72 @@ using System.Linq;
 
 public class RecyclePanel : AUIPanel
 {
-	[SerializeField] private BaseButton m_returnBtn;
-	[SerializeField] private BaseButton m_openInventoryBtn;
-	[SerializeField] private BaseButton m_upgradeBtn;
+	[SerializeField] private ComponentDisplayGrid m_inventoryGrid;
+	[SerializeField] private ComponentSlot[] m_recyclingSlots;
+	[SerializeField] private ComponentFullDisplay m_hoveredComponentFullInfoDisplay;
 
+	RecyclerStructureUpgrade StructureUpgrade => GameAssets.current.game.structureUpgrades[StructureUpgradePopup.StructureType.Recycler] as RecyclerStructureUpgrade;
+
+	private System.Func<GameDatas.PlayerSave.Equipment, bool> InventoryGridPredicate => item => item != null /*&& item.isDamaged*/;
 
 	private void Awake ()
 	{
-		m_returnBtn.onClick += OnClickReturn;
-		m_openInventoryBtn.onClick += OnClickOpenInventory;
-		m_upgradeBtn.onClick += OnClickOpenUpgradePopup;
+		for(int i = 0; i < m_recyclingSlots.Length; i++)
+		{
+			m_recyclingSlots[i].onItemAdded += OnItemAddedOnSlot;
+			m_recyclingSlots[i].onItemRemoved += OnItemRemovedOnSlot;
+		}
 	}
 
-	private void OnClickReturn ()
+	public void Init ()
 	{
-		UIManager.Instance.OpenPanel<SoloHubPanel>();
+		int maxSlotAmount = StructureUpgrade.GetCurrentMaxRecyclingSlotAmount();
+
+		for (int i = 0; i < m_recyclingSlots.Length; i++)
+		{
+			GameDatas.PlayerSave.DayData.RecyclingComponentData recyclingComponent = maxSlotAmount > i
+				? GameDatas.current.currentPlayerSave.dayData.currentlyRecyclingComponent[i] : null;
+
+			if (i >= maxSlotAmount)
+			{
+				m_recyclingSlots[i].gameObject.SetActive(false);
+			}
+			else
+			{
+				m_recyclingSlots[i].gameObject.SetActive(true);
+				m_recyclingSlots[i].Init(m_inventoryGrid, null, recyclingComponent != null && !string.IsNullOrEmpty(recyclingComponent.component.ID) ? recyclingComponent.component : null
+					, item => (item != null && (recyclingComponent == null || string.IsNullOrEmpty(recyclingComponent.component.ID) || recyclingComponent.remainingTime <= 0))
+					, ComponentDisplay.DisplayMode.RecyclingStation, i);
+				m_recyclingSlots[i].InitRecyclingData(recyclingComponent);
+			}
+		}
+
+		m_inventoryGrid.Init(null, null, null, InventoryGridPredicate, ComponentDisplay.DisplayMode.RecyclingStation);
 	}
 
-	private void OnClickOpenInventory ()
+	public ComponentSlot GetFreeContainer ()
 	{
-		UIManager.Instance.OpenPanel<InventoryPanel>();
+		foreach (ComponentSlot slot in m_recyclingSlots)
+		{
+			if (slot.Predicate(null))
+				return slot;
+		}
+
+		return null;
 	}
 
-	private void OnClickOpenUpgradePopup ()
+	private void OnItemAddedOnSlot (ComponentContainer _container, ComponentDisplay _display )
 	{
-		UIManager.Instance.OpenPopup<StructureUpgradePopup>().Init(StructureUpgradePopup.StructureType.Recycler);
+		GameDatas.current.currentPlayerSave.dayData.currentlyRecyclingComponent[_container.Index] = new() { component = _display.SavedData, remainingTime = _display.ComponentData.recyclingDurationAmount };
+		GameDatas.current.currentPlayerSave.equipmentInventory.Remove(_display.SavedData);
+		m_recyclingSlots[_container.Index].InitRecyclingData(GameDatas.current.currentPlayerSave.dayData.currentlyRecyclingComponent[_container.Index]);
 	}
+
+	private void OnItemRemovedOnSlot ( ComponentContainer _container, ComponentDisplay _display )
+	{
+		GameDatas.current.currentPlayerSave.dayData.currentlyRecyclingComponent[_container.Index] = null;
+		System.Tuple<CurrencyType, ulong> sellingPrice = _display.ComponentData.GetSellingPrice();
+		GameDatas.current.currentPlayerSave.AddCurrency(sellingPrice.Item1, sellingPrice.Item2);
+	}
+
 }

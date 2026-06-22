@@ -5,7 +5,8 @@ using System;
 
 public class ComponentSlot : ComponentContainer
 {
-    [SerializeField] private ComponentSlot[] m_subSlots;
+    [SerializeField] private GameObject m_timerSectionGO;
+    [SerializeField] private TextMeshProUGUI m_timerTMP;
 
     protected ComponentDisplay m_currentDisplay;
     public ComponentDisplay CurrentDisplay
@@ -24,9 +25,9 @@ public class ComponentSlot : ComponentContainer
     private GameDatas.PlayerSave.Equipment m_equipmentSavedData;
 
     public override void Init ( ComponentContainer _container, EntitySavedData _unitData, GameDatas.PlayerSave.Equipment _componentSavedData, Func<GameDatas.PlayerSave.Equipment, bool> _predicate
-        , ComponentDisplay.DisplayMode _displayMode )
+        , ComponentDisplay.DisplayMode _displayMode, int _index = 0 )
     {
-        base.Init(_container, _unitData, _componentSavedData, _predicate, _displayMode);
+        base.Init(_container, _unitData, _componentSavedData, _predicate, _displayMode, _index);
         m_unitData = _unitData;
 
         if (m_predicate != null && m_predicate(_componentSavedData))
@@ -43,17 +44,34 @@ public class ComponentSlot : ComponentContainer
             newDisplay.transform.localPosition = Vector3.zero;
         }
 
-        if(_displayMode == ComponentDisplay.DisplayMode.Hangar)
+        /*if(_displayMode == ComponentDisplay.DisplayMode.RecyclingStation
+            || _displayMode == ComponentDisplay.DisplayMode.RepairStation)
 		{
-            //handle sub slot => done in EntityConfigPanel
-		}
-        else if (_displayMode == ComponentDisplay.DisplayMode.ShopSelling)
-		{
-            //TODO : handle reroll btn
-		}
+            m_timerSectionGO.SetActive(true);
+        }
+		else
+        {
+            m_timerSectionGO.SetActive(false);
+        }*/
     }
 
-	public override bool IsValid ( ComponentDisplay _display )
+    public void InitRecyclingData( GameDatas.PlayerSave.DayData.RecyclingComponentData _recyclingData )
+	{
+        if (string.IsNullOrEmpty(_recyclingData.component.ID))
+            m_timerTMP.text = "";
+        else
+            m_timerTMP.text = _recyclingData.remainingTime.ToString();
+	}
+
+    public void InitRepairData ( GameDatas.PlayerSave.DayData.RepairingComponentData _repairingData )
+    {
+        if (string.IsNullOrEmpty(_repairingData.component.ID))
+            m_timerTMP.text = "";
+        else
+            m_timerTMP.text = _repairingData.remainingTime.ToString();
+    }
+
+    public override bool IsValid ( ComponentDisplay _display )
 	{
 		return m_currentDisplay != _display && base.IsValid(_display);
 	}

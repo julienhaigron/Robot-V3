@@ -4,26 +4,32 @@ using System;
 
 public abstract class ComponentContainer : MonoBehaviour, IDropHandler
 {
-    public Action<ComponentDisplay> onItemAdded;
-    public Action<ComponentDisplay> onItemRemoved;
+    public Action<ComponentContainer, ComponentDisplay> onItemAdded;
+    public Action<ComponentContainer, ComponentDisplay> onItemRemoved;
 
     [SerializeField] protected Transform m_displayParent;
     public Transform DisplayParent => m_displayParent;
 
     protected Func<GameDatas.PlayerSave.Equipment, bool> m_predicate;
+    public Func<GameDatas.PlayerSave.Equipment, bool> Predicate => m_predicate;
+
     protected EntitySavedData m_unitData;
     protected ComponentDisplay.DisplayMode m_displayMode;
 
     protected ComponentContainer m_linkedContainer;
     public ComponentContainer LinkedContainer => m_linkedContainer;
 
+    private int m_index;
+    public int Index => m_index;
+
     public virtual void Init ( ComponentContainer _container, EntitySavedData _unitData, GameDatas.PlayerSave.Equipment _componentSavedData, Func<GameDatas.PlayerSave.Equipment, bool> _predicate
-        , ComponentDisplay.DisplayMode _displayMode )
+        , ComponentDisplay.DisplayMode _displayMode, int _index = 0 )
     {
         m_linkedContainer = _container;
         m_predicate = _predicate;
         m_unitData = _unitData;
         m_displayMode = _displayMode;
+        m_index = _index;
     }
 
     public virtual bool IsValid ( ComponentDisplay _display )
@@ -43,7 +49,7 @@ public abstract class ComponentContainer : MonoBehaviour, IDropHandler
 
         RegisterInteraction(dropped);
 
-        onItemAdded.Invoke(dropped);
+        onItemAdded?.Invoke(this, dropped);
     }
 
     public abstract void RegisterInteraction ( ComponentDisplay _display);
@@ -58,6 +64,6 @@ public abstract class ComponentContainer : MonoBehaviour, IDropHandler
 
     public virtual void RemoveDisplay ( ComponentDisplay _display )
 	{
-        onItemRemoved?.Invoke(_display);
+        onItemRemoved?.Invoke(this, _display);
     }
 }

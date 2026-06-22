@@ -27,7 +27,7 @@ public class SoloHubPanel : AUIPanel
 	
 	private void OnClickOpenRecycleBtn ()
 	{
-		UIManager.Instance.OpenPanel<RecyclePanel>();
+		UIManager.Instance.OpenPanel<RecyclePanel>().Init();
 	}
 
 	private void OnClickOpenShopBtn ()
@@ -37,7 +37,7 @@ public class SoloHubPanel : AUIPanel
 
 	private void OnClickOpenRepairBtn ()
 	{
-		UIManager.Instance.OpenPanel<RepairStationPanel>();
+		UIManager.Instance.OpenPanel<RepairStationPanel>().Init();
 	}
 	
 	private void OnClickMissionBtn ()

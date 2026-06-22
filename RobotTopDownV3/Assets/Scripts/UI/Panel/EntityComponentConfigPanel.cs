@@ -18,8 +18,8 @@ public class EntityComponentConfigPanel : AUIPanel
 		m_closeBtn.onClick += OnClickClose;
 		m_upgradeHangarBtn.onClick += OnClickOpenUpgradePopup;
 
-		m_subPartGrid.onItemAdded += item => GameDatas.current.currentPlayerSave.AddEquipmentToInventory(item.ComponentData);
-		m_subPartGrid.onItemRemoved += item => GameDatas.current.currentPlayerSave.RemoveEquipmentFromInventory(item.SavedData);
+		m_subPartGrid.onItemAdded += ( container, item ) => GameDatas.current.currentPlayerSave.AddEquipmentToInventory(item.ComponentData);
+		m_subPartGrid.onItemRemoved += ( container, item ) => GameDatas.current.currentPlayerSave.RemoveEquipmentFromInventory(item.SavedData);
 
 		foreach(ComponentSlot slot in m_slots)
 		{
@@ -103,7 +103,7 @@ public class EntityComponentConfigPanel : AUIPanel
 		
 	}
 
-	private void OnItemAddedOnSlot(ComponentDisplay _display )
+	private void OnItemAddedOnSlot(ComponentContainer _container, ComponentDisplay _display )
 	{
 		switch (m_currentEquipment.GetData<EntityEquipmentData>().GetEquipmentType())
 		{
@@ -128,7 +128,7 @@ public class EntityComponentConfigPanel : AUIPanel
 		}
 	}
 
-	private void OnItemRemovedOnSlot ( ComponentDisplay _display )
+	private void OnItemRemovedOnSlot ( ComponentContainer _container, ComponentDisplay _display )
 	{
 		switch (m_currentEquipment.GetData<EntityEquipmentData>().GetEquipmentType())
 		{

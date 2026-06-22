@@ -166,6 +166,24 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 			appropriateContainer.RemoveFromOrigin(this);
 			appropriateContainer.LinkedContainer.RegisterInteraction(this);
 		}
+		else if(CurrentContainer != null && CurrentContainer.LinkedContainer == null && UIManager.Instance.currentPanel is RecyclePanel recyclePanel)
+		{
+			ComponentContainer appropriateContainer = recyclePanel.GetFreeContainer();
+			if (appropriateContainer == null)
+				return;
+
+			appropriateContainer.RemoveFromOrigin(this);
+			appropriateContainer.LinkedContainer.RegisterInteraction(this);
+		}
+		else if(CurrentContainer != null && CurrentContainer.LinkedContainer == null && UIManager.Instance.currentPanel is RepairStationPanel repairPanel)
+		{
+			ComponentContainer appropriateContainer = repairPanel.GetFreeContainer();
+			if (appropriateContainer == null)
+				return;
+
+			appropriateContainer.RemoveFromOrigin(this);
+			appropriateContainer.LinkedContainer.RegisterInteraction(this);
+		}
 	}
 
 	public void ReturnToOrigin ()

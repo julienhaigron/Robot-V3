@@ -37,37 +37,37 @@ public class EntityConfigPanel : AUIPanel
 
 	private void Awake ()
 	{
-		m_mainComponentSlotDictionary[EntityEquipmentData.EquipmentType.Frame].onItemAdded += item => m_entityData.frame = item.SavedData;
-		m_mainComponentSlotDictionary[EntityEquipmentData.EquipmentType.Frame].onItemRemoved += item => m_entityData.frame = null;
-		m_mainComponentSlotDictionary[EntityEquipmentData.EquipmentType.Reactor].onItemAdded += item => m_entityData.reactor = item.SavedData;
-		m_mainComponentSlotDictionary[EntityEquipmentData.EquipmentType.Reactor].onItemRemoved += item => m_entityData.reactor = null;
-		m_mainComponentSlotDictionary[EntityEquipmentData.EquipmentType.Brain].onItemAdded += item => m_entityData.brain = item.SavedData;
-		m_mainComponentSlotDictionary[EntityEquipmentData.EquipmentType.Brain].onItemRemoved += item => m_entityData.brain = null;
-		m_mainComponentSlotDictionary[EntityEquipmentData.EquipmentType.NeuronalMembrane].onItemAdded += item => m_entityData.neuronalMembrane = item.SavedData;
-		m_mainComponentSlotDictionary[EntityEquipmentData.EquipmentType.NeuronalMembrane].onItemRemoved += item => m_entityData.neuronalMembrane = null;
+		m_mainComponentSlotDictionary[EntityEquipmentData.EquipmentType.Frame].onItemAdded += (container, item) => m_entityData.frame = item.SavedData;
+		m_mainComponentSlotDictionary[EntityEquipmentData.EquipmentType.Frame].onItemRemoved += ( container, item ) => m_entityData.frame = null;
+		m_mainComponentSlotDictionary[EntityEquipmentData.EquipmentType.Reactor].onItemAdded += ( container, item ) => m_entityData.reactor = item.SavedData;
+		m_mainComponentSlotDictionary[EntityEquipmentData.EquipmentType.Reactor].onItemRemoved += ( container, item ) => m_entityData.reactor = null;
+		m_mainComponentSlotDictionary[EntityEquipmentData.EquipmentType.Brain].onItemAdded += ( container, item ) => m_entityData.brain = item.SavedData;
+		m_mainComponentSlotDictionary[EntityEquipmentData.EquipmentType.Brain].onItemRemoved += ( container, item ) => m_entityData.brain = null;
+		m_mainComponentSlotDictionary[EntityEquipmentData.EquipmentType.NeuronalMembrane].onItemAdded += ( container, item ) => m_entityData.neuronalMembrane = item.SavedData;
+		m_mainComponentSlotDictionary[EntityEquipmentData.EquipmentType.NeuronalMembrane].onItemRemoved += ( container, item ) => m_entityData.neuronalMembrane = null;
 
 		for(int i = 0; i < m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Frame].slots.Count; i++)
 		{
 			ComponentSlot slot = m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Frame].slots[i];
-			slot.onItemAdded += (ComponentDisplay display) => OnItemAddedOnSlot(display, EntityEquipmentData.EquipmentType.Frame);
-			slot.onItemRemoved += ( ComponentDisplay display ) => OnItemRemovedOnSlot(display, EntityEquipmentData.EquipmentType.Frame);
+			slot.onItemAdded += (ComponentContainer container, ComponentDisplay display) => OnItemAddedOnSlot(display, EntityEquipmentData.EquipmentType.Frame);
+			slot.onItemRemoved += ( ComponentContainer container, ComponentDisplay display ) => OnItemRemovedOnSlot(display, EntityEquipmentData.EquipmentType.Frame);
 		}
 		for (int i = 0; i < m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Brain].slots.Count; i++)
 		{
 			ComponentSlot slot = m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Brain].slots[i];
-			slot.onItemAdded += ( ComponentDisplay display ) => OnItemAddedOnSlot(display, EntityEquipmentData.EquipmentType.Brain);
-			slot.onItemRemoved += ( ComponentDisplay display ) => OnItemRemovedOnSlot(display, EntityEquipmentData.EquipmentType.Brain);
+			slot.onItemAdded += (ComponentContainer container,  ComponentDisplay display ) => OnItemAddedOnSlot(display, EntityEquipmentData.EquipmentType.Brain);
+			slot.onItemRemoved += (ComponentContainer container,  ComponentDisplay display ) => OnItemRemovedOnSlot(display, EntityEquipmentData.EquipmentType.Brain);
 		}
 		for (int i = 0; i < m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.NeuronalMembrane].slots.Count; i++)
 		{
 			ComponentSlot slot = m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.NeuronalMembrane].slots[i];
-			slot.onItemAdded += ( ComponentDisplay display ) => OnItemAddedOnSlot(display, EntityEquipmentData.EquipmentType.NeuronalMembrane);
-			slot.onItemRemoved += ( ComponentDisplay display ) => OnItemRemovedOnSlot(display, EntityEquipmentData.EquipmentType.NeuronalMembrane);
+			slot.onItemAdded += (ComponentContainer container,  ComponentDisplay display ) => OnItemAddedOnSlot(display, EntityEquipmentData.EquipmentType.NeuronalMembrane);
+			slot.onItemRemoved += (ComponentContainer container,  ComponentDisplay display ) => OnItemRemovedOnSlot(display, EntityEquipmentData.EquipmentType.NeuronalMembrane);
 		}
 		
 
-		m_inventoryGrid.onItemAdded += item => GameDatas.current.currentPlayerSave.AddEquipmentToInventory(item.ComponentData);
-		m_inventoryGrid.onItemRemoved += item => GameDatas.current.currentPlayerSave.RemoveEquipmentFromInventory(item.SavedData);
+		m_inventoryGrid.onItemAdded += ( container, item ) => GameDatas.current.currentPlayerSave.AddEquipmentToInventory(item.ComponentData);
+		m_inventoryGrid.onItemRemoved += ( container, item ) => GameDatas.current.currentPlayerSave.RemoveEquipmentFromInventory(item.SavedData);
 
 		foreach (KeyValuePair<EntityEquipmentData.EquipmentType, BaseButton> pair in m_componentTypeFilterBtnDictionary)
 			pair.Value.onClick = () => OnToggleComponentType(pair.Key);

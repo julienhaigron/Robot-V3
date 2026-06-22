@@ -12,9 +12,9 @@ public class ComponentDisplayGrid : ComponentContainer
     public List<ComponentDisplay> Items => m_items;
 
     public override void Init ( ComponentContainer _container, EntitySavedData _unitData, GameDatas.PlayerSave.Equipment _componentSavedData, Func<GameDatas.PlayerSave.Equipment, bool> _predicate
-        , ComponentDisplay.DisplayMode _displayMode )
+        , ComponentDisplay.DisplayMode _displayMode, int _index = 0 )
     {
-        base.Init(_container, _unitData, _componentSavedData, _predicate, _displayMode);
+        base.Init(_container, _unitData, _componentSavedData, _predicate, _displayMode, _index);
 
         if (_predicate != null)
             RefreshPredicate(_predicate);

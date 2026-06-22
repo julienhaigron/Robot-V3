@@ -36,10 +36,12 @@ MonoBehaviour:
       - {fileID: 11400000, guid: 3fb3d43f3aa477a4fbbe9607ba1aca88, type: 2}
       - {fileID: 11400000, guid: 35214ca16ad0015409672f6bba860636, type: 2}
     structureUpgrades:
-      keys: 0000000002000000
+      keys: 00000000020000000100000003000000
       values:
       - {fileID: 11400000, guid: 0d4448f120cab5c42814f6681918124f, type: 2}
       - {fileID: 11400000, guid: 8463f427f2e71a5448135f40294b8ede, type: 2}
+      - {fileID: 11400000, guid: de361b9c89c15db40abe80156bcb83e8, type: 2}
+      - {fileID: 11400000, guid: f2fde0f8f8fd985409096250c61b13b3, type: 2}
     defaultEntity: {fileID: 4673310249167116355, guid: 206cf16509b1846479a1f553fd6add2d, type: 3}
     baseGhost: {fileID: 7839904307103858393, guid: bee3bc7545f82b54babded2b3df64c96, type: 3}
     baseItem: {fileID: 831952569120969770, guid: f125b6baae3a1ab4c9203e208c4db9f3, type: 3}
@@ -415,3 +417,5 @@ MonoBehaviour:
   upgrades:
   - {fileID: 11400000, guid: 0d4448f120cab5c42814f6681918124f, type: 2}
   - {fileID: 11400000, guid: 8463f427f2e71a5448135f40294b8ede, type: 2}
+  - {fileID: 11400000, guid: de361b9c89c15db40abe80156bcb83e8, type: 2}
+  - {fileID: 11400000, guid: f2fde0f8f8fd985409096250c61b13b3, type: 2}

@@ -31,7 +31,7 @@ public class ShopPanel : AUIPanel
 			m_inventoryGrid.CreateNewDisplay(null, eq, ComponentDisplay.DisplayMode.ShopSelling);
 	}
 
-	private void SellItem(ComponentDisplay _display )
+	private void SellItem( ComponentContainer _container, ComponentDisplay _display )
 	{
 		GameDatas.current.currentPlayerSave.equipmentInventory.Remove(_display.SavedData);
 
@@ -39,7 +39,7 @@ public class ShopPanel : AUIPanel
 		GameDatas.current.currentPlayerSave.AddCurrency(price.Item1, price.Item2);
 	}
 	
-	private void BuyItem(ComponentDisplay _display )
+	private void BuyItem( ComponentContainer _container, ComponentDisplay _display )
 	{
 		GameDatas.current.currentPlayerSave.equipmentInventory.Add(_display.SavedData);
 
