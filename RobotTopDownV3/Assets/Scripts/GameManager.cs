@@ -228,7 +228,7 @@ public class GameManager : SingletonPersistant<GameManager>
 	public void EndGame ( bool _isSuccessfull )
 	{
 		GameDatas.current.currentPlayerSave.dayData.NewDay();
-		SaveMacroChanges();
+		//SaveMacroChanges();
 
 		if (_isSuccessfull)
 			LogConsole.AddLog("Victory", LogConsole.LogEventType.DebugSys);
@@ -240,7 +240,7 @@ public class GameManager : SingletonPersistant<GameManager>
 		m_fogCanvas.gameObject.SetActive(false);
 	}
 
-	private void SaveMacroChanges ()
+	/*private void SaveMacroChanges ()
 	{
 #if UNITY_EDITOR
 		if (!GameConfig.current.debug.saveEntityDeathAndDamages)
@@ -263,7 +263,7 @@ public class GameManager : SingletonPersistant<GameManager>
 		}
 
 		//
-	}
+	}*/
 
 	//hub
 	public bool SquadValidityPredicate ()

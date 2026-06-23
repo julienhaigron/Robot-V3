@@ -37,4 +37,9 @@ public class MissionData : ScriptableEnum<MissionDataEnumID>
 #endif
 
     }
+
+    public string GetDescription ()
+	{
+        return "Description";
+	}
 }

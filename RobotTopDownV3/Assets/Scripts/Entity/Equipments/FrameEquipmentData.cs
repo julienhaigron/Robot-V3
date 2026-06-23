@@ -199,6 +199,25 @@ public class EntitySavedData : INetworkSerializable
 		return passiveEffects;
 	}
 
+	public List<GameDatas.PlayerSave.Equipment> GetAllSubEquipments ()
+	{
+		List<GameDatas.PlayerSave.Equipment> equipments = new();
+		
+		foreach (var arm in arms)
+			if (arm != null && !string.IsNullOrEmpty(arm.ID))
+				equipments.Add(arm);
+
+		foreach (var aux in auxiliar)
+			if (aux != null && !string.IsNullOrEmpty(aux.ID))
+				equipments.Add(aux);
+
+		foreach (var chipset in chipsets)
+			if (chipset != null && !string.IsNullOrEmpty(chipset.ID))
+				equipments.Add(chipset);
+
+		return equipments;
+	}
+
 	public int GetMaxHealth ()
 	{
 		float bonus = 1 + GetStatBonusFrom(EntityEquipmentData.StatBonus.StatType.Hp);

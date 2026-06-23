@@ -103,9 +103,12 @@ public class EntityEquipmentPlugin : EntityPlugin
 		{
 			foreach (GameDatas.PlayerSave.Equipment stringContainer in _entityData.arms)
 			{
-				if (GameAssets.current.equipments[stringContainer.dataID] is WeaponEquipmentData weaponData)
+				if (stringContainer == null || !stringContainer.TryGetData(out EntityEquipmentData data))
+					continue;
+
+				if (data is WeaponEquipmentData weaponData)
 					AddWeapon(weaponData, m_linkedEntity.Displacement.Spawn.isFirstSide);
-				else if (GameAssets.current.equipments[stringContainer.dataID] is ToolEquipmentData toolData)
+				else if (data is ToolEquipmentData toolData)
 					AddTool(toolData, m_linkedEntity.Displacement.Spawn.isFirstSide);
 			}
 		}
@@ -320,18 +323,18 @@ public class EntityEquipmentPlugin : EntityPlugin
 
 				for (int d = minDistance; d <= maxDistance; d++)
 				{
-					List<Tile> ring = GridManager.Instance.GetTilesAtDistance( origin, d, _isThisTurn);
+					List<Tile> ring = GridManager.Instance.GetTilesAtDistance(origin, d, _isThisTurn);
 					foreach (Tile tile in ring)
 					{
-						if (GridManager.Instance.IsInArc( origin, tile, (HexDirection) m_linkedEntity.Displacement.CurrentOrientation, largeArc))
-							tilesInRange.Add(tile);	
+						if (GridManager.Instance.IsInArc(origin, tile, (HexDirection)m_linkedEntity.Displacement.CurrentOrientation, largeArc))
+							tilesInRange.Add(tile);
 					}
 				}
 
 				break;
 			case EntityActionData.AOEType.Chain:
 				List<Tile> tilesInVisionRange = GridManager.Instance.GetTilesInVisionRange(m_linkedEntity.Displacement.Coordinates.GetTile(), maxDistance, false, _isThisTurn);
-				foreach(Tile tile in tilesInVisionRange)
+				foreach (Tile tile in tilesInVisionRange)
 				{
 					if (!tile.GetEntity(_isThisTurn).IsAlliedTo(m_linkedEntity.OwnerID) && tile.Distance < minDistance)
 						tilesInRange.Add(tile);
@@ -342,7 +345,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 				break;
 		}
 
-		foreach(Tile tile in tilesInRange.ToArray())
+		foreach (Tile tile in tilesInRange.ToArray())
 		{
 			if (tile.Distance < minDistance)
 				tilesInRange.Remove(tile);
@@ -373,7 +376,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 			targetCamo
 			+ evationRatio
 			+ coverRatio;
-			//+ distanceRatio;
+		//+ distanceRatio;
 
 		//float userPerception = m_linkedEntity.Data.GetStaticPerceptionBonus(true) + m_linkedEntity.GetAdditionaryStatBonus(EntityEquipmentData.StatBonus.StatType.VisualPerception, _attackAction);
 		float userAim = _attackAction.Data.type == EntityActionData.ActionType.DistanceAttack

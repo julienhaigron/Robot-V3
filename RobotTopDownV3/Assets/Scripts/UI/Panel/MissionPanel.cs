@@ -38,6 +38,12 @@ public class MissionPanel : AUIPanel
 		{
 			btn.Init(GameDatas.current.currentPlayerSave.dayData.missionsIds[missionCount++]);
 		}
+
+		//TODO : display squad
+
+		//TODO : display rewards
+
+		//TODO : display mission objective
 	}
 
 	private void EnterTournament ()
