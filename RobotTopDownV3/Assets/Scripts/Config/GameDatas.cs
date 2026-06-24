@@ -110,7 +110,6 @@ public partial class GameDatas : ScriptableObject
 		[Serializable]
 		public class DayData
 		{
-			public List<MissionDataEnumID> missionsIds = new();
 			public List<Equipment> itemsInShop = new();
 			public RecyclingComponentData[] currentlyRecyclingComponents = new RecyclingComponentData[3];
 			public RepairingComponentData[] repairingEntities = new RepairingComponentData[3];
@@ -136,13 +135,6 @@ public partial class GameDatas : ScriptableObject
 				current.currentPlayerSave.dayCount++;
 				if (current.currentPlayerSave.dayCount >= GameConfig.current.game.nbOfDayInCycle)
 					current.currentPlayerSave.cycleData.NewCycle();
-
-				//missions
-				missionsIds.Clear();
-				for(int i = 0; i < GameConfig.current.game.missionAmountInSoloPanel; i++)
-				{
-					missionsIds.Add(GameAssets.current.game.missions.Keys.ToList().RandomElement());
-				}
 
 				//new items in shop
 				for (int i = 0; i < (GameAssets.current.game.structureUpgrades[StructureUpgradePopup.StructureType.Shop] as ShopStructureUpgrade).GetMaxItemAmount(); i++)
@@ -175,15 +167,26 @@ public partial class GameDatas : ScriptableObject
 		[Serializable]
 		public class CycleData
 		{
+			public List<MissionDataEnumID> availableMissionsIds = new();
+			public List<MissionDataEnumID> selectedMissionsIds = new();
 			public MissionDataEnumID[] roundsDatas;
 
+			public bool didSelectMissions = false;
 			public bool hasInitTournament = false;
 
+			[Button]
 			public void NewCycle ()
 			{
+				didSelectMissions = false;
 				hasInitTournament = false;
 				roundsDatas = new MissionDataEnumID[3];
-				
+				//missions
+				availableMissionsIds.Clear();
+				for (int i = 0; i < GameConfig.current.game.missionAmountInMissionSelectionPanel; i++)
+				{
+					availableMissionsIds.Add(GameAssets.current.game.missions.Keys.ToList().RandomElement());
+				}
+
 				current.currentPlayerSave.cycleCount++;
 			}
 

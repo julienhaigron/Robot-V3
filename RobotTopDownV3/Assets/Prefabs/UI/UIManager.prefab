@@ -2239,7 +2239,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 458782666846846238, guid: a83c8566737689640a48816d8c878871, type: 3}
       propertyPath: m_Name
-      value: InventoryPanel
+      value: SelectMissionPanel
       objectReference: {fileID: 0}
     - target: {fileID: 458782666846846238, guid: a83c8566737689640a48816d8c878871, type: 3}
       propertyPath: m_IsActive

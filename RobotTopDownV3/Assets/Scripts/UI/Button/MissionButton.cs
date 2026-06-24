@@ -5,18 +5,24 @@ using UnityEngine.UI;
 using TMPro;
 using DG.Tweening;
 using Sirenix.OdinInspector;
+using UnityEngine.EventSystems;
 
-public class MissionButton : BaseButton
+public class MissionButton : BaseButton, IPointerEnterHandler
 {
 	public static System.Action<MissionButton> onAnyMissionSelected;
+	public static System.Action<MissionButton> onAnyMissionHovered;
 
 	[SerializeField] private Image m_icon;
 	[SerializeField] private TextMeshProUGUI m_name;
 	[SerializeField] private TextMeshProUGUI m_description;
+	[SerializeField] private Image m_outlineImg;
 	//[SerializeField] private ToolTipTrigger m_tooltipTrigger;
 
 	private MissionData m_missionData;
 	public MissionData MissionData => m_missionData;
+
+	private bool m_isSelected = false;
+	public bool IsSelected => m_isSelected;
 
 	public void Init( MissionDataEnumID _missionID )
 	{
@@ -25,19 +31,21 @@ public class MissionButton : BaseButton
 		string description = m_missionData.GetDescription();
 		//m_tooltipTrigger.Init(title, description);
 
-		m_icon.sprite = m_missionData.icon;
+		//m_icon.sprite = m_missionData.icon;
 		m_name.text = title;
 		m_description.text = description;
 	}
 
-	public void Show ()
+	public void SetHasSelected ()
 	{
-		gameObject.SetActive(true);
+		m_isSelected = true;
+		m_outlineImg.color = Color.blue;
 	}
 
-	public void Hide ()
+	public void SetHasUnselected ()
 	{
-		gameObject.SetActive(false);
+		m_isSelected = false;
+		m_outlineImg.color = Color.white;
 	}
 
 	[Button]
@@ -46,6 +54,11 @@ public class MissionButton : BaseButton
 		onAnyMissionSelected?.Invoke(this);
 
 		base.OnClick();
+	}
+
+	public void OnPointerEnter ( PointerEventData eventData )
+	{
+		onAnyMissionHovered?.Invoke(this);
 	}
 
 

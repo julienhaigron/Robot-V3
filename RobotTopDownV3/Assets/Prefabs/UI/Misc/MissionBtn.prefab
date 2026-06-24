@@ -188,9 +188,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: RTD::MissionButton
   m_button: {fileID: 3136753431461068814}
   m_image: {fileID: 0}
-  m_icon: {fileID: 8778885014675711368}
+  m_icon: {fileID: 0}
   m_name: {fileID: 7644138648904935613}
   m_description: {fileID: 8768785578248626509}
+  m_outlineImg: {fileID: 8778885014675711368}
 --- !u!1 &460703331313455474
 GameObject:
   m_ObjectHideFlags: 0

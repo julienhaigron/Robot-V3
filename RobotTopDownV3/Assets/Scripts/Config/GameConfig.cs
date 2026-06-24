@@ -56,7 +56,8 @@ public partial class GameConfig : ScriptableObject
 		[Title("Hub")]
 		public string hubSceneName;
 		public string startScreenSceneName;
-		public int missionAmountInSoloPanel = 7;
+		public int missionAmountInMissionSelectionPanel = 12;
+		public int selectableMissionAmount = 8;
 	}
 
 	[System.Serializable]

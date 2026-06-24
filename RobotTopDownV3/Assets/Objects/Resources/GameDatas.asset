@@ -278,7 +278,7 @@ MonoBehaviour:
     - ID: Grenade launcher235
       dataID: Grenade launcher
       isDamaged: 0
-    equipmentCounter: 276
+    equipmentCounter: 306
     currencies:
       keys: 01000000020000000300000004000000
       values: 0f00000000000000000000000000000000000000000000000000000000000000
@@ -296,7 +296,6 @@ MonoBehaviour:
       - repairstationstructure
       values: 00000000000000000000000000000000
     dayData:
-      missionsIds: 01000000000000000000000001000000010000000000000000000000
       itemsInShop:
       - ID: Weapon_Paladin_Minigun244
         dataID: Weapon_Paladin_Minigun
@@ -431,6 +430,12 @@ MonoBehaviour:
           dataID: 
           isDamaged: 0
         remainingTime: 0
+    cycleData:
+      availableMissionsIds: 000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+      selectedMissionsIds: 
+      roundsDatas: 000000000100000001000000
+      didSelectMissions: 0
+      hasInitTournament: 1
     cycleCount: 0
     dayCount: 4
     tutoProgression: 0000000000

@@ -14,6 +14,7 @@ public class BaseButton : MonoBehaviour
     public Image Image => m_image;
 
     protected bool m_isVisible = false;
+    public bool IsVisible => m_isVisible;
 
     private void Start()
     {

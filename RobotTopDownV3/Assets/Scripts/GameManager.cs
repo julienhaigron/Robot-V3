@@ -69,10 +69,16 @@ public class GameManager : SingletonPersistant<GameManager>
 		if (string.Equals(_scene.name, GameConfig.current.game.hubSceneName))
 		{
 			UIManager.Instance.ShowTopCanvas<HubTopCanvas>();
-			UIManager.Instance.OpenPanel<SoloHubPanel>();
 
-			if (m_returnFromMatch)
+			if(!GameDatas.current.currentPlayerSave.cycleData.didSelectMissions)
+				UIManager.Instance.OpenPanel<SelectMissionPanel>();
+			else if (m_returnFromMatch)
+			{
+				UIManager.Instance.OpenPanel<SoloHubPanel>();
 				UIManager.Instance.OpenPopup<ReturnToHubPopup>().Init();
+			}
+			else
+				UIManager.Instance.OpenPanel<SoloHubPanel>();
 		}
 		else if (string.Equals(_scene.name, GameConfig.current.game.startScreenSceneName))
 		{

@@ -25,10 +25,12 @@ public class MissionPanel : AUIPanel
 	[SerializeField] private ComponentRewardDisplay[] m_componentRewardDisplays;
 	[SerializeField] private CurrencyRewardDisplay[] m_currencyRewardDisplays;
 
+	private MissionButton m_currentMissionHovered;
+
 	private void Awake ()
 	{
 		m_tutoBtn.Init(MissionDataEnumID.Tuto);
-		MissionButton.onAnyMissionSelected += OnAnyMissionSelected;
+		MissionButton.onAnyMissionHovered += OnAnyMissionSelected;
 		UnitMissionDisplay.onAnyUnitHovered += OnAnyUnitHovered;
 	}
 
@@ -43,19 +45,13 @@ public class MissionPanel : AUIPanel
 	{
 		for (int i = 0; i < m_missionBtns.Length; i++)
 		{
-			if (GameDatas.current.currentPlayerSave.dayData.missionsIds.Count > i)
+			if (GameDatas.current.currentPlayerSave.cycleData.selectedMissionsIds.Count > i)
 			{
-				m_missionBtns[i].Show();
-				m_missionBtns[i].Init(GameDatas.current.currentPlayerSave.dayData.missionsIds[i]);
+				m_missionBtns[i].SetVisible(true, true);
+				m_missionBtns[i].Init(GameDatas.current.currentPlayerSave.cycleData.selectedMissionsIds[i]);
 			}
 			else
-				m_missionBtns[i].Hide();
-		}
-
-		int missionCount = 0;
-		foreach(MissionButton btn in m_missionBtns)
-		{
-			btn.Init(GameDatas.current.currentPlayerSave.dayData.missionsIds[missionCount++]);
+				m_missionBtns[i].SetVisible(false, true);
 		}
 
 		for(int i = 0; i < m_unitDisplays.Length; i++)
@@ -75,8 +71,10 @@ public class MissionPanel : AUIPanel
 
 	private void OnAnyMissionSelected ( MissionButton _missionBtn)
 	{
-		if (!gameObject.activeInHierarchy)
+		if (!gameObject.activeInHierarchy || _missionBtn == m_currentMissionHovered)
 			return;
+
+		m_currentMissionHovered = _missionBtn;
 
 		m_currentMissionNameTMP.text = _missionBtn.MissionData.missionName;
 		m_currentMissionDescriptionTMP.text = _missionBtn.MissionData.GetDescription();
