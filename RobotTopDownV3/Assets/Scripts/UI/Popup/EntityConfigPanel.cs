@@ -25,6 +25,8 @@ public class EntityConfigPanel : AUIPanel
 
 	private List<EntityEquipmentData.EquipmentType> m_displayedEquipmentTypes = new();
 	private EntitySavedData m_entityData;
+	private bool m_doesComeFromMissionPanel;
+	public bool DoesComeFromMissionPanel => m_doesComeFromMissionPanel;
 
 	private System.Func<GameDatas.PlayerSave.Equipment, bool> InventoryGridPredicate => item => item != null && item.TryGetData(out EntityEquipmentData _data) 
 		&& m_displayedEquipmentTypes.Contains(_data.GetEquipmentType());
@@ -96,9 +98,10 @@ public class EntityConfigPanel : AUIPanel
 		base.OnHideFinished();
 	}
 
-	public void Init ( EntitySavedData _entity )
+	public void Init ( EntitySavedData _entity, bool _doesComeFromMissionPanel )
 	{
 		m_entityData = _entity;
+		m_doesComeFromMissionPanel = _doesComeFromMissionPanel;
 		m_unitNameInputField.text = _entity.name;
 
 		m_mainComponentSlotDictionary[EntityEquipmentData.EquipmentType.Frame].Init(m_inventoryGrid, _entity, _entity.frame

@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7722544652723346406}
   - component: {fileID: 6150621646633846625}
+  - component: {fileID: 1439925156198132974}
   - component: {fileID: 2260552854822269631}
   m_Layer: 5
   m_Name: CurrencyRewardDisplay
@@ -47,6 +48,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2293246902101225862}
   m_CullTransparentMesh: 1
+--- !u!114 &1439925156198132974
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2293246902101225862}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9394f8a6724c48b44aece82e6de33073, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: RTD::CurrencyRewardDisplay
+  m_valueTMP: {fileID: 1551088332713670681}
+  m_icon: {fileID: 2344504856484539970}
 --- !u!114 &2260552854822269631
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -25,6 +25,6 @@ public class EntityDisplay : MonoBehaviour
 
     private void OnClickOpenEntityConfigBtn ()
     {
-        UIManager.Instance.OpenPanel<EntityConfigPanel>().Init(m_unitData);
+        UIManager.Instance.OpenPanel<EntityConfigPanel>().Init(m_unitData, false);
     }
 }

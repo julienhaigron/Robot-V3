@@ -42,7 +42,10 @@ public class SoloHubPanel : AUIPanel
 	
 	private void OnClickMissionBtn ()
 	{
-		UIManager.Instance.OpenPanel<MissionPanel>();
+		if(GameDatas.current.currentPlayerSave.dayCount <= 3)
+			UIManager.Instance.OpenPanel<MissionPanel>();
+		else
+			UIManager.Instance.OpenPanel<TournamentPanel>();
 	}
 
 	protected override void OnShowStarted ()

@@ -199,6 +199,22 @@ public class EntitySavedData : INetworkSerializable
 		return passiveEffects;
 	}
 
+	public List<GameDatas.PlayerSave.Equipment> GetAllMainEquipments ()
+	{
+		List<GameDatas.PlayerSave.Equipment> equipments = new();
+
+		if (frame != null)
+			equipments.Add(frame);
+		if (reactor != null)
+			equipments.Add(frame);
+		if (neuronalMembrane != null)
+			equipments.Add(frame);
+		if (brain != null)
+			equipments.Add(frame);
+
+		return equipments;
+	}
+
 	public List<GameDatas.PlayerSave.Equipment> GetAllSubEquipments ()
 	{
 		List<GameDatas.PlayerSave.Equipment> equipments = new();

@@ -78,13 +78,21 @@ public class HubTopCanvas : AUITopCanvas
 
 	private void OnClickReturn ()
 	{
-		if(UIManager.Instance.currentPanel is HangarPanel or ShopPanel or RecyclePanel or RepairStationPanel)
+		if(UIManager.Instance.currentPanel is HangarPanel or ShopPanel or RecyclePanel or RepairStationPanel or TournamentPanel or MissionPanel)
 		{
 			UIManager.Instance.OpenPanel<SoloHubPanel>();
 		}
-		else if(UIManager.Instance.currentPanel is EntityConfigPanel)
+		else if(UIManager.Instance.currentPanel is EntityConfigPanel entityConfigPanel)
 		{
-			UIManager.Instance.OpenPanel<HangarPanel>();
+			if (entityConfigPanel.DoesComeFromMissionPanel)
+			{
+				if (GameDatas.current.currentPlayerSave.dayCount <= 3)
+					UIManager.Instance.OpenPanel<MissionPanel>();
+				else
+					UIManager.Instance.OpenPanel<TournamentPanel>();
+			}
+			else
+				UIManager.Instance.OpenPanel<HangarPanel>();
 		}
 		else if (UIManager.Instance.currentPanel is SoloHubPanel)
 		{
@@ -119,6 +127,7 @@ public class HubTopCanvas : AUITopCanvas
 					m_shopFactionCurrencyDisplay.Init(CurrencyType.CommandoCredit, GameDatas.current.currentPlayerSave.currencies[CurrencyType.CommandoCredit] + "r");
 					break;
 			}
+			m_upgradeStructureBtn.gameObject.SetActive(true);
 			m_shopFactionCurrencyDisplay.Show();
 			m_factionProgressionTMP.text = percentage + " %";
 			m_factionProgressionFill.fillAmount = (float)percentage / 100f;
@@ -129,6 +138,7 @@ public class HubTopCanvas : AUITopCanvas
 				display.Show();
 			m_shopFactionCurrencyDisplay.Hide();
 
+			m_upgradeStructureBtn.gameObject.SetActive(UIManager.Instance.currentPanel is not TournamentPanel or MissionPanel);
 			m_currencyDisplays[CurrencyType.SoftCurrency].Text.text = GameDatas.current.currentPlayerSave.currencies[CurrencyType.SoftCurrency].ToString() + " -";
 
 			int percentage = 0;

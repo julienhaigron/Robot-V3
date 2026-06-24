@@ -159,7 +159,7 @@ public class EntityComponentConfigPanel : AUIPanel
 		foreach (ComponentSlot slot in m_slots)
 			slot.Cleanup();
 
-		UIManager.Instance.OpenPanel<EntityConfigPanel>().Init(m_currentEntity);
+		UIManager.Instance.OpenPanel<EntityConfigPanel>().Init(m_currentEntity, false);
 	}
 
 	private void OnClickOpenUpgradePopup ()

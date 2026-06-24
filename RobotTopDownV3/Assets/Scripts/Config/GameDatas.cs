@@ -175,11 +175,27 @@ public partial class GameDatas : ScriptableObject
 		[Serializable]
 		public class CycleData
 		{
+			public MissionDataEnumID[] roundsDatas;
+
+			public bool hasInitTournament = false;
 
 			public void NewCycle ()
 			{
+				hasInitTournament = false;
+				roundsDatas = new MissionDataEnumID[3];
+				
 				current.currentPlayerSave.cycleCount++;
+			}
 
+			public void StartTournament ()
+			{
+				hasInitTournament = true;
+
+				//TODO : design tournament matchup
+				roundsDatas = new MissionDataEnumID[3];
+				roundsDatas[0] = GameAssets.current.game.missions.Keys.ToList().RandomElement();
+				roundsDatas[1] = GameAssets.current.game.missions.Keys.ToList().RandomElement();
+				roundsDatas[2] = GameAssets.current.game.missions.Keys.ToList().RandomElement();
 			}
 		}
 
