@@ -95,7 +95,15 @@ public class GameManager : SingletonPersistant<GameManager>
 
 		FTUEManager.Instance.InitFTUE();
 
-		if (GameDatas.current.currentPlayerSave.DidFirstIntroLevel)
+		bool doesTuto = !GameDatas.current.currentPlayerSave.DidFirstIntroLevel;
+#if UNITY_EDITOR
+		if (GameConfig.current.debug.skipFTUE)
+			doesTuto = true;
+#endif
+
+		//TODO : add TransitionPanel
+
+		if (doesTuto)
 			SceneManager.LoadSceneAsync(GameConfig.current.game.hubSceneName);
 		else
 		{

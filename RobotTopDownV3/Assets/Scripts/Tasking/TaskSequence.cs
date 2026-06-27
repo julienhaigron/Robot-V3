@@ -18,7 +18,7 @@ public class TaskSequence
 		? GameDatas.current.currentPlayerSave.sequencesProgressions[m_id] : 0;
 
 	public bool IsPerforming => CurrentTask.IsPerforming;
-	public bool IsCompleted => m_tasks[^1].IsCompleted;
+	public bool IsCompleted => m_tasks[^1].IsCompleted || CurrentTaskIndex == -1;
 
 	public TaskSequence ( string _id )
 	{
@@ -42,7 +42,15 @@ public class TaskSequence
 		{
 			m_tasks[i].SequenceID = ID;
 			m_tasks[i].IsLastTaskInSequence = i + 1 == m_tasks.Count;
+
+			if (i + 1 == m_tasks.Count)
+				m_tasks[i].onCompleted += OnComplete;
 		}
 		//TaskManager.Instance.StartSequence(this);
+	}
+
+	private void OnComplete (Task _task)
+	{
+		onCompleted?.Invoke(this);
 	}
 }

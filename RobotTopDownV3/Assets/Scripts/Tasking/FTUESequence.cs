@@ -10,13 +10,14 @@ public class FTUESequence
 	private List<TaskSequence> m_sequences = new();
 	public List<TaskSequence> Sequences => m_sequences;
 
-	public TaskSequence CurrentSequence => m_sequences[m_currentSequenceIndex];
+	public TaskSequence CurrentSequence => m_sequences[CurrentSequenceIndex];
 
-	private int m_currentSequenceIndex = 0;
-	public int CurrentSequenceIndex => m_currentSequenceIndex;
+
+	private int CurrentSequenceIndex => GameDatas.current.currentPlayerSave.sequencesProgressions.ContainsKey(m_id)
+		? GameDatas.current.currentPlayerSave.sequencesProgressions[m_id] : 0;
 
 	public bool IsPerforming => CurrentSequence.IsPerforming;
-	public bool IsCompleted => m_sequences[^1].IsCompleted;
+	public bool IsCompleted => m_sequences[^1].IsCompleted || CurrentSequenceIndex == -1;
 
 	public FTUESequence ( string _id )
 	{
@@ -33,13 +34,10 @@ public class FTUESequence
 	{
 		if (!GameDatas.current.currentPlayerSave.sequencesProgressions.ContainsKey(ID))
 		{
-			m_currentSequenceIndex = 0;
-			GameDatas.current.currentPlayerSave.sequencesProgressions.Add(ID, m_currentSequenceIndex);
+			GameDatas.current.currentPlayerSave.sequencesProgressions.Add(ID, 0);
 		}
-		else
-			m_currentSequenceIndex = GameDatas.current.currentPlayerSave.sequencesProgressions[ID];
 
-		for (int i = m_currentSequenceIndex; i < Sequences.Count; i++)
+		for (int i = CurrentSequenceIndex; i < Sequences.Count; i++)
 		{
 			if (i + 1 == Sequences.Count)
 				Sequences[i].onCompleted += OnEndFTUE;
@@ -47,7 +45,7 @@ public class FTUESequence
 				Sequences[i].onCompleted += OnEndFTUESingleSequence;
 		}
 
-		TaskManager.Instance.StartSequence(Sequences[m_currentSequenceIndex]);
+		TaskManager.Instance.StartSequence(Sequences[CurrentSequenceIndex]);
 	}
 
 	private void OnEndFTUESingleSequence ( TaskSequence _sequence )
