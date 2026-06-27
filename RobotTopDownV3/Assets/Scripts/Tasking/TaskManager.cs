@@ -5,58 +5,50 @@ using System;
 
 public class TaskManager : SingletonPersistant<TaskManager>
 {
-    public event Action<Task> onTaskStarted;
-    public event Action<Task> onTaskCompleted;
-    public event Action onSequenceCompleted;
-
-    private readonly TaskContext m_context;
-    private readonly Queue<Task> m_tasks = new();
-    private Task m_currentTask;
+    private TaskContext m_context = null;
+    private List<TaskSequence> m_activeSequences = new();
 
     public class TaskContext
     {
-        public TurnManager TurnManager;
+        public TurnManager Turn;
         public PlayerController Player;
-        public UIManager UIManager;
-        public GridManager GridManager;
-        public DialogueManager DialogueManager;
+        public UIManager UI;
+        public GridManager Grid;
+        public DialogueManager Dialogue;
+        public LogConsole Log;
+        public GameManager Game;
     }
 
-    public void StartTasks ( IEnumerable<Task> _tutorialTasks )
-    {
-        m_tasks.Clear();
-
-        foreach (Task task in _tutorialTasks)
-            m_tasks.Enqueue(task);
-
-        StartNextTask();
-    }
-
-    private void StartNextTask ()
-    {
-        if (m_tasks.Count == 0)
+	private void Start ()
+	{
+        m_context = new()
         {
-            m_currentTask = null;
+            Turn = TurnManager.Instance,
+            Player = PlayerController.Instance,
+            UI = UIManager.Instance,
+            Grid = GridManager.Instance,
+            Dialogue = DialogueManager.Instance,
+            Log = LogConsole.Instance,
+            Game = GameManager.Instance
+        };
+    }
 
-            onSequenceCompleted?.Invoke();
+	private void Update ()
+	{
+        if (m_context == null)
             return;
-        }
 
-        m_currentTask = m_tasks.Dequeue();
+		foreach (TaskSequence seq in m_activeSequences)
+		{
+			if (!seq.IsCompleted && !seq.IsPerforming)
+				seq.CurrentTask.TryStart(m_context);
+		}
+	}
 
-        m_currentTask.onCompleted += OnCurrentTaskCompleted;
-
-        onTaskStarted?.Invoke(m_currentTask);
-
-        m_currentTask.Start(m_context);
+	public void StartSequence(TaskSequence _sequence )
+	{
+        _sequence.Init();
+        m_activeSequences.Add(_sequence);
     }
 
-    private void OnCurrentTaskCompleted ( Task task )
-    {
-        task.onCompleted -= OnCurrentTaskCompleted;
-
-        onTaskCompleted?.Invoke(task);
-
-        StartNextTask();
-    }
 }

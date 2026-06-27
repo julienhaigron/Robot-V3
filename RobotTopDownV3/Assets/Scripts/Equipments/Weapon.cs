@@ -311,7 +311,7 @@ public class Weapon : MonoBehaviour
 
 		string detailsDescription = detailsBuilder.ToString();
 		LogConsole.LogDetails details = new("damage_" + LogConsole.Instance.LogsDetails.Keys.Count, "Damage Details", detailsDescription);
-		LogConsole.AddLog(_target.ID + " takes damages from " + _user.ID, LogConsole.LogEventType.AttackResolution, details);
+		LogConsole.AddLog(_target.ID + " takes damages from " + _user.ID, LogConsole.LogEventType.Damage, details);
 
 		return damages;
 	}

@@ -15,7 +15,7 @@ public class LogConsole : SingletonPersistant<LogConsole>
 	private Dictionary<string, LogDetails> m_logsDetails = new();
 	public Dictionary<string, LogDetails> LogsDetails => m_logsDetails;
 
-	public enum LogEventType { PreGame, InputPhase, AICheck, AttackResolution, ActionConflict, DebugSys }
+	public enum LogEventType { PreGame, InputPhase, AICheck, ActionResolution, ActionConflict, DebugSys, AttackRoll, Damage }
 
 	[System.Serializable]
 	public class LogDetails
@@ -73,7 +73,7 @@ public class LogConsole : SingletonPersistant<LogConsole>
 		{
 			switch (eventType)
 			{
-				case LogEventType.AttackResolution:
+				case LogEventType.ActionResolution:
 					return (details == null ? "" : ("<link=" + details.ID + ">")) + "<color=#" + ColorUtility.ToHtmlStringRGB(GameConfig.current.meta.colorsPerType[eventType]) + ">" + message + "</color>" + (details == null ? "\n" : "</link>\n");
 				default:
 					return eventType.ToString() + " [" + recordTime.ToString("HH:mm") + "]: " + "<color=#" + ColorUtility.ToHtmlStringRGB(GameConfig.current.meta.colorsPerType[eventType]) + ">" + message + "</color>\n";

@@ -1,22 +1,26 @@
 using UnityEngine;
+using System;
 
 public class DialogueHighlightTask : Task
 {
     private readonly DialogueData dialogue;
-    private readonly TutorialHighlightZone highlightZone;
+    private readonly string highlightZoneID;
 
     private DialogueManager dialogueManager;
 
-    public DialogueHighlightTask ( string description, bool _canBeSkipped, DialogueData dialogue, TutorialHighlightZone highlightZone )
-        : base(description, _canBeSkipped)
+    public DialogueHighlightTask ( string _description, Func<TaskManager.TaskContext, bool> _startPredicate, DialogueData _dialogue, string _highlightZoneID )
+        : base(_description, _startPredicate)
     {
-        this.dialogue = dialogue;
-        this.highlightZone = highlightZone;
+        this.dialogue = _dialogue;
+        this.highlightZoneID = _highlightZoneID;
     }
 
     protected override void OnStart ( TaskManager.TaskContext _context )
     {
-        dialogueManager = _context.DialogueManager;
+        base.OnStart(_context);
+        dialogueManager = _context.Dialogue;
+
+        TutorialHighlightZone highlightZone = FTUEManager.Instance.RegisterdTutorialHighlightZones[highlightZoneID];
 
         highlightZone.Show();
         highlightZone.onInteract += CompleteTask;
@@ -30,7 +34,9 @@ public class DialogueHighlightTask : Task
 
     protected override void OnComplete ()
     {
+        TutorialHighlightZone highlightZone = FTUEManager.Instance.RegisterdTutorialHighlightZones[highlightZoneID];
         highlightZone.Hide();
         highlightZone.onInteract -= CompleteTask;
+        base.OnComplete();
     }
 }

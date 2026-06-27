@@ -93,7 +93,19 @@ public class GameManager : SingletonPersistant<GameManager>
 		GameDatas.current.game.lastPlayerSaveSelectedID = _saveID;
 		m_currentGameMode = GameMode.Offline;
 
-		SceneManager.LoadSceneAsync(GameConfig.current.game.hubSceneName);
+		FTUEManager.Instance.InitFTUE();
+
+		if (GameDatas.current.currentPlayerSave.DidFirstIntroLevel)
+			SceneManager.LoadSceneAsync(GameConfig.current.game.hubSceneName);
+		else
+		{
+			//TODO : play introduction video/animation before throwing player into gameplay
+
+			foreach (UnitPreset unitPreset in GameConfig.current.game.playerStartingSquadUnits)
+				unitPreset.AddToUnits();
+
+			SetupLevel(GameConfig.current.game.microTuto1MissionData);
+		}
 	}
 
 	public void SetupLevel ( MissionData _mission )
@@ -162,7 +174,7 @@ public class GameManager : SingletonPersistant<GameManager>
 			m_playersEntityAnchor[1].Init(m_playerTwoEntityDatas, 1);
 		}
 
-		onStartLevel.Invoke();
+		onStartLevel?.Invoke();
 
 		m_fogCanvas.gameObject.SetActive(true);
 		TurnManager.Instance.StartInputPhase();
@@ -233,7 +245,7 @@ public class GameManager : SingletonPersistant<GameManager>
 
 	public void EndGame ( bool _isSuccessfull )
 	{
-		GameDatas.current.currentPlayerSave.dayData.NewDay();
+		GameDatas.current.currentPlayerSave.NewDay();
 		//SaveMacroChanges();
 
 		if (_isSuccessfull)

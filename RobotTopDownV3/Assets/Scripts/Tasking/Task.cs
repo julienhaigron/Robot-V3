@@ -3,43 +3,87 @@ using System;
 
 public abstract class Task
 {
-    public event Action<Task> onStarted;
-    public event Action<Task> onCompleted;
+	public Action<Task> onStarted;
+	public Action<Task> onCompleted;
 
-    public string Description { get; }
+	public string Description { get; }
+	public string SequenceID { get; set; }
+	public bool IsLastTaskInSequence { get; set; }
 
-    public bool IsCompleted { get; private set; }
+	public bool IsCompleted { get; private set; }
 
-    public bool CanBeSkipped;
+	private Func<TaskManager.TaskContext, bool> m_startPredicate;
+	private Func<TaskManager.TaskContext, bool> m_skipPredicate;
 
-    protected Task ( string _description, bool _canBeSkipped )
-    {
-        Description = _description;
-        CanBeSkipped = _canBeSkipped;
-    }
+	private bool m_isPerforming = false;
+	public bool IsPerforming => m_isPerforming;
 
-    public void Start ( TaskManager.TaskContext _context )
-    {
-        onStarted?.Invoke(this);
+	protected Task ( string _description, Func<TaskManager.TaskContext, bool> _startPredicate )
+	{
+		Description = _description;
+		m_startPredicate = _startPredicate;
+	}
 
-        OnStart(_context);
-    }
+	public void SetSkipPredicate ( Func<TaskManager.TaskContext, bool> _skipPredicate )
+	{
+		m_skipPredicate = _skipPredicate;
+	}
 
-    protected abstract void OnStart ( TaskManager.TaskContext _context );
+	public bool TryStart ( TaskManager.TaskContext _context )
+	{
+		if (m_skipPredicate != null && m_skipPredicate(_context))
+		{
+			Skip();
+			return false;
+		}
+		else if (m_startPredicate == null || m_startPredicate(_context))
+		{
+			Start(_context);
+			return true;
+		}
+		else
+			return false;
+	}
 
-    protected void Complete ()
-    {
-        if (IsCompleted)
-            return;
+	public void Start ( TaskManager.TaskContext _context )
+	{
+		m_isPerforming = true;
 
-        IsCompleted = true;
+		OnStart(_context);
+	}
 
-        OnComplete();
+	protected virtual void OnStart ( TaskManager.TaskContext _context )
+	{
+		Debug.Log("Start task " + Description);
+		onStarted?.Invoke(this);
+	}
 
-        onCompleted?.Invoke(this);
-    }
+	protected void Skip ()
+	{
+		Complete();
+	}
 
-    protected virtual void OnComplete ()
-    {
-    }
+	protected void Complete ()
+	{
+		if (IsCompleted)
+			return;
+
+		m_isPerforming = false;
+		IsCompleted = true;
+
+		OnComplete();
+	}
+
+	protected virtual void OnComplete ()
+	{
+		if (!string.IsNullOrEmpty(SequenceID))
+		{
+			if (IsLastTaskInSequence)
+				GameDatas.current.currentPlayerSave.sequencesProgressions[SequenceID] = -1;
+			else
+				GameDatas.current.currentPlayerSave.sequencesProgressions[SequenceID]++;
+		}
+
+		onCompleted?.Invoke(this);
+	}
 }

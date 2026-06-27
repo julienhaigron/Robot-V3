@@ -20,6 +20,7 @@ public partial class GameConfig : ScriptableObject
 	public class DebugSettings
 	{
 		public bool saveEntityDeathAndDamages = true;
+		public bool skipFTUE = false;
 	}
 
 	[System.Serializable]
@@ -58,6 +59,10 @@ public partial class GameConfig : ScriptableObject
 		public string startScreenSceneName;
 		public int missionAmountInMissionSelectionPanel = 12;
 		public int selectableMissionAmount = 8;
+
+		[Title("Tuto")]
+		public MissionData microTuto1MissionData;
+		public UnitPreset[] playerStartingSquadUnits;
 	}
 
 	[System.Serializable]

@@ -59,7 +59,7 @@ public class AttackAction : AEntityAction
 		{
 			//targetedEntityID = PerformingEntity.AI.TargetedEntity.ID;
 			if (Data.isAoe)
-				LogConsole.AddLog("Automatic hit on targets due to AoE type", LogConsole.LogEventType.AttackResolution);
+				LogConsole.AddLog("Automatic hit on targets due to AoE type", LogConsole.LogEventType.AttackRoll);
 			
 			for (int attackCount = 0; attackCount < attacksInfos.Length; attackCount++)
 			{

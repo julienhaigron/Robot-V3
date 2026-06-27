@@ -443,7 +443,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 			+ _attackAction.ToString()
 			+ " against "
 			+ _targetEntity.ID,
-			LogConsole.LogEventType.AttackResolution,
+			LogConsole.LogEventType.AttackRoll,
 			details
 		);
 		return isAttackSuccessful;
@@ -500,7 +500,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 		string detailsDescription = detailsBuilder.ToString();
 		LogConsole.LogDetails details = new("status_" + LogConsole.Instance.LogsDetails.Keys.Count, "Status Details", detailsDescription);
 		LogConsole.AddLog(m_linkedEntity.ID + (isAttackSuccessful ? " applies " : " fails to apply ")
-			+ _effect.GetType().Name + " on " + _target.ID, LogConsole.LogEventType.AttackResolution, details);
+			+ _effect.GetType().Name + " on " + _target.ID, LogConsole.LogEventType.ActionResolution, details);
 
 		return isAttackSuccessful;
 	}

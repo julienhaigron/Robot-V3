@@ -133,7 +133,7 @@ public abstract class AEntityAction : INetworkSerializable
 		if (IsPerformingAtTick(timeAtStart + lifetime))
 		{
 			if(enumID != EntityActionEnumID.Unknowned && enumID != EntityActionEnumID.Wait)
-				LogConsole.AddLog(performingEntityID + " performes " + ToString(), LogConsole.LogEventType.AttackResolution);
+				LogConsole.AddLog(performingEntityID + " performes " + ToString(), LogConsole.LogEventType.ActionResolution);
 			Perform(_state);
 			return true;
 		}
@@ -162,11 +162,11 @@ public abstract class AEntityAction : INetworkSerializable
 		if (didEndAction)
 		{
 			if (enumID != EntityActionEnumID.Unknowned && enumID != EntityActionEnumID.Wait)
-				LogConsole.AddLog("end " + ToString() + " with lifetime at " + lifetime, LogConsole.LogEventType.AttackResolution);
+				LogConsole.AddLog("end " + ToString() + " with lifetime at " + lifetime, LogConsole.LogEventType.ActionResolution);
 			EndAction();
 		}
 		else if (enumID != EntityActionEnumID.Unknowned && enumID != EntityActionEnumID.Wait)
-			LogConsole.AddLog(performingEntityID + " in " + (lifetime <= preparationDuration ? "preparation " : "cooldown ") + ToString(), LogConsole.LogEventType.AttackResolution);
+			LogConsole.AddLog(performingEntityID + " in " + (lifetime <= preparationDuration ? "preparation " : "cooldown ") + ToString(), LogConsole.LogEventType.ActionResolution);
 
 		onEndTick?.Invoke(performingEntityID, didEndAction);
 	}

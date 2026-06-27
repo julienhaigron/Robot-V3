@@ -1,19 +1,19 @@
 using UnityEngine;
+using System;
 
 public class DialogueTask : Task
 {
     private readonly DialogueData dialogue;
-    private DialogueManager dialogueManager;
 
-    public DialogueTask ( string _description, bool _canBeSkipped, DialogueData _dialogue )
-        : base(_description, _canBeSkipped)
+    public DialogueTask ( string _description, Func<TaskManager.TaskContext, bool> _startPredicate, DialogueData _dialogue )
+        : base(_description, _startPredicate)
     {
         this.dialogue = _dialogue;
     }
 
     protected override void OnStart ( TaskManager.TaskContext _context )
     {
-        dialogueManager = _context.DialogueManager;
-        dialogueManager.PlayDialogue(dialogue, Complete);
+        base.OnStart(_context);
+        _context.Dialogue.PlayDialogue(dialogue, Complete);
     }
 }

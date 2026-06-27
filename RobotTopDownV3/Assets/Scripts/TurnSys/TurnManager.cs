@@ -543,7 +543,7 @@ public class TurnManager : Singleton<TurnManager>
 			while (totalCost < 1 && recordedActions[entityID].Count > 0)
 			{
 				RecordedAction recordedAction = recordedActions[entityID].Dequeue();
-				LogConsole.AddLog(entityID + " will play new action this tick " + recordedAction.action.ToString(), LogConsole.LogEventType.AttackResolution);
+				LogConsole.AddLog(entityID + " will play new action this tick " + recordedAction.action.ToString(), LogConsole.LogEventType.ActionResolution);
 				m_actionsToPlay[entityID].Enqueue(recordedAction);
 				totalCost += recordedAction.action.TotalDuration;
 			}
@@ -803,7 +803,7 @@ public class TurnManager : Singleton<TurnManager>
 				{
 					//here
 					Debug.Log("error here with entity " + _performingEntityID);
-					LogConsole.AddLog("error here with entity " + _performingEntityID, LogConsole.LogEventType.AttackResolution);
+					LogConsole.AddLog("error here with entity " + _performingEntityID, LogConsole.LogEventType.ActionResolution);
 					TryEndRoundTick();
 					return;
 				}

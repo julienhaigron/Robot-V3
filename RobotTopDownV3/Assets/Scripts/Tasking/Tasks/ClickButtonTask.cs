@@ -1,11 +1,12 @@
 using UnityEngine;
+using System;
 
 public class ClickButtonTask : Task
 {
     private readonly BaseButton button;
 
-    public ClickButtonTask ( string _description, bool _canBeSkipped,  BaseButton _button ) 
-        : base(_description, _canBeSkipped)
+    public ClickButtonTask ( string _description, Func<TaskManager.TaskContext, bool> _startPredicate,  BaseButton _button ) 
+        : base(_description, _startPredicate)
     {
         this.button = _button;
     }
@@ -13,6 +14,7 @@ public class ClickButtonTask : Task
     protected override void OnStart ( TaskManager.TaskContext _context )
     {
         button.onClick += OnClicked;
+        base.OnStart(_context);
     }
 
     private void OnClicked ()
@@ -23,5 +25,6 @@ public class ClickButtonTask : Task
     protected override void OnComplete ()
     {
         button.onClick -= OnClicked;
+        base.OnComplete();
     }
 }

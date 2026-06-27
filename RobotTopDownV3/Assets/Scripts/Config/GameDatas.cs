@@ -15,7 +15,6 @@ using UnityEditor;
 [CreateAssetMenu(fileName = "GameDatas", menuName = "ScriptableObject/GameDatas")]
 public partial class GameDatas : ScriptableObject
 {
-	public GameAssets gameAssets;
 	public static GameDatas current => ApplicationManager.datas;
 	private static string m_defaultSaveFile = "product.sav";
 	public static string defaultSaveFile => m_defaultSaveFile;
@@ -50,9 +49,9 @@ public partial class GameDatas : ScriptableObject
 		{
 			if (playerSaves == null || game.lastPlayerSaveSelectedID == -1 || playerSaves.Count <= game.lastPlayerSaveSelectedID)
 			{
-				Debug.LogError("No saves detected. Creating default save");
-				CreateSave("NewSave");
+				//Debug.LogError("No saves detected. Creating default save");
 				game.lastPlayerSaveSelectedID = 0;
+				CreateSave("NewSave");
 				return playerSaves[0];
 			}
 			else
@@ -77,9 +76,9 @@ public partial class GameDatas : ScriptableObject
 	public void CreateSave (string _saveName)
 	{
 		PlayerSave newSave = new PlayerSave();
-		newSave.Initialize();
 		newSave.saveName = _saveName;
 		playerSaves.Add(newSave);
+		newSave.Initialize();
 	}
 	
 	[System.Serializable]
@@ -104,8 +103,8 @@ public partial class GameDatas : ScriptableObject
 		public int dayCount = 0;
 
 		//tutos
-		public bool IsInTuto => cycleCount == 0;
-		public bool[] tutoProgression = { false, false, false, false, false };
+		public bool DidFirstIntroLevel => sequencesProgressions.ContainsKey(FTUEManager.FTUEID) && sequencesProgressions[FTUEManager.FTUEID] > 0;
+		public SerializableDictionary<string, int> sequencesProgressions = new SerializableDictionary<string, int>();
 
 		[Serializable]
 		public class DayData
@@ -129,39 +128,45 @@ public partial class GameDatas : ScriptableObject
 				public int remainingTime;
 			}
 
-			[Button]
-			public void NewDay ()
+		}
+
+		[Button]
+		public void NewDay ()
+		{
+			dayCount++;
+			if (dayCount >= GameConfig.current.game.nbOfDayInCycle)
+				NewCycle();
+
+			//new items in shop
+			for (int i = 0; i < (GameAssets.current.game.structureUpgrades[StructureUpgradePopup.StructureType.Shop] as ShopStructureUpgrade).GetMaxItemAmount(); i++)
 			{
-				current.currentPlayerSave.dayCount++;
-				if (current.currentPlayerSave.dayCount >= GameConfig.current.game.nbOfDayInCycle)
-					current.currentPlayerSave.cycleData.NewCycle();
-
-				//new items in shop
-				for (int i = 0; i < (GameAssets.current.game.structureUpgrades[StructureUpgradePopup.StructureType.Shop] as ShopStructureUpgrade).GetMaxItemAmount(); i++)
-				{
-					EntityEquipmentData equipmentData = GameAssets.current.equipments.Values.ToArray().RandomElement();
-					itemsInShop.Add(new() { ID = equipmentData.name + current.currentPlayerSave.equipmentCounter++, dataID = equipmentData.name });
-				}
-
-				//recycling component
-				foreach(RecyclingComponentData data in currentlyRecyclingComponents)
-				{
-					data.remainingTime--;
-					if (data.remainingTime < 0)
-						data.remainingTime = 0;
-				}
-
-				//repairing units
-				foreach (RepairingComponentData data in repairingEntities)
-				{
-					data.remainingTime--;
-					if (data.remainingTime < 0)
-						data.remainingTime = 0;
-				}
-
-				onNewDay?.Invoke();
+				EntityEquipmentData equipmentData = GameAssets.current.equipments.Values.ToArray().RandomElement();
+				dayData.itemsInShop.Add(new() { ID = equipmentData.name + current.currentPlayerSave.equipmentCounter++, dataID = equipmentData.name });
 			}
 
+			//recycling component
+			foreach (DayData.RecyclingComponentData data in dayData.currentlyRecyclingComponents)
+			{
+				if (data == null)
+					continue;
+
+				data.remainingTime--;
+				if (data.remainingTime < 0)
+					data.remainingTime = 0;
+			}
+
+			//repairing units
+			foreach (DayData.RepairingComponentData data in dayData.repairingEntities)
+			{
+				if (data == null)
+					continue;
+
+				data.remainingTime--;
+				if (data.remainingTime < 0)
+					data.remainingTime = 0;
+			}
+
+			onNewDay?.Invoke();
 		}
 
 		[Serializable]
@@ -174,22 +179,6 @@ public partial class GameDatas : ScriptableObject
 			public bool didSelectMissions = false;
 			public bool hasInitTournament = false;
 
-			[Button]
-			public void NewCycle ()
-			{
-				didSelectMissions = false;
-				hasInitTournament = false;
-				roundsDatas = new MissionDataEnumID[3];
-				//missions
-				availableMissionsIds.Clear();
-				for (int i = 0; i < GameConfig.current.game.missionAmountInMissionSelectionPanel; i++)
-				{
-					availableMissionsIds.Add(GameAssets.current.game.missions.Keys.ToList().RandomElement());
-				}
-
-				current.currentPlayerSave.cycleCount++;
-			}
-
 			public void StartTournament ()
 			{
 				hasInitTournament = true;
@@ -200,6 +189,22 @@ public partial class GameDatas : ScriptableObject
 				roundsDatas[1] = GameAssets.current.game.missions.Keys.ToList().RandomElement();
 				roundsDatas[2] = GameAssets.current.game.missions.Keys.ToList().RandomElement();
 			}
+		}
+
+		[Button]
+		public void NewCycle ()
+		{
+			cycleData.didSelectMissions = false;
+			cycleData.hasInitTournament = false;
+			cycleData.roundsDatas = new MissionDataEnumID[3];
+			//missions
+			cycleData.availableMissionsIds.Clear();
+			for (int i = 0; i < GameConfig.current.game.missionAmountInMissionSelectionPanel; i++)
+			{
+				cycleData.availableMissionsIds.Add(GameAssets.current.game.missions.Keys.ToList().RandomElement());
+			}
+
+			cycleCount++;
 		}
 
 		public Equipment AddEquipmentToInventory ( EntityEquipmentData _data )
@@ -300,6 +305,11 @@ public partial class GameDatas : ScriptableObject
 					upgradeLevels.Add(upgrade.saveKey, 0);
 				}
 			}
+
+			NewCycle();
+			cycleCount = 0;
+			NewDay();
+			dayCount = 0;
 		}
 
 		#region Currencies

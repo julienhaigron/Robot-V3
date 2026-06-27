@@ -1,18 +1,20 @@
 using UnityEngine;
+using System;
 
 public class MoveEntityToTileTask : Task
 {
     private readonly TileCoordinates targetTile;
 
 
-    public MoveEntityToTileTask ( string _description, bool _canBeSkipped, TileCoordinates _targetTile )
-        : base(_description, _canBeSkipped)
+    public MoveEntityToTileTask ( string _description, Func<TaskManager.TaskContext, bool> _startPredicate, TileCoordinates _targetTile )
+        : base(_description, _startPredicate)
     {
         this.targetTile = _targetTile;
     }
 
     protected override void OnStart ( TaskManager.TaskContext _context )
     {
+        base.OnStart(_context);
         EntityDisplacementPlugin.onAnyEntityMovement += HandleEntityMoved;
     }
 
@@ -30,5 +32,6 @@ public class MoveEntityToTileTask : Task
     protected override void OnComplete ()
     {
         EntityDisplacementPlugin.onAnyEntityMovement -= HandleEntityMoved;
+        base.OnComplete();
     }
 }

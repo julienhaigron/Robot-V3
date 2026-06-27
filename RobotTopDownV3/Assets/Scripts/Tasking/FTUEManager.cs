@@ -1,258 +1,103 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using Sirenix.OdinInspector;
 
 public class FTUEManager : SingletonPersistant<FTUEManager>
 {
-	[SerializeField] private DialogueData m_firstTutoDialogue;
+	[Title("Tuto1")]
+	[SerializeField] private DialogueData[] m_firstTutoDialogues;
 
-	private Dictionary<string, TutorialHighlightZone> registerdTutorialHighlightZones = new();
+	private Dictionary<string, TutorialHighlightZone> m_registerdTutorialHighlightZones = new();
+	public Dictionary<string, TutorialHighlightZone> RegisterdTutorialHighlightZones => m_registerdTutorialHighlightZones;
 
-	public override void Awake ()
-	{
-		base.Awake();
-		UIManager.onFocusedWindowChanged += OnFocusedWindowChanged;
-		GameManager.onStartLevel += OnStartLevel;
-	}
-
-	private void OnDestroy ()
-	{
-		UIManager.onFocusedWindowChanged -= OnFocusedWindowChanged;
-		GameManager.onStartLevel -= OnStartLevel;
-	}
-
-	private void OnFocusedWindowChanged ()
-	{
-		CheckTutos();
-	}
-
-	private void OnStartLevel ()
-	{
-		CheckTutos();
-	}
+	public const string FTUEID = "FTUESequence";
 
 	public void AddTutorialHighlightZone ( TutorialHighlightZone _highlightZone )
 	{
-		if (registerdTutorialHighlightZones.ContainsKey(_highlightZone.ID))
+		if (m_registerdTutorialHighlightZones.ContainsKey(_highlightZone.ID))
 		{
 			Debug.LogError("this highlightZone has the same ID has another one. ID = " + _highlightZone.ID, _highlightZone.gameObject);
 			return;
 		}
 
-		registerdTutorialHighlightZones.Add(_highlightZone.ID, _highlightZone);
+		m_registerdTutorialHighlightZones.Add(_highlightZone.ID, _highlightZone);
 	}
 
 
-	private void CheckTutos ()
+	public void InitFTUE ()
 	{
-		if (!GameDatas.current.currentPlayerSave.IsInTuto)
+		if (GameDatas.current.currentPlayerSave.sequencesProgressions.ContainsKey(FTUEID) && GameDatas.current.currentPlayerSave.sequencesProgressions[FTUEID] == -1)
 			return;
 
-		/*MicroTuto1();
-		MicroTuto2();
-		MicroTuto3();
-		MacroTuto1();
-		MacroTuto2();
-		MacroTuto3();*/
+#if UNITY_EDITOR
+		if (GameConfig.current.debug.skipFTUE)
+			return;
+#endif
+		FTUESequence ftueSequence = new(FTUEID);
+
+		ftueSequence.Append(MicroTuto1());
+		//ftueSequence.Append(MicroTuto2());
+		//ftueSequence.Append(MicroTuto3());
+		//ftueSequence.Append(MicroTuto4());
+
+		ftueSequence.Start();
 	}
 
-	#region Tutos
+	#region Tuto Sequences
 
-	private void MicroTuto1 ()
+	private TaskSequence MicroTuto1 ()
 	{
-		if (!string.Equals(GameManager.Instance.CurrentMission.name, "TutoLevel1")
-			|| GameDatas.current.currentPlayerSave.tutoProgression[0])
-			return;
+		int firstPlayerEntityID = 0;
 
-		/*
-		 * - play dialogue first game introduction prt1
-		 *   - mise en situation micro (InGamePanel hidden for this part)
-		 *   - selectionné une unité
-		 *   - ajouter une action dans la queue (et ce qu'est la queue au passage) + explication sur les actions
-		 * - ask goto position
-		 * - play dialogue first game introduction prt1
-		 *   - explication log avec touche et dégat
-		 * - click menu btn
-		 * - click quit btn
-		 */
+		TaskSequence tutoSequence = new("MicroTuto1");
 
-		TaskSequence tutoSequence = new();
+		//input phase
+		tutoSequence.Append(new DialogueTask("Select Unit", ( context ) => context.Game.CurrentMission != null && context.Game.CurrentMission == GameConfig.current.game.microTuto1MissionData
+		, m_firstTutoDialogues[0]));
+		tutoSequence.Append(new DialogueHighlightTask("Action explenation", (context) => context.Player.SelectedEntity != null
+		, m_firstTutoDialogues[1], "actionBtns"));
+		tutoSequence.Append(new DialogueHighlightTask("Action Queue explenation", (context) => context.Turn.RecordedActions.ContainsKey(firstPlayerEntityID) && context.Turn.RecordedActions[firstPlayerEntityID].Count > 0
+		, m_firstTutoDialogues[2], "actionQueue"));
+		
+		//play phase
+		tutoSequence.Append(new DialogueHighlightTask("Log explenation", ( context ) => context.Turn.currentPhase == TurnManager.TurnPhase.Playing
+		, m_firstTutoDialogues[3], "logs"));
 
-		tutoSequence.Append(new DialogueTask("Introduction", false, m_firstTutoDialogue));
-		//tutoSequence.Append(new ClickButtonTask("Open Deck", false, deckButton));
-		tutoSequence.Append(new DialogueHighlightTask("Look here", false, m_firstTutoDialogue, registerdTutorialHighlightZones["deckHighlight"]));
-		tutoSequence.Append(new MoveEntityToTileTask("Move to tile", false, new TileCoordinates(4, 7, 3))).onCompleted += ( Task t ) =>
-		{
-			GameDatas.current.currentPlayerSave.tutoProgression[0] = true;
-		};
+		//input phase
+		tutoSequence.Append(new DialogueHighlightTask("State explenation", (context) => context.Log.Logs.ContainsKey(LogConsole.LogEventType.AttackRoll)
+		, m_firstTutoDialogues[4], "logs"));
+		tutoSequence.Append(new DialogueHighlightTask("Attack rolls explenation", ( context ) => context.Log.Logs.ContainsKey(LogConsole.LogEventType.Damage)
+		, m_firstTutoDialogues[5], "logs"));
 
-		tutoSequence.StartSequence();
+		return tutoSequence;
 	}
 
-	private void MicroTuto2 ()
+	private TaskSequence MicroTuto2 ()
 	{
-		if (!string.Equals(GameManager.Instance.CurrentMission.name, "TutoLevel2")
-			|| GameDatas.current.currentPlayerSave.tutoProgression[3])
-			return;
+		int firstPlayerEntityID = 0;
 
+		TaskSequence tutoSequence = new("MicroTuto2");
 
-		/*
-		 * - play dialogue micro 2
-		 *   - Fonctionnement tour par tour prt2 (state + pfc)
-		 *   - type de dégat, mort des unités et leur impact macro (le fait que c'est permanent)
-		 */
+		/*//input phase
+		tutoSequence.Append(new DialogueTask("Select Unit", ( context ) => string.Equals(context.Game.CurrentMission.name, "TutoLevel1")
+		, m_firstTutoDialogues[0]));
+		tutoSequence.Append(new DialogueHighlightTask("Action explenation", ( context ) => string.Equals(context.Player.SelectedEntity.ID, firstPlayerEntityID)
+		, m_firstTutoDialogues[1], registerdTutorialHighlightZones["actionBtns"]));
+		tutoSequence.Append(new DialogueHighlightTask("Action Queue explenation", ( context ) => context.Turn.RecordedActions.ContainsKey(firstPlayerEntityID) && context.Turn.RecordedActions[firstPlayerEntityID].Count > 0
+		, m_firstTutoDialogues[2], registerdTutorialHighlightZones["actionQueue"]));
 
-		TaskSequence tutoSequence = new();
+		//play phase
+		tutoSequence.Append(new DialogueHighlightTask("Log explenation", ( context ) => context.Turn.currentPhase == TurnManager.TurnPhase.Playing
+		, m_firstTutoDialogues[3], registerdTutorialHighlightZones["logs"]));
 
-		tutoSequence.Append(new DialogueTask("Introduction", false, m_firstTutoDialogue));
-		//tutoSequence.Append(new ClickButtonTask("Open Deck", false, deckButton));
-		tutoSequence.Append(new DialogueHighlightTask("Look here", false, m_firstTutoDialogue, registerdTutorialHighlightZones["deckHighlight"]));
-		tutoSequence.Append(new MoveEntityToTileTask("Move to tile", false, new TileCoordinates(4, 7, 3))).onCompleted += ( Task t ) =>
-		{
-			GameDatas.current.currentPlayerSave.tutoProgression[0] = true;
-		};
+		//input phase
+		tutoSequence.Append(new DialogueHighlightTask("State explenation", ( context ) => context.Log.Logs.ContainsKey(LogConsole.LogEventType.AttackRoll)
+		, m_firstTutoDialogues[4], registerdTutorialHighlightZones["stateBtns"]));
+		tutoSequence.Append(new DialogueHighlightTask("Attack rolls explenation", ( context ) => context.Log.Logs.ContainsKey(LogConsole.LogEventType.Damage)
+		, m_firstTutoDialogues[5], registerdTutorialHighlightZones["stateBtns"]));*/
 
-		tutoSequence.StartSequence();
-	}
-
-	private void MicroTuto3 ()
-	{
-		if (!string.Equals(GameManager.Instance.CurrentMission.name, "TutoLevel3")
-			|| GameDatas.current.currentPlayerSave.tutoProgression[5])
-			return;
-	}
-
-	private void MacroTuto1 ()
-	{
-		if (UIManager.Instance.currentPanel is not SoloHubPanel
-			|| GameDatas.current.currentPlayerSave.tutoProgression[1])
-			return;
-
-		/*
-		 * - play dialogue macro 1
-		 *   - le joueur est dans le hub
-		 *   - comment acceder au hangar (GoToMissionBtn must be deactivated until player when to hangar once)
-		 * - le joueur se retrouve directement dans le hangar à la fin du dialogue
-		 * - play dialogue explication hangar
-		 *   - hangar
-		 *   - edit uunité
-		 *   - ajouter / retiré unit dans la squad
-		 *   - bouton explication pour quitter le hangar et retour au hub
-		 */
-
-		TaskSequence tutoSequence = new();
-
-		tutoSequence.Append(new DialogueTask("Introduction", false, m_firstTutoDialogue));
-		//tutoSequence.Append(new ClickButtonTask("Open Deck", false, deckButton));
-		tutoSequence.Append(new DialogueHighlightTask("Look here", false, m_firstTutoDialogue, registerdTutorialHighlightZones["deckHighlight"]));
-		tutoSequence.Append(new MoveEntityToTileTask("Move to tile", false, new TileCoordinates(4, 7, 3))).onCompleted += ( Task t ) =>
-		{
-			GameDatas.current.currentPlayerSave.tutoProgression[0] = true;
-		};
-
-		tutoSequence.StartSequence();
-	}
-
-	private void MacroTuto2 ()
-	{
-		if (UIManager.Instance.currentPanel is not SoloHubPanel
-			|| GameDatas.current.currentPlayerSave.tutoProgression[2])
-			return;
-
-		/*
-		 * - play dialogue macro 2
-		 *   - Mission Panel
-		 * - FastForward btn must be active
-		 */
-
-		TaskSequence tutoSequence = new();
-
-		tutoSequence.Append(new DialogueTask("Introduction", false, m_firstTutoDialogue));
-		//tutoSequence.Append(new ClickButtonTask("Open Deck", false, deckButton));
-		tutoSequence.Append(new DialogueHighlightTask("Look here", false, m_firstTutoDialogue, registerdTutorialHighlightZones["deckHighlight"]));
-		tutoSequence.Append(new MoveEntityToTileTask("Move to tile", false, new TileCoordinates(4, 7, 3))).onCompleted += ( Task t ) =>
-		{
-			GameDatas.current.currentPlayerSave.tutoProgression[0] = true;
-		};
-
-		tutoSequence.StartSequence();
-	}
-
-	private void MacroTuto3 ()
-	{
-		if (UIManager.Instance.currentPanel is not HangarPanel
-			|| GameDatas.current.currentPlayerSave.tutoProgression[4])
-			return;
-
-		/*
-		 * - play dialogue macro 3
-		 *   - Station de réparation, station upgrade and all structure upgrade at the same time
-		 *   - Main Currency
-		 *   - Les cycles (nombre de jour, trois dernier pour le tournoi)
-		 *   - Tournoi (composé de trois missions, si tu rate le premier tu n'a pas accès au suivant etc)
-		 */
-
-		TaskSequence tutoSequence = new();
-
-		tutoSequence.Append(new DialogueTask("Introduction", false, m_firstTutoDialogue));
-		//tutoSequence.Append(new ClickButtonTask("Open Deck", false, deckButton));
-		tutoSequence.Append(new DialogueHighlightTask("Look here", false, m_firstTutoDialogue, registerdTutorialHighlightZones["deckHighlight"]));
-		tutoSequence.Append(new MoveEntityToTileTask("Move to tile", false, new TileCoordinates(4, 7, 3))).onCompleted += ( Task t ) =>
-		{
-			GameDatas.current.currentPlayerSave.tutoProgression[0] = true;
-		};
-
-		tutoSequence.StartSequence();
-	}
-
-	private void MacroTuto4 ()
-	{
-		if (UIManager.Instance.currentPanel is not HangarPanel
-			|| GameDatas.current.currentPlayerSave.tutoProgression[4])
-			return;
-
-		/*
-		 * - play dialogue macro 4
-		 *   - Recyclage
-		 */
-
-		TaskSequence tutoSequence = new();
-
-		tutoSequence.Append(new DialogueTask("Introduction", false, m_firstTutoDialogue));
-		//tutoSequence.Append(new ClickButtonTask("Open Deck", false, deckButton));
-		tutoSequence.Append(new DialogueHighlightTask("Look here", false, m_firstTutoDialogue, registerdTutorialHighlightZones["deckHighlight"]));
-		tutoSequence.Append(new MoveEntityToTileTask("Move to tile", false, new TileCoordinates(4, 7, 3))).onCompleted += ( Task t ) =>
-		{
-			GameDatas.current.currentPlayerSave.tutoProgression[0] = true;
-		};
-
-		tutoSequence.StartSequence();
-	}
-
-	private void MacroTuto5 ()
-	{
-		if (UIManager.Instance.currentPanel is not HangarPanel
-			|| GameDatas.current.currentPlayerSave.tutoProgression[4])
-			return;
-
-		/*
-		 * - play dialogue macro 4
-		 *   - Shop
-		 *   - Shop currencies and shop upgrades
-		 *   - selection des mission
-		 */
-
-		TaskSequence tutoSequence = new();
-
-		tutoSequence.Append(new DialogueTask("Introduction", false, m_firstTutoDialogue));
-		//tutoSequence.Append(new ClickButtonTask("Open Deck", false, deckButton));
-		tutoSequence.Append(new DialogueHighlightTask("Look here", false, m_firstTutoDialogue, registerdTutorialHighlightZones["deckHighlight"]));
-		tutoSequence.Append(new MoveEntityToTileTask("Move to tile", false, new TileCoordinates(4, 7, 3))).onCompleted += ( Task t ) =>
-		{
-			GameDatas.current.currentPlayerSave.tutoProgression[0] = true;
-		};
-
-		tutoSequence.StartSequence();
+		return tutoSequence;
 	}
 
 	#endregion

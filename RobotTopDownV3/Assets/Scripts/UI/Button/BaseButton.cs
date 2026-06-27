@@ -34,7 +34,7 @@ public class BaseButton : MonoBehaviour
 
     public virtual void SetVisible ( bool _isVisible, bool _isInstant )
     {
-        if (m_isVisible == _isVisible)
+        if (!_isInstant && m_isVisible == _isVisible)
             return;
 
         m_isVisible = _isVisible;
