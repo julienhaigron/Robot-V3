@@ -78,12 +78,14 @@ public class HubTopCanvas : AUITopCanvas
 
 	private void OnClickReturn ()
 	{
-		if (UIManager.Instance.currentPanel is SelectMissionPanel && GameDatas.current.currentPlayerSave.cycleData.didSelectMissions)
+		if (UIManager.Instance.currentPanel is SelectMissionPanel)
 		{
+			if(GameDatas.current.currentPlayerSave.cycleData.didSelectMissions)
+				UIManager.Instance.OpenPanel<SoloHubPanel>();
+
 			//wait for player to selected required minimum mission amount
-			UIManager.Instance.OpenPanel<SoloHubPanel>();
 		}
-		if(UIManager.Instance.currentPanel is HangarPanel or ShopPanel or RecyclePanel or RepairStationPanel or TournamentPanel or MissionPanel)
+		else if(UIManager.Instance.currentPanel is HangarPanel or ShopPanel or RecyclePanel or RepairStationPanel or TournamentPanel or MissionPanel)
 		{
 			UIManager.Instance.OpenPanel<SoloHubPanel>();
 		}

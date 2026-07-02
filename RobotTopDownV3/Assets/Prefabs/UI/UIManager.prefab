@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 4743469831670763973}
   - component: {fileID: 2753542517675198815}
   - component: {fileID: 9062248822253622312}
+  - component: {fileID: 3392051349043984197}
   m_Layer: 5
   m_Name: UIManager
   m_TagString: Untagged
@@ -155,6 +156,18 @@ MonoBehaviour:
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
   m_PresetInfoIsWorld: 0
+--- !u!114 &3392051349043984197
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4146429540296258342}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c15f270730b28124ea088fefdc88a4ea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: RTD::BillboardManager
 --- !u!1001 &840526239738713891
 PrefabInstance:
   m_ObjectHideFlags: 0

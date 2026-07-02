@@ -68,7 +68,7 @@ public class EntitySavedData : INetworkSerializable
 
 	public bool IsUnitValid ()
 	{
-		if (string.IsNullOrEmpty(frame.dataID) || string.IsNullOrEmpty(reactor.dataID) || string.IsNullOrEmpty(brain.dataID) || string.IsNullOrEmpty(neuronalMembrane.dataID))
+		if (FrameData == null || ReactorData == null || NeuronalMembraneData == null || BrainData == null)
 			return false;
 
 		int remainingEnergy = ReactorData.energyProduced;

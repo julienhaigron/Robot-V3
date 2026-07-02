@@ -87,7 +87,7 @@ GameObject:
   - component: {fileID: 6340389564353807738}
   - component: {fileID: 1420230151193463271}
   m_Layer: 5
-  m_Name: Background
+  m_Name: Outline
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -133,7 +133,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1256458020857379902}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
@@ -481,14 +481,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_canvasGroup: {fileID: 2193921125457550762}
+  m_outlineImg: {fileID: 1420230151193463271}
   m_icon: {fileID: 1542007063141976917}
   m_titleTMP: {fileID: 8711913412624370913}
   m_corpIcon: {fileID: 6890882406316987311}
-  m_componentIcon: {fileID: 7191509894469378144}
+  m_componentTypeIcon: {fileID: 7191509894469378144}
   m_priceBackground: {fileID: 2407912802454250105}
   m_priceTMP: {fileID: 4758915025133466046}
   m_descriptionTMP: {fileID: 324957359373003063}
   m_rerollBtn: {fileID: 0}
+  m_freezeBtn: {fileID: 0}
+  m_freezeImg: {fileID: 0}
+  m_freezeOnOffSpriteArray: []
   CurrentContainer: {fileID: 0}
 --- !u!225 &2193921125457550762
 CanvasGroup:
@@ -726,7 +730,7 @@ GameObject:
   - component: {fileID: 6548653586372448249}
   - component: {fileID: 7191509894469378144}
   m_Layer: 5
-  m_Name: Component Icon
+  m_Name: Component Type Icon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

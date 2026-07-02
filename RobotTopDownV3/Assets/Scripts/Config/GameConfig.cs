@@ -28,6 +28,7 @@ public partial class GameConfig : ScriptableObject
 	{
 		[Title("Macro")]
 		public int nbOfDayInCycle = 7;
+		public int maxInventoryCapacity = 80;
 
 		[Title("Actions")]
 		public EntityActionData defaultStartAction;

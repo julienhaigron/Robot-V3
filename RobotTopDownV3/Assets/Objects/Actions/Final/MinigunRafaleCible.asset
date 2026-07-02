@@ -22,6 +22,7 @@ MonoBehaviour:
   preparationAnimationKey: 
   afterPerformAnimationKey: 
   onPerformSingleAttackSFXID: 7
+  onSingleAttackHitSFXID: 0
   conditionType: 0
   previousActionAttackModificator: 0
   type: 0
@@ -36,7 +37,7 @@ MonoBehaviour:
   isAoe: 0
   aoeType: 0
   circleRange: 2
-  arcRadius: 1
+  arcType: 0
   rayDiameter: 1
   maxChainedTarget: 1
   damageRecutionOnChain: 0.1

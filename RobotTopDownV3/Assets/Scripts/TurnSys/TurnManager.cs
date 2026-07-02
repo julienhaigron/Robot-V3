@@ -924,6 +924,7 @@ public class TurnManager : Singleton<TurnManager>
 
 	}
 
+	[Button]
 	public void EndLevel ( bool _isSuccess )
 	{
 		if (currentPhase == TurnPhase.Off)

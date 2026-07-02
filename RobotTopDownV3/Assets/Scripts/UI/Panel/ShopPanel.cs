@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using System.Linq;
 
 public class ShopPanel : AUIPanel
@@ -8,6 +9,7 @@ public class ShopPanel : AUIPanel
 	[SerializeField] private ComponentDisplayGrid m_shopGrid;
 	[SerializeField] private ComponentDisplayGrid m_inventoryGrid;
 	[SerializeField] private ComponentFullDisplay m_hoveredComponentFullInfoDisplay;
+	[SerializeField] private Image m_corpIcon;
 
 	private EntityEquipmentData.EntityFaction m_currentFaction;
 	public EntityEquipmentData.EntityFaction CurrentFaction => m_currentFaction;
@@ -22,13 +24,22 @@ public class ShopPanel : AUIPanel
 	public void Init ( EntityEquipmentData.EntityFaction _faction)
 	{
 		m_currentFaction = _faction;
-
+		m_corpIcon.sprite = GameAssets.current.ui.corporationsIcons[_faction];
+		m_corpIcon.color = GameAssets.current.ui.corporationsColors[_faction];
 		RefreshShopBuyableItems();
 
 		m_inventoryGrid.Init(m_shopGrid, null, null, null, ComponentDisplay.DisplayMode.ShopSelling);
 		m_inventoryGrid.Cleanup();
-		foreach (GameDatas.PlayerSave.Equipment eq in GameDatas.current.currentPlayerSave.equipmentInventory)
-			m_inventoryGrid.CreateNewDisplay(null, eq, ComponentDisplay.DisplayMode.ShopSelling);
+
+		for(int i = 0; i < GameConfig.current.game.maxInventoryCapacity; i++)
+		{
+			if(GameDatas.current.currentPlayerSave.equipmentInventory.Count > i)
+				m_inventoryGrid.CreateNewDisplay(null, GameDatas.current.currentPlayerSave.equipmentInventory[i], ComponentDisplay.DisplayMode.ShopSelling);
+			else
+			{
+				m_inventoryGrid.CreateNewDisplay(null, null, ComponentDisplay.DisplayMode.Empty);
+			}
+		}
 	}
 
 	private void SellItem( ComponentContainer _container, ComponentDisplay _display )
@@ -49,12 +60,13 @@ public class ShopPanel : AUIPanel
 
 	public void RerollItem(ComponentDisplay _display )
 	{
-		int itemIndex = GameDatas.current.currentPlayerSave.dayData.itemsInShop.IndexOf(_display.SavedData);
+		int itemIndex = GameDatas.current.currentPlayerSave.dayData.itemsInShop.IndexOf(_display.ShopSavedData);
 
 		EntityEquipmentData equipmentData = GameAssets.current.equipments.Values.ToArray().RandomElement();
-		GameDatas.current.currentPlayerSave.dayData.itemsInShop[itemIndex] = new() { ID = equipmentData.name + GameDatas.current.currentPlayerSave.equipmentCounter++, dataID = equipmentData.name };
+		GameDatas.current.currentPlayerSave.dayData.itemsInShop.Add(new() { component = new() { ID = equipmentData.name + GameDatas.current.currentPlayerSave.equipmentCounter++, dataID = equipmentData.name, isDamaged = false }, isFrozen = false });
 
-		_display.Init(null, GameDatas.current.currentPlayerSave.dayData.itemsInShop[itemIndex], ComponentDisplay.DisplayMode.ShopBuying);
+		_display.Init(null, GameDatas.current.currentPlayerSave.dayData.itemsInShop[itemIndex].component, ComponentDisplay.DisplayMode.ShopBuying);
+		_display.SetShopData(GameDatas.current.currentPlayerSave.dayData.itemsInShop[itemIndex]);
 	}
 
 	private void RefreshShopBuyableItems ()
@@ -62,8 +74,8 @@ public class ShopPanel : AUIPanel
 		m_shopGrid.Init(m_inventoryGrid, null, null, null, ComponentDisplay.DisplayMode.ShopBuying);
 		m_shopGrid.Cleanup();
 
-		foreach (GameDatas.PlayerSave.Equipment equipmentData in GameDatas.current.currentPlayerSave.dayData.itemsInShop)
-			m_shopGrid.CreateNewDisplay(null, equipmentData, ComponentDisplay.DisplayMode.ShopBuying);
+		foreach (GameDatas.PlayerSave.DayData.ShopComponentData shopData in GameDatas.current.currentPlayerSave.dayData.itemsInShop)
+			m_shopGrid.CreateNewDisplay(null, shopData.component, ComponentDisplay.DisplayMode.ShopBuying).SetShopData(shopData);
 	}
 
 	private void OnNewDay ()

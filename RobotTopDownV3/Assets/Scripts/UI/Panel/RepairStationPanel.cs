@@ -26,19 +26,23 @@ public class RepairStationPanel : AUIPanel
 	{
 		int maxSlotAmount = StructureUpgrade.GetCurrentMaxRepairedComponentSlotAmountPerLevel();
 
+		for (int currentSlotInSaveAmount = GameDatas.current.currentPlayerSave.dayData.repairingComponents.Count; currentSlotInSaveAmount < maxSlotAmount; currentSlotInSaveAmount++)
+			GameDatas.current.currentPlayerSave.dayData.repairingComponents.Add(new());
+
 		for (int i = 0; i < m_repairingSlots.Length; i++)
 		{
+			bool hasUnlockedSlot = maxSlotAmount > i;
 			GameDatas.PlayerSave.DayData.RepairingComponentData repairingComponent = maxSlotAmount > i
-				? GameDatas.current.currentPlayerSave.dayData.repairingEntities[i] : null;
+				? GameDatas.current.currentPlayerSave.dayData.repairingComponents[i] : null;
 
-			if (i >= maxSlotAmount)
+			if (!hasUnlockedSlot)
 			{
 				m_repairingSlots[i].gameObject.SetActive(false);
 			}
 			else
 			{
 				m_repairingSlots[i].gameObject.SetActive(true);
-				m_repairingSlots[i].Init(m_inventoryGrid, null, repairingComponent != null && !string.IsNullOrEmpty(repairingComponent.component.ID) ? repairingComponent.component : null
+				m_repairingSlots[i].Init(m_inventoryGrid, null, repairingComponent != null && repairingComponent.component != null && !string.IsNullOrEmpty(repairingComponent.component.ID) ? repairingComponent.component : null
 					, item => item != null && (repairingComponent == null || string.IsNullOrEmpty(repairingComponent.component.ID) || repairingComponent.remainingTime <= 0)
 					, ComponentDisplay.DisplayMode.RepairStation, i);
 				m_repairingSlots[i].InitRepairData(repairingComponent);
@@ -61,14 +65,14 @@ public class RepairStationPanel : AUIPanel
 
 	private void OnItemAddedOnSlot ( ComponentContainer _container, ComponentDisplay _display )
 	{
-		GameDatas.current.currentPlayerSave.dayData.repairingEntities[_container.Index] = new() { component = _display.SavedData, remainingTime = _display.ComponentData.reparingDurationAmount };
+		GameDatas.current.currentPlayerSave.dayData.repairingComponents[_container.Index] = new() { component = _display.SavedData, remainingTime = _display.ComponentData.reparingDurationAmount };
 		GameDatas.current.currentPlayerSave.equipmentInventory.Remove(_display.SavedData);
-		m_repairingSlots[_container.Index].InitRepairData(GameDatas.current.currentPlayerSave.dayData.repairingEntities[_container.Index]);
+		m_repairingSlots[_container.Index].InitRepairData(GameDatas.current.currentPlayerSave.dayData.repairingComponents[_container.Index]);
 	}
 
 	private void OnItemRemovedOnSlot ( ComponentContainer _container, ComponentDisplay _display)
 	{
-		GameDatas.current.currentPlayerSave.dayData.repairingEntities[_container.Index] = null;
+		GameDatas.current.currentPlayerSave.dayData.repairingComponents[_container.Index] = null;
 		GameDatas.current.currentPlayerSave.equipmentInventory.Add(_display.SavedData);
 		m_repairingSlots[_container.Index].Cleanup();
 	}

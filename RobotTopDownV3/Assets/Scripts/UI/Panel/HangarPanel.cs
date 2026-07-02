@@ -21,8 +21,8 @@ public class HangarPanel : AUIPanel
 
 	private void OnClickCreateNewEntity ()
 	{
-		FrameEquipmentData baseFrame = GameAssets.current.game.frames[0];
-		HubManager.Instance.AddEntity(GameDatas.current.currentPlayerSave.AddNewUnit(baseFrame));
+		//FrameEquipmentData baseFrame = GameAssets.current.game.frames[0];
+		HubManager.Instance.AddEntity(GameDatas.current.currentPlayerSave.AddNewUnit());
 
 		RefreshDisplay();
 	}

@@ -51,8 +51,8 @@ public class HubManager : Singleton<HubManager>
 	{
 		Entity entity = Instantiate(_newEntity.FrameData != null ? _newEntity.FrameData.prefab : GameAssets.current.game.defaultEntity, m_squadEntitiesParent.transform);
 		m_squadEntities.Add(entity);
-		entity.InitVisualOnly(_newEntity);
 		entity.transform.rotation = Quaternion.Euler(0f, 180f, 0f);
+		entity.InitHangarMode(_newEntity);
 
 		RefreshEntitiesPosition();
 	}

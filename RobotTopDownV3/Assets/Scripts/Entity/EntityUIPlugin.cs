@@ -1,14 +1,19 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Sirenix.OdinInspector;
 
 public class EntityUIPlugin : EntityPlugin
 {
+	[SerializeField] private Billboard m_billboard;
+	[Title("InGame")]
     [SerializeField] private HealthBar m_healthBar;
 	[SerializeField] private FlyingNumberManager m_flyingNumberManagerDamage;
 	[SerializeField] private Transform m_statusDisplayParent;
-
 	[SerializeField] private int m_statusPrefabSpawnAtInitCount;
+
+	[Title("Hangar")]
+	[SerializeField] private BaseButton m_modifyBtn;
 
 	private List<EntityStatusDisplay> m_statusDisplays = new();
 
@@ -17,6 +22,7 @@ public class EntityUIPlugin : EntityPlugin
 		m_linkedEntity.Equipment.onHealthChangeDamage += OnTakeDamage;
 		m_linkedEntity.onStatusAdded += OnStatusAdded;
 		m_linkedEntity.onStatusRemoved += OnStatusRemoved;
+		m_modifyBtn.onClick += OnClickModifyBtn;
 	}
 
 	private void OnDestroy ()
@@ -24,17 +30,29 @@ public class EntityUIPlugin : EntityPlugin
 		m_linkedEntity.Equipment.onHealthChangeDamage -= OnTakeDamage;
 		m_linkedEntity.onStatusAdded -= OnStatusAdded;
 		m_linkedEntity.onStatusRemoved -= OnStatusRemoved;
+		m_modifyBtn.onClick -= OnClickModifyBtn;
 	}
 
 	public override void Init ( EntitySavedData _entityData )
 	{
 		base.Init(_entityData);
 
+		m_modifyBtn.gameObject.SetActive(false);
+		m_healthBar.gameObject.SetActive(true);
 		m_healthBar.SetHealth(m_linkedEntity.Equipment.CurrentHealth, m_linkedEntity.Equipment.MaxHealth);
 
 		for(int i = 0; i < m_statusPrefabSpawnAtInitCount; i++)
 			AddStatusDisplay();
 
+		m_billboard.SetRot();
+	}
+
+	public void InitHangarMode ( EntitySavedData _entityData )
+	{
+		m_healthBar.gameObject.SetActive(false);
+		m_modifyBtn.gameObject.SetActive(true);
+
+		m_billboard.SetRot();
 	}
 
 	public void HideUI ()
@@ -62,6 +80,11 @@ public class EntityUIPlugin : EntityPlugin
 
 		if (m_linkedEntity.Equipment.CurrentHealth <= 0)
 			HideUI();
+	}
+
+	private void OnClickModifyBtn ()
+	{
+		UIManager.Instance.OpenPanel<EntityConfigPanel>().Init(m_linkedEntity.Data, false);
 	}
 
 	#region Status

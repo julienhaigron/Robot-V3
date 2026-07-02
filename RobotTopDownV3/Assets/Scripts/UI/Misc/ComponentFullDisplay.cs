@@ -21,6 +21,9 @@ public class ComponentFullDisplay : MonoBehaviour
 
 	public void Init ( GameDatas.PlayerSave.Equipment _componentSavedData )
 	{
+		if (_componentSavedData == null)
+			return;
+
 		EntityEquipmentData componentData = _componentSavedData.GetData<EntityEquipmentData>();
 		m_componentTypeIcon.sprite = componentData == null ? null : GameAssets.current.ui.componentIcons[componentData.GetEquipmentType()];
 		m_corpIcon.sprite = componentData == null ? null : GameAssets.current.ui.corporationsIcons[componentData.faction];

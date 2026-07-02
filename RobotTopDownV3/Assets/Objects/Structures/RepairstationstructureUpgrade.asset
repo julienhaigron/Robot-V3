@@ -30,7 +30,7 @@ MonoBehaviour:
   - repair price bonus
   - mar reroll per day
   - mar lock per day
-  maxRepairedComponentSlotAmountPerLevel: 03000000040000000500000006000000
+  maxRepairedComponentSlotAmountPerLevel: 04000000050000000600000007000000
   repairPriceBonusPerLevel:
   - 0.15
   - 0.3

@@ -103,16 +103,22 @@ public partial class GameDatas : ScriptableObject
 		public int dayCount = 0;
 
 		//tutos
-		public bool DidFirstIntroLevel => sequencesProgressions.ContainsKey(FTUEManager.FTUEID) && sequencesProgressions[FTUEManager.FTUEID] > 0;
+		public bool DidFirstIntroLevel => sequencesProgressions.ContainsKey(FTUEManager.FTUEID) && sequencesProgressions[FTUEManager.FTUEID] > 0 && sequencesProgressions[FTUEManager.FTUEID] != -1;
 		public SerializableDictionary<string, int> sequencesProgressions = new SerializableDictionary<string, int>();
 
 		[Serializable]
 		public class DayData
 		{
-			public List<Equipment> itemsInShop = new();
-			public RecyclingComponentData[] currentlyRecyclingComponents = new RecyclingComponentData[3];
-			public RepairingComponentData[] repairingEntities = new RepairingComponentData[3];
+			public List<ShopComponentData> itemsInShop = new();
+			public List<RecyclingComponentData> currentlyRecyclingComponents = new();
+			public List<RepairingComponentData> repairingComponents = new();
 
+			[Serializable]
+			public class ShopComponentData
+			{
+				public Equipment component;
+				public bool isFrozen = false;
+			}
 
 			[Serializable]
 			public class RecyclingComponentData
@@ -141,7 +147,7 @@ public partial class GameDatas : ScriptableObject
 			for (int i = 0; i < (GameAssets.current.game.structureUpgrades[StructureUpgradePopup.StructureType.Shop] as ShopStructureUpgrade).GetMaxItemAmount(); i++)
 			{
 				EntityEquipmentData equipmentData = GameAssets.current.equipments.Values.ToArray().RandomElement();
-				dayData.itemsInShop.Add(new() { ID = equipmentData.name + current.currentPlayerSave.equipmentCounter++, dataID = equipmentData.name });
+				dayData.itemsInShop.Add(new() { component = new() { ID = equipmentData.name + current.currentPlayerSave.equipmentCounter++, dataID = equipmentData.name, isDamaged = false }, isFrozen = false });
 			}
 
 			//recycling component
@@ -156,7 +162,7 @@ public partial class GameDatas : ScriptableObject
 			}
 
 			//repairing units
-			foreach (DayData.RepairingComponentData data in dayData.repairingEntities)
+			foreach (DayData.RepairingComponentData data in dayData.repairingComponents)
 			{
 				if (data == null)
 					continue;
@@ -225,11 +231,12 @@ public partial class GameDatas : ScriptableObject
 			equipmentInventory.Remove(_data);
 		}
 
-		public EntitySavedData AddNewUnit (FrameEquipmentData _frame)
+		public EntitySavedData AddNewUnit ()
 		{
 			EntitySavedData newEntity = new();
-			newEntity.frame = new() { ID = _frame.name + equipmentCounter++, dataID = _frame.name };
-			newEntity.currentHp = newEntity.GetMaxHealth();
+			newEntity.name = "New Unit";
+			//newEntity.frame = new() { ID = _frame.name + equipmentCounter++, dataID = _frame.name };
+			//newEntity.currentHp = newEntity.GetMaxHealth();
 			squadUnits.Add(newEntity);
 
 			return newEntity;

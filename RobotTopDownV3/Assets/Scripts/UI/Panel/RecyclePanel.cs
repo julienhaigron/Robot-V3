@@ -26,19 +26,23 @@ public class RecyclePanel : AUIPanel
 	{
 		int maxSlotAmount = StructureUpgrade.GetCurrentMaxRecyclingSlotAmount();
 
+		for (int currentSlotInSaveAmount = GameDatas.current.currentPlayerSave.dayData.currentlyRecyclingComponents.Count ; currentSlotInSaveAmount < maxSlotAmount; currentSlotInSaveAmount++)
+			GameDatas.current.currentPlayerSave.dayData.currentlyRecyclingComponents.Add(new());
+
 		for (int i = 0; i < m_recyclingSlots.Length; i++)
 		{
-			GameDatas.PlayerSave.DayData.RecyclingComponentData recyclingComponent = maxSlotAmount > i
+			bool hasUnlockedSlot = maxSlotAmount > i;
+			GameDatas.PlayerSave.DayData.RecyclingComponentData recyclingComponent = hasUnlockedSlot
 				? GameDatas.current.currentPlayerSave.dayData.currentlyRecyclingComponents[i] : null;
 
-			if (i >= maxSlotAmount)
+			if (!hasUnlockedSlot)
 			{
 				m_recyclingSlots[i].gameObject.SetActive(false);
 			}
 			else
 			{
 				m_recyclingSlots[i].gameObject.SetActive(true);
-				m_recyclingSlots[i].Init(m_inventoryGrid, null, recyclingComponent != null && !string.IsNullOrEmpty(recyclingComponent.component.ID) ? recyclingComponent.component : null
+				m_recyclingSlots[i].Init(m_inventoryGrid, null, recyclingComponent != null && recyclingComponent.component != null && !string.IsNullOrEmpty(recyclingComponent.component.ID) ? recyclingComponent.component : null
 					, item => (item != null && (recyclingComponent == null || string.IsNullOrEmpty(recyclingComponent.component.ID) || recyclingComponent.remainingTime <= 0))
 					, ComponentDisplay.DisplayMode.RecyclingStation, i);
 				m_recyclingSlots[i].InitRecyclingData(recyclingComponent);

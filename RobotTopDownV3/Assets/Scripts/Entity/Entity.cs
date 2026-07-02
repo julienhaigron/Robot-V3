@@ -202,11 +202,12 @@ public class Entity : MonoBehaviour
 		return actionsPerComponents;
 	}
 
-	public void InitVisualOnly ( EntitySavedData _data )
+	public void InitHangarMode ( EntitySavedData _data )
 	{
 		m_data = _data;
 		m_equipment.Init(_data);
 		m_skin.Init(_data);
+		m_ui.InitHangarMode(_data);
 	}
 
 	private void OnRoundStart ()

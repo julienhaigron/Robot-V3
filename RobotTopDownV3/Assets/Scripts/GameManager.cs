@@ -98,12 +98,12 @@ public class GameManager : SingletonPersistant<GameManager>
 		bool doesTuto = !GameDatas.current.currentPlayerSave.DidFirstIntroLevel;
 #if UNITY_EDITOR
 		if (GameConfig.current.debug.skipFTUE)
-			doesTuto = true;
+			doesTuto = false;
 #endif
 
 		//TODO : add TransitionPanel
 
-		if (doesTuto)
+		if (!doesTuto)
 			SceneManager.LoadSceneAsync(GameConfig.current.game.hubSceneName);
 		else
 		{
@@ -116,6 +116,7 @@ public class GameManager : SingletonPersistant<GameManager>
 		}
 	}
 
+	[Button]
 	public void SetupLevel ( MissionData _mission )
 	{
 		m_currentMission = _mission;

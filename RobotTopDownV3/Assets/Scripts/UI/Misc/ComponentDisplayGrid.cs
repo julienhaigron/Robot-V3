@@ -22,7 +22,7 @@ public class ComponentDisplayGrid : ComponentContainer
             m_predicate = null;
     }
 
-    public void CreateNewDisplay( EntitySavedData _unitData, GameDatas.PlayerSave.Equipment _componentSavedData, ComponentDisplay.DisplayMode _displayMode )
+    public ComponentDisplay CreateNewDisplay ( EntitySavedData _unitData, GameDatas.PlayerSave.Equipment _componentSavedData, ComponentDisplay.DisplayMode _displayMode )
 	{
         ComponentDisplay newDisplay = Instantiate(_displayMode == ComponentDisplay.DisplayMode.ShopBuying 
             ? GameAssets.current.ui.shopComponentDisplay : GameAssets.current.ui.baseComponentDisplay, m_displayParent);
@@ -31,6 +31,8 @@ public class ComponentDisplayGrid : ComponentContainer
         m_items.Add(newDisplay);
         newDisplay.CurrentContainer = this;
         newDisplay.transform.localPosition = Vector3.zero;
+
+        return newDisplay;
     }
 
     public void RefreshPredicate ( Func<GameDatas.PlayerSave.Equipment, bool> _newPredicate )

@@ -20,8 +20,9 @@ MonoBehaviour:
   knownedActions: 
   passiveEffects: []
   statusHitProbability: 0.5
+  recyclingDurationAmount: 1
+  reparingDurationAmount: 1
   prefab: {fileID: 0}
   maxHealth: 150
-  armoringSlotAvailable: 4
-  occultorSlotAvailable: 2
+  auxiliarSlotAvailable: 2
   statBonuses: []

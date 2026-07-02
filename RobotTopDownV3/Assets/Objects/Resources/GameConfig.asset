@@ -14,9 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   debug:
     saveEntityDeathAndDamages: 1
-    skipFTUE: 0
+    skipFTUE: 1
   game:
     nbOfDayInCycle: 7
+    maxInventoryCapacity: 80
     defaultStartAction: {fileID: 11400000, guid: 61635f88cdfa6ab44b50dbc9c3aa34e0, type: 2}
     actionDuration: 1
     entityRotationDuration: 0.5

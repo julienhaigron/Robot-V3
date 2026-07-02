@@ -72,6 +72,7 @@ public class GameAssets : ScriptableObject
         [Title("Icons")]
         public SerializableDictionary<EntityEquipmentData.EquipmentType, Sprite> componentIcons = new();
         public SerializableDictionary<EntityEquipmentData.EntityFaction, Sprite> corporationsIcons = new();
+        public SerializableDictionary<EntityEquipmentData.EntityFaction, Color> corporationsColors = new();
     }
 
 #if UNITY_EDITOR

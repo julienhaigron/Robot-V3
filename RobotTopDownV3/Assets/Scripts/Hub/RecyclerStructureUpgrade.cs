@@ -15,10 +15,10 @@ public class RecyclerStructureUpgrade : StructureUpgrade
 	{
 		base.Upgrade(removeMoney);
 
-		List<GameDatas.PlayerSave.DayData.RecyclingComponentData> previousList = GameDatas.current.currentPlayerSave.dayData.currentlyRecyclingComponents.ToList();
-		GameDatas.current.currentPlayerSave.dayData.currentlyRecyclingComponents = new GameDatas.PlayerSave.DayData.RecyclingComponentData[GetCurrentMaxRecyclingSlotAmount()];
-		for (int i = 0; i < previousList.Count; i++)
-			GameDatas.current.currentPlayerSave.dayData.currentlyRecyclingComponents[i] = previousList[i];
+		int maxSlotAmount = GetCurrentMaxRecyclingSlotAmount();
+
+		for (int currentSlotInSaveAmount = GameDatas.current.currentPlayerSave.dayData.currentlyRecyclingComponents.Count - 1; currentSlotInSaveAmount < maxSlotAmount; currentSlotInSaveAmount++)
+			GameDatas.current.currentPlayerSave.dayData.currentlyRecyclingComponents.Add(new());
 	}
 
 

@@ -29,7 +29,7 @@ MonoBehaviour:
   - max recyling slot
   - recycling time redution
   - trade bonus amount
-  maxRecyclingSlotAmount: 03000000040000000500000006000000
+  maxRecyclingSlotAmount: 04000000050000000600000007000000
   recyclingTimeReduction: 00000000010000000200000003000000
   tradeBonusAmount:
   - 0.15

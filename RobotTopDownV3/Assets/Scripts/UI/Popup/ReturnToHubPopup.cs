@@ -23,7 +23,7 @@ public class ReturnToHubPopup : AUIPopup
 	public void Init ()
 	{
 		string content = "content:\n";
-		for (int i = 0; i < GameDatas.current.currentPlayerSave.dayData.currentlyRecyclingComponents.Length; i++)
+		for (int i = 0; i < GameDatas.current.currentPlayerSave.dayData.currentlyRecyclingComponents.Count; i++)
 		{
 			GameDatas.PlayerSave.DayData.RecyclingComponentData data = GameDatas.current.currentPlayerSave.dayData.currentlyRecyclingComponents[i];
 			if (data != null && data.component != null && !string.IsNullOrEmpty(data.component.ID))
@@ -39,9 +39,9 @@ public class ReturnToHubPopup : AUIPopup
 			}
 		}
 
-		for (int i = 0; i < GameDatas.current.currentPlayerSave.dayData.repairingEntities.Length; i++)
+		for (int i = 0; i < GameDatas.current.currentPlayerSave.dayData.repairingComponents.Count; i++)
 		{
-			GameDatas.PlayerSave.DayData.RepairingComponentData data = GameDatas.current.currentPlayerSave.dayData.repairingEntities[i];
+			GameDatas.PlayerSave.DayData.RepairingComponentData data = GameDatas.current.currentPlayerSave.dayData.repairingComponents[i];
 			if (data != null && data.component != null && !string.IsNullOrEmpty(data.component.ID))
 			{
 				EntityEquipmentData componentData = data.component.GetData<EntityEquipmentData>();
@@ -50,7 +50,7 @@ public class ReturnToHubPopup : AUIPopup
 					content += componentData.displayName + " finished repairing\n";
 					data.component.isDamaged = false;
 					GameDatas.current.currentPlayerSave.equipmentInventory.Add(data.component);
-					GameDatas.current.currentPlayerSave.dayData.repairingEntities[i] = null;
+					GameDatas.current.currentPlayerSave.dayData.repairingComponents[i] = null;
 				}
 			}
 		}

@@ -20,6 +20,8 @@ MonoBehaviour:
   knownedActions: 
   passiveEffects: []
   statusHitProbability: 0.5
+  recyclingDurationAmount: 1
+  reparingDurationAmount: 1
   statBonuses:
   - type: 6
     value: 0.3

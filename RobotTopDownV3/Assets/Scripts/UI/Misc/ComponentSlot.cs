@@ -7,6 +7,7 @@ public class ComponentSlot : ComponentContainer
 {
     [SerializeField] private GameObject m_timerSectionGO;
     [SerializeField] private TextMeshProUGUI m_timerTMP;
+    [SerializeField] private Vector2 m_displaySize = new Vector2(124f, 124f);
 
     protected ComponentDisplay m_currentDisplay;
     public ComponentDisplay CurrentDisplay
@@ -35,13 +36,14 @@ public class ComponentSlot : ComponentContainer
             m_equipmentSavedData = _componentSavedData;
             m_equipmentData = _componentSavedData.GetData<EntityEquipmentData>();
 
-            ComponentDisplay newDisplay = Instantiate(GameAssets.current.ui.baseComponentDisplay, m_displayParent);
-            newDisplay.Init(_unitData, _componentSavedData, _displayMode);
+            if(m_currentDisplay == null)
+                m_currentDisplay = Instantiate(GameAssets.current.ui.baseComponentDisplay, m_displayParent);
 
-            m_currentDisplay = newDisplay;
-            newDisplay.CurrentContainer = this;
-            newDisplay.transform.SetParent(m_displayParent);
-            newDisplay.transform.localPosition = Vector3.zero;
+            m_currentDisplay.Init(_unitData, _componentSavedData, _displayMode);
+            m_currentDisplay.CurrentContainer = this;
+            m_currentDisplay.transform.SetParent(m_displayParent);
+            m_currentDisplay.transform.localPosition = Vector3.zero;
+            (m_currentDisplay.transform as RectTransform).sizeDelta = m_displaySize;
         }
 
         /*if(_displayMode == ComponentDisplay.DisplayMode.RecyclingStation
@@ -57,7 +59,7 @@ public class ComponentSlot : ComponentContainer
 
     public void InitRecyclingData( GameDatas.PlayerSave.DayData.RecyclingComponentData _recyclingData )
 	{
-        if (string.IsNullOrEmpty(_recyclingData.component.ID))
+        if (_recyclingData != null && _recyclingData.component != null && string.IsNullOrEmpty(_recyclingData.component.ID))
             m_timerTMP.text = "";
         else
             m_timerTMP.text = _recyclingData.remainingTime.ToString();
@@ -65,7 +67,7 @@ public class ComponentSlot : ComponentContainer
 
     public void InitRepairData ( GameDatas.PlayerSave.DayData.RepairingComponentData _repairingData )
     {
-        if (string.IsNullOrEmpty(_repairingData.component.ID))
+        if (_repairingData != null && _repairingData.component != null && string.IsNullOrEmpty(_repairingData.component.ID))
             m_timerTMP.text = "";
         else
             m_timerTMP.text = _repairingData.remainingTime.ToString();

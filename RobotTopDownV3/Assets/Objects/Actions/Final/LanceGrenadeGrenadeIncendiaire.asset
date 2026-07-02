@@ -37,7 +37,7 @@ MonoBehaviour:
   isAoe: 1
   aoeType: 0
   circleRange: 1
-  arcRadius: 1
+  arcType: 0
   rayDiameter: 1
   maxChainedTarget: 1
   damageRecutionOnChain: 0.1

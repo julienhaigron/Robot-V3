@@ -126,7 +126,10 @@ public class EntityEquipmentData : AParsableScriptableObject
 		{
 			string allActionsInString = "";
 			for (int i = 0; i < knownedActions.Length; i++)
-				allActionsInString += GameAssets.current.game.entityActionsData[knownedActions[i]].displayName + (i + 1 < knownedActions.Length ? ", " : "");
+			{
+				if(knownedActions[i] != EntityActionEnumID.Unknowned && GameAssets.current.game.entityActionsData.ContainsKey(knownedActions[i]))
+					allActionsInString += GameAssets.current.game.entityActionsData[knownedActions[i]].displayName + (i + 1 < knownedActions.Length ? ", " : "");
+			}
 			description.Add(new() { ID = StatBonus.StatType.Action, title = "Actions", floatValue = 0, stringValue = allActionsInString });
 		}
 

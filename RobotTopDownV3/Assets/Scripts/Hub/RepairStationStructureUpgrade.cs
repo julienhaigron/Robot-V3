@@ -15,10 +15,10 @@ public class RepairStationStructureUpgrade : StructureUpgrade
 	{
 		base.Upgrade(removeMoney);
 
-		List<GameDatas.PlayerSave.DayData.RepairingComponentData> previousList = GameDatas.current.currentPlayerSave.dayData.repairingEntities.ToList();
-		GameDatas.current.currentPlayerSave.dayData.repairingEntities = new GameDatas.PlayerSave.DayData.RepairingComponentData[GetCurrentMaxRepairedComponentSlotAmountPerLevel()];
-		for (int i = 0; i < previousList.Count; i++)
-			GameDatas.current.currentPlayerSave.dayData.repairingEntities[i] = previousList[i];
+		int maxSlotAmount = GetCurrentMaxRepairedComponentSlotAmountPerLevel();
+
+		for (int currentSlotInSaveAmount = GameDatas.current.currentPlayerSave.dayData.repairingComponents.Count - 1; currentSlotInSaveAmount < maxSlotAmount; currentSlotInSaveAmount++)
+			GameDatas.current.currentPlayerSave.dayData.repairingComponents.Add(new());
 	}
 
 	public override float GetAddonValue ( int _level, int _addonID )
