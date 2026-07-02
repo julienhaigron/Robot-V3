@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4089774982011291642}
   - component: {fileID: 93705002080302661}
   m_Layer: 5
-  m_Name: TutoHighlight
+  m_Name: TutorialHighlightZone
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

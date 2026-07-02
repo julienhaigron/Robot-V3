@@ -15,7 +15,7 @@ public class LogConsole : SingletonPersistant<LogConsole>
 	private Dictionary<string, LogDetails> m_logsDetails = new();
 	public Dictionary<string, LogDetails> LogsDetails => m_logsDetails;
 
-	public enum LogEventType { PreGame, InputPhase, AICheck, ActionResolution, ActionConflict, DebugSys, AttackRoll, Damage }
+	public enum LogEventType { PreGame, InputPhase, AICheck, ActionResolution, ActionConflict, DebugSys, AttackRoll, Damage, Status }
 
 	[System.Serializable]
 	public class LogDetails

@@ -125,13 +125,13 @@ public class HubTopCanvas : AUITopCanvas
 			switch (selectedFaction)
 			{
 				case EntityEquipmentData.EntityFaction.Psy:
-					m_shopFactionCurrencyDisplay.Init(CurrencyType.PsyCredit, GameDatas.current.currentPlayerSave.currencies[CurrencyType.PsyCredit] + "r");
+					m_shopFactionCurrencyDisplay.Init(CurrencyType.PsyCredit, GameDatas.current.currentPlayerSave.currencies[CurrencyType.PsyCredit].ToString(), true);
 					break;
 				case EntityEquipmentData.EntityFaction.Paladin:
-					m_shopFactionCurrencyDisplay.Init(CurrencyType.PaladinCredit, GameDatas.current.currentPlayerSave.currencies[CurrencyType.PaladinCredit] + "r");
+					m_shopFactionCurrencyDisplay.Init(CurrencyType.PaladinCredit, GameDatas.current.currentPlayerSave.currencies[CurrencyType.PaladinCredit].ToString(), true);
 					break;
 				case EntityEquipmentData.EntityFaction.Commando:
-					m_shopFactionCurrencyDisplay.Init(CurrencyType.CommandoCredit, GameDatas.current.currentPlayerSave.currencies[CurrencyType.CommandoCredit] + "r");
+					m_shopFactionCurrencyDisplay.Init(CurrencyType.CommandoCredit, GameDatas.current.currentPlayerSave.currencies[CurrencyType.CommandoCredit].ToString(), true);
 					break;
 			}
 			m_upgradeStructureBtn.gameObject.SetActive(true);
@@ -146,7 +146,7 @@ public class HubTopCanvas : AUITopCanvas
 			m_shopFactionCurrencyDisplay.Hide();
 
 			m_upgradeStructureBtn.gameObject.SetActive(UIManager.Instance.currentPanel is not TournamentPanel or MissionPanel);
-			m_currencyDisplays[CurrencyType.SoftCurrency].Text.text = GameDatas.current.currentPlayerSave.currencies[CurrencyType.SoftCurrency].ToString() + " -";
+			m_currencyDisplays[CurrencyType.SoftCurrency].Text.text = GameDatas.current.currentPlayerSave.currencies[CurrencyType.SoftCurrency].ToString();
 
 			int percentage = 0;
 			m_currencyDisplays[CurrencyType.CommandoCredit].Text.text = percentage + " % - " + GameDatas.current.currentPlayerSave.currencies[CurrencyType.CommandoCredit].ToString() + "r";

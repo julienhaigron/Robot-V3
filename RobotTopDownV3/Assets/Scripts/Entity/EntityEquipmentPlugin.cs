@@ -500,7 +500,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 		string detailsDescription = detailsBuilder.ToString();
 		LogConsole.LogDetails details = new("status_" + LogConsole.Instance.LogsDetails.Keys.Count, "Status Details", detailsDescription);
 		LogConsole.AddLog(m_linkedEntity.ID + (isAttackSuccessful ? " applies " : " fails to apply ")
-			+ _effect.GetType().Name + " on " + _target.ID, LogConsole.LogEventType.ActionResolution, details);
+			+ _effect.GetType().Name + " on " + _target.ID, LogConsole.LogEventType.Status, details);
 
 		return isAttackSuccessful;
 	}

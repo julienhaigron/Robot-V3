@@ -9,10 +9,10 @@ public class CurrencyDisplay : MonoBehaviour
     [SerializeField] private Image m_icon;
     public Image Icon => m_icon;
 
-    public void Init(CurrencyType _type, string _text)
+    public void Init(CurrencyType _type, string _text, bool _displaySuffix)
 	{
         m_icon.sprite = GameAssets.current.currencies[_type].icon;
-        m_text.text = _text;
+        m_text.text = _text + (_displaySuffix ? GameAssets.current.currencies[_type].suffix : "") ;
 	}
 
     public void Show ()

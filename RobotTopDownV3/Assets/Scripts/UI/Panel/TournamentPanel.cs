@@ -144,7 +144,7 @@ public class TournamentPanel : AUIPanel
 			if (_data.currencyRewards.Keys.Count > i)
 			{
 				m_currencyRewardDisplays[i].Show();
-				m_currencyRewardDisplays[i].Init(keys[i], _data.currencyRewards[keys[i]]);
+				m_currencyRewardDisplays[i].Init(keys[i], _data.currencyRewards[keys[i]], true);
 			}
 			else
 				m_currencyRewardDisplays[i].Hide();

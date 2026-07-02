@@ -33,6 +33,8 @@ public class Currency : ScriptableEnum<CurrencyType>
 	[ShowIf("maxCapacityType", CurrencyMaxCapacityType.UpgradeAsset)]
 	public ulong[] maxCapacityPerLevel;
 
+	[Title("Writing")]
+	public string suffix;
 
 	public ulong MaxCapacity
 	{

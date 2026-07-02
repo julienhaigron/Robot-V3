@@ -54,7 +54,7 @@ public abstract class Task
 
 	protected virtual void OnStart ( TaskManager.TaskContext _context )
 	{
-		Debug.Log("Start task " + Description);
+		//Debug.Log("Start task " + Description);
 		onStarted?.Invoke(this);
 	}
 

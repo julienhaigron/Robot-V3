@@ -96,7 +96,7 @@ public class MissionPanel : AUIPanel
 			if (_missionBtn.MissionData.currencyRewards.Keys.Count> i)
 			{
 				m_currencyRewardDisplays[i].Show();
-				m_currencyRewardDisplays[i].Init(keys[i], _missionBtn.MissionData.currencyRewards[keys[i]]);
+				m_currencyRewardDisplays[i].Init(keys[i], _missionBtn.MissionData.currencyRewards[keys[i]], true);
 			}
 			else
 				m_currencyRewardDisplays[i].Hide();

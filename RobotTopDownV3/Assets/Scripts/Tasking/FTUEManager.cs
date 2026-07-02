@@ -5,8 +5,23 @@ using Sirenix.OdinInspector;
 
 public class FTUEManager : SingletonPersistant<FTUEManager>
 {
-	[Title("Tuto1")]
+	[Title("MicroTuto0")]
 	[SerializeField] private DialogueData[] m_firstTutoDialogues;
+	
+	[Title("Day1")]
+	[SerializeField] private DialogueData[] m_day1TutoDialogues;
+
+	[Title("Day2")]
+	[SerializeField] private DialogueData[] m_day2TutoDialogues;
+
+	[Title("Day3")]
+	[SerializeField] private DialogueData[] m_day3TutoDialogues;
+
+	[Title("Day4")]
+	[SerializeField] private DialogueData[] m_day4TutoDialogues;
+
+	[Title("Day5")]
+	[SerializeField] private DialogueData[] m_day5TutoDialogues;
 
 	private Dictionary<string, TutorialHighlightZone> m_registerdTutorialHighlightZones = new();
 	public Dictionary<string, TutorialHighlightZone> RegisterdTutorialHighlightZones => m_registerdTutorialHighlightZones;
@@ -36,21 +51,23 @@ public class FTUEManager : SingletonPersistant<FTUEManager>
 #endif
 		FTUESequence ftueSequence = new(FTUEID);
 
-		ftueSequence.Append(MicroTuto1());
-		//ftueSequence.Append(MicroTuto2());
-		//ftueSequence.Append(MicroTuto3());
-		//ftueSequence.Append(MicroTuto4());
+		ftueSequence.Append(MicroTuto0());
+		ftueSequence.Append(Day1Tuto());
+		ftueSequence.Append(Day2Tuto());
+		ftueSequence.Append(Day3Tuto());
+		ftueSequence.Append(Day4Tuto());
+		ftueSequence.Append(Day5Tuto());
 
 		ftueSequence.Start();
 	}
 
 	#region Tuto Sequences
 
-	private TaskSequence MicroTuto1 ()
+	private TaskSequence MicroTuto0 ()
 	{
 		int firstPlayerEntityID = 0;
 
-		TaskSequence tutoSequence = new("MicroTuto1");
+		TaskSequence tutoSequence = new("MicroTuto0");
 
 		//input phase
 		tutoSequence.Append(new DialogueTask("Select Unit", ( context ) => context.Game.CurrentMission != null && context.Game.CurrentMission == GameConfig.current.game.microTuto1MissionData
@@ -73,29 +90,87 @@ public class FTUEManager : SingletonPersistant<FTUEManager>
 		return tutoSequence;
 	}
 
-	private TaskSequence MicroTuto2 ()
+	private TaskSequence Day1Tuto ()
 	{
-		int firstPlayerEntityID = 0;
+		TaskSequence tutoSequence = new("Day1Tuto");
 
-		TaskSequence tutoSequence = new("MicroTuto2");
+		//macro
+		tutoSequence.Append(new OpenPanelTask<HangarPanel>("Send player directly to hangar", ( context ) => context.UI.currentPanel is SoloHubPanel));
+		tutoSequence.Append(new DialogueHighlightTask("Squad Explenation", ( context ) => context.UI.currentPanel is HangarPanel
+		, m_day1TutoDialogues[0], "squadUnits"));
+		tutoSequence.Append(new DialogueHighlightTask("Hub presentation", ( context ) => context.UI.currentPanel is SoloHubPanel
+		, m_day1TutoDialogues[1], "missionSection"));
+		tutoSequence.Append(new DialogueHighlightTask("Bla bla choisir mission", ( context ) => context.UI.currentPanel is MissionPanel
+		, m_day1TutoDialogues[2], "startMissionBtn"));
+		
+		//micro
+		tutoSequence.Append(new DialogueTask("Blabla PFC + Sous-type d’action", ( context ) => context.UI.currentPanel is InGamePanel
+		, m_day1TutoDialogues[3]));
+		tutoSequence.Append(new DialogueHighlightTask("Blabla statut, visible dans le log”", ( context ) => context.Log.Logs.ContainsKey(LogConsole.LogEventType.Status)
+		, m_day1TutoDialogues[4], "logs"));
 
-		/*//input phase
-		tutoSequence.Append(new DialogueTask("Select Unit", ( context ) => string.Equals(context.Game.CurrentMission.name, "TutoLevel1")
-		, m_firstTutoDialogues[0]));
-		tutoSequence.Append(new DialogueHighlightTask("Action explenation", ( context ) => string.Equals(context.Player.SelectedEntity.ID, firstPlayerEntityID)
-		, m_firstTutoDialogues[1], registerdTutorialHighlightZones["actionBtns"]));
-		tutoSequence.Append(new DialogueHighlightTask("Action Queue explenation", ( context ) => context.Turn.RecordedActions.ContainsKey(firstPlayerEntityID) && context.Turn.RecordedActions[firstPlayerEntityID].Count > 0
-		, m_firstTutoDialogues[2], registerdTutorialHighlightZones["actionQueue"]));
+		return tutoSequence;
+	}
 
-		//play phase
-		tutoSequence.Append(new DialogueHighlightTask("Log explenation", ( context ) => context.Turn.currentPhase == TurnManager.TurnPhase.Playing
-		, m_firstTutoDialogues[3], registerdTutorialHighlightZones["logs"]));
+	private TaskSequence Day2Tuto ()
+	{
+		TaskSequence tutoSequence = new("Day2Tuto");
 
-		//input phase
-		tutoSequence.Append(new DialogueHighlightTask("State explenation", ( context ) => context.Log.Logs.ContainsKey(LogConsole.LogEventType.AttackRoll)
-		, m_firstTutoDialogues[4], registerdTutorialHighlightZones["stateBtns"]));
-		tutoSequence.Append(new DialogueHighlightTask("Attack rolls explenation", ( context ) => context.Log.Logs.ContainsKey(LogConsole.LogEventType.Damage)
-		, m_firstTutoDialogues[5], registerdTutorialHighlightZones["stateBtns"]));*/
+		//macro
+		tutoSequence.Append(new DialogueHighlightTask("Vas dans le hangar ", ( context ) => context.UI.currentPanel is SoloHubPanel
+		, m_day2TutoDialogues[0], "hangarBtn"));
+		tutoSequence.Append(new DialogueHighlightTask("tweak une unit", ( context ) => context.UI.currentPanel is HangarPanel
+		, m_day2TutoDialogues[1], "squadUnit0"));
+
+		//micro
+		tutoSequence.Append(new DialogueTask("Blabla vision", ( context ) => context.UI.currentPanel is InGamePanel
+		, m_day2TutoDialogues[2]));
+
+		return tutoSequence;
+	}
+
+	private TaskSequence Day3Tuto ()
+	{
+		TaskSequence tutoSequence = new("Day3Tuto");
+
+		//macro
+		tutoSequence.Append(new DialogueHighlightTask("Blabla recyclage donne gold", ( context ) => context.UI.currentPanel is SoloHubPanel
+		, m_day3TutoDialogues[0], "recycleBtn"));
+
+		//micro
+		tutoSequence.Append(new DialogueTask("Blabla mort mais pas grave car réparation", ( context ) => context.Log.Logs.ContainsKey(LogConsole.LogEventType.Damage)
+		, m_day3TutoDialogues[1]));
+
+		return tutoSequence;
+	}
+
+	private TaskSequence Day4Tuto ()
+	{
+		TaskSequence tutoSequence = new("Day4Tuto");
+
+		//macro
+		tutoSequence.Append(new DialogueTask("Blabla gold", ( context ) => context.UI.currentPanel is SoloHubPanel, m_day4TutoDialogues[0]));
+		tutoSequence.Append(new DialogueTask("Blabla reparation", ( context ) => context.UI.currentPanel is SoloHubPanel, m_day4TutoDialogues[1]));
+
+		/*//micro
+		tutoSequence.Append(new DialogueTask("Blabla mort mais pas grave car réparation", ( context ) => context.Log.Logs.ContainsKey(LogConsole.LogEventType.Damage)
+		, m_day4TutoDialogues[1]));*/
+
+		return tutoSequence;
+	}
+
+	private TaskSequence Day5Tuto ()
+	{
+		TaskSequence tutoSequence = new("Day5Tuto");
+
+		//macro
+		tutoSequence.Append(new DialogueHighlightTask("Vas dans le hangar et créer une unit", ( context ) => context.UI.currentPanel is SoloHubPanel
+		, m_day5TutoDialogues[0], "hangarBtn"));
+		tutoSequence.Append(new DialogueTask("Blabla cycle + tournois", ( context ) => context.UI.currentPanel is SoloHubPanel, m_day5TutoDialogues[1]));
+
+		/*//micro
+		tutoSequence.Append(new DialogueTask("Blabla mort mais pas grave car réparation", ( context ) => context.Log.Logs.ContainsKey(LogConsole.LogEventType.Damage)
+		, m_day4TutoDialogues[1]));*/
 
 		return tutoSequence;
 	}

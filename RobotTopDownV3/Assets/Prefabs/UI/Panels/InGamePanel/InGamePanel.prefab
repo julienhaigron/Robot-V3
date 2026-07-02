@@ -112,7 +112,7 @@ MonoBehaviour:
   m_consoleExpandedHeight: 200
   m_consoleCollapsedHeight: 10
   m_duration: 0.3
-  m_visibleEventType: 03000000020000000600000007000000
+  m_visibleEventType: 0300000002000000060000000700000008000000
   m_validateTargetsBtn: {fileID: 4137317544265154553}
 --- !u!1 &770198328676753043
 GameObject:
