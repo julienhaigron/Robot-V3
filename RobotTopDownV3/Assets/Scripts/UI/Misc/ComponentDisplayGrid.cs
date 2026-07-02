@@ -62,9 +62,9 @@ public class ComponentDisplayGrid : ComponentContainer
         m_items.Clear();
     }
 
-    #region DnD
+	#region DnD
 
-    public override bool IsValid ( ComponentDisplay _display )
+	public override bool IsValid ( ComponentDisplay _display )
     {
         return !m_items.Contains(_display) && base.IsValid(_display);
     }

@@ -260,6 +260,8 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 		{
 			transform.SetParent(CurrentContainer.DisplayParent);
 			transform.localPosition = Vector3.zero;
+
+			transform.SetAsFirstSibling();
 		}
 	}
 

@@ -199,6 +199,13 @@ public class EntitySavedData : INetworkSerializable
 		return passiveEffects;
 	}
 
+	public List<GameDatas.PlayerSave.Equipment> GetAllEquipments ()
+	{
+		List<GameDatas.PlayerSave.Equipment> eqs = GetAllMainEquipments();
+		eqs.AddRange(GetAllSubEquipments());
+		return eqs;
+	}
+
 	public List<GameDatas.PlayerSave.Equipment> GetAllMainEquipments ()
 	{
 		List<GameDatas.PlayerSave.Equipment> equipments = new();
@@ -232,6 +239,33 @@ public class EntitySavedData : INetworkSerializable
 				equipments.Add(chipset);
 
 		return equipments;
+	}
+
+	public EntityEquipmentData.EntityFaction GetDominentFaction ()
+	{
+		Dictionary<EntityEquipmentData.EntityFaction, int> count = new();
+		foreach(GameDatas.PlayerSave.Equipment eq in GetAllEquipments())
+		{
+			if (!eq.TryGetData(out EntityEquipmentData data))
+				continue;
+
+			if (!count.ContainsKey(data.faction))
+				count.Add(data.faction, 0);
+			count[data.faction]++;
+		}
+
+		EntityEquipmentData.EntityFaction dominentFaction = EntityEquipmentData.EntityFaction.Noone;
+		int biggestAmount = -1;
+		foreach (EntityEquipmentData.EntityFaction faction in count.Keys)
+		{
+			if (count[faction] > biggestAmount)
+			{
+				dominentFaction = faction;
+				biggestAmount = count[faction];
+			}
+		}
+
+		return dominentFaction;
 	}
 
 	public int GetMaxHealth ()

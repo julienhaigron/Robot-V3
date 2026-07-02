@@ -22,6 +22,7 @@ public class EntityConfigPanel : AUIPanel
 	[Title("Unit")]
 	[SerializeField] private BaseButton m_renameBtn;
 	[SerializeField] private StatDisplay[] m_unitStatDisplays;
+	[SerializeField] private Image m_dominentCorpoIcon;
 
 	private List<EntityEquipmentData.EquipmentType> m_displayedEquipmentTypes = new();
 	private EntitySavedData m_entityData;
@@ -192,6 +193,9 @@ public class EntityConfigPanel : AUIPanel
 				m_inventoryGrid.CreateNewDisplay(null, null, ComponentDisplay.DisplayMode.Empty);
 			}
 		}
+		EntityEquipmentData.EntityFaction dominentCorpo = m_entityData.GetDominentFaction();
+		m_dominentCorpoIcon.sprite = GameAssets.current.ui.corporationsIcons[dominentCorpo];
+		m_dominentCorpoIcon.color = GameAssets.current.ui.corporationsColors[dominentCorpo];
 	}
 
 
