@@ -88,7 +88,32 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b45006602da968a4185587837b1dd109, type: 3}
   m_Name: 
   m_EditorClassIdentifier: RTD::FTUEManager
-  m_firstTutoDialogue: {fileID: 0}
+  m_firstTutoDialogues:
+  - {fileID: 11400000, guid: b43449e284014ce45b31f2d4d0526f22, type: 2}
+  - {fileID: 11400000, guid: b43449e284014ce45b31f2d4d0526f22, type: 2}
+  - {fileID: 11400000, guid: b43449e284014ce45b31f2d4d0526f22, type: 2}
+  - {fileID: 11400000, guid: b43449e284014ce45b31f2d4d0526f22, type: 2}
+  - {fileID: 11400000, guid: b43449e284014ce45b31f2d4d0526f22, type: 2}
+  - {fileID: 11400000, guid: b43449e284014ce45b31f2d4d0526f22, type: 2}
+  m_day1TutoDialogues:
+  - {fileID: 11400000, guid: b43449e284014ce45b31f2d4d0526f22, type: 2}
+  - {fileID: 11400000, guid: b43449e284014ce45b31f2d4d0526f22, type: 2}
+  - {fileID: 11400000, guid: b43449e284014ce45b31f2d4d0526f22, type: 2}
+  - {fileID: 11400000, guid: b43449e284014ce45b31f2d4d0526f22, type: 2}
+  - {fileID: 11400000, guid: b43449e284014ce45b31f2d4d0526f22, type: 2}
+  m_day2TutoDialogues:
+  - {fileID: 11400000, guid: b43449e284014ce45b31f2d4d0526f22, type: 2}
+  - {fileID: 11400000, guid: b43449e284014ce45b31f2d4d0526f22, type: 2}
+  - {fileID: 11400000, guid: b43449e284014ce45b31f2d4d0526f22, type: 2}
+  m_day3TutoDialogues:
+  - {fileID: 11400000, guid: b43449e284014ce45b31f2d4d0526f22, type: 2}
+  - {fileID: 11400000, guid: b43449e284014ce45b31f2d4d0526f22, type: 2}
+  m_day4TutoDialogues:
+  - {fileID: 11400000, guid: b43449e284014ce45b31f2d4d0526f22, type: 2}
+  - {fileID: 11400000, guid: b43449e284014ce45b31f2d4d0526f22, type: 2}
+  m_day5TutoDialogues:
+  - {fileID: 11400000, guid: b43449e284014ce45b31f2d4d0526f22, type: 2}
+  - {fileID: 11400000, guid: b43449e284014ce45b31f2d4d0526f22, type: 2}
 --- !u!1001 &2198895286629886590
 PrefabInstance:
   m_ObjectHideFlags: 0

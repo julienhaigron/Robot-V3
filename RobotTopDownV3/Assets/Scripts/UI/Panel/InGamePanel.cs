@@ -24,6 +24,7 @@ public sealed class InGamePanel : AUIPanel
 	[SerializeField] private float m_duration = 0.3f;
 	[SerializeField] private List<LogConsole.LogEventType> m_visibleEventType;
 	[SerializeField] private BaseButton m_validateTargetsBtn;
+	[SerializeField] private TutoConsole m_tutoConsole;
 
 	private bool m_isConsoleExpanded = true;
 	private Tween m_currentToggleConsoleBtnTween;
