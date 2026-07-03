@@ -671,7 +671,7 @@ GameObject:
   - component: {fileID: 5767123699685117803}
   - component: {fileID: 5426007331065028745}
   m_Layer: 0
-  m_Name: Console
+  m_Name: LogConsole
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

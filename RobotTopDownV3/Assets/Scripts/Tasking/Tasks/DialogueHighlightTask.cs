@@ -21,11 +21,17 @@ public class DialogueHighlightTask : Task
 
         highlightZone.Show();
         highlightZone.onInteract += CompleteTask;
-        _context.Dialogue.PlayDialogue(dialogue, CompleteTask);
+        if (_context.UI.currentPanel is InGamePanel inGamePanel)
+            inGamePanel.TutoConsole.PlayDialogue(dialogue, CompleteTask);
+        else
+            _context.Dialogue.PlayDialogue(dialogue, CompleteTask);
     }
 
     private void CompleteTask ()
     {
+        if (IsCompleted)
+            return;
+
         Complete();
     }
 

@@ -14,6 +14,9 @@ public class DialogueTask : Task
     protected override void OnStart ( TaskManager.TaskContext _context )
     {
         base.OnStart(_context);
-        _context.Dialogue.PlayDialogue(dialogue, Complete);
+        if (_context.UI.currentPanel is InGamePanel inGamePanel)
+            inGamePanel.TutoConsole.PlayDialogue(dialogue, Complete);
+        else
+            _context.Dialogue.PlayDialogue(dialogue, Complete);
     }
 }

@@ -71,6 +71,7 @@ public class FTUEManager : SingletonPersistant<FTUEManager>
 
 		//input phase
 		tutoSequence.Append(new DialogueTask("Select Unit", ( context ) => context.Game.CurrentMission != null && context.Game.CurrentMission == GameConfig.current.game.microTuto1MissionData
+			&& context.UI.currentPanel is InGamePanel
 		, m_firstTutoDialogues[0]));
 		tutoSequence.Append(new DialogueHighlightTask("Action explenation", (context) => context.Player.SelectedEntity != null
 		, m_firstTutoDialogues[1], "actionBtns"));

@@ -25,6 +25,7 @@ public sealed class InGamePanel : AUIPanel
 	[SerializeField] private List<LogConsole.LogEventType> m_visibleEventType;
 	[SerializeField] private BaseButton m_validateTargetsBtn;
 	[SerializeField] private TutoConsole m_tutoConsole;
+	public TutoConsole TutoConsole => m_tutoConsole;
 
 	private bool m_isConsoleExpanded = true;
 	private Tween m_currentToggleConsoleBtnTween;
@@ -64,6 +65,7 @@ public sealed class InGamePanel : AUIPanel
 	{
 		//Script Order : Awake - ShowPanelCR - l'Init
 		//in case you need to get param from other UIPANEL
+		m_tutoConsole.Init();
 	}
 	#endregion
 

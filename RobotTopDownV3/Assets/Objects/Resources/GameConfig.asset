@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   debug:
     saveEntityDeathAndDamages: 1
-    skipFTUE: 1
+    skipFTUE: 0
   game:
     nbOfDayInCycle: 7
     maxInventoryCapacity: 80

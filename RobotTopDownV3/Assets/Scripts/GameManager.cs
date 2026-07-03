@@ -162,7 +162,7 @@ public class GameManager : SingletonPersistant<GameManager>
 		TurnManager.Instance.Init();
 		GridManager.Instance.LoadGrid();
 		UIManager.Instance.HideTopCanvas<HubTopCanvas>();
-		UIManager.Instance.OpenPanel<InGamePanel>();
+		UIManager.Instance.OpenPanel<InGamePanel>().Init();
 
 		if (m_currentGameMode == GameMode.Offline)
 		{
