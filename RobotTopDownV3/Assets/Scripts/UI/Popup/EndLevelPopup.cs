@@ -3,11 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.Linq;
 
 public class EndLevelPopup : AUIPopup
 {
 	[SerializeField] private TextMeshProUGUI m_texte;
 	[SerializeField] private BaseButton m_continueButton;
+	[SerializeField] private CurrencyRewardDisplay[] m_currencyDisplays;
+	[SerializeField] private ComponentRewardDisplay[] m_componentDisplays;
+	[SerializeField] private UnitRewardDisplay[] m_unitDisplays;
 
 	private void Awake ()
 	{
@@ -46,19 +50,46 @@ public class EndLevelPopup : AUIPopup
 				DamageRandomComponents(GameDatas.current.currentPlayerSave.squadUnits[i], destroiedComponentAmount);
 		}
 
-		//TODO : display rewards
 		if (_didWin)
 		{
 			if (!_missionData.areRewardsRandom)
 			{
-				foreach (CurrencyType currencyType in _missionData.currencyRewards.Keys)
+				List<CurrencyType> currencies = _missionData.currencyRewards.Keys.ToList();
+				for (int i = 0; i < m_currencyDisplays.Length; i++)
 				{
-					GameDatas.current.currentPlayerSave.AddCurrency(currencyType, _missionData.currencyRewards[currencyType]);
+					if (_missionData.currencyRewards.Keys.Count > i)
+					{
+						m_currencyDisplays[i].Show();
+						m_currencyDisplays[i].Init(currencies[i], _missionData.currencyRewards[currencies[i]], true);
+						GameDatas.current.currentPlayerSave.AddCurrency(currencies[i], _missionData.currencyRewards[currencies[i]]);
+					}
+					else
+						m_currencyDisplays[i].Hide();
+
 				}
 
-				foreach (EntityEquipmentData equipmentData in _missionData.equipmentRewards)
+				for (int i = 0; i < m_componentDisplays.Length; i++)
 				{
-					GameDatas.current.currentPlayerSave.AddEquipmentToInventory(equipmentData);
+					if (_missionData.equipmentRewards.Count > i)
+					{
+						m_componentDisplays[i].Show();
+						m_componentDisplays[i].Init(_missionData.equipmentRewards[i]);
+						GameDatas.current.currentPlayerSave.AddEquipmentToInventory(_missionData.equipmentRewards[i]);
+					}
+					else
+						m_componentDisplays[i].Hide();
+				}
+
+				for (int i = 0; i < m_unitDisplays.Length; i++)
+				{
+					if (_missionData.unitReward.Count > i)
+					{
+						m_unitDisplays[i].Show();
+						m_unitDisplays[i].Init(_missionData.unitReward[i]);
+						_missionData.unitReward[i].AddToUnits();
+					}
+					else
+						m_unitDisplays[i].Hide();
 				}
 			}
 			else

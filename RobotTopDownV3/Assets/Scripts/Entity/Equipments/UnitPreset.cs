@@ -22,6 +22,8 @@ public class UnitPreset : ScriptableObject
     [OnValueChanged("@RefreshTotalEnergyCostRemaining()")]
     public ChipsetEquipmentData[] chipsets;
 
+    public Sprite icon;
+
     public bool isInvocation = false;
     [ShowIf("@isInvocation")]
     public bool isTangible = true;

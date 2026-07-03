@@ -25,6 +25,7 @@ public class MissionData : ScriptableEnum<MissionDataEnumID>
     public bool areRewardsRandom = false;
     public SerializableDictionary<CurrencyType, ulong> currencyRewards;
     public List<EntityEquipmentData> equipmentRewards;
+    public List<UnitPreset> unitReward;
 
 	protected override void OnValidate ()
 	{
