@@ -61,9 +61,6 @@ public partial class GameConfig : ScriptableObject
 		public int missionAmountInMissionSelectionPanel = 12;
 		public int selectableMissionAmount = 8;
 
-		[Title("Tuto")]
-		public MissionData microTuto1MissionData;
-		public UnitPreset[] playerStartingSquadUnits;
 	}
 
 	[System.Serializable]

@@ -109,10 +109,10 @@ public class GameManager : SingletonPersistant<GameManager>
 		{
 			//TODO : play introduction video/animation before throwing player into gameplay
 
-			foreach (UnitPreset unitPreset in GameConfig.current.game.playerStartingSquadUnits)
+			foreach (UnitPreset unitPreset in FTUEManager.Instance.playerStartingSquadUnits)
 				unitPreset.AddToUnits();
 
-			SetupLevel(GameConfig.current.game.microTuto1MissionData);
+			SetupLevel(GameAssets.current.game.missions[FTUEManager.Instance.Cycle1Missions[0]]);
 		}
 	}
 

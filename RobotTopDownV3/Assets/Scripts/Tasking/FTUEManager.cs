@@ -29,6 +29,8 @@ public class FTUEManager : SingletonPersistant<FTUEManager>
 	private Dictionary<string, TutorialHighlightZone> m_registerdTutorialHighlightZones = new();
 	public Dictionary<string, TutorialHighlightZone> RegisterdTutorialHighlightZones => m_registerdTutorialHighlightZones;
 
+	public UnitPreset[] playerStartingSquadUnits;
+
 	public const string FTUEID = "FTUESequence";
 
 	public void AddTutorialHighlightZone ( TutorialHighlightZone _highlightZone )
@@ -73,7 +75,7 @@ public class FTUEManager : SingletonPersistant<FTUEManager>
 		TaskSequence tutoSequence = new("MicroTuto0");
 
 		//input phase
-		tutoSequence.Append(new DialogueTask("Select Unit", ( context ) => context.Game.CurrentMission != null && context.Game.CurrentMission == GameConfig.current.game.microTuto1MissionData
+		tutoSequence.Append(new DialogueTask("Select Unit", ( context ) => context.Game.CurrentMission != null && context.Game.CurrentMission.enumID == m_cycle1Missions[0]
 			&& context.UI.currentPanel is InGamePanel
 		, m_firstTutoDialogues[0]));
 		tutoSequence.Append(new DialogueHighlightTask("Action explenation", (context) => context.Player.SelectedEntity != null
