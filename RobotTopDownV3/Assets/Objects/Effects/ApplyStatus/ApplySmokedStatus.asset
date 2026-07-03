@@ -13,4 +13,5 @@ MonoBehaviour:
   m_Name: ApplySmokedStatus
   m_EditorClassIdentifier: 
   enumID: 17
+  displayName: 
   statusApplied: 5

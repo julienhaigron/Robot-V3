@@ -12,7 +12,7 @@ public class MissionPanel : AUIPanel
 	[SerializeField] private MissionButton[] m_missionBtns;
 	[SerializeField] private MissionButton m_tutoBtn;
 	[SerializeField] private BaseButton m_startMissionBtn;
-	
+
 	[Title("Squad")]
 	[SerializeField] private UnitMissionDisplay[] m_unitDisplays;
 	[SerializeField] private UnitMissionDisplay m_hoveredUnitDisplay;
@@ -43,18 +43,35 @@ public class MissionPanel : AUIPanel
 
 	private void RefreshMissionBtns ()
 	{
+		bool doTutoMission = false;
+#if UNITY_EDITOR
+		doTutoMission = !GameConfig.current.debug.skipFTUE;
+#endif
 		for (int i = 0; i < m_missionBtns.Length; i++)
 		{
-			if (GameDatas.current.currentPlayerSave.cycleData.selectedMissionsIds.Count > i)
+			if (doTutoMission)
 			{
-				m_missionBtns[i].SetVisible(true, true);
-				m_missionBtns[i].Init(GameDatas.current.currentPlayerSave.cycleData.selectedMissionsIds[i]);
+				if (i == 0)
+				{
+					m_missionBtns[i].SetVisible(true, true);
+					m_missionBtns[i].Init(GameDatas.current.currentPlayerSave.cycleData.selectedMissionsIds[GameDatas.current.currentPlayerSave.dayCount]);
+				}
+				else
+					m_missionBtns[i].SetVisible(false, true);
 			}
 			else
-				m_missionBtns[i].SetVisible(false, true);
+			{
+				if (GameDatas.current.currentPlayerSave.cycleData.selectedMissionsIds.Count > i)
+				{
+					m_missionBtns[i].SetVisible(true, true);
+					m_missionBtns[i].Init(GameDatas.current.currentPlayerSave.cycleData.selectedMissionsIds[i]);
+				}
+				else
+					m_missionBtns[i].SetVisible(false, true);
+			}
 		}
 
-		for(int i = 0; i < m_unitDisplays.Length; i++)
+		for (int i = 0; i < m_unitDisplays.Length; i++)
 		{
 			if (GameDatas.current.currentPlayerSave.squadUnits.Count > i)
 			{
@@ -69,7 +86,7 @@ public class MissionPanel : AUIPanel
 		OnAnyUnitHovered(m_unitDisplays[0]);
 	}
 
-	private void OnAnyMissionSelected ( MissionButton _missionBtn)
+	private void OnAnyMissionSelected ( MissionButton _missionBtn )
 	{
 		if (!gameObject.activeInHierarchy || _missionBtn == m_currentMissionHovered)
 			return;
@@ -93,17 +110,17 @@ public class MissionPanel : AUIPanel
 		List<CurrencyType> keys = _missionBtn.MissionData.currencyRewards.Keys.ToList();
 		for (int i = 0; i < m_currencyRewardDisplays.Length; i++)
 		{
-			if (_missionBtn.MissionData.currencyRewards.Keys.Count> i)
+			if (_missionBtn.MissionData.currencyRewards.Keys.Count > i)
 			{
 				m_currencyRewardDisplays[i].Show();
 				m_currencyRewardDisplays[i].Init(keys[i], _missionBtn.MissionData.currencyRewards[keys[i]], true);
 			}
 			else
 				m_currencyRewardDisplays[i].Hide();
-		}		
+		}
 	}
 
-	private void OnAnyUnitHovered( UnitMissionDisplay _display )
+	private void OnAnyUnitHovered ( UnitMissionDisplay _display )
 	{
 		if (_display == null || _display.Data == null)
 			return;

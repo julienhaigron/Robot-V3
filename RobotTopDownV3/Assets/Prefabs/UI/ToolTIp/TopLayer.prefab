@@ -88,6 +88,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b45006602da968a4185587837b1dd109, type: 3}
   m_Name: 
   m_EditorClassIdentifier: RTD::FTUEManager
+  m_cycle1Missions: 02000000030000000400000005000000060000000700000008000000
   m_firstTutoDialogues:
   - {fileID: 11400000, guid: b43449e284014ce45b31f2d4d0526f22, type: 2}
   - {fileID: 11400000, guid: b43449e284014ce45b31f2d4d0526f22, type: 2}

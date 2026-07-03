@@ -13,4 +13,5 @@ MonoBehaviour:
   m_Name: ApplyStunStatus
   m_EditorClassIdentifier: 
   enumID: 14
+  displayName: 
   statusApplied: 6

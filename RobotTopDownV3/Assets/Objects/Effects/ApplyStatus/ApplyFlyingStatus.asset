@@ -13,4 +13,5 @@ MonoBehaviour:
   m_Name: ApplyFlyingStatus
   m_EditorClassIdentifier: 
   enumID: 1
+  displayName: 
   statusApplied: 2

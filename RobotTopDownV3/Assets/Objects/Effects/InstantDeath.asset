@@ -13,3 +13,4 @@ MonoBehaviour:
   m_Name: InstantDeath
   m_EditorClassIdentifier: 
   enumID: 18
+  displayName: 

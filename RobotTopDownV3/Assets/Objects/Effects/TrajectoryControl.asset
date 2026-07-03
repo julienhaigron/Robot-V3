@@ -13,4 +13,5 @@ MonoBehaviour:
   m_Name: TrajectoryControl
   m_EditorClassIdentifier: 
   enumID: 13
+  displayName: 
   rangeBoostAmount: 1

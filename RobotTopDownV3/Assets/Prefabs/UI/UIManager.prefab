@@ -3860,34 +3860,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 6791726630538330527, guid: 4c7a8251924df3c4e869651eddb86358, type: 3}
-      propertyPath: m_firstTutoDialogues.Array.size
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 6791726630538330527, guid: 4c7a8251924df3c4e869651eddb86358, type: 3}
-      propertyPath: 'm_firstTutoDialogues.Array.data[0]'
-      value: 
-      objectReference: {fileID: 11400000, guid: 6bbc1652be9c20f47b61b91e283ee705, type: 2}
-    - target: {fileID: 6791726630538330527, guid: 4c7a8251924df3c4e869651eddb86358, type: 3}
-      propertyPath: 'm_firstTutoDialogues.Array.data[1]'
-      value: 
-      objectReference: {fileID: 11400000, guid: 6bbc1652be9c20f47b61b91e283ee705, type: 2}
-    - target: {fileID: 6791726630538330527, guid: 4c7a8251924df3c4e869651eddb86358, type: 3}
-      propertyPath: 'm_firstTutoDialogues.Array.data[2]'
-      value: 
-      objectReference: {fileID: 11400000, guid: 6bbc1652be9c20f47b61b91e283ee705, type: 2}
-    - target: {fileID: 6791726630538330527, guid: 4c7a8251924df3c4e869651eddb86358, type: 3}
-      propertyPath: 'm_firstTutoDialogues.Array.data[3]'
-      value: 
-      objectReference: {fileID: 11400000, guid: 6bbc1652be9c20f47b61b91e283ee705, type: 2}
-    - target: {fileID: 6791726630538330527, guid: 4c7a8251924df3c4e869651eddb86358, type: 3}
-      propertyPath: 'm_firstTutoDialogues.Array.data[4]'
-      value: 
-      objectReference: {fileID: 11400000, guid: 6bbc1652be9c20f47b61b91e283ee705, type: 2}
-    - target: {fileID: 6791726630538330527, guid: 4c7a8251924df3c4e869651eddb86358, type: 3}
-      propertyPath: 'm_firstTutoDialogues.Array.data[5]'
-      value: 
-      objectReference: {fileID: 11400000, guid: 6bbc1652be9c20f47b61b91e283ee705, type: 2}
     - target: {fileID: 8364345404157484499, guid: 4c7a8251924df3c4e869651eddb86358, type: 3}
       propertyPath: m_Name
       value: TopLayer

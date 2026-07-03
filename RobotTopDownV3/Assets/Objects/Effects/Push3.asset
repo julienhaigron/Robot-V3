@@ -13,4 +13,5 @@ MonoBehaviour:
   m_Name: Push3
   m_EditorClassIdentifier: 
   enumID: 21
+  displayName: 
   movementStrength: 3

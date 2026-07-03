@@ -19,10 +19,10 @@ MonoBehaviour:
   showOnPlayerWhenCurrencyAdded: 1
   icon: {fileID: 1717960602, guid: 31cee7fbc7dacf5449ac2bd80b7b4b88, type: 3}
   iconWithOutline: {fileID: 1717960602, guid: 31cee7fbc7dacf5449ac2bd80b7b4b88, type: 3}
-  model: {fileID: 0}
   baseCurrency: 0
   showOnlyIfUpgradeOneTime: 0
   maxCapacityType: 0
   upgradeAsset: {fileID: 0}
   maxCapacityFlat: 0
   maxCapacityPerLevel: 
+  suffix: 

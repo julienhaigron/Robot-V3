@@ -13,4 +13,5 @@ MonoBehaviour:
   m_Name: ApplyBurning1Status
   m_EditorClassIdentifier: 
   enumID: 15
+  displayName: 
   statusApplied: 1

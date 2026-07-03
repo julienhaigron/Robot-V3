@@ -10,14 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f71a1187493589744bad6fd241af4c7b, type: 3}
-  m_Name: Mission1
+  m_Name: Day0Tuto
   m_EditorClassIdentifier: RTD::MissionData
-  enumID: 0
-  missionName: Mission 1
+  enumID: 2
+  missionName: Day0Tuto
   icon: {fileID: -1051304284, guid: b6a6397b98d67304fa94b8144e1fb5dd, type: 3}
-  preMissionDialogue: {fileID: 11400000, guid: 6bbc1652be9c20f47b61b91e283ee705, type: 2}
+  preMissionDialogue: {fileID: 0}
   afterMissionDialogue: {fileID: 0}
-  levelMission: {fileID: 11400000, guid: b42abe5b22535cf40beab03ef8f2d66f, type: 2}
+  levelMission: {fileID: 11400000, guid: 77e7909ebb1819744bb079624e2fd522, type: 2}
   type: 0
   areRewardsRandom: 0
   currencyRewards:

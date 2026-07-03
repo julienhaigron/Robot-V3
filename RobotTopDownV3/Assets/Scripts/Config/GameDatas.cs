@@ -315,8 +315,17 @@ public partial class GameDatas : ScriptableObject
 
 			NewCycle();
 			cycleCount = 0;
+
 			NewDay();
 			dayCount = 0;
+
+#if UNITY_EDITOR
+			if (GameConfig.current.debug.skipFTUE)
+				return;
+#endif
+			cycleData.availableMissionsIds.Clear();
+			for (int i = 0; i < FTUEManager.Instance.Cycle1Missions.Length; i++)
+				cycleData.availableMissionsIds.Add(FTUEManager.Instance.Cycle1Missions[i]);
 		}
 
 		#region Currencies

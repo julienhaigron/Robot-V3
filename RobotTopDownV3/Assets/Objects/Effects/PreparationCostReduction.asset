@@ -13,4 +13,5 @@ MonoBehaviour:
   m_Name: PreparationCostReduction
   m_EditorClassIdentifier: 
   enumID: 9
+  displayName: 
   reductionAmount: 1

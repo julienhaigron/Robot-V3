@@ -13,4 +13,5 @@ MonoBehaviour:
   m_Name: Pull1
   m_EditorClassIdentifier: 
   enumID: 10
+  displayName: 
   movementStrength: -1

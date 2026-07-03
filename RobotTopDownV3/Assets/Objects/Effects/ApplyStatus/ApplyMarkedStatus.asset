@@ -13,4 +13,5 @@ MonoBehaviour:
   m_Name: ApplyMarkedStatus
   m_EditorClassIdentifier: 
   enumID: 2
+  displayName: 
   statusApplied: 3

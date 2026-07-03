@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: KamaikazeDealDamage
   m_EditorClassIdentifier: 
   enumID: 19
+  displayName: 
   explosionRange: 1
   damages:
     keys: 02000000

@@ -13,4 +13,5 @@ MonoBehaviour:
   m_Name: ApplyRootedStatus
   m_EditorClassIdentifier: 
   enumID: 16
+  displayName: 
   statusApplied: 4

@@ -5,6 +5,9 @@ using Sirenix.OdinInspector;
 
 public class FTUEManager : SingletonPersistant<FTUEManager>
 {
+	[SerializeField] private MissionDataEnumID[] m_cycle1Missions;
+	public MissionDataEnumID[] Cycle1Missions => m_cycle1Missions;
+
 	[Title("MicroTuto0")]
 	[SerializeField] private DialogueData[] m_firstTutoDialogues;
 	
@@ -96,7 +99,8 @@ public class FTUEManager : SingletonPersistant<FTUEManager>
 		TaskSequence tutoSequence = new("Day1Tuto");
 
 		//macro
-		tutoSequence.Append(new OpenPanelTask<HangarPanel>("Send player directly to hangar", ( context ) => context.UI.currentPanel is SoloHubPanel));
+		tutoSequence.Append(new OpenPanelTask<HangarPanel>("Send player directly to hangar", ( context ) => context.UI.currentPanel is SoloHubPanel 
+			&& GameDatas.current.currentPlayerSave.dayCount == 1));
 		tutoSequence.Append(new DialogueHighlightTask("Squad Explenation", ( context ) => context.UI.currentPanel is HangarPanel
 		, m_day1TutoDialogues[0], "squadUnits"));
 		tutoSequence.Append(new DialogueHighlightTask("Hub presentation", ( context ) => context.UI.currentPanel is SoloHubPanel
@@ -118,7 +122,8 @@ public class FTUEManager : SingletonPersistant<FTUEManager>
 		TaskSequence tutoSequence = new("Day2Tuto");
 
 		//macro
-		tutoSequence.Append(new DialogueHighlightTask("Vas dans le hangar ", ( context ) => context.UI.currentPanel is SoloHubPanel
+		tutoSequence.Append(new DialogueHighlightTask("Vas dans le hangar ", ( context ) => context.UI.currentPanel is SoloHubPanel 
+			&& GameDatas.current.currentPlayerSave.dayCount == 2
 		, m_day2TutoDialogues[0], "hangarBtn"));
 		tutoSequence.Append(new DialogueHighlightTask("tweak une unit", ( context ) => context.UI.currentPanel is HangarPanel
 		, m_day2TutoDialogues[1], "squadUnit0"));
@@ -135,7 +140,8 @@ public class FTUEManager : SingletonPersistant<FTUEManager>
 		TaskSequence tutoSequence = new("Day3Tuto");
 
 		//macro
-		tutoSequence.Append(new DialogueHighlightTask("Blabla recyclage donne gold", ( context ) => context.UI.currentPanel is SoloHubPanel
+		tutoSequence.Append(new DialogueHighlightTask("Blabla recyclage donne gold", ( context ) => context.UI.currentPanel is SoloHubPanel 
+			&& GameDatas.current.currentPlayerSave.dayCount == 3
 		, m_day3TutoDialogues[0], "recycleBtn"));
 
 		//micro
@@ -150,7 +156,8 @@ public class FTUEManager : SingletonPersistant<FTUEManager>
 		TaskSequence tutoSequence = new("Day4Tuto");
 
 		//macro
-		tutoSequence.Append(new DialogueTask("Blabla gold", ( context ) => context.UI.currentPanel is SoloHubPanel, m_day4TutoDialogues[0]));
+		tutoSequence.Append(new DialogueTask("Blabla gold", ( context ) => context.UI.currentPanel is SoloHubPanel 
+			&& GameDatas.current.currentPlayerSave.dayCount == 4, m_day4TutoDialogues[0]));
 		tutoSequence.Append(new DialogueTask("Blabla reparation", ( context ) => context.UI.currentPanel is SoloHubPanel, m_day4TutoDialogues[1]));
 
 		/*//micro
@@ -166,7 +173,7 @@ public class FTUEManager : SingletonPersistant<FTUEManager>
 
 		//macro
 		tutoSequence.Append(new DialogueHighlightTask("Vas dans le hangar et créer une unit", ( context ) => context.UI.currentPanel is SoloHubPanel
-		, m_day5TutoDialogues[0], "hangarBtn"));
+			 && GameDatas.current.currentPlayerSave.dayCount == 5, m_day5TutoDialogues[0], "hangarBtn"));
 		tutoSequence.Append(new DialogueTask("Blabla cycle + tournois", ( context ) => context.UI.currentPanel is SoloHubPanel, m_day5TutoDialogues[1]));
 
 		/*//micro
