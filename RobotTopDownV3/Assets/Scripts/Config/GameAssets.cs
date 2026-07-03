@@ -27,7 +27,7 @@ public class GameAssets : ScriptableObject
         public Tile baseTile;
         public SerializableDictionary<Wall.WallType, GameObject> baseWallVisualPerType = new();
 
-        public List<GridData> maps = new();
+        //public List<GridData> maps = new();
         public SerializableDictionary<MissionDataEnumID, MissionData> missions = new();
         public SerializableDictionary<StructureUpgradePopup.StructureType, StructureUpgrade> structureUpgrades = new();
 
@@ -94,9 +94,7 @@ public class GameAssets : ScriptableObject
                 equipments.Add(eq.name, eq);
         }
     }
-#endif
 
-#if UNITY_EDITOR
     [Button]
     public void ReloadActions ()
     {
@@ -122,6 +120,72 @@ public class GameAssets : ScriptableObject
                 else
                 {
                     game.entityActionsData[action.enumID] = action;
+                }
+                EditorUtility.SetDirty(action);
+            }
+        }
+
+        EditorUtility.SetDirty(current);
+    }
+
+    [Button]
+    public void ReloadEffects ()
+    {
+        string[] guids = AssetDatabase.FindAssets("t:AEntityPassiveEffect");
+        List<AEntityPassiveEffect> fetchedActions = new();
+        foreach (string guid in guids)
+        {
+            string path = AssetDatabase.GUIDToAssetPath(guid);
+            var asset = AssetDatabase.LoadAssetAtPath<AEntityPassiveEffect>(path);
+            if (asset != null)
+                fetchedActions.Add(asset);
+        }
+
+        foreach (AEntityPassiveEffect action in fetchedActions)
+        {
+            if (Enum.TryParse(action.name, out EntityPassiveEffectEnumID _result))
+            {
+                action.enumID = _result;
+                if (!game.entityEffects.ContainsKey(action.enumID))
+                {
+                    game.entityEffects.Add(action.enumID, action);
+                }
+                else
+                {
+                    game.entityEffects[action.enumID] = action;
+                }
+                EditorUtility.SetDirty(action);
+            }
+        }
+
+        EditorUtility.SetDirty(current);
+    }
+
+    [Button]
+    public void ReloadStatus ()
+    {
+        string[] guids = AssetDatabase.FindAssets("t:AEntityStatus");
+        List<AEntityStatus> fetchedActions = new();
+        foreach (string guid in guids)
+        {
+            string path = AssetDatabase.GUIDToAssetPath(guid);
+            var asset = AssetDatabase.LoadAssetAtPath<AEntityStatus>(path);
+            if (asset != null)
+                fetchedActions.Add(asset);
+        }
+
+        foreach (AEntityStatus action in fetchedActions)
+        {
+            if (Enum.TryParse(action.name, out EntityStatusEnumID _result))
+            {
+                action.enumID = _result;
+                if (!game.entityStatus.ContainsKey(action.enumID))
+                {
+                    game.entityStatus.Add(action.enumID, action);
+                }
+                else
+                {
+                    game.entityStatus[action.enumID] = action;
                 }
                 EditorUtility.SetDirty(action);
             }

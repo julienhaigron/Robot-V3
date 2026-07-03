@@ -7,6 +7,7 @@ public class FTUEManager : SingletonPersistant<FTUEManager>
 {
 	[SerializeField] private MissionDataEnumID[] m_cycle1Missions;
 	public MissionDataEnumID[] Cycle1Missions => m_cycle1Missions;
+	public UnitPreset[] playerStartingSquadUnits;
 
 	[Title("MicroTuto0")]
 	[SerializeField] private DialogueData[] m_firstTutoDialogues;
@@ -29,7 +30,6 @@ public class FTUEManager : SingletonPersistant<FTUEManager>
 	private Dictionary<string, TutorialHighlightZone> m_registerdTutorialHighlightZones = new();
 	public Dictionary<string, TutorialHighlightZone> RegisterdTutorialHighlightZones => m_registerdTutorialHighlightZones;
 
-	public UnitPreset[] playerStartingSquadUnits;
 
 	public const string FTUEID = "FTUESequence";
 
