@@ -13,7 +13,9 @@ public class MissionData : ScriptableEnum<MissionDataEnumID>
 
     public DialogueData preMissionDialogue;
     public DialogueData afterMissionDialogue;
-    public LevelData levelMission;
+
+    public GridData map;
+    public UnitPreset[] enemies;
     public MissionType type;
     public enum MissionType
 	{

@@ -71,16 +71,16 @@ public class TournamentPanel : AUIPanel
 			MissionData missiondata = GameAssets.current.game.missions[GameDatas.current.currentPlayerSave.cycleData.roundsDatas[0]];
 			for (int i = 0; i < m_round1SquadUnits.Length; i++)
 			{
-				if (missiondata.levelMission.enemies.Length > i)
+				if (missiondata.enemies.Length > i)
 				{
-					m_round1SquadUnits[i].Init(missiondata.levelMission.enemies[i].GetSavedData());
+					m_round1SquadUnits[i].Init(missiondata.enemies[i].GetSavedData());
 					m_round1SquadUnits[i].Show();
 				}
 				else
 					m_round1SquadUnits[i].Hide();
 			}
 
-			EntityEquipmentData.EntityFaction dominentCorpo = GetDominentSquadFaction(missiondata.levelMission.enemies.ToList());
+			EntityEquipmentData.EntityFaction dominentCorpo = GetDominentSquadFaction(missiondata.enemies.ToList());
 			m_squadsIcons[0].gameObject.SetActive(true);
 			m_squadsIcons[0].sprite = GameAssets.current.ui.corporationsIcons[dominentCorpo];
 			m_squadsIcons[0].color = GameAssets.current.ui.corporationsColors[dominentCorpo];
@@ -90,15 +90,15 @@ public class TournamentPanel : AUIPanel
 			MissionData missiondata = GameAssets.current.game.missions[GameDatas.current.currentPlayerSave.cycleData.roundsDatas[1]];
 			for (int i = 0; i < m_round2SquadUnits.Length; i++)
 			{
-				if (missiondata.levelMission.enemies.Length > i)
+				if (missiondata.enemies.Length > i)
 				{
-					m_round2SquadUnits[i].Init(missiondata.levelMission.enemies[i].GetSavedData());
+					m_round2SquadUnits[i].Init(missiondata.enemies[i].GetSavedData());
 					m_round2SquadUnits[i].Show();
 				}
 				else
 					m_round2SquadUnits[i].Hide();
 			}
-			EntityEquipmentData.EntityFaction dominentCorpo = GetDominentSquadFaction(missiondata.levelMission.enemies.ToList());
+			EntityEquipmentData.EntityFaction dominentCorpo = GetDominentSquadFaction(missiondata.enemies.ToList());
 			m_squadsIcons[1].gameObject.SetActive(true);
 			m_squadsIcons[1].sprite = GameAssets.current.ui.corporationsIcons[dominentCorpo];
 			m_squadsIcons[1].color = GameAssets.current.ui.corporationsColors[dominentCorpo];
@@ -108,15 +108,15 @@ public class TournamentPanel : AUIPanel
 			MissionData missiondata = GameAssets.current.game.missions[GameDatas.current.currentPlayerSave.cycleData.roundsDatas[2]];
 			for (int i = 0; i < m_round3SquadUnits.Length; i++)
 			{
-				if (missiondata.levelMission.enemies.Length > i)
+				if (missiondata.enemies.Length > i)
 				{
-					m_round3SquadUnits[i].Init(missiondata.levelMission.enemies[i].GetSavedData());
+					m_round3SquadUnits[i].Init(missiondata.enemies[i].GetSavedData());
 					m_round3SquadUnits[i].Show();
 				}
 				else
 					m_round3SquadUnits[i].Hide();
 			}
-			EntityEquipmentData.EntityFaction dominentCorpo = GetDominentSquadFaction(missiondata.levelMission.enemies.ToList());
+			EntityEquipmentData.EntityFaction dominentCorpo = GetDominentSquadFaction(missiondata.enemies.ToList());
 			m_squadsIcons[2].gameObject.SetActive(true);
 			m_squadsIcons[2].sprite = GameAssets.current.ui.corporationsIcons[dominentCorpo];
 			m_squadsIcons[2].color = GameAssets.current.ui.corporationsColors[dominentCorpo];

@@ -121,12 +121,12 @@ public class GameManager : SingletonPersistant<GameManager>
 	{
 		m_currentMission = _mission;
 		m_playerTwoEntityDatas = new();
-		foreach (UnitPreset ennemi in _mission.levelMission.enemies)
+		foreach (UnitPreset ennemi in _mission.enemies)
 		{
 			m_playerTwoEntityDatas.Add(ennemi.GetSavedData());
 		}
 
-		SceneManager.LoadSceneAsync(_mission.levelMission.map.name);
+		SceneManager.LoadSceneAsync(_mission.map.name);
 	}
 
 	public void GoBackToHub ()
@@ -151,10 +151,10 @@ public class GameManager : SingletonPersistant<GameManager>
 		SceneManager.LoadSceneAsync(GameConfig.current.game.startScreenSceneName);
 	}
 
-	public LevelData GetRandomLevel ()
+	/*public MissionData GetRandomLevel ()
 	{
-		return GameAssets.current.game.levels.RandomElement();
-	}
+		return GameAssets.current.game.missions.Values.ToList().RandomElement();
+	}*/
 
 
 	public void StartGame ()
@@ -169,7 +169,7 @@ public class GameManager : SingletonPersistant<GameManager>
 			LogConsole.AddLog("Start OfflineGame", LogConsole.LogEventType.DebugSys);
 			m_playersEntityAnchor[0].Init(GameDatas.current.currentPlayerSave.squadUnits, 0);
 			List<EntitySavedData> ennemies = new();
-			foreach (UnitPreset ennemi in m_currentMission.levelMission.enemies)
+			foreach (UnitPreset ennemi in m_currentMission.enemies)
 			{
 				ennemies.Add(ennemi.GetSavedData());
 			}

@@ -14,13 +14,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: RTD::MissionData
   enumID: 7
   missionName: Day5Tuto
-  icon: {fileID: -1051304284, guid: b6a6397b98d67304fa94b8144e1fb5dd, type: 3}
+  icon: {fileID: 21300000, guid: 03da9b037a0d27b4db02f45130a6cb28, type: 3}
   preMissionDialogue: {fileID: 0}
   afterMissionDialogue: {fileID: 0}
-  levelMission: {fileID: 11400000, guid: 77e7909ebb1819744bb079624e2fd522, type: 2}
+  map: {fileID: 11400000, guid: 6f08d292abbf2bc4d8b8635617613b35, type: 2}
+  enemies:
+  - {fileID: 11400000, guid: 3e4f3c47b4ebef348a686bbfcf7f8550, type: 2}
   type: 0
   areRewardsRandom: 0
   currencyRewards:
     keys: 01000000
     values: 1e00000000000000
   equipmentRewards: []
+  unitReward: []

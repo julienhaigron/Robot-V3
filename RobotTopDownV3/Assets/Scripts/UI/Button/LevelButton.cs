@@ -10,12 +10,12 @@ public class LevelButton : BaseButton
 	[SerializeField] private Image m_icon;
 	[SerializeField] private TextMeshProUGUI m_name;
 
-	[ReadOnly, SerializeField] private LevelData m_level;
+	[ReadOnly, SerializeField] private MissionData m_level;
 
-	public void Init( LevelData _level )
+	public void Init( MissionData _level )
 	{
 		m_level = _level;
-		m_name.text = _level.title;
+		m_name.text = _level.missionName;
 	}
 
 	protected override void OnClick ()

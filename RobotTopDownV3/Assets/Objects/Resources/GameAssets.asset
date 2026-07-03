@@ -28,8 +28,6 @@ MonoBehaviour:
     maps:
     - {fileID: 11400000, guid: 6f08d292abbf2bc4d8b8635617613b35, type: 2}
     - {fileID: 11400000, guid: 55ec503584887cb4aa7dd66763e4d7a7, type: 2}
-    levels:
-    - {fileID: 11400000, guid: 77e7909ebb1819744bb079624e2fd522, type: 2}
     missions:
       keys: 00000000010000000200000003000000040000000500000006000000070000000800000009000000
       values:
