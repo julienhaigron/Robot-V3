@@ -1,14 +1,26 @@
 using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
+using Sirenix.OdinInspector;
 
 public class EntityActionQueueDisplay : MonoBehaviour
 {
-	[SerializeField] private Transform m_actionDisplayParent;
-	[SerializeField] private GameObject m_scrollView;
+	[Title("Actions")]
 	[SerializeField] private CounterDisplay m_actionTokenDisplay;
+	[SerializeField] private EntityActionDisplay[] m_actionDisplays;
 
-	private List<EntityActionDisplay> m_displays = new();
+	[Title("States")]
+	[SerializeField] private SerializableDictionary<Entity.EntityState, Transform> m_stateLineTfmDictionary;
+	[SerializeField] private StateLineDisplay[] m_stateDisplays;
+
+	[Title("PriorityQueue")]
+	[SerializeField] private Transform m_actionPriorityQueueTfm;
+	[SerializeField] private Image m_selectedActionIcon;
+	[SerializeField] private PriorityQueueActionDisplay[] m_priorityQueueActionDisplays;
+	[SerializeField] private float m_baseActionPriorityQueueHeight = 93f;
+	[SerializeField] private float m_baseActionPriorityQueueElementHeight = 54.5f;
+
 	private int? m_currentEntitySelected;
 
 	private void Awake ()
@@ -18,7 +30,7 @@ public class EntityActionQueueDisplay : MonoBehaviour
 		TurnManager.onActionRemoved += OnActionRemoved;
 		TurnManager.onEndInputPhase += OnEndInputPhase;
 
-		RefreshQueue(null);
+		RefreshVisual(null);
 	}
 
 	private void OnDestroy ()
@@ -31,81 +43,123 @@ public class EntityActionQueueDisplay : MonoBehaviour
 
 	private void OnEndInputPhase ()
 	{
-		RefreshQueue(null);
+		RefreshVisual(null);
 	}
 
 	private void OnEntitySelected ( int? _entityID )
 	{
 		m_currentEntitySelected = _entityID;
-		RefreshQueue(_entityID);
+		RefreshVisual(_entityID);
 	}
 
 	private void OnActionAdded ( TurnManager.RecordedAction _newRecordedAction )
 	{
-		/*if (m_displays.Count >= TurnManager.Instance.RecordedActions[_newRecordedAction.performingEntityID].Count)
-		{
-			m_displays[TurnManager.Instance.RecordedActions[_newRecordedAction.performingEntityID].Count - 1].gameObject.SetActive(true);
-			m_displays[TurnManager.Instance.RecordedActions[_newRecordedAction.performingEntityID].Count - 1].Init(_newRecordedAction);
-		}
-		else
-		{
-			CreateActionDisplayButton();
-			m_displays[^1].Init(_newRecordedAction);
-		}*/
-		RefreshQueue(m_currentEntitySelected);
+		RefreshVisual(m_currentEntitySelected);
 	}
 
 	private void OnActionRemoved ( TurnManager.RecordedAction _removedRecordedAction )
 	{
-		RefreshQueue(_removedRecordedAction.performingEntityID);
-		/*foreach(EntityActionDisplay display in m_displays)
+		RefreshVisual(_removedRecordedAction.performingEntityID);
+	}
+
+	private void RefreshVisual ( int? _entityID )
+	{
+		/*if (_entityID == null || !GameManager.Instance.GetEntityFromID(out Entity entity, _entityID.Value) || !entity.IsAlliedTo(GameManager.Instance.PlayerID))
 		{
-			if(display.RecordedAction.action == _removedRecordedAction.action)
-			{
-				display.Hide(false);
-				return;
-			}
+			//gameObject.SetActive(false);
+			return;
+
 		}*/
+
+		//gameObject.SetActive(true);
+
+		//Actions
+		RefreshActionQueue();
+
+		//states
+		RefreshStateQueue();
+
+		RefreshPriorityQueue(_entityID);
+
+		/*m_actionTokenDisplay.UpdateValue(TurnManager.Instance.RemainingActionToken[_entityID.Value]
+			, _suffix: "/" + GameConfig.current.game.actionTokenPerRound);*/
+
 	}
 
-	private void RefreshQueue ( int? _entityID )
+	private void RefreshActionQueue ()
 	{
-		if (_entityID != null && GameManager.Instance.GetEntityFromID(out Entity entity, _entityID.Value) && entity.IsAlliedTo(GameManager.Instance.PlayerID))
+		Entity selectedEntity = PlayerController.Instance.SelectedEntity;
+		if (selectedEntity == null || !TurnManager.Instance.RecordedActions.ContainsKey(selectedEntity.ID))
 		{
-			gameObject.SetActive(true);
-
-			int count = 0;
-			if (TurnManager.Instance.RecordedActions.ContainsKey(_entityID.Value))
-			{
-				foreach (TurnManager.RecordedAction action in TurnManager.Instance.RecordedActions[_entityID.Value])
-				{
-					if (m_displays.Count <= count)
-						CreateActionDisplayButton();
-
-					//TODO : take action type into account, display in different raw
-					m_displays[count].gameObject.SetActive(true);
-					m_displays[count++].Init(action);
-				}
-			}
-			for (int i = count; i < m_displays.Count; i++)
-			{
-				m_displays[i].Hide(true);
-			}
-
-			m_actionTokenDisplay.UpdateValue(TurnManager.Instance.RemainingActionToken[_entityID.Value]
-				, _suffix: "/" + GameConfig.current.game.actionTokenPerRound);
+			foreach (EntityActionDisplay display in m_actionDisplays)
+				display.Hide(true);
+			return;
 		}
-		else
+
+		TurnManager.RecordedAction[] recordedActions = TurnManager.Instance.RecordedActions[selectedEntity.ID].ToArray();
+		for (int i = 0; i < m_actionDisplays.Length; i++)
 		{
-			//hide stuff
-			gameObject.SetActive(false);
+			if (recordedActions.Length > i)
+			{
+				m_actionDisplays[i].Init(recordedActions[i]);
+			}
+			else
+				m_actionDisplays[i].Hide(true);
 		}
 	}
 
-	private EntityActionDisplay CreateActionDisplayButton ()
+	private void RefreshStateQueue ()
 	{
-		EntityActionDisplay newDisplay = Instantiate(GameAssets.current.ui.baseEntityActionDisplay, m_actionDisplayParent);
-		m_displays.Add(newDisplay);
-		return newDisplay;
+		Entity selectedEntity = PlayerController.Instance.SelectedEntity;
+		if (selectedEntity == null || !TurnManager.Instance.RecordedActions.ContainsKey(selectedEntity.ID))
+		{
+			foreach (StateLineDisplay display in m_stateDisplays)
+				display.Hide();
+			return;
+		}
+
+		TurnManager.RecordedAction[] recordedActions = TurnManager.Instance.RecordedActions[selectedEntity.ID].ToArray();
+
+		for (int i = 0; i < m_stateDisplays.Length; i++)
+		{
+			if (recordedActions.Length > i)
+			{
+				m_stateDisplays[i].transform.SetParent(m_stateLineTfmDictionary[recordedActions[i].entityState]);
+				m_stateDisplays[i].Show();
+				m_stateDisplays[i].Init(recordedActions[i].entityState, recordedActions[i].action.TotalDuration, recordedActions[i].action.timeAtStart);
+			}
+			else
+				m_stateDisplays[i].Hide();
+		}
+	}
+
+	private void RefreshPriorityQueue ( int? _entityID )
+	{
+		if (_entityID == null)
+		{
+			foreach (PriorityQueueActionDisplay display in m_priorityQueueActionDisplays)
+				display.Hide(true);
+
+			m_actionPriorityQueueTfm.gameObject.SetActive(false);
+			return;
+		}
+
+		m_actionPriorityQueueTfm.gameObject.SetActive(true);
+		m_selectedActionIcon.sprite = TurnManager.Instance.CurrentActionSelected.Data.icon;
+		List<EntityActionEnumID> recordedActions = PlayerController.Instance.SelectedEntity.GetReplacementActionFor(TurnManager.Instance.CurrentActionTypeSelected);
+
+		Vector2 newSize = (m_actionPriorityQueueTfm.transform as RectTransform).sizeDelta;
+		newSize.y = m_baseActionPriorityQueueHeight + (m_baseActionPriorityQueueElementHeight * recordedActions.Count);
+		(m_actionPriorityQueueTfm.transform as RectTransform).sizeDelta = newSize;
+
+		for (int i = 0; i < m_priorityQueueActionDisplays.Length; i++)
+		{
+			if (recordedActions.Count > i)
+			{
+				m_priorityQueueActionDisplays[i].Init(recordedActions[i]);
+			}
+			else
+				m_priorityQueueActionDisplays[i].Hide(true);
+		}
 	}
 }

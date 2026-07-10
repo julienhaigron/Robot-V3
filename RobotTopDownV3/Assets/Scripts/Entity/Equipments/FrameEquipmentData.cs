@@ -171,7 +171,8 @@ public class EntitySavedData : INetworkSerializable
 		passiveEffects.AddRange(ReactorData.passiveEffects);
 		passiveEffects.AddRange(NeuronalMembraneData.passiveEffects);
 		passiveEffects.AddRange(BrainData.passiveEffects);
-		passiveEffects.AddRange(GameAssets.current.game.entityActionsData[_actionID].passiveEffects);
+		if(_actionID != EntityActionEnumID.Unknowned && GameAssets.current.game.entityActionsData.ContainsKey(_actionID))
+			passiveEffects.AddRange(GameAssets.current.game.entityActionsData[_actionID].passiveEffects);
 
 		foreach (GameDatas.PlayerSave.Equipment container in arms)
 		{

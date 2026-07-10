@@ -5,6 +5,8 @@ using System.Linq;
 using TMPro;
 using UnityEngine.UI;
 using DG.Tweening;
+using System;
+using Sirenix.OdinInspector;
 
 public sealed class InGamePanel : AUIPanel
 {
@@ -23,9 +25,19 @@ public sealed class InGamePanel : AUIPanel
 	[SerializeField] private float m_consoleCollapsedHeight = 80f;
 	[SerializeField] private float m_duration = 0.3f;
 	[SerializeField] private List<LogConsole.LogEventType> m_visibleEventType;
-	[SerializeField] private BaseButton m_validateTargetsBtn;
+	//[SerializeField] private BaseButton m_validateTargetsBtn;
 	[SerializeField] private TutoConsole m_tutoConsole;
 	public TutoConsole TutoConsole => m_tutoConsole;
+
+	[Title("Animations")]
+	[SerializeField] private SerializableDictionary<RectTransform, AnchoredPositions> m_sectionPlacementsDictionary;
+	[SerializeField] private float m_animationDuration = .5f;
+
+	[Serializable]
+	public class AnchoredPositions
+	{
+		public Vector2[] positions;
+	}
 
 	private bool m_isConsoleExpanded = true;
 	private Tween m_currentToggleConsoleBtnTween;
@@ -37,36 +49,48 @@ public sealed class InGamePanel : AUIPanel
 		TurnManager.onStartInputPhase += OnStartInputPhase;
 		TurnManager.onEndInputPhase += OnEndInputPhase;
 		TurnManager.onEndLevel += OnEndLevel;
-		TurnManager.onActionSelected += OnActionSelected;
 		PlayerController.onEntitySelected += OnEntitySelected;
 		m_endPhaseButton.onClick += OnClickEndPhaseBtn;
-
 		LogConsole.onLogAdded += OnLogAdded;
 		m_toggleDisplayConsoleBtn.onClick += OnClickToggleDisplayConsoleBtn;
-		m_validateTargetsBtn.onClick += OnClickValidateTargets;
 
-		m_validateTargetsBtn.SetVisible(false, true);
+		//TurnManager.onActionSelected += OnActionSelected;
+		/*m_validateTargetsBtn.onClick += OnClickValidateTargets;
+		m_validateTargetsBtn.SetVisible(false, true);*/
 	}
 
 	private void OnDestroy ()
 	{
 		TurnManager.onStartInputPhase = OnStartInputPhase;
 		TurnManager.onEndInputPhase = OnEndInputPhase;
-		TurnManager.onActionSelected -= OnActionSelected;
 		PlayerController.onEntitySelected -= OnEntitySelected;
 		m_endPhaseButton.onClick -= OnClickEndPhaseBtn;
 		TurnManager.onEndLevel -= OnEndLevel;
 		m_toggleDisplayConsoleBtn.onClick -= OnClickToggleDisplayConsoleBtn;
 		LogConsole.onLogAdded -= OnLogAdded;
-		m_validateTargetsBtn.onClick -= OnClickValidateTargets;
+		//TurnManager.onActionSelected -= OnActionSelected;
+		//m_validateTargetsBtn.onClick -= OnClickValidateTargets;
 	}
 
 	public void Init () //add param
 	{
 		//Script Order : Awake - ShowPanelCR - l'Init
 		//in case you need to get param from other UIPANEL
+		RefreshVisual(false, false);
 		m_tutoConsole.Init();
 	}
+
+	public void RefreshVisual(bool _isEntitySelected, bool _isInstant )
+	{
+		foreach(RectTransform tfm in m_sectionPlacementsDictionary.Keys)
+		{
+			if (_isInstant)
+				tfm.anchoredPosition = m_sectionPlacementsDictionary[tfm].positions[_isEntitySelected ? 0 : 1];
+			else
+				tfm.DOAnchorPos(m_sectionPlacementsDictionary[tfm].positions[_isEntitySelected ? 0 : 1], m_animationDuration).SetEase(Ease.OutExpo);
+		}
+	}
+
 	#endregion
 
 	#region animation
@@ -133,15 +157,16 @@ public sealed class InGamePanel : AUIPanel
 		m_consoleTMP.text = "";
 	}
 
-	private void OnActionSelected (AEntityAction _selectedAction)
+	/*private void OnActionSelected (AEntityAction _selectedAction)
 	{
 		m_validateTargetsBtn.SetVisible(_selectedAction != null && _selectedAction.Data.GetMaxTargetAmount(_selectedAction, PlayerController.Instance.SelectedEntity, null) > 1, true);
-	}
+	}*/
 
 	private void OnEntitySelected ( int? _entityID )
 	{
-		AEntityAction selectedAction = TurnManager.Instance.CurrentActionSelected;
-		m_validateTargetsBtn.SetVisible(_entityID.HasValue && selectedAction != null && selectedAction.Data.GetMaxTargetAmount(selectedAction, PlayerController.Instance.SelectedEntity, null) > 1, true);
+		RefreshVisual(_entityID.HasValue, false);
+		//AEntityAction selectedAction = TurnManager.Instance.CurrentActionSelected;
+		//m_validateTargetsBtn.SetVisible(_entityID.HasValue && selectedAction != null && selectedAction.Data.GetMaxTargetAmount(selectedAction, PlayerController.Instance.SelectedEntity, null) > 1, true);
 	}
 
 	private void OnClickToggleDisplayConsoleBtn ()

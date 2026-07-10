@@ -1,16 +1,22 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
+using Sirenix.OdinInspector;
 
 public class UIEntityActionList : MonoBehaviour
 {
-	[SerializeField] private ActionButton m_baseActionButtonPrefab;
-	[SerializeField] private StateButton m_baseStateButtonPrefab;
 	[SerializeField] private Transform m_actionButtonsParent;
-	[SerializeField] private Transform m_stateButtonsParent;
+	[SerializeField] private Transform m_modActionButtonsParent;
 
-	private List<ActionButton> m_actionButtons = new();
-	private List<StateButton> m_stateButtons = new();
+	[SerializeField] private ActionButton[] m_actionButtons;
+	[SerializeField] private ModActionButton[] m_modActionButtons;
+
+	[Title("Parameters")]
+	[SerializeField] private float m_actionListBaseWidth = 0f;
+	[SerializeField] private float m_actionListElementWidth = 76.067f;
+	[SerializeField] private float m_modActionListBaseWidth = 92.2728f;
+	[SerializeField] private float m_modActionListElementWidth = 19f;
 
 	private void Awake ()
 	{
@@ -24,59 +30,35 @@ public class UIEntityActionList : MonoBehaviour
 		TurnManager.onEndInputPhase -= HideButtons;
 	}
 
-	private void OnEntitySelected (int? _entityID)
+	private void OnEntitySelected ( int? _entityID )
 	{
-		if(_entityID == null)
+		if (_entityID == null)
+			return;
+
+		Entity selectedEntity = GameManager.Instance.GetEntityFromID((int)_entityID);
+		EntityActionEnumID[] keys = selectedEntity.ComponentLinkedToAction.Keys.ToArray();
+		for (int i = 0; i < m_actionButtons.Length; i++)
 		{
-			foreach(ActionButton btn in m_actionButtons)
+			if (keys.Length > i)
 			{
-				btn.SetVisible(_isVisible: false, _isInstant: true);
+				m_actionButtons[i].Init(keys[i], selectedEntity.ComponentLinkedToAction[keys[i]][0]);
+				m_actionButtons[i].SetVisible(_isVisible: true, _isInstant: true);
 			}
-			foreach (StateButton btn in m_stateButtons)
-			{
-				btn.SetVisible(_isVisible: false, _isInstant: true);
-			}
+			else
+				m_actionButtons[i].SetVisible(_isVisible: false, _isInstant: true);
 		}
-		else
+
+		for (int i = 0; i < m_modActionButtons.Length; i++)
 		{
-			Entity selectedEntity = GameManager.Instance.GetEntityFromID((int)_entityID);
-			int actionCounter = 0;
-			foreach(KeyValuePair<EntityActionEnumID, List<string>> pair in selectedEntity.ComponentLinkedToAction)
+			if (selectedEntity.KnownedModActions.Count > i)
 			{
-				foreach(string equipment in pair.Value)
-				{
-					if(actionCounter >= m_actionButtons.Count)
-						CreateNewActionButton().SetVisible(false, true);
-
-					m_actionButtons[actionCounter].Init(pair.Key, equipment);
-					m_actionButtons[actionCounter].SetVisible(_isVisible: true, _isInstant: true);
-					actionCounter++;
-				}
+				m_modActionButtons[i].Init(selectedEntity.KnownedModActions[i], selectedEntity.ComponentLinkedToAction[selectedEntity.KnownedModActions[i]][0]);
+				m_modActionButtons[i].SetVisible(_isVisible: true, _isInstant: true);
 			}
-
-			for (int i = 0; i < selectedEntity.KnownedStates.Count; i++)
-			{
-				if (i >= m_stateButtons.Count)
-					CreateNewStateButton().SetVisible(false, true);
-
-				m_stateButtons[i].Init(selectedEntity.KnownedStates[i]);
-				m_stateButtons[i].SetVisible(_isVisible: true, _isInstant: true);
-			}
+			else
+				m_modActionButtons[i].SetVisible(_isVisible: false, _isInstant: true);
 		}
-	}
 
-	private ActionButton CreateNewActionButton ()
-	{
-		ActionButton newBtn = Instantiate(m_baseActionButtonPrefab, m_actionButtonsParent);
-		m_actionButtons.Add(newBtn);
-		return newBtn;
-	}
-
-	private BaseButton CreateNewStateButton ()
-	{
-		StateButton newButton = Instantiate(m_baseStateButtonPrefab, m_stateButtonsParent);
-		m_stateButtons.Add(newButton);
-		return newButton;
 	}
 
 	public void HideButtons ()

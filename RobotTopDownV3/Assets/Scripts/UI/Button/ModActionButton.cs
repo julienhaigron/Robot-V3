@@ -1,0 +1,71 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
+using DG.Tweening;
+
+public class ModActionButton : BaseButton
+{
+	[SerializeField] private Image m_icon;
+	/*[SerializeField] private TextMeshProUGUI m_name;
+	[SerializeField] private TextMeshProUGUI m_tokenCost;*/
+
+	private EntityActionEnumID m_actionType;
+	private string m_linkedEquipmentData;
+
+	private void Awake ()
+	{
+		TurnManager.onActionAdded += OnActionAdded;
+	}
+
+	private void OnDestroy ()
+	{
+		TurnManager.onActionAdded -= OnActionAdded;
+	}
+
+	public void Init( EntityActionEnumID _action, string _linkedEquipmentData )
+	{
+		m_actionType = _action;
+		m_linkedEquipmentData = _linkedEquipmentData;
+		EntityActionData data = GameAssets.current.game.entityActionsData[_action];
+		m_icon.sprite = data.icon;
+		/*m_name.text = data.displayName;
+		m_tokenCost.text = data.GetTokenTotalCost(null, null, null).ToString();*/
+
+		RefreshInteractability();
+	}
+
+	private void RefreshInteractability ()
+	{
+		if (PlayerController.Instance.SelectedEntity == null)
+			return;
+
+		int entityID = PlayerController.Instance.SelectedEntity.ID;
+		int timeAtStart = TurnManager.Instance.RecordedActions.ContainsKey(entityID) && TurnManager.Instance.RecordedActions[entityID].Count > 0
+			? TurnManager.Instance.RecordedActions[entityID].ToArray()[^1].action.TimeAtEnd : TurnManager.Instance.currentTick;
+
+		SetInteractability(GameAssets.current.game.entityActionsData[m_actionType].UseConditionPredicate(TurnManager.Instance.GetAction(m_actionType, PlayerController.Instance.SelectedEntity.ID, m_linkedEquipmentData, timeAtStart), PlayerController.Instance.SelectedEntity, null));
+	}
+
+	public override void SetInteractability ( bool _isInteractable )
+	{
+		base.SetInteractability(_isInteractable);
+		m_icon.color = _isInteractable ? Color.white : Color.black;
+	}
+
+	private void OnActionAdded (TurnManager.RecordedAction _addedAction)
+	{
+		//refresh if is available
+		RefreshInteractability();
+	}
+
+	protected override void OnClick ()
+	{
+		//TODO : interaction with mod action
+		//TurnManager.Instance.SetCurrentActionSelected(m_actionType, m_linkedEquipmentData, true);
+		base.OnClick();
+	}
+
+
+}

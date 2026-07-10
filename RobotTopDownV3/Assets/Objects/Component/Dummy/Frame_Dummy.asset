@@ -17,11 +17,12 @@ MonoBehaviour:
   icon: {fileID: -1360359492, guid: b61920d2917644949a125f8a6af0e45c, type: 3}
   displayName: default
   energyCost: 10
-  knownedActions: 
+  knownedActions: 03000000
   passiveEffects: []
   statusHitProbability: 0.5
+  recyclingDurationAmount: 1
+  reparingDurationAmount: 1
   prefab: {fileID: 4673310249167116355, guid: 206cf16509b1846479a1f553fd6add2d, type: 3}
   maxHealth: 100
-  armoringSlotAvailable: 2
-  occultorSlotAvailable: 2
+  auxiliarSlotAvailable: 2
   statBonuses: []

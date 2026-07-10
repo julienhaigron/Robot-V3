@@ -17,7 +17,7 @@ MonoBehaviour:
   icon: {fileID: 21300000, guid: 03da9b037a0d27b4db02f45130a6cb28, type: 3}
   preMissionDialogue: {fileID: 0}
   afterMissionDialogue: {fileID: 0}
-  map: {fileID: 11400000, guid: 6f08d292abbf2bc4d8b8635617613b35, type: 2}
+  map: {fileID: 11400000, guid: 96bdcbe1a80e5c04bb71dc4c4aed43a9, type: 2}
   enemies:
   - {fileID: 11400000, guid: 3e4f3c47b4ebef348a686bbfcf7f8550, type: 2}
   type: 0

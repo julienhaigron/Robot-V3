@@ -221,6 +221,8 @@ public class TurnManager : Singleton<TurnManager>
 	public AEntityAction GetAction ( EntityActionData _actionData, int _performingEntityID, string _linkedEquipmentID, int _timeAtStart )
 	{
 		AEntityAction action = null;
+		if (_actionData == null)
+			return null;
 
 		//for base actions or exceptions
 		switch (_actionData.codeType)

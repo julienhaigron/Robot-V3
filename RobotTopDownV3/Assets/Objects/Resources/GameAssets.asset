@@ -25,9 +25,6 @@ MonoBehaviour:
       - {fileID: 365438557547955023, guid: baccb178baf498d4a909c566783c2faa, type: 3}
       - {fileID: 365438557547955023, guid: 93be84e1c556b9449900f56036992ca7, type: 3}
       - {fileID: 365438557547955023, guid: 11159afb9d3869e4bb434de5237fba0f, type: 3}
-    maps:
-    - {fileID: 11400000, guid: 6f08d292abbf2bc4d8b8635617613b35, type: 2}
-    - {fileID: 11400000, guid: 55ec503584887cb4aa7dd66763e4d7a7, type: 2}
     missions:
       keys: 000000000100000002000000030000000400000005000000060000000700000008000000
       values:

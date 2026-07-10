@@ -17,11 +17,12 @@ MonoBehaviour:
   icon: {fileID: -1360359492, guid: b61920d2917644949a125f8a6af0e45c, type: 3}
   displayName: Assault
   energyCost: 0
-  knownedActions: 
+  knownedActions: 03000000
   passiveEffects: []
   statusHitProbability: 0.5
+  recyclingDurationAmount: 1
+  reparingDurationAmount: 1
   prefab: {fileID: 0}
   maxHealth: 100
-  armoringSlotAvailable: 2
-  occultorSlotAvailable: 5
+  auxiliarSlotAvailable: 2
   statBonuses: []

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Sirenix.OdinInspector;
 using System;
+using System.Linq;
 
 public class Entity : MonoBehaviour
 {
@@ -40,6 +41,9 @@ public class Entity : MonoBehaviour
 
 	private List<EntityActionEnumID> m_knownedActions = new();
 	public List<EntityActionEnumID> KnownedActions => m_knownedActions;
+
+	private List<EntityActionEnumID> m_knowedModActions = new();
+	public List<EntityActionEnumID> KnownedModActions => m_knowedModActions;
 
 	private Dictionary<EntityActionEnumID, List<string>> m_componentLinkedToAction;
 	public Dictionary<EntityActionEnumID, List<string>> ComponentLinkedToAction => m_componentLinkedToAction;
@@ -110,6 +114,7 @@ public class Entity : MonoBehaviour
 
 		m_componentLinkedToAction = GetActions();
 		m_knownedActions = new(m_componentLinkedToAction.Keys);
+		m_knowedModActions = GetModActions();
 
 		foreach (EntityActionEnumID actionID in m_knownedActions)
 		{
@@ -125,6 +130,9 @@ public class Entity : MonoBehaviour
 
 		foreach (EntityActionEnumID actionID in m_data.FrameData.knownedActions)
 		{
+			if (actionID == EntityActionEnumID.Unknowned)
+				continue;
+
 			if (!actionsPerComponents.ContainsKey(actionID))
 				actionsPerComponents.Add(actionID, new());
 
@@ -132,13 +140,19 @@ public class Entity : MonoBehaviour
 		}
 		foreach (EntityActionEnumID actionID in m_data.ReactorData.knownedActions)
 		{
-			if (!actionsPerComponents.ContainsKey(actionID))
+			if (actionID == EntityActionEnumID.Unknowned)
+				continue;
+
+			if (actionID != EntityActionEnumID.Unknowned && !actionsPerComponents.ContainsKey(actionID))
 				actionsPerComponents.Add(actionID, new());
 
 			actionsPerComponents[actionID].Add(m_data.ReactorData.name);
 		}
 		foreach (EntityActionEnumID actionID in m_data.NeuronalMembraneData.knownedActions)
 		{
+			if (actionID == EntityActionEnumID.Unknowned)
+				continue;
+
 			if (!actionsPerComponents.ContainsKey(actionID))
 				actionsPerComponents.Add(actionID, new());
 
@@ -146,6 +160,9 @@ public class Entity : MonoBehaviour
 		}
 		foreach (EntityActionEnumID actionID in m_data.BrainData.knownedActions)
 		{
+			if (actionID == EntityActionEnumID.Unknowned)
+				continue;
+
 			if (!actionsPerComponents.ContainsKey(actionID))
 				actionsPerComponents.Add(actionID, new());
 
@@ -156,6 +173,9 @@ public class Entity : MonoBehaviour
 		{
 			foreach (EntityActionEnumID actionID in pair.Value.Data.knownedActions)
 			{
+				if (actionID == EntityActionEnumID.Unknowned)
+					continue;
+
 				if (!actionsPerComponents.ContainsKey(actionID))
 					actionsPerComponents.Add(actionID, new());
 
@@ -167,6 +187,9 @@ public class Entity : MonoBehaviour
 		{
 			foreach (EntityActionEnumID actionID in pair.Value.Data.knownedActions)
 			{
+				if (actionID == EntityActionEnumID.Unknowned)
+					continue;
+
 				if (!actionsPerComponents.ContainsKey(actionID))
 					actionsPerComponents.Add(actionID, new());
 
@@ -180,7 +203,7 @@ public class Entity : MonoBehaviour
 			{
 				foreach (EntityActionEnumID actionID in equipment.knownedActions)
 				{
-					if (actionsPerComponents.ContainsKey(actionID))
+					if (actionID == EntityActionEnumID.Unknowned || actionsPerComponents.ContainsKey(actionID))
 						continue;
 					actionsPerComponents[actionID].Add(equipment.name);
 				}
@@ -192,7 +215,7 @@ public class Entity : MonoBehaviour
 			{
 				foreach (EntityActionEnumID actionID in equipment.knownedActions)
 				{
-					if (actionsPerComponents.ContainsKey(actionID))
+					if (actionID == EntityActionEnumID.Unknowned || actionsPerComponents.ContainsKey(actionID))
 						continue;
 					actionsPerComponents[actionID].Add(equipment.name);
 				}
@@ -200,6 +223,50 @@ public class Entity : MonoBehaviour
 		}
 
 		return actionsPerComponents;
+	}
+
+	private List<EntityActionEnumID> GetModActions ()
+	{
+		List<EntityActionEnumID> actions = m_knownedActions.ToList();
+
+		foreach (EntityActionEnumID actionID in actions.ToArray())
+		{
+			if (actionID == EntityActionEnumID.Unknowned || !GameAssets.current.game.entityActionsData.ContainsKey(actionID) || !GameAssets.current.game.entityActionsData[actionID].isModAction)
+				actions.Remove(actionID);
+		}
+
+		return actions;
+	}
+
+	public List<EntityActionEnumID> GetReplacementActionFor ( EntityActionEnumID _actionID )
+	{
+		EntityActionData data = GameAssets.current.game.entityActionsData[_actionID];
+		List<EntityActionEnumID> replacements = new();
+		foreach (EntityActionEnumID actionID in m_knownedActions)
+		{
+			switch (GameAssets.current.game.entityActionsData[_actionID].type)
+			{
+				case EntityActionData.ActionType.DistanceAttack:
+				case EntityActionData.ActionType.MeleeAttack:
+					if (data.type == EntityActionData.ActionType.DistanceAttack || data.type == EntityActionData.ActionType.MeleeAttack)
+						replacements.Add(actionID);
+					break;
+				case EntityActionData.ActionType.Movement:
+					if (data.type == EntityActionData.ActionType.Movement)
+						replacements.Add(actionID);
+					break;
+				case EntityActionData.ActionType.Rotation:
+					if (data.type == EntityActionData.ActionType.Rotation)
+						replacements.Add(actionID);
+					break;
+				case EntityActionData.ActionType.Special:
+					if (data.type == EntityActionData.ActionType.Special)
+						replacements.Add(actionID);
+					break;
+			}
+		}
+
+		return replacements;
 	}
 
 	public void InitHangarMode ( EntitySavedData _data )
@@ -262,7 +329,7 @@ public class Entity : MonoBehaviour
 		onDeselect?.Invoke();
 	}
 
-	public void SetVisibility ( bool _isVisible, NeuronalMembraneEquipmentData.VisionTypes _visionType)
+	public void SetVisibility ( bool _isVisible, NeuronalMembraneEquipmentData.VisionTypes _visionType )
 	{
 		m_isVisible = _isVisible;
 		m_howIsUnitVisible = _visionType;
@@ -313,18 +380,18 @@ public class Entity : MonoBehaviour
 		onStatBonusRemoved?.Invoke(_statBuff);
 	}
 
-	public float GetAdditionaryStatBonus( EntityEquipmentData.StatBonus.StatType _type, AEntityAction _relatedAction )
+	public float GetAdditionaryStatBonus ( EntityEquipmentData.StatBonus.StatType _type, AEntityAction _relatedAction )
 	{
 		float bonus = 0f;
 
 		if (m_activeStatBonusBuffs.ContainsKey(_type))
 			bonus += m_activeStatBonusBuffs[_type];
 
-		foreach(GameDatas.PlayerSave.Equipment eq in m_data.chipsets)
+		foreach (GameDatas.PlayerSave.Equipment eq in m_data.chipsets)
 		{
-			if(eq.TryGetData(out ChipsetEquipmentData _chipsedData))
+			if (eq.TryGetData(out ChipsetEquipmentData _chipsedData))
 			{
-				foreach(ChipsetEquipmentData.ConditionalStatBonus conditionalStatBonus in _chipsedData.statBonuses)
+				foreach (ChipsetEquipmentData.ConditionalStatBonus conditionalStatBonus in _chipsedData.statBonuses)
 				{
 					if (conditionalStatBonus.bonus.type == _type && conditionalStatBonus.UseConditionPredicate(_relatedAction, this, null))
 						bonus += conditionalStatBonus.bonus.value;

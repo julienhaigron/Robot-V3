@@ -8,8 +8,9 @@ using DG.Tweening;
 public class ActionButton : BaseButton
 {
 	[SerializeField] private Image m_icon;
-	[SerializeField] private TextMeshProUGUI m_name;
-	[SerializeField] private TextMeshProUGUI m_tokenCost;
+	/*[SerializeField] private TextMeshProUGUI m_name;
+	[SerializeField] private TextMeshProUGUI m_tokenCost;*/
+	[SerializeField] private BaseButton m_modActionBtn;
 
 	private EntityActionEnumID m_actionType;
 	private string m_linkedEquipmentData;
@@ -30,15 +31,15 @@ public class ActionButton : BaseButton
 		m_linkedEquipmentData = _linkedEquipmentData;
 		EntityActionData data = GameAssets.current.game.entityActionsData[_action];
 		m_icon.sprite = data.icon;
-		m_name.text = data.displayName;
-		m_tokenCost.text = data.GetTokenTotalCost(null, null, null).ToString();
+		/*m_name.text = data.displayName;
+		m_tokenCost.text = data.GetTokenTotalCost(null, null, null).ToString();*/
 
 		RefreshInteractability();
 	}
 
 	private void RefreshInteractability ()
 	{
-		if (PlayerController.Instance.SelectedEntity == null)
+		if (PlayerController.Instance.SelectedEntity == null || m_actionType == EntityActionEnumID.Unknowned)
 			return;
 
 		int entityID = PlayerController.Instance.SelectedEntity.ID;

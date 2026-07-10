@@ -1929,22 +1929,6 @@ PrefabInstance:
       propertyPath: m_SizeDelta.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 2837779132483701830, guid: f37dd7cc452733444b26f4b4c3dbe1e3, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2837779132483701830, guid: f37dd7cc452733444b26f4b4c3dbe1e3, type: 3}
-      propertyPath: m_AnchorMin.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2837779132483701830, guid: f37dd7cc452733444b26f4b4c3dbe1e3, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2837779132483701830, guid: f37dd7cc452733444b26f4b4c3dbe1e3, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 2948456795794019726, guid: f37dd7cc452733444b26f4b4c3dbe1e3, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -1952,30 +1936,6 @@ PrefabInstance:
     - target: {fileID: 2948456795794019726, guid: f37dd7cc452733444b26f4b4c3dbe1e3, type: 3}
       propertyPath: m_AnchorMin.y
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4503437941893238170, guid: f37dd7cc452733444b26f4b4c3dbe1e3, type: 3}
-      propertyPath: m_button
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 4518910231918161111, guid: f37dd7cc452733444b26f4b4c3dbe1e3, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4518910231918161111, guid: f37dd7cc452733444b26f4b4c3dbe1e3, type: 3}
-      propertyPath: m_AnchorMin.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4518910231918161111, guid: f37dd7cc452733444b26f4b4c3dbe1e3, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4518910231918161111, guid: f37dd7cc452733444b26f4b4c3dbe1e3, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5665636420093467359, guid: f37dd7cc452733444b26f4b4c3dbe1e3, type: 3}
-      propertyPath: m_Name
-      value: End Input Phase Btn
       objectReference: {fileID: 0}
     - target: {fileID: 7317583918328290663, guid: f37dd7cc452733444b26f4b4c3dbe1e3, type: 3}
       propertyPath: m_AnchorMax.x
@@ -1985,10 +1945,6 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 7360724127197169925, guid: f37dd7cc452733444b26f4b4c3dbe1e3, type: 3}
-      propertyPath: m_entityActionList
-      value: 
-      objectReference: {fileID: 2606145908995249020}
     - target: {fileID: 8233058411460167624, guid: f37dd7cc452733444b26f4b4c3dbe1e3, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
@@ -2006,17 +1962,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f37dd7cc452733444b26f4b4c3dbe1e3, type: 3}
---- !u!114 &2606145908995249020 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 2062748653963323419, guid: f37dd7cc452733444b26f4b4c3dbe1e3, type: 3}
-  m_PrefabInstance: {fileID: 4074272350304598887}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1700dcea303636345b061bf6cecc070b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!224 &2622728624218446318 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2085013606559376009, guid: f37dd7cc452733444b26f4b4c3dbe1e3, type: 3}

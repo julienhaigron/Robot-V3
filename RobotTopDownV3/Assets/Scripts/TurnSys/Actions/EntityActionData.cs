@@ -17,6 +17,7 @@ public class EntityActionData : ScriptableObject
 	[SerializeField] private int m_tokenPreparationDuration;
 	[SerializeField] private int m_tokenCooldown;
 	public int tokenDuration = 1;
+	public bool isModAction = false;
 
 	[Title("Animation")]
 	public string preparationAnimationKey;
