@@ -69,19 +69,13 @@ public class EntityActionDisplay : MonoBehaviour
 		//- green hatched width formula is wrong when actualDuration % 2 == 0
 
 		float activeDuration = _totalDuration - _preparationTime - _cooldownTime;
-		if (_totalDuration == 1 || (_timeAtStart + _totalDuration == 10 && _preparationTime == 0))
-		{
-			m_mainHachureLeft.gameObject.SetActive(false);
-		}
-		else
-		{
-			m_mainHachureLeft.gameObject.SetActive(true);
-			Vector2 leftGreenHatchedWidth = (m_mainHachureLeft.transform as RectTransform).sizeDelta;
-			leftGreenHatchedWidth.x = m_baseGreenHatchedWidth
-				+ (activeDuration > 1 ? (m_greenHatchedOneTickWidth * ((float)activeDuration / 2f)) : 0f)
-				/*+ (activeDuration == 1 && _preparationTime > 0 ? m_greenHatchedOneActivationAndHasCooldownOrPreparationOffset : 0f)*/;
-			(m_mainHachureLeft.transform as RectTransform).sizeDelta = leftGreenHatchedWidth;
-		}
+
+		Vector2 leftGreenHatchedWidth = (m_mainHachureLeft.transform as RectTransform).sizeDelta;
+		leftGreenHatchedWidth.x = m_baseGreenHatchedWidth
+			+ (activeDuration > 1 ? (m_greenHatchedOneTickWidth * ((float)activeDuration / 2f)) : 0f)
+			/*+ (activeDuration == 1 && _preparationTime > 0 ? m_greenHatchedOneActivationAndHasCooldownOrPreparationOffset : 0f)*/;
+		(m_mainHachureLeft.transform as RectTransform).sizeDelta = leftGreenHatchedWidth;
+
 
 		if (_preparationTime > 0)
 		{
@@ -94,18 +88,15 @@ public class EntityActionDisplay : MonoBehaviour
 		else
 			m_preparationHachure.gameObject.SetActive(false);
 
-		if (_cooldownTime == 0 && _preparationTime > 1 && activeDuration == 1)
-			m_mainHachureRight.gameObject.SetActive(false);
-		else
-		{
-			m_mainHachureRight.gameObject.SetActive(true);
-			Vector2 rightGreenHatchedWidth = (m_mainHachureRight.transform as RectTransform).sizeDelta;
-			rightGreenHatchedWidth.x = m_baseGreenHatchedWidth
-				+ (activeDuration > 1 ? (m_greenHatchedOneTickWidth * ((float)activeDuration / 2f)) : 0f)
-				- (_timeAtStart != 0 && (_timeAtStart + _totalDuration != 10) && activeDuration == 1 && _cooldownTime == 0 ? m_firstUnitStartOffset : 0f)
-				+ (activeDuration == 1 && _cooldownTime > 0 ? m_greenHatchedOneActivationAndHasCooldownOrPreparationOffset : 0f);
-			(m_mainHachureRight.transform as RectTransform).sizeDelta = rightGreenHatchedWidth;
-		}
+
+		m_mainHachureRight.gameObject.SetActive(true);
+		Vector2 rightGreenHatchedWidth = (m_mainHachureRight.transform as RectTransform).sizeDelta;
+		rightGreenHatchedWidth.x = m_baseGreenHatchedWidth
+			+ (activeDuration > 1 ? (m_greenHatchedOneTickWidth * ((float)activeDuration / 2f)) : 0f)
+			- (_timeAtStart != 0 && (_timeAtStart + _totalDuration != 10) && activeDuration == 1 && _cooldownTime == 0 ? m_firstUnitStartOffset : 0f)
+			+ (activeDuration == 1 && _cooldownTime > 0 ? m_greenHatchedOneActivationAndHasCooldownOrPreparationOffset : 0f);
+		(m_mainHachureRight.transform as RectTransform).sizeDelta = rightGreenHatchedWidth;
+
 
 		if (_cooldownTime > 0)
 		{
