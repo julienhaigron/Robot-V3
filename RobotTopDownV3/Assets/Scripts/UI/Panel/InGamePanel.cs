@@ -10,7 +10,8 @@ using Sirenix.OdinInspector;
 
 public sealed class InGamePanel : AUIPanel
 {
-
+	[SerializeField] private EntityActionQueueDisplay m_actionQueue;
+	[SerializeField] private SquadUnitDisplayList m_squadUnitDisplayList;
 	[SerializeField] private UIEntityActionList m_entityActionList;
 	public UIEntityActionList EntityActionList => m_entityActionList;
 
@@ -53,10 +54,6 @@ public sealed class InGamePanel : AUIPanel
 		m_endPhaseButton.onClick += OnClickEndPhaseBtn;
 		LogConsole.onLogAdded += OnLogAdded;
 		m_toggleDisplayConsoleBtn.onClick += OnClickToggleDisplayConsoleBtn;
-
-		//TurnManager.onActionSelected += OnActionSelected;
-		/*m_validateTargetsBtn.onClick += OnClickValidateTargets;
-		m_validateTargetsBtn.SetVisible(false, true);*/
 	}
 
 	private void OnDestroy ()
@@ -68,16 +65,15 @@ public sealed class InGamePanel : AUIPanel
 		TurnManager.onEndLevel -= OnEndLevel;
 		m_toggleDisplayConsoleBtn.onClick -= OnClickToggleDisplayConsoleBtn;
 		LogConsole.onLogAdded -= OnLogAdded;
-		//TurnManager.onActionSelected -= OnActionSelected;
-		//m_validateTargetsBtn.onClick -= OnClickValidateTargets;
 	}
 
-	public void Init () //add param
+	public void Init ()
 	{
-		//Script Order : Awake - ShowPanelCR - l'Init
-		//in case you need to get param from other UIPANEL
+		m_squadUnitDisplayList.Init();
 		RefreshVisual(false, false);
 		m_tutoConsole.Init();
+		m_entityActionList.Init();
+		m_actionQueue.Init();
 	}
 
 	public void RefreshVisual(bool _isEntitySelected, bool _isInstant )
@@ -157,16 +153,9 @@ public sealed class InGamePanel : AUIPanel
 		m_consoleTMP.text = "";
 	}
 
-	/*private void OnActionSelected (AEntityAction _selectedAction)
-	{
-		m_validateTargetsBtn.SetVisible(_selectedAction != null && _selectedAction.Data.GetMaxTargetAmount(_selectedAction, PlayerController.Instance.SelectedEntity, null) > 1, true);
-	}*/
-
 	private void OnEntitySelected ( int? _entityID )
 	{
 		RefreshVisual(_entityID.HasValue, false);
-		//AEntityAction selectedAction = TurnManager.Instance.CurrentActionSelected;
-		//m_validateTargetsBtn.SetVisible(_entityID.HasValue && selectedAction != null && selectedAction.Data.GetMaxTargetAmount(selectedAction, PlayerController.Instance.SelectedEntity, null) > 1, true);
 	}
 
 	private void OnClickToggleDisplayConsoleBtn ()
@@ -227,7 +216,7 @@ public sealed class InGamePanel : AUIPanel
 		}
 	}
 
-	private void OnClickValidateTargets ()
+	/*private void OnClickValidateTargets ()
 	{
 		if (TurnManager.Instance.CurrentActionSelected == null)
 			return;
@@ -236,7 +225,7 @@ public sealed class InGamePanel : AUIPanel
 		TurnManager.Instance.AddAction(performingEntityID, TurnManager.Instance.CurrentActionSelected, TurnManager.Instance.CurrentStateTypeSelected);
 
 		TurnManager.Instance.RefreshActionDisplay(performingEntityID, true);
-	}
+	}*/
 
 	#endregion
 }

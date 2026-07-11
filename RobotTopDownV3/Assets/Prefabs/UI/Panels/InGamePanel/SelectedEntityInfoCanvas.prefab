@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 3617092240664879171}
   - component: {fileID: 8361696347108135819}
   m_Layer: 5
-  m_Name: PlayerEntitiesInfoCanvas
+  m_Name: SelectedEntityInfoCanvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

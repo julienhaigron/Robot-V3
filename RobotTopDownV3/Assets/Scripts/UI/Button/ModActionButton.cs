@@ -38,14 +38,17 @@ public class ModActionButton : BaseButton
 
 	private void RefreshInteractability ()
 	{
-		if (PlayerController.Instance.SelectedEntity == null)
+		if (PlayerController.Instance.SelectedEntity == null || m_actionType == EntityActionEnumID.Unknowned
+			|| !GameAssets.current.game.entityActionsData.ContainsKey(m_actionType))
 			return;
 
 		int entityID = PlayerController.Instance.SelectedEntity.ID;
 		int timeAtStart = TurnManager.Instance.RecordedActions.ContainsKey(entityID) && TurnManager.Instance.RecordedActions[entityID].Count > 0
 			? TurnManager.Instance.RecordedActions[entityID].ToArray()[^1].action.TimeAtEnd : TurnManager.Instance.currentTick;
 
-		SetInteractability(GameAssets.current.game.entityActionsData[m_actionType].UseConditionPredicate(TurnManager.Instance.GetAction(m_actionType, PlayerController.Instance.SelectedEntity.ID, m_linkedEquipmentData, timeAtStart), PlayerController.Instance.SelectedEntity, null));
+		SetInteractability(GameAssets.current.game.entityActionsData[m_actionType].UseConditionPredicate
+			(TurnManager.Instance.GetAction(m_actionType, PlayerController.Instance.SelectedEntity.ID, m_linkedEquipmentData, timeAtStart)
+			, PlayerController.Instance.SelectedEntity, null));
 	}
 
 	public override void SetInteractability ( bool _isInteractable )

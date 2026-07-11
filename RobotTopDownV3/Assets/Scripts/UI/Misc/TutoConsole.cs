@@ -51,7 +51,7 @@ public class TutoConsole : MonoBehaviour
 	{
 		m_allDialogs.Clear();
 
-		Show(false);
+		Hide(true);
     }
 
     public void Show (bool _isInstant)

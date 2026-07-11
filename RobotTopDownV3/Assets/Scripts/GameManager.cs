@@ -109,8 +109,12 @@ public class GameManager : SingletonPersistant<GameManager>
 		{
 			//TODO : play introduction video/animation before throwing player into gameplay
 
-			foreach (UnitPreset unitPreset in FTUEManager.Instance.playerStartingSquadUnits)
+			if (!GameDatas.current.currentPlayerSave.didStartTuto)
+			{
+				foreach (UnitPreset unitPreset in FTUEManager.Instance.playerStartingSquadUnits)
 				unitPreset.AddToUnits();
+				GameDatas.current.currentPlayerSave.didStartTuto = true;
+			}
 
 			SetupLevel(GameAssets.current.game.missions[FTUEManager.Instance.Cycle1Missions[0]]);
 		}
@@ -162,7 +166,6 @@ public class GameManager : SingletonPersistant<GameManager>
 		TurnManager.Instance.Init();
 		GridManager.Instance.LoadGrid();
 		UIManager.Instance.HideTopCanvas<HubTopCanvas>();
-		UIManager.Instance.OpenPanel<InGamePanel>().Init();
 
 		if (m_currentGameMode == GameMode.Offline)
 		{
@@ -183,6 +186,7 @@ public class GameManager : SingletonPersistant<GameManager>
 			m_playersEntityAnchor[1].Init(m_playerTwoEntityDatas, 1);
 		}
 
+		UIManager.Instance.OpenPanel<InGamePanel>().Init();
 		onStartLevel?.Invoke();
 
 		m_fogCanvas.gameObject.SetActive(true);

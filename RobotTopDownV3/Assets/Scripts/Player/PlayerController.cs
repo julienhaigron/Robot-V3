@@ -171,40 +171,13 @@ public class PlayerController : Singleton<PlayerController>
 			return;
 
 		//Event => Select // unselect entity
-		if (_tile.GetEntity(true) != null && !_tile.CanInteract)
+		if (_tile.TryGetEntity(true, out Entity _entity) && !_tile.CanInteract)
 		{
 			//ally entity
-			if (_tile.GetEntity(true).IsAlliedTo(PlayerID))
-			{
-				if (m_selectedEntity == _tile.GetEntity(true))
-				{
-					m_selectedEntity.Deselect();
-					m_selectedEntity = null;
-					onEntitySelected?.Invoke(null);
-					return;
-				}
-				else if (m_selectedEntity == null)
-				{
-					m_selectedEntity = _tile.GetEntity(true);
-					if (m_selectedEntity != null)
-					{
-						onEntitySelected?.Invoke(m_selectedEntity.ID);
-						m_selectedEntity.Select();
-					}
-					return;
-				}
-				else
-				{
-					m_selectedEntity.Deselect();
-					//onEntitySelected?.Invoke(null);
-					m_selectedEntity = _tile.GetEntity(true);
-					onEntitySelected?.Invoke(m_selectedEntity.ID);
-					m_selectedEntity.Select();
+			if (_entity.IsAlliedTo(PlayerID))
+				SelectEntity(_entity);
 
-					return;
-				}
-			}
-
+			return;
 		}
 
 		//validate action
@@ -214,6 +187,33 @@ public class PlayerController : Singleton<PlayerController>
 			{
 				TurnManager.Instance.CurrentActionSelected.RegisterInteraction(_tile);
 			}
+		}
+	}
+
+	public void SelectEntity(Entity _entity )
+	{
+		if (m_selectedEntity == _entity)
+		{
+			m_selectedEntity.Deselect();
+			m_selectedEntity = null;
+			onEntitySelected?.Invoke(null);
+		}
+		else if (m_selectedEntity == null)
+		{
+			m_selectedEntity = _entity;
+			if (m_selectedEntity != null)
+			{
+				onEntitySelected?.Invoke(m_selectedEntity.ID);
+				m_selectedEntity.Select();
+			}
+		}
+		else
+		{
+			m_selectedEntity.Deselect();
+			//onEntitySelected?.Invoke(null);
+			m_selectedEntity = _entity;
+			onEntitySelected?.Invoke(m_selectedEntity.ID);
+			m_selectedEntity.Select();
 		}
 	}
 

@@ -62,6 +62,11 @@ public class EntityActionQueueDisplay : MonoBehaviour
 		RefreshVisual(_removedRecordedAction.performingEntityID);
 	}
 
+	public void Init ()
+	{
+		RefreshVisual(null);
+	}
+
 	private void RefreshVisual ( int? _entityID )
 	{
 		/*if (_entityID == null || !GameManager.Instance.GetEntityFromID(out Entity entity, _entityID.Value) || !entity.IsAlliedTo(GameManager.Instance.PlayerID))

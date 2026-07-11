@@ -286,7 +286,7 @@ MonoBehaviour:
   - {fileID: 2555435866581534639}
   m_baseActionPriorityQueueHeight: 93
   m_baseActionPriorityQueueElementHeight: 54.5
-  testActions: 0a0000000a0000001000000012000000
+  testActions: 0a0000000a000000100000001200000005000000
 --- !u!1 &2313726195502766979
 GameObject:
   m_ObjectHideFlags: 0
@@ -4079,7 +4079,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 850088682039763638, guid: 43cde6fde6a65d04c81939ddc6df829d, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1423773269852107715, guid: 43cde6fde6a65d04c81939ddc6df829d, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 74.5
       objectReference: {fileID: 0}
     - target: {fileID: 2018225834193283861, guid: 43cde6fde6a65d04c81939ddc6df829d, type: 3}
       propertyPath: m_Pivot.x
@@ -4143,7 +4147,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2018225834193283861, guid: 43cde6fde6a65d04c81939ddc6df829d, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 238.88281
+      value: 1253.3999
       objectReference: {fileID: 0}
     - target: {fileID: 2018225834193283861, guid: 43cde6fde6a65d04c81939ddc6df829d, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -4160,6 +4164,22 @@ PrefabInstance:
     - target: {fileID: 2018225834193283861, guid: 43cde6fde6a65d04c81939ddc6df829d, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2467025995105080492, guid: 43cde6fde6a65d04c81939ddc6df829d, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4323108748145790608, guid: 43cde6fde6a65d04c81939ddc6df829d, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 69
+      objectReference: {fileID: 0}
+    - target: {fileID: 5880742225462417875, guid: 43cde6fde6a65d04c81939ddc6df829d, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 69
+      objectReference: {fileID: 0}
+    - target: {fileID: 7041969439563091438, guid: 43cde6fde6a65d04c81939ddc6df829d, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -11
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

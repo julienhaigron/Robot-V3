@@ -203,10 +203,10 @@ MonoBehaviour:
   - {fileID: 9094718789756042286}
   - {fileID: 1709250600167232526}
   - {fileID: 6667364427458828833}
-  m_actionListBaseWidth: 0
+  m_actionListBaseWidth: 115.6
   m_actionListElementWidth: 76.067
   m_modActionListBaseWidth: 92.2728
-  m_modActionListElementWidth: 17
+  m_modActionListElementWidth: 31.93
 --- !u!1 &8626590120931117900
 GameObject:
   m_ObjectHideFlags: 0

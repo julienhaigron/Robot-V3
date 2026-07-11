@@ -6,17 +6,17 @@ using Sirenix.OdinInspector;
 
 public class UIEntityActionList : MonoBehaviour
 {
-	[SerializeField] private Transform m_actionButtonsParent;
-	[SerializeField] private Transform m_modActionButtonsParent;
+	[SerializeField] private RectTransform m_actionButtonsParent;
+	[SerializeField] private RectTransform m_modActionButtonsParent;
 
 	[SerializeField] private ActionButton[] m_actionButtons;
 	[SerializeField] private ModActionButton[] m_modActionButtons;
 
 	[Title("Parameters")]
-	[SerializeField] private float m_actionListBaseWidth = 0f;
-	[SerializeField] private float m_actionListElementWidth = 76.067f;
-	[SerializeField] private float m_modActionListBaseWidth = 92.2728f;
-	[SerializeField] private float m_modActionListElementWidth = 19f;
+	[SerializeField] private float m_actionListBaseWidth = 115.6f;
+	[SerializeField] private float m_actionListElementWidth = 71.6f;
+	[SerializeField] private float m_modActionListBaseWidth = 92.24f;
+	[SerializeField] private float m_modActionListElementWidth = 31.93f;
 
 	private void Awake ()
 	{
@@ -30,13 +30,31 @@ public class UIEntityActionList : MonoBehaviour
 		TurnManager.onEndInputPhase -= HideButtons;
 	}
 
+	public void Init ()
+	{
+		OnEntitySelected(null);
+	}
+
 	private void OnEntitySelected ( int? _entityID )
 	{
 		if (_entityID == null)
+		{
+			gameObject.SetActive(false);
 			return;
+		}
 
-		Entity selectedEntity = GameManager.Instance.GetEntityFromID((int)_entityID);
+		gameObject.SetActive(true);
+		Entity selectedEntity = PlayerController.Instance.SelectedEntity;
 		EntityActionEnumID[] keys = selectedEntity.ComponentLinkedToAction.Keys.ToArray();
+		EntityActionEnumID[] keys2 = selectedEntity.KnownedModActions.ToArray();
+
+		Vector2 newSize = m_actionButtonsParent.sizeDelta;
+		newSize.x = m_actionListBaseWidth + ((keys.Length - 1) * m_actionListElementWidth);
+		m_actionButtonsParent.sizeDelta = newSize;
+		Vector2 newSize2 = m_modActionButtonsParent.sizeDelta;
+		newSize2.x = m_modActionListBaseWidth + ((keys2.Length - 1) * m_modActionListElementWidth);
+		m_modActionButtonsParent.sizeDelta = newSize2;
+
 		for (int i = 0; i < m_actionButtons.Length; i++)
 		{
 			if (keys.Length > i)

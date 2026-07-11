@@ -18,7 +18,8 @@ MonoBehaviour:
   tileOutlineColor: {r: 0.34384358, g: 1, b: 0, a: 1}
   m_tokenPreparationDuration: 0
   m_tokenCooldown: 0
-  tokenDuration: 1
+  tokenDuration: 3
+  isModAction: 0
   preparationAnimationKey: 
   afterPerformAnimationKey: 
   onPerformSingleAttackSFXID: 0
