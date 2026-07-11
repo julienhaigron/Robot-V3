@@ -162,4 +162,31 @@ public class EntityActionQueueDisplay : MonoBehaviour
 				m_priorityQueueActionDisplays[i].Hide(true);
 		}
 	}
+
+#if UNITY_EDITOR
+
+	[SerializeField] private EntityActionEnumID[] testActions;
+
+	[Button]
+	private void EditorTest()
+	{
+		int timeAtStart = 0;
+		for (int i = 0; i < m_actionDisplays.Length; i++)
+		{
+			if (testActions.Length > i && timeAtStart < m_actionDisplays.Length)
+			{
+				EntityActionData data = GameAssets.current.game.entityActionsData[testActions[i]];
+				int preparationTime = data.GetTokenPreparationCost(null, null, null);
+				int cooldownTime = data.GetTokenCooldownCost(null, null, null);
+				int tyotalDuration = data.tokenDuration + preparationTime + cooldownTime;
+				m_actionDisplays[i].Show(true);
+				m_actionDisplays[i].RefreshVisual(timeAtStart, tyotalDuration, preparationTime, cooldownTime);
+				timeAtStart += tyotalDuration;
+			}
+			else
+				m_actionDisplays[i].Hide(true);
+		}
+	}
+
+#endif
 }
