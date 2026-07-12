@@ -9,6 +9,8 @@ public class EntityActionQueueDisplay : MonoBehaviour
 	[Title("Actions")]
 	[SerializeField] private CounterDisplay m_actionTokenDisplay;
 	[SerializeField] private EntityActionDisplay[] m_actionDisplays;
+	[SerializeField] private Transform m_backgroundV1;
+	[SerializeField] private Transform m_backgroundV2;
 
 	[Title("States")]
 	[SerializeField] private SerializableDictionary<Entity.EntityState, Transform> m_stateLineTfmDictionary;
@@ -96,17 +98,22 @@ public class EntityActionQueueDisplay : MonoBehaviour
 		Entity selectedEntity = PlayerController.Instance.SelectedEntity;
 		if (selectedEntity == null || !TurnManager.Instance.RecordedActions.ContainsKey(selectedEntity.ID))
 		{
+			m_backgroundV1.gameObject.SetActive(selectedEntity != null);
+			m_backgroundV2.gameObject.SetActive(selectedEntity == null);
+
 			foreach (EntityActionDisplay display in m_actionDisplays)
 				display.Hide(true);
 			return;
 		}
 
+		m_backgroundV1.gameObject.SetActive(true);
+		m_backgroundV2.gameObject.SetActive(false);
 		TurnManager.RecordedAction[] recordedActions = TurnManager.Instance.RecordedActions[selectedEntity.ID].ToArray();
 		for (int i = 0; i < m_actionDisplays.Length; i++)
 		{
 			if (recordedActions.Length > i)
 			{
-				m_actionDisplays[i].Init(recordedActions[i]);
+				m_actionDisplays[i].Init(recordedActions[i], i == 0 && selectedEntity != null);
 			}
 			else
 				m_actionDisplays[i].Hide(true);
@@ -173,7 +180,7 @@ public class EntityActionQueueDisplay : MonoBehaviour
 	[SerializeField] private EntityActionEnumID[] testActions;
 
 	[Button]
-	private void EditorTest()
+	private void EditorTest (bool _isEntitySelected)
 	{
 		int timeAtStart = 0;
 		for (int i = 0; i < m_actionDisplays.Length; i++)
@@ -185,7 +192,7 @@ public class EntityActionQueueDisplay : MonoBehaviour
 				int cooldownTime = data.GetTokenCooldownCost(null, null, null);
 				int tyotalDuration = data.tokenDuration + preparationTime + cooldownTime;
 				m_actionDisplays[i].Show(true);
-				m_actionDisplays[i].RefreshVisual(timeAtStart, tyotalDuration, preparationTime, cooldownTime);
+				m_actionDisplays[i].RefreshVisual(timeAtStart, tyotalDuration, preparationTime, cooldownTime, i == 0 && _isEntitySelected);
 				timeAtStart += tyotalDuration;
 			}
 			else

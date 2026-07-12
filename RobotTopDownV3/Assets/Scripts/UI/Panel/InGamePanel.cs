@@ -42,6 +42,8 @@ public sealed class InGamePanel : AUIPanel
 
 	private bool m_isConsoleExpanded = true;
 	private Tween m_currentToggleConsoleBtnTween;
+	/*private bool m_entitySelectedDisplayMode = false;
+	public bool EntitySelectedDisplayMode => m_entitySelectedDisplayMode;*/
 
 	#region MonoBehaviour & Init
 
@@ -78,7 +80,9 @@ public sealed class InGamePanel : AUIPanel
 
 	public void RefreshVisual(bool _isEntitySelected, bool _isInstant )
 	{
-		foreach(RectTransform tfm in m_sectionPlacementsDictionary.Keys)
+		//m_entitySelectedDisplayMode = _isEntitySelected;
+
+		foreach (RectTransform tfm in m_sectionPlacementsDictionary.Keys)
 		{
 			if (_isInstant)
 				tfm.anchoredPosition = m_sectionPlacementsDictionary[tfm].positions[_isEntitySelected ? 0 : 1];
