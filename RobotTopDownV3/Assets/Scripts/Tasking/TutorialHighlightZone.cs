@@ -8,7 +8,7 @@ public class TutorialHighlightZone : MonoBehaviour
 	[SerializeField] private string m_id;
 	public string ID => m_id;
 
-	private void Start ()
+	private void Awake ()
 	{
 		FTUEManager.Instance.AddTutorialHighlightZone(this);
 	}
