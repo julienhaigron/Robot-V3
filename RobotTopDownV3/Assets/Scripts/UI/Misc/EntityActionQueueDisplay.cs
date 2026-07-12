@@ -153,8 +153,7 @@ public class EntityActionQueueDisplay : MonoBehaviour
 			{
 				m_stateDisplays[i].transform.SetParent(m_stateLineTfmDictionary[recordedActions[i].entityState]);
 				m_stateDisplays[i].Show();
-				m_stateDisplays[i].Init(recordedActions[i].entityState, m_stateLines[recordedActions[i].entityState].slots[i]
-					, recordedActions[i].action.TotalDuration, recordedActions[i].action.timeAtStart);
+				m_stateDisplays[i].Init(recordedActions[i].entityState, m_stateLines[recordedActions[i].entityState].slots[i], recordedActions[i]);
 			}
 			else
 				m_stateDisplays[i].Hide();

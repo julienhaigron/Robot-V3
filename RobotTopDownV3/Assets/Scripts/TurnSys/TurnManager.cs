@@ -208,6 +208,20 @@ public class TurnManager : Singleton<TurnManager>
 		}
 	}
 
+	public void ReplaceAction(RecordedAction _actionToReplaceTo )
+	{
+		List<RecordedAction> recordedActions = m_recordedActionInput[_actionToReplaceTo.action.performingEntityID].ToList();
+		Queue<RecordedAction> newQueue = new();
+		for(int i = 0; i < recordedActions.Count; i++)
+		{
+			if (recordedActions[i].timeAtStart == _actionToReplaceTo.timeAtStart)
+				newQueue.Enqueue(_actionToReplaceTo);
+			else
+				newQueue.Enqueue(recordedActions[i]);
+		}
+		m_recordedActionInput[_actionToReplaceTo.action.performingEntityID] = new(newQueue);
+	}
+
 	public void AddTargetTileInCurrentAction ( Tile _tile )
 	{
 		m_currentActionTargetTiles.Add(_tile);

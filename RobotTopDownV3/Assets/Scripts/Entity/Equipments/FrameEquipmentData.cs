@@ -100,7 +100,7 @@ public class EntitySavedData : INetworkSerializable
 		return totalEnergyUsed;
 	}
 
-	public float GetStatBonusFromAll ( EntityEquipmentData.StatBonus.StatType _stat)
+	public float GetStatBonusFromAll ( EntityEquipmentData.StatBonus.StatType _stat )
 	{
 		return GetStatBonusFrom(_stat, true, true, true, true);
 	}
@@ -164,14 +164,14 @@ public class EntitySavedData : INetworkSerializable
 		return totalBonus;
 	}
 
-	public List<AEntityPassiveEffect.PassiveEffectContainer> GetPassiveEffects( EntityActionEnumID _actionID )
+	public List<AEntityPassiveEffect.PassiveEffectContainer> GetPassiveEffects ( EntityActionEnumID _actionID )
 	{
 		List<AEntityPassiveEffect.PassiveEffectContainer> passiveEffects = new();
 		passiveEffects.AddRange(FrameData.passiveEffects);
 		passiveEffects.AddRange(ReactorData.passiveEffects);
 		passiveEffects.AddRange(NeuronalMembraneData.passiveEffects);
 		passiveEffects.AddRange(BrainData.passiveEffects);
-		if(_actionID != EntityActionEnumID.Unknowned && GameAssets.current.game.entityActionsData.ContainsKey(_actionID))
+		if (_actionID != EntityActionEnumID.Unknowned && GameAssets.current.game.entityActionsData.ContainsKey(_actionID))
 			passiveEffects.AddRange(GameAssets.current.game.entityActionsData[_actionID].passiveEffects);
 
 		foreach (GameDatas.PlayerSave.Equipment container in arms)
@@ -226,18 +226,27 @@ public class EntitySavedData : INetworkSerializable
 	public List<GameDatas.PlayerSave.Equipment> GetAllSubEquipments ()
 	{
 		List<GameDatas.PlayerSave.Equipment> equipments = new();
-		
-		foreach (var arm in arms)
-			if (arm != null && !string.IsNullOrEmpty(arm.ID))
-				equipments.Add(arm);
 
-		foreach (var aux in auxiliar)
-			if (aux != null && !string.IsNullOrEmpty(aux.ID))
-				equipments.Add(aux);
+		if (arms != null)
+		{
+			foreach (var arm in arms)
+				if (arm != null && !string.IsNullOrEmpty(arm.ID))
+					equipments.Add(arm);
+		}
 
-		foreach (var chipset in chipsets)
-			if (chipset != null && !string.IsNullOrEmpty(chipset.ID))
-				equipments.Add(chipset);
+		if (auxiliar != null)
+		{
+			foreach (var aux in auxiliar)
+				if (aux != null && !string.IsNullOrEmpty(aux.ID))
+					equipments.Add(aux);
+		}
+
+		if (chipsets != null)
+		{
+			foreach (var chipset in chipsets)
+				if (chipset != null && !string.IsNullOrEmpty(chipset.ID))
+					equipments.Add(chipset);
+		}
 
 		return equipments;
 	}
@@ -245,7 +254,7 @@ public class EntitySavedData : INetworkSerializable
 	public EntityEquipmentData.EntityFaction GetDominentFaction ()
 	{
 		Dictionary<EntityEquipmentData.EntityFaction, int> count = new();
-		foreach(GameDatas.PlayerSave.Equipment eq in GetAllEquipments())
+		foreach (GameDatas.PlayerSave.Equipment eq in GetAllEquipments())
 		{
 			if (!eq.TryGetData(out EntityEquipmentData data))
 				continue;
@@ -361,9 +370,9 @@ public class EntitySavedData : INetworkSerializable
 	public SerializableDictionary<EntityEquipmentData.StatBonus.StatType, EntityEquipmentData.StatDescription> GetStatsDesciptions ()
 	{
 		SerializableDictionary<EntityEquipmentData.StatBonus.StatType, EntityEquipmentData.StatDescription> statsDictionary = new();
-		if(FrameData != null)
+		if (FrameData != null)
 		{
-			foreach(EntityEquipmentData.StatDescription stat in FrameData.GetDesciption())
+			foreach (EntityEquipmentData.StatDescription stat in FrameData.GetDesciption())
 			{
 				if (statsDictionary.ContainsKey(stat.ID))
 					statsDictionary[stat.ID].Add(stat);
@@ -371,7 +380,7 @@ public class EntitySavedData : INetworkSerializable
 					statsDictionary.Add(stat.ID, stat);
 			}
 		}
-		if(ReactorData != null)
+		if (ReactorData != null)
 		{
 			foreach (EntityEquipmentData.StatDescription stat in ReactorData.GetDesciption())
 			{

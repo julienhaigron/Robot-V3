@@ -369,7 +369,8 @@ public class Tile : MonoBehaviour
 
 	public bool TryGetPlannedItemAt ( int _time, out Item _item )
 	{
-		_item = m_plannedContentsPerTick.Length < _time  && m_plannedContentsPerTick[_time] != null ? m_plannedContentsPerTick[_time].Item : null;
+		_item = m_plannedContentsPerTick != null && m_plannedContentsPerTick.Length < _time  && m_plannedContentsPerTick[_time] != null 
+			? m_plannedContentsPerTick[_time].Item : null;
 		return _item != null;
 	}
 

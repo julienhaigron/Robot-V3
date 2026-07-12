@@ -1,6 +1,8 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using System.Collections;
+using System.Collections.Generic;
 
 public class StateLineDisplay :
 	MonoBehaviour,
@@ -21,23 +23,26 @@ public class StateLineDisplay :
 	private StateLineSlot m_originalSlot;
 
 	private bool m_dropSucceeded;
+	private TurnManager.RecordedAction m_recordedAction;
 
 	/*private void Awake ()
 	{
 		m_canvas = GetComponentInParent<Canvas>();
 	}*/
 
-	public void Init(Entity.EntityState _state, StateLineSlot _slot, float _duration, float _timeAtStart)
+	public void Init(Entity.EntityState _state, StateLineSlot _slot, TurnManager.RecordedAction _recordedAction)
 	{
 		m_backgroundImg.color = GameAssets.current.ui.entityStateColors[_state];
-		m_timeAtStart = _timeAtStart;
+		m_recordedAction = _recordedAction;
 		m_canvas = _slot.Canvas;
+		m_originalSlot = _slot;
 
 		_slot.SetDisplay(this);
 
-		Vector2 newSize = (m_backgroundImg.transform as RectTransform).sizeDelta;
-		newSize.x = (m_stateLineUnitLenght * _duration) + (_duration > 1 ? (m_stateLineUnitBorderLenght * (_duration - 1)) : 0);
-		(m_backgroundImg.transform as RectTransform).sizeDelta = newSize;
+		Vector2 newSize = (transform as RectTransform).sizeDelta;
+		newSize.x = (m_stateLineUnitLenght * _recordedAction.action.TotalDuration) 
+			+ (_recordedAction.action.TotalDuration > 1 ? (m_stateLineUnitBorderLenght * (_recordedAction.action.TotalDuration - 1)) : 0);
+		(transform as RectTransform).sizeDelta = newSize;
 		/*Vector2 newPos = (m_backgroundImg.transform as RectTransform).anchoredPosition;
 		newPos.x = 0f;
 		(m_backgroundImg.transform as RectTransform).anchoredPosition = newPos;*/
@@ -50,7 +55,9 @@ public class StateLineDisplay :
 
 	private void OnDnDropEnded ( StateLineSlot _droppedOnSlot)
 	{
-		//for later
+		m_backgroundImg.color = GameAssets.current.ui.entityStateColors[_droppedOnSlot.State];
+		m_recordedAction.entityState = _droppedOnSlot.State;
+		TurnManager.Instance.ReplaceAction(m_recordedAction);
 	}
 
 	public void OnBeginDrag ( PointerEventData eventData )
@@ -58,7 +65,6 @@ public class StateLineDisplay :
 		m_dropSucceeded = false;
 
 		m_originalParent = transform.parent;
-		m_originalSlot = GetComponentInParent<StateLineSlot>();
 
 		if (m_originalSlot != null)
 			m_originalSlot.RemoveDisplay();

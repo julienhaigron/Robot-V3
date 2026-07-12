@@ -62,10 +62,6 @@ MonoBehaviour:
     startScreenSceneName: MainScene
     missionAmountInMissionSelectionPanel: 12
     selectableMissionAmount: 8
-    microTuto1MissionData: {fileID: 11400000, guid: 35214ca16ad0015409672f6bba860636, type: 2}
-    playerStartingSquadUnits:
-    - {fileID: 11400000, guid: 3e4f3c47b4ebef348a686bbfcf7f8550, type: 2}
-    - {fileID: 11400000, guid: 381f9f47fae877f4b82c643f1b0575e7, type: 2}
   input:
     interactionRayCastLength: 100
     uiLayer:
