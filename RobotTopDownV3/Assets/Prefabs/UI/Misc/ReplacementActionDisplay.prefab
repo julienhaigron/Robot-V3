@@ -10,11 +10,11 @@ GameObject:
   m_Component:
   - component: {fileID: 30180558624842028}
   - component: {fileID: 4210288922901103782}
-  - component: {fileID: 7061236300462618284}
+  - component: {fileID: 3357519942927979725}
   - component: {fileID: 6958491227178010152}
-  - component: {fileID: 1024464723454574440}
+  - component: {fileID: 2628173483136373321}
   m_Layer: 5
-  m_Name: ReplacementActionSlot
+  m_Name: ReplacementActionDisplay
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -47,7 +47,7 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5040731641541898781}
   m_CullTransparentMesh: 1
---- !u!114 &7061236300462618284
+--- !u!114 &3357519942927979725
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -56,12 +56,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 5040731641541898781}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9a16bf2b35ec48e4e9d6be517c5e8079, type: 3}
+  m_Script: {fileID: 11500000, guid: 6349ed9bd84499e44b5957d84d948e16, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: RTD::PriorityQueueActionSlot
-  m_displayParent: {fileID: 30180558624842028}
-  m_backgroundImg: {fileID: 6958491227178010152}
-  m_canvas: {fileID: 1024464723454574440}
+  m_EditorClassIdentifier: RTD::PriorityQueueActionDisplay
+  m_icon: {fileID: 6958491227178010152}
+  m_canvasGroup: {fileID: 2628173483136373321}
 --- !u!114 &6958491227178010152
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -82,7 +81,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: a7ba6fb357c61f54795c9bdb84b8e998, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 7f6b84ca33a165a47b787bd9aca20227, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -92,26 +91,15 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!223 &1024464723454574440
-Canvas:
+--- !u!225 &2628173483136373321
+CanvasGroup:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5040731641541898781}
   m_Enabled: 1
-  serializedVersion: 3
-  m_RenderMode: 2
-  m_Camera: {fileID: 0}
-  m_PlaneDistance: 100
-  m_PixelPerfect: 0
-  m_ReceivesEvents: 1
-  m_OverrideSorting: 0
-  m_OverridePixelPerfect: 0
-  m_SortingBucketNormalizedSize: 0
-  m_VertexColorAlwaysGammaSpace: 0
-  m_AdditionalShaderChannelsFlag: 0
-  m_UpdateRectTransformForStandalone: 0
-  m_SortingLayerID: 0
-  m_SortingOrder: 0
-  m_TargetDisplay: 0
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0

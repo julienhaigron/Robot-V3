@@ -109,13 +109,13 @@ public class Entity : MonoBehaviour
 
 		m_equipment.Init(_data);
 		m_ui.Init(_data);
-		m_ai.Init(_data);
 		m_skin.Init(_data);
 
 		m_componentLinkedToAction = GetAllActions();
 		m_knownedActions = GetActions().Keys.ToList();
 		m_knowedModActions = GetModActions();
 
+		m_ai.Init(_data);
 		foreach (EntityActionEnumID actionID in m_knownedActions)
 		{
 			m_knownedPassiveEffectsPerAction.Add(actionID, _data.GetPassiveEffects(actionID));
@@ -250,7 +250,7 @@ public class Entity : MonoBehaviour
 		return actions;
 	}
 
-	public List<EntityActionEnumID> GetReplacementActionFor ( EntityActionEnumID _actionID )
+	/*public List<EntityActionEnumID> GetReplacementActionFor ( EntityActionEnumID _actionID )
 	{
 		EntityActionData data = GameAssets.current.game.entityActionsData[_actionID];
 		List<EntityActionEnumID> replacements = new();
@@ -279,7 +279,7 @@ public class Entity : MonoBehaviour
 		}
 
 		return replacements;
-	}
+	}*/
 
 	public void InitHangarMode ( EntitySavedData _data )
 	{

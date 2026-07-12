@@ -12,7 +12,7 @@ public class UnitRewardDisplay : MonoBehaviour
 	{
         m_nameTMP.text = _unit.displayName;
         m_mainIcon.sprite = _unit.icon;
-        m_subIcon.sprite = GameAssets.current.ui.corporationsIcons[_unit.GetSavedData().GetDominentFaction()];
+        m_subIcon.sprite = GameAssets.current.ui.corporationsIcons[_unit.GetSavedData().GetDominentFaction(out float percentage)];
     }
 
     public void Show ()

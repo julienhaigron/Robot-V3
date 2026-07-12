@@ -152,6 +152,31 @@ public class EntityActionData : ScriptableObject
 	[ShowIf("@codeType == ActionCodeType.InvokeEntity || codeType == ActionCodeType.InvokeItem")] public int invocationCountLimit = 1;
 	[ShowIf("@type == ActionType.Movement || codeType == ActionCodeType.MoveThenAttack ")] public int movementSpeed = 1;
 
+	
+	public enum MainActionType
+	{
+		Attack,
+		Movement,
+		Special
+	}
+
+	public MainActionType GetMainActionType ()
+	{
+		switch (type)
+		{
+			case ActionType.DistanceAttack:
+			case ActionType.MeleeAttack:
+				return MainActionType.Attack;
+			case ActionType.Movement:
+				return MainActionType.Movement;
+			case ActionType.Rotation:
+			case ActionType.Special:
+				return MainActionType.Special;
+		}
+
+		return MainActionType.Special;
+	}
+
 	public enum PFCResultType
 	{
 		Failure,

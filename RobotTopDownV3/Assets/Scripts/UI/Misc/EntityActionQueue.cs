@@ -3,8 +3,9 @@ using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 using Sirenix.OdinInspector;
+using System.Linq;
 
-public class EntityActionQueueDisplay : MonoBehaviour
+public class EntityActionQueue : MonoBehaviour
 {
 	[Title("Actions")]
 	[SerializeField] private CounterDisplay m_actionTokenDisplay;
@@ -20,7 +21,12 @@ public class EntityActionQueueDisplay : MonoBehaviour
 	[Title("PriorityQueue")]
 	[SerializeField] private Transform m_actionPriorityQueueTfm;
 	[SerializeField] private Image m_selectedActionIcon;
+	[SerializeField] private PriorityQueueActionSlot[] m_priorityQueueActionSlots;
+	public PriorityQueueActionSlot[] PriorityQueueSlots => m_priorityQueueActionSlots;
+
 	[SerializeField] private PriorityQueueActionDisplay[] m_priorityQueueActionDisplays;
+	public PriorityQueueActionDisplay[] PriorityQueueDisplays => m_priorityQueueActionDisplays;
+
 	[SerializeField] private float m_baseActionPriorityQueueHeight = 93f;
 	[SerializeField] private float m_baseActionPriorityQueueElementHeight = 54.5f;
 
@@ -35,6 +41,7 @@ public class EntityActionQueueDisplay : MonoBehaviour
 	private void Awake ()
 	{
 		PlayerController.onEntitySelected += OnEntitySelected;
+		TurnManager.onActionSelected += OnActionSelected;
 		TurnManager.onActionAdded += OnActionAdded;
 		TurnManager.onActionRemoved += OnActionRemoved;
 		TurnManager.onEndInputPhase += OnEndInputPhase;
@@ -47,6 +54,11 @@ public class EntityActionQueueDisplay : MonoBehaviour
 			}
 		}
 
+		for (int i = 0; i < m_priorityQueueActionSlots.Length; i++)
+		{
+			m_priorityQueueActionSlots[i].Init(m_priorityQueueActionDisplays[i]);
+		}
+
 		RefreshVisual(null);
 	}
 
@@ -56,6 +68,7 @@ public class EntityActionQueueDisplay : MonoBehaviour
 		TurnManager.onActionAdded -= OnActionAdded;
 		TurnManager.onActionRemoved -= OnActionRemoved;
 		TurnManager.onEndInputPhase -= OnEndInputPhase;
+		TurnManager.onActionSelected -= OnActionSelected;
 	}
 
 	private void OnEndInputPhase ()
@@ -67,6 +80,11 @@ public class EntityActionQueueDisplay : MonoBehaviour
 	{
 		m_currentEntitySelected = _entityID;
 		RefreshVisual(_entityID);
+	}
+
+	private void OnActionSelected (AEntityAction _selectedAction)
+	{
+		RefreshPriorityQueue(m_currentEntitySelected);
 	}
 
 	private void OnActionAdded ( TurnManager.RecordedAction _newRecordedAction )
@@ -187,7 +205,7 @@ public class EntityActionQueueDisplay : MonoBehaviour
 	{
 		if (_entityID == null)
 		{
-			foreach (PriorityQueueActionDisplay display in m_priorityQueueActionDisplays)
+			foreach (PriorityQueueActionSlot display in m_priorityQueueActionSlots)
 				display.Hide(true);
 
 			m_actionPriorityQueueTfm.gameObject.SetActive(false);
@@ -196,21 +214,65 @@ public class EntityActionQueueDisplay : MonoBehaviour
 
 		m_actionPriorityQueueTfm.gameObject.SetActive(true);
 		m_selectedActionIcon.sprite = TurnManager.Instance.CurrentActionSelected.Data.icon;
-		List<EntityActionEnumID> recordedActions = PlayerController.Instance.SelectedEntity.GetReplacementActionFor(TurnManager.Instance.CurrentActionTypeSelected);
+
+		EntityActionData.MainActionType mainType = TurnManager.Instance.CurrentActionSelected.Data.GetMainActionType();
+		List<EntityActionEnumID> actionPriorityQueue = new(PlayerController.Instance.SelectedEntity.AI.ActionPriorityQueues[mainType].priorityQueue);
+		actionPriorityQueue.Remove(TurnManager.Instance.CurrentActionTypeSelected);
 
 		Vector2 newSize = (m_actionPriorityQueueTfm.transform as RectTransform).sizeDelta;
-		newSize.y = m_baseActionPriorityQueueHeight + (m_baseActionPriorityQueueElementHeight * recordedActions.Count);
+		newSize.y = m_baseActionPriorityQueueHeight + (m_baseActionPriorityQueueElementHeight * actionPriorityQueue.Count);
 		(m_actionPriorityQueueTfm.transform as RectTransform).sizeDelta = newSize;
 
 		for (int i = 0; i < m_priorityQueueActionDisplays.Length; i++)
 		{
-			if (recordedActions.Count > i)
+			if (actionPriorityQueue.Count > i)
 			{
-				m_priorityQueueActionDisplays[i].Init(recordedActions[i]);
+				m_priorityQueueActionSlots[i].Show(true);
+				m_priorityQueueActionDisplays[i].Init(actionPriorityQueue[i], m_priorityQueueActionSlots[i], this);
 			}
 			else
-				m_priorityQueueActionDisplays[i].Hide(true);
+				m_priorityQueueActionSlots[i].Hide(true);
 		}
+	}
+
+	public void RegisterActionPriorityOrder ()
+	{
+		EntityActionData.MainActionType mainType = TurnManager.Instance.CurrentActionSelected.Data.GetMainActionType();
+		List<EntityActionEnumID> actionsInOrder = new();
+		actionsInOrder.Add(TurnManager.Instance.CurrentActionTypeSelected);
+		foreach (PriorityQueueActionSlot slot in m_priorityQueueActionSlots)
+			actionsInOrder.Add(slot.Display.ActionEnumId);
+
+		PlayerController.Instance.SelectedEntity.AI.SetActionPriorityQueue(mainType, actionsInOrder);
+	}
+
+	public void Move ( PriorityQueueActionDisplay display, PriorityQueueActionSlot target )
+	{
+		if (display.OriginalSlot == target)
+			return;
+
+		int from = m_priorityQueueActionSlots.ToList().IndexOf(display.OriginalSlot);
+		int to = m_priorityQueueActionSlots.ToList().IndexOf(target);
+
+		if (from == to)
+			return;
+
+		if (from < to)
+		{
+			for (int i = from; i < to; i++)
+			{
+				m_priorityQueueActionSlots[i].SetDisplay( m_priorityQueueActionSlots[i + 1].Display);
+			}
+		}
+		else
+		{
+			for (int i = from; i > to; i--)
+			{
+				m_priorityQueueActionSlots[i].SetDisplay( m_priorityQueueActionSlots[i - 1].Display);
+			}
+		}
+
+		target.SetDisplay(display);
 	}
 
 #if UNITY_EDITOR

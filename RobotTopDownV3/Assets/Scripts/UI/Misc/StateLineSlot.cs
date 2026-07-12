@@ -6,11 +6,11 @@ public class StateLineSlot : MonoBehaviour, IDropHandler
 {
 	[SerializeField] private Transform m_displayParent;
 	[SerializeField] private Canvas m_canvas;
+	public Canvas Canvas => m_canvas;
 
 	[SerializeField] private float m_stateLineUnitLenght = 135f;
 	[SerializeField] private float m_stateLineUnitBorderLenght = 2.4f;
 
-	public Canvas Canvas => m_canvas;
 
 	private float m_timeAtStart;
 	public float TimeAtStart => m_timeAtStart;

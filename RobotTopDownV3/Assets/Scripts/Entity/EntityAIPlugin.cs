@@ -5,9 +5,16 @@ using System.Linq;
 
 public class EntityAIPlugin : EntityPlugin
 {
-
 	private List<Entity> m_entitiesInVisionRange = new();
 	private List<EntityInRangeInfo> m_entitiesInActionRangeInfos = new();
+	private Dictionary<EntityActionData.MainActionType, ActionReplacements> m_actionPriorityQueues = new();
+	public Dictionary<EntityActionData.MainActionType, ActionReplacements> ActionPriorityQueues => m_actionPriorityQueues;
+
+	[System.Serializable]
+	public class ActionReplacements
+	{
+		public List<EntityActionEnumID> priorityQueue = new();
+	}
 
 	private struct EntityInRangeInfo
 	{
@@ -39,6 +46,26 @@ public class EntityAIPlugin : EntityPlugin
 			replacedFreeAction = _replacedFreeAction;
 			replacementReasonTxt = _reasonTxt;
 		}
+	}
+
+	public override void Init ( EntitySavedData _entityData )
+	{
+		base.Init(_entityData);
+
+		foreach(EntityActionEnumID actionID in m_linkedEntity.KnownedActions)
+		{
+			EntityActionData.MainActionType mainType = GameAssets.current.game.entityActionsData[actionID].GetMainActionType();
+
+			if (!m_actionPriorityQueues.ContainsKey(mainType))
+				m_actionPriorityQueues.Add(mainType, new());
+			
+			m_actionPriorityQueues[mainType].priorityQueue.Add(actionID);
+		}
+	}
+
+	public void SetActionPriorityQueue( EntityActionData.MainActionType _mainType, List<EntityActionEnumID> _actionsInOrder )
+	{
+		m_actionPriorityQueues[_mainType].priorityQueue = new(_actionsInOrder);
 	}
 
 	public CheckActionResultInfo CheckAction ( TurnManager.RecordedAction _recordedAction )

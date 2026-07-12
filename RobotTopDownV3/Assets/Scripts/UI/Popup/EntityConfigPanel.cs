@@ -193,7 +193,7 @@ public class EntityConfigPanel : AUIPanel
 				m_inventoryGrid.CreateNewDisplay(null, null, ComponentDisplay.DisplayMode.Empty);
 			}
 		}
-		EntityEquipmentData.EntityFaction dominentCorpo = m_entityData.GetDominentFaction();
+		EntityEquipmentData.EntityFaction dominentCorpo = m_entityData.GetDominentFaction(out float percentage);
 		m_dominentCorpoIcon.sprite = GameAssets.current.ui.corporationsIcons[dominentCorpo];
 		m_dominentCorpoIcon.color = GameAssets.current.ui.corporationsColors[dominentCorpo];
 	}

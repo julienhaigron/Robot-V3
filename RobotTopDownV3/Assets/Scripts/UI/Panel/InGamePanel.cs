@@ -10,7 +10,9 @@ using Sirenix.OdinInspector;
 
 public sealed class InGamePanel : AUIPanel
 {
-	[SerializeField] private EntityActionQueueDisplay m_actionQueue;
+	[SerializeField] private EntityActionQueue m_actionQueue;
+	public EntityActionQueue ActionQueue => m_actionQueue;
+
 	[SerializeField] private SquadUnitDisplayList m_squadUnitDisplayList;
 	[SerializeField] private UIEntityActionList m_entityActionList;
 	public UIEntityActionList EntityActionList => m_entityActionList;

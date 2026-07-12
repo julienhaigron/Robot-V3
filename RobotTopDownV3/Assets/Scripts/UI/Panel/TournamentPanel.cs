@@ -156,7 +156,7 @@ public class TournamentPanel : AUIPanel
 		Dictionary<EntityEquipmentData.EntityFaction, int> count = new();
 		foreach (UnitPreset unit in _units)
 		{
-			EntityEquipmentData.EntityFaction faction = unit.GetSavedData().GetDominentFaction();
+			EntityEquipmentData.EntityFaction faction = unit.GetSavedData().GetDominentFaction(out float percentage);
 
 			if (!count.ContainsKey(faction))
 				count.Add(faction, 0);

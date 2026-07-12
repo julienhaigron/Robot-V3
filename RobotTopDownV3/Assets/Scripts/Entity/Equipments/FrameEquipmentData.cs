@@ -251,7 +251,7 @@ public class EntitySavedData : INetworkSerializable
 		return equipments;
 	}
 
-	public EntityEquipmentData.EntityFaction GetDominentFaction ()
+	public EntityEquipmentData.EntityFaction GetDominentFaction (out float _percentage)
 	{
 		Dictionary<EntityEquipmentData.EntityFaction, int> count = new();
 		foreach (GameDatas.PlayerSave.Equipment eq in GetAllEquipments())
@@ -265,7 +265,8 @@ public class EntitySavedData : INetworkSerializable
 		}
 
 		EntityEquipmentData.EntityFaction dominentFaction = EntityEquipmentData.EntityFaction.Noone;
-		int biggestAmount = -1;
+		float biggestAmount = -1;
+		float total = 0;
 		foreach (EntityEquipmentData.EntityFaction faction in count.Keys)
 		{
 			if (count[faction] > biggestAmount)
@@ -273,8 +274,10 @@ public class EntitySavedData : INetworkSerializable
 				dominentFaction = faction;
 				biggestAmount = count[faction];
 			}
+			total += count[faction];
 		}
 
+		_percentage = biggestAmount / total;
 		return dominentFaction;
 	}
 
