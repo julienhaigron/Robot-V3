@@ -233,6 +233,8 @@ public class TurnManager : Singleton<TurnManager>
 				newQueue.Enqueue(recordedActions[i]);
 		}
 		m_recordedActionInput[_actionToReplaceTo.action.performingEntityID] = new(newQueue);
+
+		RefreshActionDisplay(PlayerController.Instance.SelectedEntity != null ? PlayerController.Instance.SelectedEntity.ID : null, false);
 	}
 
 	public void AddTargetTileInCurrentAction ( Tile _tile )
