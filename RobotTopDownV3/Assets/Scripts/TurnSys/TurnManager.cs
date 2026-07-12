@@ -208,14 +208,27 @@ public class TurnManager : Singleton<TurnManager>
 		}
 	}
 
-	public void ReplaceAction(RecordedAction _actionToReplaceTo )
+	public void ReplaceActionState(RecordedAction _actionToReplaceTo, Entity.EntityState _state )
 	{
 		List<RecordedAction> recordedActions = m_recordedActionInput[_actionToReplaceTo.action.performingEntityID].ToList();
 		Queue<RecordedAction> newQueue = new();
 		for(int i = 0; i < recordedActions.Count; i++)
 		{
 			if (recordedActions[i].timeAtStart == _actionToReplaceTo.timeAtStart)
-				newQueue.Enqueue(_actionToReplaceTo);
+			{
+				RecordedAction newAction = new RecordedAction()
+				{
+					action = recordedActions[i].action,
+					entityState = _state,
+					freeAction = recordedActions[i].freeAction,
+					freeActionType = recordedActions[i].freeActionType,
+					linkedEquipmentID = recordedActions[i].linkedEquipmentID,
+					performingEntityID = recordedActions[i].performingEntityID,
+					timeAtStart = recordedActions[i].timeAtStart,
+					type = recordedActions[i].type
+				};
+				newQueue.Enqueue(newAction);
+			}
 			else
 				newQueue.Enqueue(recordedActions[i]);
 		}
