@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 3525337816145055868}
   - component: {fileID: 4291217097222578230}
   - component: {fileID: 7184611134353916502}
+  - component: {fileID: 5317945632963401950}
   m_Layer: 5
   m_Name: StateLineDisplay
   m_TagString: Untagged
@@ -33,10 +34,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 0.5}
+  m_AnchorMax: {x: 0, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 134, y: 12}
+  m_SizeDelta: {x: 135, y: 12}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!222 &3525337816145055868
 CanvasRenderer:
@@ -59,6 +60,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: RTD::StateLineDisplay
   m_backgroundImg: {fileID: 7184611134353916502}
+  m_canvasGroup: {fileID: 5317945632963401950}
   m_stateLineUnitLenght: 135
   m_stateLineUnitBorderLenght: 2.4
 --- !u!114 &7184611134353916502
@@ -91,3 +93,15 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 30.1
+--- !u!225 &5317945632963401950
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6218004126789201870}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0

@@ -112,8 +112,8 @@ public class Entity : MonoBehaviour
 		m_ai.Init(_data);
 		m_skin.Init(_data);
 
-		m_componentLinkedToAction = GetActions();
-		m_knownedActions = new(m_componentLinkedToAction.Keys);
+		m_componentLinkedToAction = GetAllActions();
+		m_knownedActions = GetActions().Keys.ToList();
 		m_knowedModActions = GetModActions();
 
 		foreach (EntityActionEnumID actionID in m_knownedActions)
@@ -124,7 +124,7 @@ public class Entity : MonoBehaviour
 		m_knownedStates.AddRange(_data.BrainData.knownedStates);
 	}
 
-	private Dictionary<EntityActionEnumID, List<string>> GetActions ()
+	private Dictionary<EntityActionEnumID, List<string>> GetAllActions ()
 	{
 		Dictionary<EntityActionEnumID, List<string>> actionsPerComponents = new();
 
@@ -225,9 +225,21 @@ public class Entity : MonoBehaviour
 		return actionsPerComponents;
 	}
 
+	private Dictionary<EntityActionEnumID, List<string>> GetActions ()
+	{
+		Dictionary<EntityActionEnumID, List<string>> actionsPerComponents = GetAllActions();
+		foreach (EntityActionEnumID actionID in actionsPerComponents.Keys.ToArray())
+		{
+			if (actionID == EntityActionEnumID.Unknowned || !GameAssets.current.game.entityActionsData.ContainsKey(actionID) || GameAssets.current.game.entityActionsData[actionID].isModAction)
+				actionsPerComponents.Remove(actionID);
+		}
+
+		return actionsPerComponents;
+	}
+
 	private List<EntityActionEnumID> GetModActions ()
 	{
-		List<EntityActionEnumID> actions = m_knownedActions.ToList();
+		List<EntityActionEnumID> actions = GetAllActions().Keys.ToList();
 
 		foreach (EntityActionEnumID actionID in actions.ToArray())
 		{

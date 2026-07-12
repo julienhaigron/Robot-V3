@@ -60,13 +60,13 @@ public class EntityActionDisplay : MonoBehaviour
 		newSize.x = (m_unitLenght * _totalDuration)
 			+ (_totalDuration > 1 ? (m_offsetLenght * (_totalDuration - 1)) : 0f)
 			+ (_timeAtStart == 0 || (_timeAtStart + _totalDuration == 10) ? m_firstUnitStartOffset : 0f)
-			- (_isLeftAngleRectangle ? m_firstUnitStartRectangleShapeOffset : 0f);
+			- (_isLeftAngleRectangle && _timeAtStart == 0 ? m_firstUnitStartRectangleShapeOffset : 0f);
 		(m_backgroundImg.transform as RectTransform).sizeDelta = newSize;
 		Vector2 newPos = (m_backgroundImg.transform as RectTransform).anchoredPosition;
 		newPos.x = (m_unitLenght * _timeAtStart)
 			+ m_offsetLenght * _timeAtStart
 			+ (_timeAtStart > 0 ? m_firstUnitStartOffset : 0f)
-			+ (_isLeftAngleRectangle ? m_firstUnitStartRectangleShapeOffset : 0f);
+			+ (_isLeftAngleRectangle && _timeAtStart == 0 ? m_firstUnitStartRectangleShapeOffset : 0f);
 		(m_backgroundImg.transform as RectTransform).anchoredPosition = newPos;
 
 		float activeDuration = _totalDuration - _preparationTime - _cooldownTime;
@@ -75,7 +75,7 @@ public class EntityActionDisplay : MonoBehaviour
 		float timeFactor = _preparationTime + ((activeDuration / 2f));
 		Vector2 newIconPos = (m_actionIconParent.transform as RectTransform).anchoredPosition;
 		newIconPos.x = (activeDuration > 1 || _preparationTime > 0 ? m_iconTimeFactorWidth * timeFactor : m_iconBaseXPosition)
-			- (_isLeftAngleRectangle ? m_firstUnitStartRectangleShapeOffset / 2f : 0f);
+			- (_isLeftAngleRectangle && _timeAtStart == 0 ? m_firstUnitStartRectangleShapeOffset / 2f : 0f);
 		(m_actionIconParent as RectTransform).anchoredPosition = newIconPos;
 		
 		//icon offset
@@ -89,7 +89,7 @@ public class EntityActionDisplay : MonoBehaviour
 
 		Vector2 leftGreenHatchedWidth = (m_mainHachureLeft.transform as RectTransform).sizeDelta;
 		leftGreenHatchedWidth.x = greenHatchedWidth 
-			- (_isLeftAngleRectangle && _preparationTime == 0 ? m_firstUnitStartRectangleShapeOffset / 2f : 0f);
+			- (_isLeftAngleRectangle && _preparationTime == 0 && _timeAtStart == 0 ? m_firstUnitStartRectangleShapeOffset / 2f : 0f);
 			/*+ (activeDuration == 1 && _preparationTime > 0 ? m_greenHatchedOneActivationAndHasCooldownOrPreparationOffset : 0f);*/
 		(m_mainHachureLeft.transform as RectTransform).sizeDelta = leftGreenHatchedWidth;
 
@@ -98,7 +98,7 @@ public class EntityActionDisplay : MonoBehaviour
 			m_preparationHachure.gameObject.SetActive(true);
 			Vector2 leftRedHatchedWidth = (m_preparationHachure.transform as RectTransform).sizeDelta;
 			leftRedHatchedWidth.x = m_redHatchedOneTickWidth * _preparationTime
-				- (_isLeftAngleRectangle ? m_firstUnitStartRectangleShapeOffset / 2f : 0f)
+				- (_isLeftAngleRectangle && _timeAtStart == 0 ? m_firstUnitStartRectangleShapeOffset / 2f : 0f)
 				/*- (activeDuration == 1 && _preparationTime > 0 ? m_greenHatchedOneActivationAndHasCooldownOrPreparationOffset : 0f)*/;
 			(m_preparationHachure.transform as RectTransform).sizeDelta = leftRedHatchedWidth;
 		}
@@ -109,7 +109,7 @@ public class EntityActionDisplay : MonoBehaviour
 		Vector2 rightGreenHatchedWidth = (m_mainHachureRight.transform as RectTransform).sizeDelta;
 		rightGreenHatchedWidth.x = greenHatchedWidth
 			- (_timeAtStart != 0 && (_timeAtStart + _totalDuration != 10) && activeDuration == 1 && _cooldownTime == 0 ? m_firstUnitStartOffset : 0f)
-			- (_isLeftAngleRectangle && _cooldownTime == 0 ? m_firstUnitStartRectangleShapeOffset / 2f : 0f);
+			- (_isLeftAngleRectangle && _cooldownTime == 0 && _timeAtStart == 0 ? m_firstUnitStartRectangleShapeOffset / 2f : 0f);
 			//+ (activeDuration == 1 && _cooldownTime > 0 ? m_greenHatchedOneActivationAndHasCooldownOrPreparationOffset : 0f);
 		(m_mainHachureRight.transform as RectTransform).sizeDelta = rightGreenHatchedWidth;
 
@@ -120,7 +120,7 @@ public class EntityActionDisplay : MonoBehaviour
 			rightRedHatchedWidth.x = m_redHatchedOneTickWidth * _cooldownTime
 				+ (activeDuration == 1 && _cooldownTime > 0 ? m_greenHatchedOneActivationAndHasCooldownOrPreparationOffset : 0f)
 				- (_timeAtStart != 0 && (_timeAtStart + _totalDuration != 10) && activeDuration == 1 && _cooldownTime > 0 ? m_firstUnitStartOffset : 0f)
-				- (_isLeftAngleRectangle ? m_firstUnitStartRectangleShapeOffset / 2f : 0f);
+				- (_isLeftAngleRectangle && _timeAtStart == 0 ? m_firstUnitStartRectangleShapeOffset / 2f : 0f);
 			(m_cooldownHachure.transform as RectTransform).sizeDelta = rightRedHatchedWidth;
 		}
 		else

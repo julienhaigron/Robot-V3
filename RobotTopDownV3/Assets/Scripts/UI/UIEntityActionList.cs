@@ -45,7 +45,7 @@ public class UIEntityActionList : MonoBehaviour
 
 		gameObject.SetActive(true);
 		Entity selectedEntity = PlayerController.Instance.SelectedEntity;
-		EntityActionEnumID[] keys = selectedEntity.ComponentLinkedToAction.Keys.ToArray();
+		EntityActionEnumID[] keys = selectedEntity.KnownedActions.ToArray();
 		EntityActionEnumID[] keys2 = selectedEntity.KnownedModActions.ToArray();
 
 		Vector2 newSize = m_actionButtonsParent.sizeDelta;

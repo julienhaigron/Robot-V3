@@ -15,6 +15,7 @@ public class EntityActionQueueDisplay : MonoBehaviour
 	[Title("States")]
 	[SerializeField] private SerializableDictionary<Entity.EntityState, Transform> m_stateLineTfmDictionary;
 	[SerializeField] private StateLineDisplay[] m_stateDisplays;
+	[SerializeField] private SerializableDictionary<Entity.EntityState, StateLine> m_stateLines;
 
 	[Title("PriorityQueue")]
 	[SerializeField] private Transform m_actionPriorityQueueTfm;
@@ -25,12 +26,26 @@ public class EntityActionQueueDisplay : MonoBehaviour
 
 	private int? m_currentEntitySelected;
 
+	[System.Serializable]
+	public class StateLine
+	{
+		public StateLineSlot[] slots;
+	}
+
 	private void Awake ()
 	{
 		PlayerController.onEntitySelected += OnEntitySelected;
 		TurnManager.onActionAdded += OnActionAdded;
 		TurnManager.onActionRemoved += OnActionRemoved;
 		TurnManager.onEndInputPhase += OnEndInputPhase;
+
+		foreach(Entity.EntityState state in m_stateLines.Keys)
+		{
+			for(int i = 0; i < m_stateLines[state].slots.Length; i++)
+			{
+				m_stateLines[state].slots[i].Init(state, i);
+			}
+		}
 
 		RefreshVisual(null);
 	}
@@ -138,10 +153,34 @@ public class EntityActionQueueDisplay : MonoBehaviour
 			{
 				m_stateDisplays[i].transform.SetParent(m_stateLineTfmDictionary[recordedActions[i].entityState]);
 				m_stateDisplays[i].Show();
-				m_stateDisplays[i].Init(recordedActions[i].entityState, recordedActions[i].action.TotalDuration, recordedActions[i].action.timeAtStart);
+				m_stateDisplays[i].Init(recordedActions[i].entityState, m_stateLines[recordedActions[i].entityState].slots[i]
+					, recordedActions[i].action.TotalDuration, recordedActions[i].action.timeAtStart);
 			}
 			else
 				m_stateDisplays[i].Hide();
+		}
+
+		foreach (Entity.EntityState state in m_stateLines.Keys)
+		{
+			int totalCost = 0;
+			for (int i = 0; i < m_stateLines[state].slots.Length; i++)
+			{
+				if(recordedActions.Length > i)
+				{
+					m_stateLines[state].slots[i].RefresSizeAndPosition(recordedActions[i].action.TotalDuration, recordedActions[i].action.timeAtStart);
+					m_stateLines[state].slots[i].Show();
+					totalCost += recordedActions[i].action.TotalDuration;
+				}
+				else if(totalCost < 10)
+				{
+					m_stateLines[state].slots[i].RefresSizeAndPosition(1, totalCost);
+					m_stateLines[state].slots[i].Show();
+					totalCost += 1;
+				}
+				else
+					m_stateLines[state].slots[i].Hide();
+
+			}
 		}
 	}
 

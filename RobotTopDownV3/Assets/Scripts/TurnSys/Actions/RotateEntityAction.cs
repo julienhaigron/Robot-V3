@@ -60,6 +60,9 @@ public class RotateEntityAction : AEntityAction
 
 	public override bool TileInteractPredicate ( Tile _tile )
 	{
-		return PerformingEntity.Displacement.Coordinates.GetTile().Neighbors.Contains(_tile);
+		if (_tile.Distance == 1)
+			return true;
+
+		return false;
 	}
 }
