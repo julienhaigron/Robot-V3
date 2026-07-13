@@ -50,6 +50,7 @@ public class PlayerController : Singleton<PlayerController>
 
 	private SerializableDictionary<int, List<ActionDisplayOnTile>> m_actionDisplays = new();
 	private SerializableDictionary<int, List<ActionDisplayOnTile>> m_tempActionDisplays = new();
+	private SerializableDictionary<int, List<RotationActionDisplay>> m_rotationActionDisplays = new();
 	private SerializableDictionary<int, GhostEntity> m_ghostEntities = new();
 	private SerializableDictionary<int, GhostItem> m_ghostItems = new();
 
@@ -355,6 +356,13 @@ public class PlayerController : Singleton<PlayerController>
 		}
 	}
 
+	public void AddRotationActionDisplay( RotationActionDisplay _display, int _performingEntityID )
+	{
+		if (!m_rotationActionDisplays.ContainsKey(_performingEntityID))
+			m_rotationActionDisplays.Add(_performingEntityID, new());
+		m_rotationActionDisplays[_performingEntityID].Add(_display);
+	}
+
 	public void AddGhostEntityAt ( Entity _entity, Tile _position, int _orientation )
 	{
 		if (!m_ghostEntities.ContainsKey(_entity.ID))
@@ -413,6 +421,15 @@ public class PlayerController : Singleton<PlayerController>
 				display.Discard();
 			}
 			m_tempActionDisplays[entityID].Clear();
+		}
+
+		foreach (int entityID in m_rotationActionDisplays.Keys)
+		{
+			foreach (RotationActionDisplay display in m_rotationActionDisplays[entityID])
+			{
+				display.Discard();
+			}
+			m_rotationActionDisplays[entityID].Clear();
 		}
 	}
 

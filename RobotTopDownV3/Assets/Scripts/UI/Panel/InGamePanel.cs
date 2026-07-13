@@ -10,6 +10,7 @@ using Sirenix.OdinInspector;
 
 public sealed class InGamePanel : AUIPanel
 {
+	[Title("Actions")]
 	[SerializeField] private EntityActionQueue m_actionQueue;
 	public EntityActionQueue ActionQueue => m_actionQueue;
 
@@ -20,12 +21,13 @@ public sealed class InGamePanel : AUIPanel
 	[SerializeField] private BaseButton m_endPhaseButton;
 	[SerializeField] private TextMeshProUGUI m_phaseTitleTmp;
 
+	[Title("Console")]
 	[SerializeField] private RectTransform m_consoleParent;
 	[SerializeField] private TextMeshProUGUI m_consoleTMP;
 	[SerializeField] private ScrollRect m_scrollRect;
 	[SerializeField] private BaseButton m_toggleDisplayConsoleBtn;
-	[SerializeField] private float m_consoleExpandedHeight = 400f;
-	[SerializeField] private float m_consoleCollapsedHeight = 80f;
+	[SerializeField] private float m_consoleExpandedXPos = 400f;
+	[SerializeField] private float m_consoleCollapsedXPos = 80f;
 	[SerializeField] private float m_duration = 0.3f;
 	[SerializeField] private List<LogConsole.LogEventType> m_visibleEventType;
 	//[SerializeField] private BaseButton m_validateTargetsBtn;
@@ -44,8 +46,6 @@ public sealed class InGamePanel : AUIPanel
 
 	private bool m_isConsoleExpanded = true;
 	private Tween m_currentToggleConsoleBtnTween;
-	/*private bool m_entitySelectedDisplayMode = false;
-	public bool EntitySelectedDisplayMode => m_entitySelectedDisplayMode;*/
 
 	#region MonoBehaviour & Init
 
@@ -74,7 +74,7 @@ public sealed class InGamePanel : AUIPanel
 	public void Init ()
 	{
 		m_squadUnitDisplayList.Init();
-		RefreshVisual(false, false);
+		RefreshVisual(false, true);
 		m_tutoConsole.Init();
 		m_entityActionList.Init();
 		m_actionQueue.Init();
@@ -82,8 +82,6 @@ public sealed class InGamePanel : AUIPanel
 
 	public void RefreshVisual(bool _isEntitySelected, bool _isInstant )
 	{
-		//m_entitySelectedDisplayMode = _isEntitySelected;
-
 		foreach (RectTransform tfm in m_sectionPlacementsDictionary.Keys)
 		{
 			if (_isInstant)
@@ -91,6 +89,8 @@ public sealed class InGamePanel : AUIPanel
 			else
 				tfm.DOAnchorPos(m_sectionPlacementsDictionary[tfm].positions[_isEntitySelected ? 0 : 1], m_animationDuration).SetEase(Ease.OutExpo);
 		}
+
+		SetConsoleVisibility(!_isEntitySelected);
 	}
 
 	#endregion
@@ -164,17 +164,23 @@ public sealed class InGamePanel : AUIPanel
 		RefreshVisual(_entityID.HasValue, false);
 	}
 
-	private void OnClickToggleDisplayConsoleBtn ()
+	private void SetConsoleVisibility(bool _isVisible )
 	{
-		m_isConsoleExpanded = !m_isConsoleExpanded;
-		float targetHeight = m_isConsoleExpanded
-			? m_consoleExpandedHeight
-			: m_consoleCollapsedHeight;
+		if (m_isConsoleExpanded == _isVisible)
+			return;
+
+		m_isConsoleExpanded = _isVisible;
+		m_toggleDisplayConsoleBtn.SetVisible(!m_isConsoleExpanded || PlayerController.Instance.SelectedEntity != null, true);
+		float targetXPos = m_isConsoleExpanded ? m_consoleExpandedXPos : m_consoleCollapsedXPos;
 
 		m_currentToggleConsoleBtnTween?.Kill();
-
-		m_currentToggleConsoleBtnTween = m_consoleParent.DOSizeDelta(new Vector2(m_consoleParent.sizeDelta.x, targetHeight), m_duration)
+		m_currentToggleConsoleBtnTween = m_consoleParent.DOAnchorPos(new Vector2(targetXPos, m_consoleParent.anchoredPosition.y), m_duration)
 			.SetEase(Ease.OutCubic);
+	}
+
+	private void OnClickToggleDisplayConsoleBtn ()
+	{
+		SetConsoleVisibility(!m_isConsoleExpanded);
 	}
 
 	private void OnStartInputPhase ()

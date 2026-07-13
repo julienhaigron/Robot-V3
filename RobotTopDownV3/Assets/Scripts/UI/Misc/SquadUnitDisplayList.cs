@@ -7,20 +7,34 @@ using Sirenix.OdinInspector;
 
 public class SquadUnitDisplayList : MonoBehaviour
 {
-    [SerializeField] private UnitMacroDisplay[] m_displays;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+	[SerializeField] private UnitMacroDisplay[] m_displays;
+	[SerializeField] private UnitMacroDisplay m_soloDisplay;
+	// Start is called once before the first execution of Update after the MonoBehaviour is created
 
-    public void Init ()
+	public void Init ()
 	{
-        for(int i = 0; i < m_displays.Length; i++)
+
+		if (GameManager.Instance.PlayersEntityAnchor[GameManager.Instance.PlayerID].Entities.Count == 1)
 		{
-            if(GameManager.Instance.PlayersEntityAnchor[GameManager.Instance.PlayerID].Entities.Count > i)
-			{
-				m_displays[i].Init(GameManager.Instance.PlayersEntityAnchor[GameManager.Instance.PlayerID].Entities[i]);
-				m_displays[i].Show();
-			}
-			else
+			m_soloDisplay.Init(GameManager.Instance.PlayersEntityAnchor[GameManager.Instance.PlayerID].Entities[0]);
+			m_soloDisplay.Show();
+
+			for (int i = 0; i < m_displays.Length; i++)
 				m_displays[i].Hide();
+		}
+		else
+		{
+			m_soloDisplay.Hide();
+			for (int i = 0; i < m_displays.Length; i++)
+			{
+				if (GameManager.Instance.PlayersEntityAnchor[GameManager.Instance.PlayerID].Entities.Count > i)
+				{
+					m_displays[i].Init(GameManager.Instance.PlayersEntityAnchor[GameManager.Instance.PlayerID].Entities[i]);
+					m_displays[i].Show();
+				}
+				else
+					m_displays[i].Hide();
+			}
 		}
 	}
 }

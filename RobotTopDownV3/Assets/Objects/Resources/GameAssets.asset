@@ -149,6 +149,7 @@ MonoBehaviour:
       - {fileID: 11400000, guid: c751ea5480127c74fab9380a7b894335, type: 2}
       - {fileID: 11400000, guid: 089f5b6503687a44ca2eb812dcd04d46, type: 2}
     arrowPoolData: {fileID: 11400000, guid: 64f7846c9740e524a979a96964270b2f, type: 2}
+    rotationHandlePoolData: {fileID: 0}
   ui:
     baseEquipmentSprite: {fileID: -1360359492, guid: b61920d2917644949a125f8a6af0e45c, type: 3}
     baseComponentDisplay: {fileID: 6816767632338375938, guid: 6e102cf7754096846b421344887ef18e, type: 3}
@@ -214,6 +215,12 @@ MonoBehaviour:
       - {r: 1, g: 0.5013487, b: 0, a: 1}
       - {r: 1, g: 0, b: 0, a: 1}
       - {r: 1, g: 1, b: 1, a: 0}
+    mainActionTypeIcons:
+      keys: 000000000100000002000000
+      values:
+      - {fileID: 21300000, guid: 03da9b037a0d27b4db02f45130a6cb28, type: 3}
+      - {fileID: 21300000, guid: 03da9b037a0d27b4db02f45130a6cb28, type: 3}
+      - {fileID: 21300000, guid: 03da9b037a0d27b4db02f45130a6cb28, type: 3}
   currencies:
     keys: 01000000020000000300000004000000
     values:

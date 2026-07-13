@@ -66,7 +66,7 @@ public class ModActionButton : BaseButton
 	protected override void OnClick ()
 	{
 		//TODO : interaction with mod action
-		//TurnManager.Instance.SetCurrentActionSelected(m_actionType, m_linkedEquipmentData, true);
+		TurnManager.Instance.SetCurrentModActionSelected(m_actionType, m_linkedEquipmentData);
 		base.OnClick();
 	}
 

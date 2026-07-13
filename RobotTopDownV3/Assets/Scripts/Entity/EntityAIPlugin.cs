@@ -99,7 +99,7 @@ public class EntityAIPlugin : EntityPlugin
 			//  => shoot directly
 			m_lastEntitiesTargeted = enemies;
 
-			here
+			//here
 			//TODO : check action priority queue and choose appropriate action
 
 			AttackAction attackAction = (TurnManager.Instance.GetAction(attackEnumID, m_linkedEntity.ID, equipmentID, _recordedAction.timeAtStart) as AttackAction);
@@ -264,7 +264,8 @@ public class EntityAIPlugin : EntityPlugin
 		}
 		else
 		{
-			//TODO : make action priority ?
+			m_entitiesInActionRangeInfos.OrderBy(e => m_actionPriorityQueues[EntityActionData.MainActionType.Attack].priorityQueue.IndexOf(e.actionID));
+
 			_enemies = new();
 			_attackEnumID = m_entitiesInActionRangeInfos[0].actionID;
 			_equipmentID = m_entitiesInActionRangeInfos[0].linkedEquipmentID;

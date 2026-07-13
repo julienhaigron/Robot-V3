@@ -14,7 +14,6 @@ public class TutoConsole : MonoBehaviour
 	[SerializeField] private TextMeshProUGUI m_dialogueTMP;
 	[SerializeField] private TextMeshProUGUI m_characterNameTMP;
 	[SerializeField] private Image m_dialogueImg;
-	[SerializeField] private BaseButton m_validateDialogueButton;
 	[SerializeField] private BaseButton m_previousBtn;
     [SerializeField] private BaseButton m_nextBtn;
 
@@ -37,14 +36,12 @@ public class TutoConsole : MonoBehaviour
 	{
 		m_previousBtn.onClick += OnClickPreviousLineOrDialogue;
 		m_nextBtn.onClick += OnClickNextLineOrDialogue;
-		m_validateDialogueButton.onClick += OnClickValidateDialogue;
 	}
 
 	private void OnDestroy ()
 	{
 		m_previousBtn.onClick -= OnClickPreviousLineOrDialogue;
 		m_nextBtn.onClick -= OnClickNextLineOrDialogue;
-		m_validateDialogueButton.onClick -= OnClickValidateDialogue;
 	}
 
 	public void Init ()
@@ -135,10 +132,10 @@ public class TutoConsole : MonoBehaviour
 
 		m_previousBtn.SetInteractability(canGoPrevious);
 		m_nextBtn.SetInteractability(canGoNext);
-		m_validateDialogueButton.SetInteractability(!m_didEndLastDialogue);
+		//m_validateDialogueButton.SetInteractability(!m_didEndLastDialogue);
 	}
 
-	private void OnClickValidateDialogue ()
+	/*private void OnClickValidateDialogue ()
 	{
 		if (m_didEndLastDialogue)
 			return;
@@ -157,7 +154,7 @@ public class TutoConsole : MonoBehaviour
 
 		m_currentLineIndex++;
 		DisplayCurrentLine();
-	}
+	}*/
 
 	private void OnClickPreviousLineOrDialogue ()
 	{
@@ -194,17 +191,17 @@ public class TutoConsole : MonoBehaviour
 		if (m_isTextAnimationOn)
 		{
 			m_currentTextTween.Complete();
-			return;
 		}
-
-		if (m_currentLineIndex < m_currentDialogueData.lines.Count - 1)
+		else if(!m_didEndLastDialogue && m_currentLineIndex + 1 >= m_currentDialogueData.lines.Count)
+		{
+			EndDialogue();
+		}
+		else if (m_currentLineIndex < m_currentDialogueData.lines.Count - 1)
 		{
 			m_currentLineIndex++;
 			DisplayCurrentLine();
-			return;
 		}
-
-		if (m_currentDialogueIndex < m_allDialogs.Count - 1)
+		else if (m_currentDialogueIndex < m_allDialogs.Count - 1)
 		{
 			m_currentDialogueIndex++;
 			m_currentDialogueData = m_allDialogs[m_currentDialogueIndex];

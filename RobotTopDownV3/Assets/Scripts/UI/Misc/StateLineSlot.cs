@@ -2,9 +2,10 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
-public class StateLineSlot : MonoBehaviour, IDropHandler
+public class StateLineSlot : MonoBehaviour, IPointerEnterHandler
 {
 	[SerializeField] private Transform m_displayParent;
+	public Transform DisplayParent => m_displayParent;
 	[SerializeField] private Canvas m_canvas;
 	public Canvas Canvas => m_canvas;
 
@@ -56,7 +57,20 @@ public class StateLineSlot : MonoBehaviour, IDropHandler
 		m_display = null;
 	}
 
-	public void OnDrop ( PointerEventData eventData )
+	public void OnPointerEnter ( PointerEventData eventData )
+	{
+		if (eventData.pointerDrag == null)
+			return;
+
+		StateLineDisplay display = eventData.pointerDrag.GetComponent<StateLineDisplay>();
+
+		if (display == null)
+			return;
+
+		display.OnHoverSlot(this);
+	}
+
+	/*public void OnDrop ( PointerEventData eventData )
 	{
 		StateLineDisplay display = eventData.pointerDrag?.GetComponent<StateLineDisplay>();
 
@@ -64,7 +78,7 @@ public class StateLineSlot : MonoBehaviour, IDropHandler
 			return;
 
 		display.TryDropOn(this);
-	}
+	}*/
 
 	public void Show ()
 	{

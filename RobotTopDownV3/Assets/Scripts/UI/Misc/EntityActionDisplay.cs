@@ -10,6 +10,7 @@ public class EntityActionDisplay : MonoBehaviour
 	[SerializeField] private Transform m_actionIconParent;
 	[SerializeField] private Transform m_actionIconPivot;
 	[SerializeField] private Image m_actionIconImg;
+	[SerializeField] private Image m_modActionIconImg;
 	[SerializeField] private Image m_mainHachureLeft;
 	[SerializeField] private Image m_mainHachureRight;
 	[SerializeField] private Image m_preparationHachure;
@@ -43,6 +44,9 @@ public class EntityActionDisplay : MonoBehaviour
 	public void Init ( TurnManager.RecordedAction _recordedAction, bool _isLeftAngleRectangle)
 	{
 		m_recordedAction = _recordedAction;
+		m_actionIconImg.sprite = _recordedAction.action.Data.icon;
+		m_modActionIconImg.sprite = _recordedAction.freeActionType != EntityActionEnumID.Unknowned && _recordedAction.freeActionType != EntityActionEnumID.Wait
+			? _recordedAction.freeAction.Data.icon : null;
 		RefreshVisual(m_recordedAction.action.timeAtStart, m_recordedAction.action.TotalDuration, m_recordedAction.action.preparationDuration, m_recordedAction.action.cooldownDuration, _isLeftAngleRectangle);
 
 		Show(false);

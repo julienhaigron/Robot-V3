@@ -20,7 +20,8 @@ public class StateLineDisplay :
 
 	private Canvas m_canvas;
 	private Transform m_originalParent;
-	private StateLineSlot m_originalSlot;
+	private StateLineSlot m_originalSlot; 
+	private StateLineSlot m_hoveredSlot;
 
 	private bool m_dropSucceeded;
 	private TurnManager.RecordedAction m_recordedAction;
@@ -77,21 +78,44 @@ public class StateLineDisplay :
 
 	public void OnDrag ( PointerEventData eventData )
 	{
-		transform.position = eventData.position;
+		//transform.position = eventData.position;
+	}
+
+	public void OnHoverSlot ( StateLineSlot slot )
+	{
+		if (!DnDPredicate(slot))
+			return;
+
+		if (m_hoveredSlot == slot)
+			return;
+
+		m_hoveredSlot = slot;
+
+		transform.SetParent(slot.DisplayParent, false);
+		(transform as RectTransform).anchoredPosition = Vector2.zero;
 	}
 
 	public void OnEndDrag ( PointerEventData eventData )
 	{
 		m_canvasGroup.blocksRaycasts = true;
 
-		if (!m_dropSucceeded)
+		if (m_hoveredSlot != null)
+		{
+			m_hoveredSlot.SetDisplay(this);
+			OnDnDropEnded(m_hoveredSlot);
+		}
+		else
+		{
+			m_originalSlot.SetDisplay(this);
+		}
+		/*if (!m_dropSucceeded)
 		{
 			transform.SetParent(m_originalParent, false);
 			(transform as RectTransform).anchoredPosition = Vector2.zero;
 
 			if (m_originalSlot != null)
 				m_originalSlot.SetDisplay(this);
-		}
+		}*/
 	}
 
 	public void TryDropOn ( StateLineSlot slot )

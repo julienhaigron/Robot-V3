@@ -50,6 +50,9 @@ public class UnitMacroDisplay : MonoBehaviour
 
 	private void OnEntitySelected (int? _entityID)
 	{
-		m_selectedHighlightGO.SetActive(_entityID.HasValue && _entityID.Value == m_linkedEntity.ID);
+		if (!gameObject.activeInHierarchy)
+			return;
+
+		m_selectedHighlightGO.SetActive(_entityID != null && _entityID.HasValue && _entityID.Value == m_linkedEntity.ID);
 	}
 }

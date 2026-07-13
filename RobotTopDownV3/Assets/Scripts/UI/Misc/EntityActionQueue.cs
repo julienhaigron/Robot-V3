@@ -104,12 +104,13 @@ public class EntityActionQueue : MonoBehaviour
 
 	private void RefreshVisual ( int? _entityID )
 	{
-		/*if (_entityID == null || !GameManager.Instance.GetEntityFromID(out Entity entity, _entityID.Value) || !entity.IsAlliedTo(GameManager.Instance.PlayerID))
+		if (_entityID == null || !GameManager.Instance.GetEntityFromID(out Entity entity, _entityID.Value) || !entity.IsAlliedTo(GameManager.Instance.PlayerID))
 		{
 			//gameObject.SetActive(false);
-			return;
+			return;//780.5f//1123f
+				   //-770.35f
 
-		}*/
+		}
 
 		//gameObject.SetActive(true);
 
@@ -213,11 +214,11 @@ public class EntityActionQueue : MonoBehaviour
 		}
 
 		m_actionPriorityQueueTfm.gameObject.SetActive(true);
-		m_selectedActionIcon.sprite = TurnManager.Instance.CurrentActionSelected.Data.icon;
-
 		EntityActionData.MainActionType mainType = TurnManager.Instance.CurrentActionSelected.Data.GetMainActionType();
+		m_selectedActionIcon.sprite = GameAssets.current.ui.mainActionTypeIcons[mainType];
+
 		List<EntityActionEnumID> actionPriorityQueue = new(PlayerController.Instance.SelectedEntity.AI.ActionPriorityQueues[mainType].priorityQueue);
-		actionPriorityQueue.Remove(TurnManager.Instance.CurrentActionTypeSelected);
+		//actionPriorityQueue.Remove(TurnManager.Instance.CurrentActionTypeSelected);
 
 		Vector2 newSize = (m_actionPriorityQueueTfm.transform as RectTransform).sizeDelta;
 		newSize.y = m_baseActionPriorityQueueHeight + (m_baseActionPriorityQueueElementHeight * actionPriorityQueue.Count);
@@ -239,7 +240,7 @@ public class EntityActionQueue : MonoBehaviour
 	{
 		EntityActionData.MainActionType mainType = TurnManager.Instance.CurrentActionSelected.Data.GetMainActionType();
 		List<EntityActionEnumID> actionsInOrder = new();
-		actionsInOrder.Add(TurnManager.Instance.CurrentActionTypeSelected);
+		//actionsInOrder.Add(TurnManager.Instance.CurrentActionTypeSelected);
 		foreach (PriorityQueueActionSlot slot in m_priorityQueueActionSlots)
 			actionsInOrder.Add(slot.Display.ActionEnumId);
 

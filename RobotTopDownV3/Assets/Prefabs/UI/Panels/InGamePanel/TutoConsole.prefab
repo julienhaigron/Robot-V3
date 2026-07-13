@@ -191,7 +191,6 @@ MonoBehaviour:
   m_dialogueTMP: {fileID: 5917936421854586822}
   m_characterNameTMP: {fileID: 3034546580025553875}
   m_dialogueImg: {fileID: 803810402827915727}
-  m_validateDialogueButton: {fileID: 838911817403335393}
   m_previousBtn: {fileID: 750350847440584869}
   m_nextBtn: {fileID: 9150902653829654508}
   m_charactersPerSecond: 30
@@ -800,6 +799,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Validate
       objectReference: {fileID: 0}
+    - target: {fileID: 4646697956712014140, guid: 610470f5c7e09224499375bfa2416e56, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5909219420003501140, guid: 610470f5c7e09224499375bfa2416e56, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -888,17 +891,6 @@ PrefabInstance:
       addedObject: {fileID: 1042219207486387834}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 610470f5c7e09224499375bfa2416e56, type: 3}
---- !u!114 &838911817403335393 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 3272911831302135717, guid: 610470f5c7e09224499375bfa2416e56, type: 3}
-  m_PrefabInstance: {fileID: 2796698131899342148}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 188bed51bf7dbd84b9b789ba9bfb59f6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!224 &7216074074270259055 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 4822083072303499819, guid: 610470f5c7e09224499375bfa2416e56, type: 3}

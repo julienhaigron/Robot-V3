@@ -94,6 +94,7 @@ MonoBehaviour:
   m_actionIconParent: {fileID: 1423773269852107715}
   m_actionIconPivot: {fileID: 7041969439563091438}
   m_actionIconImg: {fileID: 5473289538713760152}
+  m_modActionIconImg: {fileID: 7645630468761879677}
   m_mainHachureLeft: {fileID: 8778642475523729653}
   m_mainHachureRight: {fileID: 5790965976956297798}
   m_preparationHachure: {fileID: 4513178261367145892}
@@ -1235,7 +1236,7 @@ GameObject:
   - component: {fileID: 5686016288168892152}
   - component: {fileID: 7645630468761879677}
   m_Layer: 0
-  m_Name: Icon
+  m_Name: ModIcon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

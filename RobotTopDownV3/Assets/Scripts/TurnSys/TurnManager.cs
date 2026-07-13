@@ -33,6 +33,12 @@ public class TurnManager : Singleton<TurnManager>
 	public AEntityAction CurrentActionSelected => m_currentEntityAction;
 	private EntityActionEnumID m_currentActionTypeSelected;
 	public EntityActionEnumID CurrentActionTypeSelected => m_currentActionTypeSelected;
+
+	private AEntityAction m_currentEntityModAction;
+	public AEntityAction CurrentModActionSelected => m_currentEntityAction;
+	private EntityActionEnumID m_currentModActionTypeSelected;
+	public EntityActionEnumID CurrentModActionTypeSelected => m_currentActionTypeSelected;
+
 	private string m_currentEquipmentLinkedToActionTypeSelected;
 	public string CurrentEquipmentLinkedToActionTypeSelected => m_currentEquipmentLinkedToActionTypeSelected;
 
@@ -164,6 +170,7 @@ public class TurnManager : Singleton<TurnManager>
 			Entity selectedEntity = GameManager.Instance.GetEntityFromID(_selectedEntity.Value);
 			SetCurrentActionSelected(selectedEntity.AI.GetMovementAction().enumID, null, true);
 			SetCurrentStateSelected(selectedEntity.KnownedStates[0]);
+			SetCurrentModActionSelected(selectedEntity.KnownedModActions[0], selectedEntity.ComponentLinkedToAction[selectedEntity.KnownedModActions[0]][0]);
 		}
 		RefreshActionDisplay(_selectedEntity, false);
 	}
@@ -208,11 +215,30 @@ public class TurnManager : Singleton<TurnManager>
 		}
 	}
 
-	public void ReplaceActionState(RecordedAction _actionToReplaceTo, Entity.EntityState _state )
+	public void SetCurrentModActionSelected ( EntityActionEnumID _action, string _linkedEquipmentID/*, bool _isResetingAction*/ )
+	{
+		int performingEntityID = PlayerController.Instance.SelectedEntity.ID;
+		int timeAtStart = m_recordedActionInput.ContainsKey(performingEntityID) && m_recordedActionInput[performingEntityID].Count > 0
+			? m_recordedActionInput[performingEntityID].ToArray()[^1].action.TimeAtEnd : currentTick;
+
+		m_currentModActionTypeSelected = _action;
+		m_currentEquipmentLinkedToActionTypeSelected = _linkedEquipmentID;
+		m_currentEntityModAction = GetAction(GameAssets.current.game.entityActionsData[_action], performingEntityID, _linkedEquipmentID, timeAtStart);
+
+		//m_currentActionTargetTiles.Clear();
+		//m_currentEntityAction.OnSelectActionTileInteractPredicatePrewarm();
+		//onActionSelected?.Invoke(m_currentEntityAction);
+
+		/*if (_isResetingAction)
+		{
+		}*/
+	}
+
+	public void ReplaceActionState ( RecordedAction _actionToReplaceTo, Entity.EntityState _state )
 	{
 		List<RecordedAction> recordedActions = m_recordedActionInput[_actionToReplaceTo.action.performingEntityID].ToList();
 		Queue<RecordedAction> newQueue = new();
-		for(int i = 0; i < recordedActions.Count; i++)
+		for (int i = 0; i < recordedActions.Count; i++)
 		{
 			if (recordedActions[i].timeAtStart == _actionToReplaceTo.timeAtStart)
 			{
@@ -341,8 +367,8 @@ public class TurnManager : Singleton<TurnManager>
 			performingEntityID = _entityID,
 			action = _action,
 			entityState = _state,
-			freeAction = new WaitAction(), //default is wait action
-			freeActionType = EntityActionEnumID.Wait
+			freeAction = m_currentEntityModAction,
+			freeActionType = m_currentModActionTypeSelected
 		};
 
 		m_recordedActionInput[_entityID].Enqueue(recordedAction);
@@ -439,7 +465,7 @@ public class TurnManager : Singleton<TurnManager>
 		PlayerController.Instance.ClearGhostActionOnTileDisplay();
 		PlayerController.Instance.ClearGhostEntitiesAndItems();
 
-		if (_selectedEntityID.HasValue && _isResetingAction 
+		if (_selectedEntityID.HasValue && _isResetingAction
 			&& m_remainingActionToken[_selectedEntityID.Value] >= GameAssets.current.game.entityActionsData[m_currentActionTypeSelected].GetTokenTotalCost(m_currentEntityAction, GameManager.Instance.GetEntityFromID(_selectedEntityID.Value), null))
 			SetCurrentActionSelected(m_currentActionTypeSelected, m_currentEquipmentLinkedToActionTypeSelected, _isResetingAction);
 
@@ -447,14 +473,19 @@ public class TurnManager : Singleton<TurnManager>
 		foreach (int entityID in m_recordedActionInput.Keys)
 		{
 			int totalCost = 0;
+			RecordedAction lastRecordedAction = new();
 			Entity entity = GameManager.Instance.GetEntityFromID(entityID);
 			Tile lastRecordedPosition = entity.Displacement.Coordinates.GetTile();
 			int lastRecordedOrientation = entity.Displacement.CurrentOrientation;
 
 			foreach (RecordedAction recordedAction in m_recordedActionInput[entityID].ToArray())
 			{
+				lastRecordedAction = recordedAction;
 				totalCost += recordedAction.action.TotalDuration;
 				recordedAction.action.Display(recordedAction);
+
+				if(recordedAction.freeActionType != EntityActionEnumID.Unknowned && recordedAction.freeActionType != EntityActionEnumID.Wait)
+					recordedAction.freeAction.Display(recordedAction);
 
 				if (_specificTokenCount != -1 && totalCost <= _specificTokenCount)
 				{
@@ -468,6 +499,9 @@ public class TurnManager : Singleton<TurnManager>
 
 			if (_selectedEntityID.HasValue)
 				PlayerController.Instance.AddGhostEntityAt(entity, lastRecordedPosition, lastRecordedOrientation);
+
+			if (lastRecordedAction.freeActionType != EntityActionEnumID.Unknowned && lastRecordedAction.freeActionType != EntityActionEnumID.Wait)
+				lastRecordedAction.freeAction.GhostDisplay(lastRecordedAction.entityState);
 		}
 	}
 
@@ -890,7 +924,7 @@ public class TurnManager : Singleton<TurnManager>
 
 	private void EndRoundTick ()
 	{
-		if(currentPhase != TurnPhase.Playing)
+		if (currentPhase != TurnPhase.Playing)
 		{
 			Debug.Log("Server ended tick " + currentTick);
 			return; //error is here

@@ -45,6 +45,7 @@ public class GameAssets : ScriptableObject
 
         [Title("Pools")]
         public PoolData arrowPoolData;
+        public PoolData rotationHandlePoolData;
     }
 
     [System.Serializable]
@@ -72,6 +73,7 @@ public class GameAssets : ScriptableObject
         public SerializableDictionary<EntityEquipmentData.EquipmentType, Sprite> componentIcons = new();
         public SerializableDictionary<EntityEquipmentData.EntityFaction, Sprite> corporationsIcons = new();
         public SerializableDictionary<EntityEquipmentData.EntityFaction, Color> corporationsColors = new();
+        public SerializableDictionary<EntityActionData.MainActionType, Sprite> mainActionTypeIcons = new();
     }
 
 #if UNITY_EDITOR
