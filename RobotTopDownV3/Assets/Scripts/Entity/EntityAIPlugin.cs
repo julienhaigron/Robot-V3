@@ -52,18 +52,18 @@ public class EntityAIPlugin : EntityPlugin
 	{
 		base.Init(_entityData);
 
-		foreach(EntityActionEnumID actionID in m_linkedEntity.KnownedActions)
+		foreach (EntityActionEnumID actionID in m_linkedEntity.KnownedActions)
 		{
 			EntityActionData.MainActionType mainType = GameAssets.current.game.entityActionsData[actionID].GetMainActionType();
 
 			if (!m_actionPriorityQueues.ContainsKey(mainType))
 				m_actionPriorityQueues.Add(mainType, new());
-			
+
 			m_actionPriorityQueues[mainType].priorityQueue.Add(actionID);
 		}
 	}
 
-	public void SetActionPriorityQueue( EntityActionData.MainActionType _mainType, List<EntityActionEnumID> _actionsInOrder )
+	public void SetActionPriorityQueue ( EntityActionData.MainActionType _mainType, List<EntityActionEnumID> _actionsInOrder )
 	{
 		m_actionPriorityQueues[_mainType].priorityQueue = new(_actionsInOrder);
 	}
@@ -98,6 +98,10 @@ public class EntityAIPlugin : EntityPlugin
 			// if eneemy in weapon range
 			//  => shoot directly
 			m_lastEntitiesTargeted = enemies;
+
+			here
+			//TODO : check action priority queue and choose appropriate action
+
 			AttackAction attackAction = (TurnManager.Instance.GetAction(attackEnumID, m_linkedEntity.ID, equipmentID, _recordedAction.timeAtStart) as AttackAction);
 
 			int maxAmount = Mathf.Min(attackAction.Data.GetMaxTargetAmount(attackAction, m_linkedEntity, null), m_lastEntitiesTargeted.Count);
@@ -231,13 +235,20 @@ public class EntityAIPlugin : EntityPlugin
 
 	public EntityActionData GetMovementAction ()
 	{
-		foreach (EntityActionEnumID action in m_linkedEntity.KnownedActions)
+		if (m_actionPriorityQueues.ContainsKey(EntityActionData.MainActionType.Movement))
 		{
-			if (GameAssets.current.game.entityActionsData[action].type == EntityActionData.ActionType.Movement)
-				return GameAssets.current.game.entityActionsData[action];
+			return GameAssets.current.game.entityActionsData[m_actionPriorityQueues[EntityActionData.MainActionType.Movement].priorityQueue[0]];
 		}
+		else
+		{
+			foreach (EntityActionEnumID action in m_linkedEntity.KnownedActions)
+			{
+				if (GameAssets.current.game.entityActionsData[action].type == EntityActionData.ActionType.Movement)
+					return GameAssets.current.game.entityActionsData[action];
+			}
 
-		return null;
+			return null;
+		}
 	}
 
 	#region Vision

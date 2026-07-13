@@ -128,6 +128,7 @@ public class MoveToTargetAction : AEntityAction
 		List<Tile> path = GridManager.Instance.GetPath(from, _tile, true);
 
 		path.Reverse();
+		int actionCount = 0;
 		for (int i = 0; i < path.Count - 1; i += Data.movementSpeed)
 		{
 			MoveToTargetAction action = new MoveToTargetAction();
@@ -144,12 +145,13 @@ public class MoveToTargetAction : AEntityAction
 			for (int j = 0; j < Data.movementSpeed && i+j < path.Count - 1; j++)
 				tileIDList.Add(path[i + j + 1].coordinates.ID);
 			action.thisActionDestinationIDArray = tileIDList.ToArray();
-			action.Init(GameAssets.current.game.entityActionsData[enumID], linkedEquipmentId, performingEntityID, path[i].coordinates.ID, timeAtStart + i);
+			action.Init(GameAssets.current.game.entityActionsData[enumID], linkedEquipmentId, performingEntityID, path[i].coordinates.ID, timeAtStart + (actionCount * Data.tokenDuration));
 			//action.actualDuration = Data.movementSpeed;
 
 			if (_tile.TryGetPlannedItemAt(timeAtStart + i, out Item _item))
 				_item.Data.OnRegisterInteraction(action, _item);
 
+			actionCount++;
 			TurnManager.Instance.AddAction(performingEntityID, action, TurnManager.Instance.CurrentStateTypeSelected);
 		}
 

@@ -131,16 +131,16 @@ public class EntityActionQueue : MonoBehaviour
 		Entity selectedEntity = PlayerController.Instance.SelectedEntity;
 		if (selectedEntity == null || !TurnManager.Instance.RecordedActions.ContainsKey(selectedEntity.ID))
 		{
-			m_backgroundV1.gameObject.SetActive(selectedEntity != null);
-			m_backgroundV2.gameObject.SetActive(selectedEntity == null);
+			m_backgroundV1.gameObject.SetActive(selectedEntity == null);
+			m_backgroundV2.gameObject.SetActive(selectedEntity != null);
 
 			foreach (EntityActionDisplay display in m_actionDisplays)
 				display.Hide(true);
 			return;
 		}
 
-		m_backgroundV1.gameObject.SetActive(true);
-		m_backgroundV2.gameObject.SetActive(false);
+		m_backgroundV1.gameObject.SetActive(false);
+		m_backgroundV2.gameObject.SetActive(true);
 		TurnManager.RecordedAction[] recordedActions = TurnManager.Instance.RecordedActions[selectedEntity.ID].ToArray();
 		for (int i = 0; i < m_actionDisplays.Length; i++)
 		{
