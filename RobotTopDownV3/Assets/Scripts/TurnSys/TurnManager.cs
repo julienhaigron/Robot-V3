@@ -553,7 +553,7 @@ public class TurnManager : Singleton<TurnManager>
 				}
 			}
 
-			if (EntityActionDisplay.SelectedDisplay != null)
+			if (EntityActionDisplay.SelectedDisplay != null && entityID == _selectedEntityID.Value)
 				lastRecordedAction = EntityActionDisplay.SelectedDisplay.RecordedAction;
 			if (_selectedEntityID.HasValue)
 				PlayerController.Instance.AddGhostEntityAt(entity, _specificTokenCount == -1 ? 
