@@ -33,11 +33,11 @@ public class InvokeEntityAction : SpecialAction
 		bool doesSelfHaveConflict = false;
 		bool doesOtherHaveConflict = false;
 
-		if (_otherAction is MoveToTargetAction _otherMoveToTargetAction && _otherMoveToTargetAction.thisActionDestinationIDArray.Any(e => targetTileIDs.Contains(e)))
+		if (_otherAction is MoveToTargetAction _otherMoveToTargetAction && _otherMoveToTargetAction.targetTileIDs.Any(e => targetTileIDs.Contains(e)))
 		{
 			if (result == EntityActionData.PFCResultType.FirstWins)
 			{
-				_otherMoveToTargetAction.thisActionDestinationIDArray = null;
+				_otherMoveToTargetAction.targetTileIDs = null;
 				doesOtherHaveConflict = true;
 			}
 			else if (result == EntityActionData.PFCResultType.SecondWins)
@@ -50,7 +50,7 @@ public class InvokeEntityAction : SpecialAction
 				int roll = Random.Range((int)0, 2);
 				if (roll == 0)
 				{
-					_otherMoveToTargetAction.thisActionDestinationIDArray = null;
+					_otherMoveToTargetAction.targetTileIDs = null;
 					doesOtherHaveConflict = true;
 				}
 				else

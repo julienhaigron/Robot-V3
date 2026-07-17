@@ -59,7 +59,7 @@ public class StateLineDisplay :
 		m_originalSlot = _droppedOnSlot;
 		m_backgroundImg.color = GameAssets.current.ui.entityStateColors[_droppedOnSlot.State];
 		m_recordedAction.entityState = _droppedOnSlot.State;
-		TurnManager.Instance.ReplaceActionState(m_recordedAction, _droppedOnSlot.State);
+		//TurnManager.Instance.ReplaceActionState(m_recordedAction, _droppedOnSlot.State);
 	}
 
 	public void OnBeginDrag ( PointerEventData eventData )

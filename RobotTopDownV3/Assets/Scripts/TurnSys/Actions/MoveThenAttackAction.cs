@@ -60,12 +60,12 @@ public class MoveThenAttackAction : AttackAction
 				isActionCanceled = true;
 			}
 		}
-		else */if (_otherAction is MoveToTargetAction && (_otherAction as MoveToTargetAction).thisActionDestinationIDArray.Contains(positionAfterMovementID))
+		else */if (_otherAction is MoveToTargetAction && (_otherAction as MoveToTargetAction).targetTileIDs.Contains(positionAfterMovementID))
 		{
 			int roll = UnityEngine.Random.Range((int)0, 2);
 			if (roll == 0)
 			{
-				(_otherAction as MoveToTargetAction).thisActionDestinationIDArray = null;
+				(_otherAction as MoveToTargetAction).targetTileIDs = null;
 				doesOtherHaveConflict = true;
 			}
 			else
@@ -140,7 +140,7 @@ public class MoveThenAttackAction : AttackAction
 		Vector3 startPos = GridManager.Instance.Tiles[supposedPositionAtActionStartID].transform.position;
 		Vector3 destination = GridManager.Instance.Tiles[(int)positionAfterMovementID].transform.position;
 		Vector3 position = Vector3.Lerp(startPos, destination, .5f);
-		arrow.Init(_recordedAction);
+		arrow.Init(_recordedAction, true);
 		arrow.transform.position = position;
 		arrow.transform.LookAt(GridManager.Instance.Tiles[(int)positionAfterMovementID].transform);
 
@@ -160,10 +160,22 @@ public class MoveThenAttackAction : AttackAction
 			Vector3 destination = pathToTile[i + 1].transform.position;
 			Vector3 position = Vector3.Lerp(startPos, destination, .5f);
 			arrow.SetMaterial(GameAssets.current.ui.ghostEntityStateMaterials[_state]);
+			arrow.SetBeginningGoVisibility(i == 0);
 			arrow.transform.position = position;
 			arrow.transform.LookAt(pathToTile[i + 1].transform);
 
 			PlayerController.Instance.AddActionDisplay(arrow, performingEntityID, true);
+		}
+
+		if (TurnManager.Instance.CurrentActionTargetTiles == null)
+			return;
+
+		foreach (Tile tile in TurnManager.Instance.CurrentActionTargetTiles)
+		{
+			if (tile == null)
+				continue;
+
+			tile.UI.SetOutlineColor(Color.blue);
 		}
 	}
 

@@ -5,16 +5,23 @@ using UnityEngine;
 public class ActionDisplayOnTile : PoolElement
 {
     [SerializeField] private MeshRenderer[] m_renderers;
+	[SerializeField] private GameObject m_beginningGO;
 
 	private TurnManager.RecordedAction m_recordedAction;
 	public TurnManager.RecordedAction RecordedAction => m_recordedAction;
 	public Tile OriginTile => GridManager.Instance.Tiles[m_recordedAction.action.supposedPositionAtActionStartID];
 	public Tile DestinationTile => GridManager.Instance.Tiles[m_recordedAction.action.positionAtActionEndID];
 
-	public void Init (TurnManager.RecordedAction _recordedAction)
+	public void Init (TurnManager.RecordedAction _recordedAction, bool _isBeginning)
 	{
 		m_recordedAction = _recordedAction;
+		SetBeginningGoVisibility(_isBeginning);
 		SetMaterial(GameAssets.current.ui.entityStateMaterials[_recordedAction.entityState]);
+	}
+
+	public void SetBeginningGoVisibility(bool _isVisible )
+	{
+		m_beginningGO.SetActive(_isVisible);
 	}
 
     public void SetMaterial(Material _mat)

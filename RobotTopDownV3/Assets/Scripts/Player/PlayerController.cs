@@ -10,6 +10,7 @@ public class PlayerController : Singleton<PlayerController>
 {
 	public static Action<int?> onEntitySelected;
 
+	[SerializeField] private TurnManager m_turnManager;
 	[SerializeField] private FogOfWarRenderer m_fogRenderer;
 
 	[Header("Camera Limits")]
@@ -83,7 +84,7 @@ public class PlayerController : Singleton<PlayerController>
 
 	private void FixedUpdate ()
 	{
-		if (TurnManager.Instance.currentPhase == TurnManager.TurnPhase.Off
+		if (m_turnManager.currentPhase == TurnManager.TurnPhase.Off
 			|| UIManager.Instance.currentPanel is not InGamePanel)
 			return;
 
@@ -168,7 +169,7 @@ public class PlayerController : Singleton<PlayerController>
 
 	private void OnTileLeftClick ( Tile _tile )
 	{
-		if (TurnManager.Instance.currentPhase != TurnManager.TurnPhase.Recording)
+		if (m_turnManager.currentPhase != TurnManager.TurnPhase.Recording)
 			return;
 
 		//Event => Select // unselect entity
@@ -186,12 +187,12 @@ public class PlayerController : Singleton<PlayerController>
 		{
 			if (_tile.CanInteract)
 			{
-				TurnManager.Instance.CurrentActionSelected.RegisterInteraction(_tile);
+				m_turnManager.CurrentActionSelected.RegisterInteraction(_tile);
 			}
 		}
 	}
 
-	public void SelectEntity(Entity _entity )
+	public void SelectEntity ( Entity _entity )
 	{
 		if (m_selectedEntity == _entity)
 		{
@@ -220,10 +221,34 @@ public class PlayerController : Singleton<PlayerController>
 
 	private void OnTileRightClick ( Tile _tile )
 	{
-		if (TurnManager.Instance.currentPhase != TurnManager.TurnPhase.Recording)
+		if (m_turnManager.currentPhase != TurnManager.TurnPhase.Recording)
 			return;
 
-		if (m_selectedEntity != null && m_actionDisplays.ContainsKey(m_selectedEntity.ID) && m_actionDisplays[m_selectedEntity.ID].Count > 0)
+		AEntityAction action = EntityActionDisplay.SelectedDisplay != null 
+			? (m_turnManager.hasModActionSelected ? EntityActionDisplay.SelectedDisplay.RecordedAction.freeAction : EntityActionDisplay.SelectedDisplay.RecordedAction.action)
+			: (m_turnManager.hasModActionSelected ? m_turnManager.CurrentModActionSelected : m_turnManager.CurrentActionSelected);
+
+		/*if (action != null && _tile != null && (EntityActionDisplay.SelectedDisplay != null ?
+			(action.targetTileIDs != null && action.targetTileIDs.Contains(_tile.coordinates.ID))
+			: (m_turnManager.CurrentActionTargetTiles != null && m_turnManager.CurrentActionTargetTiles.Contains(_tile))))
+		{*/
+		if (action != null && _tile != null && m_turnManager.CurrentActionTargetTiles != null && m_turnManager.CurrentActionTargetTiles.Contains(_tile))
+		{
+			/*if(EntityActionDisplay.SelectedDisplay != null)
+			{
+				for(int i = 0; i <action.targetTileIDs.Length; i++)
+				{
+					if(action.targetTileIDs[i] == _tile.coordinates.ID)
+					{
+						action.targetTileIDs[i] = -1;
+						break;
+					}
+				}
+			}
+			else*/
+				m_turnManager.CurrentActionTargetTiles.Remove(_tile);
+		}
+		else if (m_selectedEntity != null && m_actionDisplays.ContainsKey(m_selectedEntity.ID) && m_actionDisplays[m_selectedEntity.ID].Count > 0)
 		{
 			//ally entity
 			if (m_selectedEntity.IsAlliedTo(PlayerID))
@@ -242,12 +267,12 @@ public class PlayerController : Singleton<PlayerController>
 					//remove actions
 					foreach (ActionDisplayOnTile display in actionsOnTile)
 					{
-						List<TurnManager.RecordedAction> actionQueue = TurnManager.Instance.RecordedActions[m_selectedEntity.ID].ToList();
+						List<TurnManager.RecordedAction> actionQueue = m_turnManager.RecordedActions[m_selectedEntity.ID].ToList();
 						for (int i = 0; i < actionQueue.Count; i++)
 						{
 							if (actionQueue[i].action == display.RecordedAction.action)
 							{
-								TurnManager.Instance.RemoveActionFrom(actionQueue[i], i);
+								m_turnManager.RemoveActionFrom(actionQueue[i], i);
 							}
 						}
 					}
@@ -261,18 +286,25 @@ public class PlayerController : Singleton<PlayerController>
 				}
 			}
 		}
-		else if(m_selectedEntity != null)
+		else if (m_selectedEntity != null)
 		{
-			//unselect entity
-			m_selectedEntity.Deselect();
-			m_selectedEntity = null;
-			onEntitySelected?.Invoke(null);
+			if (!_tile.CanInteract && EntityActionDisplay.SelectedDisplay != null)
+			{
+				EntityActionDisplay.SelectedDisplay.Deselect();
+			}
+			else
+			{
+				//unselect entity
+				m_selectedEntity.Deselect();
+				m_selectedEntity = null;
+				onEntitySelected?.Invoke(null);
+			}
 		}
 	}
 
 	private void OnTileHovered ( Tile _tile )
 	{
-		if (m_selectedEntity == null || _tile == m_hoveredTile)
+		if (m_selectedEntity == null || _tile == m_hoveredTile || EntityActionDisplay.SelectedDisplay != null || !_tile.CanInteract)
 			return;
 
 		ClearGhostActionOnTileDisplay();
@@ -280,8 +312,7 @@ public class PlayerController : Singleton<PlayerController>
 		int totalCostSpend = 0;
 		bool didContainTile = false;
 
-		//wrong way of calculating
-		//must check each actions
+		m_hoveredTile = _tile;
 		if (m_actionDisplays.ContainsKey(m_selectedEntity.ID))
 		{
 			foreach (ActionDisplayOnTile display in m_actionDisplays[m_selectedEntity.ID])
@@ -294,22 +325,26 @@ public class PlayerController : Singleton<PlayerController>
 				}
 			}
 		}
-		if (!didContainTile)
-			GridManager.Instance.BFS(GridManager.Instance.Tiles[TurnManager.Instance.GetLastRegisteredPositionOfEntity(m_selectedEntity.ID)]
-				, TurnManager.Instance.RemainingActionToken[m_selectedEntity.ID] * TurnManager.Instance.CurrentActionSelected.Data.movementSpeed, null, true, false);
+		AEntityAction currentSelectedAction = EntityActionDisplay.SelectedDisplay != null
+			? (m_turnManager.hasModActionSelected ? EntityActionDisplay.SelectedDisplay.RecordedAction.freeAction : EntityActionDisplay.SelectedDisplay.RecordedAction.action)
+			: (m_turnManager.hasModActionSelected ? m_turnManager.CurrentModActionSelected : m_turnManager.CurrentActionSelected);
 
-		bool isTargetValid = TurnManager.Instance.currentPhase == TurnManager.TurnPhase.Recording && _tile.CanInteract;
+		if (!didContainTile)
+			GridManager.Instance.BFS(GridManager.Instance.Tiles[m_turnManager.GetLastRegisteredPositionOfEntity(m_selectedEntity.ID)]
+				, m_turnManager.RemainingActionToken[m_selectedEntity.ID] * currentSelectedAction.Data.movementSpeed, null, true, false);
+
+		bool isTargetValid = m_turnManager.currentPhase == TurnManager.TurnPhase.Recording && _tile.CanInteract;
 		int distanceToTarget = isTargetValid ? _tile.Distance : 0;
-		int specificTokenCount = didContainTile ? totalCostSpend : (GameConfig.current.game.actionTokenPerRound - TurnManager.Instance.RemainingActionToken[m_selectedEntity.ID]) + distanceToTarget;
-		TurnManager.Instance.RefreshActionDisplay(m_selectedEntity.ID, false, specificTokenCount);
+		int specificTokenCount = didContainTile ? totalCostSpend : (GameConfig.current.game.actionTokenPerRound - m_turnManager.RemainingActionToken[m_selectedEntity.ID]) + distanceToTarget;
+
 		if (isTargetValid)
 		{
-			if(TurnManager.Instance.CurrentActionSelected.Data.codeType == EntityActionData.ActionCodeType.MoveThenAttack || TurnManager.Instance.CurrentActionSelected.Data.codeType == EntityActionData.ActionCodeType.TargetTileMove)
-				TurnManager.Instance.CurrentActionSelected.positionAtActionEndID = _tile.coordinates.ID;
-			TurnManager.Instance.CurrentActionSelected.GhostDisplay(TurnManager.Instance.CurrentStateTypeSelected);
+			if (currentSelectedAction.Data.codeType == EntityActionData.ActionCodeType.MoveThenAttack || currentSelectedAction.Data.codeType == EntityActionData.ActionCodeType.TargetTileMove)
+				currentSelectedAction.positionAtActionEndID = _tile.coordinates.ID;
 		}
 
-		m_hoveredTile = _tile;
+		m_turnManager.RefreshActionDisplay(m_selectedEntity.ID, false, specificTokenCount);
+
 	}
 
 	#region Ghost
@@ -356,7 +391,7 @@ public class PlayerController : Singleton<PlayerController>
 		}
 	}
 
-	public void AddRotationActionDisplay( RotationActionDisplay _display, int _performingEntityID )
+	public void AddRotationActionDisplay ( RotationActionDisplay _display, int _performingEntityID )
 	{
 		if (!m_rotationActionDisplays.ContainsKey(_performingEntityID))
 			m_rotationActionDisplays.Add(_performingEntityID, new());
@@ -393,7 +428,7 @@ public class PlayerController : Singleton<PlayerController>
 		{
 			ghost.Hide();
 		}
-		
+
 		foreach (GhostItem ghost in m_ghostItems.Values)
 		{
 			ghost.Hide();

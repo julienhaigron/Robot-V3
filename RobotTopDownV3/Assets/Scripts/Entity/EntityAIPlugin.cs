@@ -162,7 +162,7 @@ public class EntityAIPlugin : EntityPlugin
 					MoveToTargetAction moveToAction = (TurnManager.Instance.GetAction(movementAction.enumID, m_linkedEntity.ID, null, _recordedAction.timeAtStart) as MoveToTargetAction);
 					moveToAction.mode = MoveToTargetAction.MoveActionMode.Entity;
 					moveToAction.targetEntiyID = closestEntity.ID;
-					moveToAction.thisActionDestinationIDArray = tileIDs.ToArray();
+					moveToAction.targetTileIDs = tileIDs.ToArray();
 					moveToAction.Init(GameAssets.current.game.entityActionsData[movementAction.enumID], null, m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID, _recordedAction.action.timeAtStart);
 					resultInfo.ReplaceAction(moveToAction, "Gets closer to entity");
 

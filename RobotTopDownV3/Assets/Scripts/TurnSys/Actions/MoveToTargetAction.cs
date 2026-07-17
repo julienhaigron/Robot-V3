@@ -12,7 +12,6 @@ public class MoveToTargetAction : AEntityAction
 	public MoveActionMode mode;
 
 	public int finalTargetTileID = -1;
-	public int[] thisActionDestinationIDArray = null;
 	public enum MoveActionMode { Coordinate, Entity }
 
 	public override void NetworkSerialize<T> ( BufferSerializer<T> serializer )
@@ -22,7 +21,6 @@ public class MoveToTargetAction : AEntityAction
 		serializer.SerializeValue(ref targetTileID);
 		serializer.SerializeValue(ref mode);
 		serializer.SerializeValue(ref finalTargetTileID);
-		serializer.SerializeValue(ref thisActionDestinationIDArray);
 	}
 
 	public override void Init ( EntityActionData _data, string _linkedEquipmentID, int _performingEntityID, int _positionAtActionStartID, int _timeAtStart )
@@ -39,7 +37,7 @@ public class MoveToTargetAction : AEntityAction
 				break;
 		}
 
-		positionAtActionEndID = thisActionDestinationIDArray == null ? _positionAtActionStartID : thisActionDestinationIDArray[^1];
+		positionAtActionEndID = targetTileIDs == null ? _positionAtActionStartID : targetTileIDs[^1];
 	}
 
 	public override void Prepare ( Entity.EntityState _state )
@@ -56,7 +54,7 @@ public class MoveToTargetAction : AEntityAction
 		base.Perform(_state);
 
 		//move to targetTile
-		if (thisActionDestinationIDArray != null && thisActionDestinationIDArray.Length > 0 && finalTargetTileID != -1/* && thisActionDestination.GetEntity(false) == null*/)
+		if (targetTileIDs != null && targetTileIDs.Length > 0 && finalTargetTileID != -1/* && thisActionDestination.GetEntity(false) == null*/)
 		{
 			GameManager.Instance.StartCoroutine(PerformCR());
 		}
@@ -74,7 +72,7 @@ public class MoveToTargetAction : AEntityAction
 		/*Tile from = GameManager.Instance.GetEntityFromID(performingEntityID).Displacement.Coordinates.GetTile();
 		Tile to = GridManager.Instance.Tiles[thisActionDestinationIDArray[];
 		List<Tile> path = GridManager.Instance.GetPath(from, to, false);*/
-		int movementAmount = Mathf.Min(thisActionDestinationIDArray.Length, Data.movementSpeed);
+		int movementAmount = Mathf.Min(targetTileIDs.Length, Data.movementSpeed);
 		float movementSpeed = GameConfig.current.game.actionDuration / movementAmount;
 
 		for (int i = 0; i < movementAmount; i++)
@@ -87,7 +85,7 @@ public class MoveToTargetAction : AEntityAction
 			{
 				tile.UI.SetOutlineColor(Color.blue);
 			}
-			GameManager.Instance.GetEntityFromID(performingEntityID).Displacement.MoveToTile(thisActionDestinationIDArray[i], null, true, movementSpeed);
+			GameManager.Instance.GetEntityFromID(performingEntityID).Displacement.MoveToTile(targetTileIDs[i], null, true, movementSpeed);
 
 			yield return new WaitForSeconds(movementSpeed);
 			foreach (Tile tile in tilesInRange)
@@ -144,7 +142,7 @@ public class MoveToTargetAction : AEntityAction
 			List<int> tileIDList = new();
 			for (int j = 0; j < Data.movementSpeed && i+j < path.Count - 1; j++)
 				tileIDList.Add(path[i + j + 1].coordinates.ID);
-			action.thisActionDestinationIDArray = tileIDList.ToArray();
+			action.targetTileIDs = tileIDList.ToArray();
 			action.Init(GameAssets.current.game.entityActionsData[enumID], linkedEquipmentId, performingEntityID, path[i].coordinates.ID, timeAtStart + (actionCount * Data.tokenDuration));
 			//action.actualDuration = Data.movementSpeed;
 
@@ -152,7 +150,10 @@ public class MoveToTargetAction : AEntityAction
 				_item.Data.OnRegisterInteraction(action, _item);
 
 			actionCount++;
-			TurnManager.Instance.AddAction(performingEntityID, action, TurnManager.Instance.CurrentStateTypeSelected);
+			TurnManager.Instance.RegisterAction(performingEntityID, action, TurnManager.Instance.CurrentStateTypeSelected);
+
+			if (TurnManager.Instance.RemainingActionToken[performingEntityID] < Data.tokenDuration)
+				break;
 		}
 
 		TurnManager.Instance.RefreshActionDisplay(performingEntityID, true);
@@ -185,13 +186,13 @@ public class MoveToTargetAction : AEntityAction
 					doesSelfHaveConflict = true;
 			}
 		}
-		else if (thisActionDestinationIDArray != null && GridManager.Instance.GetDistanceBetween(PerformingEntity.Displacement.Coordinates.GetTile(), GridManager.Instance.Tiles[thisActionDestinationIDArray[0]], Data.movementSpeed, false) > 1)
+		else if (targetTileIDs != null && GridManager.Instance.GetDistanceBetween(PerformingEntity.Displacement.Coordinates.GetTile(), GridManager.Instance.Tiles[targetTileIDs[0]], Data.movementSpeed, false) > 1)
 		{
 			//check if tile too far
 			doesSelfHaveConflict = true;
 			RefreshDestinatedTile();
 		}
-		else if (thisActionDestinationIDArray == null)
+		else if (targetTileIDs == null)
 		{
 			doesSelfHaveConflict = true;
 			RefreshDestinatedTile();
@@ -211,25 +212,25 @@ public class MoveToTargetAction : AEntityAction
 				thisActionDestinationIDArray = null;
 			}
 		}*/
-		else if (_otherAction is MoveToTargetAction _otherMoveToTargetAction && _otherMoveToTargetAction.thisActionDestinationIDArray.Any(tileID => thisActionDestinationIDArray.Contains(tileID)))
+		else if (_otherAction is MoveToTargetAction _otherMoveToTargetAction && _otherMoveToTargetAction.targetTileIDs.Any(tileID => targetTileIDs.Contains(tileID)))
 		{
 			int roll = UnityEngine.Random.Range((int)0, 2);
 			if (roll == 0)
 			{
 				//performing entity wins roll
-				_otherMoveToTargetAction.thisActionDestinationIDArray = null;
+				_otherMoveToTargetAction.targetTileIDs = null;
 				doesOtherHaveConflict = true;
 			}
 			else
 			{
 				doesSelfHaveConflict = true;
-				thisActionDestinationIDArray = null;
+				targetTileIDs = null;
 			}
 		}
 
 		if (doesSelfHaveConflict == false)
 		{
-			foreach (int tileID in thisActionDestinationIDArray)
+			foreach (int tileID in targetTileIDs)
 				GridManager.Instance.Tiles[tileID].SetEntity(performingEntity, _isThisTurn: false);
 		}
 
@@ -238,11 +239,11 @@ public class MoveToTargetAction : AEntityAction
 
 	private bool IsDestinationOccupiedOnNextTurnAction ()
 	{
-		if (thisActionDestinationIDArray == null)
+		if (targetTileIDs == null)
 			return false;
 
 		bool hasOtherEntityOnDestinations = false;
-		foreach (int tileID in thisActionDestinationIDArray)
+		foreach (int tileID in targetTileIDs)
 		{
 			Entity entity = GridManager.Instance.Tiles[tileID].GetEntity(_isThisTurn: false);
 			if ((entity != null && entity.ID != performingEntityID)
@@ -271,10 +272,10 @@ public class MoveToTargetAction : AEntityAction
 		}
 
 		pathToTile.Reverse();
-		thisActionDestinationIDArray = new int[Data.movementSpeed];
+		targetTileIDs = new int[Data.movementSpeed];
 		for (int i = 0; i < Data.movementSpeed; i++)
 		{
-			thisActionDestinationIDArray[i] = pathToTile[i + 1].coordinates.ID;
+			targetTileIDs[i] = pathToTile[i + 1].coordinates.ID;
 			positionAtActionEndID = pathToTile[i + 1].coordinates.ID;
 		}
 	}
@@ -282,17 +283,19 @@ public class MoveToTargetAction : AEntityAction
 	public override void Display ( TurnManager.RecordedAction _recordedAction )
 	{
 		Vector3 previousPosition = GridManager.Instance.Tiles[supposedPositionAtActionStartID].transform.position;
-		foreach (int tileID in thisActionDestinationIDArray)
+		bool didBeginning = false;
+		foreach (int tileID in targetTileIDs)
 		{
 			ActionDisplayOnTile arrow = ObjectsPooling.GetElement(GameAssets.current.game.arrowPoolData) as ActionDisplayOnTile;
 			Vector3 startPos = previousPosition;
 			Vector3 destination = GridManager.Instance.Tiles[tileID].transform.position;
 			Vector3 position = Vector3.Lerp(startPos, destination, .5f);
 			previousPosition = destination;
-			arrow.Init(_recordedAction);
+			arrow.Init(_recordedAction, !didBeginning);
 			arrow.transform.position = position;
 			arrow.transform.LookAt(GridManager.Instance.Tiles[tileID].transform);
 
+			didBeginning = true;
 			PlayerController.Instance.AddActionDisplay(arrow, performingEntityID, false);
 		}
 	}
@@ -304,6 +307,7 @@ public class MoveToTargetAction : AEntityAction
 
 		Tile from = GridManager.Instance.Tiles[TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntityID)];
 		List<Tile> path = GridManager.Instance.GetPath(from, GridManager.Instance.Tiles[positionAtActionEndID], true, false);
+		path.Reverse();
 
 		for (int i = 0; i < path.Count - 1; i++)
 		{
@@ -314,6 +318,7 @@ public class MoveToTargetAction : AEntityAction
 			Vector3 destination = otherTile.transform.position;
 			Vector3 position = Vector3.Lerp(startPos, destination, .5f);
 			arrow.SetMaterial(GameAssets.current.ui.ghostEntityStateMaterials[_state]);
+			arrow.SetBeginningGoVisibility(i % Data.movementSpeed == 0);
 			arrow.transform.position = position;
 			arrow.transform.LookAt(otherTile.transform);
 

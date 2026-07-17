@@ -122,7 +122,7 @@ public class EntityActionQueue : MonoBehaviour
 
 		RefreshPriorityQueue(_entityID);
 
-		/*m_actionTokenDisplay.UpdateValue(TurnManager.Instance.RemainingActionToken[_entityID.Value]
+		/*m_actionTokenDisplay.UpdateValue(m_turnManager.RemainingActionToken[_entityID.Value]
 			, _suffix: "/" + GameConfig.current.game.actionTokenPerRound);*/
 
 	}

@@ -850,6 +850,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8fb5f8303f4426146afd8c7ac6d779b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_turnManager: {fileID: 2601377726672517245}
   m_fogRenderer: {fileID: 5089135159799770867}
 --- !u!114 &2601377726672517245
 MonoBehaviour:
@@ -870,6 +871,7 @@ MonoBehaviour:
     keys: 
   currentPhase: 0
   currentTick: 0
+  hasModActionSelected: 0
 --- !u!114 &7124589887109012541
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -37,7 +37,14 @@ public class SpecialAction : AEntityAction
 
 	public override void GhostDisplay ( Entity.EntityState _state )
 	{
+		foreach (int tileID in targetTileIDs)
+		{
+			if (tileID == -1 || GridManager.Instance.Tiles.Length <= tileID)
+				continue;
 
+			Tile tile = GridManager.Instance.Tiles[tileID];
+			tile.UI.SetOutlineColor(Color.yellow);
+		}
 	}
 
 	public override bool TileInteractPredicate ( Tile _tile )

@@ -195,6 +195,8 @@ public sealed class InGamePanel : AUIPanel
 
 	private void OnClickEndPhaseBtn ()
 	{
+		if (TurnManager.Instance.currentPhase != TurnManager.TurnPhase.Recording)
+			return;
 
 		foreach (Entity entity in GameManager.Instance.PlayersEntityAnchor[0].Entities)
 		{

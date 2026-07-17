@@ -88,22 +88,14 @@ public abstract class AEntityAction : INetworkSerializable
 			targetedEntityID = _tile.GetEntity(true).ID;
 		targetTileID = _tile.coordinates.ID;*/
 		int maxTargetAmount = Data.GetMaxTargetAmount(this, PerformingEntity, _tile.GetEntity(true));
-
-		bool shouldAddAction = maxTargetAmount <= 1;
-		if (maxTargetAmount > 1)
-		{
-			TurnManager.Instance.AddTargetTileInCurrentAction(_tile);
-			shouldAddAction = TurnManager.Instance.CurrentActionTargetTiles.Count == maxTargetAmount;
-		}
+		TurnManager.Instance.AddTargetTileInCurrentAction(_tile);
 
 		if (_tile.TryGetPlannedItemAt(timeAtStart, out Item item))
 			item.Data.OnRegisterInteraction(this, item);
 
-		if (shouldAddAction)
+		if (TurnManager.Instance.CurrentActionTargetTiles.Count == maxTargetAmount)
 		{
-			TurnManager.Instance.AddAction(performingEntityID, TurnManager.Instance.CurrentActionSelected
-				, TurnManager.Instance.CurrentStateTypeSelected);
-
+			TurnManager.Instance.RegisterAction(performingEntityID, TurnManager.Instance.CurrentActionSelected, TurnManager.Instance.CurrentStateTypeSelected);
 			TurnManager.Instance.RefreshActionDisplay(performingEntityID, true);
 		}
 	}

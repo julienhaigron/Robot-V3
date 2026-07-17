@@ -161,6 +161,15 @@ public class AttackAction : AEntityAction
 
 	public override void GhostDisplay ( Entity.EntityState _state )
 	{
+		if (TurnManager.Instance.CurrentActionTargetTiles == null)
+			return;
 
+		foreach (Tile tile in TurnManager.Instance.CurrentActionTargetTiles)
+		{
+			if (tile == null)
+				continue;
+
+			tile.UI.SetOutlineColor(Color.blue);
+		}
 	}
 }
