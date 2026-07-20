@@ -326,7 +326,7 @@ public partial class GameDatas : ScriptableObject
 #endif
 			cycleData.availableMissionsIds.Clear();
 			for (int i = 0; i < FTUEManager.Instance.Cycle1Missions.Length; i++)
-				cycleData.availableMissionsIds.Add(FTUEManager.Instance.Cycle1Missions[i]);
+				cycleData.availableMissionsIds.Add(FTUEManager.Instance.Cycle1Missions[i].enumID);
 		}
 
 		#region Currencies

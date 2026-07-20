@@ -5,8 +5,8 @@ using Sirenix.OdinInspector;
 
 public class FTUEManager : SingletonPersistant<FTUEManager>
 {
-	[SerializeField] private MissionDataEnumID[] m_cycle1Missions;
-	public MissionDataEnumID[] Cycle1Missions => m_cycle1Missions;
+	[SerializeField] private MissionData[] m_cycle1Missions;
+	public MissionData[] Cycle1Missions => m_cycle1Missions;
 	public UnitPreset[] playerStartingSquadUnits;
 
 	[Title("MicroTuto0")]
@@ -75,7 +75,7 @@ public class FTUEManager : SingletonPersistant<FTUEManager>
 		TaskSequence tutoSequence = new("MicroTuto0");
 
 		//input phase
-		tutoSequence.Append(new DialogueTask("Select Unit", ( context ) => context.Game.CurrentMission != null && context.Game.CurrentMission.enumID == m_cycle1Missions[0]
+		tutoSequence.Append(new DialogueTask("Select Unit", ( context ) => context.Game.CurrentMission != null && context.Game.CurrentMission.enumID == m_cycle1Missions[0].enumID
 			&& context.UI.currentPanel is InGamePanel
 		, m_firstTutoDialogues[0]));
 		tutoSequence.Append(new DialogueHighlightTask("Action explenation", (context) => context.Player.SelectedEntity != null

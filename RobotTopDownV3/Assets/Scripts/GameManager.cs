@@ -116,7 +116,7 @@ public class GameManager : SingletonPersistant<GameManager>
 				GameDatas.current.currentPlayerSave.didStartTuto = true;
 			}
 
-			SetupLevel(GameAssets.current.game.missions[FTUEManager.Instance.Cycle1Missions[0]]);
+			SetupLevel(FTUEManager.Instance.Cycle1Missions[0]);
 		}
 	}
 

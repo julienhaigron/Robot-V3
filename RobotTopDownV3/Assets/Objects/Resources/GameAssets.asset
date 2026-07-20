@@ -32,14 +32,6 @@ MonoBehaviour:
       - {fileID: 4284569996962346650, guid: 578d5999807fd994988697a8fb4b8abd, type: 3}
       - {fileID: 365438557547955023, guid: 11159afb9d3869e4bb434de5237fba0f, type: 3}
       - {fileID: 7481265744519623856, guid: a8849ca6c917aee4d860adeb29120bc3, type: 3}
-    maps:
-    - {fileID: 11400000, guid: 6f08d292abbf2bc4d8b8635617613b35, type: 2}
-    - {fileID: 11400000, guid: 55ec503584887cb4aa7dd66763e4d7a7, type: 2}
-    levels:
-    - {fileID: 11400000, guid: b42abe5b22535cf40beab03ef8f2d66f, type: 2}
-    - {fileID: 11400000, guid: 8a6954d87f761a44d91a6e04577b276b, type: 2}
-    - {fileID: 11400000, guid: 949f97dacb028be43823f17b50a53791, type: 2}
-    - {fileID: 11400000, guid: 197186d81997d9b47a9bf17799354160, type: 2}
     missions:
       keys: 000000000100000002000000030000000400000005000000060000000700000008000000
       values:

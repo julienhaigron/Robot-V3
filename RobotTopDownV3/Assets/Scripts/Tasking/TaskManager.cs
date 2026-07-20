@@ -6,6 +6,7 @@ using System;
 public class TaskManager : SingletonPersistant<TaskManager>
 {
     private TaskContext m_context = null;
+    public TaskContext Context => m_context;
     private List<TaskSequence> m_activeSequences = new();
 
     public class TaskContext

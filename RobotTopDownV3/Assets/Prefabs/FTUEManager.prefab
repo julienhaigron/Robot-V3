@@ -48,7 +48,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b45006602da968a4185587837b1dd109, type: 3}
   m_Name: 
   m_EditorClassIdentifier: RTD::FTUEManager
-  m_cycle1Missions: 02000000030000000400000005000000060000000700000008000000
+  m_cycle1Missions:
+  - {fileID: 11400000, guid: 28bfe04a7099d0e42974765d328d185b, type: 2}
+  - {fileID: 11400000, guid: 417b10a5886f32743823118c49c05109, type: 2}
+  - {fileID: 11400000, guid: 375f382f2fe6ced4a856eff99f23c657, type: 2}
+  - {fileID: 11400000, guid: 5edf076e2e7fa7f40899398bd8eacf95, type: 2}
+  - {fileID: 11400000, guid: 7d2b176a03b632347870b1b5839a68d1, type: 2}
+  - {fileID: 11400000, guid: 8bc950661f8e4a04a95934b9a4f2fc57, type: 2}
+  - {fileID: 11400000, guid: 4c89a94e7d2857c498bf0005d49fc66a, type: 2}
   playerStartingSquadUnits:
   - {fileID: 11400000, guid: 3e4f3c47b4ebef348a686bbfcf7f8550, type: 2}
   - {fileID: 11400000, guid: 381f9f47fae877f4b82c643f1b0575e7, type: 2}
