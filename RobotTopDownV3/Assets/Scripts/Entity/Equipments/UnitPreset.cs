@@ -7,19 +7,19 @@ using Sirenix.OdinInspector;
 public class UnitPreset : AParsableScriptableObject
 {
     public string displayName;
-    [OnValueChanged("@RefreshTotalEnergyCostRemaining()")]
+    [OnValueChanged("@RefreshTotalEnergyCostRemaining()"), Parsing("Frame")]
     public FrameEquipmentData frame;
-    [OnValueChanged("@RefreshTotalEnergyCostRemaining()")]
+    [OnValueChanged("@RefreshTotalEnergyCostRemaining()"), Parsing("Reactor")]
     public ReactorEquipmentData reactor;
-    [OnValueChanged("@RefreshTotalEnergyCostRemaining()")]
+    [OnValueChanged("@RefreshTotalEnergyCostRemaining()"), Parsing("AI Module")]
     public BrainEquipmentData brain;
-    [OnValueChanged("@RefreshTotalEnergyCostRemaining()")]
+    [OnValueChanged("@RefreshTotalEnergyCostRemaining()"), Parsing("Neural Interface")]
     public NeuronalMembraneEquipmentData neuronalMembrane;
-    [OnValueChanged("@RefreshTotalEnergyCostRemaining()")]
+    [OnValueChanged("@RefreshTotalEnergyCostRemaining()")] //parsing done manualy
     public EntityEquipmentData[] arms;
-    [OnValueChanged("@RefreshTotalEnergyCostRemaining()")]
+    [OnValueChanged("@RefreshTotalEnergyCostRemaining()")] //parsing done manualy
     public EntityEquipmentData[] auxiliary;
-    [OnValueChanged("@RefreshTotalEnergyCostRemaining()")]
+    [OnValueChanged("@RefreshTotalEnergyCostRemaining()"), Parsing("Chipset")]
     public ChipsetEquipmentData[] chipsets;
 
     public Sprite icon;
@@ -35,10 +35,14 @@ public class UnitPreset : AParsableScriptableObject
     [Button]
     private void RefreshTotalEnergyCostRemaining ()
 	{
-        m_totalEnergyCostRemaining = reactor.energyProduced;
-        m_totalEnergyCostRemaining -= frame.energyCost;
-        m_totalEnergyCostRemaining -= brain.energyCost;
-        m_totalEnergyCostRemaining -= neuronalMembrane.energyCost;
+        if(reactor != null)
+            m_totalEnergyCostRemaining = reactor.energyProduced;
+        if(frame != null)
+            m_totalEnergyCostRemaining -= frame.energyCost;
+        if(brain != null)
+            m_totalEnergyCostRemaining -= brain.energyCost;
+        if(neuronalMembrane != null)
+            m_totalEnergyCostRemaining -= neuronalMembrane.energyCost;
         foreach (EntityEquipmentData equipment in arms)
             m_totalEnergyCostRemaining -= equipment.energyCost;
         foreach (EntityEquipmentData equipment in auxiliary)
@@ -89,6 +93,18 @@ public class UnitPreset : AParsableScriptableObject
 
 	public override void OnParse ( ImportedData _data )
 	{
-		
-	}
+        List<EntityEquipmentData> newArms = new();
+        if (_data.TryGetValue("Weapon", out EntityEquipmentData[] weapons))
+            newArms.AddRange(weapons);
+        if(_data.TryGetValue("Tool", out EntityEquipmentData[] tools))
+            newArms.AddRange(tools);
+        arms = newArms.ToArray();
+
+        List<EntityEquipmentData> newAux = new();
+        if (_data.TryGetValue("Armouring", out EntityEquipmentData[] armors))
+            newAux.AddRange(armors);
+        if (_data.TryGetValue("Occultor", out EntityEquipmentData[] occultors))
+            newAux.AddRange(occultors);
+        auxiliary = newAux.ToArray();
+    }
 }

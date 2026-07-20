@@ -21,7 +21,7 @@ public class ImportedData
 		T value = default;
 		if (data.TryGetValue(_id, out string raw))
 		{
-			object converted = CsvTypeConverter.Convert(raw, value.GetType());
+			object converted = CsvTypeConverter.Convert(raw, typeof(T));
 			value = (T)converted;
 		}
 
