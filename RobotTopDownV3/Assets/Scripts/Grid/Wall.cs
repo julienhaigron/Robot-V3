@@ -38,7 +38,14 @@ public class Wall : MonoBehaviour
 		TAngle,
 		SmallAngle,
 		ReverseSmallAngle,
-		Biet,
+		WideV,
+		ThinV,
+		HorizontalYAngle,
+		HorizontalReverseYAngle,
+		VerticalYAngle,
+		VerticalReverseYAngle,
+		XCross,
+		LnYAngle,
 		Total
 	}
 	//TODO :
