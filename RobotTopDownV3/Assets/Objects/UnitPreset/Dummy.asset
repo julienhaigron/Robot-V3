@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f0bd4350348c78f4e89080417667cc11, type: 3}
+  m_Name: Dummy
+  m_EditorClassIdentifier: 
+  displayName: Dummy
+  frame: {fileID: 11400000, guid: 9d4218543c7d1d546a340ed92f98c08a, type: 2}
+  reactor: {fileID: 11400000, guid: 12b55974368649d449c104fbb70defa7, type: 2}
+  brain: {fileID: 11400000, guid: 1c0aa955379f1604f9c85b8aa4dc06d0, type: 2}
+  neuronalMembrane: {fileID: 11400000, guid: 784bffc355a2b644294c78cac8a1a5fc, type: 2}
+  arms: []
+  auxiliary: []
+  chipsets: []
+  isInvocation: 0
+  isTangible: 1
+  m_totalEnergyCostRemaining: 140

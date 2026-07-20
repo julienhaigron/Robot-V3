@@ -8,15 +8,28 @@ public partial class GameConfig : ScriptableObject
 {
 	public static GameConfig current => ApplicationManager.config;
 
+	public DebugSettings debug = new DebugSettings();
 	public GameSettings game = new GameSettings();
 	public Input input = new Input();
 	public Meta meta = new Meta();
 	public UI ui = new UI();
 	public DatasConfigs datas = new DatasConfigs();
+	public Parsing parsing = new Parsing();
+
+	[System.Serializable]
+	public class DebugSettings
+	{
+		public bool saveEntityDeathAndDamages = true;
+		public bool skipFTUE = false;
+	}
 
 	[System.Serializable]
 	public partial class GameSettings
 	{
+		[Title("Macro")]
+		public int nbOfDayInCycle = 7;
+		public int maxInventoryCapacity = 80;
+
 		[Title("Actions")]
 		public EntityActionData defaultStartAction;
 		public float actionDuration = 1f;
@@ -36,19 +49,32 @@ public partial class GameConfig : ScriptableObject
 		public float entityMovementEvasionBonus = 2;
 		public float entityCoverBonus = 2;
 		public SerializableDictionary<WeaponEquipmentData.DistanceType, float> distanceTypeSpreadEvaluation;
-		public SerializableDictionary<WeaponEquipmentData.DamageType, WeaponEquipmentData.DamageCategory> damageCateforyPerDamageType;
+		public SerializableDictionary<WeaponEquipmentData.DamageType, WeaponEquipmentData.DamageCategory> damageCategoryPerDamageType;
+		public SerializableDictionary<WeaponEquipmentData.DamageCategory, EntityEquipmentData.StatBonus.StatType> statTypePerDamageCategory;
+		public SerializableDictionary<WeaponEquipmentData.DamageCategory, EntityEquipmentData.StatBonus.StatType> statTypePerResistanceCategory;
+		public SerializableDictionary<WeaponEquipmentData.DamageType, EntityEquipmentData.StatBonus.StatType> statTypePerDamageType;
+		public SerializableDictionary<WeaponEquipmentData.DamageType, EntityEquipmentData.StatBonus.StatType> statTypePerDamageResistanceType;
+
+		[Title("Hub")]
+		public string hubSceneName;
+		public string startScreenSceneName;
+		public int missionAmountInMissionSelectionPanel = 12;
+		public int selectableMissionAmount = 8;
+
 	}
 
 	[System.Serializable]
 	public class Meta
 	{
 		public SerializableDictionary<LogConsole.LogEventType, Color> colorsPerType = new();
+		public SerializableDictionary<EntityEquipmentData.StatBonus.StatType, EntityEquipmentData.StatBonus.StatTypeFormat> formatPerStartTypeDictionary = new();
 	}
 	
 	[System.Serializable]
 	public class UI
 	{
 		public LayerMask wallLayerMask;
+		public float doubleClickDelay = 0.25f;
 	}
 
 	[System.Serializable]
@@ -67,6 +93,14 @@ public partial class GameConfig : ScriptableObject
 		public LayerMask tileInternRayCastLayer;
 		public LayerMask wallRayCastLayer;
 
+	}
+	
+	[System.Serializable]
+	public class Parsing
+	{
+		public SerializableDictionary<string, AParsableScriptableObject> baseParsableScriptablePerType = new();
+		public string componentsSpreadSheetID = "1AeQujaBf6YdyVQRD2gBNWazoosesi46DpAoY5b6hrt8";
+		public SerializableDictionary<EntityEquipmentData.EquipmentType, string> componentGUIDPerPage;
 	}
 
 	public void Initialize ()

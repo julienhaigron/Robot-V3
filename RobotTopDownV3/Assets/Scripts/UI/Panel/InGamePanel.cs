@@ -3,15 +3,49 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using TMPro;
+using UnityEngine.UI;
+using DG.Tweening;
+using System;
+using Sirenix.OdinInspector;
 
 public sealed class InGamePanel : AUIPanel
 {
+	[Title("Actions")]
+	[SerializeField] private EntityActionQueue m_actionQueue;
+	public EntityActionQueue ActionQueue => m_actionQueue;
 
+	[SerializeField] private SquadUnitDisplayList m_squadUnitDisplayList;
 	[SerializeField] private UIEntityActionList m_entityActionList;
 	public UIEntityActionList EntityActionList => m_entityActionList;
 
 	[SerializeField] private BaseButton m_endPhaseButton;
 	[SerializeField] private TextMeshProUGUI m_phaseTitleTmp;
+
+	[Title("Console")]
+	[SerializeField] private RectTransform m_consoleParent;
+	[SerializeField] private TextMeshProUGUI m_consoleTMP;
+	[SerializeField] private ScrollRect m_scrollRect;
+	[SerializeField] private BaseButton m_toggleDisplayConsoleBtn;
+	[SerializeField] private float m_consoleExpandedXPos = 400f;
+	[SerializeField] private float m_consoleCollapsedXPos = 80f;
+	[SerializeField] private float m_duration = 0.3f;
+	[SerializeField] private List<LogConsole.LogEventType> m_visibleEventType;
+	//[SerializeField] private BaseButton m_validateTargetsBtn;
+	[SerializeField] private TutoConsole m_tutoConsole;
+	public TutoConsole TutoConsole => m_tutoConsole;
+
+	[Title("Animations")]
+	[SerializeField] private SerializableDictionary<RectTransform, AnchoredPositions> m_sectionPlacementsDictionary;
+	[SerializeField] private float m_animationDuration = .5f;
+
+	[Serializable]
+	public class AnchoredPositions
+	{
+		public Vector2[] positions;
+	}
+
+	private bool m_isConsoleExpanded = true;
+	private Tween m_currentToggleConsoleBtnTween;
 
 	#region MonoBehaviour & Init
 
@@ -19,21 +53,46 @@ public sealed class InGamePanel : AUIPanel
 	{
 		TurnManager.onStartInputPhase += OnStartInputPhase;
 		TurnManager.onEndInputPhase += OnEndInputPhase;
+		TurnManager.onEndLevel += OnEndLevel;
+		PlayerController.onEntitySelected += OnEntitySelected;
 		m_endPhaseButton.onClick += OnClickEndPhaseBtn;
+		LogConsole.onLogAdded += OnLogAdded;
+		m_toggleDisplayConsoleBtn.onClick += OnClickToggleDisplayConsoleBtn;
 	}
 
 	private void OnDestroy ()
 	{
 		TurnManager.onStartInputPhase = OnStartInputPhase;
 		TurnManager.onEndInputPhase = OnEndInputPhase;
+		PlayerController.onEntitySelected -= OnEntitySelected;
 		m_endPhaseButton.onClick -= OnClickEndPhaseBtn;
+		TurnManager.onEndLevel -= OnEndLevel;
+		m_toggleDisplayConsoleBtn.onClick -= OnClickToggleDisplayConsoleBtn;
+		LogConsole.onLogAdded -= OnLogAdded;
 	}
 
-	public void Init () //add param
+	public void Init ()
 	{
-		//Script Order : Awake - ShowPanelCR - l'Init
-		//in case you need to get param from other UIPANEL
+		m_squadUnitDisplayList.Init();
+		RefreshVisual(false, true);
+		m_tutoConsole.Init();
+		m_entityActionList.Init();
+		m_actionQueue.Init();
 	}
+
+	public void RefreshVisual(bool _isEntitySelected, bool _isInstant )
+	{
+		foreach (RectTransform tfm in m_sectionPlacementsDictionary.Keys)
+		{
+			if (_isInstant)
+				tfm.anchoredPosition = m_sectionPlacementsDictionary[tfm].positions[_isEntitySelected ? 0 : 1];
+			else
+				tfm.DOAnchorPos(m_sectionPlacementsDictionary[tfm].positions[_isEntitySelected ? 0 : 1], m_animationDuration).SetEase(Ease.OutExpo);
+		}
+
+		SetConsoleVisibility(!_isEntitySelected);
+	}
+
 	#endregion
 
 	#region animation
@@ -77,9 +136,52 @@ public sealed class InGamePanel : AUIPanel
 	{
 		base.OnHideFinished();
 	}*/
+
+	protected override void OnHideStarted ()
+	{
+		if (m_currentToggleConsoleBtnTween.IsActive())
+			m_currentToggleConsoleBtnTween.Kill();
+		base.OnHideStarted();
+	}
+
 	#endregion
 
 	#region Callbacks
+
+	private void OnLogAdded ( LogConsole.Log _newLog )
+	{
+		if(m_visibleEventType.Contains(_newLog.eventType))
+			m_consoleTMP.text += _newLog.ToString();
+	}
+
+	private void OnEndLevel ()
+	{
+		m_consoleTMP.text = "";
+	}
+
+	private void OnEntitySelected ( int? _entityID )
+	{
+		RefreshVisual(_entityID.HasValue, false);
+	}
+
+	private void SetConsoleVisibility(bool _isVisible )
+	{
+		if (m_isConsoleExpanded == _isVisible)
+			return;
+
+		m_isConsoleExpanded = _isVisible;
+		m_toggleDisplayConsoleBtn.SetVisible(!m_isConsoleExpanded || PlayerController.Instance.SelectedEntity != null, true);
+		float targetXPos = m_isConsoleExpanded ? m_consoleExpandedXPos : m_consoleCollapsedXPos;
+
+		m_currentToggleConsoleBtnTween?.Kill();
+		m_currentToggleConsoleBtnTween = m_consoleParent.DOAnchorPos(new Vector2(targetXPos, m_consoleParent.anchoredPosition.y), m_duration)
+			.SetEase(Ease.OutCubic);
+	}
+
+	private void OnClickToggleDisplayConsoleBtn ()
+	{
+		SetConsoleVisibility(!m_isConsoleExpanded);
+	}
 
 	private void OnStartInputPhase ()
 	{
@@ -93,15 +195,17 @@ public sealed class InGamePanel : AUIPanel
 
 	private void OnClickEndPhaseBtn ()
 	{
+		if (TurnManager.Instance.currentPhase != TurnManager.TurnPhase.Recording)
+			return;
 
 		foreach (Entity entity in GameManager.Instance.PlayersEntityAnchor[0].Entities)
 		{
 			if (entity.Equipment.IsDead)
 				continue;
-
-			for (int i = TurnManager.Instance.RemainingActionToken[entity.ID]; i < GameConfig.current.game.actionTokenPerRound; i++)
+			int remainingToken = TurnManager.Instance.RemainingActionToken[entity.ID];
+			for (int i = 0; i < remainingToken; i++)
 			{
-				TurnManager.Instance.AddAction(entity.ID, EntityActionEnumID.Wait, Entity.EntityState.Guarding);
+				TurnManager.Instance.AddAction(entity.ID, EntityActionEnumID.Wait, Entity.EntityState.Patroling, null);
 			}
 		}
 
@@ -125,6 +229,17 @@ public sealed class InGamePanel : AUIPanel
 			OnlinePlayerInstance.Self.EndInputPhaseServerRPC(OnlinePlayerInstance.Self.OwnerClientId, actionsToSend.ToArray());
 		}
 	}
+
+	/*private void OnClickValidateTargets ()
+	{
+		if (TurnManager.Instance.CurrentActionSelected == null)
+			return;
+
+		int performingEntityID = TurnManager.Instance.CurrentActionSelected.performingEntityID;
+		TurnManager.Instance.AddAction(performingEntityID, TurnManager.Instance.CurrentActionSelected, TurnManager.Instance.CurrentStateTypeSelected);
+
+		TurnManager.Instance.RefreshActionDisplay(performingEntityID, true);
+	}*/
 
 	#endregion
 }

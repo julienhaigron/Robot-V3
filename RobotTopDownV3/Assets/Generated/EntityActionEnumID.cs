@@ -1,4 +1,4 @@
-//GENERATED 13
+//GENERATED 53
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,6 +6,7 @@ using UnityEngine;
 [System.Serializable]
 public enum EntityActionEnumID
 {
+		Unknowned,
 		//#START#ENTITYACTIONENUMID#//
 		Attack,
 		NeighborMove,
@@ -18,6 +19,46 @@ public enum EntityActionEnumID
 		Slash,
 		Walk,
 
-		//#END#ENTITYACTIONENUMID#//
-		Unknowned,
+		TurnShield,
+		InvokeEntity,
+		ApplyEffect,
+		MoveThenAttack,
+		AddTrajectoryControl,
+		MinigunBalayage,
+		MinigunRafaleCible,
+		MissileArrayBarrageDeMissiles,
+		FlailFrappeSimple,
+		FlailFrappeCharge,
+		HammerFrappeSimple,
+		HammerEcrasement,
+		AmpificateurDefensifInvoke,
+		KamikazeExplode,
+		LanceFlammeBalayage,
+		LanceFlammeJetDeFlamme,
+		LanceGrenadeGrenadeShrapnel,
+		LanceGrenadeGrenadeIncendiaire,
+		LanceGrenadeGrenadeFumigene,
+		GanteletCoupDePoint,
+		GanteletRue,
+		GanteletCoupCharge,
+		RapiereEstoc,
+		RapiereDelugeDEstoc,
+		MineExplosion,
+		RapiereDelugePerforation,
+		KitDePiegePiegeMarquant,
+		KitDePiegePiegeChoc,
+		Envol,
+		Atterissage,
+		SniperTirDeSniper,
+		RailgunTirAttirant,
+		RailgunTirRepoussant,
+		KnightRun,
+		GlaiveDeSivirLanceDuGlaive,
+		GlaiveDeSivirChainThrow,
+		LanceCoupDeLance,
+		LanceDelugeDeCoup,
+		ToolPortalsInvoke,
+		ToolRepulseurRepulse,
+		ToolMineInvoke,
+		//#END#ENTITYACTIONENUMID
 }

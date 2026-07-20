@@ -7,32 +7,115 @@ using DG.Tweening;
 
 public class ActionButton : BaseButton
 {
-	[SerializeField] private Image m_icon;
-	[SerializeField] private TextMeshProUGUI m_name;
-	[SerializeField] private TextMeshProUGUI m_tokenCost;
+	protected static ActionButton m_selectedBtn;
+	public static ActionButton SelectedBtn => m_selectedBtn;
 
-	private EntityActionEnumID m_actionType;
+	[SerializeField] protected Image m_icon;
+	/*[SerializeField] private TextMeshProUGUI m_name;
+	[SerializeField] private TextMeshProUGUI m_tokenCost;*/
+	//[SerializeField] protected BaseButton m_modActionBtn;
+	[SerializeField] protected GameObject m_selectionOutline;
 
+	protected EntityActionEnumID m_actionType;
+	protected string m_linkedEquipmentData;
 
-	public void Init( EntityActionEnumID _action )
+	protected void Awake ()
 	{
-		m_actionType = _action;
-		EntityActionData data = GameAssets.current.game.entityActionsData[_action];
-		m_icon.sprite = data.icon;
-		m_name.text = data.displayName;
-		m_tokenCost.text = data.tokenCost.ToString();
+		TurnManager.onActionAdded += OnActionAdded;
+		TurnManager.onActionSelected += OnSelectAction;
+		EntityActionDisplay.onSelect += OnEntityActionDisplaySelected;
 	}
 
-	private void OnActionTokenUsed ()
+	protected void OnDestroy ()
+	{
+		TurnManager.onActionAdded -= OnActionAdded;
+		TurnManager.onActionSelected -= OnSelectAction;
+		EntityActionDisplay.onSelect -= OnEntityActionDisplaySelected;
+	}
+
+	public void Init( EntityActionEnumID _action, string _linkedEquipmentData )
+	{
+		m_actionType = _action;
+		m_linkedEquipmentData = _linkedEquipmentData;
+		EntityActionData data = GameAssets.current.game.entityActionsData[_action];
+		m_icon.sprite = data.icon;
+		/*m_name.text = data.displayName;
+		m_tokenCost.text = data.GetTokenTotalCost(null, null, null).ToString();*/
+
+		RefreshVisual();
+	}
+
+	protected void RefreshInteractability ()
+	{
+		if (PlayerController.Instance.SelectedEntity == null || m_actionType == EntityActionEnumID.Unknowned)
+			return;
+
+		int entityID = PlayerController.Instance.SelectedEntity.ID;
+		int timeAtStart = TurnManager.Instance.RecordedActions.ContainsKey(entityID) && TurnManager.Instance.RecordedActions[entityID].Count > 0
+			? TurnManager.Instance.RecordedActions[entityID].ToArray()[^1].action.TimeAtEnd : TurnManager.Instance.currentTick;
+
+		SetInteractability(GameAssets.current.game.entityActionsData[m_actionType].UseConditionPredicate
+			(TurnManager.Instance.GetAction(m_actionType, PlayerController.Instance.SelectedEntity.ID, m_linkedEquipmentData, timeAtStart)
+			, PlayerController.Instance.SelectedEntity, null));
+
+	}
+
+	protected void RefreshVisual ()
+	{
+		RefreshInteractability();
+
+		m_selectionOutline.SetActive(m_selectedBtn == this);
+	}
+
+	public override void SetInteractability ( bool _isInteractable )
+	{
+		base.SetInteractability(_isInteractable);
+		m_icon.color = _isInteractable ? Color.white : Color.black;
+	}
+
+	private void OnActionAdded (TurnManager.RecordedAction _addedAction)
 	{
 		//refresh if is available
+		RefreshVisual();
+	}
+
+	private void OnSelectAction (AEntityAction _action)
+	{
+		if (m_actionType == _action.enumID)
+			Select();
+	}
+
+	private void OnEntityActionDisplaySelected ( EntityActionDisplay _display, bool _isModAction)
+	{
+		if (_display != null)
+			Deselect();
 	}
 
 	protected override void OnClick ()
 	{
-		TurnManager.Instance.SetCurrentActionSelected(m_actionType);
+		Select();
+		TurnManager.Instance.SetCurrentActionSelected(m_actionType, m_linkedEquipmentData, true);
 		base.OnClick();
 	}
 
+	public void Select ()
+	{
+		if (m_selectedBtn != null)
+			m_selectedBtn.Deselect();
+
+		m_selectedBtn = this;
+		RefreshVisual();
+	}
+
+	public void Deselect ()
+	{
+		if (m_selectedBtn != this)
+			return;
+
+		if (m_selectedBtn == this)
+			m_selectedBtn = null;
+
+		RefreshVisual();
+	}
 
 }

@@ -13,18 +13,23 @@ MonoBehaviour:
   m_Name: Slash
   m_EditorClassIdentifier: 
   displayName: Slash
-  enumID: 8
+  enumID: 9
   icon: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
   tileOutlineColor: {r: 1, g: 0, b: 0, a: 1}
-  tokenPreparationDuration: 0
-  tokenCooldown: 1
+  m_tokenPreparationDuration: 0
+  m_tokenCooldown: 0
   tokenDuration: 1
   preparationAnimationKey: 
   afterPerformAnimationKey: 
+  onPerformSingleAttackSFXID: 0
+  onSingleAttackHitSFXID: 0
+  conditionType: 0
   previousActionAttackModificator: 0
   type: 1
   subType: 4
+  codeType: 1
   targetType: 1
+  trajectoryType: 0
   minDistance: 0
   maxDistance: 1
   minTargetAmount: 1
@@ -32,9 +37,18 @@ MonoBehaviour:
   isAoe: 0
   aoeType: 2
   circleRange: 2
-  arcRadius: 1
+  arcType: 0
   rayDiameter: 1
+  maxChainedTarget: 1
+  damageRecutionOnChain: 0.1
   coneType: 1
+  hitAmount: 1
+  damageFactor: 1
   usedDamageChannels: 05000000
-  appliableEffects:
-  - {fileID: 11400000, guid: 7af3cbb2fb9300d4c8a9b333e8a5b7a4, type: 2}
+  appliableStatus: []
+  statusHitProbability: 0
+  passiveEffects: []
+  invocatedEntity: {fileID: 0}
+  invocatedItem: {fileID: 0}
+  invocationCountLimit: 1
+  movementSpeed: 0

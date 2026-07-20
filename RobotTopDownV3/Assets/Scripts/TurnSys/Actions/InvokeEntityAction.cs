@@ -1,0 +1,92 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using Unity.Netcode;
+using System.Linq;
+
+public class InvokeEntityAction : SpecialAction
+{
+	public int newEntityID;
+	public bool isActionCanceled;
+
+	public override void NetworkSerialize<T> ( BufferSerializer<T> serializer )
+	{
+		base.NetworkSerialize(serializer);
+		serializer.SerializeValue(ref newEntityID);
+		serializer.SerializeValue(ref isActionCanceled);
+	}
+
+	public override void Prepare ( Entity.EntityState _state )
+	{
+		isActionCanceled = false;
+		newEntityID = GameManager.Instance.PlayersEntityAnchor[GameManager.Instance.PlayerID].Entities[^1].ID + 1;
+		foreach(int tileID in targetTileIDs)
+			GridManager.Instance.Tiles[tileID].SetEntity(GameManager.Instance.GetEntityFromID(newEntityID), false);
+	}
+
+	public override ActionConflictResultInfo CheckConflict ( AEntityAction _otherAction, bool _isCheck = true )
+	{
+		EntityActionData.PFCResultType result = EntityActionData.PFC(Data, _otherAction.Data);
+		if (isActionCanceled)
+			return new() { isFirstActionConflicted = false, isSecondActionConflicted = false };
+
+		bool doesSelfHaveConflict = false;
+		bool doesOtherHaveConflict = false;
+
+		if (_otherAction is MoveToTargetAction _otherMoveToTargetAction && _otherMoveToTargetAction.targetTileIDs.Any(e => targetTileIDs.Contains(e)))
+		{
+			if (result == EntityActionData.PFCResultType.FirstWins)
+			{
+				_otherMoveToTargetAction.targetTileIDs = null;
+				doesOtherHaveConflict = true;
+			}
+			else if (result == EntityActionData.PFCResultType.SecondWins)
+			{
+				isActionCanceled = true;
+				doesSelfHaveConflict = true;
+			}
+			else
+			{
+				int roll = Random.Range((int)0, 2);
+				if (roll == 0)
+				{
+					_otherMoveToTargetAction.targetTileIDs = null;
+					doesOtherHaveConflict = true;
+				}
+				else
+				{
+					isActionCanceled = true;
+					doesSelfHaveConflict = true;
+				}
+			}
+		}
+
+		return new() { isFirstActionConflicted = doesSelfHaveConflict, isSecondActionConflicted = doesOtherHaveConflict };
+	}
+
+	protected override void Perform ( Entity.EntityState _state )
+	{
+		if (isActionCanceled)
+		{
+			EndTick();
+			return;
+		}
+
+		foreach(int tileID in targetTileIDs)
+			GameManager.Instance.PlayersEntityAnchor[GameManager.Instance.GetEntityFromID(performingEntityID).OwnerID]
+				.SpawnEntityDuringPlay(Data.invocatedEntity.GetSavedData(), newEntityID, GameManager.Instance.GetEntityFromID(performingEntityID).OwnerID, tileID, EndTick);
+
+		base.Perform(_state);
+		//DG.Tweening.DOVirtual.DelayedCall(GameConfig.current.game.actionDuration, EndTick);
+	}
+
+	public override void Display ( TurnManager.RecordedAction _recordedAction )
+	{
+		//TODO ?
+	}
+
+	public override void GhostDisplay ( Entity.EntityState _state )
+	{
+
+	}
+}

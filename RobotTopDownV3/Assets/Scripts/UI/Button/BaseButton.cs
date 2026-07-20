@@ -9,12 +9,16 @@ public class BaseButton : MonoBehaviour
     public System.Action onClick;
 
     [SerializeField] protected Button m_button;
+    [SerializeField] protected Image m_image;
     public Button Button => m_button;
+    public Image Image => m_image;
 
     protected bool m_isVisible = false;
+    public bool IsVisible => m_isVisible;
 
     private void Start()
     {
+        m_isVisible = gameObject.activeSelf;
         m_button.onClick.AddListener(OnClick);
     }
 
@@ -30,14 +34,26 @@ public class BaseButton : MonoBehaviour
 
     public virtual void SetVisible ( bool _isVisible, bool _isInstant )
     {
-        if (m_isVisible == _isVisible)
+        if (!_isInstant && m_isVisible == _isVisible)
             return;
 
         m_isVisible = _isVisible;
 
         if (_isInstant)
-            transform.localScale = _isVisible ? Vector3.one : Vector3.zero;
-        else
-            transform.DOScale(_isVisible ? 1f : 0f, 1f);
+            gameObject.SetActive(_isVisible);
+		else
+		{
+            if (_isVisible)
+                gameObject.SetActive(_isVisible);
+            transform.DOScale(_isVisible ? 1f : 0f, 1f).OnComplete(() =>
+            {
+                gameObject.SetActive(_isVisible);
+            });
+		}
+    }
+
+    public virtual void SetInteractability(bool _isInteractable )
+	{
+        m_button.interactable = _isInteractable;
     }
 }

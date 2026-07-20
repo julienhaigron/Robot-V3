@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 377ca2099ac4b6147bf777f681302f03, type: 3}
+  m_Name: Missil array
+  m_EditorClassIdentifier: 
+  spreadsheetId: https://docs.google.com/spreadsheets/d/1AeQujaBf6YdyVQRD2gBNWazoosesi46DpAoY5b6hrt8/export?format=csv&gid=1562946535
+  faction: 3
+  icon: {fileID: -1360359492, guid: b61920d2917644949a125f8a6af0e45c, type: 3}
+  displayName: Missil array
+  energyCost: 30
+  knownedActions: 12000000
+  passiveEffects: []
+  statusHitProbability: 0.5
+  prefab: {fileID: 3050370552699964755, guid: 36439995b7529d14ab4a03536fbc4267, type: 3}
+  baseDamages:
+    keys: 000000000500000002000000
+    values: 050000000500000005000000
+  visionConeRange: 60
+  attackAnimationSuccessId: 
+  attackAnimationFailureId: 
+  isTwoHanded: 0
+  singleAttackAnimationDuration: 0

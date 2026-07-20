@@ -20,9 +20,6 @@ public class GridManager : Singleton<GridManager>
 	[SerializeField] private int m_width;
 	public int Width => m_width;
 
-	/*public Texture2D fogTexture;
-	[SerializeField] private MeshRenderer m_fowRenderer;*/
-
 	private struct PlayerVisionRangeInfo
 	{
 		public Dictionary<Entity, List<Tile>> entitiesVisionRange;
@@ -45,6 +42,11 @@ public class GridManager : Singleton<GridManager>
 		new Vector2Int(-1,  1), // 5
 	};
 
+	/*private Tile m_lastBFSOriginTile;
+	public Tile LastBFSOriginTile => m_lastBFSOriginTile;
+	private int m_lastBFSMaxDistance;
+	public int LastBFSMaxDistance => m_lastBFSMaxDistance;*/
+
 	#region Editor
 #if UNITY_EDITOR
 
@@ -55,7 +57,7 @@ public class GridManager : Singleton<GridManager>
 	{
 		get
 		{
-			if(m_gridData == null)
+			if (m_gridData == null)
 			{
 				Debug.LogError("Missing GridData ScriptableObject in the GridManager of this scene");
 				return null;
@@ -91,7 +93,7 @@ public class GridManager : Singleton<GridManager>
 			}
 			else
 			{
-				m_tiles[i].SetActiveFOW(true, true);
+				m_tiles[i].SetActiveFOW(NeuronalMembraneEquipmentData.VisionTypes.Optical, true, true);
 
 				if (groundType == TileGroundType.PlayerSpawn)
 					GameManager.Instance.PlayersEntityAnchor[0].AddSpawn(m_tiles[i].coordinates, true);
@@ -243,6 +245,20 @@ public class GridManager : Singleton<GridManager>
 		return _from.Neighbors[_orientation];
 	}
 
+	public List<Tile> GetTilesAtDistance ( Tile _center, int _distance, bool _isThisTurn = false )
+	{
+		List<Tile> result = new();
+		List<Tile> candidates = GetTilesInVisionRange(_center, _distance, false, _isThisTurn);
+
+		foreach (Tile tile in candidates)
+		{
+			if (_center.Distance == _distance)
+				result.Add(tile);
+		}
+
+		return result;
+	}
+
 	public List<Tile> GetPath ( Tile _from, Tile _to, bool _isThisTurn, bool _ignoreObstacles = false )
 	{
 		BFS(_from, _to: _to, _isThisTurn: _isThisTurn, _ignoreObstacles: _ignoreObstacles);
@@ -276,7 +292,7 @@ public class GridManager : Singleton<GridManager>
 		return path;
 	}
 
-	public List<Tile> GetLine ( Tile _from, Tile _to )
+	/*public List<Tile> GetLine ( Tile _from, Tile _to )
 	{
 		List<Tile> results = new();
 
@@ -298,7 +314,7 @@ public class GridManager : Singleton<GridManager>
 		}
 
 		return results;
-	}
+	}*/
 	public CubeF CubeLerp ( TileCoordinates a, TileCoordinates b, float t )
 	{
 		return new CubeF(
@@ -328,12 +344,11 @@ public class GridManager : Singleton<GridManager>
 		return new TileCoordinates(rx, rz, -1);
 	}
 
-
 	public List<Entity> GetEntitiesInRange ( Tile _from, int _maxDist, bool _isThisTurn )
 	{
 		List<Entity> entitiesInRange = new();
 
-		List<Tile> tilesInRange = GetTilesInVisionRange(_from, _maxDist, _isThisTurn);
+		List<Tile> tilesInRange = GetTilesInVisionRange(_from, _maxDist, false, _isThisTurn);
 		foreach (Tile tile in tilesInRange)
 		{
 			Entity entity = tile.GetEntity(_isThisTurn);
@@ -343,102 +358,8 @@ public class GridManager : Singleton<GridManager>
 
 		return entitiesInRange;
 	}
-	/*public List<Entity> GetEntitiesInRange(Tile _from, int _maxDist, bool _isThisTurn )
-	{
-		List<Entity> entitiesInRange = new();
 
-		for (int i = 0; i < m_tiles.Length; i++)
-		{
-			m_tiles[i].Distance = int.MaxValue;
-			//m_tiles[i].UI.ResetOutline();
-		}
-
-		Queue<Tile> frontier = new Queue<Tile>();
-		_from.Distance = 0;
-		frontier.Enqueue(_from);
-
-		while (frontier.Count > 0)
-		{
-			Tile current = frontier.Dequeue();
-			for (int i = 0; i < 6; i++)
-			{
-				//yield return new WaitForSeconds(1 / 60f);
-				Tile neighbor = current.GetNeighbor((HexDirection)i);
-
-				if (neighbor == null || neighbor.Distance != int.MaxValue)
-				{
-					continue;
-				}
-
-				//max distance
-				if (current.Distance + 1 > _maxDist)
-				{
-					continue;
-				}
-
-				//obstacle
-				if (neighbor.GetEntity(_isThisTurn) != null)
-				{
-					entitiesInRange.Add(neighbor.GetEntity(_isThisTurn));
-				}
-
-				neighbor.Distance = current.Distance + 1;
-				frontier.Enqueue(neighbor);
-			}
-		}
-
-
-		return entitiesInRange;
-	}*/
-
-	public List<Tile> GetTilesInRange ( Tile _from, int _maxDist, bool _isThisTurn )
-	{
-		List<Tile> tilesInRange = new();
-
-		for (int i = 0; i < m_tiles.Length; i++)
-		{
-			m_tiles[i].Distance = int.MaxValue;
-			//m_tiles[i].UI.ResetOutline();
-		}
-
-		Queue<Tile> frontier = new Queue<Tile>();
-		_from.Distance = 0;
-		frontier.Enqueue(_from);
-
-		while (frontier.Count > 0)
-		{
-			Tile current = frontier.Dequeue();
-			for (int i = 0; i < 6; i++)
-			{
-				//yield return new WaitForSeconds(1 / 60f);
-				Tile neighbor = current.GetNeighbor((HexDirection)i);
-
-				if (neighbor == null || neighbor.Distance != int.MaxValue)
-				{
-					continue;
-				}
-
-				//max distance
-				if (current.Distance + 1 > _maxDist)
-				{
-					continue;
-				}
-
-				//obstacle
-				if (neighbor.CanSeeThrough())
-				{
-					tilesInRange.Add(neighbor);
-				}
-
-				neighbor.Distance = current.Distance + 1;
-				frontier.Enqueue(neighbor);
-			}
-		}
-
-		return tilesInRange;
-	}
-
-	public List<Tile> GetTilesInVisionRange ( Tile _from, int _maxDist, bool _isThisTurn )
+	public List<Tile> GetTilesInVisionRange ( Tile _from, int _maxDist, bool _ignoreObstacles, bool _isThisTurn )
 	{
 		List<Tile> tilesInRange = new();
 		tilesInRange.Add(_from);
@@ -473,10 +394,13 @@ public class GridManager : Singleton<GridManager>
 				}
 
 				//obstacle
-				if (IsVisionLineClear(_from, neighbor, _isThisTurn))
+				if (_ignoreObstacles || IsVisionLineClear(_from, neighbor, _isThisTurn))
 				{
 					tilesInRange.Add(neighbor);
+					neighbor.IsVisibleFromSelectedEntity = true;
 				}
+				else
+					neighbor.IsVisibleFromSelectedEntity = false;
 
 				neighbor.Distance = current.Distance + 1;
 				frontier.Enqueue(neighbor);
@@ -510,10 +434,10 @@ public class GridManager : Singleton<GridManager>
 			if (mainTile == _from)
 				continue;
 
-			if (mainTile == null || mainTile.IsObstacle())
+			if (mainTile == null || mainTile.IsObstacle(_isThisTurn))
 				break;
 
-			TryAdd(c, tilesInRange);
+			TryAdd(c, tilesInRange, _isThisTurn);
 
 			if (!isInSplitLine)
 				continue;
@@ -549,7 +473,7 @@ public class GridManager : Singleton<GridManager>
 				}
 
 				TileCoordinates adj = CubeNeighbor(c, dir);
-				TryAdd(adj, tilesInRange);
+				TryAdd(adj, tilesInRange, _isThisTurn);
 			}
 
 			/*for (int dir = 0; dir < 6; dir++)
@@ -575,10 +499,10 @@ public class GridManager : Singleton<GridManager>
 		return new TileCoordinates(c.X + dir.x, c.Z + dir.z, -1);
 	}
 
-	void TryAdd ( TileCoordinates c, List<Tile> set )
+	void TryAdd ( TileCoordinates c, List<Tile> set, bool _isThisTurn )
 	{
 		Tile t = c.GetTile();
-		if (t != null && !t.IsObstacle())
+		if (t != null && !t.IsObstacle(_isThisTurn))
 			set.Add(t);
 	}
 
@@ -747,12 +671,16 @@ public class GridManager : Singleton<GridManager>
 		// Orientation depuis l’attaquant vers la cible
 		int attackerPosition = _didAttackerWinPFC ? TurnManager.Instance.GetPositionOfEntityAtEndOfRound(_attacker.ID) : TurnManager.Instance.GetPositionOfEntityAtEndOfRound(_attacker.ID);
 		int defenderPosition = !_didAttackerWinPFC ? TurnManager.Instance.GetPositionOfEntityAtEndOfRound(_target.ID) : TurnManager.Instance.GetPositionOfEntityAtEndOfRound(_target.ID);
-		int attackOrientation = GetClosestOrientation(m_tiles[attackerPosition], m_tiles[defenderPosition]);
+		//int attackOrientation = GetClosestOrientation(m_tiles[attackerPosition], m_tiles[defenderPosition]);
 
-		// Tile potentielle de couvert
-		Tile potentialCover = GetTileAtOrientation(m_tiles[attackerPosition], attackOrientation);
+		List<Tile> tilesInLine = GetTilesInRay(Tiles[attackerPosition], Tiles[defenderPosition], _didAttackerWinPFC);
+		foreach(Tile tile in tilesInLine)
+		{
+			if (tile.GroundType == TileGroundType.Wall)
+				return true;
+		}
 
-		return potentialCover != null && potentialCover.GroundType == TileGroundType.Wall;
+		return false;
 	}
 
 	public Tile.TileDirectionType GetHitTileSide ( Entity _from, Entity _to, bool _didAttackerWinPFC )
@@ -823,35 +751,36 @@ public class GridManager : Singleton<GridManager>
 		}
 	}
 
-	public void BFS ( Tile cell, int _maxDistance = -1, Tile _to = null, bool _isThisTurn = false, bool _ignoreObstacles = false )
+	public void BFS ( Tile _from, int _maxDistance = -1, Tile _to = null, bool _isThisTurn = false, bool _ignoreObstacles = false )
 	{
+		/*m_lastBFSOriginTile = _from;
+		m_lastBFSMaxDistance = _maxDistance;*/
 		for (int i = 0; i < m_tiles.Length; i++)
 		{
 			m_tiles[i].Distance = int.MaxValue;
-			//m_tiles[i].UI.ResetOutline();
 		}
 
 		Queue<Tile> frontier = new Queue<Tile>();
-		cell.Distance = 0;
-		frontier.Enqueue(cell);
+		_from.Distance = 0;
+		frontier.Enqueue(_from);
 		bool isDestinationReached = false;
+		bool isDestinationNotNull = _to != null;
 
 		while (frontier.Count > 0 && isDestinationReached == false)
 		{
 			Tile current = frontier.Dequeue();
 			for (int i = 0; i < 6; i++)
 			{
-				//yield return new WaitForSeconds(1 / 60f);
 				Tile neighbor = current.GetNeighbor((HexDirection)i);
-
-				//destination reached
-				if (_to != null && neighbor == _to)
-					isDestinationReached = true;
 
 				if (neighbor == null || neighbor.Distance != int.MaxValue)
 				{
 					continue;
 				}
+
+				//destination reached
+				if (isDestinationNotNull && neighbor.coordinates.ID == _to.coordinates.ID)
+					isDestinationReached = true;
 
 				//max distance
 				if (_maxDistance != -1 && current.Distance + 1 > _maxDistance)
@@ -860,7 +789,7 @@ public class GridManager : Singleton<GridManager>
 				}
 
 				//obstacle
-				if (!_ignoreObstacles && (neighbor.IsObstacle() || (neighbor.GetEntity(_isThisTurn) != null && neighbor != _to)))
+				if (!_ignoreObstacles && (neighbor.IsObstacle(_isThisTurn) || (isDestinationNotNull && neighbor.GetEntity(_isThisTurn) != null && neighbor.coordinates.ID != _to.coordinates.ID)))
 				{
 					continue;
 				}
@@ -893,11 +822,61 @@ public class GridManager : Singleton<GridManager>
 		return angle;
 	}
 
-	public int GetDistanceBetween ( Tile _from, Tile _to, bool _isThisTurn = false )
+	public int GetDistanceBetween ( Tile _from, Tile _to, int _maxDistance, bool _isThisTurn = false )
 	{
-		BFS(_from, _to: _to, _isThisTurn: _isThisTurn);
+		//record last BFS done and avaid doing one if last one is valid
+		/*if (m_lastBFSOriginTile == _from && m_lastBFSMaxDistance >= _maxDistance)
+			return _to.Distance;*/
+
+		BFS(_from, _maxDistance, _to: _to, _isThisTurn: _isThisTurn);
 
 		return _to.Distance;
+	}
+
+	public bool IsInArc ( Tile _origin, Tile _target, HexDirection _facing, bool _largeArc )
+	{
+		int dx = _target.coordinates.X - _origin.coordinates.X;
+		int dy = _target.coordinates.Y - _origin.coordinates.Y;
+		int dz = _target.coordinates.Z - _origin.coordinates.Z;
+
+		var forward = TileCoordinates.ForwardVectors[(int)_facing];
+		int forwardValue =
+			dx * forward.x +
+			dy * forward.y +
+			dz * forward.z;
+
+		if (forwardValue <= 0)
+			return false;
+
+		int distance = _origin.coordinates.DistanceTo(_target.coordinates);
+
+		int sideA;
+		int sideB;
+
+		switch (_facing)
+		{
+			case HexDirection.NE:
+			case HexDirection.SW:
+				sideA = Mathf.Abs(dy);
+				sideB = Mathf.Abs(dz);
+				break;
+
+			case HexDirection.E:
+			case HexDirection.W:
+				sideA = Mathf.Abs(dx);
+				sideB = Mathf.Abs(dy);
+				break;
+
+			default: // SE / NW
+				sideA = Mathf.Abs(dx);
+				sideB = Mathf.Abs(dz);
+				break;
+		}
+
+		int lateral = Mathf.Max(sideA, sideB);
+		int maxLateral = _largeArc ? distance : distance / 2;
+
+		return lateral <= maxLateral;
 	}
 
 	#endregion
@@ -916,43 +895,27 @@ public class GridManager : Singleton<GridManager>
 
 	#region FOW
 
-	/*public void InitFOW ( )
-	{
-		fogTexture = new Texture2D(m_width, m_height, TextureFormat.RGBA32, false);
-		fogTexture.filterMode = FilterMode.Point;
-
-		// Tout noir = full fog
-		Color[] colors = new Color[m_width * m_height];
-		for (int i = 0; i < colors.Length; i++)
-			colors[i] = Color.black;
-
-		fogTexture.SetPixels(colors);
-		fogTexture.Apply();
-		//Shader.SetGlobalTexture("_FogTex", fogTexture);
-		m_fowRenderer.material.SetTexture("_FogTex", fogTexture);
-	}*/
-
 	public void OnNewEntity ( Entity _entity )
 	{
 		int playerId = !GameManager.Instance.IsOnline ? 0 : OnlinePlayerInstance.Self.connectionIndex;
 		if (!_entity.IsAlliedTo(playerId))
 		{
-			_entity.SetVisibility(false);
+			_entity.SetVisibility(false, NeuronalMembraneEquipmentData.VisionTypes.Optical);
 			return;
 		}
 
 		Tile from = _entity.Displacement.Coordinates.GetTile();
-		from.SetActiveFOW(false, true);
-		List<Tile> tileInEntityRange = GetTilesInVisionRange(from, _entity.Data.FrameData.visibilityRange, true);
+		from.SetActiveFOW(_entity.Data.NeuronalMembraneData.visionType, false, true);
+		List<Tile> tileInEntityRange = GetTilesInVisionRange(from, _entity.Data.NeuronalMembraneData.visionRange, false, true);
 
 		foreach (Tile tile in tileInEntityRange)
 		{
-			tile.SetActiveFOW(false, true);
+			tile.SetActiveFOW(_entity.Data.NeuronalMembraneData.visionType, false, true);
 		}
 
 		m_entitiesVisions[_entity.OwnerID].entitiesVisionRange.Add(_entity, tileInEntityRange);
 
-		//m_fowRenderer.material.SetTexture("_FogTex", fogTexture);
+		FogOfWarRenderer.Instance.MarkDirty();
 	}
 
 	public void OnEntityDeath ( Entity _entity )
@@ -974,12 +937,12 @@ public class GridManager : Singleton<GridManager>
 			}
 
 			if (!isInAnotherEntityVisionRange)
-				tile.SetActiveFOW(false, false);
+				tile.SetActiveFOW(_entity.Data.NeuronalMembraneData.visionType, false);
 		}
 
 		m_entitiesVisions[_entity.OwnerID].entitiesVisionRange.Remove(_entity);
 
-		//m_fowRenderer.material.SetTexture("_FogTex", fogTexture);
+		FogOfWarRenderer.Instance.MarkDirty();
 	}
 
 	public void OnEntityMovement ( Entity _entity )
@@ -987,12 +950,12 @@ public class GridManager : Singleton<GridManager>
 		int playerId = !GameManager.Instance.IsOnline ? 0 : OnlinePlayerInstance.Self.connectionIndex;
 		if (!_entity.IsAlliedTo(playerId))
 		{
-			_entity.SetVisibility(_entity.Displacement.Coordinates.GetTile().IsVisible);
+			_entity.SetVisibility(_entity.Displacement.Coordinates.GetTile().IsVisible, NeuronalMembraneEquipmentData.VisionTypes.Optical);
 			return;
 		}
 
 		List<Tile> previousTilesInRangeList = new(m_entitiesVisions[_entity.OwnerID].entitiesVisionRange[_entity]);
-		List<Tile> newTilesInRangeList = GetTilesInVisionRange(_entity.Displacement.Coordinates.GetTile(), _entity.Data.FrameData.visibilityRange, true);
+		List<Tile> newTilesInRangeList = GetTilesInVisionRange(_entity.Displacement.Coordinates.GetTile(), _entity.Data.NeuronalMembraneData.visionRange, false, true);
 		m_entitiesVisions[_entity.OwnerID].entitiesVisionRange[_entity] = new(newTilesInRangeList);
 
 		foreach (Tile tile in newTilesInRangeList)
@@ -1012,7 +975,7 @@ public class GridManager : Singleton<GridManager>
 				}
 
 				if (!isInAnotherEntityVisionRange)
-					tile.SetActiveFOW(false, false);
+					tile.SetActiveFOW(_entity.Data.NeuronalMembraneData.visionType, false, false);
 			}
 		}
 
@@ -1029,10 +992,10 @@ public class GridManager : Singleton<GridManager>
 			}
 
 			if (!isInAnotherEntityVisionRange)
-				previousTile.SetActiveFOW(true, false);
+				previousTile.SetActiveFOW(_entity.Data.NeuronalMembraneData.visionType, true, false);
 		}
 
-		//m_fowRenderer.material.SetTexture("_FogTex", fogTexture);
+		FogOfWarRenderer.Instance.MarkDirty();
 	}
 
 	#endregion
@@ -1117,6 +1080,11 @@ public struct TileCoordinates
 			  + Mathf.Abs(Z - other.Z)) / 2;
 	}
 
+	public bool IsEqualTo(TileCoordinates _otherCoordinates )
+	{
+		return _otherCoordinates.X == X && _otherCoordinates.Y == Y && _otherCoordinates.Z == Z;
+	}
+
 	public override string ToString ()
 	{
 		return "(" +
@@ -1126,6 +1094,23 @@ public struct TileCoordinates
 	public Entity IsOccupied ( bool _isThisTurn )
 	{
 		return GetTile().GetEntity(_isThisTurn: _isThisTurn);
+	}
+
+	public static readonly (int x, int y, int z)[] ForwardVectors =
+	{
+		( 1,-1, 0), // NE
+		( 1, 0,-1), // E
+		( 0, 1,-1), // SE
+		(-1, 1, 0), // SW
+		(-1, 0, 1), // W
+		( 0,-1, 1), // NW
+	};
+
+	public int Dot ((int x, int y, int z) _a, (int x, int y, int z) _b )
+	{
+		return _a.x * _b.x +
+			   _a.y * _b.y +
+			   _a.z * _b.z;
 	}
 
 }

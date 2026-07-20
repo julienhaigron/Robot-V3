@@ -44,7 +44,7 @@ public class LobbyManager : NetworkBehaviour
     {
         if (connectedClients.Count >= nbOfPlayer)
         {
-            LogConsole.AddLog("[Server] Tous les clients sont connectés. Lancement de la partie dans 1 seconde...", LogConsole.LogEventType.Main);
+            LogConsole.AddLog("[Server] Tous les clients sont connectés. Lancement de la partie dans 1 seconde...", LogConsole.LogEventType.DebugSys);
             StartCoroutine(DelayedStart());
         }
     }
@@ -56,14 +56,14 @@ public class LobbyManager : NetworkBehaviour
         StartClientsGameServerRPC();
     }
 
-    [ServerRpc(RequireOwnership = false)]
+    [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
     private void StartClientsGameServerRPC ()
     {
         StartClientsGameClientRPC();
     }
 
-    [ClientRpc(RequireOwnership = false)]
-	private void StartClientsGameClientRPC ()
+    [Rpc(SendTo.Everyone, InvokePermission = RpcInvokePermission.Server)]
+    private void StartClientsGameClientRPC ()
 	{
 		GameManager.Instance.StartGame();
 	}

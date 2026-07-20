@@ -10,8 +10,8 @@ public class PlayerController : Singleton<PlayerController>
 {
 	public static Action<int?> onEntitySelected;
 
-	[Title("Camera Settings")]
-	[SerializeField] private GameObject playerCamera;
+	[SerializeField] private TurnManager m_turnManager;
+	[SerializeField] private FogOfWarRenderer m_fogRenderer;
 
 	[Header("Camera Limits")]
 	private Vector2 xLimits
@@ -49,16 +49,15 @@ public class PlayerController : Singleton<PlayerController>
 	public Entity SelectedEntity => m_selectedEntity;
 
 
-	//public List<ActionDisplayOnTile> arrows = new();
 	private SerializableDictionary<int, List<ActionDisplayOnTile>> m_actionDisplays = new();
-	//public SerializableDictionary<int, List<ActionDisplayOnTile>> ActionDisplays => m_actionDisplays;
-	//public List<ActionDisplayOnTile> tempArrows = new();
 	private SerializableDictionary<int, List<ActionDisplayOnTile>> m_tempActionDisplays = new();
-	//public SerializableDictionary<int, List<ActionDisplayOnTile>> TempActionDisplays => m_tempActionDisplays;
+	private SerializableDictionary<int, List<RotationActionDisplay>> m_rotationActionDisplays = new();
 	private SerializableDictionary<int, GhostEntity> m_ghostEntities = new();
+	private SerializableDictionary<int, GhostItem> m_ghostItems = new();
 
-	private void Start ()
+	public override void Awake ()
 	{
+		base.Awake();
 		InputManager.onTileleftClick += OnTileLeftClick;
 		InputManager.onTileRightClick += OnTileRightClick;
 		InputManager.onTileHovered += OnTileHovered;
@@ -66,8 +65,8 @@ public class PlayerController : Singleton<PlayerController>
 		EntityEquipmentPlugin.onAnyEntityDeath += OnAnyEntityDeath;
 		TurnManager.onEndLevel += OnEndLevel;
 
-		m_targetRotation = playerCamera.transform.rotation;
-		m_currentZoomDistance = playerCamera.transform.position.y;
+		m_targetRotation = CameraManager.Instance.CameraParent.transform.rotation;
+		m_currentZoomDistance = CameraManager.Instance.CameraParent.transform.position.y;
 	}
 
 	private void OnDestroy ()
@@ -85,6 +84,10 @@ public class PlayerController : Singleton<PlayerController>
 
 	private void FixedUpdate ()
 	{
+		if (m_turnManager.currentPhase == TurnManager.TurnPhase.Off
+			|| UIManager.Instance.currentPanel is not InGamePanel)
+			return;
+
 		HandleCameraMovement();
 
 		HandleCameraRotation();
@@ -96,8 +99,8 @@ public class PlayerController : Singleton<PlayerController>
 	{
 		float moveX = 0f;
 		float moveZ = 0f;
-		Vector3 forward = playerCamera.transform.forward;
-		Vector3 right = playerCamera.transform.right;
+		Vector3 forward = CameraManager.Instance.CameraParent.transform.forward;
+		Vector3 right = CameraManager.Instance.CameraParent.transform.right;
 
 		forward.y = 0f;
 		right.y = 0f;
@@ -111,12 +114,15 @@ public class PlayerController : Singleton<PlayerController>
 			* GameConfig.current.game.cameraMovementSpeed
 			* Time.fixedDeltaTime;
 
-		Vector3 targetPos = playerCamera.transform.position + move;
+		Vector3 targetPos = CameraManager.Instance.CameraParent.transform.position + move;
 
 		targetPos.x = Mathf.Clamp(targetPos.x, xLimits.x - GameConfig.current.game.cameraMovementBoundsOffset.x, xLimits.y + GameConfig.current.game.cameraMovementBoundsOffset.x);
 		targetPos.z = Mathf.Clamp(targetPos.z, zLimits.x - GameConfig.current.game.cameraMovementBoundsOffset.y, zLimits.y + GameConfig.current.game.cameraMovementBoundsOffset.y);
 
-		playerCamera.transform.position = targetPos;
+		CameraManager.Instance.CameraParent.transform.position = targetPos;
+
+		if (moveZ != 0 && moveX != 0)
+			m_fogRenderer.MarkDirty();
 	}
 
 	private void HandleCameraRotation ()
@@ -139,7 +145,9 @@ public class PlayerController : Singleton<PlayerController>
 		if (m_cameraRotationTween.IsActive())
 			m_cameraRotationTween.Kill();
 
-		m_cameraRotationTween = playerCamera.transform.DOLocalRotateQuaternion(m_targetRotation, GameConfig.current.game.cameraRotationDuration).SetEase(Ease.OutQuad);
+		m_cameraRotationTween = CameraManager.Instance.CameraParent.transform.DOLocalRotateQuaternion(m_targetRotation, GameConfig.current.game.cameraRotationDuration).SetEase(Ease.OutQuad);
+		m_fogRenderer.MarkDirty();
+
 	}
 
 	private void HandleCameraZoom ()
@@ -153,48 +161,25 @@ public class PlayerController : Singleton<PlayerController>
 		m_currentZoomDistance += zoomMovement;
 		m_currentZoomDistance = Mathf.Clamp(m_currentZoomDistance, GameConfig.current.game.cameraZoomBounds.x, GameConfig.current.game.cameraZoomBounds.y);
 
-		playerCamera.transform.position = new Vector3(playerCamera.transform.position.x, m_currentZoomDistance, playerCamera.transform.position.z);
+		CameraManager.Instance.CameraParent.transform.position = new Vector3(CameraManager.Instance.CameraParent.transform.position.x, m_currentZoomDistance, CameraManager.Instance.CameraParent.transform.position.z);
+		if (zoomMovement != 0)
+			m_fogRenderer.MarkDirty();
+
 	}
 
 	private void OnTileLeftClick ( Tile _tile )
 	{
-		if (TurnManager.Instance.currentPhase != TurnManager.TurnPhase.Recording)
+		if (m_turnManager.currentPhase != TurnManager.TurnPhase.Recording)
 			return;
 
 		//Event => Select // unselect entity
-		if (_tile.GetEntity(true) != null && !_tile.CanInteract)
+		if (_tile.TryGetEntity(true, out Entity _entity) && !_tile.CanInteract)
 		{
 			//ally entity
-			if (_tile.GetEntity(true).IsAlliedTo(PlayerID))
-			{
-				if (m_selectedEntity == _tile.GetEntity(true))
-				{
-					m_selectedEntity.Deselect();
-					m_selectedEntity = null;
-					onEntitySelected?.Invoke(null);
-					return;
-				}
-				else if (m_selectedEntity == null)
-				{
-					m_selectedEntity = _tile.GetEntity(true);
-					onEntitySelected?.Invoke(m_selectedEntity == null ? null : m_selectedEntity.ID);
+			if (_entity.IsAlliedTo(PlayerID))
+				SelectEntity(_entity);
 
-					if (m_selectedEntity != null)
-						m_selectedEntity.Select();
-					return;
-				}
-				else
-				{
-					m_selectedEntity.Deselect();
-					onEntitySelected?.Invoke(null);
-					m_selectedEntity = _tile.GetEntity(true);
-					onEntitySelected?.Invoke(m_selectedEntity.ID);
-					m_selectedEntity.Select();
-
-					return;
-				}
-			}
-
+			return;
 		}
 
 		//validate action
@@ -202,17 +187,68 @@ public class PlayerController : Singleton<PlayerController>
 		{
 			if (_tile.CanInteract)
 			{
-				TurnManager.Instance.CurrentActionSelected.RegisterInteraction(_tile);
+				m_turnManager.CurrentActionSelected.RegisterInteraction(_tile);
 			}
+		}
+	}
+
+	public void SelectEntity ( Entity _entity )
+	{
+		if (m_selectedEntity == _entity)
+		{
+			m_selectedEntity.Deselect();
+			m_selectedEntity = null;
+			onEntitySelected?.Invoke(null);
+		}
+		else if (m_selectedEntity == null)
+		{
+			m_selectedEntity = _entity;
+			if (m_selectedEntity != null)
+			{
+				onEntitySelected?.Invoke(m_selectedEntity.ID);
+				m_selectedEntity.Select();
+			}
+		}
+		else
+		{
+			m_selectedEntity.Deselect();
+			//onEntitySelected?.Invoke(null);
+			m_selectedEntity = _entity;
+			onEntitySelected?.Invoke(m_selectedEntity.ID);
+			m_selectedEntity.Select();
 		}
 	}
 
 	private void OnTileRightClick ( Tile _tile )
 	{
-		if (TurnManager.Instance.currentPhase != TurnManager.TurnPhase.Recording)
+		if (m_turnManager.currentPhase != TurnManager.TurnPhase.Recording)
 			return;
 
-		if (m_selectedEntity != null && m_actionDisplays.ContainsKey(m_selectedEntity.ID) && m_actionDisplays[m_selectedEntity.ID].Count > 0)
+		AEntityAction action = EntityActionDisplay.SelectedDisplay != null 
+			? (m_turnManager.hasModActionSelected ? EntityActionDisplay.SelectedDisplay.RecordedAction.freeAction : EntityActionDisplay.SelectedDisplay.RecordedAction.action)
+			: (m_turnManager.hasModActionSelected ? m_turnManager.CurrentModActionSelected : m_turnManager.CurrentActionSelected);
+
+		/*if (action != null && _tile != null && (EntityActionDisplay.SelectedDisplay != null ?
+			(action.targetTileIDs != null && action.targetTileIDs.Contains(_tile.coordinates.ID))
+			: (m_turnManager.CurrentActionTargetTiles != null && m_turnManager.CurrentActionTargetTiles.Contains(_tile))))
+		{*/
+		if (action != null && _tile != null && m_turnManager.CurrentActionTargetTiles != null && m_turnManager.CurrentActionTargetTiles.Contains(_tile))
+		{
+			/*if(EntityActionDisplay.SelectedDisplay != null)
+			{
+				for(int i = 0; i <action.targetTileIDs.Length; i++)
+				{
+					if(action.targetTileIDs[i] == _tile.coordinates.ID)
+					{
+						action.targetTileIDs[i] = -1;
+						break;
+					}
+				}
+			}
+			else*/
+				m_turnManager.CurrentActionTargetTiles.Remove(_tile);
+		}
+		else if (m_selectedEntity != null && m_actionDisplays.ContainsKey(m_selectedEntity.ID) && m_actionDisplays[m_selectedEntity.ID].Count > 0)
 		{
 			//ally entity
 			if (m_selectedEntity.IsAlliedTo(PlayerID))
@@ -231,12 +267,12 @@ public class PlayerController : Singleton<PlayerController>
 					//remove actions
 					foreach (ActionDisplayOnTile display in actionsOnTile)
 					{
-						List<TurnManager.RecordedAction> actionQueue = TurnManager.Instance.RecordedActions[m_selectedEntity.ID].ToList();
+						List<TurnManager.RecordedAction> actionQueue = m_turnManager.RecordedActions[m_selectedEntity.ID].ToList();
 						for (int i = 0; i < actionQueue.Count; i++)
 						{
 							if (actionQueue[i].action == display.RecordedAction.action)
 							{
-								TurnManager.Instance.RemoveActionFrom(actionQueue[i], i);
+								m_turnManager.RemoveActionFrom(actionQueue[i], i);
 							}
 						}
 					}
@@ -250,52 +286,65 @@ public class PlayerController : Singleton<PlayerController>
 				}
 			}
 		}
+		else if (m_selectedEntity != null)
+		{
+			if (!_tile.CanInteract && EntityActionDisplay.SelectedDisplay != null)
+			{
+				EntityActionDisplay.SelectedDisplay.Deselect();
+			}
+			else
+			{
+				//unselect entity
+				m_selectedEntity.Deselect();
+				m_selectedEntity = null;
+				onEntitySelected?.Invoke(null);
+			}
+		}
 	}
 
 	private void OnTileHovered ( Tile _tile )
 	{
-		if (m_selectedEntity == null)
+		if (m_selectedEntity == null || _tile == m_hoveredTile || EntityActionDisplay.SelectedDisplay != null || !_tile.CanInteract)
 			return;
 
-		if (_tile != m_hoveredTile)
+		ClearGhostActionOnTileDisplay();
+
+		int totalCostSpend = 0;
+		bool didContainTile = false;
+
+		m_hoveredTile = _tile;
+		if (m_actionDisplays.ContainsKey(m_selectedEntity.ID))
 		{
-
-			ClearGhostActionOnTileDisplay();
-
-			int totalCostSpend = 0;
-			bool didContainTile = false;
-			if (m_actionDisplays.ContainsKey(m_selectedEntity.ID))
+			foreach (ActionDisplayOnTile display in m_actionDisplays[m_selectedEntity.ID])
 			{
-				foreach (ActionDisplayOnTile display in m_actionDisplays[m_selectedEntity.ID])
+				if (display.DestinationTile == _tile)
 				{
-					totalCostSpend += display.RecordedAction.action.Data.tokenCost;
-					if (display.DestinationTile == _tile)
-					{
-						didContainTile = true;
-						break;
-					}
+					totalCostSpend = display.RecordedAction.action.TimeAtEnd;
+					didContainTile = true;
+					break;
 				}
 			}
-
-			bool isTargetValid = TurnManager.Instance.currentPhase == TurnManager.TurnPhase.Recording
-				&& (TurnManager.Instance.CurrentActionTypeSelected == EntityActionEnumID.NeighborMove || TurnManager.Instance.CurrentActionTypeSelected == EntityActionEnumID.TargetTileMove)
-				&& TurnManager.Instance.CurrentActionSelected.TileInteractPredicate(_tile);
-
-			Tile from = GridManager.Instance.Tiles[TurnManager.Instance.GetLastRegisteredPositionOfEntity(m_selectedEntity.ID)];
-			int distanceToTarget = isTargetValid ? GridManager.Instance.GetDistanceBetween(from, _tile) : 0; 
-			TurnManager.Instance.RefreshActionDisplay(m_selectedEntity.ID
-				, didContainTile ? totalCostSpend : (GameConfig.current.game.actionTokenPerRound - TurnManager.Instance.RemainingActionToken[m_selectedEntity.ID]) + distanceToTarget);
-			if (isTargetValid)
-			{
-				TurnManager.Instance.CurrentActionSelected.positionAtActionEndID = _tile.coordinates.ID;
-				TurnManager.Instance.CurrentActionSelected.GhostDisplay(TurnManager.Instance.CurrentStateTypeSelected);
-			}
-
-
-
-			m_hoveredTile = _tile;
-
 		}
+		AEntityAction currentSelectedAction = EntityActionDisplay.SelectedDisplay != null
+			? (m_turnManager.hasModActionSelected ? EntityActionDisplay.SelectedDisplay.RecordedAction.freeAction : EntityActionDisplay.SelectedDisplay.RecordedAction.action)
+			: (m_turnManager.hasModActionSelected ? m_turnManager.CurrentModActionSelected : m_turnManager.CurrentActionSelected);
+
+		if (!didContainTile)
+			GridManager.Instance.BFS(GridManager.Instance.Tiles[m_turnManager.GetLastRegisteredPositionOfEntity(m_selectedEntity.ID)]
+				, m_turnManager.RemainingActionToken[m_selectedEntity.ID] * currentSelectedAction.Data.movementSpeed, null, true, false);
+
+		bool isTargetValid = m_turnManager.currentPhase == TurnManager.TurnPhase.Recording && _tile.CanInteract;
+		int distanceToTarget = isTargetValid ? _tile.Distance : 0;
+		int specificTokenCount = didContainTile ? totalCostSpend : (GameConfig.current.game.actionTokenPerRound - m_turnManager.RemainingActionToken[m_selectedEntity.ID]) + distanceToTarget;
+
+		if (isTargetValid)
+		{
+			if (currentSelectedAction.Data.codeType == EntityActionData.ActionCodeType.MoveThenAttack || currentSelectedAction.Data.codeType == EntityActionData.ActionCodeType.TargetTileMove)
+				currentSelectedAction.positionAtActionEndID = _tile.coordinates.ID;
+		}
+
+		m_turnManager.RefreshActionDisplay(m_selectedEntity.ID, false, specificTokenCount);
+
 	}
 
 	#region Ghost
@@ -305,7 +354,7 @@ public class PlayerController : Singleton<PlayerController>
 		m_selectedEntity = null;
 		ClearActionOnTileDisplay();
 		ClearGhostActionOnTileDisplay();
-		ClearGhostEntities();
+		ClearGhostEntitiesAndItems();
 	}
 
 	private void OnEndLevel ()
@@ -313,7 +362,17 @@ public class PlayerController : Singleton<PlayerController>
 		m_selectedEntity = null;
 		ClearActionOnTileDisplay();
 		ClearGhostActionOnTileDisplay();
-		ClearGhostEntities();
+
+		foreach (GhostEntity ghost in m_ghostEntities.Values)
+		{
+			Destroy(ghost.gameObject);
+		}
+		m_ghostEntities.Clear();
+		foreach (GhostItem ghost in m_ghostItems.Values)
+		{
+			Destroy(ghost.gameObject);
+		}
+		m_ghostItems.Clear();
 	}
 
 	public void AddActionDisplay ( ActionDisplayOnTile _display, int _performingEntityID, bool _isTemp )
@@ -332,7 +391,14 @@ public class PlayerController : Singleton<PlayerController>
 		}
 	}
 
-	public void AddGhostAt ( Entity _entity, Tile _position, int _orientation )
+	public void AddRotationActionDisplay ( RotationActionDisplay _display, int _performingEntityID )
+	{
+		if (!m_rotationActionDisplays.ContainsKey(_performingEntityID))
+			m_rotationActionDisplays.Add(_performingEntityID, new());
+		m_rotationActionDisplays[_performingEntityID].Add(_display);
+	}
+
+	public void AddGhostEntityAt ( Entity _entity, Tile _position, int _orientation )
 	{
 		if (!m_ghostEntities.ContainsKey(_entity.ID))
 		{
@@ -344,9 +410,26 @@ public class PlayerController : Singleton<PlayerController>
 		m_ghostEntities[_entity.ID].ShowAtPositionAndOrientation(_position, _orientation);
 	}
 
-	public void ClearGhostEntities ()
+	public void AddGhostItemAt ( AItemData _itemData, Tile _position, int _orientation, int _id )
+	{
+		if (!m_ghostItems.ContainsKey(_id))
+		{
+			GhostItem newGhost = Instantiate(GameAssets.current.game.baseItem /*, GameManager.Instance.transform*/);
+			newGhost.Init(_itemData);
+			m_ghostItems.Add(_id, newGhost);
+		}
+
+		m_ghostItems[_id].ShowAtPositionAndOrientation(_position, _orientation);
+	}
+
+	public void ClearGhostEntitiesAndItems ()
 	{
 		foreach (GhostEntity ghost in m_ghostEntities.Values)
+		{
+			ghost.Hide();
+		}
+
+		foreach (GhostItem ghost in m_ghostItems.Values)
 		{
 			ghost.Hide();
 		}
@@ -374,9 +457,18 @@ public class PlayerController : Singleton<PlayerController>
 			}
 			m_tempActionDisplays[entityID].Clear();
 		}
+
+		foreach (int entityID in m_rotationActionDisplays.Keys)
+		{
+			foreach (RotationActionDisplay display in m_rotationActionDisplays[entityID])
+			{
+				display.Discard();
+			}
+			m_rotationActionDisplays[entityID].Clear();
+		}
 	}
 
-	private void OnAnyEntityDeath(Entity _entity )
+	private void OnAnyEntityDeath ( Entity _entity )
 	{
 		m_ghostEntities.Remove(_entity.ID);
 	}

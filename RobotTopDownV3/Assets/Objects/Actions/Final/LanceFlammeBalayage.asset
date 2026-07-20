@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a743e40aeafc0445b10e59cec8dfa98, type: 3}
+  m_Name: LanceFlammeBalayage
+  m_EditorClassIdentifier: 
+  displayName: Balayage
+  enumID: 25
+  icon: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
+  tileOutlineColor: {r: 1, g: 0, b: 0, a: 1}
+  m_tokenPreparationDuration: 0
+  m_tokenCooldown: 1
+  tokenDuration: 1
+  preparationAnimationKey: 
+  afterPerformAnimationKey: 
+  onPerformSingleAttackSFXID: 0
+  onSingleAttackHitSFXID: 2
+  conditionType: 0
+  previousActionAttackModificator: 0
+  type: 0
+  subType: 3
+  codeType: 1
+  targetType: 3
+  trajectoryType: 0
+  minDistance: 1
+  maxDistance: 5
+  minTargetAmount: 1
+  maxTargetAmount: 1
+  isAoe: 1
+  aoeType: 2
+  circleRange: 1
+  arcType: 0
+  rayDiameter: 1
+  maxChainedTarget: 1
+  damageRecutionOnChain: 0.1
+  coneType: 0
+  hitAmount: 1
+  damageFactor: 0.8
+  usedDamageChannels: 05000000
+  appliableStatus:
+  - {fileID: 11400000, guid: 7af3cbb2fb9300d4c8a9b333e8a5b7a4, type: 2}
+  statusHitProbability: 0
+  passiveEffects: []
+  invocatedEntity: {fileID: 0}
+  invocatedItem: {fileID: 0}
+  invocationCountLimit: 1
+  movementSpeed: 0

@@ -19,11 +19,24 @@ public class EntityDisplacementPlugin : EntityPlugin
 	private EntityAnchor.Spawn m_spawn;
 	public EntityAnchor.Spawn Spawn => m_spawn;
 
+	private bool m_didMoveThisTurn = false;
+	public bool DidMoveThisTurn => m_didMoveThisTurn;
+
 	private Tween m_movementTween;
 	private Tween m_rotationTween;
 
+
+	private void Awake ()
+	{
+		m_linkedEntity.onStartPerformAction += OnStartPerformAction;
+		TurnManager.onStartInputPhase += OnNewTurnBegin;
+	}
+
 	private void OnDestroy ()
 	{
+		m_linkedEntity.onStartPerformAction -= OnStartPerformAction;
+		TurnManager.onStartInputPhase -= OnNewTurnBegin;
+
 		if (m_movementTween.IsActive())
 			m_movementTween.Kill();
 		if (m_rotationTween.IsActive())
@@ -48,24 +61,55 @@ public class EntityDisplacementPlugin : EntityPlugin
 		onAnyEntitySpawn.Invoke(m_linkedEntity);
 	}
 
-	public void MoveToTile( int _tileID,  System.Action onMovementDoneAction)
+	public void MoveToTile( int _tileID,  System.Action onMovementDoneAction, bool _overrideMovementSpeed = false, float _overritenMovementSpeed = 0)
 	{
 		if(m_coordinate.GetTile().GetEntity(true) == m_linkedEntity)
 			m_coordinate.GetTile().SetEntity(null, _isThisTurn: true);
 		Tile tile = GridManager.Instance.Tiles[_tileID];
 
-		if(m_linkedEntity.AI.TargetedEntity == null)
+		if(m_linkedEntity.AI.LastTargetedEntities == null)
 			Rotate(tile, GameConfig.current.game.actionDuration);
 			//Rotate(tile, Mathf.Max(GameConfig.current.game.entityRotationDuration, GameConfig.current.game.actionDuration));
 
 		if (m_movementTween.IsActive())
 			m_movementTween.Kill();
 
-		m_movementTween = transform.DOMove(tile.transform.position - m_bottomPosition.localPosition, GameConfig.current.game.actionDuration).SetEase(Ease.Linear).OnComplete(() => onMovementDoneAction?.Invoke());
+		float movementDuration = _overrideMovementSpeed ? _overritenMovementSpeed : GameConfig.current.game.actionDuration;
+		m_movementTween = transform.DOMove(tile.transform.position - m_bottomPosition.localPosition, movementDuration)
+			.SetEase(Ease.Linear).OnComplete(() => onMovementDoneAction?.Invoke());
 		tile.SetEntity(m_linkedEntity, _isThisTurn: true);
 		m_coordinate.SetCoordinate(tile.coordinates.X, tile.coordinates.Z, tile.coordinates.ID);
 
+
+		//here
+		//this must be called right before onEndAction (OnMove tween)
+		tile.OnEntityEnter(m_linkedEntity, false);
+
 		//refresh fow
+		onAnyEntityMovement?.Invoke(m_linkedEntity);
+	}
+
+	public void TeleportToTile(int _tileID, System.Action onMovementDoneAction )
+	{
+		if (m_coordinate.GetTile().GetEntity(true) == m_linkedEntity)
+			m_coordinate.GetTile().SetEntity(null, _isThisTurn: true);
+		Tile tile = GridManager.Instance.Tiles[_tileID];
+
+		if (m_linkedEntity.AI.LastTargetedEntities == null)
+			Rotate(tile, GameConfig.current.game.actionDuration);
+		//Rotate(tile, Mathf.Max(GameConfig.current.game.entityRotationDuration, GameConfig.current.game.actionDuration));
+
+		if (m_movementTween.IsActive())
+			m_movementTween.Kill();
+
+		transform.position = tile.transform.position - m_bottomPosition.localPosition;
+		tile.SetEntity(m_linkedEntity, _isThisTurn: true);
+		m_coordinate.SetCoordinate(tile.coordinates.X, tile.coordinates.Z, tile.coordinates.ID);
+
+		tile.OnEntityEnter(m_linkedEntity, true);
+
+		//refresh fow
+		onMovementDoneAction?.Invoke();
 		onAnyEntityMovement?.Invoke(m_linkedEntity);
 	}
 
@@ -97,5 +141,16 @@ public class EntityDisplacementPlugin : EntityPlugin
 	{
 		int closestOrientationToTile = GridManager.Instance.GetClosestOrientation(m_coordinate.GetTile(), _towards);
 		Rotate(closestOrientationToTile, _duration, _onEndPerform);
+	}
+
+	private void OnStartPerformAction(AEntityAction _actionPerformed )
+	{
+		if (_actionPerformed.Data.type == EntityActionData.ActionType.Movement)
+			m_didMoveThisTurn = true;
+	}
+
+	private void OnNewTurnBegin ()
+	{
+		m_didMoveThisTurn = false;
 	}
 }

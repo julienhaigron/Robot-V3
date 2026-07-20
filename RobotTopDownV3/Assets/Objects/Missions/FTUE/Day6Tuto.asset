@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f71a1187493589744bad6fd241af4c7b, type: 3}
+  m_Name: Day6Tuto
+  m_EditorClassIdentifier: RTD::MissionData
+  enumID: 8
+  missionName: Day6Tuto
+  icon: {fileID: 21300000, guid: 03da9b037a0d27b4db02f45130a6cb28, type: 3}
+  preMissionDialogue: {fileID: 0}
+  afterMissionDialogue: {fileID: 0}
+  map: {fileID: 11400000, guid: 96bdcbe1a80e5c04bb71dc4c4aed43a9, type: 2}
+  enemies:
+  - {fileID: 11400000, guid: 3e4f3c47b4ebef348a686bbfcf7f8550, type: 2}
+  type: 0
+  areRewardsRandom: 0
+  currencyRewards:
+    keys: 01000000
+    values: 1e00000000000000
+  equipmentRewards: []
+  unitReward: []

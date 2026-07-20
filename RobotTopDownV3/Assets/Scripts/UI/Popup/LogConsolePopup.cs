@@ -13,9 +13,10 @@ public class LogConsolePopup : AUIPopup
 
 	private void Awake ()
 	{
-		m_visibleEventType.Add(LogConsole.LogEventType.Main);
+		m_visibleEventType.Add(LogConsole.LogEventType.PreGame);
 		m_visibleEventType.Add(LogConsole.LogEventType.InputPhase);
-		m_visibleEventType.Add(LogConsole.LogEventType.PlayPhase);
+		m_visibleEventType.Add(LogConsole.LogEventType.ActionConflict);
+		m_visibleEventType.Add(LogConsole.LogEventType.DebugSys);
 
 		LogConsole.onLogAdded += OnLogAdded;
 	}
@@ -34,6 +35,7 @@ public class LogConsolePopup : AUIPopup
 
 	private void OnLogAdded ( LogConsole.Log _newLog )
 	{
-		m_console.text += _newLog.ToString();
+		if(m_visibleEventType.Contains(_newLog.eventType))
+			m_console.text += _newLog.ToString();
 	}
 }

@@ -13,18 +13,24 @@ MonoBehaviour:
   m_Name: RotateEntity
   m_EditorClassIdentifier: 
   displayName: RotateEntity
-  enumID: 2
+  enumID: 3
   icon: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
   tileOutlineColor: {r: 0, g: 1, b: 0, a: 1}
-  tokenPreparationDuration: 0
-  tokenCooldown: 1
-  tokenDuration: 0
+  m_tokenPreparationDuration: 0
+  m_tokenCooldown: 0
+  tokenDuration: 1
+  isModAction: 1
   preparationAnimationKey: 
   afterPerformAnimationKey: 
+  onPerformSingleAttackSFXID: 0
+  onSingleAttackHitSFXID: 0
+  conditionType: 0
   previousActionAttackModificator: 0
   type: 4
   subType: 0
+  codeType: 8
   targetType: 1
+  trajectoryType: 0
   minDistance: 0
   maxDistance: 0
   minTargetAmount: 1
@@ -32,8 +38,18 @@ MonoBehaviour:
   isAoe: 0
   aoeType: 0
   circleRange: 1
-  arcRadius: 1
+  arcType: 0
   rayDiameter: 1
+  maxChainedTarget: 1
+  damageRecutionOnChain: 0.1
   coneType: 0
+  hitAmount: 1
+  damageFactor: 1
   usedDamageChannels: 
-  appliableEffects: []
+  appliableStatus: []
+  statusHitProbability: 0
+  passiveEffects: []
+  invocatedEntity: {fileID: 0}
+  invocatedItem: {fileID: 0}
+  invocationCountLimit: 1
+  movementSpeed: 0

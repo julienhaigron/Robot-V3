@@ -1,0 +1,30 @@
+using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
+
+public class EntityDisplay : MonoBehaviour
+{
+    [SerializeField] private TextMeshProUGUI m_title;
+    [SerializeField] private Image m_iconImg;
+    [SerializeField] private Image[] m_armsImgs;
+    [SerializeField] private BaseButton m_openEntityConfigBtn;
+
+    private EntitySavedData m_unitData;
+
+    public void Init ( EntitySavedData _unitData )
+    {
+        m_unitData = _unitData;
+        m_title.text = _unitData.name;
+        m_iconImg.sprite = GameAssets.current.equipments[_unitData.frame.dataID].icon;
+		for (int i = 0; i < _unitData.arms.Length; i++)
+		{
+            m_armsImgs[i].sprite = GameAssets.current.equipments[_unitData.arms[i].dataID].icon;
+		}
+        m_openEntityConfigBtn.onClick += OnClickOpenEntityConfigBtn;
+    }
+
+    private void OnClickOpenEntityConfigBtn ()
+    {
+        UIManager.Instance.OpenPanel<EntityConfigPanel>().Init(m_unitData, false);
+    }
+}

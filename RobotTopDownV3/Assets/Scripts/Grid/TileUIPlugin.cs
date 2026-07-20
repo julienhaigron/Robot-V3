@@ -20,11 +20,6 @@ public class TileUIPlugin : MonoBehaviour
 		m_positionDisplay.text = _x + "." + _y;
 	}
 
-	public void UpdateDistanceLabel (int _distance)
-	{
-		//m_positionDisplay.text = _distance == int.MaxValue ? "" :  _distance.ToString();
-	}
-
 	public void UpdateGroundMaterial ()
 	{
 		m_groundMeshRendered.material = GameAssets.current.ui.tileGroundMaterials[m_linkedTile.GroundType];

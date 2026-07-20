@@ -3,161 +3,415 @@ using System.Collections.Generic;
 using UnityEngine;
 using Sirenix.OdinInspector;
 using System;
+using System.Linq;
 
 public class Entity : MonoBehaviour
 {
-    public Action onSelect;
-    public Action onDeselect;
-    public Action<AEntityAction> onStartPerformAction;
-    public Action onEndPerformAction;
-    public Action onNewPhaseBegin;
+	public Action onSelect;
+	public Action onDeselect;
+	public Action<AEntityAction> onStartPerformAction;
+	public Action onEndPerformAction;
+	public Action onNewRoundBegin;
+	public Action<EntityStatusEnumID> onStatusAdded;
+	public Action<EntityStatusEnumID> onStatusRemoved;
+	public Action<EntityEquipmentData.StatBonusBuff> onStatBonusAdded;
+	public Action<EntityEquipmentData.StatBonusBuff> onStatBonusRemoved;
 
-    [Title("Depedencies")]
-    [SerializeField] private GameObject m_skinParent;
-    public GameObject SkinParent => m_skinParent;
+	[Title("Depedencies")]
+	[SerializeField] private GameObject m_skinParent;
+	public GameObject SkinParent => m_skinParent;
 
-    [SerializeField] private EntityDisplacementPlugin m_displacement;
-    public EntityDisplacementPlugin Displacement => m_displacement;
+	[SerializeField] private EntityDisplacementPlugin m_displacement;
+	public EntityDisplacementPlugin Displacement => m_displacement;
 
-    [SerializeField] private EntityEquipmentPlugin m_equipment;
+	[SerializeField] private EntityEquipmentPlugin m_equipment;
 	public EntityEquipmentPlugin Equipment => m_equipment;
 
-    [SerializeField] private EntityAIPlugin m_ai;
-    public EntityAIPlugin AI => m_ai;
-    [SerializeField] private EntitySkinPlugin m_skin;
-    public EntitySkinPlugin Skin => m_skin;
-    
-    [SerializeField] private EntityUIPlugin m_ui;
-    public EntityUIPlugin UI => m_ui;
+	[SerializeField] private EntityAIPlugin m_ai;
+	public EntityAIPlugin AI => m_ai;
+	[SerializeField] private EntitySkinPlugin m_skin;
+	public EntitySkinPlugin Skin => m_skin;
 
-    [SerializeField] private EntitySavedData m_data;
+	[SerializeField] private EntityUIPlugin m_ui;
+	public EntityUIPlugin UI => m_ui;
 
-    public EntitySavedData Data => m_data;
+	[SerializeField] private EntitySavedData m_data;
 
-    private List<EntityActionEnumID> m_knownedActions = new();
-    public List<EntityActionEnumID> KnownedActions => m_knownedActions;
+	public EntitySavedData Data => m_data;
 
-    private EntityState m_state;
-    public EntityState State => m_state;
+	private List<EntityActionEnumID> m_knownedActions = new();
+	public List<EntityActionEnumID> KnownedActions => m_knownedActions;
 
-    private List<AEntityEffect> m_effects = new();
-    public List<AEntityEffect> Effects => m_effects;
-    private Dictionary<AEntityEffect, int> m_remainingDurationToActiveEffects = new();
+	private List<EntityActionEnumID> m_knowedModActions = new();
+	public List<EntityActionEnumID> KnownedModActions => m_knowedModActions;
 
-    private int m_ownerID;
-    public int OwnerID => m_ownerID;
-    //public EntityFaction Faction => m_data.FrameData.faction;
+	private Dictionary<EntityActionEnumID, List<string>> m_componentLinkedToAction;
+	public Dictionary<EntityActionEnumID, List<string>> ComponentLinkedToAction => m_componentLinkedToAction;
 
-    [BoxGroup("Fix Stats")]
-    
+	private Dictionary<EntityActionEnumID, List<AEntityPassiveEffect.PassiveEffectContainer>> m_knownedPassiveEffectsPerAction = new();
+	public Dictionary<EntityActionEnumID, List<AEntityPassiveEffect.PassiveEffectContainer>> KnownedPassiveEffectsPerAction => m_knownedPassiveEffectsPerAction;
+	private List<AEntityPassiveEffect.PassiveEffectContainer> m_allPassiveEffects = new();
+	public List<AEntityPassiveEffect.PassiveEffectContainer> AllPassiveEffects => m_allPassiveEffects;
 
+	private List<EntityState> m_knownedStates = new();
+	public List<EntityState> KnownedStates => m_knownedStates;
 
-    private EntityActionData m_lastActionPerformed;
-    public EntityActionData LastActionPerformedData => m_lastActionPerformed == null ? GameConfig.current.game.defaultStartAction : m_lastActionPerformed;
+	private EntityState m_state;
+	public EntityState State => m_state;
 
-    public int ID;
-    //public int PlayerOwnerID;
+	private List<EntityStatusEnumID> m_status = new();
+	public List<EntityStatusEnumID> Status => m_status;
+	private Dictionary<AEntityStatus, int> m_remainingDurationToActiveStatuses = new();
+	private List<EntityEquipmentData.StatBonusBuff> m_statBuffs = new();
+	public List<EntityEquipmentData.StatBonusBuff> StatBuffs => m_statBuffs;
+	private Dictionary<EntityEquipmentData.StatBonus.StatType, float> m_activeStatBonusBuffs = new();
 
-    public enum EntityState 
-    {
-        Guarding,
-        Patroling,
-        Special //to add
-    }
-    public enum EntityFaction
+	private int m_ownerID;
+	public int OwnerID => m_ownerID;
+	//public EntityFaction Faction => m_data.FrameData.faction;
+
+	[BoxGroup("Fix Stats")]
+	private EntityActionData m_lastActionPerformed;
+	public EntityActionData LastActionPerformedData => m_lastActionPerformed == null ? GameConfig.current.game.defaultStartAction : m_lastActionPerformed;
+
+	public int ID;
+	public int PlayerOwnerID;
+
+	private bool m_isVisible = false;
+	public bool IsVisible => m_isVisible;
+	private NeuronalMembraneEquipmentData.VisionTypes m_howIsUnitVisible;
+	public NeuronalMembraneEquipmentData.VisionTypes HowIsUnitVisible => m_howIsUnitVisible;
+
+	[Serializable]
+	public enum EntityState
 	{
-        Scout,
-        Psy
+		Guarding,
+		Patroling,
+		Fleeing //to add
 	}
 
 	private void Awake ()
 	{
-        TurnManager.onNewPhaseStart += OnPhaseStart;
-    }
+		TurnManager.onNewRoundStart += OnRoundStart;
+	}
 
-    private void OnDestroy ()
-    {
-        TurnManager.onNewPhaseStart -= OnPhaseStart;
-    }
-
-    public void Init ( EntitySavedData _data, EntityAnchor.Spawn _spawn, int _id, int _playerID )
-    {
-        ID = _id;
-        m_ownerID = _playerID;
-        m_data = _data;
-        Displacement.SetSpawn(_spawn);
-        
-        m_equipment.Init(_data);
-        m_ui.Init(_data);
-        m_ai.Init(_data);
-        m_skin.Init(_data);
-
-        m_knownedActions = _data.GetActions();
-    }
-
-    private void OnPhaseStart ()
+	private void OnDestroy ()
 	{
-        onNewPhaseBegin?.Invoke();
+		TurnManager.onNewRoundStart -= OnRoundStart;
+	}
 
-        foreach (AEntityEffect effect in m_effects)
+	public void Init ( EntitySavedData _data, EntityAnchor.Spawn _spawn, int _id, int _playerID )
+	{
+		ID = _id;
+		m_ownerID = _playerID;
+		m_data = _data;
+		Displacement.SetSpawn(_spawn);
+
+		m_equipment.Init(_data);
+		m_ui.Init(_data);
+		m_skin.Init(_data);
+
+		m_componentLinkedToAction = GetAllActions();
+		m_knownedActions = GetActions().Keys.ToList();
+		m_knowedModActions = GetModActions();
+
+		m_ai.Init(_data);
+		foreach (EntityActionEnumID actionID in m_knownedActions)
 		{
-            if (--m_remainingDurationToActiveEffects[effect] <= 0)
+			m_knownedPassiveEffectsPerAction.Add(actionID, _data.GetPassiveEffects(actionID));
+		}
+
+		m_knownedStates.AddRange(_data.BrainData.knownedStates);
+	}
+
+	private Dictionary<EntityActionEnumID, List<string>> GetAllActions ()
+	{
+		Dictionary<EntityActionEnumID, List<string>> actionsPerComponents = new();
+
+		foreach (EntityActionEnumID actionID in m_data.FrameData.knownedActions)
+		{
+			if (actionID == EntityActionEnumID.Unknowned)
+				continue;
+
+			if (!actionsPerComponents.ContainsKey(actionID))
+				actionsPerComponents.Add(actionID, new());
+
+			actionsPerComponents[actionID].Add(m_data.FrameData.name);
+		}
+		foreach (EntityActionEnumID actionID in m_data.ReactorData.knownedActions)
+		{
+			if (actionID == EntityActionEnumID.Unknowned)
+				continue;
+
+			if (actionID != EntityActionEnumID.Unknowned && !actionsPerComponents.ContainsKey(actionID))
+				actionsPerComponents.Add(actionID, new());
+
+			actionsPerComponents[actionID].Add(m_data.ReactorData.name);
+		}
+		foreach (EntityActionEnumID actionID in m_data.NeuronalMembraneData.knownedActions)
+		{
+			if (actionID == EntityActionEnumID.Unknowned)
+				continue;
+
+			if (!actionsPerComponents.ContainsKey(actionID))
+				actionsPerComponents.Add(actionID, new());
+
+			actionsPerComponents[actionID].Add(m_data.NeuronalMembraneData.name);
+		}
+		foreach (EntityActionEnumID actionID in m_data.BrainData.knownedActions)
+		{
+			if (actionID == EntityActionEnumID.Unknowned)
+				continue;
+
+			if (!actionsPerComponents.ContainsKey(actionID))
+				actionsPerComponents.Add(actionID, new());
+
+			actionsPerComponents[actionID].Add(m_data.BrainData.name);
+		}
+
+		foreach (KeyValuePair<string, Weapon> pair in m_equipment.Weapons)
+		{
+			foreach (EntityActionEnumID actionID in pair.Value.Data.knownedActions)
 			{
-                m_effects.Remove(effect);
-                m_remainingDurationToActiveEffects.Remove(effect);
+				if (actionID == EntityActionEnumID.Unknowned)
+					continue;
+
+				if (!actionsPerComponents.ContainsKey(actionID))
+					actionsPerComponents.Add(actionID, new());
+
+				actionsPerComponents[actionID].Add(pair.Key);
+			}
+		}
+
+		foreach (KeyValuePair<string, Tool> pair in m_equipment.Tools)
+		{
+			foreach (EntityActionEnumID actionID in pair.Value.Data.knownedActions)
+			{
+				if (actionID == EntityActionEnumID.Unknowned)
+					continue;
+
+				if (!actionsPerComponents.ContainsKey(actionID))
+					actionsPerComponents.Add(actionID, new());
+
+				actionsPerComponents[actionID].Add(pair.Key);
+			}
+		}
+
+		foreach (GameDatas.PlayerSave.Equipment container in m_data.auxiliar)
+		{
+			if (GameAssets.current.equipments[container.dataID] is EntityEquipmentData equipment)
+			{
+				foreach (EntityActionEnumID actionID in equipment.knownedActions)
+				{
+					if (actionID == EntityActionEnumID.Unknowned || actionsPerComponents.ContainsKey(actionID))
+						continue;
+					actionsPerComponents[actionID].Add(equipment.name);
+				}
+			}
+		}
+		foreach (GameDatas.PlayerSave.Equipment container in m_data.chipsets)
+		{
+			if (GameAssets.current.equipments[container.dataID] is EntityEquipmentData equipment)
+			{
+				foreach (EntityActionEnumID actionID in equipment.knownedActions)
+				{
+					if (actionID == EntityActionEnumID.Unknowned || actionsPerComponents.ContainsKey(actionID))
+						continue;
+					actionsPerComponents[actionID].Add(equipment.name);
+				}
+			}
+		}
+
+		return actionsPerComponents;
+	}
+
+	private Dictionary<EntityActionEnumID, List<string>> GetActions ()
+	{
+		Dictionary<EntityActionEnumID, List<string>> actionsPerComponents = GetAllActions();
+		foreach (EntityActionEnumID actionID in actionsPerComponents.Keys.ToArray())
+		{
+			if (actionID == EntityActionEnumID.Unknowned || !GameAssets.current.game.entityActionsData.ContainsKey(actionID) || GameAssets.current.game.entityActionsData[actionID].isModAction)
+				actionsPerComponents.Remove(actionID);
+		}
+
+		return actionsPerComponents;
+	}
+
+	private List<EntityActionEnumID> GetModActions ()
+	{
+		List<EntityActionEnumID> actions = GetAllActions().Keys.ToList();
+
+		foreach (EntityActionEnumID actionID in actions.ToArray())
+		{
+			if (actionID == EntityActionEnumID.Unknowned || !GameAssets.current.game.entityActionsData.ContainsKey(actionID) || !GameAssets.current.game.entityActionsData[actionID].isModAction)
+				actions.Remove(actionID);
+		}
+
+		return actions;
+	}
+
+	/*public List<EntityActionEnumID> GetReplacementActionFor ( EntityActionEnumID _actionID )
+	{
+		EntityActionData data = GameAssets.current.game.entityActionsData[_actionID];
+		List<EntityActionEnumID> replacements = new();
+		foreach (EntityActionEnumID actionID in m_knownedActions)
+		{
+			switch (GameAssets.current.game.entityActionsData[_actionID].type)
+			{
+				case EntityActionData.ActionType.DistanceAttack:
+				case EntityActionData.ActionType.MeleeAttack:
+					if (data.type == EntityActionData.ActionType.DistanceAttack || data.type == EntityActionData.ActionType.MeleeAttack)
+						replacements.Add(actionID);
+					break;
+				case EntityActionData.ActionType.Movement:
+					if (data.type == EntityActionData.ActionType.Movement)
+						replacements.Add(actionID);
+					break;
+				case EntityActionData.ActionType.Rotation:
+					if (data.type == EntityActionData.ActionType.Rotation)
+						replacements.Add(actionID);
+					break;
+				case EntityActionData.ActionType.Special:
+					if (data.type == EntityActionData.ActionType.Special)
+						replacements.Add(actionID);
+					break;
+			}
+		}
+
+		return replacements;
+	}*/
+
+	public void InitHangarMode ( EntitySavedData _data )
+	{
+		m_data = _data;
+		m_equipment.Init(_data);
+		m_skin.Init(_data);
+		m_ui.InitHangarMode(_data);
+	}
+
+	private void OnRoundStart ()
+	{
+		onNewRoundBegin?.Invoke();
+
+		foreach (EntityStatusEnumID status in m_status.ToArray())
+		{
+			if (m_remainingDurationToActiveStatuses.ContainsKey(GameAssets.current.game.entityStatus[status])
+				&& m_remainingDurationToActiveStatuses[GameAssets.current.game.entityStatus[status]] <= 0)
+			{
+				RemoveStatus(status);
 			}
 
-            effect.ApplyEffect(this);
+			GameAssets.current.game.entityStatus[status].ApplyStatusEffect(m_remainingDurationToActiveStatuses[GameAssets.current.game.entityStatus[status]]--, this);
+		}
+
+		foreach (EntityEquipmentData.StatBonusBuff buff in m_statBuffs.ToArray())
+		{
+			buff.duration--;
+			if (buff.duration <= 0)
+				RemoveAdditionaryStatBonus(buff);
 		}
 	}
 
-    public void StartPerformAction ( AEntityAction _action)
+	public void StartPerformAction ( AEntityAction _action, EntityState _state )
 	{
-        if(_action.Data.type != EntityActionData.ActionType.Rotation)
-            m_lastActionPerformed = _action.Data;
+		if (_action.Data.type != EntityActionData.ActionType.Rotation)
+			m_lastActionPerformed = _action.Data;
 
-        onStartPerformAction?.Invoke(_action);
-    }
-    
-    public void EndPerformAction ( )
-	{
-        onEndPerformAction?.Invoke();
+		m_state = _state;
+		onStartPerformAction?.Invoke(_action);
 	}
 
-    public bool IsAlliedTo (int _playerOwnerId)
+	public void EndPerformAction ()
 	{
-        return m_ownerID == _playerOwnerId;
-        /*if (!GameManager.Instance.IsOnline && m_data.FrameData.faction == EntityFaction.Scout)
-            return true;
-        else if (GameManager.Instance.IsOnline && m_ownerID == _playerOwnerId)
-            return true;
-        else
-            return false;*/
+		onEndPerformAction?.Invoke();
 	}
 
-    public void Select ()
+	public bool IsAlliedTo ( int _playerOwnerId )
 	{
-        onSelect?.Invoke();
-    }
+		return m_ownerID == _playerOwnerId;
+	}
 
-    public void Deselect ()
-    {
-        onDeselect?.Invoke();
-    }
-
-    public void SetVisibility(bool _isVisible )
+	public void Select ()
 	{
-        m_ui.gameObject.SetActive(_isVisible);
-        if (_isVisible)
-            m_skin.Show();
-        else
-            m_skin.Hide();
-    }
+		onSelect?.Invoke();
+	}
 
-    public void AddEffect(AEntityEffect _effect )
+	public void Deselect ()
 	{
-        m_effects.Add(_effect);
-        m_remainingDurationToActiveEffects.Add(_effect, _effect.duration);
-    }
+		onDeselect?.Invoke();
+	}
+
+	public void SetVisibility ( bool _isVisible, NeuronalMembraneEquipmentData.VisionTypes _visionType )
+	{
+		m_isVisible = _isVisible;
+		m_howIsUnitVisible = _visionType;
+
+		m_ui.gameObject.SetActive(_isVisible);
+		if (_isVisible)
+			m_skin.Show();
+		else
+			m_skin.Hide();
+	}
+
+	public void AddStatus ( EntityStatusEnumID _statusID )
+	{
+		m_status.Add(_statusID);
+		if (m_remainingDurationToActiveStatuses.ContainsKey(GameAssets.current.game.entityStatus[_statusID]))
+			m_remainingDurationToActiveStatuses[GameAssets.current.game.entityStatus[_statusID]] = GameAssets.current.game.entityStatus[_statusID].duration;
+		else
+			m_remainingDurationToActiveStatuses.Add(GameAssets.current.game.entityStatus[_statusID], GameAssets.current.game.entityStatus[_statusID].duration);
+
+		onStatusAdded?.Invoke(_statusID);
+	}
+
+	public void RemoveStatus ( EntityStatusEnumID _statusID )
+	{
+		GameAssets.current.game.entityStatus[_statusID].OnRemoveStatusEffect(this);
+		m_status.Remove(_statusID);
+		m_remainingDurationToActiveStatuses.Remove(GameAssets.current.game.entityStatus[_statusID]);
+
+		onStatusRemoved?.Invoke(_statusID);
+	}
+
+	public void AddAdditionaryStatBonus ( EntityEquipmentData.StatBonusBuff _statBuff )
+	{
+		m_statBuffs.Add(_statBuff);
+		if (m_activeStatBonusBuffs.ContainsKey(_statBuff.statBonus.type))
+			m_activeStatBonusBuffs[_statBuff.statBonus.type] += _statBuff.statBonus.value;
+		else
+			m_activeStatBonusBuffs.Add(_statBuff.statBonus.type, _statBuff.statBonus.value);
+
+		onStatBonusAdded?.Invoke(_statBuff);
+	}
+
+	public void RemoveAdditionaryStatBonus ( EntityEquipmentData.StatBonusBuff _statBuff )
+	{
+		m_statBuffs.Remove(_statBuff);
+		m_activeStatBonusBuffs[_statBuff.statBonus.type] -= _statBuff.statBonus.value;
+
+		onStatBonusRemoved?.Invoke(_statBuff);
+	}
+
+	public float GetAdditionaryStatBonus ( EntityEquipmentData.StatBonus.StatType _type, AEntityAction _relatedAction )
+	{
+		float bonus = 0f;
+
+		if (m_activeStatBonusBuffs.ContainsKey(_type))
+			bonus += m_activeStatBonusBuffs[_type];
+
+		foreach (GameDatas.PlayerSave.Equipment eq in m_data.chipsets)
+		{
+			if (eq.TryGetData(out ChipsetEquipmentData _chipsedData))
+			{
+				foreach (ChipsetEquipmentData.ConditionalStatBonus conditionalStatBonus in _chipsedData.statBonuses)
+				{
+					if (conditionalStatBonus.bonus.type == _type && conditionalStatBonus.UseConditionPredicate(_relatedAction, this, null))
+						bonus += conditionalStatBonus.bonus.value;
+				}
+			}
+		}
+
+		return bonus;
+	}
 
 }

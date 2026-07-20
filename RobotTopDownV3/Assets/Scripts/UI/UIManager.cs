@@ -12,12 +12,9 @@ public sealed class UIManager : SingletonPersistant<UIManager>
 	public static Action onChangeScreen;
 	//Panel contain TopCanvas
 
-	//GOALS :
-	//1) Get and Open Panel
-	//2) Get and Open TopCanvas
-	//3) Show Panel / Show TopCanvas
-
 	[SerializeField] private AUIPanel m_firstPanelToOpen;
+	[SerializeField] private Transform m_topLayer;
+	public Transform TopLayer => m_topLayer;
 
 	private static List<AUIPanel> m_panels;
 	private static List<AUIPopup> m_popups;
@@ -44,6 +41,9 @@ public sealed class UIManager : SingletonPersistant<UIManager>
 	public override void Awake ()
 	{
 		base.Awake();
+		if (Instance != this)
+			return;
+
 		m_panels = new List<AUIPanel>();
 		m_popups = new List<AUIPopup>();
 		m_topCanvases = new List<AUITopCanvas>();
@@ -154,7 +154,8 @@ public sealed class UIManager : SingletonPersistant<UIManager>
 		{
 			currentPanel.CanClick = false;
 
-			if (!_additive)
+			currentPanel.Close(0f, _closePreviousInstant);
+			/*if (!_additive)
 			{
 				HashSet<AUIWindow> panelToClose = new(oppenedPanels);
 				foreach (AUIWindow item in panelToClose)
@@ -163,7 +164,7 @@ public sealed class UIManager : SingletonPersistant<UIManager>
 				}
 
 				//currentPanel.Close(0f, _closePreviousInstant);
-			}
+			}*/
 
 			if (_pushHistory)
 				previousPanels.Add(currentPanel.GetType());

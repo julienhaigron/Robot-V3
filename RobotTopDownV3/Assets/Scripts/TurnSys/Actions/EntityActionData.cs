@@ -2,9 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Sirenix.OdinInspector;
+using System.Linq;
 
 
-[CreateAssetMenu(fileName = "EntityActionData", menuName = "Tools/Scriptables/Entity Action")]
+[CreateAssetMenu(fileName = "EntityActionData", menuName = "ScriptableObject/ActionData")]
 public class EntityActionData : ScriptableObject
 {
 	public string displayName;
@@ -13,14 +14,20 @@ public class EntityActionData : ScriptableObject
 
 	public Sprite icon;
 	public Color tileOutlineColor = Color.green;
-	public int tokenCost => tokenPreparationDuration + tokenDuration;
-	[Min(0)] public int tokenPreparationDuration;
-	[Min(0)] public int tokenCooldown;
-	[Min(0)] public int tokenDuration;
+	[SerializeField] private int m_tokenPreparationDuration;
+	[SerializeField] private int m_tokenCooldown;
+	public int tokenDuration = 1;
+	public bool isModAction = false;
 
 	[Title("Animation")]
 	public string preparationAnimationKey;
 	public string afterPerformAnimationKey;
+	public SfxId onPerformSingleAttackSFXID;
+	public SfxId onSingleAttackHitSFXID;
+
+	[Title("Condition")]
+	public enum ConditionType { Noone, DidNotMoveThisTurn, DidNotAttackThisTurn/*, IsTargetMarked*/ }
+	public ConditionType conditionType = ConditionType.Noone;
 
 	[Title("Stats")]
 	public float previousActionAttackModificator = 0;
@@ -48,40 +55,78 @@ public class EntityActionData : ScriptableObject
 	}
 	public ActionSubType subType;
 
+	public ActionCodeType codeType = ActionCodeType.Attack;
+	public enum ActionCodeType
+	{
+		//NeighborMove,
+		TargetTileMove,
+		Attack,
+		MoveThenAttack,
+		Special,
+		AddEffectToAction,
+		ApplyEffect,
+		InvokeEntity,
+		TurnShield,
+		TurnEntity,
+		Wait,
+		InvokeItem,
+	}
+
+	#region Target Vars
 	[Title("Target")] //TODO: see this later https://odininspector.com/attributes/hide-if-group-attribute
 	public enum TargetType
 	{
 		Self,
-		Distance,
-		Mortar
+		OtherEntity,
+		Mortar,
+		Tile
 	}
-	public TargetType targetType = TargetType.Distance;
+	public TargetType targetType = TargetType.OtherEntity;
+	public enum TrajectoryType
+	{
+		Direct,
+		Mortar,
+		Grenade,
+		Underground,
+		Throw
+	}
+	public TrajectoryType trajectoryType = TrajectoryType.Direct;
 	[ShowIf("@targetType != TargetType.Self")]
 	public int minDistance;
 	[ShowIf("@targetType != TargetType.Self")]
 	public int maxDistance;
 
+	[ShowIf("@!isAoe || (aoeType == AOEType.Circle && targetType != TargetType.Self)")]
 	public int minTargetAmount = 1;
+	[ShowIf("@!isAoe || (aoeType == AOEType.Circle && targetType != TargetType.Self)")]
 	public int maxTargetAmount = 1;
+	#endregion
 
-	[ShowIf("@targetType != TargetType.Self")]
+	#region AOE Vars
 	public bool isAoe = false;
 	public enum AOEType
 	{
 		Circle,
 		Ray,
 		Cone,
-		Arc
+		Arc,
+		Chain
 	}
 	[ShowIf("@isAoe")]
 	public AOEType aoeType = AOEType.Circle;
 	[ShowIf("@isAoe && aoeType == AOEType.Circle"), Min(1)]
 	public int circleRange = 1;
-	[ShowIf("@isAoe && aoeType == AOEType.Arc"), Min(1)]
-	public int arcRadius = 1;
+	[ShowIf("@isAoe && aoeType == AOEType.Arc")]
+	public ArcType arcType = ArcType.Small;
+	public enum ArcType { Small, Large }
+
 	[ShowIf("@isAoe && aoeType == AOEType.Ray"), Min(1)]
 	public int rayDiameter = 1;
-	
+	[ShowIf("@isAoe && aoeType == AOEType.Chain"), Min(1)]
+	public int maxChainedTarget = 1;
+	[ShowIf("@isAoe && aoeType == AOEType.Chain"), Min(1)]
+	public float damageRecutionOnChain = .1f;
+
 	public enum ConeType
 	{
 		Thin,
@@ -89,17 +134,55 @@ public class EntityActionData : ScriptableObject
 	}
 	[ShowIf("@isAoe && aoeType == AOEType.Cone")]
 	public ConeType coneType = ConeType.Thin;
+	#endregion
 
+	[Title("Damage")]
+	public int hitAmount = 1;
+	public float damageFactor = 1f;
 	public WeaponEquipmentData.DamageType[] usedDamageChannels;
 
-	public AEntityEffect[] appliableEffects;
+	[Title("Effect")]
+	public AEntityStatus[] appliableStatus;
+	public float statusHitProbability;
+	public AEntityPassiveEffect.PassiveEffectContainer[] passiveEffects;
+
+	[Title("Misc")]
+	[ShowIf("@codeType == ActionCodeType.InvokeEntity")] public UnitPreset invocatedEntity;
+	[ShowIf("@codeType == ActionCodeType.InvokeItem")] public AItemData invocatedItem;
+	[ShowIf("@codeType == ActionCodeType.InvokeEntity || codeType == ActionCodeType.InvokeItem")] public int invocationCountLimit = 1;
+	[ShowIf("@type == ActionType.Movement || codeType == ActionCodeType.MoveThenAttack ")] public int movementSpeed = 1;
+
+	
+	public enum MainActionType
+	{
+		Attack,
+		Movement,
+		Special
+	}
+
+	public MainActionType GetMainActionType ()
+	{
+		switch (type)
+		{
+			case ActionType.DistanceAttack:
+			case ActionType.MeleeAttack:
+				return MainActionType.Attack;
+			case ActionType.Movement:
+				return MainActionType.Movement;
+			case ActionType.Rotation:
+			case ActionType.Special:
+				return MainActionType.Special;
+		}
+
+		return MainActionType.Special;
+	}
 
 	public enum PFCResultType
 	{
+		Failure,
 		FirstWins,
 		SecondWins,
-		Equal,
-		Failure
+		Equal
 	}
 
 	public static PFCResultType PFC ( EntityActionData _firstAction, EntityActionData _secondAction )
@@ -185,5 +268,133 @@ public class EntityActionData : ScriptableObject
 		}
 
 		return PFCResultType.Failure;
+	}
+
+	#region Getters
+
+	public bool ContainsEffect(EntityPassiveEffectEnumID _enumID, out AEntityPassiveEffect.PassiveEffectContainer _passiveEffect)
+	{
+		foreach(AEntityPassiveEffect.PassiveEffectContainer effectContainer in passiveEffects)
+		{
+			if(effectContainer.enumID == _enumID)
+			{
+				_passiveEffect = effectContainer;
+				return true;
+			}
+		}
+
+		_passiveEffect = new AEntityPassiveEffect.PassiveEffectContainer() { enumID = EntityPassiveEffectEnumID.Unknown, conditionType = AEntityPassiveEffect.ConditionType.Noone};
+		return false;
+	}
+
+	public int GetTokenTotalCost ( AEntityAction _action, Entity _performingEntity, Entity _targetEntity )
+	{
+		return GetTokenPreparationCost(_action, _performingEntity, _targetEntity) + GetTokenCooldownCost(_action, _performingEntity, _targetEntity) + tokenDuration;
+	}
+
+	public int GetTokenPreparationCost ( AEntityAction _action, Entity _performingEntity, Entity _targetEntity )
+	{
+		PreparationCostReductionPassiveEffect so = (GameAssets.current.game.entityEffects[EntityPassiveEffectEnumID.PreparationCostReduction] as PreparationCostReductionPassiveEffect);
+
+		if (_action != null && _performingEntity != null && ContainsEffect(EntityPassiveEffectEnumID.PreparationCostReduction, out AEntityPassiveEffect.PassiveEffectContainer effectContainer)
+			&& so.UseConditionPredicate(_action, _performingEntity, _targetEntity, effectContainer.conditionType))
+		{
+			return m_tokenPreparationDuration - (GameAssets.current.game.entityEffects[EntityPassiveEffectEnumID.PreparationCostReduction] as PreparationCostReductionPassiveEffect).reductionAmount;
+		}
+
+		return m_tokenPreparationDuration;
+
+	}
+
+	public int GetTokenCooldownCost ( AEntityAction _action, Entity _performingEntity, Entity _targetEntity )
+	{
+		CooldownCostReductionPassiveEffect so = (GameAssets.current.game.entityEffects[EntityPassiveEffectEnumID.CooldownCostReduction] as CooldownCostReductionPassiveEffect);
+
+		if (_action != null && _performingEntity != null && ContainsEffect(EntityPassiveEffectEnumID.CooldownCostReduction, out AEntityPassiveEffect.PassiveEffectContainer effectContainer)
+			&& so.UseConditionPredicate(_action, _performingEntity, _targetEntity, effectContainer.conditionType))
+		{
+			return m_tokenCooldown - (GameAssets.current.game.entityEffects[EntityPassiveEffectEnumID.CooldownCostReduction] as CooldownCostReductionPassiveEffect).reductionAmount;
+		}
+
+		return m_tokenCooldown;
+	}
+
+	public int GetMaxRange ( AEntityAction _action, Entity _performingEntity, Entity _targetEntity )
+	{
+		MaxRangeUpPassiveEffect so = (GameAssets.current.game.entityEffects[EntityPassiveEffectEnumID.MaxRangeUp] as MaxRangeUpPassiveEffect);
+
+		if (_action != null && _performingEntity != null && ContainsEffect(EntityPassiveEffectEnumID.MaxRangeUp, out AEntityPassiveEffect.PassiveEffectContainer effectContainer)
+			&& so.UseConditionPredicate(_action, _performingEntity, _targetEntity, effectContainer.conditionType))
+		{
+			return maxDistance + (GameAssets.current.game.entityEffects[EntityPassiveEffectEnumID.MaxRangeUp] as MaxRangeUpPassiveEffect).rangeBoostAmount;
+		}
+
+		return maxDistance;
+	}
+
+	public int GetMaxTargetAmount ( AEntityAction _action, Entity _performingEntity, Entity _targetEntity )
+	{
+		MaxTargetUpPassiveEffect so = (GameAssets.current.game.entityEffects[EntityPassiveEffectEnumID.MaxTargetUp] as MaxTargetUpPassiveEffect);
+
+		if (_action != null && _performingEntity != null && ContainsEffect(EntityPassiveEffectEnumID.MaxTargetUp, out AEntityPassiveEffect.PassiveEffectContainer effectContainer)
+			&& so.UseConditionPredicate(_action, _performingEntity, _targetEntity, effectContainer.conditionType))
+		{
+			return maxTargetAmount + (GameAssets.current.game.entityEffects[EntityPassiveEffectEnumID.MaxTargetUp] as MaxTargetUpPassiveEffect).targetBoostAmount;
+		}
+
+		return maxTargetAmount;
+	}
+
+	public float GetDamageFactorAmountForType ( AEntityAction _action, Entity _performingEntity, Entity _targetEntity, WeaponEquipmentData.DamageType _damageType )
+	{
+		DamageUpPassiveEffect so = (GameAssets.current.game.entityEffects[EntityPassiveEffectEnumID.DamageUpOnMarked] as DamageUpPassiveEffect);
+
+		if (_action != null && _performingEntity != null && ContainsEffect(EntityPassiveEffectEnumID.DamageUpOnMarked, out AEntityPassiveEffect.PassiveEffectContainer effectContainer)
+			&& so.UseConditionPredicate(_action, _performingEntity, _targetEntity, effectContainer.conditionType))
+		{
+			return damageFactor + (GameAssets.current.game.entityEffects[EntityPassiveEffectEnumID.DamageUpOnMarked] as DamageUpPassiveEffect).damageBoostAmount;
+		}
+
+		return damageFactor;
+	}
+	
+	public int GetHitAmount ( AEntityAction _action, Entity _performingEntity, Entity _targetEntity )
+	{
+		HitAmountBoostPassiveEffect so = (GameAssets.current.game.entityEffects[EntityPassiveEffectEnumID.HitAmountBoost] as HitAmountBoostPassiveEffect);
+
+		if (_action != null && _performingEntity != null && ContainsEffect(EntityPassiveEffectEnumID.HitAmountBoost, out AEntityPassiveEffect.PassiveEffectContainer effectContainer)
+			&& so.UseConditionPredicate(_action, _performingEntity, _targetEntity, effectContainer.conditionType))
+		{
+			return hitAmount + (GameAssets.current.game.entityEffects[EntityPassiveEffectEnumID.HitAmountBoost] as HitAmountBoostPassiveEffect).hitAmountBoost;
+		}
+
+		return hitAmount;
+	}
+
+	#endregion
+
+	public bool UseConditionPredicate ( AEntityAction _action, Entity _entity, Entity _targetEntity )
+	{
+		if (_action == null || _entity == null)
+			return false;
+
+		switch (conditionType)
+		{
+			default:
+			case ConditionType.Noone:
+				return true;
+			case ConditionType.DidNotMoveThisTurn:
+				bool recordedCheck = TurnManager.Instance.TrackedEventsPerEntity[_entity.ID].firstTimeEntityMoved == -1
+					|| TurnManager.Instance.TrackedEventsPerEntity[_entity.ID].firstTimeEntityMoved >= _action.timeAtStart;
+				bool liveCheck = !_entity.Displacement.DidMoveThisTurn;
+				return liveCheck && recordedCheck;
+			case ConditionType.DidNotAttackThisTurn:
+				bool recordedCheck2 = TurnManager.Instance.TrackedEventsPerEntity[_entity.ID].firstTimeEntityAttacked == -1
+					|| TurnManager.Instance.TrackedEventsPerEntity[_entity.ID].firstTimeEntityAttacked >= _action.timeAtStart;
+				bool liveCheck2 = !_entity.Equipment.DidAttackThisTurn;
+				return recordedCheck2 && liveCheck2;
+			/*case ConditionType.IsTargetMarked:
+				return _targetEntity != null && _targetEntity.Status.Contains(EntityStatusEnumID.Marked);*/
+		}
 	}
 }

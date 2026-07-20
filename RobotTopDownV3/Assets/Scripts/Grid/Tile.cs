@@ -38,12 +38,25 @@ public class Tile : MonoBehaviour
 	[SerializeField] private Wall m_wall;
 	public Wall Wall { get { return m_wall; } set { m_wall = value; } }
 
+	private List<EntityStatusEnumID> m_status = new();
+	public List<EntityStatusEnumID> Status => m_status;
+	private Dictionary<AEntityStatus, int> m_remainingDurationToActiveEffects = new();
+	[SerializeField] private Transform m_statusVisualsParent;
+	private Dictionary<EntityStatusEnumID, GameObject> m_statusVisuals = new();
+
 	//Content on tile
-	public TileContent currentContent;
-	public TileContent nextTurnActionContent;
-	public struct TileContent
+	private TileContent m_currentContent = new() { itemID = -1, entityID = -1 };
+	private TileContent m_nextTurnActionContent = new() { itemID = -1, entityID = -1 };
+	private TileContent[] m_plannedContentsPerTick;
+
+	[Serializable]
+	public class TileContent
 	{
-		public Entity entity;
+		public int entityID = -1;
+		public int itemID = -1;
+
+		public Entity Entity => GameManager.Instance.GetEntityFromID(entityID);
+		public Item Item => GameManager.Instance.GetItemFromID(itemID);
 	}
 
 	public enum TileDirectionType
@@ -65,7 +78,19 @@ public class Tile : MonoBehaviour
 		set
 		{
 			m_distance = value;
-			m_ui.UpdateDistanceLabel(value);
+		}
+	}
+
+	private bool m_IsVisibleFromSelectedEntity;
+	public bool IsVisibleFromSelectedEntity
+	{
+		get
+		{
+			return m_IsVisibleFromSelectedEntity;
+		}
+		set
+		{
+			m_IsVisibleFromSelectedEntity = value;
 		}
 	}
 
@@ -76,13 +101,14 @@ public class Tile : MonoBehaviour
 		m_neighbors = new Tile[6];
 	}*/
 
-	private void Start ()
+	private void Awake ()
 	{
 		TurnManager.onActionAdded += OnActionAdded;
 		TurnManager.onActionRemoved += OnActionRemoved;
 		TurnManager.onActionSelected += OnActionSelected;
 		TurnManager.onEndInputPhase += OnEndInputPhase;
 		TurnManager.onStartInputPhase += OnStartInputPhase;
+		TurnManager.onNewRoundStart += OnRoundStart;
 		PlayerController.onEntitySelected += OnEntitySelected;
 	}
 
@@ -93,6 +119,7 @@ public class Tile : MonoBehaviour
 		TurnManager.onActionSelected -= OnActionSelected;
 		TurnManager.onEndInputPhase -= OnEndInputPhase;
 		TurnManager.onStartInputPhase -= OnStartInputPhase;
+		TurnManager.onNewRoundStart -= OnRoundStart;
 		PlayerController.onEntitySelected -= OnEntitySelected;
 	}
 
@@ -102,6 +129,13 @@ public class Tile : MonoBehaviour
 	public void Init ( int _x, int _y, GridData.TileData _data = null )
 	{
 		m_neighbors = new Tile[6];
+		m_plannedContentsPerTick = new TileContent[GameConfig.current.game.actionTokenPerRound];
+		for (int i = 0; i < GameConfig.current.game.actionTokenPerRound; i++)
+		{
+			m_plannedContentsPerTick[i] = new() { entityID = -1, itemID = -1 };
+		}
+		m_currentContent = new() { entityID = -1, itemID = -1 };
+		m_nextTurnActionContent = new() { entityID = -1, itemID = -1 };
 
 		m_ui.SetPosition(_x, _y);
 		if (_data != null)
@@ -113,7 +147,7 @@ public class Tile : MonoBehaviour
 				RemoveWall();
 		}
 
-		SetActiveFOW(false, true);
+		SetActiveFOW(NeuronalMembraneEquipmentData.VisionTypes.Optical, false, true);
 	}
 
 	public void SetGroundType ( TileGroundType _groundType )
@@ -126,11 +160,11 @@ public class Tile : MonoBehaviour
 		UnityEditor.EditorUtility.SetDirty(this);
 	}
 
-	public void SetupWall ( Wall.WallType _wallType, int _orientation)
+	public void SetupWall ( Wall.WallType _wallType, int _orientation )
 	{
 		if (m_wall == null)
 			m_wall = gameObject.AddComponent<Wall>();
-			//m_wall = UnityEditor.Undo.AddComponent<Wall>(gameObject);
+		//m_wall = UnityEditor.Undo.AddComponent<Wall>(gameObject);
 
 		m_wall.LinkWithTile(this);
 		m_wall.SetWallType(_wallType);
@@ -169,11 +203,15 @@ public class Tile : MonoBehaviour
 		_tile.Neighbors[(int)_direction.Opposite()] = this;
 	}
 
-	public bool IsObstacle ()
+	public bool IsObstacle ( bool _isThisTurn )
 	{
 		if (m_groundType == TileGroundType.Wall && m_wall.Health > 0)
 			return true;
 		else if (m_groundType == TileGroundType.Void)
+			return true;
+		else if (_isThisTurn && m_currentContent.Item != null && !m_currentContent.Item.Data.CanWalkThroughPredicate(m_currentContent.Item.LinkedData, m_currentContent.Item, _isThisTurn))
+			return true;
+		else if (!_isThisTurn && m_nextTurnActionContent.Item != null && !m_nextTurnActionContent.Item.Data.CanWalkThroughPredicate(m_nextTurnActionContent.Item.LinkedData, m_nextTurnActionContent.Item, _isThisTurn))
 			return true;
 
 		return false;
@@ -184,7 +222,23 @@ public class Tile : MonoBehaviour
 		if (m_groundType == TileGroundType.Wall && m_wall.Health > 0)
 			return false;
 
+		if (m_status.Contains(EntityStatusEnumID.Smoked))
+			return false;
+
 		return true;
+	}
+
+	public void OnEntityEnter ( Entity _enteringEntity, bool _isFromTeleportation )
+	{
+		if (m_groundType == TileGroundType.Void && !_enteringEntity.Status.Contains(EntityStatusEnumID.Flying))
+		{
+			Dictionary<WeaponEquipmentData.DamageType, int> damages = new();
+			damages.Add(WeaponEquipmentData.DamageType.Contendant, 9999);
+			_enteringEntity.Equipment.TakeDamage(new EntityEquipmentPlugin.TakeDamageCallback() { damages = damages });
+		}
+
+		if (m_currentContent.Item != null)
+			m_currentContent.Item.OnTileEnter(_enteringEntity, _isFromTeleportation);
 	}
 
 	#endregion
@@ -194,8 +248,11 @@ public class Tile : MonoBehaviour
 
 	private void OnEntitySelected ( int? _entityID )
 	{
-		UI.ResetOutline();
-		m_canInteract = false;
+		if (!_entityID.HasValue)
+		{
+			UI.ResetOutline();
+			m_canInteract = false;
+		}
 	}
 
 	private void OnActionSelected ( AEntityAction _action )
@@ -220,6 +277,11 @@ public class Tile : MonoBehaviour
 	private void OnStartInputPhase ()
 	{
 		m_canInteract = false;
+		m_plannedContentsPerTick = new TileContent[GameConfig.current.game.actionTokenPerRound];
+		for (int i = 0; i < GameConfig.current.game.actionTokenPerRound; i++)
+		{
+			m_plannedContentsPerTick[i] = new() { entityID = -1, itemID = -1 };
+		}
 	}
 
 	private void OnEndInputPhase ()
@@ -230,33 +292,136 @@ public class Tile : MonoBehaviour
 
 	public void NewPhase ()
 	{
-		SetEntity(currentContent.entity, false);
+		SetEntity(m_currentContent.Entity, false);
+		SetItem(m_currentContent.Item, false);
+	}
+
+	private void OnRoundStart ()
+	{
+		foreach (EntityStatusEnumID status in m_status.ToArray())
+		{
+			if (--m_remainingDurationToActiveEffects[GameAssets.current.game.entityStatus[status]] <= 0)
+				RemoveStatus(status);
+
+			GameAssets.current.game.entityStatus[status].PerformStatusEffectAtBeginingOfRound(this);
+		}
 	}
 
 	public void SetEntity ( Entity _entity, bool _isThisTurn )
 	{
 		if (_isThisTurn)
-			currentContent.entity = _entity;
+			m_currentContent.entityID = _entity == null ? -1 : _entity.ID;
 		else
-			nextTurnActionContent.entity = _entity;
+			m_nextTurnActionContent.entityID = _entity == null ? -1 : _entity.ID;
 	}
 
 	public Entity GetEntity ( bool _isThisTurn )
 	{
 		if (_isThisTurn)
-			return currentContent.entity;
+			return m_currentContent.Entity;
 		else
-			return nextTurnActionContent.entity;
+			return m_nextTurnActionContent.Entity;
+	}
+
+	public bool TryGetEntity ( bool _isThisTurn, out Entity _entity )
+	{
+		if (_isThisTurn)
+		{
+			_entity = m_currentContent.Entity;
+			return m_currentContent.Entity != null;
+		}
+		else
+		{
+			_entity = m_nextTurnActionContent.Entity;
+			return m_nextTurnActionContent.Entity != null;
+		}
+	}
+
+	public void SetItem ( Item _item, bool _isThisTurn )
+	{
+		if (_isThisTurn)
+			m_currentContent.itemID = _item == null ? -1 : _item.ID;
+		else
+			m_nextTurnActionContent.itemID = _item == null ? -1 : _item.ID;
+	}
+
+	public bool TryGetItem ( bool _isThisTurn, out Item _item )
+	{
+		if (_isThisTurn)
+		{
+			_item = m_currentContent.Item;
+			return m_currentContent.Item != null;
+		}
+		else
+		{
+			_item = m_nextTurnActionContent.Item;
+			return m_nextTurnActionContent.Item != null;
+		}
+	}
+
+	public Item GetItem ( bool _isThisTurn )
+	{
+		if (_isThisTurn)
+			return m_currentContent.Item;
+		else
+			return m_nextTurnActionContent.Item;
+	}
+
+	public bool TryGetPlannedItemAt ( int _time, out Item _item )
+	{
+		_item = m_plannedContentsPerTick != null && m_plannedContentsPerTick.Length > _time && m_plannedContentsPerTick[_time] != null 
+			? m_plannedContentsPerTick[_time].Item : null;
+		return _item != null;
+	}
+
+	public void SetPlannedItemAt ( Item _item, int _time )
+	{
+		for (int i = _time; i < m_plannedContentsPerTick.Length; i++)
+		{
+			if (_item == null && m_plannedContentsPerTick[i].Item != null)
+				m_plannedContentsPerTick[i].Item.Cancel();
+			m_plannedContentsPerTick[i].itemID = _item == null ? -1 : _item.ID;
+		}
+	}
+
+	public Item GetPlannedItemAt ( int _time )
+	{
+		return m_plannedContentsPerTick[_time].Item;
 	}
 
 	#endregion
 
-	public void SetActiveFOW ( bool _isActive = false, bool _isInstant = false )
+	public void AddStatus ( EntityStatusEnumID _statusID )
+	{
+		AEntityStatus statusData = GameAssets.current.game.entityStatus[_statusID];
+		statusData.ApplyStatus(this);
+		m_status.Add(_statusID);
+		m_remainingDurationToActiveEffects.Add(GameAssets.current.game.entityStatus[_statusID], GameAssets.current.game.entityStatus[_statusID].duration);
+
+		//spawn visual
+		if (statusData.groundPrefab != null && !m_statusVisuals.ContainsKey(_statusID))
+			m_statusVisuals.Add(_statusID, Instantiate(statusData.groundPrefab, m_statusVisualsParent));
+	}
+
+	public void RemoveStatus ( EntityStatusEnumID _statusID )
+	{
+		GameAssets.current.game.entityStatus[_statusID].RemoveStatus(this);
+		m_status.Remove(_statusID);
+		m_remainingDurationToActiveEffects.Remove(GameAssets.current.game.entityStatus[_statusID]);
+
+		if (m_statusVisuals.ContainsKey(_statusID))
+		{
+			Destroy(m_statusVisuals[_statusID]);
+			m_statusVisuals.Remove(_statusID);
+		}
+	}
+
+	public void SetActiveFOW ( NeuronalMembraneEquipmentData.VisionTypes _visionType, bool _isActive = false, bool _isInstant = false )
 	{
 		m_isVisible = !_isActive;
 		m_ui.SetActiveFOW(!m_isVisible, _isInstant);
 
-		if (currentContent.entity != null)
-			currentContent.entity.SetVisibility(m_isVisible);
+		if (m_currentContent.Entity != null)
+			m_currentContent.Entity.SetVisibility(m_isVisible, _visionType);
 	}
 }

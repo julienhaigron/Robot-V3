@@ -4,7 +4,9 @@ using UnityEngine;
 
 public class EntityAnchor : MonoBehaviour
 {
-    private List<Entity> m_entities = new();
+	public static System.Action<Entity> onEntityAdded;
+
+	private List<Entity> m_entities = new();
     public List<Entity> Entities => m_entities;
 
 	[SerializeField] private List<Spawn> m_spawnCoordinates = new();
@@ -62,8 +64,19 @@ public class EntityAnchor : MonoBehaviour
 
 	private void SpawnEntity ( EntitySavedData _entityData, int _entityID, int _playerID)
 	{
-		Entity entity = Instantiate((GameAssets.current.equipments[_entityData.frameID] as FrameEquipmentData).prefab, transform);
+		Entity entity = Instantiate(_entityData.FrameData.prefab, transform);
 		m_entities.Add(entity);
 		entity.Init(_entityData, GetRandomAvailableSpawnPosition(), _entityID, _playerID);
+		onEntityAdded?.Invoke(entity);
+	}
+
+	public void SpawnEntityDuringPlay ( EntitySavedData _entityData, int _entityID, int _playerID, int _tileID, System.Action _onEndSpawn = null )
+	{
+		Entity entity = Instantiate(_entityData.FrameData.prefab, transform);
+		m_entities.Add(entity);
+		entity.Init(_entityData, new Spawn(GridManager.Instance.Tiles[_tileID].coordinates, Spawn.InitializationState.Success, true), _entityID, _playerID);
+		onEntityAdded?.Invoke(entity);
+
+		TurnManager.Instance.AddEntityMidGame(entity, _onEndSpawn);
 	}
 }

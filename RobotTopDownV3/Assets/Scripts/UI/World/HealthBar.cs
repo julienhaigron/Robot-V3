@@ -5,7 +5,7 @@ using TMPro;
 
 public class HealthBar : MonoBehaviour
 {
-    [SerializeField] private TextMeshPro m_text;
+    [SerializeField] private TextMeshProUGUI m_text;
     
     public void SetHealth(int _current, int _max )
 	{

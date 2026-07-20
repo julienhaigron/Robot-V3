@@ -104,7 +104,7 @@ public class LobbySelectionPanel : AUIPanel
 
         if (m_updateCR != null)
             StopCoroutine(m_updateCR);
-        UIManager.Instance.OpenPanel<InGamePanel>();
+        UIManager.Instance.OpenPanel<InGamePanel>().Init();
     }
 
     private void OnClickOpenLobbySettings ()
@@ -124,7 +124,7 @@ public class LobbySelectionPanel : AUIPanel
             transport.SetConnectionData(sender.Address.ToString(), response.Port);
             NetworkManager.Singleton.StartClient();
             Close();
-            UIManager.Instance.OpenPanel<InGamePanel>();
+            UIManager.Instance.OpenPanel<InGamePanel>().Init();
         }, sender);
         m_lobbies.Add(newDisplay);
 

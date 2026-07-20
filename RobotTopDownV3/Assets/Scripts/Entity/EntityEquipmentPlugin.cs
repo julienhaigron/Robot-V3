@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using Sirenix.OdinInspector;
-
+using System.Text;
 public class EntityEquipmentPlugin : EntityPlugin
 {
 	public static System.Action<Entity> onAnyEntityDeath;
@@ -16,6 +16,12 @@ public class EntityEquipmentPlugin : EntityPlugin
 
 	private Dictionary<string, WeaponCone> m_weaponConeDictionary = new();
 
+	private Dictionary<string, Tool> m_tools = new();
+	public Dictionary<string, Tool> Tools => m_tools;
+
+	private Dictionary<string, AItemLinkedData> m_itemsLinkedDataDictionary = new();
+	public Dictionary<string, AItemLinkedData> ItemsLinkedDataDictionary => m_itemsLinkedDataDictionary;
+
 	private int m_currentHealth;
 	public int CurrentHealth => m_currentHealth;
 
@@ -25,15 +31,37 @@ public class EntityEquipmentPlugin : EntityPlugin
 	private bool m_isDead = false;
 	public bool IsDead => m_isDead;
 
-	private SerializableDictionary<EntityActionEnumID, int> m_actionsInCooldown = new();
-	public SerializableDictionary<EntityActionEnumID, int> ActionInCooldown => m_actionsInCooldown;
+	private SerializableDictionary<string, int> m_equipmentInCooldown = new();
+	public SerializableDictionary<string, int> EquipmentInCooldown => m_equipmentInCooldown;
 
 	[Title("Stats")]
 	private float m_generalDamageBuff = 0f;
-	public float GeneralDamageBuff => m_generalDamageBuff;
+	public float GeneralDamageBuff
+	{
+
+		get
+		{
+			return m_generalDamageBuff;
+		}
+		set
+		{
+			m_generalDamageBuff = value;
+		}
+	}
 
 	private float m_generalDamageResistance = 0f;
-	public float GeneralDamageResistance => m_generalDamageResistance;
+	public float GeneralDamageResistance
+	{
+
+		get
+		{
+			return m_generalDamageResistance;
+		}
+		set
+		{
+			m_generalDamageResistance = value;
+		}
+	}
 
 	private SerializableDictionary<WeaponEquipmentData.DamageType, float> m_applyedDamageTypeBuffs = new();
 	public SerializableDictionary<WeaponEquipmentData.DamageType, float> ApplyedDamageTypeBuffs => m_applyedDamageTypeBuffs;
@@ -47,37 +75,47 @@ public class EntityEquipmentPlugin : EntityPlugin
 	private SerializableDictionary<WeaponEquipmentData.DamageCategory, float> m_applyedDamageCategoryResitance = new();
 	public SerializableDictionary<WeaponEquipmentData.DamageCategory, float> ApplyedDamageTypeCategoryResitance => m_applyedDamageCategoryResitance;
 
+	private bool m_didAttackThisTurn = false;
+	public bool DidAttackThisTurn => m_didAttackThisTurn;
 
 	private void Awake ()
 	{
 		m_linkedEntity.onSelect += OnEntitySelected;
 		m_linkedEntity.onDeselect += OnEntityDeselected;
-		m_linkedEntity.onStartPerformAction += OnActionPerformed;
-		m_linkedEntity.onNewPhaseBegin += OnNewPhaseStart;
+		m_linkedEntity.onNewRoundBegin += OnNewPhaseStart;
+		m_linkedEntity.onStartPerformAction += OnStartPerformAction;
+		TurnManager.onStartInputPhase += OnNewTurnBegin;
 	}
 
 	private void OnDestroy ()
 	{
 		m_linkedEntity.onSelect -= OnEntitySelected;
 		m_linkedEntity.onDeselect -= OnEntityDeselected;
-		m_linkedEntity.onStartPerformAction -= OnActionPerformed;
-		m_linkedEntity.onNewPhaseBegin -= OnNewPhaseStart;
+		m_linkedEntity.onNewRoundBegin -= OnNewPhaseStart;
+		m_linkedEntity.onStartPerformAction -= OnStartPerformAction;
+		TurnManager.onStartInputPhase -= OnNewTurnBegin;
 	}
 
 	public override void Init ( EntitySavedData _entityData )
 	{
 		//init weapon
-		if (_entityData.armsIds != null && _entityData.armsIds.Length > 0)
+		if (_entityData.arms != null && _entityData.arms.Length > 0)
 		{
-			foreach (StringContainer stringContainer in _entityData.armsIds)
+			foreach (GameDatas.PlayerSave.Equipment stringContainer in _entityData.arms)
 			{
-				AddWeapon(GameAssets.current.equipments[stringContainer.value] as WeaponEquipmentData, m_linkedEntity.Displacement.Spawn.isFirstSide);
+				if (stringContainer == null || !stringContainer.TryGetData(out EntityEquipmentData data))
+					continue;
+
+				if (data is WeaponEquipmentData weaponData)
+					AddWeapon(weaponData, m_linkedEntity.Displacement.Spawn.isFirstSide);
+				else if (data is ToolEquipmentData toolData)
+					AddTool(toolData, m_linkedEntity.Displacement.Spawn.isFirstSide);
 			}
 		}
 
 		//init health
 		m_maxHealth = m_linkedEntity.Data.GetMaxHealth();
-		m_currentHealth = m_maxHealth;
+		m_currentHealth = _entityData.currentHp;
 		m_isDead = false;
 
 		//resistance
@@ -116,8 +154,6 @@ public class EntityEquipmentPlugin : EntityPlugin
 
 	private void OnEntitySelected ()
 	{
-		TurnManager.Instance.SetCurrentActionSelected(EntityActionEnumID.TargetTileMove);
-
 		foreach (WeaponCone weaponCone in m_weaponConeDictionary.Values)
 		{
 			weaponCone.ActivateActiveCone();
@@ -134,19 +170,23 @@ public class EntityEquipmentPlugin : EntityPlugin
 
 	private void OnNewPhaseStart ()
 	{
-		foreach (EntityActionEnumID action in m_actionsInCooldown.Keys.ToList())
+		foreach (string equipment in m_equipmentInCooldown.Keys.ToList())
 		{
-			m_actionsInCooldown[action]--;
-			if (m_actionsInCooldown[action] <= 0)
-				m_actionsInCooldown.Remove(action);
+			m_equipmentInCooldown[equipment]--;
+			if (m_equipmentInCooldown[equipment] <= 0)
+				m_equipmentInCooldown.Remove(equipment);
 		}
 	}
 
-	private void OnActionPerformed ( AEntityAction _actionPerformed )
+	private void OnStartPerformAction ( AEntityAction _actionPerformed )
 	{
-		EntityActionData actionData = GameAssets.current.game.entityActionsData[_actionPerformed.enumID];
-		if (actionData.tokenCooldown > 0)
-			m_actionsInCooldown.Add(_actionPerformed.enumID, actionData.tokenCooldown);
+		if (_actionPerformed.Data.type == EntityActionData.ActionType.MeleeAttack || _actionPerformed.Data.type == EntityActionData.ActionType.DistanceAttack)
+			m_didAttackThisTurn = true;
+	}
+
+	private void OnNewTurnBegin ()
+	{
+		m_didAttackThisTurn = false;
 	}
 
 	#endregion
@@ -167,7 +207,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 	{
 		Weapon newWeapon = Instantiate(_data.prefab, m_linkedEntity.Skin.IK.handGrabSocket);
 		newWeapon.Init(m_linkedEntity, _data, _isFirstSide);
-		m_weapons.Add(_data.name, newWeapon);
+		m_weapons.Add(newWeapon.ID, newWeapon);
 
 		WeaponCone weaponCone = Instantiate(GameAssets.current.game.weaponCone, m_weaponConesParent);
 		m_weaponConeDictionary.Add(_data.name, weaponCone);
@@ -190,12 +230,24 @@ public class EntityEquipmentPlugin : EntityPlugin
 		m_linkedEntity.Displacement.Rotate(_tile, false);
 	}*/
 
-	public List<Tile> GetTilesInWeaponRange ( string _weaponID, bool _isThisTurn = false )
+	public List<Tile> GetTilesInWeaponRange ( AEntityAction _action, string _weaponID, bool _isThisTurn = false )
 	{
 		List<Tile> tilesInRange = new();
 		Weapon usedWeapon = m_weapons[_weaponID];
 
 		float angle = GridManager.Instance.FromOrientationToAngle(m_linkedEntity.Displacement.CurrentOrientation);
+		int maxDistance = _action.Data.GetMaxRange(_action, m_linkedEntity, null);
+		int minDistance = _action.Data.minDistance;
+		Tile from = _isThisTurn ? m_linkedEntity.Displacement.Coordinates.GetTile() : GridManager.Instance.Tiles[_action.supposedPositionAtActionStartID];
+
+		bool ignoreObstacles = false;
+		foreach (AEntityPassiveEffect.PassiveEffectContainer passiveContainer in _action.effects)
+		{
+			ignoreObstacles = passiveContainer.enumID == EntityPassiveEffectEnumID.TrajectoryControl;
+			break;
+		}
+
+		GridManager.Instance.BFS(from, maxDistance, null, _isThisTurn, ignoreObstacles);
 
 		int nbOfRayPerAngle = 1;
 		int totalNbOfRay = usedWeapon.Data.visionConeRange * nbOfRayPerAngle;
@@ -210,11 +262,12 @@ public class EntityEquipmentPlugin : EntityPlugin
 
 			float radians = rayAngle * Mathf.Deg2Rad;
 			Vector3 aimedPosition = new Vector3(Mathf.Sin(radians), 0, Mathf.Cos(radians));
-			RaycastHit[] hits = Physics.RaycastAll(m_linkedEntity.Displacement.Coordinates.GetTile().transform.position, aimedPosition * usedWeapon.Data.range, usedWeapon.Data.range * (2 * Tile.innerRadius), GameConfig.current.input.tileInternRayCastLayer);
+			RaycastHit[] hits = Physics.RaycastAll(m_linkedEntity.Displacement.Coordinates.GetTile().transform.position, aimedPosition * maxDistance, maxDistance * (2 * Tile.innerRadius), GameConfig.current.input.tileInternRayCastLayer);
 			foreach (RaycastHit hitInfo in hits)
 			{
 				if (hitInfo.transform.TryGetComponent(out Tile tile) && !tilesInRange.Contains(tile)
-					&& GridManager.Instance.IsVisionLineClear(m_linkedEntity.Displacement.Coordinates.GetTile(), tile, _isThisTurn))
+					&& (ignoreObstacles || GridManager.Instance.IsVisionLineClear(m_linkedEntity.Displacement.Coordinates.GetTile(), tile, _isThisTurn))
+					&& tile.Distance > minDistance)
 				{
 					tilesInRange.Add(tile);
 				}
@@ -224,11 +277,12 @@ public class EntityEquipmentPlugin : EntityPlugin
 		return tilesInRange;
 	}
 
-
-	public List<Tile> GetTilesInAoERange ( AttackAction _action, bool _isThisTurn = false )
+	public List<Tile> GetTilesInAoERange ( AttackAction _action, Tile _targetTile, bool _isThisTurn = false )
 	{
 		List<Tile> tilesInRange = new();
 		EntityActionData attackData = GameAssets.current.game.entityActionsData[_action.enumID];
+		int maxDistance = _action.Data.GetMaxRange(_action, m_linkedEntity, null);
+		int minDistance = _action.Data.minDistance;
 
 		Weapon usedWeapon = null;
 		foreach (string weaponID in m_weapons.Keys)
@@ -251,94 +305,158 @@ public class EntityEquipmentPlugin : EntityPlugin
 		switch (attackData.aoeType)
 		{
 			case EntityActionData.AOEType.Circle:
-
-				tilesInRange.AddRange(GridManager.Instance.GetTilesInVisionRange(_action.TargetTile, attackData.circleRange, _isThisTurn));
+				tilesInRange.AddRange(GridManager.Instance.GetTilesInVisionRange(_targetTile, attackData.circleRange, false, _isThisTurn));
 				break;
 			case EntityActionData.AOEType.Ray:
 
-				tilesInRange.AddRange(GridManager.Instance.GetTilesInRay(_action.PerformingEntity.Displacement.Coordinates.GetTile() ,_action.TargetTile, _isThisTurn));
+				tilesInRange.AddRange(GridManager.Instance.GetTilesInRay(_action.PerformingEntity.Displacement.Coordinates.GetTile(), _targetTile, _isThisTurn));
 				break;
 			case EntityActionData.AOEType.Cone:
 
 				tilesInRange.AddRange(GridManager.Instance.GetTilesInCone(m_linkedEntity.Displacement.Coordinates.GetTile()
-						, usedWeapon.Data.range, m_linkedEntity.Displacement.CurrentOrientation, attackData.coneType, _isThisTurn));
+						, maxDistance, m_linkedEntity.Displacement.CurrentOrientation, attackData.coneType, _isThisTurn));
 				break;
 			case EntityActionData.AOEType.Arc:
 
-				float angle = GridManager.Instance.FromOrientationToAngle(m_linkedEntity.Displacement.CurrentOrientation);
+				Tile origin = m_linkedEntity.Displacement.Coordinates.GetTile();
+				bool largeArc = attackData.arcType == EntityActionData.ArcType.Large;
 
-				int nbOfRayPerAngle = 1;
-				int totalNbOfRay = usedWeapon.Data.visionConeRange * nbOfRayPerAngle;
-				for (int i = 0; i < totalNbOfRay; i++)
+				for (int d = minDistance; d <= maxDistance; d++)
 				{
-					//calculate angle
-					float rayAngle = Mathf.LerpAngle(angle - (usedWeapon.Data.visionConeRange / 2), angle + (usedWeapon.Data.visionConeRange / 2), (float)i / (float)totalNbOfRay);
-					rayAngle += 90f;
-					//get position in at angle Y at distance X from linkedEntity
-					if (rayAngle < 0)
-						rayAngle += 360;
-
-					float radians = rayAngle * Mathf.Deg2Rad;
-					Vector3 aimedPosition = new Vector3(Mathf.Sin(radians), 0, Mathf.Cos(radians));
-					RaycastHit[] hits = Physics.RaycastAll(m_linkedEntity.Displacement.Coordinates.GetTile().transform.position, aimedPosition * usedWeapon.Data.range, usedWeapon.Data.range * (2 * Tile.innerRadius), GameConfig.current.input.tileInternRayCastLayer);
-					foreach (RaycastHit hitInfo in hits)
+					List<Tile> ring = GridManager.Instance.GetTilesAtDistance(origin, d, _isThisTurn);
+					foreach (Tile tile in ring)
 					{
-						if (hitInfo.transform.TryGetComponent(out Tile tile) && !tilesInRange.Contains(tile)
-							&& GridManager.Instance.IsVisionLineClear(m_linkedEntity.Displacement.Coordinates.GetTile(), tile, _isThisTurn))
-						{
+						if (GridManager.Instance.IsInArc(origin, tile, (HexDirection)m_linkedEntity.Displacement.CurrentOrientation, largeArc))
 							tilesInRange.Add(tile);
-						}
 					}
 				}
 
 				break;
+			case EntityActionData.AOEType.Chain:
+				List<Tile> tilesInVisionRange = GridManager.Instance.GetTilesInVisionRange(m_linkedEntity.Displacement.Coordinates.GetTile(), maxDistance, false, _isThisTurn);
+				foreach (Tile tile in tilesInVisionRange)
+				{
+					if (!tile.GetEntity(_isThisTurn).IsAlliedTo(m_linkedEntity.OwnerID) && tile.Distance < minDistance)
+						tilesInRange.Add(tile);
+
+					if (tilesInRange.Count >= _action.Data.maxChainedTarget + 1)
+						break;
+				}
+				break;
 		}
 
+		foreach (Tile tile in tilesInRange.ToArray())
+		{
+			if (tile.Distance < minDistance)
+				tilesInRange.Remove(tile);
+		}
 
 		return tilesInRange;
 	}
 
-	public bool AttackRoll ( AttackAction _attackAction )
+	public bool AttackRoll ( AttackAction _attackAction, AttackAction.SingleAttackInfo _singleAttackInfo, Entity _targetEntity )
 	{
-		Entity targetEntity = _attackAction.TargetEntity;
-		WeaponEquipmentData usedWeapon = m_weapons[_attackAction.attackingWeaponId].Data;
-		bool doesWinPFC = _attackAction.pfcResult == (int)EntityActionData.PFCResultType.FirstWins;
+		WeaponEquipmentData usedWeapon = m_weapons[_attackAction.linkedEquipmentId].Data;
+		bool doesWinPFC = _singleAttackInfo.pfcResult == (int)EntityActionData.PFCResultType.FirstWins;
 
-		float targetCamo = targetEntity.Data.GetStaticStealthBonus(true);
-		float evationRatio = _attackAction.Data.type == EntityActionData.ActionType.DistanceAttack ? targetEntity.Data.BrainData.distanceEvasion : targetEntity.Data.BrainData.meleeEvasion;
-		float coverRatio = GridManager.Instance.IsThereCoverBeween(_attackAction.PerformingEntity, targetEntity, doesWinPFC) ? GameConfig.current.game.entityCoverBonus : 0;
-		float distanceRatio = m_weapons[_attackAction.attackingWeaponId].Data.distanceAccuracyBonus[GetWeaponDistanceTypeFrom(targetEntity, usedWeapon, doesWinPFC)];
-		float targetEvasionScore = targetCamo + evationRatio + coverRatio + distanceRatio;
+		float targetCamo = _targetEntity.Data.GetStaticStealthBonus(true)
+			+ (_targetEntity.HowIsUnitVisible == NeuronalMembraneEquipmentData.VisionTypes.Optical ? _targetEntity.GetAdditionaryStatBonus(EntityEquipmentData.StatBonus.StatType.VisualCamo, null)
+			: _targetEntity.HowIsUnitVisible == NeuronalMembraneEquipmentData.VisionTypes.Radar ? _targetEntity.GetAdditionaryStatBonus(EntityEquipmentData.StatBonus.StatType.RadarCamo, null)
+			: _targetEntity.GetAdditionaryStatBonus(EntityEquipmentData.StatBonus.StatType.ThermalCamo, null));
 
-		float userPerception = m_linkedEntity.Data.GetStaticPerceptionBonus(true);
-		float userAim = _attackAction.Data.type == EntityActionData.ActionType.DistanceAttack ? m_linkedEntity.Data.BrainData.distanceAccuracy : m_linkedEntity.Data.BrainData.agility;
-		float flankBonus = GameConfig.current.game.entityFlankRatio[GridManager.Instance.GetHitTileSide(m_linkedEntity, targetEntity, doesWinPFC)];
+		float evationRatio = _attackAction.Data.type == EntityActionData.ActionType.DistanceAttack
+				? _targetEntity.Data.BrainData.distanceEvasion + _targetEntity.GetAdditionaryStatBonus(EntityEquipmentData.StatBonus.StatType.DistanceEvasion, null)
+				: _targetEntity.Data.BrainData.meleeEvasion + _targetEntity.GetAdditionaryStatBonus(EntityEquipmentData.StatBonus.StatType.MeleeEvasion, null);
+		float coverRatio = GridManager.Instance.IsThereCoverBeween(_attackAction.PerformingEntity, _targetEntity, doesWinPFC)
+				? GameConfig.current.game.entityCoverBonus
+				: 0f;
+		//float distanceRatio = GameConfig.current.game.distanceTypeSpreadEvaluation[GetWeaponDistanceTypeFrom(_targetEntity, _attackAction, doesWinPFC)];
+
+		float targetEvasionScore =
+			targetCamo
+			+ evationRatio
+			+ coverRatio;
+		//+ distanceRatio;
+
+		//float userPerception = m_linkedEntity.Data.GetStaticPerceptionBonus(true) + m_linkedEntity.GetAdditionaryStatBonus(EntityEquipmentData.StatBonus.StatType.VisualPerception, _attackAction);
+		float userAim = _attackAction.Data.type == EntityActionData.ActionType.DistanceAttack
+				? m_linkedEntity.Data.BrainData.distanceAccuracy + m_linkedEntity.GetAdditionaryStatBonus(EntityEquipmentData.StatBonus.StatType.DistanceAccuracy, _attackAction)
+				: m_linkedEntity.Data.BrainData.agility + m_linkedEntity.GetAdditionaryStatBonus(EntityEquipmentData.StatBonus.StatType.MeleeAccuracy, _attackAction);
+		float flankBonus = GameConfig.current.game.entityFlankRatio[GridManager.Instance.GetHitTileSide(m_linkedEntity, _targetEntity, doesWinPFC)]
+			+ m_linkedEntity.GetAdditionaryStatBonus(EntityEquipmentData.StatBonus.StatType.FlankBonus, _attackAction);
 		float modAction = m_linkedEntity.LastActionPerformedData.previousActionAttackModificator;
-		float userHitScore = userPerception + userAim + flankBonus + modAction;
+
+		float userHitScore =
+			//userPerception
+			userAim
+			+ flankBonus
+			+ modAction;
 
 		float finalScore = userHitScore - targetEvasionScore;
 
-		if (finalScore >= 1)
-		{
-			LogConsole.AddLog("Attack Roll [AUTOMATIC SUCESS] : targetEvasionScore = " + targetEvasionScore + " and userHitScore = " + userHitScore, LogConsole.LogEventType.PlayPhase);
-			return true;
-		}
+		float roll = Random.Range(0f, 1f);
+		bool isAttackSuccessful = finalScore >= 1f || finalScore >= roll;
+
+		StringBuilder detailsBuilder = new();
+		detailsBuilder.AppendLine($"<b>{m_linkedEntity.ID}</b> attacks <b>{_targetEntity.ID}</b>");
+		detailsBuilder.AppendLine();
+		detailsBuilder.AppendLine("<b>Attacker Hit Score</b>");
+		//detailsBuilder.AppendLine($"Perception: {userPerception:+0.##;-0.##;0}");
+		detailsBuilder.AppendLine($"Aim: {userAim:+0.##;-0.##;0}");
+
+		if (flankBonus != 0)
+			detailsBuilder.AppendLine($"Flank Bonus: {flankBonus:+0.##;-0.##;0}");
+
+		if (modAction != 0)
+			detailsBuilder.AppendLine($"Action Modifier: {modAction:+0.##;-0.##;0}");
+
+		detailsBuilder.AppendLine($"<b>Total Hit Score: {userHitScore:F2}</b>");
+		detailsBuilder.AppendLine();
+		detailsBuilder.AppendLine("<b>Target Evasion Score</b>");
+		detailsBuilder.AppendLine($"Camouflage: {targetCamo:+0.##;-0.##;0}");
+		detailsBuilder.AppendLine($"Evasion: {evationRatio:+0.##;-0.##;0}");
+
+		if (coverRatio > 0)
+			detailsBuilder.AppendLine($"Cover Bonus: +{coverRatio:0.##}");
+
+		/*if (distanceRatio != 0)
+			detailsBuilder.AppendLine($"Distance Modifier: {distanceRatio:+0.##;-0.##;0}");*/
+
+		detailsBuilder.AppendLine($"<b>Total Evasion: {targetEvasionScore:F2}</b>");
+		detailsBuilder.AppendLine();
+		detailsBuilder.AppendLine($"Final Score = {userHitScore:F2} - {targetEvasionScore:F2}");
+
+		if (finalScore >= 1f)
+			detailsBuilder.AppendLine($"<color=green><b>Guaranteed Hit ({finalScore:F2})</b></color>");
 		else
 		{
-			float roll = Random.Range(0f, 1f);
-			bool isAttackSuccessful = finalScore >= roll;
-			//bool isAttackSuccessful = roll + finalScore > 1;
-			LogConsole.AddLog("Attack Roll " + (isAttackSuccessful ? "[SUCESS]" : "[FAILURE]") + " : targetEvasionScore = " + targetEvasionScore + ", roll = " + roll + " and userHitScore = " + userHitScore, LogConsole.LogEventType.PlayPhase);
-			return isAttackSuccessful;
+			detailsBuilder.AppendLine($"Hit Chance: {(finalScore * 100f):F0}%");
+			detailsBuilder.AppendLine($"Roll: {roll:F2}");
+			detailsBuilder.AppendLine(isAttackSuccessful ? "<color=green><b>Hit Success</b></color>" : "<color=red><b>Hit Failed</b></color>");
 		}
+
+		string detailsDescription = detailsBuilder.ToString();
+		LogConsole.LogDetails details = new("attack_" + LogConsole.Instance.LogsDetails.Keys.Count, "Attack Details", detailsDescription);
+		LogConsole.AddLog(
+			m_linkedEntity.ID
+			+ (isAttackSuccessful ? " succeeds " : " fails ")
+			+ _attackAction.ToString()
+			+ " against "
+			+ _targetEntity.ID,
+			LogConsole.LogEventType.AttackRoll,
+			details
+		);
+		return isAttackSuccessful;
 	}
 
-	public WeaponEquipmentData.DistanceType GetWeaponDistanceTypeFrom ( Entity _target, WeaponEquipmentData _weaponData, bool _didAttackerWinPFC )
+	public WeaponEquipmentData.DistanceType GetWeaponDistanceTypeFrom ( Entity _target, AEntityAction _action, bool _didAttackerWinPFC )
 	{
 		int attackerPosition = _didAttackerWinPFC ? TurnManager.Instance.GetPositionOfEntityAtEndOfRound(_target.ID) : TurnManager.Instance.GetPositionOfEntityAtEndOfRound(_target.ID);
-		int defenderPosition = !_didAttackerWinPFC ? TurnManager.Instance.GetPositionOfEntityAtEndOfRound(_target.ID) : TurnManager.Instance.GetPositionOfEntityAtEndOfRound(_target.ID);
+		int defenderPosition = !_didAttackerWinPFC ? TurnManager.Instance.GetPositionOfEntityAtEndOfRound(m_linkedEntity.ID) : TurnManager.Instance.GetPositionOfEntityAtEndOfRound(m_linkedEntity.ID);
 		float actualDistanceFromTarget = Vector3.Distance(GridManager.Instance.Tiles[attackerPosition].transform.position, GridManager.Instance.Tiles[defenderPosition].transform.position) / (Tile.outerRadius * 2f);
-		float distanceRelativeToWeaponRangePercentage = actualDistanceFromTarget / (float)_weaponData.range;
+
+		int maxDistance = _action.Data.GetMaxRange(_action, m_linkedEntity, _target);
+		float distanceRelativeToWeaponRangePercentage = actualDistanceFromTarget / (float)maxDistance;
 
 		float currentTotal = 0;
 		for (int i = 0; i < GameConfig.current.game.distanceTypeSpreadEvaluation.Keys.Count; i++)
@@ -351,28 +469,79 @@ public class EntityEquipmentPlugin : EntityPlugin
 		return WeaponEquipmentData.DistanceType.Long;
 	}
 
-	public bool EffectRoll ( Entity _entity, AEntityEffect _effect )
+	public bool StatusRoll ( Entity _target, AEntityStatus _effect, AEntityAction _action, EntityEquipmentData _equipmentData )
 	{
-		bool isAttackSuccessful = Random.Range(0, 100) > _effect.hitProbability;
+		float actionProbability = _action.Data.statusHitProbability;
+		float equipmentProbability = _equipmentData.statusHitProbability;
+		float userStatusChance = m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.StatBonus.StatType.StatusChance) + m_linkedEntity.GetAdditionaryStatBonus(EntityEquipmentData.StatBonus.StatType.StatusChance, _action);
+		float targetResistance = _target.Data.GetStatBonusFromAll(EntityEquipmentData.StatBonus.StatType.StatusResistance) + _target.GetAdditionaryStatBonus(EntityEquipmentData.StatBonus.StatType.StatusResistance, null);
+		float hitProba = actionProbability + equipmentProbability + userStatusChance - targetResistance;
+		float roll = Random.Range(0f, 1f);
+		bool isAttackSuccessful = hitProba >= 1f || roll <= hitProba;
 
-		//TODO
-		//take possible build buff into acount
+		StringBuilder detailsBuilder = new();
+		detailsBuilder.AppendLine($"<b>{m_linkedEntity.ID}</b> tries to apply <b>{_effect.GetType().Name}</b> on <b>{_target.ID}</b>");
+		detailsBuilder.AppendLine();
+		detailsBuilder.AppendLine("<b>Status Chance Calculation</b>");
+		detailsBuilder.AppendLine($"Base Chance: {actionProbability:+0.##%;-0.##%;0%}");
+		detailsBuilder.AppendLine($"Equipment Bonus: {equipmentProbability:+0.##%;-0.##%;0%}");
+		detailsBuilder.AppendLine($"Status Chance Bonus: {userStatusChance:+0.##%;-0.##%;0%}");
+		detailsBuilder.AppendLine($"Target Resistance: -{targetResistance:0.##%}");
+		detailsBuilder.AppendLine();
+		detailsBuilder.AppendLine($"<b>Final Chance: {Mathf.Clamp01(hitProba):P0}</b>");
+		if (hitProba >= 1f)
+			detailsBuilder.AppendLine("<color=green><b>Guaranteed Apply</b></color>");
+		else
+		{
+			detailsBuilder.AppendLine($"Roll: {roll:F2}");
+			detailsBuilder.AppendLine(isAttackSuccessful ? "<color=green><b>Status Applied</b></color>" : "<color=red><b>Status Resisted</b></color>");
+		}
+
+		string detailsDescription = detailsBuilder.ToString();
+		LogConsole.LogDetails details = new("status_" + LogConsole.Instance.LogsDetails.Keys.Count, "Status Details", detailsDescription);
+		LogConsole.AddLog(m_linkedEntity.ID + (isAttackSuccessful ? " applies " : " fails to apply ")
+			+ _effect.GetType().Name + " on " + _target.ID, LogConsole.LogEventType.Status, details);
 
 		return isAttackSuccessful;
 	}
 
 	#endregion
 
-	#region Heatlh
+	#region Tool
 
-	public void AddDamageBuff ( WeaponEquipmentData.DamageType _type, int _amount )
+	private Tool AddTool ( ToolEquipmentData _data, bool _isFirstSide )
 	{
-		m_applyedDamageTypeBuffs.Add(_type, _amount);
+		Tool newTool = Instantiate(_data.prefab, m_linkedEntity.Skin.IK.handGrabSocket);
+		newTool.Init(m_linkedEntity, _data, _isFirstSide);
+		m_tools.Add(newTool.ID, newTool);
+
+		return newTool;
 	}
+
+	#endregion
+
+	#region Heatlh
 
 	public void TakeDamage ( TakeDamageCallback _damageInfo )
 	{
-		foreach (KeyValuePair<WeaponEquipmentData.DamageType, int> pair in _damageInfo.damages)
+		//apply flat damage reduction (ex: Shield)
+		Dictionary<WeaponEquipmentData.DamageType, int> damages = new(_damageInfo.damages);
+		if (_damageInfo.entityAttacker != null)
+		{
+			foreach (Tool tool in m_tools.Values)
+			{
+				if (tool is Shield shield
+					&& shield.orientation == GridManager.Instance.GetClosestOrientation(m_linkedEntity.Displacement.Coordinates.GetTile(), _damageInfo.entityAttacker.Displacement.Coordinates.GetTile()))
+				{
+					foreach (WeaponEquipmentData.DamageType damageType in damages.Keys)
+					{
+						damages[damageType] -= shield.RemoveDamage(damages[damageType]);
+					}
+				}
+			}
+		}
+
+		foreach (KeyValuePair<WeaponEquipmentData.DamageType, int> pair in damages)
 		{
 			m_currentHealth -= pair.Value;
 		}
@@ -381,6 +550,24 @@ public class EntityEquipmentPlugin : EntityPlugin
 			Death();
 
 		onHealthChangeDamage?.Invoke(_damageInfo);
+	}
+
+	public void InstantDeath ()
+	{
+		Dictionary<WeaponEquipmentData.DamageType, int> damages = new();
+		damages.Add(WeaponEquipmentData.DamageType.Contendant, 999999);
+		m_currentHealth = 0;
+		onHealthChangeDamage?.Invoke(new TakeDamageCallback()
+		{
+			critical = false,
+			damages = damages,
+			entityAttacker = m_linkedEntity,
+			entityTargeted = m_linkedEntity,
+			hitNormal = Vector3.zero,
+			hitPos = Vector3.zero
+		});
+
+		Death();
 	}
 
 	private void Death ()

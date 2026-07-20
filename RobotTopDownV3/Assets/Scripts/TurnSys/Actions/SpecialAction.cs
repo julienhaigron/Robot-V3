@@ -5,43 +5,28 @@ using Unity.Netcode;
 
 public class SpecialAction : AEntityAction
 {
-	public string rotatingWeaponID;
-	public int targetedEntityID = -1;
-
-	public override void NetworkSerialize<T> ( BufferSerializer<T> serializer )
-	{
-		base.NetworkSerialize(serializer);
-		serializer.SerializeValue(ref rotatingWeaponID);
-		serializer.SerializeValue(ref targetedEntityID);
-	}
-
-	public override void RegisterInteraction ( Tile _tile )
-	{
-		if(targetedEntityID == -1 && GameManager.Instance.GetEntityFromID(performingEntityID).AI.TargetedEntity != null)
-			targetedEntityID = GameManager.Instance.GetEntityFromID(performingEntityID).AI.TargetedEntity.ID;
-
-		base.RegisterInteraction(_tile);
-	}
 
 	public override void Prepare ( Entity.EntityState _state )
 	{
-		if (targetedEntityID == -1 && GameManager.Instance.GetEntityFromID(performingEntityID).AI.TargetedEntity != null)
+		/*if (targetedEntityID == -1 && GameManager.Instance.GetEntityFromID(performingEntityID).AI.TargetedEntity != null)
 			targetedEntityID = GameManager.Instance.GetEntityFromID(performingEntityID).AI.TargetedEntity.ID;
 		else if(targetedEntityID == -1)
 		{
 			//TODO : handle this situation
 			Debug.Log("ERROR : no available target");
-		}
+		}*/
 	}
 
-	public override bool CheckConflict ( AEntityAction _otherAction, bool _isCheck = true )
+	public override ActionConflictResultInfo CheckConflict ( AEntityAction _otherAction, bool _isCheck = true )
 	{
 		//no conflict ?
-		return false;
+
+		return new() { isFirstActionConflicted = false, isSecondActionConflicted = false };
 	}
 
-	public override void Perform ( Entity.EntityState _state )
+	protected override void Perform ( Entity.EntityState _state )
 	{
+		base.Perform(_state);
 		//todo : apply effect
 	}
 
@@ -52,14 +37,28 @@ public class SpecialAction : AEntityAction
 
 	public override void GhostDisplay ( Entity.EntityState _state )
 	{
+		foreach (int tileID in targetTileIDs)
+		{
+			if (tileID == -1 || GridManager.Instance.Tiles.Length <= tileID)
+				continue;
 
+			Tile tile = GridManager.Instance.Tiles[tileID];
+			tile.UI.SetOutlineColor(Color.yellow);
+		}
 	}
 
 	public override bool TileInteractPredicate ( Tile _tile )
 	{
-		//TODO : select only visible enemies
+		if (Data.targetType == EntityActionData.TargetType.Self && _tile.coordinates.ID == TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntityID))
+			return true;
+
+		int maxDist = Data.GetMaxRange(this, PerformingEntity, null);
+		bool isInRange = GridManager.Instance.GetTilesInVisionRange(GridManager.Instance.Tiles[TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntityID)], maxDist, false, true).Contains(_tile);
+
+		if (Data.targetType == EntityActionData.TargetType.Tile && isInRange)
+			return true;
 
 		Entity entity = _tile.GetEntity(true);
-		return entity != null && (Data.targetType == EntityActionData.TargetType.Self == entity.IsAlliedTo(GameManager.Instance.GetEntityFromID(performingEntityID).OwnerID));
+		return entity != null && isInRange && !entity.IsAlliedTo(GameManager.Instance.GetEntityFromID(performingEntityID).OwnerID);
 	}
 }
