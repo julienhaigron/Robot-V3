@@ -93,6 +93,7 @@ public class FTUEManager : SingletonPersistant<FTUEManager>
 		tutoSequence.Append(new DialogueHighlightTask("Attack rolls explenation", ( context ) => context.Log.Logs.ContainsKey(LogConsole.LogEventType.Damage)
 		, m_firstTutoDialogues[5], "logs"));
 
+		tutoSequence.SetSkipPredicate(( context ) => GameDatas.current.currentPlayerSave.dayCount > 0);
 		return tutoSequence;
 	}
 
@@ -116,6 +117,7 @@ public class FTUEManager : SingletonPersistant<FTUEManager>
 		tutoSequence.Append(new DialogueHighlightTask("Blabla statut, visible dans le log”", ( context ) => context.Log.Logs.ContainsKey(LogConsole.LogEventType.Status)
 		, m_day1TutoDialogues[4], "logs"));
 
+		tutoSequence.SetSkipPredicate(( context ) => GameDatas.current.currentPlayerSave.dayCount > 1);
 		return tutoSequence;
 	}
 
@@ -134,6 +136,7 @@ public class FTUEManager : SingletonPersistant<FTUEManager>
 		tutoSequence.Append(new DialogueTask("Blabla vision", ( context ) => context.UI.currentPanel is InGamePanel
 		, m_day2TutoDialogues[2]));
 
+		tutoSequence.SetSkipPredicate(( context ) => GameDatas.current.currentPlayerSave.dayCount > 2);
 		return tutoSequence;
 	}
 
@@ -150,6 +153,7 @@ public class FTUEManager : SingletonPersistant<FTUEManager>
 		tutoSequence.Append(new DialogueTask("Blabla mort mais pas grave car réparation", ( context ) => context.Log.Logs.ContainsKey(LogConsole.LogEventType.Damage)
 		, m_day3TutoDialogues[1]));
 
+		tutoSequence.SetSkipPredicate(( context ) => GameDatas.current.currentPlayerSave.dayCount > 3);
 		return tutoSequence;
 	}
 
@@ -166,6 +170,7 @@ public class FTUEManager : SingletonPersistant<FTUEManager>
 		tutoSequence.Append(new DialogueTask("Blabla mort mais pas grave car réparation", ( context ) => context.Log.Logs.ContainsKey(LogConsole.LogEventType.Damage)
 		, m_day4TutoDialogues[1]));*/
 
+		tutoSequence.SetSkipPredicate(( context ) => GameDatas.current.currentPlayerSave.dayCount > 4);
 		return tutoSequence;
 	}
 
@@ -182,6 +187,7 @@ public class FTUEManager : SingletonPersistant<FTUEManager>
 		tutoSequence.Append(new DialogueTask("Blabla mort mais pas grave car réparation", ( context ) => context.Log.Logs.ContainsKey(LogConsole.LogEventType.Damage)
 		, m_day4TutoDialogues[1]));*/
 
+		tutoSequence.SetSkipPredicate(( context ) => GameDatas.current.currentPlayerSave.dayCount > 5);
 		return tutoSequence;
 	}
 

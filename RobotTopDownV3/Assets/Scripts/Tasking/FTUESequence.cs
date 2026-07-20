@@ -39,7 +39,11 @@ public class FTUESequence
 
 		for (int i = CurrentSequenceIndex; i < Sequences.Count; i++)
 		{
-			if (i + 1 == Sequences.Count)
+			if(Sequences[i].SkipPredicate != null && Sequences[i].SkipPredicate())
+			{
+				OnEndFTUESingleSequence(Sequences[i]);
+			}
+			else if (i + 1 == Sequences.Count)
 				Sequences[i].onCompleted += OnEndFTUE;
 			else
 				Sequences[i].onCompleted += OnEndFTUESingleSequence;

@@ -20,6 +20,9 @@ public class TaskSequence
 	public bool IsPerforming => CurrentTask.IsPerforming;
 	public bool IsCompleted => m_tasks[^1].IsCompleted || CurrentTaskIndex == -1;
 
+	private System.Func<TaskManager.TaskContext, bool> m_skipPredicate;
+	public System.Func<TaskManager.TaskContext, bool> SkipPredicate => m_skipPredicate;
+
 	public TaskSequence ( string _id )
 	{
 		m_id = _id;
@@ -49,8 +52,18 @@ public class TaskSequence
 		//TaskManager.Instance.StartSequence(this);
 	}
 
+	public void Complete ()
+	{
+		GameDatas.current.currentPlayerSave.sequencesProgressions[m_id] = -1;
+	}
+
 	private void OnComplete (Task _task)
 	{
 		onCompleted?.Invoke(this);
+	}
+
+	public void SetSkipPredicate(System.Func<TaskManager.TaskContext, bool> _skipPredicate )
+	{
+		m_skipPredicate = _skipPredicate;
 	}
 }

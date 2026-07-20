@@ -40,9 +40,12 @@ public class TaskManager : SingletonPersistant<TaskManager>
 
 		foreach (TaskSequence seq in m_activeSequences)
 		{
-			if (!seq.IsCompleted && !seq.IsPerforming)
-				seq.CurrentTask.TryStart(m_context);
-		}
+            if (!seq.IsCompleted && !seq.IsPerforming)
+                seq.CurrentTask.TryStart(m_context);
+            else if (!seq.IsCompleted && seq.IsPerforming
+                && seq.SkipPredicate != null && seq.SkipPredicate(m_context))
+                seq.Complete();
+        }
 	}
 
 	public void StartSequence(TaskSequence _sequence )
