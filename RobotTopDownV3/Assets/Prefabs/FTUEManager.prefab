@@ -49,8 +49,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: RTD::FTUEManager
   m_cycle1Missions:
-  - {fileID: 11400000, guid: 28bfe04a7099d0e42974765d328d185b, type: 2}
   - {fileID: 11400000, guid: 417b10a5886f32743823118c49c05109, type: 2}
+  - {fileID: 11400000, guid: 28bfe04a7099d0e42974765d328d185b, type: 2}
   - {fileID: 11400000, guid: 375f382f2fe6ced4a856eff99f23c657, type: 2}
   - {fileID: 11400000, guid: 5edf076e2e7fa7f40899398bd8eacf95, type: 2}
   - {fileID: 11400000, guid: 7d2b176a03b632347870b1b5839a68d1, type: 2}
