@@ -7,7 +7,7 @@ using Sirenix.OdinInspector;
 [CreateAssetMenu(fileName = "ReactorData", menuName = "ScriptableObject/Equipment/ReactorData", order = 1)]
 public class ReactorEquipmentData : EntityEquipmentData
 {
-    [BoxGroup(GroupID = "Stat")]
+    [BoxGroup(GroupID = "Stat"), Parsing("Energy")]
     public int energyProduced = 160;
 
 	public override StatDescription[] GetDesciption ()

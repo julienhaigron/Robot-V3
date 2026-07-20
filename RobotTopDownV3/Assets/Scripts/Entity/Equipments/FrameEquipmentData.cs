@@ -14,9 +14,9 @@ public class FrameEquipmentData : EntityEquipmentData
 	[BoxGroup(GroupID = "Stat"), Parsing("HP")]
 	public int maxHealth;
 	[BoxGroup(GroupID = "Stat"), Parsing("Armouring Slot")]
-	public int auxiliarSlotAvailable = 2;
-	/*[BoxGroup(GroupID = "Stat"), Parsing("Occultor Slot")]
-	public int occultorSlotAvailable = 2;*/
+	public int armouringSlotAvailable = 2;
+	[BoxGroup(GroupID = "Stat"), Parsing("Occultor Slot")]
+	public int occultorSlotAvailable = 2;
 	[BoxGroup(GroupID = "Stat")]
 	public StatBonus[] statBonuses;
 
@@ -24,7 +24,8 @@ public class FrameEquipmentData : EntityEquipmentData
 	{
 		List<StatDescription> description = base.GetDesciption().ToList();
 		description.Add(new() { ID = StatBonus.StatType.BaseHp, title = "HP", floatValue = maxHealth, stringValue = maxHealth.ToString() });
-		description.Add(new() { ID = StatBonus.StatType.AuxiliarSlot, title = "AuxiliarSlot", floatValue = auxiliarSlotAvailable, stringValue = null });
+		description.Add(new() { ID = StatBonus.StatType.ArmourySlot, title = "ArmourySlot", floatValue = armouringSlotAvailable, stringValue = null });
+		description.Add(new() { ID = StatBonus.StatType.OccultorSlot, title = "OccultorSlot", floatValue = occultorSlotAvailable, stringValue = null });
 		foreach (StatBonus bonus in statBonuses)
 		{
 			description.Add(bonus.GetDescription());

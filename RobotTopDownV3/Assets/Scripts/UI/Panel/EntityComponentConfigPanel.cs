@@ -44,11 +44,18 @@ public class EntityComponentConfigPanel : AUIPanel
 
 				for (int i = 0; i < m_slots.Length; i++)
 				{
-					if (chassisData.auxiliarSlotAvailable > i)
+					if (chassisData.armouringSlotAvailable > i)
 					{
 						m_slots[i].gameObject.SetActive(true);
 						m_slots[i].Init(m_subPartGrid, _data, _data.auxiliar.Length <= i ? null : _data.auxiliar[i]
-							, item => item != null && item.TryGetData(out EntityEquipmentData _data) && (_data.GetEquipmentType() == EntityEquipmentData.EquipmentType.Armor || _data.GetEquipmentType() == EntityEquipmentData.EquipmentType.Occultor)
+							, item => item != null && item.TryGetData(out EntityEquipmentData _data) && (_data.GetEquipmentType() == EntityEquipmentData.EquipmentType.Armor)
+							, ComponentDisplay.DisplayMode.Hangar);
+					}
+					else if(chassisData.armouringSlotAvailable + chassisData.occultorSlotAvailable > i)
+					{
+						m_slots[i].gameObject.SetActive(true);
+						m_slots[i].Init(m_subPartGrid, _data, _data.auxiliar.Length <= i ? null : _data.auxiliar[i]
+							, item => item != null && item.TryGetData(out EntityEquipmentData _data) && (_data.GetEquipmentType() == EntityEquipmentData.EquipmentType.Occultor)
 							, ComponentDisplay.DisplayMode.Hangar);
 					}
 					else

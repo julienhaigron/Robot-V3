@@ -7,12 +7,12 @@ using System.Linq;
 [CreateAssetMenu(fileName = "NeuronalMembrane", menuName = "ScriptableObject/Equipment/NeuronalMembrane", order = 1)]
 public class NeuronalMembraneEquipmentData : EntityEquipmentData
 {
-    [BoxGroup(GroupID = "Stat")]
+    [BoxGroup(GroupID = "Stat"), Parsing("Chipset Slot")]
     public int equipmentSlotAvailable = 2;
-    [Min(0), BoxGroup(GroupID = "Stat")]
+    [Min(0), BoxGroup(GroupID = "Stat"), Parsing("Vision range")]
     public int visionRange = 8;
 
-    [BoxGroup(GroupID = "AI")]
+    [BoxGroup(GroupID = "AI"), Parsing("Vision type")]
     public VisionTypes visionType;
 
     public enum VisionTypes

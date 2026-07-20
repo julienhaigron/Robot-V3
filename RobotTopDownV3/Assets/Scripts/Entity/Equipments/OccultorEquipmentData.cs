@@ -7,10 +7,12 @@ using System.Linq;
 [CreateAssetMenu(fileName = "OccultorData", menuName = "ScriptableObject/Equipment/OccultorData", order = 1)]
 public class OccultorEquipmentData : EntityEquipmentData
 {
-    [BoxGroup(GroupID = "Stat")]
+    [BoxGroup(GroupID = "Stat"), Parsing("Radar camo")]
     public float soundCamo = .3f;
-    [BoxGroup(GroupID = "Stat")]
+    [BoxGroup(GroupID = "Stat"), Parsing("Optic camo")]
     public float visualCamo = .2f;
+    [BoxGroup(GroupID = "Stat"), Parsing("Thermic camo")]
+    public float thermicCamo = .2f;
     [BoxGroup(GroupID = "Stat")]
     public StatBonus[] statBonuses;
 

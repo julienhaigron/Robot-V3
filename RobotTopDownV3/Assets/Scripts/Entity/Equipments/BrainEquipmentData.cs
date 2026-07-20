@@ -7,15 +7,15 @@ using System.Linq;
 [CreateAssetMenu(fileName = "BrainData", menuName = "ScriptableObject/Equipment/BrainData", order = 1)]
 public class BrainEquipmentData : EntityEquipmentData
 {
-    [BoxGroup(GroupID = "Stat")]
+    [BoxGroup(GroupID = "Stat"), Parsing("Chipset Slot")]
     public int chipsetSlotAvailable = 2;
-    [BoxGroup(GroupID = "Stat")]
+    [BoxGroup(GroupID = "Stat"), Parsing("Melee Accuracy")]
     public float agility = .155f;
-    [BoxGroup(GroupID = "Stat")]
+    [BoxGroup(GroupID = "Stat"), Parsing("Shoot Accuracy")]
     public float distanceAccuracy = .5f;
-    [BoxGroup(GroupID = "Stat")]
+    [BoxGroup(GroupID = "Stat"), Parsing("Shoot Dodge")]
     public float distanceEvasion = .25f;
-    [BoxGroup(GroupID = "Stat")]
+    [BoxGroup(GroupID = "Stat"), Parsing("Melee Dodge")]
     public float meleeEvasion = .25f;
 
     [BoxGroup(GroupID = "AI")]

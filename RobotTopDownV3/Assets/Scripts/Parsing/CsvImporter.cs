@@ -22,7 +22,7 @@ public static class CsvImporter
             T asset = CreateOrLoadAsset<T>(id, _assetFolder);
 
             asset.spreadsheetId = _csvUrl;
-            PopulateAsset(asset, data);
+            PopulateAsset(asset, new(data, asset.Id));
 
             EditorUtility.SetDirty(asset);
         }
@@ -38,7 +38,7 @@ public static class CsvImporter
 
         if (objects.Keys.Contains(_parsableScriptable.Id))
 		{
-            PopulateAsset(_parsableScriptable, objects[_parsableScriptable.Id]);
+            PopulateAsset(_parsableScriptable, new(objects[_parsableScriptable.Id], _parsableScriptable.Id));
 
             EditorUtility.SetDirty(_parsableScriptable);
 
@@ -129,7 +129,7 @@ public static class CsvImporter
         return result.ToArray();
     }
 
-    private static void PopulateAsset ( AParsableScriptableObject _asset, Dictionary<string, string> _data )
+    private static void PopulateAsset ( AParsableScriptableObject _asset, ImportedData _data )
     {
         var fields = _asset.GetType().GetFields(
             BindingFlags.Public |
@@ -142,7 +142,7 @@ public static class CsvImporter
             if (attr == null)
                 continue;
 
-            if (!_data.TryGetValue(attr.ColumnName, out string value))
+            if (!_data.data.TryGetValue(attr.ColumnName, out string value))
 			{
                 Debug.Log("No collumn with id " + attr.ColumnName + " found");
                 continue;
@@ -152,6 +152,8 @@ public static class CsvImporter
 
             field.SetValue(_asset, converted);
         }
+
+        _asset.OnParse(_data);
     }
 
     private static T CreateOrLoadAsset<T> ( string _id, string _folder ) where T : AParsableScriptableObject

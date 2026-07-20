@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using Sirenix.OdinInspector;
+using System.Collections.Generic;
 
 [AttributeUsage(AttributeTargets.Field)]
 public class ParsingAttribute : Attribute
@@ -30,6 +31,8 @@ public abstract class AParsableScriptableObject : ScriptableObject, IParsingImpo
     {
         return "https://docs.google.com/spreadsheets/d/" + spreadsheetId +"/export?format=csv&gid=" + GetSheetID();
     }
+
+    public abstract void OnParse ( ImportedData _data );
 
     [BoxGroup("Parsing"), Button]
     public void RefreshParsedValues ()

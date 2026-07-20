@@ -18,13 +18,18 @@ MonoBehaviour:
   displayName: A-7
   energyCost: 10
   knownedActions: 030000002c00000000000000
-  passiveEffects: []
+  passiveEffects:
+  - enumID: 0
+    conditionType: 0
+    targetType: 0
+    effectRange: 0
   statusHitProbability: 0.5
   recyclingDurationAmount: 1
   reparingDurationAmount: 1
   prefab: {fileID: 4673310249167116355, guid: 206cf16509b1846479a1f553fd6add2d, type: 3}
   maxHealth: 5
-  auxiliarSlotAvailable: 2
+  armouringSlotAvailable: 2
+  occultorSlotAvailable: 2
   statBonuses:
   - type: 3
     value: 0.3

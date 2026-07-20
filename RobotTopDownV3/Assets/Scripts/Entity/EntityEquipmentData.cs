@@ -15,9 +15,9 @@ public class EntityEquipmentData : AParsableScriptableObject
 	[Parsing("Name")]
 	public string displayName = "default";
 
-	[BoxGroup(GroupID = "Stat")]
+	[BoxGroup(GroupID = "Stat"), Parsing("Cost")]
 	public int energyCost;
-	[BoxGroup(GroupID = "Actions")]
+	[BoxGroup(GroupID = "Actions"), Parsing("Actions")]
 	public EntityActionEnumID[] knownedActions;
 	[BoxGroup(GroupID = "PassiveEffects")]
 	public AEntityPassiveEffect.PassiveEffectContainer[] passiveEffects;
@@ -244,7 +244,8 @@ public class EntityEquipmentData : AParsableScriptableObject
 			States,
 			ChipsetSlot,
 			EquipmentSlot,
-			AuxiliarSlot,
+			ArmourySlot,
+			OccultorSlot
 
 		}
 
@@ -299,6 +300,13 @@ public class EntityEquipmentData : AParsableScriptableObject
 
 		AssetDatabase.SaveAssets();
 		AssetDatabase.Refresh();
+	}
+
+	public override void OnParse ( ImportedData _data )
+	{
+		/*List<EntityActionEnumID> actions = new();
+		if(_data.TryGetValue("Actions", out EntityActionEnumID[] values))
+			actions.AddRange(values);*/
 	}
 
 #endif
