@@ -6,7 +6,7 @@ using System.Linq;
 
 
 [CreateAssetMenu(fileName = "EntityActionData", menuName = "ScriptableObject/ActionData")]
-public class EntityActionData : ScriptableObject
+public class EntityActionData : AParsableScriptableObject
 {
 	public string displayName;
 	[ReadOnly]
@@ -396,5 +396,15 @@ public class EntityActionData : ScriptableObject
 			/*case ConditionType.IsTargetMarked:
 				return _targetEntity != null && _targetEntity.Status.Contains(EntityStatusEnumID.Marked);*/
 		}
+	}
+
+	protected override string GetSheetID ()
+	{
+		return GameConfig.current.parsing.actionGUIDPerPage[type];
+	}
+
+	public override void OnParse ( ImportedData _data )
+	{
+		
 	}
 }

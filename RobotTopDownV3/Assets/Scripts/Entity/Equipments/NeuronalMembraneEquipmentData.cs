@@ -17,8 +17,8 @@ public class NeuronalMembraneEquipmentData : EntityEquipmentData
 
     public enum VisionTypes
     {
-        Optical,
-        Thermal,
+        Optic,
+        Thermic,
         Radar
     }
 

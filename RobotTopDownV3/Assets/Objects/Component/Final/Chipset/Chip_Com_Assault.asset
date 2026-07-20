@@ -14,10 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: RTD::ChipsetEquipmentData
   spreadsheetId: https://docs.google.com/spreadsheets/d/1AeQujaBf6YdyVQRD2gBNWazoosesi46DpAoY5b6hrt8/export?format=csv&gid=1887781930
   faction: 4
-  icon: {fileID: -1360359492, guid: b61920d2917644949a125f8a6af0e45c, type: 3}
+  icon: {fileID: 0}
   displayName: Assault Chipset
-  energyCost: 0
+  energyCost: 50
   knownedActions: 
   passiveEffects: []
   statusHitProbability: 0.5
+  recyclingDurationAmount: 1
+  reparingDurationAmount: 1
   statBonuses: []

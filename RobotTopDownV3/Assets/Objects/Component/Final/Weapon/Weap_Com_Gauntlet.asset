@@ -16,10 +16,12 @@ MonoBehaviour:
   faction: 4
   icon: {fileID: -1360359492, guid: b61920d2917644949a125f8a6af0e45c, type: 3}
   displayName: Gauntlet
-  energyCost: 30
-  knownedActions: 09000000
+  energyCost: 50
+  knownedActions: 
   passiveEffects: []
   statusHitProbability: 0.5
+  recyclingDurationAmount: 1
+  reparingDurationAmount: 1
   prefab: {fileID: 4024176136403563100, guid: 66812f69ad78b734dbdc05849c6752ae, type: 3}
   baseDamages:
     keys: 000000000500000002000000

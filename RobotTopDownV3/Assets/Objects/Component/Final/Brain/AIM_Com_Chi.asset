@@ -14,15 +14,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: RTD::BrainEquipmentData
   spreadsheetId: https://docs.google.com/spreadsheets/d/1AeQujaBf6YdyVQRD2gBNWazoosesi46DpAoY5b6hrt8/export?format=csv&gid=1473852370
   faction: 4
-  icon: {fileID: -1360359492, guid: b61920d2917644949a125f8a6af0e45c, type: 3}
+  icon: {fileID: 0}
   displayName: AIM_Chi
-  energyCost: 0
+  energyCost: 75
   knownedActions: 
   passiveEffects: []
   statusHitProbability: 0.5
-  chipsetSlotAvailable: 2
-  agility: 0.155
-  distanceAccuracy: 0.5
-  distanceEvasion: 0.25
-  meleeEvasion: 0.25
+  recyclingDurationAmount: 1
+  reparingDurationAmount: 1
+  chipsetSlotAvailable: 4
+  agility: 25
+  distanceAccuracy: 25
+  distanceEvasion: 15
+  meleeEvasion: 15
   knownedStates: 

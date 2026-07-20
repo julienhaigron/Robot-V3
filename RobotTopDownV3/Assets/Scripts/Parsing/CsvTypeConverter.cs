@@ -7,7 +7,9 @@ public static class CsvTypeConverter
 {
     public static object Convert ( string value, Type targetType )
     {
-        if (targetType == typeof(string))
+        if (string.Equals(value, "-"))
+            return null;
+        else if (targetType == typeof(string))
             return value;
         else if (targetType == typeof(int))
             return int.Parse(value);
@@ -16,26 +18,29 @@ public static class CsvTypeConverter
         else if (targetType == typeof(bool))
             return bool.Parse(value);
 
-        else if(targetType == typeof(EntityActionEnumID[]))
-		{
+        else if (targetType == typeof(EntityActionEnumID[]))
+        {
             string[] raw = value.Split(",");
 
             List<EntityActionEnumID> result = new();
             foreach (string item in raw)
             {
-                result.Add((EntityActionEnumID) Enum.Parse(typeof(EntityActionEnumID), item));
+                if (!Enum.TryParse(typeof(EntityActionEnumID), item, out object rawResult))
+                    Debug.Log("Missing action value: " + item);
+                else
+                    result.Add((EntityActionEnumID)rawResult);
             }
 
             return result.ToArray();
         }
-        else if(targetType == typeof(Entity.EntityState[]))
-		{
+        else if (targetType == typeof(Entity.EntityState[]))
+        {
             string[] raw = value.Split(",");
 
             List<Entity.EntityState> result = new();
             foreach (string item in raw)
             {
-                result.Add((Entity.EntityState) Enum.Parse(typeof(Entity.EntityState), item));
+                result.Add((Entity.EntityState)Enum.Parse(typeof(Entity.EntityState), item));
             }
 
             return result.ToArray();

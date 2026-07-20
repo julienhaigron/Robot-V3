@@ -6,6 +6,11 @@ using UnityEditor;
 public class GameToolboxWindow : EditorWindow
 {
 
+	private int m_missingUnitCount;
+	private int m_missingActionCount;
+	private int m_missingComponentCount;
+
+
 	[MenuItem("Tools/Game Toolbox")]
 	public static void LoadWindows ()
 	{
@@ -25,6 +30,18 @@ public class GameToolboxWindow : EditorWindow
 		StartBox("Parsing");
 
 		EditorGUILayout.BeginVertical(group);
+
+		if (GUILayout.Button("Parse all Actions", group))
+		{
+			CsvImporter.ImportFromUrl<EntityActionData>(MakeUrl(GameConfig.current.parsing.actionSpreadSheetID
+				, GameConfig.current.parsing.actionGUIDPerPage[EntityActionData.ActionType.Movement]), "Assets/Objects/Actions/Final/Movement");
+			CsvImporter.ImportFromUrl<EntityActionData>(MakeUrl(GameConfig.current.parsing.actionSpreadSheetID
+				, GameConfig.current.parsing.actionGUIDPerPage[EntityActionData.ActionType.DistanceAttack]), "Assets/Objects/Actions/Final/Tir");
+			CsvImporter.ImportFromUrl<EntityActionData>(MakeUrl(GameConfig.current.parsing.actionSpreadSheetID
+				, GameConfig.current.parsing.actionGUIDPerPage[EntityActionData.ActionType.MeleeAttack]), "Assets/Objects/Actions/Final/Melee");
+			CsvImporter.ImportFromUrl<EntityActionData>(MakeUrl(GameConfig.current.parsing.actionSpreadSheetID
+				, GameConfig.current.parsing.actionGUIDPerPage[EntityActionData.ActionType.Special]), "Assets/Objects/Actions/Final/Special");
+		}
 
 		if (GUILayout.Button("Parse all components", group))
 		{
@@ -47,10 +64,24 @@ public class GameToolboxWindow : EditorWindow
 			CsvImporter.ImportFromUrl<ChipsetEquipmentData>(MakeUrl(GameConfig.current.parsing.componentsSpreadSheetID, GameConfig.current.parsing.componentGUIDPerPage[EntityEquipmentData.EquipmentType.Chipset])
 				, "Assets/Objects/Component/Final/Chipset");
 		}
+
+		if(GUILayout.Button("Parse all Units", group))
+		{
+			CsvImporter.ImportFromUrl<UnitPreset>(MakeUrl(GameConfig.current.parsing.unitSpreadSheetID, "0")
+				, "Assets/Objects/UnitPreset/Final");
+		}
 		EditorGUILayout.EndVertical();
 
 		EndBox();
 
+		if (GUILayout.Button("Check misssing data", group))
+			CheckMissingData();
+
+	}
+
+	private void CheckMissingData ()
+	{
+		//m_missingUnitCount = GameAssets.current.game.uni
 	}
 
 	private string MakeUrl(string _spreadsheetID, string _sheetName )

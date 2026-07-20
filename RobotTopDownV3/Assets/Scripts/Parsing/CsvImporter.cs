@@ -144,7 +144,7 @@ public static class CsvImporter
 
             if (!_data.data.TryGetValue(attr.ColumnName, out string value))
 			{
-                Debug.Log("No collumn with id " + attr.ColumnName + " found");
+                Debug.Log("No value for var " + attr.ColumnName + " found for asset " + _asset.name);
                 continue;
 			}
 
@@ -166,7 +166,6 @@ public static class CsvImporter
             return asset;
 
         string typeName = typeof(T).Name;
-        Debug.Log(typeName);
         if (GameConfig.current.parsing.baseParsableScriptablePerType.ContainsKey(typeName))
             asset = AParsableScriptableObject.Instantiate(GameConfig.current.parsing.baseParsableScriptablePerType[typeName]) as T;
         else

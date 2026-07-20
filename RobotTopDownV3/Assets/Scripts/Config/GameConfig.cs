@@ -101,6 +101,9 @@ public partial class GameConfig : ScriptableObject
 		public SerializableDictionary<string, AParsableScriptableObject> baseParsableScriptablePerType = new();
 		public string componentsSpreadSheetID = "1AeQujaBf6YdyVQRD2gBNWazoosesi46DpAoY5b6hrt8";
 		public SerializableDictionary<EntityEquipmentData.EquipmentType, string> componentGUIDPerPage;
+		public string unitSpreadSheetID = "1PpT7zhUyvnxNfQoW6Z8a4ntcJ83OzwLOVkCfgDB5bX0";
+		public string actionSpreadSheetID = "1quAn64T5zuE6npFmDzjOhNFFvw4UJaXSoWxX-uvy3gI";
+		public SerializableDictionary<EntityActionData.ActionType, string> actionGUIDPerPage;
 	}
 
 	public void Initialize ()

@@ -93,7 +93,7 @@ public class GridManager : Singleton<GridManager>
 			}
 			else
 			{
-				m_tiles[i].SetActiveFOW(NeuronalMembraneEquipmentData.VisionTypes.Optical, true, true);
+				m_tiles[i].SetActiveFOW(NeuronalMembraneEquipmentData.VisionTypes.Optic, true, true);
 
 				if (groundType == TileGroundType.PlayerSpawn)
 					GameManager.Instance.PlayersEntityAnchor[0].AddSpawn(m_tiles[i].coordinates, true);
@@ -900,7 +900,7 @@ public class GridManager : Singleton<GridManager>
 		int playerId = !GameManager.Instance.IsOnline ? 0 : OnlinePlayerInstance.Self.connectionIndex;
 		if (!_entity.IsAlliedTo(playerId))
 		{
-			_entity.SetVisibility(false, NeuronalMembraneEquipmentData.VisionTypes.Optical);
+			_entity.SetVisibility(false, NeuronalMembraneEquipmentData.VisionTypes.Optic);
 			return;
 		}
 
@@ -950,7 +950,7 @@ public class GridManager : Singleton<GridManager>
 		int playerId = !GameManager.Instance.IsOnline ? 0 : OnlinePlayerInstance.Self.connectionIndex;
 		if (!_entity.IsAlliedTo(playerId))
 		{
-			_entity.SetVisibility(_entity.Displacement.Coordinates.GetTile().IsVisible, NeuronalMembraneEquipmentData.VisionTypes.Optical);
+			_entity.SetVisibility(_entity.Displacement.Coordinates.GetTile().IsVisible, NeuronalMembraneEquipmentData.VisionTypes.Optic);
 			return;
 		}
 

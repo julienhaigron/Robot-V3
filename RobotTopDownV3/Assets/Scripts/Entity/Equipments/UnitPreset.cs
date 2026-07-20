@@ -4,7 +4,7 @@ using UnityEngine;
 using Sirenix.OdinInspector;
 
 [CreateAssetMenu(fileName = "UnitPreset", menuName = "ScriptableObject/UnitPreset", order = 1)]
-public class UnitPreset : ScriptableObject
+public class UnitPreset : AParsableScriptableObject
 {
     public string displayName;
     [OnValueChanged("@RefreshTotalEnergyCostRemaining()")]
@@ -81,4 +81,14 @@ public class UnitPreset : ScriptableObject
 	{
         GameDatas.current.currentPlayerSave.squadUnits.Add(GetSavedData());
     }
+
+	protected override string GetSheetID ()
+	{
+        return "0";
+	}
+
+	public override void OnParse ( ImportedData _data )
+	{
+		
+	}
 }

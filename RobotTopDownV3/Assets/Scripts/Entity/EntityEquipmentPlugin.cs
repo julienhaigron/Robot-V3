@@ -360,7 +360,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 		bool doesWinPFC = _singleAttackInfo.pfcResult == (int)EntityActionData.PFCResultType.FirstWins;
 
 		float targetCamo = _targetEntity.Data.GetStaticStealthBonus(true)
-			+ (_targetEntity.HowIsUnitVisible == NeuronalMembraneEquipmentData.VisionTypes.Optical ? _targetEntity.GetAdditionaryStatBonus(EntityEquipmentData.StatBonus.StatType.VisualCamo, null)
+			+ (_targetEntity.HowIsUnitVisible == NeuronalMembraneEquipmentData.VisionTypes.Optic ? _targetEntity.GetAdditionaryStatBonus(EntityEquipmentData.StatBonus.StatType.VisualCamo, null)
 			: _targetEntity.HowIsUnitVisible == NeuronalMembraneEquipmentData.VisionTypes.Radar ? _targetEntity.GetAdditionaryStatBonus(EntityEquipmentData.StatBonus.StatType.RadarCamo, null)
 			: _targetEntity.GetAdditionaryStatBonus(EntityEquipmentData.StatBonus.StatType.ThermalCamo, null));
 
