@@ -64,7 +64,7 @@ public class Entity : MonoBehaviour
 	private Dictionary<AEntityStatus, int> m_remainingDurationToActiveStatuses = new();
 	private List<EntityEquipmentData.StatBonusBuff> m_statBuffs = new();
 	public List<EntityEquipmentData.StatBonusBuff> StatBuffs => m_statBuffs;
-	private Dictionary<EntityEquipmentData.StatBonus.StatType, float> m_activeStatBonusBuffs = new();
+	private Dictionary<EntityEquipmentData.SecondaryStat.StatType, float> m_activeStatBonusBuffs = new();
 
 	private int m_ownerID;
 	public int OwnerID => m_ownerID;
@@ -392,7 +392,7 @@ public class Entity : MonoBehaviour
 		onStatBonusRemoved?.Invoke(_statBuff);
 	}
 
-	public float GetAdditionaryStatBonus ( EntityEquipmentData.StatBonus.StatType _type, AEntityAction _relatedAction )
+	public float GetAdditionaryStatBonus ( EntityEquipmentData.SecondaryStat.StatType _type, AEntityAction _relatedAction )
 	{
 		float bonus = 0f;
 

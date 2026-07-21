@@ -19,4 +19,43 @@ MonoBehaviour:
     sfxVolume: 1
   game:
     lastPlayerSaveSelectedID: -1
-  playerSaves: []
+  playerSaves:
+  - saveName: 
+    knownedFrames: []
+    allBuiltUnits: []
+    squadUnits: []
+    equipmentInventory: []
+    equipmentCounter: 0
+    currencies:
+      keys: 
+      values: 
+    totalCurrenciesGot:
+      keys: 
+      values: 
+    totalCurrenciesSpent:
+      keys: 
+      values: 
+    upgradeLevels:
+      keys: []
+      values: 
+    dayData:
+      itemsInShop:
+      - component:
+          ID: 
+          dataID: 
+          isDamaged: 0
+        isFrozen: 0
+      currentlyRecyclingComponents: []
+      repairingComponents: []
+    cycleData:
+      availableMissionsIds: 0200000006000000
+      selectedMissionsIds: 
+      roundsDatas: 
+      didSelectMissions: 0
+      hasInitTournament: 0
+    cycleCount: 0
+    dayCount: 0
+    didStartTuto: 0
+    sequencesProgressions:
+      keys: []
+      values: 

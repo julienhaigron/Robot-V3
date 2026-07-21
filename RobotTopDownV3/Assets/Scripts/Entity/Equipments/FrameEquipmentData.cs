@@ -17,16 +17,16 @@ public class FrameEquipmentData : EntityEquipmentData
 	public int armouringSlotAvailable = 2;
 	[BoxGroup(GroupID = "Stat"), Parsing("Occultor Slot")]
 	public int occultorSlotAvailable = 2;
-	[BoxGroup(GroupID = "Stat")]
-	public StatBonus[] statBonuses;
+	[BoxGroup(GroupID = "Stat"), Parsing("SecondaryStat")]
+	public SecondaryStat[] statBonuses;
 
 	public override StatDescription[] GetDesciption ()
 	{
 		List<StatDescription> description = base.GetDesciption().ToList();
-		description.Add(new() { ID = StatBonus.StatType.BaseHp, title = "HP", floatValue = maxHealth, stringValue = maxHealth.ToString() });
-		description.Add(new() { ID = StatBonus.StatType.ArmourySlot, title = "ArmourySlot", floatValue = armouringSlotAvailable, stringValue = null });
-		description.Add(new() { ID = StatBonus.StatType.OccultorSlot, title = "OccultorSlot", floatValue = occultorSlotAvailable, stringValue = null });
-		foreach (StatBonus bonus in statBonuses)
+		description.Add(new() { ID = SecondaryStat.StatType.BaseHp, title = "HP", floatValue = maxHealth, stringValue = maxHealth.ToString() });
+		description.Add(new() { ID = SecondaryStat.StatType.ArmourySlot, title = "ArmourySlot", floatValue = armouringSlotAvailable, stringValue = null });
+		description.Add(new() { ID = SecondaryStat.StatType.OccultorSlot, title = "OccultorSlot", floatValue = occultorSlotAvailable, stringValue = null });
+		foreach (SecondaryStat bonus in statBonuses)
 		{
 			description.Add(bonus.GetDescription());
 		}
@@ -101,17 +101,17 @@ public class EntitySavedData : INetworkSerializable
 		return totalEnergyUsed;
 	}
 
-	public float GetStatBonusFromAll ( EntityEquipmentData.StatBonus.StatType _stat )
+	public float GetStatBonusFromAll ( EntityEquipmentData.SecondaryStat.StatType _stat )
 	{
 		return GetStatBonusFrom(_stat, true, true, true, true);
 	}
 
-	public float GetStatBonusFrom ( EntityEquipmentData.StatBonus.StatType _stat, bool _frame = false/*, bool _brain = false*/, bool _arms = false, bool _auxiliar = false, bool _chipsets = false )
+	public float GetStatBonusFrom ( EntityEquipmentData.SecondaryStat.StatType _stat, bool _frame = false/*, bool _brain = false*/, bool _arms = false, bool _auxiliar = false, bool _chipsets = false )
 	{
 		float totalBonus = 0;
 		if (_frame && FrameData != null)
 		{
-			foreach (EntityEquipmentData.StatBonus statBonus in FrameData.statBonuses)
+			foreach (EntityEquipmentData.SecondaryStat statBonus in FrameData.statBonuses)
 			{
 				if (statBonus.type == _stat)
 					totalBonus += statBonus.value;
@@ -131,7 +131,7 @@ public class EntitySavedData : INetworkSerializable
 			{
 				if (GameAssets.current.equipments[container.dataID] is OccultorEquipmentData occultor)
 				{
-					foreach (EntityEquipmentData.StatBonus statBonus in occultor.statBonuses)
+					foreach (EntityEquipmentData.SecondaryStat statBonus in occultor.statBonuses)
 					{
 						if (statBonus.type == _stat)
 							totalBonus += statBonus.value;
@@ -139,7 +139,7 @@ public class EntitySavedData : INetworkSerializable
 				}
 				else if (GameAssets.current.equipments[container.dataID] is ArmorEquipmentData armor)
 				{
-					foreach (EntityEquipmentData.StatBonus statBonus in armor.statBonuses)
+					foreach (EntityEquipmentData.SecondaryStat statBonus in armor.statBonuses)
 					{
 						if (statBonus.type == _stat)
 							totalBonus += statBonus.value;
@@ -284,7 +284,7 @@ public class EntitySavedData : INetworkSerializable
 
 	public int GetMaxHealth ()
 	{
-		float bonus = 1 + GetStatBonusFrom(EntityEquipmentData.StatBonus.StatType.Hp);
+		float bonus = 1 + GetStatBonusFrom(EntityEquipmentData.SecondaryStat.StatType.BaseHp);
 		float maxHealth = FrameData == null ? 0 : FrameData.maxHealth;
 
 		return Mathf.RoundToInt(maxHealth * bonus);
@@ -308,11 +308,11 @@ public class EntitySavedData : INetworkSerializable
 		{
 			if (GameAssets.current.equipments[container.dataID] is OccultorEquipmentData occultor)
 			{
-				foreach (EntityEquipmentData.StatBonus statBonus in occultor.statBonuses)
+				foreach (EntityEquipmentData.SecondaryStat statBonus in occultor.statBonuses)
 				{
-					if (statBonus.type == EntityEquipmentData.StatBonus.StatType.VisualPerception && _isVisual)
+					if (statBonus.type == EntityEquipmentData.SecondaryStat.StatType.VisualPerception && _isVisual)
 						result += statBonus.value;
-					else if (statBonus.type == EntityEquipmentData.StatBonus.StatType.SoundPerception && !_isVisual)
+					else if (statBonus.type == EntityEquipmentData.SecondaryStat.StatType.SoundPerception && !_isVisual)
 						result += statBonus.value;
 				}
 			}
@@ -345,11 +345,11 @@ public class EntitySavedData : INetworkSerializable
 				else
 					result += occultor.soundCamo;
 
-				foreach (EntityEquipmentData.StatBonus statBonus in occultor.statBonuses)
+				foreach (EntityEquipmentData.SecondaryStat statBonus in occultor.statBonuses)
 				{
-					if (statBonus.type == EntityEquipmentData.StatBonus.StatType.VisualCamo && _isVisual)
+					if (statBonus.type == EntityEquipmentData.SecondaryStat.StatType.VisualCamo && _isVisual)
 						result += statBonus.value;
-					else if (statBonus.type == EntityEquipmentData.StatBonus.StatType.RadarCamo && !_isVisual)
+					else if (statBonus.type == EntityEquipmentData.SecondaryStat.StatType.RadarCamo && !_isVisual)
 						result += statBonus.value;
 				}
 			}
@@ -371,9 +371,9 @@ public class EntitySavedData : INetworkSerializable
 
 	}
 
-	public SerializableDictionary<EntityEquipmentData.StatBonus.StatType, EntityEquipmentData.StatDescription> GetStatsDesciptions ()
+	public SerializableDictionary<EntityEquipmentData.SecondaryStat.StatType, EntityEquipmentData.StatDescription> GetStatsDesciptions ()
 	{
-		SerializableDictionary<EntityEquipmentData.StatBonus.StatType, EntityEquipmentData.StatDescription> statsDictionary = new();
+		SerializableDictionary<EntityEquipmentData.SecondaryStat.StatType, EntityEquipmentData.StatDescription> statsDictionary = new();
 		if (FrameData != null)
 		{
 			foreach (EntityEquipmentData.StatDescription stat in FrameData.GetDesciption())

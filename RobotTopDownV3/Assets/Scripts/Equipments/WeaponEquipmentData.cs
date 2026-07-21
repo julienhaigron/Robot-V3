@@ -58,7 +58,7 @@ public class WeaponEquipmentData : EntityEquipmentData
             count++;
         }
 
-        description.Add(new() { ID = StatBonus.StatType.BaseDamage, title = "BaseDamage", floatValue = 0, stringValue = value });
+        description.Add(new() { ID = SecondaryStat.StatType.BaseDamage, title = "BaseDamage", floatValue = 0, stringValue = value });
 
 		return description.ToArray();
 	}

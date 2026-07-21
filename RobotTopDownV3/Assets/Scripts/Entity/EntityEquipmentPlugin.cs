@@ -119,33 +119,33 @@ public class EntityEquipmentPlugin : EntityPlugin
 		m_isDead = false;
 
 		//resistance
-		m_generalDamageBuff = m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.StatBonus.StatType.GeneralDamageBonus);
-		m_applyedDamageTypeBuffs.Add(WeaponEquipmentData.DamageType.Tranchant, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.StatBonus.StatType.SlashDamageBonus));
-		m_applyedDamageTypeBuffs.Add(WeaponEquipmentData.DamageType.Contendant, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.StatBonus.StatType.BludgeoningDamageBonus));
-		m_applyedDamageTypeBuffs.Add(WeaponEquipmentData.DamageType.Perforant, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.StatBonus.StatType.PiercingDamageBonus));
-		m_applyedDamageTypeBuffs.Add(WeaponEquipmentData.DamageType.Electrique, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.StatBonus.StatType.ElectricDamageBonus));
-		m_applyedDamageTypeBuffs.Add(WeaponEquipmentData.DamageType.Feu, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.StatBonus.StatType.FireDamageBonus));
-		m_applyedDamageTypeBuffs.Add(WeaponEquipmentData.DamageType.Laser, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.StatBonus.StatType.LaserDamageBonus));
-		m_applyedDamageTypeBuffs.Add(WeaponEquipmentData.DamageType.Magnetique, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.StatBonus.StatType.MagneticDamageBonus));
-		m_applyedDamageTypeBuffs.Add(WeaponEquipmentData.DamageType.Plasma, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.StatBonus.StatType.PlasmaDamageBonus));
-		m_applyedDamageTypeBuffs.Add(WeaponEquipmentData.DamageType.Radiation, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.StatBonus.StatType.RadiationDamageBonus));
+		m_generalDamageBuff = m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.SecondaryStat.StatType.GeneralDamageBonus);
+		m_applyedDamageTypeBuffs.Add(WeaponEquipmentData.DamageType.Tranchant, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.SecondaryStat.StatType.SlashDamageBonus));
+		m_applyedDamageTypeBuffs.Add(WeaponEquipmentData.DamageType.Contendant, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.SecondaryStat.StatType.BludgeoningDamageBonus));
+		m_applyedDamageTypeBuffs.Add(WeaponEquipmentData.DamageType.Perforant, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.SecondaryStat.StatType.PiercingDamageBonus));
+		m_applyedDamageTypeBuffs.Add(WeaponEquipmentData.DamageType.Electrique, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.SecondaryStat.StatType.ElectricDamageBonus));
+		m_applyedDamageTypeBuffs.Add(WeaponEquipmentData.DamageType.Feu, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.SecondaryStat.StatType.FireDamageBonus));
+		m_applyedDamageTypeBuffs.Add(WeaponEquipmentData.DamageType.Laser, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.SecondaryStat.StatType.LaserDamageBonus));
+		m_applyedDamageTypeBuffs.Add(WeaponEquipmentData.DamageType.Magnetique, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.SecondaryStat.StatType.MagneticDamageBonus));
+		m_applyedDamageTypeBuffs.Add(WeaponEquipmentData.DamageType.Plasma, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.SecondaryStat.StatType.PlasmaDamageBonus));
+		m_applyedDamageTypeBuffs.Add(WeaponEquipmentData.DamageType.Radiation, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.SecondaryStat.StatType.RadiationDamageBonus));
 
-		m_generalDamageResistance = m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.StatBonus.StatType.GeneralDamageResistance);
-		m_applyedDamageTypeResitance.Add(WeaponEquipmentData.DamageType.Tranchant, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.StatBonus.StatType.SlashResitance));
-		m_applyedDamageTypeResitance.Add(WeaponEquipmentData.DamageType.Contendant, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.StatBonus.StatType.BludgeoningResitance));
-		m_applyedDamageTypeResitance.Add(WeaponEquipmentData.DamageType.Perforant, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.StatBonus.StatType.PiercingResitance));
-		m_applyedDamageTypeResitance.Add(WeaponEquipmentData.DamageType.Electrique, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.StatBonus.StatType.ElectricResitance));
-		m_applyedDamageTypeResitance.Add(WeaponEquipmentData.DamageType.Feu, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.StatBonus.StatType.FireResitance));
-		m_applyedDamageTypeResitance.Add(WeaponEquipmentData.DamageType.Laser, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.StatBonus.StatType.LaserResitance));
-		m_applyedDamageTypeResitance.Add(WeaponEquipmentData.DamageType.Magnetique, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.StatBonus.StatType.MagneticResitance));
-		m_applyedDamageTypeResitance.Add(WeaponEquipmentData.DamageType.Plasma, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.StatBonus.StatType.PlasmaResitance));
-		m_applyedDamageTypeResitance.Add(WeaponEquipmentData.DamageType.Radiation, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.StatBonus.StatType.RadiationResitance));
+		m_generalDamageResistance = m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.SecondaryStat.StatType.GeneralDamageResistance);
+		m_applyedDamageTypeResitance.Add(WeaponEquipmentData.DamageType.Tranchant, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.SecondaryStat.StatType.SlashResitance));
+		m_applyedDamageTypeResitance.Add(WeaponEquipmentData.DamageType.Contendant, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.SecondaryStat.StatType.BludgeoningResitance));
+		m_applyedDamageTypeResitance.Add(WeaponEquipmentData.DamageType.Perforant, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.SecondaryStat.StatType.PiercingResitance));
+		m_applyedDamageTypeResitance.Add(WeaponEquipmentData.DamageType.Electrique, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.SecondaryStat.StatType.ElectricResitance));
+		m_applyedDamageTypeResitance.Add(WeaponEquipmentData.DamageType.Feu, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.SecondaryStat.StatType.FireResitance));
+		m_applyedDamageTypeResitance.Add(WeaponEquipmentData.DamageType.Laser, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.SecondaryStat.StatType.LaserResitance));
+		m_applyedDamageTypeResitance.Add(WeaponEquipmentData.DamageType.Magnetique, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.SecondaryStat.StatType.MagneticResitance));
+		m_applyedDamageTypeResitance.Add(WeaponEquipmentData.DamageType.Plasma, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.SecondaryStat.StatType.PlasmaResitance));
+		m_applyedDamageTypeResitance.Add(WeaponEquipmentData.DamageType.Radiation, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.SecondaryStat.StatType.RadiationResitance));
 
-		m_applyedDamageCategoryBuffs.Add(WeaponEquipmentData.DamageCategory.Physic, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.StatBonus.StatType.PhysicalDamageBonus));
-		m_applyedDamageCategoryBuffs.Add(WeaponEquipmentData.DamageCategory.Elemental, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.StatBonus.StatType.ElementalDamageBonus));
+		m_applyedDamageCategoryBuffs.Add(WeaponEquipmentData.DamageCategory.Physic, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.SecondaryStat.StatType.PhysicalDamageBonus));
+		m_applyedDamageCategoryBuffs.Add(WeaponEquipmentData.DamageCategory.Elemental, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.SecondaryStat.StatType.ElementalDamageBonus));
 
-		m_applyedDamageCategoryResitance.Add(WeaponEquipmentData.DamageCategory.Physic, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.StatBonus.StatType.PhysicalDamageResistance));
-		m_applyedDamageCategoryResitance.Add(WeaponEquipmentData.DamageCategory.Elemental, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.StatBonus.StatType.ElementalDamageResistance));
+		m_applyedDamageCategoryResitance.Add(WeaponEquipmentData.DamageCategory.Physic, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.SecondaryStat.StatType.PhysicalDamageResistance));
+		m_applyedDamageCategoryResitance.Add(WeaponEquipmentData.DamageCategory.Elemental, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.SecondaryStat.StatType.ElementalDamageResistance));
 
 		base.Init(_entityData);
 	}
@@ -360,13 +360,13 @@ public class EntityEquipmentPlugin : EntityPlugin
 		bool doesWinPFC = _singleAttackInfo.pfcResult == (int)EntityActionData.PFCResultType.FirstWins;
 
 		float targetCamo = _targetEntity.Data.GetStaticStealthBonus(true)
-			+ (_targetEntity.HowIsUnitVisible == NeuronalMembraneEquipmentData.VisionTypes.Optic ? _targetEntity.GetAdditionaryStatBonus(EntityEquipmentData.StatBonus.StatType.VisualCamo, null)
-			: _targetEntity.HowIsUnitVisible == NeuronalMembraneEquipmentData.VisionTypes.Radar ? _targetEntity.GetAdditionaryStatBonus(EntityEquipmentData.StatBonus.StatType.RadarCamo, null)
-			: _targetEntity.GetAdditionaryStatBonus(EntityEquipmentData.StatBonus.StatType.ThermalCamo, null));
+			+ (_targetEntity.HowIsUnitVisible == NeuronalMembraneEquipmentData.VisionTypes.Optic ? _targetEntity.GetAdditionaryStatBonus(EntityEquipmentData.SecondaryStat.StatType.VisualCamo, null)
+			: _targetEntity.HowIsUnitVisible == NeuronalMembraneEquipmentData.VisionTypes.Radar ? _targetEntity.GetAdditionaryStatBonus(EntityEquipmentData.SecondaryStat.StatType.RadarCamo, null)
+			: _targetEntity.GetAdditionaryStatBonus(EntityEquipmentData.SecondaryStat.StatType.ThermalCamo, null));
 
 		float evationRatio = _attackAction.Data.type == EntityActionData.ActionType.DistanceAttack
-				? _targetEntity.Data.BrainData.distanceEvasion + _targetEntity.GetAdditionaryStatBonus(EntityEquipmentData.StatBonus.StatType.DistanceEvasion, null)
-				: _targetEntity.Data.BrainData.meleeEvasion + _targetEntity.GetAdditionaryStatBonus(EntityEquipmentData.StatBonus.StatType.MeleeEvasion, null);
+				? _targetEntity.Data.BrainData.distanceEvasion + _targetEntity.GetAdditionaryStatBonus(EntityEquipmentData.SecondaryStat.StatType.DistanceEvasion, null)
+				: _targetEntity.Data.BrainData.meleeEvasion + _targetEntity.GetAdditionaryStatBonus(EntityEquipmentData.SecondaryStat.StatType.MeleeEvasion, null);
 		float coverRatio = GridManager.Instance.IsThereCoverBeween(_attackAction.PerformingEntity, _targetEntity, doesWinPFC)
 				? GameConfig.current.game.entityCoverBonus
 				: 0f;
@@ -380,10 +380,10 @@ public class EntityEquipmentPlugin : EntityPlugin
 
 		//float userPerception = m_linkedEntity.Data.GetStaticPerceptionBonus(true) + m_linkedEntity.GetAdditionaryStatBonus(EntityEquipmentData.StatBonus.StatType.VisualPerception, _attackAction);
 		float userAim = _attackAction.Data.type == EntityActionData.ActionType.DistanceAttack
-				? m_linkedEntity.Data.BrainData.distanceAccuracy + m_linkedEntity.GetAdditionaryStatBonus(EntityEquipmentData.StatBonus.StatType.DistanceAccuracy, _attackAction)
-				: m_linkedEntity.Data.BrainData.agility + m_linkedEntity.GetAdditionaryStatBonus(EntityEquipmentData.StatBonus.StatType.MeleeAccuracy, _attackAction);
+				? m_linkedEntity.Data.BrainData.distanceAccuracy + m_linkedEntity.GetAdditionaryStatBonus(EntityEquipmentData.SecondaryStat.StatType.DistanceAccuracy, _attackAction)
+				: m_linkedEntity.Data.BrainData.agility + m_linkedEntity.GetAdditionaryStatBonus(EntityEquipmentData.SecondaryStat.StatType.MeleeAccuracy, _attackAction);
 		float flankBonus = GameConfig.current.game.entityFlankRatio[GridManager.Instance.GetHitTileSide(m_linkedEntity, _targetEntity, doesWinPFC)]
-			+ m_linkedEntity.GetAdditionaryStatBonus(EntityEquipmentData.StatBonus.StatType.FlankBonus, _attackAction);
+			+ m_linkedEntity.GetAdditionaryStatBonus(EntityEquipmentData.SecondaryStat.StatType.FlankBonus, _attackAction);
 		float modAction = m_linkedEntity.LastActionPerformedData.previousActionAttackModificator;
 
 		float userHitScore =
@@ -473,8 +473,8 @@ public class EntityEquipmentPlugin : EntityPlugin
 	{
 		float actionProbability = _action.Data.statusHitProbability;
 		float equipmentProbability = _equipmentData.statusHitProbability;
-		float userStatusChance = m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.StatBonus.StatType.StatusChance) + m_linkedEntity.GetAdditionaryStatBonus(EntityEquipmentData.StatBonus.StatType.StatusChance, _action);
-		float targetResistance = _target.Data.GetStatBonusFromAll(EntityEquipmentData.StatBonus.StatType.StatusResistance) + _target.GetAdditionaryStatBonus(EntityEquipmentData.StatBonus.StatType.StatusResistance, null);
+		float userStatusChance = m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.SecondaryStat.StatType.StatusChance) + m_linkedEntity.GetAdditionaryStatBonus(EntityEquipmentData.SecondaryStat.StatType.StatusChance, _action);
+		float targetResistance = _target.Data.GetStatBonusFromAll(EntityEquipmentData.SecondaryStat.StatType.StatusResistance) + _target.GetAdditionaryStatBonus(EntityEquipmentData.SecondaryStat.StatType.StatusResistance, null);
 		float hitProba = actionProbability + equipmentProbability + userStatusChance - targetResistance;
 		float roll = Random.Range(0f, 1f);
 		bool isAttackSuccessful = hitProba >= 1f || roll <= hitProba;

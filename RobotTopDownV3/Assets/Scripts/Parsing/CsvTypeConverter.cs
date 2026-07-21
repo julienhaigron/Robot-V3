@@ -8,8 +8,8 @@ public static class CsvTypeConverter
 {
     public static object Convert ( string value, Type targetType )
     {
-		#region Base Vars
-		if (string.Equals(value, "-"))
+        #region Base Vars
+        if (string.Equals(value, "-"))
             return null;
         else if (targetType == typeof(string))
             return value;
@@ -23,12 +23,12 @@ public static class CsvTypeConverter
 
         #region Scriptables
         else if (targetType == typeof(FrameEquipmentData))
-		{
+        {
             if (TryGetFrameComponent(value, out FrameEquipmentData data))
                 return data;
             else
                 return null;
-		}
+        }
         else if (targetType == typeof(ReactorEquipmentData))
         {
             if (TryGetReactorComponent(value, out ReactorEquipmentData data))
@@ -89,17 +89,108 @@ public static class CsvTypeConverter
         {
             List<EntityEquipmentData> equipments = new();
             string[] rawValues = value.Replace(" ", "").Split(",");
-            foreach(string raw in rawValues)
-			{
+            foreach (string raw in rawValues)
+            {
                 if (TryGetEquipmentComponent(value, out EntityEquipmentData data))
                     equipments.Add(data);
             }
             return equipments.ToArray();
         }
-		#endregion
+        #endregion
 
-		#region Enums
-		else if (targetType == typeof(EntityActionEnumID[]))
+        #region Class
+
+        else if (targetType == typeof(EntityEquipmentData.SecondaryStat))
+        {
+            if (string.IsNullOrEmpty(value))
+                return null;
+            EntityEquipmentData.SecondaryStat stat = new();
+            string[] vars = value.Replace(" ", "").Split(";");
+            if (vars.Length < 2)
+                return null;
+
+            stat.type = (EntityEquipmentData.SecondaryStat.StatType)Convert(vars[0], typeof(EntityEquipmentData.SecondaryStat.StatType));
+            stat.value = (float)Convert(vars[1], typeof(float));
+
+            return stat;
+        }
+        else if (targetType == typeof(EntityEquipmentData.SecondaryStat[]))
+        {
+            if (string.IsNullOrEmpty(value))
+                return null;
+            List<EntityEquipmentData.SecondaryStat> stats = new();
+            string[] rawStats = value.Split(",");
+            foreach (string rawStat in rawStats)
+                stats.Add((EntityEquipmentData.SecondaryStat)Convert(rawStat.Replace("[", "").Replace("]", ""), typeof(EntityEquipmentData.SecondaryStat)));
+
+            return stats.ToArray();
+        }
+
+        else if (targetType == typeof(ChipsetEquipmentData.ConditionalStatBonus))
+        {
+            if (string.IsNullOrEmpty(value))
+                return null;
+            ChipsetEquipmentData.ConditionalStatBonus stat = new();
+            string[] vars = value.Replace(" ", "").Split(";");
+            if (vars.Length < 3)
+                return null;
+
+            stat.bonus = new()
+            {
+                type = (EntityEquipmentData.SecondaryStat.StatType)Convert(vars[0], typeof(EntityEquipmentData.SecondaryStat.StatType)),
+                value = (float)Convert(vars[1], typeof(float))
+            };
+            stat.conditionType = (AEntityPassiveEffect.ConditionType)Convert(vars[2], typeof(AEntityPassiveEffect.ConditionType));
+
+            return stat;
+        }
+        else if (targetType == typeof(ChipsetEquipmentData.ConditionalStatBonus[]))
+        {
+            if (string.IsNullOrEmpty(value))
+                return null;
+            List<ChipsetEquipmentData.ConditionalStatBonus> stats = new();
+            string[] rawStats = value.Split(",");
+            foreach (string rawStat in rawStats)
+                stats.Add((ChipsetEquipmentData.ConditionalStatBonus)Convert(rawStat.Replace("[", "").Replace("]", ""), typeof(ChipsetEquipmentData.ConditionalStatBonus)));
+
+            return stats.ToArray();
+        }
+
+        else if (targetType == typeof(AEntityPassiveEffect.PassiveEffectContainer))
+        {
+            if (string.IsNullOrEmpty(value))
+                return null;
+            string[] vars = value.Replace(" ", "").Split(";");
+            if (vars.Length < 3)
+                return null;
+
+            AEntityPassiveEffect.PassiveEffectContainer passiveEffect = new()
+            {
+                enumID = (EntityPassiveEffectEnumID)Convert(vars[0], typeof(EntityPassiveEffectEnumID)),
+                conditionType = (AEntityPassiveEffect.ConditionType)Convert(vars[1], typeof(AEntityPassiveEffect.ConditionType)),
+                targetType = (AEntityPassiveEffect.TargetType)Convert(vars[2], typeof(AEntityPassiveEffect.TargetType)),
+                effectRange = vars.Length == 4 ? (int)Convert(vars[2], typeof(int)) : 0
+            };
+
+            return passiveEffect;
+        }
+        else if (targetType == typeof(AEntityPassiveEffect.PassiveEffectContainer[]))
+        {
+            if (string.IsNullOrEmpty(value))
+                return null;
+            List<AEntityPassiveEffect.PassiveEffectContainer> stats = new();
+            string[] rawStats = value.Split(",");
+            foreach (string rawStat in rawStats)
+                stats.Add((AEntityPassiveEffect.PassiveEffectContainer)Convert(rawStat.Replace("[", "").Replace("]", ""), typeof(AEntityPassiveEffect.PassiveEffectContainer)));
+
+            return stats.ToArray();
+        }
+
+
+        #endregion
+
+        #region Enums
+        else if (targetType == typeof(EntityActionEnumID[]))
         {
             string[] raw = value.Split(",");
 

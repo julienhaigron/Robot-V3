@@ -19,7 +19,7 @@ public class EntityEquipmentData : AParsableScriptableObject
 	public int energyCost;
 	[BoxGroup(GroupID = "Actions"), Parsing("Actions")]
 	public EntityActionEnumID[] knownedActions;
-	[BoxGroup(GroupID = "PassiveEffects")]
+	[BoxGroup(GroupID = "PassiveEffects"), Parsing("Passive Ability")]
 	public AEntityPassiveEffect.PassiveEffectContainer[] passiveEffects;
 	[BoxGroup(GroupID = "Status")]
 	[Range(0f, 1f)] public float statusHitProbability = .5f;
@@ -48,7 +48,7 @@ public class EntityEquipmentData : AParsableScriptableObject
 	[System.Serializable]
 	public class StatDescription
 	{
-		public StatBonus.StatType ID;
+		public SecondaryStat.StatType ID;
 		public string title;
 		public string stringValue;
 		public float floatValue;
@@ -57,22 +57,22 @@ public class EntityEquipmentData : AParsableScriptableObject
 		{
 			switch (GameConfig.current.meta.formatPerStartTypeDictionary[ID])
 			{
-				case StatBonus.StatTypeFormat.Int:
+				case SecondaryStat.StatTypeFormat.Int:
 					floatValue += _statDescription.floatValue;
 					if(string.IsNullOrEmpty(stringValue))
 						stringValue = null;
 					else
 						stringValue = floatValue.ToString();
 					break;
-				case StatBonus.StatTypeFormat.Percentage:
+				case SecondaryStat.StatTypeFormat.Percentage:
 					floatValue += _statDescription.floatValue;
 					stringValue = (floatValue*100) + " %";
 					break;
-				case StatBonus.StatTypeFormat.Cell:
+				case SecondaryStat.StatTypeFormat.Cell:
 					floatValue += _statDescription.floatValue;
 					stringValue = floatValue + " C";
 					break;
-				case StatBonus.StatTypeFormat.String:
+				case SecondaryStat.StatTypeFormat.String:
 					if(!string.IsNullOrEmpty(_statDescription.stringValue))
 						stringValue += ", " + _statDescription.stringValue;
 					break;
@@ -83,19 +83,19 @@ public class EntityEquipmentData : AParsableScriptableObject
 		{
 			switch (GameConfig.current.meta.formatPerStartTypeDictionary[ID])
 			{
-				case StatBonus.StatTypeFormat.Int:
+				case SecondaryStat.StatTypeFormat.Int:
 					floatValue -= _statDescription.floatValue;
 					stringValue = null;
 					break;
-				case StatBonus.StatTypeFormat.Percentage:
+				case SecondaryStat.StatTypeFormat.Percentage:
 					floatValue -= _statDescription.floatValue;
 					stringValue = (floatValue * 100) + " %";
 					break;
-				case StatBonus.StatTypeFormat.Cell:
+				case SecondaryStat.StatTypeFormat.Cell:
 					floatValue -= _statDescription.floatValue;
 					stringValue = floatValue + " C";
 					break;
-				case StatBonus.StatTypeFormat.String:
+				case SecondaryStat.StatTypeFormat.String:
 					if (!string.IsNullOrEmpty(_statDescription.stringValue))
 						stringValue.Replace(_statDescription.stringValue, "");
 					break;
@@ -114,14 +114,14 @@ public class EntityEquipmentData : AParsableScriptableObject
 	public virtual StatDescription[] GetDesciption ()
 	{
 		List<StatDescription> description = new();
-		description.Add(new() { ID = StatBonus.StatType.EnergyCost, title = "Energy Cost", floatValue = energyCost, stringValue = energyCost.ToString() });
+		description.Add(new() { ID = SecondaryStat.StatType.EnergyCost, title = "Energy Cost", floatValue = energyCost, stringValue = energyCost.ToString() });
 
 		if (passiveEffects != null && passiveEffects.Length > 0)
 		{
 			string allStatesInString = "";
 			for (int i = 0; i < passiveEffects.Length; i++)
 				allStatesInString += GameAssets.current.game.entityEffects[passiveEffects[i].enumID].displayName + (i + 1 < passiveEffects.Length ? ", " : "");
-			description.Add(new() { ID = StatBonus.StatType.PassiveEffect, title = "Passive Effects", floatValue = 0, stringValue = allStatesInString });
+			description.Add(new() { ID = SecondaryStat.StatType.PassiveEffect, title = "Passive Effects", floatValue = 0, stringValue = allStatesInString });
 		}
 		if (knownedActions != null && knownedActions.Length > 0)
 		{
@@ -131,7 +131,7 @@ public class EntityEquipmentData : AParsableScriptableObject
 				if(knownedActions[i] != EntityActionEnumID.Unknowned && GameAssets.current.game.entityActionsData.ContainsKey(knownedActions[i]))
 					allActionsInString += GameAssets.current.game.entityActionsData[knownedActions[i]].displayName + (i + 1 < knownedActions.Length ? ", " : "");
 			}
-			description.Add(new() { ID = StatBonus.StatType.Action, title = "Actions", floatValue = 0, stringValue = allActionsInString });
+			description.Add(new() { ID = SecondaryStat.StatType.Action, title = "Actions", floatValue = 0, stringValue = allActionsInString });
 		}
 
 		return description.ToArray();
@@ -178,14 +178,14 @@ public class EntityEquipmentData : AParsableScriptableObject
 	}
 
 	[System.Serializable, ShowOdinSerializedPropertiesInInspector]
-	public class StatBonus
+	public class SecondaryStat
 	{
 		public enum StatType
 		{
 			VisualCamo,
 			RadarCamo,
 			Camo,
-			Hp,
+			BaseHp,
 			VisualPerception,
 			SoundPerception,
 
@@ -236,7 +236,6 @@ public class EntityEquipmentData : AParsableScriptableObject
 
 			EnergyCost,
 			EnergyProduced,
-			BaseHp,
 			BaseDamage,
 			VisionRange,
 			VisionType,
@@ -279,7 +278,7 @@ public class EntityEquipmentData : AParsableScriptableObject
 	[System.Serializable, ShowOdinSerializedPropertiesInInspector]
 	public class StatBonusBuff
 	{
-		public StatBonus statBonus;
+		public SecondaryStat statBonus;
 		public int duration;
 	}
 

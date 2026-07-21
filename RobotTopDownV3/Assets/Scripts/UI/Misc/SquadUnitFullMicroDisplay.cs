@@ -44,8 +44,8 @@ public class SquadUnitFullMicroDisplay : MonoBehaviour
 		m_mainFactionPercentageTMP.text = (percentage*100f).ToString() + "%" ;
 		m_mainFactionIconImg.sprite = GameAssets.current.ui.corporationsIcons[mainFaction];
 
-		SerializableDictionary<EntityEquipmentData.StatBonus.StatType, EntityEquipmentData.StatDescription> statsDescriptions = entity.Data.GetStatsDesciptions();
-		List<EntityEquipmentData.StatBonus.StatType> keys = statsDescriptions.Keys.ToList();
+		SerializableDictionary<EntityEquipmentData.SecondaryStat.StatType, EntityEquipmentData.StatDescription> statsDescriptions = entity.Data.GetStatsDesciptions();
+		List<EntityEquipmentData.SecondaryStat.StatType> keys = statsDescriptions.Keys.ToList();
 		for (int i = 0; i < m_statDisplays.Length; i++)
 		{
 			if (keys.Count <= i)

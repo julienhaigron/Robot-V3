@@ -25,9 +25,9 @@ public class NeuronalMembraneEquipmentData : EntityEquipmentData
 	public override StatDescription[] GetDesciption ()
     {
         List<StatDescription> description = base.GetDesciption().ToList();
-        description.Add(new() { ID = StatBonus.StatType.EquipmentSlot, title = "Equipment Slots", floatValue = equipmentSlotAvailable, stringValue = null });
-        description.Add(new() { ID = StatBonus.StatType.VisionRange, title = "Vision Range", floatValue = visionRange, stringValue = visionRange + " C" });
-        description.Add(new() { ID = StatBonus.StatType.VisionType, title = "Vision Type", floatValue = 0, stringValue = visionType.ToString() });
+        description.Add(new() { ID = SecondaryStat.StatType.EquipmentSlot, title = "Equipment Slots", floatValue = equipmentSlotAvailable, stringValue = null });
+        description.Add(new() { ID = SecondaryStat.StatType.VisionRange, title = "Vision Range", floatValue = visionRange, stringValue = visionRange + " C" });
+        description.Add(new() { ID = SecondaryStat.StatType.VisionType, title = "Vision Type", floatValue = 0, stringValue = visionType.ToString() });
 
         return description.ToArray();
     }

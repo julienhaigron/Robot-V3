@@ -18,8 +18,14 @@ MonoBehaviour:
   displayName: "Magn\xE9tique Armouring"
   energyCost: 50
   knownedActions: 
-  passiveEffects: []
+  passiveEffects:
+  - enumID: 0
+    conditionType: 0
+    targetType: 0
+    effectRange: 0
   statusHitProbability: 0.5
   recyclingDurationAmount: 1
   reparingDurationAmount: 1
-  statBonuses: []
+  statBonuses:
+  - type: 36
+    value: 0.3

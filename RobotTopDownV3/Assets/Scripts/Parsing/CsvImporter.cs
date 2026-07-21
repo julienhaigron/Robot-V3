@@ -148,9 +148,16 @@ public static class CsvImporter
                 continue;
 			}
 
-            object converted = CsvTypeConverter.Convert(value, field.FieldType);
+			try
+			{
+                object converted = CsvTypeConverter.Convert(value, field.FieldType);
+                field.SetValue(_asset, converted);
+			}
+			catch(System.Exception ex)
+			{
+                Debug.LogError("Error while parsing field \"" + field + "\" for asset \"" + _asset.name + "\": " + ex);
+			}
 
-            field.SetValue(_asset, converted);
         }
 
         _asset.OnParse(_data);

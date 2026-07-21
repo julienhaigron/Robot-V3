@@ -25,4 +25,4 @@ MonoBehaviour:
   icon: {fileID: 0}
   isInvocation: 0
   isTangible: 1
-  m_totalEnergyCostRemaining: 50
+  m_totalEnergyCostRemaining: 0

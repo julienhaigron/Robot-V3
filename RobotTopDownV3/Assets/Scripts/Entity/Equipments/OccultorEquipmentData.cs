@@ -14,14 +14,14 @@ public class OccultorEquipmentData : EntityEquipmentData
     [BoxGroup(GroupID = "Stat"), Parsing("Thermic camo")]
     public float thermicCamo = .2f;
     [BoxGroup(GroupID = "Stat")]
-    public StatBonus[] statBonuses;
+    public SecondaryStat[] statBonuses;
 
 	public override StatDescription[] GetDesciption ()
     {
         List<StatDescription> description = base.GetDesciption().ToList();
-        description.Add(new() { ID = StatBonus.StatType.RadarCamo, title = "Sound stealth", floatValue = soundCamo, stringValue = (soundCamo *100f) + " %" });
-        description.Add(new() { ID = StatBonus.StatType.VisualCamo, title = "Visual stealth", floatValue = visualCamo, stringValue = (visualCamo * 100f) + " %" });
-        foreach (StatBonus bonus in statBonuses)
+        description.Add(new() { ID = SecondaryStat.StatType.RadarCamo, title = "Sound stealth", floatValue = soundCamo, stringValue = (soundCamo *100f) + " %" });
+        description.Add(new() { ID = SecondaryStat.StatType.VisualCamo, title = "Visual stealth", floatValue = visualCamo, stringValue = (visualCamo * 100f) + " %" });
+        foreach (SecondaryStat bonus in statBonuses)
             description.Add(bonus.GetDescription());
 
         return description.ToArray();
