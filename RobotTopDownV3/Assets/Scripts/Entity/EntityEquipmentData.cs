@@ -183,8 +183,8 @@ public class EntityEquipmentData : AParsableScriptableObject
 		public enum StatType
 		{
 			VisualCamo,
-			RadarCamo,
-			Camo,
+			RadarCamo, 
+			ThermalCamo,
 			BaseHp,
 			VisualPerception,
 			SoundPerception,
@@ -232,7 +232,6 @@ public class EntityEquipmentData : AParsableScriptableObject
 			MeleeEvasion,
 			DistanceAccuracy,
 			MeleeAccuracy,
-			ThermalCamo,
 
 			EnergyCost,
 			EnergyProduced,
