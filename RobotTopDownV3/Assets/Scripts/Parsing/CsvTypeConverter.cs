@@ -275,7 +275,7 @@ public static class CsvTypeConverter
 
     private static bool TryGetNeuronalMembraneComponent ( this string _input, out NeuronalMembraneEquipmentData _data )
     {
-        string[] guids = AssetDatabase.FindAssets("t:BrainEquipmentData");
+        string[] guids = AssetDatabase.FindAssets("t:NeuronalMembraneEquipmentData");
 
         foreach (string guid in guids)
         {
