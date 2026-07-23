@@ -195,5 +195,14 @@ public class GameAssets : ScriptableObject
 
         EditorUtility.SetDirty(current);
     }
+
+    [Button]
+    public void ReloadAll ()
+	{
+        ReloadEquipments();
+        ReloadActions();
+        ReloadEffects();
+        ReloadStatus();
+    }
 #endif
 }

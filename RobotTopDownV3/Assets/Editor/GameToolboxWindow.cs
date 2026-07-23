@@ -77,6 +77,9 @@ public class GameToolboxWindow : EditorWindow
 		if (GUILayout.Button("Check misssing data", group))
 			CheckMissingData();
 
+		if (GUILayout.Button("Load new assets into GameAssets"))
+			GameAssets.current.ReloadAll();
+
 	}
 
 	private void CheckMissingData ()

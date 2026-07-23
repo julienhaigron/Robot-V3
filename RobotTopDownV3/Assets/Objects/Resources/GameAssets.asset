@@ -255,6 +255,7 @@ MonoBehaviour:
     - Arm_Pal_Insulating
     - Arm_Psy_Plasma
     - Arm_Psy_Rad
+    - AIM_Com_Chi
     - AIM_Com_Def
     - AIM_Com_Mel
     - AIM_Com_Off
@@ -401,6 +402,7 @@ MonoBehaviour:
     - {fileID: 11400000, guid: c6489c9722d10e64aa7b307e13b0c7f1, type: 2}
     - {fileID: 11400000, guid: 5a4a2e795627b67479624ca0f4e4d52d, type: 2}
     - {fileID: 11400000, guid: a6d4b9d695bcf154380212dd58b260eb, type: 2}
+    - {fileID: 11400000, guid: 246f5c41b0229ed42af562c847a5ad62, type: 2}
     - {fileID: 11400000, guid: b2360bdeda8a14446b4491c06619e98b, type: 2}
     - {fileID: 11400000, guid: af5020eb76a72154093d64abfb862a5c, type: 2}
     - {fileID: 11400000, guid: 361060b8cbaa293408bc49d65ba8694d, type: 2}
