@@ -21,9 +21,9 @@ public class DealCircleDamagePassiveEffect : AEntityPassiveEffect
 		};
 		switch (_effectContainer.targetType)
 		{
-			case TargetType.ConeOnSelf:
-			case TargetType.ConeOnTarget:
-				Entity entityTargetted = _effectContainer.targetType == TargetType.ConeOnSelf ? _entity : _targetEntity;
+			case TargetType.CircleOnSelf:
+			case TargetType.CircleOnTarget:
+				Entity entityTargetted = _effectContainer.targetType == TargetType.CircleOnSelf ? _entity : _targetEntity;
 				List <Tile> tilesInRange = GridManager.Instance.GetTilesInVisionRange(entityTargetted.Displacement.Coordinates.GetTile(), explosionRange, false, true);
 				foreach (Tile tile in tilesInRange)
 				{

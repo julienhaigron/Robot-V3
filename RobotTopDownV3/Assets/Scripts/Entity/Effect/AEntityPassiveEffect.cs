@@ -26,7 +26,7 @@ public abstract class AEntityPassiveEffect : ScriptableEnum<EntityPassiveEffectE
 		}
 	}
 
-	public enum TargetType { OtherEntity, Tile, ConeOnSelf, Self, ConeOnTarget}
+	public enum TargetType { OtherEntity, Tile, CircleOnSelf, Self, CircleOnTarget}
 	public enum ConditionType { Noone, DidNotMoveThisTurn, DidNotAttackThisTurn, IsTargetMarked }
 
 	public virtual bool UseConditionPredicate ( AEntityAction _action, Entity _entity, Entity _targetEntity, ConditionType _conditionType )
