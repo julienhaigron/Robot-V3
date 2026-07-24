@@ -14,8 +14,8 @@ public abstract class AEntityPassiveEffect : ScriptableEnum<EntityPassiveEffectE
 		public EntityPassiveEffectEnumID enumID;
 		public ConditionType conditionType;
 		public TargetType targetType;
-		[ShowIf("@targetType == TargetType.ConeOnSelf || targetType == TargetType.ConeOnTarget")]
-		public int effectRange;
+		[ShowIf("@targetType == TargetType.CircleOnSelf || targetType == TargetType.CircleOnTarget")]
+		public Vector2Int effectRange;
 
 		public void NetworkSerialize<T> ( BufferSerializer<T> serializer ) where T : IReaderWriter
 		{

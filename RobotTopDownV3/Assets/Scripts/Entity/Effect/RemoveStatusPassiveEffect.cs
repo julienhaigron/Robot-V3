@@ -23,7 +23,7 @@ public class RemoveStatusPassiveEffect : AEntityPassiveEffect
 			case TargetType.CircleOnSelf:
 			case TargetType.CircleOnTarget:
 				Entity entityTargetted = _effectContainer.targetType == TargetType.CircleOnSelf ? _entity : _targetEntity;
-				List<Tile> tilesInRange = GridManager.Instance.GetTilesInVisionRange(entityTargetted.Displacement.Coordinates.GetTile(), _effectContainer.effectRange, false, true);
+				List<Tile> tilesInRange = GridManager.Instance.GetTilesInVisionRange(entityTargetted.Displacement.Coordinates.GetTile(), _effectContainer.effectRange.y, false, true);
 				foreach (Tile tile in tilesInRange)
 				{
 					if (tile.GetEntity(true) != null)

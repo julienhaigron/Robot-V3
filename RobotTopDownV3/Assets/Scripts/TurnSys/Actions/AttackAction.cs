@@ -139,7 +139,7 @@ public class AttackAction : AEntityAction
 
 		//for all tiles overall distance calculation
 		bool attackIgnoresObstacles = (Data.type == EntityActionData.ActionType.DistanceAttack && effects.Any(e => e.enumID == EntityPassiveEffectEnumID.TrajectoryControl))
-			|| Data.targetType == EntityActionData.TargetType.Mortar;
+			|| Data.trajectoryType == EntityActionData.TrajectoryType.Mortar;
 		Entity user = GameManager.Instance.GetEntityFromID(performingEntityID);
 		Weapon attackingWeapon = user.Equipment.Weapons[linkedEquipmentId];
 		Tile from = GridManager.Instance.Tiles[TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntityID)];

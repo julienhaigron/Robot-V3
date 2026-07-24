@@ -281,8 +281,9 @@ public class EntityEquipmentPlugin : EntityPlugin
 	{
 		List<Tile> tilesInRange = new();
 		EntityActionData attackData = GameAssets.current.game.entityActionsData[_action.enumID];
-		int maxDistance = _action.Data.GetMaxRange(_action, m_linkedEntity, null);
-		int minDistance = _action.Data.minDistance;
+		int maxDistance = _action.Data.aoECenterType == EntityActionData.AOECenterType.Self ? _action.Data.GetMaxRange(_action, m_linkedEntity, null) : _action.Data.GetAoEMaxRange(_action, m_linkedEntity, null);
+		int minDistance = _action.Data.aoECenterType == EntityActionData.AOECenterType.Self ? _action.Data.minDistance : _action.Data.aoeMinEffectRange;
+		Tile from = _action.Data.aoECenterType == EntityActionData.AOECenterType.Self ? _action.PerformingEntity.Displacement.Coordinates.GetTile() : _targetTile;
 
 		Weapon usedWeapon = null;
 		foreach (string weaponID in m_weapons.Keys)
@@ -305,28 +306,26 @@ public class EntityEquipmentPlugin : EntityPlugin
 		switch (attackData.aoeType)
 		{
 			case EntityActionData.AOEType.Circle:
-				tilesInRange.AddRange(GridManager.Instance.GetTilesInVisionRange(_targetTile, attackData.circleRange, false, _isThisTurn));
+				tilesInRange.AddRange(GridManager.Instance.GetTilesInVisionRange(from, attackData.aoeMaxEffectRange, false, _isThisTurn));
 				break;
 			case EntityActionData.AOEType.Ray:
 
-				tilesInRange.AddRange(GridManager.Instance.GetTilesInRay(_action.PerformingEntity.Displacement.Coordinates.GetTile(), _targetTile, _isThisTurn));
+				tilesInRange.AddRange(GridManager.Instance.GetTilesInRay(from, _targetTile, _isThisTurn));
 				break;
 			case EntityActionData.AOEType.Cone:
 
-				tilesInRange.AddRange(GridManager.Instance.GetTilesInCone(m_linkedEntity.Displacement.Coordinates.GetTile()
-						, maxDistance, m_linkedEntity.Displacement.CurrentOrientation, attackData.coneType, _isThisTurn));
+				tilesInRange.AddRange(GridManager.Instance.GetTilesInCone(from, maxDistance, m_linkedEntity.Displacement.CurrentOrientation
+					, attackData.coneType, _isThisTurn));
 				break;
 			case EntityActionData.AOEType.Arc:
 
-				Tile origin = m_linkedEntity.Displacement.Coordinates.GetTile();
 				bool largeArc = attackData.arcType == EntityActionData.ArcType.Large;
-
 				for (int d = minDistance; d <= maxDistance; d++)
 				{
-					List<Tile> ring = GridManager.Instance.GetTilesAtDistance(origin, d, _isThisTurn);
+					List<Tile> ring = GridManager.Instance.GetTilesAtDistance(from, d, _isThisTurn);
 					foreach (Tile tile in ring)
 					{
-						if (GridManager.Instance.IsInArc(origin, tile, (HexDirection)m_linkedEntity.Displacement.CurrentOrientation, largeArc))
+						if (GridManager.Instance.IsInArc(from, tile, (HexDirection)m_linkedEntity.Displacement.CurrentOrientation, largeArc))
 							tilesInRange.Add(tile);
 					}
 				}

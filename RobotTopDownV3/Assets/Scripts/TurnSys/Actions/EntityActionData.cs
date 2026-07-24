@@ -8,14 +8,16 @@ using System.Linq;
 [CreateAssetMenu(fileName = "EntityActionData", menuName = "ScriptableObject/ActionData")]
 public class EntityActionData : AParsableScriptableObject
 {
+	[Parsing("Nom")]
 	public string displayName;
 	[ReadOnly]
 	public EntityActionEnumID enumID = EntityActionEnumID.Unknowned;
 
 	public Sprite icon;
 	public Color tileOutlineColor = Color.green;
-	[SerializeField] private int m_tokenPreparationDuration;
-	[SerializeField] private int m_tokenCooldown;
+	[SerializeField, Parsing("Préparation")] private int m_tokenPreparationDuration;
+	[SerializeField, Parsing("Refroidissement")] private int m_tokenCooldown;
+	[Parsing("Durée")]
 	public int tokenDuration = 1;
 	public bool isModAction = false;
 
@@ -27,6 +29,7 @@ public class EntityActionData : AParsableScriptableObject
 
 	[Title("Condition")]
 	public enum ConditionType { Noone, DidNotMoveThisTurn, DidNotAttackThisTurn/*, IsTargetMarked*/ }
+	[Parsing("Condition")]
 	public ConditionType conditionType = ConditionType.Noone;
 
 	[Title("Stats")]
@@ -40,6 +43,7 @@ public class EntityActionData : AParsableScriptableObject
 		Rotation,
 		Special
 	}
+	[Parsing("Type")]
 	public ActionType type;
 
 	public enum ActionSubType
@@ -53,8 +57,10 @@ public class EntityActionData : AParsableScriptableObject
 		TBD1,
 		TBD2
 	}
+	[Parsing("Sous type")]
 	public ActionSubType subType;
 
+	[Parsing("CodeType")]
 	public ActionCodeType codeType = ActionCodeType.Attack;
 	public enum ActionCodeType
 	{
@@ -78,9 +84,9 @@ public class EntityActionData : AParsableScriptableObject
 	{
 		Self,
 		OtherEntity,
-		Mortar,
 		Tile
 	}
+	[Parsing("Target Type")]
 	public TargetType targetType = TargetType.OtherEntity;
 	public enum TrajectoryType
 	{
@@ -90,19 +96,21 @@ public class EntityActionData : AParsableScriptableObject
 		Underground,
 		Throw
 	}
+	[Parsing("Trajectory Type")]
 	public TrajectoryType trajectoryType = TrajectoryType.Direct;
-	[ShowIf("@targetType != TargetType.Self")]
+	[ShowIf("@targetType != TargetType.Self"), Parsing("Min Distance")]
 	public int minDistance;
-	[ShowIf("@targetType != TargetType.Self")]
+	[ShowIf("@targetType != TargetType.Self"), Parsing("Max Distance")]
 	public int maxDistance;
 
-	[ShowIf("@!isAoe || (aoeType == AOEType.Circle && targetType != TargetType.Self)")]
-	public int minTargetAmount = 1;
-	[ShowIf("@!isAoe || (aoeType == AOEType.Circle && targetType != TargetType.Self)")]
+	/*[ShowIf("@!isAoe || (aoeType == AOEType.Circle && targetType != TargetType.Self)"), Parsing("Max Distance")]
+	public int minTargetAmount = 1;*/
+	[Parsing("Max Distance")]
 	public int maxTargetAmount = 1;
 	#endregion
 
 	#region AOE Vars
+	[Parsing("Is AoE")]
 	public bool isAoe = false;
 	public enum AOEType
 	{
@@ -112,20 +120,30 @@ public class EntityActionData : AParsableScriptableObject
 		Arc,
 		Chain
 	}
-	[ShowIf("@isAoe")]
+	[ShowIf("@isAoe"), Parsing("AoE Type")]
 	public AOEType aoeType = AOEType.Circle;
-	[ShowIf("@isAoe && aoeType == AOEType.Circle"), Min(1)]
-	public int circleRange = 1;
+	[ShowIf("@isAoe"), Parsing("Does Affect Tile")]
+	public bool doesAffectTile = false;
+	public enum AOECenterType
+	{
+		Self,
+		Target
+	}
+	[ShowIf("@isAoe"), Parsing("AoE Center Type")]
+	public AOECenterType aoECenterType = AOECenterType.Self;
+	[ShowIf("@isAoe"), Parsing("Min AoE Effect Range")]
+	public int aoeMinEffectRange = 0;
+	[ShowIf("@isAoe"), Parsing("Max AoE Effect Range")]
+	public int aoeMaxEffectRange = 0;
+
+
 	[ShowIf("@isAoe && aoeType == AOEType.Arc")]
 	public ArcType arcType = ArcType.Small;
 	public enum ArcType { Small, Large }
-
-	[ShowIf("@isAoe && aoeType == AOEType.Ray"), Min(1)]
-	public int rayDiameter = 1;
 	[ShowIf("@isAoe && aoeType == AOEType.Chain"), Min(1)]
 	public int maxChainedTarget = 1;
 	[ShowIf("@isAoe && aoeType == AOEType.Chain"), Min(1)]
-	public float damageRecutionOnChain = .1f;
+	public float damageReductionOnChain = .1f;
 
 	public enum ConeType
 	{
@@ -136,14 +154,18 @@ public class EntityActionData : AParsableScriptableObject
 	public ConeType coneType = ConeType.Thin;
 	#endregion
 
-	[Title("Damage")]
+	[Title("Damage"), Parsing("Hit Amount")]
 	public int hitAmount = 1;
+	[Parsing("Damage Factor")]
 	public float damageFactor = 1f;
+	[Parsing("Used Damage Channels")]
 	public WeaponEquipmentData.DamageType[] usedDamageChannels;
 
 	[Title("Effect")]
 	public AEntityStatus[] appliableStatus;
+	[Parsing("Status Hit Probability")]
 	public float statusHitProbability;
+	[Parsing("Passive effect")]
 	public AEntityPassiveEffect.PassiveEffectContainer[] passiveEffects;
 
 	[Title("Misc")]
@@ -332,6 +354,19 @@ public class EntityActionData : AParsableScriptableObject
 		return maxDistance;
 	}
 
+	public int GetAoEMaxRange ( AEntityAction _action, Entity _performingEntity, Entity _targetEntity )
+	{
+		MaxAoERangeUpPassiveEffect so = (GameAssets.current.game.entityEffects[EntityPassiveEffectEnumID.MaxAoERangeUp] as MaxAoERangeUpPassiveEffect);
+
+		if (_action != null && _performingEntity != null && ContainsEffect(EntityPassiveEffectEnumID.MaxAoERangeUp, out AEntityPassiveEffect.PassiveEffectContainer effectContainer)
+			&& so.UseConditionPredicate(_action, _performingEntity, _targetEntity, effectContainer.conditionType))
+		{
+			return maxDistance + (GameAssets.current.game.entityEffects[EntityPassiveEffectEnumID.MaxAoERangeUp] as MaxAoERangeUpPassiveEffect).rangeBoostAmount;
+		}
+
+		return maxDistance;
+	}
+
 	public int GetMaxTargetAmount ( AEntityAction _action, Entity _performingEntity, Entity _targetEntity )
 	{
 		MaxTargetUpPassiveEffect so = (GameAssets.current.game.entityEffects[EntityPassiveEffectEnumID.MaxTargetUp] as MaxTargetUpPassiveEffect);
@@ -405,6 +440,20 @@ public class EntityActionData : AParsableScriptableObject
 
 	public override void OnParse ( ImportedData _data )
 	{
-		
+		if(isAoe)
+		{
+			switch (aoeType)
+			{
+				case AOEType.Chain:
+					maxChainedTarget = _data.GetValue<int>("AoE Extra Values");
+					break;
+				case AOEType.Cone:
+					coneType = _data.GetValue<ConeType>("AoE Extra Values");
+					break;
+			}
+		}
+
+		if(codeType == ActionCodeType.InvokeItem)
+			invocatedItem = _data.GetValue<AItemData>("Special Extra Values");
 	}
 }

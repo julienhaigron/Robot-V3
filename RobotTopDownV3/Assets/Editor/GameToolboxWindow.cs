@@ -78,13 +78,21 @@ public class GameToolboxWindow : EditorWindow
 			CheckMissingData();
 
 		if (GUILayout.Button("Load new assets into GameAssets"))
+		{
+			GenerateAllEnums();
 			GameAssets.current.ReloadAll();
+		}
 
 	}
 
 	private void CheckMissingData ()
 	{
 		//m_missingUnitCount = GameAssets.current.game.uni
+	}
+
+	private void GenerateAllEnums ()
+	{
+		ScriptableEnumAutoEditor.GenerateAllEnums();
 	}
 
 	private string MakeUrl(string _spreadsheetID, string _sheetName )

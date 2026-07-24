@@ -6,92 +6,119 @@ using UnityEditor;
 
 public static class CsvTypeConverter
 {
-    public static object Convert ( string value, Type targetType )
+    public static object Convert ( string _rawValue, Type _targetType )
     {
         #region Base Vars
-        if (string.Equals(value, "-"))
-            return null;
-        else if (targetType == typeof(string))
+        if (string.Equals(_rawValue, "-"))
+            return default;
+        else if (_targetType == typeof(string))
+            return _rawValue;
+        else if (_targetType == typeof(int))
+            return int.Parse(_rawValue);
+        else if (_targetType == typeof(float))
+            return float.Parse(_rawValue);
+        else if (_targetType == typeof(bool))
+		{
+            if (!string.IsNullOrEmpty(_rawValue) && string.Equals(_rawValue, "TRUE"))
+                return true;
+            else if (!string.IsNullOrEmpty(_rawValue) && string.Equals(_rawValue, "FALSE"))
+                return false;
+            else
+                return bool.Parse(_rawValue);
+		}
+        else if (_targetType == typeof(Vector2Int))
+		{
+            Vector2Int value = new(0, 0);
+            if(string.IsNullOrEmpty(_rawValue))
+                return value;
+            string[] splits = _rawValue.Split("-");
+            if (splits.Length >= 1)
+                value.x = int.Parse(splits[0]);
+            if(splits.Length >= 2)
+                value.x = int.Parse(splits[1]);
+
             return value;
-        else if (targetType == typeof(int))
-            return int.Parse(value);
-        else if (targetType == typeof(float))
-            return float.Parse(value);
-        else if (targetType == typeof(bool))
-            return bool.Parse(value);
+		}
         #endregion
 
         #region Scriptables
-        else if (targetType == typeof(FrameEquipmentData))
+        else if (_targetType == typeof(FrameEquipmentData))
         {
-            if (TryGetFrameComponent(value, out FrameEquipmentData data))
+            if (TryGetFrameComponent(_rawValue, out FrameEquipmentData data))
                 return data;
             else
                 return null;
         }
-        else if (targetType == typeof(ReactorEquipmentData))
+        else if (_targetType == typeof(ReactorEquipmentData))
         {
-            if (TryGetReactorComponent(value, out ReactorEquipmentData data))
+            if (TryGetReactorComponent(_rawValue, out ReactorEquipmentData data))
                 return data;
             else
                 return null;
         }
-        else if (targetType == typeof(BrainEquipmentData))
+        else if (_targetType == typeof(BrainEquipmentData))
         {
-            if (TryGetBrainComponent(value, out BrainEquipmentData data))
+            if (TryGetBrainComponent(_rawValue, out BrainEquipmentData data))
                 return data;
             else
                 return null;
         }
-        else if (targetType == typeof(NeuronalMembraneEquipmentData))
+        else if (_targetType == typeof(NeuronalMembraneEquipmentData))
         {
-            if (TryGetNeuronalMembraneComponent(value, out NeuronalMembraneEquipmentData data))
+            if (TryGetNeuronalMembraneComponent(_rawValue, out NeuronalMembraneEquipmentData data))
                 return data;
             else
                 return null;
         }
-        else if (targetType == typeof(WeaponEquipmentData))
+        else if (_targetType == typeof(WeaponEquipmentData))
         {
-            if (TryGetWeaponComponent(value, out WeaponEquipmentData data))
+            if (TryGetWeaponComponent(_rawValue, out WeaponEquipmentData data))
                 return data;
             else
                 return null;
         }
-        else if (targetType == typeof(ToolEquipmentData))
+        else if (_targetType == typeof(ToolEquipmentData))
         {
-            if (TryGetToolComponent(value, out ToolEquipmentData data))
+            if (TryGetToolComponent(_rawValue, out ToolEquipmentData data))
                 return data;
             else
                 return null;
         }
-        else if (targetType == typeof(ArmorEquipmentData))
+        else if (_targetType == typeof(ArmorEquipmentData))
         {
-            if (TryGetArmorComponent(value, out ArmorEquipmentData data))
+            if (TryGetArmorComponent(_rawValue, out ArmorEquipmentData data))
                 return data;
             else
                 return null;
         }
-        else if (targetType == typeof(OccultorEquipmentData))
+        else if (_targetType == typeof(OccultorEquipmentData))
         {
-            if (TryGetOccultorComponent(value, out OccultorEquipmentData data))
+            if (TryGetOccultorComponent(_rawValue, out OccultorEquipmentData data))
                 return data;
             else
                 return null;
         }
-        else if (targetType == typeof(ChipsetEquipmentData))
+        else if (_targetType == typeof(ChipsetEquipmentData))
         {
-            if (TryGetChipsetComponent(value, out ChipsetEquipmentData data))
+            if (TryGetChipsetComponent(_rawValue, out ChipsetEquipmentData data))
                 return data;
             else
                 return null;
         }
-        else if (targetType == typeof(EntityEquipmentData[]))
+        else if (_targetType == typeof(AItemData))
+        {
+            if (TryGetItemData(_rawValue, out AItemData data))
+                return data;
+            else
+                return null;
+        }
+        else if (_targetType == typeof(EntityEquipmentData[]))
         {
             List<EntityEquipmentData> equipments = new();
-            string[] rawValues = value.Replace(" ", "").Split(",");
+            string[] rawValues = _rawValue.Replace(" ", "").Split(",");
             foreach (string raw in rawValues)
             {
-                if (TryGetEquipmentComponent(value, out EntityEquipmentData data))
+                if (TryGetEquipmentComponent(_rawValue, out EntityEquipmentData data))
                     equipments.Add(data);
             }
             return equipments.ToArray();
@@ -100,12 +127,12 @@ public static class CsvTypeConverter
 
         #region Class
 
-        else if (targetType == typeof(EntityEquipmentData.SecondaryStat))
+        else if (_targetType == typeof(EntityEquipmentData.SecondaryStat))
         {
-            if (string.IsNullOrEmpty(value))
+            if (string.IsNullOrEmpty(_rawValue))
                 return null;
             EntityEquipmentData.SecondaryStat stat = new();
-            string[] vars = value.Replace(" ", "").Split(";");
+            string[] vars = _rawValue.Replace(" ", "").Split(";");
             if (vars.Length < 2)
                 return null;
 
@@ -114,24 +141,24 @@ public static class CsvTypeConverter
 
             return stat;
         }
-        else if (targetType == typeof(EntityEquipmentData.SecondaryStat[]))
+        else if (_targetType == typeof(EntityEquipmentData.SecondaryStat[]))
         {
-            if (string.IsNullOrEmpty(value))
+            if (string.IsNullOrEmpty(_rawValue))
                 return null;
             List<EntityEquipmentData.SecondaryStat> stats = new();
-            string[] rawStats = value.Split(",");
+            string[] rawStats = _rawValue.Split(",");
             foreach (string rawStat in rawStats)
                 stats.Add((EntityEquipmentData.SecondaryStat)Convert(rawStat.Replace("[", "").Replace("]", ""), typeof(EntityEquipmentData.SecondaryStat)));
 
             return stats.ToArray();
         }
 
-        else if (targetType == typeof(ChipsetEquipmentData.ConditionalStatBonus))
+        else if (_targetType == typeof(ChipsetEquipmentData.ConditionalStatBonus))
         {
-            if (string.IsNullOrEmpty(value))
+            if (string.IsNullOrEmpty(_rawValue))
                 return null;
             ChipsetEquipmentData.ConditionalStatBonus stat = new();
-            string[] vars = value.Replace(" ", "").Split(";");
+            string[] vars = _rawValue.Replace(" ", "").Split(";");
             if (vars.Length < 3)
                 return null;
 
@@ -144,23 +171,23 @@ public static class CsvTypeConverter
 
             return stat;
         }
-        else if (targetType == typeof(ChipsetEquipmentData.ConditionalStatBonus[]))
+        else if (_targetType == typeof(ChipsetEquipmentData.ConditionalStatBonus[]))
         {
-            if (string.IsNullOrEmpty(value))
+            if (string.IsNullOrEmpty(_rawValue))
                 return null;
             List<ChipsetEquipmentData.ConditionalStatBonus> stats = new();
-            string[] rawStats = value.Split(",");
+            string[] rawStats = _rawValue.Split(",");
             foreach (string rawStat in rawStats)
                 stats.Add((ChipsetEquipmentData.ConditionalStatBonus)Convert(rawStat.Replace("[", "").Replace("]", ""), typeof(ChipsetEquipmentData.ConditionalStatBonus)));
 
             return stats.ToArray();
         }
 
-        else if (targetType == typeof(AEntityPassiveEffect.PassiveEffectContainer))
+        else if (_targetType == typeof(AEntityPassiveEffect.PassiveEffectContainer))
         {
-            if (string.IsNullOrEmpty(value))
+            if (string.IsNullOrEmpty(_rawValue))
                 return null;
-            string[] vars = value.Replace(" ", "").Split(";");
+            string[] vars = _rawValue.Replace(" ", "").Split(";");
             if (vars.Length < 3)
                 return null;
 
@@ -169,17 +196,17 @@ public static class CsvTypeConverter
                 enumID = (EntityPassiveEffectEnumID)Convert(vars[0], typeof(EntityPassiveEffectEnumID)),
                 conditionType = (AEntityPassiveEffect.ConditionType)Convert(vars[1], typeof(AEntityPassiveEffect.ConditionType)),
                 targetType = (AEntityPassiveEffect.TargetType)Convert(vars[2], typeof(AEntityPassiveEffect.TargetType)),
-                effectRange = vars.Length == 4 ? (int)Convert(vars[2], typeof(int)) : 0
+                effectRange = vars.Length == 4 ? (Vector2Int)Convert(vars[2], typeof(Vector2Int)) : new(0,0)
             };
 
             return passiveEffect;
         }
-        else if (targetType == typeof(AEntityPassiveEffect.PassiveEffectContainer[]))
+        else if (_targetType == typeof(AEntityPassiveEffect.PassiveEffectContainer[]))
         {
-            if (string.IsNullOrEmpty(value))
+            if (string.IsNullOrEmpty(_rawValue))
                 return null;
             List<AEntityPassiveEffect.PassiveEffectContainer> stats = new();
-            string[] rawStats = value.Split(",");
+            string[] rawStats = _rawValue.Split(",");
             foreach (string rawStat in rawStats)
                 stats.Add((AEntityPassiveEffect.PassiveEffectContainer)Convert(rawStat.Replace("[", "").Replace("]", ""), typeof(AEntityPassiveEffect.PassiveEffectContainer)));
 
@@ -190,9 +217,9 @@ public static class CsvTypeConverter
         #endregion
 
         #region Enums
-        else if (targetType == typeof(EntityActionEnumID[]))
+        else if (_targetType == typeof(EntityActionEnumID[]))
         {
-            string[] raw = value.Split(",");
+            string[] raw = _rawValue.Split(",");
 
             List<EntityActionEnumID> result = new();
             foreach (string item in raw)
@@ -205,9 +232,9 @@ public static class CsvTypeConverter
 
             return result.ToArray();
         }
-        else if (targetType == typeof(Entity.EntityState[]))
+        else if (_targetType == typeof(Entity.EntityState[]))
         {
-            string[] raw = value.Split(",");
+            string[] raw = _rawValue.Split(",");
 
             List<Entity.EntityState> result = new();
             foreach (string item in raw)
@@ -217,11 +244,23 @@ public static class CsvTypeConverter
 
             return result.ToArray();
         }
-        else if (targetType.IsEnum)
-            return Enum.Parse(targetType, value);
+        else if (_targetType == typeof(WeaponEquipmentData.DamageType[]))
+        {
+            string[] raw = _rawValue.Split(",");
+
+            List<WeaponEquipmentData.DamageType> result = new();
+            foreach (string item in raw)
+            {
+                result.Add((WeaponEquipmentData.DamageType)Enum.Parse(typeof(WeaponEquipmentData.DamageType), item));
+            }
+
+            return result.ToArray();
+        }
+        else if (_targetType.IsEnum)
+            return Enum.Parse(_targetType, _rawValue);
 		#endregion
 
-		Debug.Log("Unsupported CSV type: " + targetType.Name);
+		Debug.Log("Unsupported CSV type: " + _targetType.Name);
         return null;
     }
 
@@ -376,6 +415,22 @@ public static class CsvTypeConverter
         foreach (string guid in guids)
         {
             _data = AssetDatabase.LoadAssetAtPath(AssetDatabase.GUIDToAssetPath(guid), typeof(EntityEquipmentData)) as EntityEquipmentData;
+
+            if (_data != null && string.Equals(_data.name, _input))
+                return true;
+        }
+
+        _data = null;
+        return false;
+    }
+    
+    private static bool TryGetItemData ( this string _input, out AItemData _data )
+    {
+        string[] guids = AssetDatabase.FindAssets("t:AItemData");
+
+        foreach (string guid in guids)
+        {
+            _data = AssetDatabase.LoadAssetAtPath(AssetDatabase.GUIDToAssetPath(guid), typeof(AItemData)) as AItemData;
 
             if (_data != null && string.Equals(_data.name, _input))
                 return true;

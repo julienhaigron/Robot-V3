@@ -15,7 +15,7 @@ public class EntityEquipmentData : AParsableScriptableObject
 	[Parsing("Name")]
 	public string displayName = "default";
 
-	[BoxGroup(GroupID = "Stat"), Parsing("Cost")]
+	[BoxGroup(GroupID = "Stat"), Parsing("Energy Cost")]
 	public int energyCost;
 	[BoxGroup(GroupID = "Actions"), Parsing("Actions")]
 	public EntityActionEnumID[] knownedActions;
@@ -23,6 +23,8 @@ public class EntityEquipmentData : AParsableScriptableObject
 	public AEntityPassiveEffect.PassiveEffectContainer[] passiveEffects;
 	[BoxGroup(GroupID = "Status")]
 	[Range(0f, 1f)] public float statusHitProbability = .5f;
+	[Parsing("Credit Cost")]
+	public ulong creditCost;
 
 	public int recyclingDurationAmount = 1;
 	public int reparingDurationAmount = 1;
