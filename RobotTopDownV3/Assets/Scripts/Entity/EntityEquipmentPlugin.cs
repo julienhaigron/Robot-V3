@@ -31,8 +31,8 @@ public class EntityEquipmentPlugin : EntityPlugin
 	private bool m_isDead = false;
 	public bool IsDead => m_isDead;
 
-	private SerializableDictionary<string, int> m_equipmentInCooldown = new();
-	public SerializableDictionary<string, int> EquipmentInCooldown => m_equipmentInCooldown;
+	/*private SerializableDictionary<string, int> m_equipmentInCooldown = new();
+	public SerializableDictionary<string, int> EquipmentInCooldown => m_equipmentInCooldown;*/
 
 	[Title("Stats")]
 	private float m_generalDamageBuff = 0f;
@@ -170,12 +170,12 @@ public class EntityEquipmentPlugin : EntityPlugin
 
 	private void OnNewPhaseStart ()
 	{
-		foreach (string equipment in m_equipmentInCooldown.Keys.ToList())
+		/*foreach (string equipment in m_equipmentInCooldown.Keys.ToList())
 		{
 			m_equipmentInCooldown[equipment]--;
 			if (m_equipmentInCooldown[equipment] <= 0)
 				m_equipmentInCooldown.Remove(equipment);
-		}
+		}*/
 	}
 
 	private void OnStartPerformAction ( AEntityAction _actionPerformed )

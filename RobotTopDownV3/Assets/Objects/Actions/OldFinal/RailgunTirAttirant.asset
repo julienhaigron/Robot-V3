@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a743e40aeafc0445b10e59cec8dfa98, type: 3}
   m_Name: RailgunTirAttirant
   m_EditorClassIdentifier: 
+  spreadsheetId: 
   displayName: Tir attirant
   enumID: 42
   icon: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
@@ -19,6 +20,7 @@ MonoBehaviour:
   m_tokenPreparationDuration: 1
   m_tokenCooldown: 1
   tokenDuration: 1
+  isModAction: 0
   preparationAnimationKey: 
   afterPerformAnimationKey: 
   onPerformSingleAttackSFXID: 6
@@ -32,15 +34,16 @@ MonoBehaviour:
   trajectoryType: 0
   minDistance: 3
   maxDistance: 12
-  minTargetAmount: 1
   maxTargetAmount: 1
   isAoe: 0
   aoeType: 0
-  circleRange: 2
+  doesAffectTile: 0
+  aoECenterType: 0
+  aoeMinEffectRange: 0
+  aoeMaxEffectRange: 0
   arcType: 0
-  rayDiameter: 1
   maxChainedTarget: 1
-  damageRecutionOnChain: 0.1
+  damageReductionOnChain: 0.1
   coneType: 1
   hitAmount: 1
   damageFactor: 0.8
@@ -51,11 +54,11 @@ MonoBehaviour:
   - enumID: 4
     conditionType: 3
     targetType: 3
-    effectRange: 0
+    effectRange: {x: 0, y: 0}
   - enumID: 10
     conditionType: 0
     targetType: 4
-    effectRange: 2
+    effectRange: {x: 0, y: 0}
   invocatedEntity: {fileID: 0}
   invocatedItem: {fileID: 0}
   invocationCountLimit: 1

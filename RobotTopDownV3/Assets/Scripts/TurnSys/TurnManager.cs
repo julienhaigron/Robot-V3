@@ -61,11 +61,13 @@ public class TurnManager : Singleton<TurnManager>
 	{
 		public int firstTimeEntityMoved;
 		public int firstTimeEntityAttacked;
+		public int traveledTileCountThisTurn;
 
 		public void ResetAllValues ()
 		{
 			firstTimeEntityMoved = -1;
 			firstTimeEntityAttacked = -1;
+			traveledTileCountThisTurn = 0;
 		}
 	}
 
@@ -324,6 +326,9 @@ public class TurnManager : Singleton<TurnManager>
 			case EntityActionData.ActionCodeType.InvokeItem:
 				action = new InvokeItemAction();
 				break;
+			case EntityActionData.ActionCodeType.JumpMove:
+				action = new JumpToTarget();
+				break;
 			default:
 				Debug.LogError("Missing entree in TurnManager.GetAction for type \"" + _actionData.codeType + "\"");
 				return action;
@@ -499,7 +504,10 @@ public class TurnManager : Singleton<TurnManager>
 			foreach (RecordedAction recordedAction in m_recordedActionInput[pair.Key].ToArray())
 			{
 				if (recordedAction.action.Data.type == EntityActionData.ActionType.Movement)
+				{
 					pair.Value.firstTimeEntityMoved = recordedAction.action.timeAtStart;
+					pair.Value.traveledTileCountThisTurn++;
+				}
 				if (recordedAction.action.Data.type == EntityActionData.ActionType.DistanceAttack || recordedAction.action.Data.type == EntityActionData.ActionType.MeleeAttack)
 					pair.Value.firstTimeEntityAttacked = recordedAction.action.timeAtStart;
 			}

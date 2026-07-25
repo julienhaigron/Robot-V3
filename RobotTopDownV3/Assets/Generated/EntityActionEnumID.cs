@@ -60,5 +60,6 @@ public enum EntityActionEnumID
 		ToolPortalsInvoke,
 		ToolRepulseurRepulse,
 		ToolMineInvoke,
+		Saut,
 		//#END#ENTITYACTIONENUMID
 }

@@ -12,7 +12,7 @@ public abstract class AEntityPassiveEffect : ScriptableEnum<EntityPassiveEffectE
 	public struct PassiveEffectContainer : INetworkSerializable
 	{
 		public EntityPassiveEffectEnumID enumID;
-		public ConditionType conditionType;
+		public Condition.ConditionType conditionType;
 		public TargetType targetType;
 		[ShowIf("@targetType == TargetType.CircleOnSelf || targetType == TargetType.CircleOnTarget")]
 		public Vector2Int effectRange;
@@ -27,32 +27,6 @@ public abstract class AEntityPassiveEffect : ScriptableEnum<EntityPassiveEffectE
 	}
 
 	public enum TargetType { OtherEntity, Tile, CircleOnSelf, Self, CircleOnTarget, LargeConeOnSelf, LargeConeOnTarget, ThinConeOnSelf, ThinConeOnTarget }
-	public enum ConditionType { Noone, DidNotMoveThisTurn, DidNotAttackThisTurn, IsTargetMarked, NoEnnemy8CellDistance, Ennemy2Cell3Distance, Traveled6Tiles, IsInPreaparation, Cells12FromStart }
-
-	public virtual bool UseConditionPredicate ( AEntityAction _action, Entity _entity, Entity _targetEntity, ConditionType _conditionType )
-	{
-		if (_action == null || _entity == null )
-			return false;
-
-		switch (_conditionType)
-		{
-			default:
-			case ConditionType.Noone:
-				return true;
-			case ConditionType.DidNotMoveThisTurn:
-				bool recordedCheck = TurnManager.Instance.TrackedEventsPerEntity[_entity.ID].firstTimeEntityMoved == -1
-					|| TurnManager.Instance.TrackedEventsPerEntity[_entity.ID].firstTimeEntityMoved >= _action.timeAtStart;
-				bool liveCheck = !_entity.Displacement.DidMoveThisTurn;
-				return liveCheck && recordedCheck;
-			case ConditionType.DidNotAttackThisTurn:
-				bool recordedCheck2 = TurnManager.Instance.TrackedEventsPerEntity[_entity.ID].firstTimeEntityAttacked == -1
-					|| TurnManager.Instance.TrackedEventsPerEntity[_entity.ID].firstTimeEntityAttacked >= _action.timeAtStart;
-				bool liveCheck2 = !_entity.Equipment.DidAttackThisTurn;
-				return recordedCheck2 && liveCheck2;
-			case ConditionType.IsTargetMarked:
-				return _targetEntity != null && _targetEntity.Status.Contains(EntityStatusEnumID.Marked);
-		}
-	}
 
 	public virtual void ApplyEffect ( Entity _performingEntity, Entity _targetEntity, PassiveEffectContainer _effectContainer )
     {

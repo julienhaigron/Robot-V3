@@ -21,6 +21,10 @@ public class EntityDisplacementPlugin : EntityPlugin
 
 	private bool m_didMoveThisTurn = false;
 	public bool DidMoveThisTurn => m_didMoveThisTurn;
+	private int m_traveledTileCountThisTurn = 0;
+	public int TraveledTileCountThisTurn => m_traveledTileCountThisTurn;
+	private int m_traveledTileTotalCount = 0;
+	public int TraveledTileTotalCount => m_traveledTileTotalCount;
 
 	private Tween m_movementTween;
 	private Tween m_rotationTween;
@@ -48,6 +52,7 @@ public class EntityDisplacementPlugin : EntityPlugin
 		//MoveToTile(_spawn.coordinates.GetTile(), null);
 		Tile spawn = _spawn.coordinates.GetTile();
 		transform.position = spawn.transform.position - m_bottomPosition.localPosition;
+		m_traveledTileTotalCount = 0;
 
 		//Rotate((new int[3] { 3, 4, 5 }).RandomElement(), true);
 		if (!_spawn.isFirstSide)
@@ -146,11 +151,16 @@ public class EntityDisplacementPlugin : EntityPlugin
 	private void OnStartPerformAction(AEntityAction _actionPerformed )
 	{
 		if (_actionPerformed.Data.type == EntityActionData.ActionType.Movement)
+		{
 			m_didMoveThisTurn = true;
+			m_traveledTileCountThisTurn++;
+			m_traveledTileTotalCount++;
+		}
 	}
 
 	private void OnNewTurnBegin ()
 	{
 		m_didMoveThisTurn = false;
+		m_traveledTileCountThisTurn = 0;
 	}
 }

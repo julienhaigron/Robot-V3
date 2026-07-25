@@ -405,7 +405,7 @@ public class Entity : MonoBehaviour
 			{
 				foreach (ChipsetEquipmentData.ConditionalStatBonus conditionalStatBonus in _chipsedData.statBonuses)
 				{
-					if (conditionalStatBonus.bonus.type == _type && conditionalStatBonus.UseConditionPredicate(_relatedAction, this, null))
+					if (conditionalStatBonus.bonus.type == _type && Condition.UseConditionPredicate(_relatedAction, this, null, conditionalStatBonus.conditionType))
 						bonus += conditionalStatBonus.bonus.value;
 				}
 			}

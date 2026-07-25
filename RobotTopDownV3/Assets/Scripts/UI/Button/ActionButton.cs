@@ -54,9 +54,8 @@ public class ActionButton : BaseButton
 		int timeAtStart = TurnManager.Instance.RecordedActions.ContainsKey(entityID) && TurnManager.Instance.RecordedActions[entityID].Count > 0
 			? TurnManager.Instance.RecordedActions[entityID].ToArray()[^1].action.TimeAtEnd : TurnManager.Instance.currentTick;
 
-		SetInteractability(GameAssets.current.game.entityActionsData[m_actionType].UseConditionPredicate
-			(TurnManager.Instance.GetAction(m_actionType, PlayerController.Instance.SelectedEntity.ID, m_linkedEquipmentData, timeAtStart)
-			, PlayerController.Instance.SelectedEntity, null));
+		AEntityAction action = TurnManager.Instance.GetAction(m_actionType, PlayerController.Instance.SelectedEntity.ID, m_linkedEquipmentData, timeAtStart);
+		SetInteractability(Condition.UseConditionPredicate(action, PlayerController.Instance.SelectedEntity, null, action.Data.conditionType));
 
 	}
 

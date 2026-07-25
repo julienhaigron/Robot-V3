@@ -213,17 +213,17 @@ public class EntityAIPlugin : EntityPlugin
 	private List<System.Tuple<EntityActionData, string>> GetAvailableAttackAction ()
 	{
 		List<System.Tuple<EntityActionData, string>> actionEquipmentPairs = new();
-		foreach (EntityActionEnumID action in m_linkedEntity.ComponentLinkedToAction.Keys)
+		foreach (EntityActionEnumID actionEnumID in m_linkedEntity.ComponentLinkedToAction.Keys)
 		{
-			if ((GameAssets.current.game.entityActionsData[action].type == EntityActionData.ActionType.DistanceAttack
-				|| GameAssets.current.game.entityActionsData[action].type == EntityActionData.ActionType.MeleeAttack
-				))
+			EntityActionData data = GameAssets.current.game.entityActionsData[actionEnumID];
+			if (data.type == EntityActionData.ActionType.DistanceAttack || data.type == EntityActionData.ActionType.MeleeAttack)
 			{
-				foreach (string equipmentID in m_linkedEntity.ComponentLinkedToAction[action])
+				foreach (string equipmentID in m_linkedEntity.ComponentLinkedToAction[actionEnumID])
 				{
-					if (!m_linkedEntity.Equipment.EquipmentInCooldown.Keys.Contains(equipmentID))
+					if (Condition.UseConditionPredicate(TurnManager.Instance.GetAction(actionEnumID, m_linkedEntity.ID, m_linkedEntity.ComponentLinkedToAction[actionEnumID][0], TurnManager.Instance.currentTick)
+						, m_linkedEntity, m_lastEntitiesTargeted.Count > 0 ? m_lastEntitiesTargeted[0] : null, data.conditionType))
 					{
-						actionEquipmentPairs.Add(new(GameAssets.current.game.entityActionsData[action], equipmentID));
+						actionEquipmentPairs.Add(new(GameAssets.current.game.entityActionsData[actionEnumID], equipmentID));
 					}
 
 				}
@@ -237,15 +237,27 @@ public class EntityAIPlugin : EntityPlugin
 	{
 		if (m_actionPriorityQueues.ContainsKey(EntityActionData.MainActionType.Movement))
 		{
-			return GameAssets.current.game.entityActionsData[m_actionPriorityQueues[EntityActionData.MainActionType.Movement].priorityQueue[0]];
+			foreach(EntityActionEnumID actionEnumID in m_actionPriorityQueues[EntityActionData.MainActionType.Movement].priorityQueue)
+			{
+				EntityActionData data = GameAssets.current.game.entityActionsData[actionEnumID];
+				if (Condition.UseConditionPredicate( TurnManager.Instance.GetAction(actionEnumID, m_linkedEntity.ID, m_linkedEntity.ComponentLinkedToAction[actionEnumID][0], TurnManager.Instance.currentTick)
+						, m_linkedEntity, m_lastEntitiesTargeted.Count > 0 ? m_lastEntitiesTargeted[0] : null, data.conditionType))
+				{
+					return data;
+				}
+			}
+			return null;
 		}
 		else
 		{
-			foreach (EntityActionEnumID action in m_linkedEntity.KnownedActions)
+			/*foreach (EntityActionEnumID actionEnumID in m_linkedEntity.KnownedActions)
 			{
-				if (GameAssets.current.game.entityActionsData[action].type == EntityActionData.ActionType.Movement)
-					return GameAssets.current.game.entityActionsData[action];
-			}
+				EntityActionData data = GameAssets.current.game.entityActionsData[actionEnumID];
+				if (data.type == EntityActionData.ActionType.Movement && Condition.UseConditionPredicate
+					(TurnManager.Instance.GetAction(actionEnumID, m_linkedEntity.ID, m_linkedEntity.ComponentLinkedToAction[actionEnumID][0], TurnManager.Instance.currentTick)
+						, m_linkedEntity, m_lastEntitiesTargeted.Count > 0 ? m_lastEntitiesTargeted[0] : null, data.conditionType))
+					return data;
+			}*/
 
 			return null;
 		}

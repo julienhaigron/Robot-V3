@@ -14,4 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enumID: 4
   displayName: 
-  damageBoostAmount: 1
+  damageBoostAmount: 0.3

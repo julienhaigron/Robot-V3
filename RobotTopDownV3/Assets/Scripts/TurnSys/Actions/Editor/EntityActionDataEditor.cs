@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 using UnityEditor;
 using System;
 
-[CustomEditor(typeof(EntityActionData))]
+/*[CustomEditor(typeof(EntityActionData))]
 public class EntityActionDataEditor : OdinEditor
 {
 	EntityActionData targetAction;
@@ -162,4 +162,4 @@ public class EntityActionDataEditor : OdinEditor
 		}
 		return assets;
 	}
-}
+}*/

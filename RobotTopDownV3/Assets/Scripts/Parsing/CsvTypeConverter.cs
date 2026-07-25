@@ -167,7 +167,7 @@ public static class CsvTypeConverter
                 type = (EntityEquipmentData.SecondaryStat.StatType)Convert(vars[0], typeof(EntityEquipmentData.SecondaryStat.StatType)),
                 value = (float)Convert(vars[1], typeof(float))
             };
-            stat.conditionType = (AEntityPassiveEffect.ConditionType)Convert(vars[2], typeof(AEntityPassiveEffect.ConditionType));
+            stat.conditionType = (Condition.ConditionType)Convert(vars[2], typeof(Condition.ConditionType));
 
             return stat;
         }
@@ -194,7 +194,7 @@ public static class CsvTypeConverter
             AEntityPassiveEffect.PassiveEffectContainer passiveEffect = new()
             {
                 enumID = (EntityPassiveEffectEnumID)Convert(vars[0], typeof(EntityPassiveEffectEnumID)),
-                conditionType = (AEntityPassiveEffect.ConditionType)Convert(vars[1], typeof(AEntityPassiveEffect.ConditionType)),
+                conditionType = (Condition.ConditionType)Convert(vars[1], typeof(Condition.ConditionType)),
                 targetType = (AEntityPassiveEffect.TargetType)Convert(vars[2], typeof(AEntityPassiveEffect.TargetType)),
                 effectRange = vars.Length == 4 ? (Vector2Int)Convert(vars[2], typeof(Vector2Int)) : new(0,0)
             };

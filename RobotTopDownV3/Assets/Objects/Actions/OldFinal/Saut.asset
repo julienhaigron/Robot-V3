@@ -10,32 +10,32 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2a743e40aeafc0445b10e59cec8dfa98, type: 3}
-  m_Name: MissileArrayBarrageDeMissiles
+  m_Name: Saut
   m_EditorClassIdentifier: 
   spreadsheetId: 
-  displayName: BarrageDeMissiles
-  enumID: 18
+  displayName: Saut
+  enumID: 52
   icon: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
   tileOutlineColor: {r: 1, g: 0, b: 0, a: 1}
-  m_tokenPreparationDuration: 2
+  m_tokenPreparationDuration: 1
   m_tokenCooldown: 0
   tokenDuration: 1
   isModAction: 0
   preparationAnimationKey: 
   afterPerformAnimationKey: 
-  onPerformSingleAttackSFXID: 8
-  onSingleAttackHitSFXID: 5
+  onPerformSingleAttackSFXID: 0
+  onSingleAttackHitSFXID: 0
   conditionType: 0
   previousActionAttackModificator: 0
-  type: 0
+  type: 2
   subType: 1
-  codeType: 1
-  targetType: 3
-  trajectoryType: 1
-  minDistance: 5
-  maxDistance: 10
-  maxTargetAmount: 3
-  isAoe: 1
+  codeType: 11
+  targetType: 2
+  trajectoryType: 0
+  minDistance: 2
+  maxDistance: 2
+  maxTargetAmount: 1
+  isAoe: 0
   aoeType: 0
   doesAffectTile: 0
   aoECenterType: 0
@@ -46,16 +46,12 @@ MonoBehaviour:
   damageReductionOnChain: 0.1
   coneType: 1
   hitAmount: 1
-  damageFactor: 1.2
-  usedDamageChannels: 0200000005000000
+  damageFactor: 1
+  usedDamageChannels: 02000000
   appliableStatus: []
   statusHitProbability: 0
-  passiveEffects:
-  - enumID: 9
-    conditionType: 1
-    targetType: 3
-    effectRange: {x: 0, y: 0}
+  passiveEffects: []
   invocatedEntity: {fileID: 0}
-  invocatedItem: {fileID: 0}
+  invocatedItem: {fileID: 11400000, guid: 1f9868f8e19a7824ab72a40eb51db31e, type: 2}
   invocationCountLimit: 1
   movementSpeed: 0
