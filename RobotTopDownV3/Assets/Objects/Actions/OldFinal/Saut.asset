@@ -28,7 +28,7 @@ MonoBehaviour:
   conditionType: 0
   previousActionAttackModificator: 0
   type: 2
-  subType: 1
+  subType: 2
   codeType: 11
   targetType: 2
   trajectoryType: 0
