@@ -156,10 +156,10 @@ public class EntityActionData : AParsableScriptableObject
 
 	[Title("Damage"), Parsing("Hit Amount")]
 	public int hitAmount = 1;
-	[Parsing("Damage Factor")]
 	public float damageFactor = 1f;
-	[Parsing("Used Damage Channels")]
-	public WeaponEquipmentData.DamageType[] usedDamageChannels;
+	[Parsing("Base damages")]
+	public SerializableDictionary<WeaponEquipmentData.DamageType, int> baseDamages;
+	//public WeaponEquipmentData.DamageType[] usedDamageChannels;
 
 	[Title("Effect")]
 	public AEntityStatus[] appliableStatus;

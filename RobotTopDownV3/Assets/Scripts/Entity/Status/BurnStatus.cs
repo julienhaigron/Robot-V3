@@ -12,7 +12,7 @@ public class BurnStatus : AEntityStatus
 		base.ApplyStatusEffect(_remainingDuration, _entity);
 
 		Dictionary<WeaponEquipmentData.DamageType, int> damage = new();
-		damage.Add(WeaponEquipmentData.DamageType.Feu, damageAmount);
+		damage.Add(WeaponEquipmentData.DamageType.Fire, damageAmount);
 
 		_entity.Equipment.TakeDamage(new EntityEquipmentPlugin.TakeDamageCallback() { damages = damage, entityTargeted = _entity });
 	}

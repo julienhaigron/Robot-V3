@@ -186,10 +186,11 @@ public class EntityEquipmentData : AParsableScriptableObject
 		{
 			VisualCamo,
 			RadarCamo, 
-			ThermalCamo,
+			ThermicCamo,
 			BaseHp,
 			VisualPerception,
-			SoundPerception,
+			RadarPerception,
+			ThermicPerception,
 
 			FireResitance,
 			ElectricResitance,

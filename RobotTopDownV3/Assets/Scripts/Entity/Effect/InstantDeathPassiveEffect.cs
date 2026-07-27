@@ -31,5 +31,7 @@ public class InstantDeathPassiveEffect : AEntityPassiveEffect
 		{
 			targetEntity.Equipment.InstantDeath();
 		}
+
+		base.ApplyEffect(_entity, _targetEntity, _effectContainer);
 	}
 }

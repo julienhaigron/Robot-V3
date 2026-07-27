@@ -78,7 +78,7 @@ public class Projectile : PoolElement
 			&& _other.transform.TryGetComponent(out WallSelector selector) && selector.LinkedWall != null)
 		{
 			Dictionary<WeaponEquipmentData.DamageType, int> damages = new();
-			damages.Add(WeaponEquipmentData.DamageType.Contendant, 1);
+			damages.Add(WeaponEquipmentData.DamageType.Bludgeoning, 1);
 
 			selector.LinkedWall.TakeDamage(damages);
 

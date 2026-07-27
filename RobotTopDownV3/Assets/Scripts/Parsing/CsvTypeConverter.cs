@@ -125,6 +125,26 @@ public static class CsvTypeConverter
         }
         #endregion
 
+        #region Dictionaries
+        else if (_targetType == typeof(SerializableDictionary<WeaponEquipmentData.DamageType, int>))
+        {
+            if (string.IsNullOrEmpty(_rawValue))
+                return null;
+            string[] elems = _rawValue.Replace(" ", "").Split(",");
+
+            SerializableDictionary<WeaponEquipmentData.DamageType, int> returnedValue = new();
+            foreach (string elem in elems)
+			{
+                string[] rawValues = elem.Replace("[", "").Replace("]", "").Split(";");
+                if (rawValues.Length < 2)
+                    continue;
+                returnedValue.Add((WeaponEquipmentData.DamageType)Convert(rawValues[0], typeof(WeaponEquipmentData.DamageType)), (int)Convert(rawValues[1], typeof(int)));
+			}
+
+            return returnedValue;
+        }
+        #endregion
+
         #region Class
 
         else if (_targetType == typeof(EntityEquipmentData.SecondaryStat))

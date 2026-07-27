@@ -44,5 +44,6 @@ public class PushOrPullPassiveEffect : AEntityPassiveEffect
 			_targetEntity.Displacement.MoveToTile(destination.coordinates.ID, movementEvent.EndEvent, false);
 		}
 
+		base.ApplyEffect(_entity, _targetEntity, _effectContainer);
 	}
 }

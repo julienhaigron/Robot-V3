@@ -9,7 +9,7 @@ public class WeaponEquipmentData : EntityEquipmentData
     public Weapon prefab;
 
     //public int accuracy;
-    public SerializableDictionary<DamageType, int> baseDamages;
+    //public SerializableDictionary<DamageType, int> baseDamages;
     public int visionConeRange;
     public enum DistanceType
 	{
@@ -27,15 +27,15 @@ public class WeaponEquipmentData : EntityEquipmentData
 
     public enum DamageType
 	{
-        Tranchant,
-        Perforant,
-        Contendant,
+        Slash,
+        Piercing,
+        Bludgeoning,
         Laser,
         Plasma,
-        Feu,
+        Fire,
         Radiation,
-        Electrique,
-        Magnetique
+        Electric,
+        Magnetic
 	}
 
     public enum DamageCategory
@@ -44,7 +44,7 @@ public class WeaponEquipmentData : EntityEquipmentData
         Elemental
 	}
 
-	public override StatDescription[] GetDesciption ()
+	/*public override StatDescription[] GetDesciption ()
     {
         List<StatDescription> description = base.GetDesciption().ToList();
         string value = "";
@@ -61,6 +61,6 @@ public class WeaponEquipmentData : EntityEquipmentData
         description.Add(new() { ID = SecondaryStat.StatType.BaseDamage, title = "BaseDamage", floatValue = 0, stringValue = value });
 
 		return description.ToArray();
-	}
+	}*/
 
 }

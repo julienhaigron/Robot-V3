@@ -233,7 +233,7 @@ public class Tile : MonoBehaviour
 		if (m_groundType == TileGroundType.Void && !_enteringEntity.Status.Contains(EntityStatusEnumID.Flying))
 		{
 			Dictionary<WeaponEquipmentData.DamageType, int> damages = new();
-			damages.Add(WeaponEquipmentData.DamageType.Contendant, 9999);
+			damages.Add(WeaponEquipmentData.DamageType.Bludgeoning, 9999);
 			_enteringEntity.Equipment.TakeDamage(new EntityEquipmentPlugin.TakeDamageCallback() { damages = damages });
 		}
 

@@ -35,6 +35,8 @@ public class RemoveStatusPassiveEffect : AEntityPassiveEffect
 		{
 			targetEntity.RemoveStatus(statusRemoved);
 		}
+
+		base.ApplyEffect(_entity, _targetEntity, _effectContainer);
 	}
 
 	public override void ApplyEffect(Tile _tile )

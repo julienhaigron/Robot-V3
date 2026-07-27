@@ -312,7 +312,7 @@ public class EntitySavedData : INetworkSerializable
 				{
 					if (statBonus.type == EntityEquipmentData.SecondaryStat.StatType.VisualPerception && _isVisual)
 						result += statBonus.value;
-					else if (statBonus.type == EntityEquipmentData.SecondaryStat.StatType.SoundPerception && !_isVisual)
+					else if (statBonus.type == EntityEquipmentData.SecondaryStat.StatType.RadarPerception && !_isVisual)
 						result += statBonus.value;
 				}
 			}

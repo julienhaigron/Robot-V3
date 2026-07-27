@@ -221,14 +221,11 @@ public class Weapon : MonoBehaviour
 		detailsBuilder.AppendLine($"<b>{_user.ID}</b> => <b>{_target.ID}</b>");
 		detailsBuilder.AppendLine();
 
-		foreach (KeyValuePair<WeaponEquipmentData.DamageType, int> pair in Data.baseDamages)
+		foreach (KeyValuePair<WeaponEquipmentData.DamageType, int> pair in _action.Data.baseDamages)
 		{
-			if (!_action.Data.usedDamageChannels.Contains(pair.Key))
-				continue;
-
 			int baseDamage = pair.Value;
 
-			float actionFactor = _action.Data.damageFactor + _action.Data.GetDamageFactorAmountForType(
+			float actionFactor = _action.Data.GetDamageFactorAmountForType(
 					_action,
 					_user,
 					_target,

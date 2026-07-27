@@ -30,7 +30,8 @@ public abstract class AEntityPassiveEffect : ScriptableEnum<EntityPassiveEffectE
 
 	public virtual void ApplyEffect ( Entity _performingEntity, Entity _targetEntity, PassiveEffectContainer _effectContainer )
     {
-
+		if (_effectContainer.conditionType == Condition.ConditionType.IsTargetMarked && _targetEntity.Status.Contains(EntityStatusEnumID.Marked))
+			_targetEntity.RemoveStatus(EntityStatusEnumID.Marked);
     }
 
 	public virtual void ApplyEffect ( Tile _tile )

@@ -38,5 +38,7 @@ public class DealCircleDamagePassiveEffect : AEntityPassiveEffect
 				_targetEntity.Equipment.TakeDamage(damageCallback);
 				break;
 		}
+
+		base.ApplyEffect(_entity, _targetEntity, _effectContainer);
 	}
 }
