@@ -30,7 +30,7 @@ public class EntityConfigPanel : AUIPanel
 	public bool DoesComeFromMissionPanel => m_doesComeFromMissionPanel;
 
 	private System.Func<GameDatas.PlayerSave.Equipment, bool> InventoryGridPredicate => item => item != null && item.TryGetData(out EntityEquipmentData _data)
-		&& m_displayedEquipmentTypes.Contains(_data.GetEquipmentType());
+		&& m_displayedEquipmentTypes.Contains(_data.GetEquipmentType()) && !item.isDamaged;
 
 	[System.Serializable]
 	public class SubSlotContainer

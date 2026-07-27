@@ -61,6 +61,7 @@ public class GameAssets : ScriptableObject
         public Material flyingDamageCritFontAsset;
         public Sprite critIcon;
         public EntityStatusDisplay statusDisplayPrefab;
+        public SerializableDictionary<WeaponEquipmentData.DamageType, Sprite> damageIconPerType = new();
 
         [Title("Tile")]
         public SerializableDictionary<TileGroundType, Material> tileGroundMaterials = new();

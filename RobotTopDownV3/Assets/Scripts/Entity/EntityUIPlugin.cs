@@ -63,18 +63,7 @@ public class EntityUIPlugin : EntityPlugin
 	private void OnTakeDamage( EntityEquipmentPlugin.TakeDamageCallback _damageInfo )
 	{
 		foreach(KeyValuePair<WeaponEquipmentData.DamageType, int> pair in _damageInfo.damages)
-		{
-			if (_damageInfo.critical)
-			{
-				m_flyingNumberManagerDamage.config.fontAsset = GameAssets.current.ui.flyingDamageCritFontAsset;
-				m_flyingNumberManagerDamage.ShowNumber(pair.Value, GameAssets.current.ui.critIcon, _iconScale: 0.4f);
-			}
-			else
-			{
-				m_flyingNumberManagerDamage.config.fontAsset = GameAssets.current.ui.flyingDamageFontAsset;
-				m_flyingNumberManagerDamage.ShowNumber(pair.Value, false, false);
-			}
-		}
+			m_flyingNumberManagerDamage.ShowNumber(pair.Value, GameAssets.current.ui.damageIconPerType[pair.Key], false);
 
 		m_healthBar.SetHealth(m_linkedEntity.Equipment.CurrentHealth, m_linkedEntity.Equipment.MaxHealth);
 

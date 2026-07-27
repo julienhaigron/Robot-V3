@@ -122,7 +122,11 @@ public class EntityEquipmentData : AParsableScriptableObject
 		{
 			string allStatesInString = "";
 			for (int i = 0; i < passiveEffects.Length; i++)
+			{
+				if (passiveEffects[i].enumID == EntityPassiveEffectEnumID.Unknown)
+					continue;
 				allStatesInString += GameAssets.current.game.entityEffects[passiveEffects[i].enumID].displayName + (i + 1 < passiveEffects.Length ? ", " : "");
+			}
 			description.Add(new() { ID = SecondaryStat.StatType.PassiveEffect, title = "Passive Effects", floatValue = 0, stringValue = allStatesInString });
 		}
 		if (knownedActions != null && knownedActions.Length > 0)

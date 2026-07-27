@@ -47,7 +47,9 @@ MonoBehaviour:
   coneType: 0
   hitAmount: 1
   damageFactor: 1
-  usedDamageChannels: 
+  baseDamages:
+    keys: 
+    values: 
   appliableStatus: []
   statusHitProbability: 0
   passiveEffects: []

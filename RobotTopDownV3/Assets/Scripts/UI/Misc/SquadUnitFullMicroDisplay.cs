@@ -13,6 +13,7 @@ public class SquadUnitFullMicroDisplay : MonoBehaviour
 	[SerializeField] private Image m_mainFactionIconImg;
 	[SerializeField] private TextMeshProUGUI m_mainFactionPercentageTMP;
 	[SerializeField] private StatDisplay[] m_statDisplays;
+	[SerializeField] private StatusDisplay[] m_statusDisplays;
 	// Start is called once before the first execution of Update after the MonoBehaviour is created
 
 	private Entity m_linkedEntity;
@@ -54,6 +55,17 @@ public class SquadUnitFullMicroDisplay : MonoBehaviour
 			{
 				m_statDisplays[i].gameObject.SetActive(true);
 				m_statDisplays[i].Init(statsDescriptions[keys[i]]);
+			}
+		}
+
+		for(int i = 0; i < m_statusDisplays.Length; i++)
+		{
+			if (m_linkedEntity.Status.Count <= i)
+				m_statusDisplays[i].Hide();
+			else
+			{
+				m_statusDisplays[i].Init(GameAssets.current.game.entityStatus[m_linkedEntity.Status[i]]);
+				m_statusDisplays[i].Show();
 			}
 		}
 	}

@@ -23,7 +23,7 @@ public class EntityAIPlugin : EntityPlugin
 		public string linkedEquipmentID;
 	}
 
-	private List<Entity> m_lastEntitiesTargeted;
+	private List<Entity> m_lastEntitiesTargeted = new();
 	public List<Entity> LastTargetedEntities => m_lastEntitiesTargeted;
 
 	public struct CheckActionResultInfo

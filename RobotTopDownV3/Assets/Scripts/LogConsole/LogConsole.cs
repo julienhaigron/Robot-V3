@@ -74,9 +74,9 @@ public class LogConsole : SingletonPersistant<LogConsole>
 			switch (eventType)
 			{
 				case LogEventType.ActionResolution:
-					return (details == null ? "" : ("<link=" + details.ID + ">")) + "<color=#" + ColorUtility.ToHtmlStringRGB(GameConfig.current.meta.colorsPerType[eventType]) + ">" + message + "</color>" + (details == null ? "\n" : "</link>\n");
+					return "- " + (details == null ? "" : ("<link=" + details.ID + ">")) + "<color=#" + ColorUtility.ToHtmlStringRGB(GameConfig.current.meta.colorsPerType[eventType]) + ">" + message + "</color>" + (details == null ? "\n" : "</link>\n");
 				default:
-					return eventType.ToString() + " [" + recordTime.ToString("HH:mm") + "]: " + "<color=#" + ColorUtility.ToHtmlStringRGB(GameConfig.current.meta.colorsPerType[eventType]) + ">" + message + "</color>\n";
+					return "- " + eventType.ToString() + " [" + recordTime.ToString("HH:mm") + "]: " + "<color=#" + ColorUtility.ToHtmlStringRGB(GameConfig.current.meta.colorsPerType[eventType]) + ">" + message + "</color>\n";
 			}
 
 		}

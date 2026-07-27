@@ -47,7 +47,9 @@ MonoBehaviour:
   coneType: 1
   hitAmount: 2
   damageFactor: 0.8
-  usedDamageChannels: 0100000000000000
+  baseDamages:
+    keys: 
+    values: 
   appliableStatus:
   - {fileID: 11400000, guid: 8e5bfd61c7b1163409a1714c5cc52df9, type: 2}
   statusHitProbability: 0
