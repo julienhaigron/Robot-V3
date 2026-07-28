@@ -23,6 +23,9 @@ public class EntityConfigPanel : AUIPanel
 	[SerializeField] private BaseButton m_renameBtn;
 	[SerializeField] private StatDisplay[] m_unitStatDisplays;
 	[SerializeField] private Image m_dominentCorpoIcon;
+	[SerializeField] private EntityEquipmentData.SecondaryStat.StatType[] m_displayStaticStatsFilter;
+	[SerializeField] private EntityEquipmentData.SecondaryStat.StatType[] m_displayConditionalStatsFilter;
+	[SerializeField] private List<EntityEquipmentData.SecondaryStat.StatType> m_statDisplayOrder;
 
 	private List<EntityEquipmentData.EquipmentType> m_displayedEquipmentTypes = new();
 	private EntitySavedData m_entityData;
@@ -186,6 +189,15 @@ public class EntityConfigPanel : AUIPanel
 		//set unit stats
 		SerializableDictionary<EntityEquipmentData.SecondaryStat.StatType, EntityEquipmentData.StatDescription> statsDescriptions = m_entityData.GetStatsDesciptions();
 		List<EntityEquipmentData.SecondaryStat.StatType> keys = statsDescriptions.Keys.ToList();
+		foreach (EntityEquipmentData.SecondaryStat.StatType stat in keys.ToArray())
+		{
+			bool conditionalPredicate = m_displayConditionalStatsFilter.Contains(stat)
+				&& (statsDescriptions[stat].floatValue != 0 || statsDescriptions[stat].Format == EntityEquipmentData.SecondaryStat.StatTypeFormat.String || statsDescriptions[stat].Format == EntityEquipmentData.SecondaryStat.StatTypeFormat.Cell);
+			bool staticPredicate = m_displayStaticStatsFilter.Contains(stat);
+			if (!conditionalPredicate && !staticPredicate)
+				keys.Remove(stat);
+		}
+		keys.OrderBy(e => m_statDisplayOrder.IndexOf(e));
 		for (int i = 0; i < m_unitStatDisplays.Length; i++)
 		{
 			if (keys.Count <= i)

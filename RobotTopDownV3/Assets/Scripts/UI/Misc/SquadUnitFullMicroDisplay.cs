@@ -5,6 +5,9 @@ using UnityEngine.UI;
 using System.Linq;
 using Sirenix.OdinInspector;
 using TMPro;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 public class SquadUnitFullMicroDisplay : MonoBehaviour
 {
@@ -14,9 +17,9 @@ public class SquadUnitFullMicroDisplay : MonoBehaviour
 	[SerializeField] private TextMeshProUGUI m_mainFactionPercentageTMP;
 	[SerializeField] private StatDisplay[] m_statDisplays;
 	[SerializeField] private StatusDisplay[] m_statusDisplays;
-	// Start is called once before the first execution of Update after the MonoBehaviour is created
-
-	private Entity m_linkedEntity;
+	[SerializeField] private EntityEquipmentData.SecondaryStat.StatType[] m_displayStaticStatsFilter;
+	[SerializeField] private EntityEquipmentData.SecondaryStat.StatType[] m_displayConditionalStatsFilter;
+	[SerializeField] private List<EntityEquipmentData.SecondaryStat.StatType> m_statDisplayOrder;
 
 	private void Awake ()
 	{
@@ -47,6 +50,16 @@ public class SquadUnitFullMicroDisplay : MonoBehaviour
 
 		SerializableDictionary<EntityEquipmentData.SecondaryStat.StatType, EntityEquipmentData.StatDescription> statsDescriptions = entity.Data.GetStatsDesciptions();
 		List<EntityEquipmentData.SecondaryStat.StatType> keys = statsDescriptions.Keys.ToList();
+		foreach(EntityEquipmentData.SecondaryStat.StatType stat in keys.ToArray())
+		{
+			bool conditionalPredicate = m_displayConditionalStatsFilter.Contains(stat) 
+				&& (statsDescriptions[stat].floatValue != 0 || statsDescriptions[stat].Format == EntityEquipmentData.SecondaryStat.StatTypeFormat.String || statsDescriptions[stat].Format == EntityEquipmentData.SecondaryStat.StatTypeFormat.Cell);
+			bool staticPredicate = m_displayStaticStatsFilter.Contains(stat);
+			if (!conditionalPredicate && !staticPredicate)
+				keys.Remove(stat);
+		}
+		keys.OrderBy(e => m_statDisplayOrder.IndexOf(e));
+
 		for (int i = 0; i < m_statDisplays.Length; i++)
 		{
 			if (keys.Count <= i)
@@ -60,13 +73,84 @@ public class SquadUnitFullMicroDisplay : MonoBehaviour
 
 		for(int i = 0; i < m_statusDisplays.Length; i++)
 		{
-			if (m_linkedEntity.Status.Count <= i)
+			if (entity.Status.Count <= i)
 				m_statusDisplays[i].Hide();
 			else
 			{
-				m_statusDisplays[i].Init(GameAssets.current.game.entityStatus[m_linkedEntity.Status[i]]);
+				m_statusDisplays[i].Init(GameAssets.current.game.entityStatus[entity.Status[i]]);
 				m_statusDisplays[i].Show();
 			}
 		}
 	}
+
+#if UNITY_EDITOR
+	[Button]
+	private void Test ()
+	{
+		foreach(EntityEquipmentData.SecondaryStat.StatType type in m_displayStaticStatsFilter)
+		{
+			if (!m_statDisplayOrder.Contains(type))
+				Debug.Log("Missing type: " + type);
+		}
+
+		foreach (EntityEquipmentData.SecondaryStat.StatType type in m_displayConditionalStatsFilter)
+		{
+			if (!m_statDisplayOrder.Contains(type))
+				Debug.Log("Missing type: " + type);
+		}
+	}
+
+	[Button]
+	private void Test2 ()
+	{
+		foreach (EntityEquipmentData.SecondaryStat.StatType type in m_statDisplayOrder)
+		{
+			if(!m_displayStaticStatsFilter.Contains(type) && !m_displayConditionalStatsFilter.Contains(type))
+				Debug.Log("Missing type: " + type);
+		}
+
+		foreach (EntityEquipmentData.SecondaryStat.StatType type in m_statDisplayOrder)
+		{
+			if (m_displayStaticStatsFilter.Contains(type) && m_displayConditionalStatsFilter.Contains(type))
+				Debug.Log("Extra type: " + type);
+		}
+	}
+
+	[Button]
+	private void Test3 ()
+	{
+		List<EntityEquipmentData.SecondaryStat.StatType> alreadySeen = new();
+		foreach (EntityEquipmentData.SecondaryStat.StatType type in m_displayStaticStatsFilter)
+		{
+			if (alreadySeen.Contains(type))
+			{
+				Debug.Log("Double type in static: " + type);
+				continue;
+			}
+			alreadySeen.Add(type);
+		}
+
+		alreadySeen.Clear();
+		foreach (EntityEquipmentData.SecondaryStat.StatType type in m_displayConditionalStatsFilter)
+		{
+			if (alreadySeen.Contains(type))
+			{
+				Debug.Log("Double type in conditional: " + type);
+				continue;
+			}
+			alreadySeen.Add(type);
+		}
+	}
+
+	[Button]
+	private void EditorApplyToGameConfig ()
+	{
+		GameConfig.current.ui.statsDisplayOrder = m_statDisplayOrder.ToArray();
+		EditorUtility.SetDirty(GameConfig.current);
+	
+		AssetDatabase.SaveAssets();
+        AssetDatabase.Refresh();
+	}
+
+#endif
 }

@@ -55,9 +55,11 @@ public class EntityEquipmentData : AParsableScriptableObject
 		public string stringValue;
 		public float floatValue;
 
+		public SecondaryStat.StatTypeFormat Format => GameConfig.current.meta.formatPerStartTypeDictionary[ID];
+
 		public void Add(StatDescription _statDescription )
 		{
-			switch (GameConfig.current.meta.formatPerStartTypeDictionary[ID])
+			switch (Format)
 			{
 				case SecondaryStat.StatTypeFormat.Int:
 					floatValue += _statDescription.floatValue;

@@ -172,6 +172,9 @@ MonoBehaviour:
     flyingDamageCritFontAsset: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
     critIcon: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
     statusDisplayPrefab: {fileID: 4648805977819339727, guid: a644c3a9cc6d76d49933b728bcd7e368, type: 3}
+    damageIconPerType:
+      keys: 
+      values: []
     tileGroundMaterials:
       keys: 000000000100000002000000030000000400000005000000
       values:
