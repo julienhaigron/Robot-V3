@@ -111,7 +111,7 @@ public class EntityActionData : AParsableScriptableObject
 	public enum AOEType { Noone, Circle, Ray, LargeCone, ThinCone, LargeArc, ThinArc, Chain }
 
 	[Parsing("AoE Type")]
-	public AOEType aoeType = AOEType.Circle;
+	public AOEType aoeType = AOEType.Noone;
 	[ShowIf("@aoeType != AOEType.Noone"), Parsing("Does Affect Tile")]
 	public bool doesAffectTile = false;
 	public enum AOECenterType

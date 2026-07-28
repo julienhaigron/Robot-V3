@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: RTD::EntityActionData
   spreadsheetId: https://docs.google.com/spreadsheets/d/1quAn64T5zuE6npFmDzjOhNFFvw4UJaXSoWxX-uvy3gI/export?format=csv&gid=1875123267
   displayName: Balayage
-  enumID: 88
+  enumID: 39
   icon: {fileID: 0}
   tileOutlineColor: {r: 0, g: 1, b: 0, a: 1}
   m_tokenPreparationDuration: 0

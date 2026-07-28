@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: RTD::EntityActionData
   spreadsheetId: https://docs.google.com/spreadsheets/d/1quAn64T5zuE6npFmDzjOhNFFvw4UJaXSoWxX-uvy3gI/export?format=csv&gid=0
   displayName: Marche
-  enumID: 68
+  enumID: 19
   icon: {fileID: 0}
   tileOutlineColor: {r: 0, g: 1, b: 0, a: 1}
   m_tokenPreparationDuration: 0

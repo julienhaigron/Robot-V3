@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: RTD::EntityActionData
   spreadsheetId: https://docs.google.com/spreadsheets/d/1quAn64T5zuE6npFmDzjOhNFFvw4UJaXSoWxX-uvy3gI/export?format=csv&gid=709140422
   displayName: Rush
-  enumID: 59
+  enumID: 9
   icon: {fileID: 0}
   tileOutlineColor: {r: 0, g: 1, b: 0, a: 1}
   m_tokenPreparationDuration: 1
