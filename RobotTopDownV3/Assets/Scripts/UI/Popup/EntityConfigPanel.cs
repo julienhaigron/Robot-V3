@@ -25,7 +25,6 @@ public class EntityConfigPanel : AUIPanel
 	[SerializeField] private Image m_dominentCorpoIcon;
 	[SerializeField] private EntityEquipmentData.SecondaryStat.StatType[] m_displayStaticStatsFilter;
 	[SerializeField] private EntityEquipmentData.SecondaryStat.StatType[] m_displayConditionalStatsFilter;
-	[SerializeField] private List<EntityEquipmentData.SecondaryStat.StatType> m_statDisplayOrder;
 
 	private List<EntityEquipmentData.EquipmentType> m_displayedEquipmentTypes = new();
 	private EntitySavedData m_entityData;
@@ -192,12 +191,14 @@ public class EntityConfigPanel : AUIPanel
 		foreach (EntityEquipmentData.SecondaryStat.StatType stat in keys.ToArray())
 		{
 			bool conditionalPredicate = m_displayConditionalStatsFilter.Contains(stat)
-				&& (statsDescriptions[stat].floatValue != 0 || statsDescriptions[stat].Format == EntityEquipmentData.SecondaryStat.StatTypeFormat.String || statsDescriptions[stat].Format == EntityEquipmentData.SecondaryStat.StatTypeFormat.Cell);
+				&& ((statsDescriptions[stat].floatValue != 0 && (statsDescriptions[stat].Format == EntityEquipmentData.SecondaryStat.StatTypeFormat.Int || statsDescriptions[stat].Format == EntityEquipmentData.SecondaryStat.StatTypeFormat.Percentage || statsDescriptions[stat].Format == EntityEquipmentData.SecondaryStat.StatTypeFormat.Cell))
+				|| (statsDescriptions[stat].Format == EntityEquipmentData.SecondaryStat.StatTypeFormat.String));
 			bool staticPredicate = m_displayStaticStatsFilter.Contains(stat);
 			if (!conditionalPredicate && !staticPredicate)
 				keys.Remove(stat);
 		}
-		keys.OrderBy(e => m_statDisplayOrder.IndexOf(e));
+		List<EntityEquipmentData.SecondaryStat.StatType> order = GameConfig.current.ui.statsDisplayOrder.ToList();
+		keys.OrderByDescending(e => order.IndexOf(e));
 		for (int i = 0; i < m_unitStatDisplays.Length; i++)
 		{
 			if (keys.Count <= i)

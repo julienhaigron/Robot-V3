@@ -19,7 +19,6 @@ public class SquadUnitFullMicroDisplay : MonoBehaviour
 	[SerializeField] private StatusDisplay[] m_statusDisplays;
 	[SerializeField] private EntityEquipmentData.SecondaryStat.StatType[] m_displayStaticStatsFilter;
 	[SerializeField] private EntityEquipmentData.SecondaryStat.StatType[] m_displayConditionalStatsFilter;
-	[SerializeField] private List<EntityEquipmentData.SecondaryStat.StatType> m_statDisplayOrder;
 
 	private void Awake ()
 	{
@@ -58,7 +57,8 @@ public class SquadUnitFullMicroDisplay : MonoBehaviour
 			if (!conditionalPredicate && !staticPredicate)
 				keys.Remove(stat);
 		}
-		keys.OrderBy(e => m_statDisplayOrder.IndexOf(e));
+		List<EntityEquipmentData.SecondaryStat.StatType> order = GameConfig.current.ui.statsDisplayOrder.ToList();
+		keys.OrderByDescending(e => order.IndexOf(e));
 
 		for (int i = 0; i < m_statDisplays.Length; i++)
 		{
@@ -83,7 +83,7 @@ public class SquadUnitFullMicroDisplay : MonoBehaviour
 		}
 	}
 
-#if UNITY_EDITOR
+/*#if UNITY_EDITOR
 	[Button]
 	private void Test ()
 	{
@@ -142,15 +142,5 @@ public class SquadUnitFullMicroDisplay : MonoBehaviour
 		}
 	}
 
-	[Button]
-	private void EditorApplyToGameConfig ()
-	{
-		GameConfig.current.ui.statsDisplayOrder = m_statDisplayOrder.ToArray();
-		EditorUtility.SetDirty(GameConfig.current);
-	
-		AssetDatabase.SaveAssets();
-        AssetDatabase.Refresh();
-	}
-
-#endif
+#endif*/
 }
