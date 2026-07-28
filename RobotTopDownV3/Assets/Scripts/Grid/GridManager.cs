@@ -410,6 +410,62 @@ public class GridManager : Singleton<GridManager>
 		return tilesInRange;
 	}
 
+	public List<Tile> GetTilesInAoERange (EntityActionData.AOEType _type, Entity _caster, Tile _from, Tile _targetTile, int _minDistance, int _maxDistance, int _extraValue, bool _isThisTurn = false )
+	{
+		List<Tile> tilesInRange = new();
+		int orientation = _caster.Displacement.CurrentOrientation;
+
+		switch (_type)
+		{
+			case EntityActionData.AOEType.Circle:
+				tilesInRange.AddRange(GetTilesInVisionRange(_from, _maxDistance, false, _isThisTurn));
+				break;
+			case EntityActionData.AOEType.Ray:
+
+				tilesInRange.AddRange(GetTilesInRay(_from, _targetTile, _isThisTurn));
+				break;
+			case EntityActionData.AOEType.LargeCone:
+			case EntityActionData.AOEType.ThinCone:
+
+				tilesInRange.AddRange(GetTilesInCone(_from, _maxDistance, orientation, _type, _isThisTurn));
+				break;
+			case EntityActionData.AOEType.ThinArc:
+			case EntityActionData.AOEType.LargeArc:
+
+				bool largeArc = _type == EntityActionData.AOEType.LargeArc;
+				for (int d = _minDistance; d <= _maxDistance; d++)
+				{
+					List<Tile> ring = GetTilesAtDistance(_from, d, _isThisTurn);
+					foreach (Tile tile in ring)
+					{
+						if (IsInArc(_from, tile, (HexDirection)orientation, largeArc))
+							tilesInRange.Add(tile);
+					}
+				}
+
+				break;
+			case EntityActionData.AOEType.Chain:
+				List<Tile> tilesInVisionRange = GetTilesInVisionRange(_from, _maxDistance, false, _isThisTurn);
+				foreach (Tile tile in tilesInVisionRange)
+				{
+					if (!tile.GetEntity(_isThisTurn).IsAlliedTo(_caster.OwnerID) && tile.Distance < _minDistance)
+						tilesInRange.Add(tile);
+
+					if (tilesInRange.Count >= _extraValue + 1)
+						break;
+				}
+				break;
+		}
+
+		foreach (Tile tile in tilesInRange.ToArray())
+		{
+			if (tile.Distance < _minDistance)
+				tilesInRange.Remove(tile);
+		}
+
+		return tilesInRange;
+	}
+
 	public List<Tile> GetTilesInRay ( Tile _from, Tile _to, bool _isThisTurn )
 	{
 		List<Tile> tilesInRange = new();
@@ -506,7 +562,7 @@ public class GridManager : Singleton<GridManager>
 			set.Add(t);
 	}
 
-	public List<Tile> GetTilesInCone ( Tile _from, int _distance, int _orientation, EntityActionData.ConeType _type, bool _isThisTurn )
+	public List<Tile> GetTilesInCone ( Tile _from, int _distance, int _orientation, EntityActionData.AOEType _type, bool _isThisTurn )
 	{
 		List<Tile> tilesInRange = new();
 
@@ -542,7 +598,7 @@ public class GridManager : Singleton<GridManager>
 		{
 			List<Tile> newLine = new();
 
-			if (_type == EntityActionData.ConeType.Thin)
+			if (_type == EntityActionData.AOEType.ThinCone)
 			{
 				if (cursor % 2 == 0)
 				{

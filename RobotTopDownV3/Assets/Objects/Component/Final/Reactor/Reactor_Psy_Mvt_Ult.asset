@@ -16,10 +16,11 @@ MonoBehaviour:
   faction: 2
   icon: {fileID: 0}
   displayName: Mvt_Ult
-  energyCost: 75
+  energyCost: 0
   knownedActions: 
   passiveEffects: []
   statusHitProbability: 0.5
+  creditCost: 75
   recyclingDurationAmount: 1
   reparingDurationAmount: 1
   energyProduced: 200

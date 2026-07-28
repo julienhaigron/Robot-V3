@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 using UnityEditor;
 using System;
 
-/*[CustomEditor(typeof(EntityActionData))]
+[CustomEditor(typeof(EntityActionData))]
 public class EntityActionDataEditor : OdinEditor
 {
 	EntityActionData targetAction;
@@ -31,7 +31,7 @@ public class EntityActionDataEditor : OdinEditor
 
 		if (!string.Equals(targetAction.name, targetAction.enumID.ToString()))
 		{
-			Regex rgx = new Regex("[^a-zA-Z0-9]");
+			Regex rgx = new Regex("[^a-zA-Z0-9_-]");
 			targetAction.name = rgx.Replace(targetAction.name, "");
 			if (GUILayout.Button("Add enum"))
 			{
@@ -41,11 +41,11 @@ public class EntityActionDataEditor : OdinEditor
 			if (GUILayout.Button("Rename enum"))
 			{
 				//ComputeEnum();
-				string previousLine = "\t\t" + targetAction.enumID.ToString() + ",\n";
-				string newLine = "\t\t" + targetAction.name + ",\n";
+				string previousLine = "\t" + targetAction.enumID.ToString() + ",\n";
+				string newLine = "\t" + targetAction.name + ",\n";
 				ScriptGenerator.RewriteContent("EntityActionEnumID.cs", "EntityActionEnumID", previousLine, newLine);
 			}
-			
+
 			if (GUILayout.Button("Refresh enum"))
 			{
 				//ComputeEnum();
@@ -78,13 +78,13 @@ public class EntityActionDataEditor : OdinEditor
 		HashSet<string> processedActions = new HashSet<string>();
 		List<EntityActionData> ignoredActions = new List<EntityActionData>();
 		string enumList = "";
-		Regex rgx = new Regex("[^a-zA-Z0-9 -]");
+		Regex rgx = new Regex("[^a-zA-Z0-9 _-]");
 		foreach (EntityActionData action in actions)
 		{
 			action.name = rgx.Replace(action.name, "");
 			if (processedActions.Add(action.name))
 			{
-				enumList += "\t\t" + action.name + ",\n";
+				enumList += "\t" + action.name + ",\n";
 			}
 			else
 			{
@@ -126,9 +126,9 @@ public class EntityActionDataEditor : OdinEditor
 			foreach (string actionPath in actionsPathsToUpdate)
 			{
 				EntityActionData action = AssetDatabase.LoadAssetAtPath<EntityActionData>(actionPath);
-				if (action != null)
+				if (action != null && Enum.TryParse(action.name, out EntityActionEnumID result))
 				{
-					action.enumID = Enum.Parse<EntityActionEnumID>(action.name);
+					action.enumID = result;
 					if (!GameAssets.current.game.entityActionsData.ContainsKey(action.enumID))
 					{
 						GameAssets.current.game.entityActionsData.Add(action.enumID, action);
@@ -162,4 +162,4 @@ public class EntityActionDataEditor : OdinEditor
 		}
 		return assets;
 	}
-}*/
+}

@@ -2,7 +2,19 @@ using UnityEngine;
 
 public class Condition
 {
-	public enum ConditionType { Noone, DidNotMoveThisTurn, DidNotAttackThisTurn, IsTargetMarked, NoEnnemy8CellDistance, Ennemy2Cell3Distance, Traveled6Tiles, IsInPreaparation, Cells12FromStart }
+	public enum ConditionType 
+	{ 
+		Noone, 
+		DidNotMoveThisTurn, 
+		DidNotAttackThisTurn, 
+		IsTargetMarked, 
+		NoEnnemy8CellDistance, 
+		Ennemy2Cell3Distance, 
+		Traveled6Tiles, 
+		IsInPreaparation, 
+		IsInCooldown, 
+		Cells12FromStart 
+	}
 
 	public static bool UseConditionPredicate ( AEntityAction _action, Entity _entity, Entity _targetEntity, ConditionType _conditionType )
 	{

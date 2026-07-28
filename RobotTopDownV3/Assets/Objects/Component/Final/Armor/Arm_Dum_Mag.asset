@@ -16,10 +16,11 @@ MonoBehaviour:
   faction: 5
   icon: {fileID: 0}
   displayName: "Magn\xE9tique Armouring"
-  energyCost: 0
+  energyCost: 15
   knownedActions: 
   passiveEffects: []
   statusHitProbability: 0.5
+  creditCost: 0
   recyclingDurationAmount: 1
   reparingDurationAmount: 1
   statBonuses: []

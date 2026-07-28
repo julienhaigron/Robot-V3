@@ -17,12 +17,14 @@ public static class CsvImporter
         foreach (var kvp in objects)
         {
             string id = kvp.Key;
+            if (string.IsNullOrEmpty(id))
+                continue;
             Dictionary<string, string> data = kvp.Value;
 
             T asset = CreateOrLoadAsset<T>(id, _assetFolder);
 
             asset.spreadsheetId = _csvUrl;
-            PopulateAsset(asset, new(data, asset.Id));
+            PopulateAsset(asset, new(data, id, asset.Id));
 
             EditorUtility.SetDirty(asset);
         }
@@ -38,7 +40,7 @@ public static class CsvImporter
 
         if (objects.Keys.Contains(_parsableScriptable.Id))
 		{
-            PopulateAsset(_parsableScriptable, new(objects[_parsableScriptable.Id], _parsableScriptable.Id));
+            PopulateAsset(_parsableScriptable, new(objects[_parsableScriptable.Id], _parsableScriptable.Id, _parsableScriptable.Id));
 
             EditorUtility.SetDirty(_parsableScriptable);
 
@@ -177,6 +179,7 @@ public static class CsvImporter
             asset = AParsableScriptableObject.Instantiate(GameConfig.current.parsing.baseParsableScriptablePerType[typeName]) as T;
         else
             asset = ScriptableObject.CreateInstance<T>();
+        asset.name = _id;
         AssetDatabase.CreateAsset(asset, path);
 
         return asset;

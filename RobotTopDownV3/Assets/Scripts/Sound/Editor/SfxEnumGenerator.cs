@@ -27,9 +27,9 @@ public static class SfxEnumGenerator
 
 		StringBuilder builder = new();
 
-		builder.AppendLine("\tpublic enum SfxId");
-		builder.AppendLine("\t{");
-		builder.AppendLine("\t\tNone,");
+		builder.AppendLine("public enum SfxId");
+		builder.AppendLine("{");
+		builder.AppendLine("\tNone,");
 
 		foreach (string rawId in ids)
 		{
@@ -37,10 +37,10 @@ public static class SfxEnumGenerator
 				continue;
 
 			string id = Sanitize(rawId);
-			builder.AppendLine($"\t\t{id},");
+			builder.AppendLine($"\t{id},");
 		}
 
-		builder.AppendLine("\t}");
+		builder.AppendLine("}");
 
 		File.WriteAllText(OUTPUT_PATH, builder.ToString());
 

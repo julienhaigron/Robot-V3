@@ -279,78 +279,12 @@ public class EntityEquipmentPlugin : EntityPlugin
 
 	public List<Tile> GetTilesInAoERange ( AttackAction _action, Tile _targetTile, bool _isThisTurn = false )
 	{
-		List<Tile> tilesInRange = new();
 		EntityActionData attackData = GameAssets.current.game.entityActionsData[_action.enumID];
 		int maxDistance = _action.Data.aoECenterType == EntityActionData.AOECenterType.Self ? _action.Data.GetMaxRange(_action, m_linkedEntity, null) : _action.Data.GetAoEMaxRange(_action, m_linkedEntity, null);
 		int minDistance = _action.Data.aoECenterType == EntityActionData.AOECenterType.Self ? _action.Data.minDistance : _action.Data.aoeMinEffectRange;
 		Tile from = _action.Data.aoECenterType == EntityActionData.AOECenterType.Self ? _action.PerformingEntity.Displacement.Coordinates.GetTile() : _targetTile;
-
-		Weapon usedWeapon = null;
-		foreach (string weaponID in m_weapons.Keys)
-		{
-			if (m_weapons[weaponID].Data.knownedActions.Contains(attackData.enumID))
-			{
-				usedWeapon = m_weapons[weaponID];
-				break;
-			}
-		}
-		if (usedWeapon == null)
-		{
-			Debug.LogError("Error : trying to use an attack not in a weapon. No weapon found for action " + _action.enumID.ToString());
-			return tilesInRange;
-		}
-
-		if (!attackData.isAoe)
-			return tilesInRange;
-
-		switch (attackData.aoeType)
-		{
-			case EntityActionData.AOEType.Circle:
-				tilesInRange.AddRange(GridManager.Instance.GetTilesInVisionRange(from, attackData.aoeMaxEffectRange, false, _isThisTurn));
-				break;
-			case EntityActionData.AOEType.Ray:
-
-				tilesInRange.AddRange(GridManager.Instance.GetTilesInRay(from, _targetTile, _isThisTurn));
-				break;
-			case EntityActionData.AOEType.Cone:
-
-				tilesInRange.AddRange(GridManager.Instance.GetTilesInCone(from, maxDistance, m_linkedEntity.Displacement.CurrentOrientation
-					, attackData.coneType, _isThisTurn));
-				break;
-			case EntityActionData.AOEType.Arc:
-
-				bool largeArc = attackData.arcType == EntityActionData.ArcType.Large;
-				for (int d = minDistance; d <= maxDistance; d++)
-				{
-					List<Tile> ring = GridManager.Instance.GetTilesAtDistance(from, d, _isThisTurn);
-					foreach (Tile tile in ring)
-					{
-						if (GridManager.Instance.IsInArc(from, tile, (HexDirection)m_linkedEntity.Displacement.CurrentOrientation, largeArc))
-							tilesInRange.Add(tile);
-					}
-				}
-
-				break;
-			case EntityActionData.AOEType.Chain:
-				List<Tile> tilesInVisionRange = GridManager.Instance.GetTilesInVisionRange(m_linkedEntity.Displacement.Coordinates.GetTile(), maxDistance, false, _isThisTurn);
-				foreach (Tile tile in tilesInVisionRange)
-				{
-					if (!tile.GetEntity(_isThisTurn).IsAlliedTo(m_linkedEntity.OwnerID) && tile.Distance < minDistance)
-						tilesInRange.Add(tile);
-
-					if (tilesInRange.Count >= _action.Data.maxChainedTarget + 1)
-						break;
-				}
-				break;
-		}
-
-		foreach (Tile tile in tilesInRange.ToArray())
-		{
-			if (tile.Distance < minDistance)
-				tilesInRange.Remove(tile);
-		}
-
-		return tilesInRange;
+		int extraValue = _action.Data.maxChainedTarget;
+		return GridManager.Instance.GetTilesInAoERange(_action.Data.aoeType, m_linkedEntity, from, _targetTile, minDistance, maxDistance, extraValue, _isThisTurn);
 	}
 
 	public bool AttackRoll ( AttackAction _attackAction, AttackAction.SingleAttackInfo _singleAttackInfo, Entity _targetEntity )

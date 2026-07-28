@@ -8,41 +8,17 @@ public class PushOrPullPassiveEffect : AEntityPassiveEffect
 
 	public override void ApplyEffect ( Entity _entity, Entity _targetEntity, PassiveEffectContainer _effectContainer )
 	{
-		List<Entity> entitiesAffected = new();
-		switch (_effectContainer.targetType)
+		int direction = GridManager.Instance.GetClosestOrientation(_targetEntity.Displacement.Coordinates.GetTile(), _entity.Displacement.Coordinates.GetTile());
+		if (movementStrength > 0)
+			direction = (direction + 3) % 5;
+		Tile destination = _targetEntity.Displacement.Coordinates.GetTile().Neighbors[direction];
+		for (int i = 0; i < Mathf.Abs(movementStrength) - 1; i++)
 		{
-			case TargetType.Self:
-				entitiesAffected.Add(_entity);
-				break;
-			case TargetType.OtherEntity:
-				entitiesAffected.Add(_targetEntity);
-				break;
-			case TargetType.CircleOnSelf:
-			case TargetType.CircleOnTarget:
-				Entity entityTargetted = _effectContainer.targetType == TargetType.CircleOnSelf ? _entity : _targetEntity;
-				List<Tile> tilesInRange = GridManager.Instance.GetTilesInVisionRange(entityTargetted.Displacement.Coordinates.GetTile(), _effectContainer.effectRange.y, false, true);
-				foreach (Tile tile in tilesInRange)
-				{
-					if (tile.GetEntity(true) != null)
-						entitiesAffected.Add(tile.GetEntity(true));
-				}
-				break;
+			destination = destination.Neighbors[direction];
 		}
-
-		foreach (Entity targetEntity in entitiesAffected)
-		{
-			int direction = GridManager.Instance.GetClosestOrientation(_targetEntity.Displacement.Coordinates.GetTile(), _entity.Displacement.Coordinates.GetTile());
-			if (movementStrength > 0)
-				direction = (direction + 3) % 5;
-			Tile destination = _targetEntity.Displacement.Coordinates.GetTile().Neighbors[direction];
-			for (int i = 0; i < Mathf.Abs(movementStrength) - 1; i++)
-			{
-				destination = destination.Neighbors[direction];
-			}
-			TurnManager.InPlayEvent movementEvent = new();
-			TurnManager.Instance.AddGameEvent(movementEvent);
-			_targetEntity.Displacement.MoveToTile(destination.coordinates.ID, movementEvent.EndEvent, false);
-		}
+		TurnManager.InPlayEvent movementEvent = new();
+		TurnManager.Instance.AddGameEvent(movementEvent);
+		_targetEntity.Displacement.MoveToTile(destination.coordinates.ID, movementEvent.EndEvent, false);
 
 		base.ApplyEffect(_entity, _targetEntity, _effectContainer);
 	}

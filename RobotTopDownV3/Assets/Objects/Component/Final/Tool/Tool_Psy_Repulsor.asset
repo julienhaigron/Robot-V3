@@ -16,10 +16,11 @@ MonoBehaviour:
   faction: 2
   icon: {fileID: 0}
   displayName: Repulsor
-  energyCost: 50
-  knownedActions: 
+  energyCost: 15
+  knownedActions: 4a000000
   passiveEffects: []
   statusHitProbability: 0.5
+  creditCost: 50
   recyclingDurationAmount: 1
   reparingDurationAmount: 1
   prefab: {fileID: 0}

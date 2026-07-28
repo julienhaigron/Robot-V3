@@ -17,9 +17,10 @@ MonoBehaviour:
   icon: {fileID: 0}
   displayName: Dummy Frame
   energyCost: 0
-  knownedActions: 
+  knownedActions: 44000000
   passiveEffects: []
   statusHitProbability: 0.5
+  creditCost: 0
   recyclingDurationAmount: 1
   reparingDurationAmount: 1
   prefab: {fileID: 0}

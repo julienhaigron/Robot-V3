@@ -92,6 +92,7 @@ public class GameToolboxWindow : EditorWindow
 
 	private void GenerateAllEnums ()
 	{
+		EntityActionDataEditor.ComputeEnum();
 		ScriptableEnumAutoEditor.GenerateAllEnums();
 	}
 

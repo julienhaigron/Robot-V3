@@ -9,7 +9,7 @@ public static class CsvTypeConverter
     public static object Convert ( string _rawValue, Type _targetType )
     {
         #region Base Vars
-        if (string.Equals(_rawValue, "-"))
+        if (string.IsNullOrEmpty(_rawValue) || string.Equals(_rawValue, "-") || string.Equals(_rawValue, " "))
             return default;
         else if (_targetType == typeof(string))
             return _rawValue;
@@ -17,6 +17,8 @@ public static class CsvTypeConverter
             return int.Parse(_rawValue);
         else if (_targetType == typeof(float))
             return float.Parse(_rawValue);
+        else if (_targetType == typeof(ulong))
+            return ulong.Parse(_rawValue);
         else if (_targetType == typeof(bool))
 		{
             if (!string.IsNullOrEmpty(_rawValue) && string.Equals(_rawValue, "TRUE"))
@@ -105,6 +107,17 @@ public static class CsvTypeConverter
             else
                 return null;
         }
+        else if (_targetType == typeof(ChipsetEquipmentData[]))
+        {
+            List<ChipsetEquipmentData> equipments = new();
+            string[] rawValues = _rawValue.Replace(" ", "").Split(",");
+            foreach (string raw in rawValues)
+            {
+                if (TryGetChipsetComponent(raw, out ChipsetEquipmentData data))
+                    equipments.Add(data);
+            }
+            return equipments.ToArray();
+        }
         else if (_targetType == typeof(AItemData))
         {
             if (TryGetItemData(_rawValue, out AItemData data))
@@ -118,10 +131,21 @@ public static class CsvTypeConverter
             string[] rawValues = _rawValue.Replace(" ", "").Split(",");
             foreach (string raw in rawValues)
             {
-                if (TryGetEquipmentComponent(_rawValue, out EntityEquipmentData data))
+                if (TryGetEquipmentComponent(raw, out EntityEquipmentData data))
                     equipments.Add(data);
             }
             return equipments.ToArray();
+        }
+        else if (_targetType == typeof(AEntityStatus[]))
+        {
+            List<AEntityStatus> statuses = new();
+            string[] rawValues = _rawValue.Replace(" ", "").Split(",");
+            foreach (string raw in rawValues)
+            {
+                if (TryGetStatus(raw, out AEntityStatus data))
+                    statuses.Add(data);
+            }
+            return statuses.ToArray();
         }
         #endregion
 
@@ -208,15 +232,17 @@ public static class CsvTypeConverter
             if (string.IsNullOrEmpty(_rawValue))
                 return null;
             string[] vars = _rawValue.Replace(" ", "").Split(";");
-            if (vars.Length < 3)
+            if (vars.Length < 5)
                 return null;
 
             AEntityPassiveEffect.PassiveEffectContainer passiveEffect = new()
             {
                 enumID = (EntityPassiveEffectEnumID)Convert(vars[0], typeof(EntityPassiveEffectEnumID)),
                 conditionType = (Condition.ConditionType)Convert(vars[1], typeof(Condition.ConditionType)),
-                targetType = (AEntityPassiveEffect.TargetType)Convert(vars[2], typeof(AEntityPassiveEffect.TargetType)),
-                effectRange = vars.Length == 4 ? (Vector2Int)Convert(vars[2], typeof(Vector2Int)) : new(0,0)
+                targetType = (EntityActionData.TargetType)Convert(vars[2], typeof(EntityActionData.TargetType)),
+                aoeType = (EntityActionData.AOEType)Convert(vars[3], typeof(EntityActionData.AOEType)),
+                centerType = (EntityActionData.AOECenterType)Convert(vars[4], typeof(EntityActionData.AOECenterType)),
+                effectRange = vars.Length == 6 ? (Vector2Int)Convert(vars[5], typeof(Vector2Int)) : new(-1,-1)
             };
 
             return passiveEffect;
@@ -239,7 +265,7 @@ public static class CsvTypeConverter
         #region Enums
         else if (_targetType == typeof(EntityActionEnumID[]))
         {
-            string[] raw = _rawValue.Split(",");
+            string[] raw = _rawValue.Replace(" ", "").Split(",");
 
             List<EntityActionEnumID> result = new();
             foreach (string item in raw)
@@ -443,7 +469,23 @@ public static class CsvTypeConverter
         _data = null;
         return false;
     }
-    
+
+    private static bool TryGetStatus ( this string _input, out AEntityStatus _data )
+    {
+        string[] guids = AssetDatabase.FindAssets("t:AEntityStatus");
+
+        foreach (string guid in guids)
+        {
+            _data = AssetDatabase.LoadAssetAtPath(AssetDatabase.GUIDToAssetPath(guid), typeof(AEntityStatus)) as AEntityStatus;
+
+            if (_data != null && string.Equals(_data.name, _input))
+                return true;
+        }
+
+        _data = null;
+        return false;
+    }
+
     private static bool TryGetItemData ( this string _input, out AItemData _data )
     {
         string[] guids = AssetDatabase.FindAssets("t:AItemData");

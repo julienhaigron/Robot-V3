@@ -16,12 +16,12 @@ MonoBehaviour:
   faction: 2
   icon: {fileID: 0}
   displayName: Optic
-  energyCost: 75
+  energyCost: 0
   knownedActions: 
   passiveEffects: []
   statusHitProbability: 0.5
+  creditCost: 75
   recyclingDurationAmount: 1
   reparingDurationAmount: 1
   equipmentSlotAvailable: 2
-  visionRange: 15
   visionType: 0

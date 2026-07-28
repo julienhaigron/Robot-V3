@@ -20,6 +20,7 @@ MonoBehaviour:
   knownedActions: 
   passiveEffects: []
   statusHitProbability: 0.5
+  creditCost: 0
   recyclingDurationAmount: 1
   reparingDurationAmount: 1
   energyProduced: 0

@@ -16,10 +16,11 @@ MonoBehaviour:
   faction: 2
   icon: {fileID: 0}
   displayName: AIM_Sho
-  energyCost: 75
+  energyCost: 0
   knownedActions: 
   passiveEffects: []
   statusHitProbability: 0.5
+  creditCost: 75
   recyclingDurationAmount: 1
   reparingDurationAmount: 1
   chipsetSlotAvailable: 2

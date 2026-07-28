@@ -55,17 +55,17 @@ public class AttackAction : AEntityAction
 
 	public override void Prepare ( Entity.EntityState _state )
 	{
-		if (targetedEntityIDs != null || (Data.isAoe && targetTileIDs != null))
+		if (targetedEntityIDs != null || (Data.aoeType != EntityActionData.AOEType.Noone && targetTileIDs != null))
 		{
 			//targetedEntityID = PerformingEntity.AI.TargetedEntity.ID;
-			if (Data.isAoe)
+			if (Data.aoeType != EntityActionData.AOEType.Noone)
 				LogConsole.AddLog("Automatic hit on targets due to AoE type", LogConsole.LogEventType.AttackRoll);
 			
 			for (int attackCount = 0; attackCount < attacksInfos.Length; attackCount++)
 			{
 				SingleAttackInfo attackInfo = attacksInfos[attackCount];
 				Entity targetEntity = GameManager.Instance.GetEntityFromID(targetedEntityIDs[attackCount]);
-				attackInfo.isAttackSuccessfull = Data.isAoe ? true : PerformingEntity.Equipment.AttackRoll(this, attackInfo, targetEntity);
+				attackInfo.isAttackSuccessfull = Data.aoeType != EntityActionData.AOEType.Noone ? true : PerformingEntity.Equipment.AttackRoll(this, attackInfo, targetEntity);
 
 				if (attackInfo.isAttackSuccessfull)
 				{

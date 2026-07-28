@@ -1,4 +1,4 @@
-//GENERATED 30
+//GENERATED 35
 public enum EntityPassiveEffectEnumID
 {
 	Unknown,
@@ -27,6 +27,7 @@ public enum EntityPassiveEffectEnumID
 	Push3,
 	MaxAoERangeUp,
 	DoubleDamage,
+	QuickDraw,
 	//#END#ENTITYPASSIVEEFFECTENUMID#//
 
 }

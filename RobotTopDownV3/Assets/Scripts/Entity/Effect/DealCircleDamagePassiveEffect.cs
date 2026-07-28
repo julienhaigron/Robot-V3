@@ -19,25 +19,7 @@ public class DealCircleDamagePassiveEffect : AEntityPassiveEffect
 			hitNormal = Vector3.zero,
 			hitPos = Vector3.zero
 		};
-		switch (_effectContainer.targetType)
-		{
-			case TargetType.CircleOnSelf:
-			case TargetType.CircleOnTarget:
-				Entity entityTargetted = _effectContainer.targetType == TargetType.CircleOnSelf ? _entity : _targetEntity;
-				List <Tile> tilesInRange = GridManager.Instance.GetTilesInVisionRange(entityTargetted.Displacement.Coordinates.GetTile(), explosionRange, false, true);
-				foreach (Tile tile in tilesInRange)
-				{
-					if (tile.GetEntity(true) != null)
-						tile.GetEntity(true).Equipment.TakeDamage(damageCallback);
-				}
-				break;
-			case TargetType.Self:
-				_entity.Equipment.TakeDamage(damageCallback);
-				break;
-			case TargetType.OtherEntity:
-				_targetEntity.Equipment.TakeDamage(damageCallback);
-				break;
-		}
+		_targetEntity.Equipment.TakeDamage(damageCallback);
 
 		base.ApplyEffect(_entity, _targetEntity, _effectContainer);
 	}

@@ -35,16 +35,13 @@ MonoBehaviour:
   minDistance: 1
   maxDistance: 1
   maxTargetAmount: 1
-  isAoe: 1
   aoeType: 3
   doesAffectTile: 0
   aoECenterType: 0
   aoeMinEffectRange: 0
   aoeMaxEffectRange: 0
-  arcType: 1
   maxChainedTarget: 1
   damageReductionOnChain: 0.1
-  coneType: 1
   hitAmount: 1
   damageFactor: 1
   baseDamages:
@@ -57,6 +54,8 @@ MonoBehaviour:
   - enumID: 7
     conditionType: 1
     targetType: 3
+    aoeType: 0
+    centerType: 0
     effectRange: {x: 0, y: 0}
   invocatedEntity: {fileID: 0}
   invocatedItem: {fileID: 0}

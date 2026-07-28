@@ -16,10 +16,17 @@ MonoBehaviour:
   faction: 4
   icon: {fileID: 0}
   displayName: Goliath
-  energyCost: 75
+  energyCost: 0
   knownedActions: 0a000000
-  passiveEffects: []
+  passiveEffects:
+  - enumID: 19
+    conditionType: 0
+    targetType: 0
+    aoeType: 0
+    centerType: 0
+    effectRange: {x: -1, y: -1}
   statusHitProbability: 0.5
+  creditCost: 75
   recyclingDurationAmount: 1
   reparingDurationAmount: 1
   prefab: {fileID: 0}

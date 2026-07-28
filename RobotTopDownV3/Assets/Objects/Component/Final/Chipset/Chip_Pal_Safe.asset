@@ -16,10 +16,15 @@ MonoBehaviour:
   faction: 3
   icon: {fileID: 0}
   displayName: Safe Chipset
-  energyCost: 50
+  energyCost: 15
   knownedActions: 
   passiveEffects: []
   statusHitProbability: 0.5
+  creditCost: 50
   recyclingDurationAmount: 1
   reparingDurationAmount: 1
-  statBonuses: []
+  statBonuses:
+  - conditionType: 4
+    bonus:
+      type: 22
+      value: 40

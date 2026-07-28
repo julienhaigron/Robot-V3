@@ -33,7 +33,7 @@ public class BulletWeapon : Weapon
 
 	protected override IEnumerator AimTargetCR ( AttackAction _attackAction, int _attackIndex, AttackAction.SingleAttackInfo _attackInfo )
 	{
-		if (!_attackAction.Data.isAoe || (_attackAction.Data.aoeType == EntityActionData.AOEType.Circle && _attackAction.Data.targetType != EntityActionData.TargetType.Self))
+		if (_attackAction.Data.aoeType == EntityActionData.AOEType.Noone || (_attackAction.Data.aoeType == EntityActionData.AOEType.Circle && _attackAction.Data.targetType != EntityActionData.TargetType.Self))
 		{
 			Entity targetEntity = GameManager.Instance.GetEntityFromID(_attackAction.targetedEntityIDs[_attackIndex]);
 			Tile targetTile = GridManager.Instance.Tiles[_attackAction.targetTileIDs[_attackIndex]];
@@ -76,7 +76,7 @@ public class BulletWeapon : Weapon
 		if (!_attackInfo.isAttackSuccessfull)
 			yield break;
 		
-		if (!_attackAction.Data.isAoe || (_attackAction.Data.aoeType == EntityActionData.AOEType.Circle && _attackAction.Data.targetType != EntityActionData.TargetType.Self))
+		if (_attackAction.Data.aoeType == EntityActionData.AOEType.Noone || (_attackAction.Data.aoeType == EntityActionData.AOEType.Circle && _attackAction.Data.targetType != EntityActionData.TargetType.Self))
 		{
 			Entity targetEntity = GameManager.Instance.GetEntityFromID((int)_attackAction.targetedEntityIDs[_attackIndex]);
 			yield return ShootAtEntityAnim(_attackAction, _attackIndex, _attackInfo, _lastSuccessfullAttackIndex, targetEntity);
@@ -104,8 +104,14 @@ public class BulletWeapon : Weapon
 					});
 
 					ApplyStatuses(entity, _attackInfo);
-					ApplyEffects(entity);
+					//ApplyEffects(entity);
 				}
+			}
+			foreach(AEntityPassiveEffect.PassiveEffectContainer pe in m_lastPerformedAction.effects)
+			{
+				List<Entity> effectsTargets = GetPassiveEffectTargets(_attackAction, pe, _attackIndex);
+				foreach (Entity entity in effectsTargets)
+					ApplyEffects(entity, pe);
 			}
 		}
 	}
@@ -154,7 +160,9 @@ public class BulletWeapon : Weapon
 		});
 
 		ApplyStatuses(_entity, _attackInfo);
-		ApplyEffects(_entity);
+
+		foreach (AEntityPassiveEffect.PassiveEffectContainer pe in m_lastPerformedAction.effects)
+			ApplyEffects(_entity, pe);
 
 		if (_isLastBullet)
 			EndAttack(m_lastPerformedAction);

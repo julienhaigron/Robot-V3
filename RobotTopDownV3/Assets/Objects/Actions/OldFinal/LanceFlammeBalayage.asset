@@ -35,16 +35,13 @@ MonoBehaviour:
   minDistance: 1
   maxDistance: 5
   maxTargetAmount: 1
-  isAoe: 1
   aoeType: 2
   doesAffectTile: 0
   aoECenterType: 0
   aoeMinEffectRange: 0
   aoeMaxEffectRange: 0
-  arcType: 0
   maxChainedTarget: 1
   damageReductionOnChain: 0.1
-  coneType: 0
   hitAmount: 1
   damageFactor: 0.8
   baseDamages:

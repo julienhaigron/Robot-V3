@@ -1,0 +1,62 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a743e40aeafc0445b10e59cec8dfa98, type: 3}
+  m_Name: Thrust_Flurry
+  m_EditorClassIdentifier: RTD::EntityActionData
+  spreadsheetId: https://docs.google.com/spreadsheets/d/1quAn64T5zuE6npFmDzjOhNFFvw4UJaXSoWxX-uvy3gI/export?format=csv&gid=709140422
+  displayName: Thrust_Flurry
+  enumID: 65
+  icon: {fileID: 0}
+  tileOutlineColor: {r: 0, g: 1, b: 0, a: 1}
+  m_tokenPreparationDuration: 0
+  m_tokenCooldown: 0
+  tokenDuration: 1
+  isModAction: 0
+  preparationAnimationKey: 
+  afterPerformAnimationKey: 
+  onPerformSingleAttackSFXID: 0
+  onSingleAttackHitSFXID: 0
+  conditionType: 0
+  previousActionAttackModificator: 0
+  type: 1
+  subType: 5
+  codeType: 1
+  targetType: 1
+  trajectoryType: 0
+  minDistance: 1
+  maxDistance: 1
+  maxTargetAmount: 1
+  aoeType: 0
+  doesAffectTile: 0
+  aoECenterType: 0
+  aoeMinEffectRange: 0
+  aoeMaxEffectRange: 0
+  maxChainedTarget: 1
+  damageReductionOnChain: 0.1
+  hitAmount: 2
+  damageFactor: 1
+  baseDamages:
+    keys: 01000000
+    values: 0a000000
+  appliableStatus: []
+  statusHitProbability: 0
+  passiveEffects:
+  - enumID: 5
+    conditionType: 3
+    targetType: 0
+    aoeType: 0
+    centerType: 0
+    effectRange: {x: -1, y: -1}
+  invocatedEntity: {fileID: 0}
+  invocatedItem: {fileID: 0}
+  invocationCountLimit: 1
+  movementSpeed: 1

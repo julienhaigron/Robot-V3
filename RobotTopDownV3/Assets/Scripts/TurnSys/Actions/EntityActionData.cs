@@ -103,55 +103,33 @@ public class EntityActionData : AParsableScriptableObject
 	[ShowIf("@targetType != TargetType.Self"), Parsing("Max Distance")]
 	public int maxDistance;
 
-	/*[ShowIf("@!isAoe || (aoeType == AOEType.Circle && targetType != TargetType.Self)"), Parsing("Max Distance")]
-	public int minTargetAmount = 1;*/
 	[Parsing("Max Distance")]
 	public int maxTargetAmount = 1;
 	#endregion
 
 	#region AOE Vars
-	[Parsing("Is AoE")]
-	public bool isAoe = false;
-	public enum AOEType
-	{
-		Circle,
-		Ray,
-		Cone,
-		Arc,
-		Chain
-	}
-	[ShowIf("@isAoe"), Parsing("AoE Type")]
+	public enum AOEType { Noone, Circle, Ray, LargeCone, ThinCone, LargeArc, ThinArc, Chain }
+
+	[Parsing("AoE Type")]
 	public AOEType aoeType = AOEType.Circle;
-	[ShowIf("@isAoe"), Parsing("Does Affect Tile")]
+	[ShowIf("@aoeType != AOEType.Noone"), Parsing("Does Affect Tile")]
 	public bool doesAffectTile = false;
 	public enum AOECenterType
 	{
 		Self,
 		Target
 	}
-	[ShowIf("@isAoe"), Parsing("AoE Center Type")]
+	[ShowIf("@aoeType != AOEType.Noone"), Parsing("AoE Center Type")]
 	public AOECenterType aoECenterType = AOECenterType.Self;
-	[ShowIf("@isAoe"), Parsing("Min AoE Effect Range")]
+	[ShowIf("@aoeType != AOEType.Noone"), Parsing("Min AoE Effect Range")]
 	public int aoeMinEffectRange = 0;
-	[ShowIf("@isAoe"), Parsing("Max AoE Effect Range")]
+	[ShowIf("@aoeType != AOEType.Noone"), Parsing("Max AoE Effect Range")]
 	public int aoeMaxEffectRange = 0;
-
-
-	[ShowIf("@isAoe && aoeType == AOEType.Arc")]
-	public ArcType arcType = ArcType.Small;
-	public enum ArcType { Small, Large }
-	[ShowIf("@isAoe && aoeType == AOEType.Chain"), Min(1)]
+	[ShowIf("@aoeType == AOEType.Chain"), Min(1)]
 	public int maxChainedTarget = 1;
-	[ShowIf("@isAoe && aoeType == AOEType.Chain"), Min(1)]
+	[ShowIf("@aoeType == AOEType.Chain"), Min(1)]
 	public float damageReductionOnChain = .1f;
 
-	public enum ConeType
-	{
-		Thin,
-		Large
-	}
-	[ShowIf("@isAoe && aoeType == AOEType.Cone")]
-	public ConeType coneType = ConeType.Thin;
 	#endregion
 
 	[Title("Damage"), Parsing("Hit Amount")]
@@ -159,13 +137,12 @@ public class EntityActionData : AParsableScriptableObject
 	public float damageFactor = 1f;
 	[Parsing("Base damages")]
 	public SerializableDictionary<WeaponEquipmentData.DamageType, int> baseDamages;
-	//public WeaponEquipmentData.DamageType[] usedDamageChannels;
 
-	[Title("Effect")]
+	[Title("Effect"), Parsing("Appliable Status")]
 	public AEntityStatus[] appliableStatus;
 	[Parsing("Status Hit Probability")]
 	public float statusHitProbability;
-	[Parsing("Passive effect")]
+	[Parsing("Passif")]
 	public AEntityPassiveEffect.PassiveEffectContainer[] passiveEffects;
 
 	[Title("Misc")]
@@ -353,10 +330,10 @@ public class EntityActionData : AParsableScriptableObject
 		if (_action != null && _performingEntity != null && ContainsEffect(EntityPassiveEffectEnumID.MaxAoERangeUp, out AEntityPassiveEffect.PassiveEffectContainer effectContainer)
 			&& Condition.UseConditionPredicate(_action, _performingEntity, _targetEntity, effectContainer.conditionType))
 		{
-			return maxDistance + (GameAssets.current.game.entityEffects[EntityPassiveEffectEnumID.MaxAoERangeUp] as MaxAoERangeUpPassiveEffect).rangeBoostAmount;
+			return aoeMaxEffectRange + (GameAssets.current.game.entityEffects[EntityPassiveEffectEnumID.MaxAoERangeUp] as MaxAoERangeUpPassiveEffect).rangeBoostAmount;
 		}
 
-		return maxDistance;
+		return aoeMaxEffectRange;
 	}
 
 	public int GetMaxTargetAmount ( AEntityAction _action, Entity _performingEntity, Entity _targetEntity )
@@ -408,16 +385,33 @@ public class EntityActionData : AParsableScriptableObject
 
 	public override void OnParse ( ImportedData _data )
 	{
-		if(isAoe)
+		/*if(enumID == EntityActionEnumID.Unknowned)
+		{
+			if (System.Enum.TryParse(typeof(EntityActionEnumID), _data.id, out object result))
+				enumID = (EntityActionEnumID)result;
+			else
+			{
+				ScriptableEnumAutoEditor.GenerateEnum(typeof(EntityActionData), typeof(EntityActionEnumID));
+				enumID = (EntityActionEnumID)System.Enum.Parse(typeof(EntityActionEnumID), _data.id);
+			}
+		}*/
+
+		if(aoeType != AOEType.Noone)
 		{
 			switch (aoeType)
 			{
 				case AOEType.Chain:
 					maxChainedTarget = _data.GetValue<int>("AoE Extra Values");
 					break;
-				case AOEType.Cone:
+				/*case AOEType.Cone:
 					coneType = _data.GetValue<ConeType>("AoE Extra Values");
-					break;
+					break;*/
+			}
+
+			if(aoECenterType == AOECenterType.Self)
+			{
+				aoeMinEffectRange = minDistance;
+				aoeMaxEffectRange = maxDistance;
 			}
 		}
 

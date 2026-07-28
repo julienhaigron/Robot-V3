@@ -152,8 +152,14 @@ public class Weapon : MonoBehaviour
 				});
 
 				ApplyStatuses(entity, _attackInfo);
-				ApplyEffects(entity);
+				//ApplyEffects(entity);
 			}
+		}
+		foreach (AEntityPassiveEffect.PassiveEffectContainer pe in m_lastPerformedAction.effects)
+		{
+			List<Entity> effectsTargets = GetPassiveEffectTargets(_attackAction, pe, _attackIndex);
+			foreach (Entity entity in effectsTargets)
+				ApplyEffects(entity, pe);
 		}
 
 		yield return m_singleAttackDuration;
@@ -164,7 +170,7 @@ public class Weapon : MonoBehaviour
 		List<Entity> targets = new();
 		EntityActionData attackData = GameAssets.current.game.entityActionsData[_attackAction.enumID];
 
-		if (attackData.isAoe)
+		if (attackData.aoeType != EntityActionData.AOEType.Noone)
 		{
 			foreach (Tile tile in m_user.Equipment.GetTilesInAoERange(_attackAction, GridManager.Instance.Tiles[_attackAction.targetTileIDs[_attackIndex]]))
 			{
@@ -174,6 +180,29 @@ public class Weapon : MonoBehaviour
 		}
 		else
 			targets.Add(GameManager.Instance.GetEntityFromID(_attackAction.targetedEntityIDs[_attackIndex]));
+
+		return targets;
+	}
+
+	protected virtual List<Entity> GetPassiveEffectTargets( AttackAction _attackAction, AEntityPassiveEffect.PassiveEffectContainer _passiveEffect, int _attackIndex )
+	{
+		List<Entity> targets = new();
+
+		if (_passiveEffect.aoeType == EntityActionData.AOEType.Noone)
+			targets.Add(GameManager.Instance.GetEntityFromID(_attackAction.targetedEntityIDs[_attackIndex]));
+		else
+		{
+			Tile target = GridManager.Instance.Tiles[_attackAction.targetTileIDs[_attackIndex]];
+			Tile from = _passiveEffect.centerType == EntityActionData.AOECenterType.Self 
+				? m_user.Displacement.Coordinates.GetTile() : target;
+			int minDistance = _passiveEffect.effectRange.x != -1 ? _passiveEffect.effectRange.x : _attackAction.Data.aoeMinEffectRange;
+			int maxDistance = _passiveEffect.effectRange.y != -1 ? _passiveEffect.effectRange.y : _attackAction.Data.aoeMaxEffectRange;
+			foreach(Tile tile in GridManager.Instance.GetTilesInAoERange(_passiveEffect.aoeType, m_user, from, target, minDistance, maxDistance, _attackAction.Data.maxChainedTarget, true))
+			{
+				if (tile.TryGetEntity(true, out Entity entity))
+					targets.Add(entity);
+			}
+		}
 
 		return targets;
 	}
@@ -197,7 +226,7 @@ public class Weapon : MonoBehaviour
 		}
 	}
 
-	protected virtual void ApplyEffects ( Entity _target )
+	protected virtual void ApplyEffects ( Entity _target, AEntityPassiveEffect.PassiveEffectContainer _passiveEffect )
 	{
 		foreach (AEntityPassiveEffect.PassiveEffectContainer passiveEffectID in m_lastPerformedAction.effects)
 			GameAssets.current.game.entityEffects[passiveEffectID.enumID].ApplyEffect(m_user, _target, passiveEffectID);

@@ -17,12 +17,20 @@ MonoBehaviour:
   frame: {fileID: 11400000, guid: 7682b7a54cde6fd44b4e4927f8febe2c, type: 2}
   reactor: {fileID: 11400000, guid: bba42464362d2dd40b90ff19ee0fe28d, type: 2}
   brain: {fileID: 11400000, guid: d436e6c3b7bc32245883dc7f1150d4d8, type: 2}
-  neuronalMembrane: {fileID: 0}
+  neuronalMembrane: {fileID: 11400000, guid: 1c7cab2865629574087379467c2a9e2b, type: 2}
   arms:
   - {fileID: 11400000, guid: 71373a3ba9edef942b651bae6903954d, type: 2}
   - {fileID: 11400000, guid: 440d06cb7d37c934db58dbeeed7687e9, type: 2}
-  auxiliary: []
-  chipsets: []
+  auxiliary:
+  - {fileID: 11400000, guid: 0c93d7333747ae447851bc8e94221059, type: 2}
+  - {fileID: 11400000, guid: 67ac34424bf991b49b53d71803c6b56a, type: 2}
+  - {fileID: 11400000, guid: 4284609624bc57e48a7c0ed3269d930c, type: 2}
+  - {fileID: 11400000, guid: 4284609624bc57e48a7c0ed3269d930c, type: 2}
+  - {fileID: 11400000, guid: bc63f1515ed7976409cd3d02c8bcd82d, type: 2}
+  - {fileID: 11400000, guid: bc63f1515ed7976409cd3d02c8bcd82d, type: 2}
+  chipsets:
+  - {fileID: 11400000, guid: 691d5195c4afaea49ac979c394018c5e, type: 2}
+  - {fileID: 11400000, guid: 691d5195c4afaea49ac979c394018c5e, type: 2}
   icon: {fileID: 0}
   isInvocation: 0
   isTangible: 1

@@ -41,7 +41,7 @@ public class ScriptableEnumAutoEditor : OdinEditor
 
 		if (!string.Equals(target.name, ((IScriptableEnum)targetScriptable).GetEnumName().ToString()))
 		{
-			Regex rgx = new Regex("[^a-zA-Z0-9]");
+			Regex rgx = new Regex("[^a-zA-Z0-9_-]");
 			target.name = rgx.Replace(target.name, "");
 			if (GUILayout.Button("Compute enum"))
 			{
@@ -50,8 +50,8 @@ public class ScriptableEnumAutoEditor : OdinEditor
 			if (GUILayout.Button("Rename enum"))
 			{
 				string enumValue = ((IScriptableEnum)targetScriptable).GetEnumName();
-				string previousLine = "\t\t" + enumValue + ",\n";
-				string newLine = "\t\t" + targetScriptable.name + ",\n";
+				string previousLine = "\t" + enumValue + ",\n";
+				string newLine = "\t" + targetScriptable.name + ",\n";
 				ScriptGenerator.RewriteContent("EntityActionEnumID.cs", "EntityActionEnumID", previousLine, newLine);
 			}
 			if (GUILayout.Button("Refresh enum"))
@@ -77,7 +77,8 @@ public class ScriptableEnumAutoEditor : OdinEditor
 
 		foreach (var type in scriptableEnumTypes)
 		{
-			GenerateEnum(type);
+			Type enumType = type.GetGenericArguments()[0];
+			GenerateEnum(type, enumType);
 		}
 	}
 
@@ -96,18 +97,18 @@ public class ScriptableEnumAutoEditor : OdinEditor
 			.ToList();
 	}
 
-	static void GenerateEnum ( Type scriptableType )
+	public static void GenerateEnum ( Type _scriptableType, Type _enumType )
 	{
-		Type enumType = scriptableType.BaseType.GetGenericArguments()[0];
-		string enumName = enumType.Name;
-		string fileName = enumType + ".cs";
+		//Type enumType = _scriptableType.BaseType.GetGenericArguments()[0];
+		string enumName = _enumType.Name;
+		string fileName = _enumType + ".cs";
 
-		List<ScriptableObject> assets = FindAssets(scriptableType);
+		List<ScriptableObject> assets = FindAssets(_scriptableType);
 		HashSet<string> processedAssets = new HashSet<string>();
 		List<ScriptableObject> ignoredAssets = new List<ScriptableObject>();
 
 		string enumList = "";
-		Regex rgx = new Regex("[^a-zA-Z0-9 -]");
+		Regex rgx = new Regex("[^a-zA-Z0-9 _-]");
 		foreach (ScriptableObject scriptable in assets)
 		{
 			scriptable.name = rgx.Replace(scriptable.name, "");
@@ -171,7 +172,7 @@ public class ScriptableEnumAutoEditor : OdinEditor
 			if (asset == null)
 				continue;
 
-			string cleanName = Regex.Replace(asset.name, "[^a-zA-Z0-9]", "");
+			string cleanName = Regex.Replace(asset.name, "[^a-zA-Z0-9_-]", "");
 
 			if (string.IsNullOrEmpty(cleanName))
 				continue;

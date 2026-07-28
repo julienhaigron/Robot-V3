@@ -13,8 +13,9 @@ public abstract class AEntityPassiveEffect : ScriptableEnum<EntityPassiveEffectE
 	{
 		public EntityPassiveEffectEnumID enumID;
 		public Condition.ConditionType conditionType;
-		public TargetType targetType;
-		[ShowIf("@targetType == TargetType.CircleOnSelf || targetType == TargetType.CircleOnTarget")]
+		public EntityActionData.TargetType targetType;
+		public EntityActionData.AOEType aoeType;
+		public EntityActionData.AOECenterType centerType;
 		public Vector2Int effectRange;
 
 		public void NetworkSerialize<T> ( BufferSerializer<T> serializer ) where T : IReaderWriter
@@ -22,11 +23,11 @@ public abstract class AEntityPassiveEffect : ScriptableEnum<EntityPassiveEffectE
 			serializer.SerializeValue(ref enumID);
 			serializer.SerializeValue(ref conditionType);
 			serializer.SerializeValue(ref targetType);
+			serializer.SerializeValue(ref aoeType);
+			serializer.SerializeValue(ref centerType);
 			serializer.SerializeValue(ref effectRange);
 		}
 	}
-
-	public enum TargetType { OtherEntity, Tile, CircleOnSelf, Self, CircleOnTarget, LargeConeOnSelf, LargeConeOnTarget, ThinConeOnSelf, ThinConeOnTarget }
 
 	public virtual void ApplyEffect ( Entity _performingEntity, Entity _targetEntity, PassiveEffectContainer _effectContainer )
     {

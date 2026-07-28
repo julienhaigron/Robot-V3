@@ -30,21 +30,18 @@ MonoBehaviour:
   type: 2
   subType: 0
   codeType: 0
-  targetType: 0
+  targetType: 2
   trajectoryType: 0
   minDistance: 0
   maxDistance: 5
   maxTargetAmount: 1
-  isAoe: 0
   aoeType: 2
   doesAffectTile: 0
   aoECenterType: 0
   aoeMinEffectRange: 0
   aoeMaxEffectRange: 0
-  arcType: 0
   maxChainedTarget: 1
   damageReductionOnChain: 0.1
-  coneType: 0
   hitAmount: 1
   damageFactor: 1
   baseDamages:

@@ -12,16 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9e73bc741ebbdc840b41c9a3b0e4d4b6, type: 3}
   m_Name: NeurInt_Dummy
   m_EditorClassIdentifier: RTD::NeuronalMembraneEquipmentData
-  spreadsheetId: 
-  faction: 0
+  spreadsheetId: https://docs.google.com/spreadsheets/d/1AeQujaBf6YdyVQRD2gBNWazoosesi46DpAoY5b6hrt8/export?format=csv&gid=916485654
+  faction: 5
   icon: {fileID: 0}
-  displayName: default
+  displayName: NeurInt_Dummy
   energyCost: 0
   knownedActions: 
   passiveEffects: []
   statusHitProbability: 0.5
+  creditCost: 0
   recyclingDurationAmount: 1
   reparingDurationAmount: 1
-  equipmentSlotAvailable: 2
-  visionRange: 8
+  equipmentSlotAvailable: 0
   visionType: 0

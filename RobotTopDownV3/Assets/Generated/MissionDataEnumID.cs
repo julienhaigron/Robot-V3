@@ -1,4 +1,4 @@
-//GENERATED 14
+//GENERATED 18
 public enum MissionDataEnumID
 {
 	//#START#MISSIONDATAENUMID#//

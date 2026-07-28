@@ -6,11 +6,13 @@ using System.Linq;
 public class ImportedData
 {
 	public string sheetName;
+	public string id;
 	public Dictionary<string, string> data { get; private set; }
 
-	public ImportedData ( Dictionary<string, string> _data, string _sheetName )
+	public ImportedData ( Dictionary<string, string> _data, string _id, string _sheetName )
 	{
 		data = _data;
+		id = _id;
 		sheetName = _sheetName;
 	}
 

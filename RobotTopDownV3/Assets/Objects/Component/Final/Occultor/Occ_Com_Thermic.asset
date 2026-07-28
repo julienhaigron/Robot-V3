@@ -16,13 +16,14 @@ MonoBehaviour:
   faction: 4
   icon: {fileID: 0}
   displayName: Thermic Occ
-  energyCost: 50
+  energyCost: 15
   knownedActions: 
   passiveEffects: []
   statusHitProbability: 0.5
+  creditCost: 50
   recyclingDurationAmount: 1
   reparingDurationAmount: 1
   soundCamo: 0
   visualCamo: 0
-  thermicCamo: 25
+  thermicCamo: 26
   statBonuses: []

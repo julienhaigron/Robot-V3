@@ -16,10 +16,17 @@ MonoBehaviour:
   faction: 4
   icon: {fileID: 0}
   displayName: Kamikaze
-  energyCost: 75
-  knownedActions: 0a000000
-  passiveEffects: []
+  energyCost: 0
+  knownedActions: 0a0000004200000046000000
+  passiveEffects:
+  - enumID: 20
+    conditionType: 0
+    targetType: 0
+    aoeType: 0
+    centerType: 0
+    effectRange: {x: -1, y: -1}
   statusHitProbability: 0.5
+  creditCost: 75
   recyclingDurationAmount: 1
   reparingDurationAmount: 1
   prefab: {fileID: 0}

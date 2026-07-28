@@ -17,7 +17,7 @@ public class ApplyEffectAction : SpecialAction
 	{
 		for (int targetCount = 0; targetCount < targetedEntityIDs.Length; targetCount++)
 		{
-			if (Data.isAoe)
+			if (Data.aoeType != EntityActionData.AOEType.Noone)
 			{
 				Entity user = GameManager.Instance.GetEntityFromID(performingEntityID);
 				int maxDist = Data.GetMaxRange(this, PerformingEntity, null);

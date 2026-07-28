@@ -7,23 +7,31 @@ public class InstantDeathPassiveEffect : AEntityPassiveEffect
 {
 	public override void ApplyEffect ( Entity _entity, Entity _targetEntity, PassiveEffectContainer _effectContainer )
 	{
-		List<Entity> entitiesAffected = new();
-		switch (_effectContainer.targetType)
+		_targetEntity.Equipment.InstantDeath();
+		base.ApplyEffect(_entity, _targetEntity, _effectContainer);
+	}
+
+	/*OLD :
+	 
+	switch (_effectContainer.targetType)
 		{
-			case TargetType.Self:
+			case EntityActionData.TargetType.Self:
 				entitiesAffected.Add(_entity);
 				break;
-			case TargetType.OtherEntity:
-				entitiesAffected.Add(_targetEntity);
-				break;
-			case TargetType.CircleOnSelf:
-			case TargetType.CircleOnTarget:
-				Entity entityTargetted = _effectContainer.targetType == TargetType.CircleOnSelf ? _entity : _targetEntity;
-				List<Tile> tilesInRange = GridManager.Instance.GetTilesInVisionRange(entityTargetted.Displacement.Coordinates.GetTile(), _effectContainer.effectRange.y, false, true);
-				foreach (Tile tile in tilesInRange)
+			case EntityActionData.TargetType.OtherEntity:
+			case EntityActionData.TargetType.Tile:
+				if (_effectContainer.aoeType == EntityActionData.AOEType.Noone)
+					entitiesAffected.Add(_targetEntity);
+				else
 				{
-					if (tile.GetEntity(true) != null)
-						entitiesAffected.Add(tile.GetEntity(true));
+					Tile from = _effectContainer.centerType == EntityActionData.AOECenterType.Self ? _entity.Displacement.Coordinates.GetTile() : _targetEntity.Displacement.Coordinates.GetTile();
+					List<Tile> tilesInRange = GridManager.Instance.GetTilesInAoERange
+						(_effectContainer.aoeType, _entity, from, null, _effectContainer.effectRange.x, _effectContainer.effectRange.y, 0, true);
+					foreach (Tile tile in tilesInRange)
+					{
+						if (tile.GetEntity(true) != null)
+							entitiesAffected.Add(tile.GetEntity(true));
+					}
 				}
 				break;
 		}
@@ -31,7 +39,6 @@ public class InstantDeathPassiveEffect : AEntityPassiveEffect
 		{
 			targetEntity.Equipment.InstantDeath();
 		}
-
-		base.ApplyEffect(_entity, _targetEntity, _effectContainer);
-	}
+	 
+	 */
 }
