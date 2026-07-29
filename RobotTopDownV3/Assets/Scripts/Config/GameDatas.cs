@@ -85,7 +85,6 @@ public partial class GameDatas : ScriptableObject
 	public class PlayerSave
 	{
 		public string saveName;
-		public List<string> knownedFrames = new();
 		public List<EntitySavedData> allBuiltUnits = new();
 		public List<EntitySavedData> squadUnits = new();
 		public List<Equipment> equipmentInventory = new ();
@@ -251,13 +250,15 @@ public partial class GameDatas : ScriptableObject
 			equipmentInventory.Remove(_data);
 		}
 
-		public EntitySavedData AddNewUnit ()
+		public EntitySavedData AddNewUnit ( EntitySavedData _newUnit)
 		{
-			EntitySavedData newEntity = new();
-			newEntity.name = "New Unit";
-			squadUnits.Add(newEntity);
+			//_newUnit.name = "New Unit";
 
-			return newEntity;
+			if(_newUnit.CanAddToSquad())
+				squadUnits.Add(_newUnit);
+			allBuiltUnits.Add(_newUnit);
+
+			return _newUnit;
 		}
 
 		[Serializable]

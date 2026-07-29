@@ -6,7 +6,7 @@ using TMPro;
 
 public class HangarPanel : AUIPanel
 {
-	[SerializeField] private EndLevelEntityDisplay[] m_hangarUnits;
+	[SerializeField] private HangarEntityDisplay[] m_hangarUnits;
 	[SerializeField] private BaseButton m_addNewEntityBtn;
 
 	[SerializeField] private TextMeshProUGUI m_maxUnitInSquadTMP;
@@ -14,8 +14,6 @@ public class HangarPanel : AUIPanel
 	[SerializeField] private TextMeshProUGUI m_maxUnitInHangarTMP;
 
 	HangarStructureUpgrade HangarUpgrade => GameAssets.current.game.structureUpgrades[StructureUpgradePopup.StructureType.Hangar] as HangarStructureUpgrade;
-
-	
 
 	private void Awake ()
 	{
@@ -25,7 +23,9 @@ public class HangarPanel : AUIPanel
 	private void OnClickCreateNewEntity ()
 	{
 		//FrameEquipmentData baseFrame = GameAssets.current.game.frames[0];
-		HubManager.Instance.AddEntity(GameDatas.current.currentPlayerSave.AddNewUnit());
+		EntitySavedData newUnit = new();
+		newUnit.name = "New Unit";
+		HubManager.Instance.AddEntity(GameDatas.current.currentPlayerSave.AddNewUnit(newUnit));
 
 		RefreshDisplay();
 	}
@@ -51,7 +51,12 @@ public class HangarPanel : AUIPanel
 			if (i >= GameDatas.current.currentPlayerSave.allBuiltUnits.Count)
 				m_hangarUnits[i].Hide();
 			else
-				m_hangarUnits[i].Init(GameDatas.current.currentPlayerSave.allBuiltUnits[i]);
+			{
+				EntitySavedData entityData = GameDatas.current.currentPlayerSave.allBuiltUnits[i];
+				bool isInSquad = GameDatas.current.currentPlayerSave.squadUnits.Contains(entityData);
+				m_hangarUnits[i].Init(entityData, isInSquad);
+				m_hangarUnits[i].Show();
+			}
 		}
 
 		m_addNewEntityBtn.SetInteractability(GameDatas.current.currentPlayerSave.squadUnits.Count < HangarUpgrade.GetCurrentMaxHangarUnit());	

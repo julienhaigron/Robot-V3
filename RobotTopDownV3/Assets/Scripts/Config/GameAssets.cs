@@ -35,7 +35,6 @@ public class GameAssets : ScriptableObject
         public Entity defaultEntity;
         public GhostEntity baseGhost;
         public GhostItem baseItem;
-        public List<FrameEquipmentData> frames = new();
 
         public WeaponCone weaponCone;
 

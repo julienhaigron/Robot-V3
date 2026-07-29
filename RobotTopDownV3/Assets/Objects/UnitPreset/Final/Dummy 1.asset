@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f0bd4350348c78f4e89080417667cc11, type: 3}
+  m_Name: Dummy 1
+  m_EditorClassIdentifier: RTD::UnitPreset
+  spreadsheetId: https://docs.google.com/spreadsheets/d/1PpT7zhUyvnxNfQoW6Z8a4ntcJ83OzwLOVkCfgDB5bX0/export?format=csv&gid=0
+  displayName: 
+  frame: {fileID: 11400000, guid: a8305b93253611445a7302abdd25ed41, type: 2}
+  reactor: {fileID: 11400000, guid: 3ac6affda30deee4e8b82cd8c469bd25, type: 2}
+  brain: {fileID: 11400000, guid: 2261c00c52c27a646bda5aea69e4bb9b, type: 2}
+  neuronalMembrane: {fileID: 11400000, guid: 80795059694745a4dafaaed676086d59, type: 2}
+  arms: []
+  auxiliary:
+  - {fileID: 11400000, guid: 4dbe7e3974d2f3648804159965aa4200, type: 2}
+  chipsets: []
+  icon: {fileID: 0}
+  isInvocation: 0
+  isTangible: 1
+  m_totalEnergyCostRemaining: 0

@@ -17,13 +17,13 @@ MonoBehaviour:
   icon: {fileID: 0}
   displayName: Armoured
   energyCost: 0
-  knownedActions: 0a0000005100000048000000
+  knownedActions: 120000002000000017000000
   passiveEffects: []
   statusHitProbability: 0.5
   creditCost: 75
   recyclingDurationAmount: 1
   reparingDurationAmount: 1
-  prefab: {fileID: 0}
+  prefab: {fileID: 4673310249167116355, guid: 206cf16509b1846479a1f553fd6add2d, type: 3}
   maxHealth: 150
   armouringSlotAvailable: 4
   occultorSlotAvailable: 2

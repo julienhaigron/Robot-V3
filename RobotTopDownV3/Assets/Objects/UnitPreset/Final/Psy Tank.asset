@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f0bd4350348c78f4e89080417667cc11, type: 3}
+  m_Name: Psy Tank
+  m_EditorClassIdentifier: RTD::UnitPreset
+  spreadsheetId: https://docs.google.com/spreadsheets/d/1PpT7zhUyvnxNfQoW6Z8a4ntcJ83OzwLOVkCfgDB5bX0/export?format=csv&gid=0
+  displayName: 
+  frame: {fileID: 11400000, guid: c587a392cbf393944837a66143c3eb51, type: 2}
+  reactor: {fileID: 11400000, guid: 851deacda29124747956e98faffb70d3, type: 2}
+  brain: {fileID: 11400000, guid: db967ec8af3c1404aaa7fe7fa2e6b4ac, type: 2}
+  neuronalMembrane: {fileID: 11400000, guid: 18ee2728a94d8544ab825f12b49d19c9, type: 2}
+  arms:
+  - {fileID: 11400000, guid: 5fad80951e5e5cc43959928dc3f7f6d9, type: 2}
+  - {fileID: 11400000, guid: 667b756eab89edd41920b84e1a1e1992, type: 2}
+  auxiliary:
+  - {fileID: 11400000, guid: 5a4a2e795627b67479624ca0f4e4d52d, type: 2}
+  - {fileID: 11400000, guid: 5a4a2e795627b67479624ca0f4e4d52d, type: 2}
+  - {fileID: 11400000, guid: a6d4b9d695bcf154380212dd58b260eb, type: 2}
+  - {fileID: 11400000, guid: a6d4b9d695bcf154380212dd58b260eb, type: 2}
+  - {fileID: 11400000, guid: bf3116f68a17b4f4f80f9935bc778b97, type: 2}
+  - {fileID: 11400000, guid: 00d0bf18336ff0b43a146892eb0a359c, type: 2}
+  chipsets:
+  - {fileID: 11400000, guid: 0dbb36f683610fd4483b0975ffedc85c, type: 2}
+  - {fileID: 11400000, guid: 0dbb36f683610fd4483b0975ffedc85c, type: 2}
+  icon: {fileID: 0}
+  isInvocation: 0
+  isTangible: 1
+  m_totalEnergyCostRemaining: 0

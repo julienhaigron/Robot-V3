@@ -19,10 +19,9 @@ MonoBehaviour:
   afterMissionDialogue: {fileID: 0}
   map: {fileID: 11400000, guid: 96bdcbe1a80e5c04bb71dc4c4aed43a9, type: 2}
   enemies:
-  - {fileID: 11400000, guid: d26ed967dd7a392478f3f1c6bb46449f, type: 2}
-  - {fileID: 11400000, guid: d26ed967dd7a392478f3f1c6bb46449f, type: 2}
+  - {fileID: 11400000, guid: 9836f91ed23168045825c58159b00445, type: 2}
+  - {fileID: 11400000, guid: 3cea4ca1d17080547a35225eb12892eb, type: 2}
   type: 0
-  areRewardsRandom: 0
   currencyRewards:
     keys: 01000000
     values: 1e00000000000000

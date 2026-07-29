@@ -17,7 +17,7 @@ MonoBehaviour:
   icon: {fileID: -1360359492, guid: b61920d2917644949a125f8a6af0e45c, type: 3}
   displayName: Hammer
   energyCost: 15
-  knownedActions: 3c00000038000000
+  knownedActions: 0a00000006000000
   passiveEffects: []
   statusHitProbability: 0.5
   creditCost: 50

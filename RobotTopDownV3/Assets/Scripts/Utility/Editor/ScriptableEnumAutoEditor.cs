@@ -77,8 +77,11 @@ public class ScriptableEnumAutoEditor : OdinEditor
 
 		foreach (var type in scriptableEnumTypes)
 		{
-			Type enumType = type.GetGenericArguments()[0];
-			GenerateEnum(type, enumType);
+			Type[] generalArguments = type.GetGenericArguments();
+			if (generalArguments.Length > 0)
+				GenerateEnum(type, generalArguments[0]);
+			else
+				Debug.LogError("Cannont find TEnum for type " + type);
 		}
 	}
 

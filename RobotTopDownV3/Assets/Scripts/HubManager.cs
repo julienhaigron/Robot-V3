@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using Sirenix.OdinInspector;
+using System.Linq;
 
 public class HubManager : Singleton<HubManager>
 {
@@ -13,25 +14,20 @@ public class HubManager : Singleton<HubManager>
 	[Title("Parameters")]
 	[SerializeField] private float m_unitSpacing = 1.5f;
 
-	private List<Entity> m_squadEntities = new();
-
-	private Entity m_selectedEntity;
+	private SerializableDictionary<EntitySavedData, Entity> m_squadEntities = new();
 
     public void ShowHangar ()
 	{
 		CameraManager.Instance.TeleportCameraTo(m_hangarCameraPosition);
 
-		foreach (EntitySavedData entitySavedData in GameDatas.current.currentPlayerSave.squadUnits)
-		{
-			AddEntity(entitySavedData);
-		}
+		RefreshSquadEntities();
 	}
 
 	public void HideHangar ()
 	{
 		CameraManager.Instance.ResetPosition();
 
-		foreach (Entity entity in m_squadEntities)
+		foreach (Entity entity in m_squadEntities.Values)
 		{
 			Destroy(entity.gameObject);
 		}
@@ -40,17 +36,37 @@ public class HubManager : Singleton<HubManager>
 
 	public void SelectEntity(Entity _selectedEntity )
 	{
-		m_selectedEntity = _selectedEntity;
-
 		UIManager.Instance.OpenPanel<EntityConfigPanel>().Init(_selectedEntity.Data, false);
 
 		//RefreshEntitiesPosition();
 	}
 
+	public void RefreshSquadEntities ()
+	{
+		foreach(EntitySavedData entityData in m_squadEntities.Keys.ToArray())
+		{
+			if (!GameDatas.current.currentPlayerSave.squadUnits.Contains(entityData))
+			{
+				Destroy(m_squadEntities[entityData].gameObject);
+				m_squadEntities.Remove(entityData);
+			}
+		}
+
+		for(int i = 0; i < GameDatas.current.currentPlayerSave.squadUnits.Count; i++) 
+		{
+			if(i >= m_squadEntities.Count)
+				AddEntity(GameDatas.current.currentPlayerSave.squadUnits[i]);
+
+			//entity.RefreshHangarVisual ?
+		}
+
+		RefreshEntitiesPosition();
+	}
+
 	public void AddEntity (EntitySavedData _newEntity)
 	{
 		Entity entity = Instantiate(_newEntity.FrameData != null ? _newEntity.FrameData.prefab : GameAssets.current.game.defaultEntity, m_squadEntitiesParent.transform);
-		m_squadEntities.Add(entity);
+		m_squadEntities.Add(_newEntity, entity);
 		entity.transform.rotation = Quaternion.Euler(0f, 180f, 0f);
 		entity.InitHangarMode(_newEntity);
 
@@ -59,9 +75,10 @@ public class HubManager : Singleton<HubManager>
 
 	public void RefreshEntitiesPosition ()
 	{
-		for(int i = 0; i < m_squadEntities.Count; i++)
+		List<EntitySavedData> keys = m_squadEntities.Keys.ToList();
+		for (int i = 0; i < keys.Count; i++)
 		{
-			m_squadEntities[i].transform.localPosition = new Vector3(m_unitSpacing * i, 0f, 0f);
+			m_squadEntities[keys[i]].transform.localPosition = new Vector3(m_unitSpacing * i, 0f, 0f);
 		}
 	}
 

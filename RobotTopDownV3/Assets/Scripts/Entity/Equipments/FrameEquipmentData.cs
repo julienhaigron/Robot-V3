@@ -67,6 +67,12 @@ public class EntitySavedData : INetworkSerializable
 		serializer.SerializeValue(ref currentHp);
 	}
 
+	public bool CanAddToSquad ()
+	{
+		bool hasCapacity = GameDatas.current.currentPlayerSave.squadUnits.Count < (GameAssets.current.game.structureUpgrades[StructureUpgradePopup.StructureType.Hangar] as HangarStructureUpgrade).GetCurrentMaxUnitAmount();
+		return hasCapacity && IsUnitValid();
+	}
+
 	public bool IsUnitValid ()
 	{
 		if (FrameData == null || ReactorData == null || NeuronalMembraneData == null || BrainData == null)
