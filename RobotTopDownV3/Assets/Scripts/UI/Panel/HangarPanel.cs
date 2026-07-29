@@ -6,6 +6,7 @@ using TMPro;
 
 public class HangarPanel : AUIPanel
 {
+	[SerializeField] private EndLevelEntityDisplay[] m_hangarUnits;
 	[SerializeField] private BaseButton m_addNewEntityBtn;
 
 	[SerializeField] private TextMeshProUGUI m_maxUnitInSquadTMP;
@@ -13,6 +14,8 @@ public class HangarPanel : AUIPanel
 	[SerializeField] private TextMeshProUGUI m_maxUnitInHangarTMP;
 
 	HangarStructureUpgrade HangarUpgrade => GameAssets.current.game.structureUpgrades[StructureUpgradePopup.StructureType.Hangar] as HangarStructureUpgrade;
+
+	
 
 	private void Awake ()
 	{
@@ -43,6 +46,14 @@ public class HangarPanel : AUIPanel
 
 	private void RefreshDisplay ()
 	{
+		for(int i = 0; i < m_hangarUnits.Length; i++)
+		{
+			if (i >= GameDatas.current.currentPlayerSave.allBuiltUnits.Count)
+				m_hangarUnits[i].Hide();
+			else
+				m_hangarUnits[i].Init(GameDatas.current.currentPlayerSave.allBuiltUnits[i]);
+		}
+
 		m_addNewEntityBtn.SetInteractability(GameDatas.current.currentPlayerSave.squadUnits.Count < HangarUpgrade.GetCurrentMaxHangarUnit());	
 		m_maxUnitInSquadTMP.text = "Active squad: " + GameDatas.current.currentPlayerSave.squadUnits.Count +  "/" + HangarUpgrade.GetCurrentMaxHangarUnit();
 		m_maxUnitInHangarTMP.text = "Inactive unit: " + GameDatas.current.currentPlayerSave.allBuiltUnits.Count + "/" + HangarUpgrade.GetCurrentMaxUnitAmount();
