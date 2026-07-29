@@ -70,9 +70,9 @@ public class Entity : MonoBehaviour
 	public int OwnerID => m_ownerID;
 	//public EntityFaction Faction => m_data.FrameData.faction;
 
-	[BoxGroup("Fix Stats")]
-	private EntityActionData m_lastActionPerformed;
+	[SerializeField, ReadOnly] private EntityActionData m_lastActionPerformed;
 	public EntityActionData LastActionPerformedData => m_lastActionPerformed == null ? GameConfig.current.game.defaultStartAction : m_lastActionPerformed;
+	[SerializeField, ReadOnly] private bool m_isPerforming = false;
 
 	public int ID;
 	public int PlayerOwnerID;
@@ -317,12 +317,14 @@ public class Entity : MonoBehaviour
 		if (_action.Data.type != EntityActionData.ActionType.Rotation)
 			m_lastActionPerformed = _action.Data;
 
+		m_isPerforming = true;
 		m_state = _state;
 		onStartPerformAction?.Invoke(_action);
 	}
 
 	public void EndPerformAction ()
 	{
+		m_isPerforming = true;
 		onEndPerformAction?.Invoke();
 	}
 

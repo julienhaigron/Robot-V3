@@ -19,6 +19,7 @@ public class EntityActionData : AParsableScriptableObject
 	[SerializeField, Parsing("Refroidissement")] private int m_tokenCooldown;
 	[Parsing("Durée")]
 	public int tokenDuration = 1;
+	[Parsing("Is Mod Action")]
 	public bool isModAction = false;
 
 	[Title("Animation")]
