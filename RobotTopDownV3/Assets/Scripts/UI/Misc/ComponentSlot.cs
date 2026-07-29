@@ -24,6 +24,8 @@ public class ComponentSlot : ComponentContainer
 
     private EntityEquipmentData m_equipmentData;
     private GameDatas.PlayerSave.Equipment m_equipmentSavedData;
+    public GameDatas.PlayerSave.Equipment Equipment => m_equipmentSavedData;
+    private bool m_canInteract = true;
 
     public override void Init ( ComponentContainer _container, EntitySavedData _unitData, GameDatas.PlayerSave.Equipment _componentSavedData, Func<GameDatas.PlayerSave.Equipment, bool> _predicate
         , ComponentDisplay.DisplayMode _displayMode, int _index = 0 )
@@ -57,6 +59,11 @@ public class ComponentSlot : ComponentContainer
         }*/
     }
 
+    public void SetInteractability (bool _canInterract)
+	{
+        m_canInteract = _canInterract;
+    }
+
     public void InitRecyclingData( GameDatas.PlayerSave.DayData.RecyclingComponentData _recyclingData )
 	{
         if (_recyclingData != null && _recyclingData.component != null && string.IsNullOrEmpty(_recyclingData.component.ID))
@@ -75,7 +82,7 @@ public class ComponentSlot : ComponentContainer
 
     public override bool IsValid ( ComponentDisplay _display )
 	{
-		return m_currentDisplay != _display && base.IsValid(_display);
+		return m_currentDisplay != _display && base.IsValid(_display) && m_canInteract;
 	}
 
     public void Cleanup ()
