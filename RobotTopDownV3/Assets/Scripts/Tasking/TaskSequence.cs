@@ -55,11 +55,12 @@ public class TaskSequence
 	public void Complete ()
 	{
 		GameDatas.current.currentPlayerSave.sequencesProgressions[m_id] = -1;
+		onCompleted?.Invoke(this);
 	}
 
 	private void OnComplete (Task _task)
 	{
-		onCompleted?.Invoke(this);
+		Complete();
 	}
 
 	public void SetSkipPredicate(System.Func<TaskManager.TaskContext, bool> _skipPredicate )

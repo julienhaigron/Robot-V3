@@ -39,7 +39,7 @@ public class TaskManager : SingletonPersistant<TaskManager>
         if (m_context == null)
             return;
 
-		foreach (TaskSequence seq in m_activeSequences)
+		foreach (TaskSequence seq in m_activeSequences.ToArray())
 		{
             if (!seq.IsCompleted && !seq.IsPerforming)
                 seq.CurrentTask.TryStart(m_context);
