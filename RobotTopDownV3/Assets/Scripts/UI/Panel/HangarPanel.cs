@@ -13,8 +13,6 @@ public class HangarPanel : AUIPanel
 	[SerializeField] private TextMeshProUGUI m_maxEnergyCostInSquadTMP;
 	[SerializeField] private TextMeshProUGUI m_maxUnitInHangarTMP;
 
-	HangarStructureUpgrade HangarUpgrade => GameAssets.current.game.structureUpgrades[StructureUpgradePopup.StructureType.Hangar] as HangarStructureUpgrade;
-
 	private void Awake ()
 	{
 		m_addNewEntityBtn.onClick += OnClickCreateNewEntity;
@@ -64,14 +62,14 @@ public class HangarPanel : AUIPanel
 
 	public void RefreshTexts ()
 	{
-		m_addNewEntityBtn.SetInteractability(GameDatas.current.currentPlayerSave.squadUnits.Count < HangarUpgrade.GetCurrentMaxHangarUnit());
+		m_addNewEntityBtn.SetInteractability(GameDatas.current.currentPlayerSave.squadUnits.Count < GameAssets.current.game.HangarStructureUpgrade.GetCurrentMaxHangarUnit());
 		int squadCount = GameDatas.current.currentPlayerSave.squadUnits.Count;
-		m_maxUnitInSquadTMP.text = "Active squad: " + squadCount + "/" + HangarUpgrade.GetCurrentMaxHangarUnit();
-		m_maxUnitInHangarTMP.text = "Inactive unit: " + (GameDatas.current.currentPlayerSave.allBuiltUnits.Count - GameDatas.current.currentPlayerSave.squadUnits.Count) + "/" + HangarUpgrade.GetCurrentMaxUnitAmount();
+		m_maxUnitInSquadTMP.text = "Active squad: " + squadCount + "/" + GameAssets.current.game.HangarStructureUpgrade.GetCurrentMaxHangarUnit();
+		m_maxUnitInHangarTMP.text = "Inactive unit: " + (GameDatas.current.currentPlayerSave.allBuiltUnits.Count - GameDatas.current.currentPlayerSave.squadUnits.Count) + "/" + GameAssets.current.game.HangarStructureUpgrade.GetCurrentMaxUnitAmount();
 
 		int totalEnergyUsed = 0;
 		foreach (EntitySavedData savedEntity in GameDatas.current.currentPlayerSave.squadUnits)
 			totalEnergyUsed += savedEntity.GetTotalEnergyUsed();
-		m_maxEnergyCostInSquadTMP.text = "Energy: " + totalEnergyUsed + "/" + HangarUpgrade.GetCurrentMaxSquadEnergyAmount();
+		m_maxEnergyCostInSquadTMP.text = "Energy: " + totalEnergyUsed + "/" + GameAssets.current.game.HangarStructureUpgrade.GetCurrentMaxSquadEnergyAmount();
 	}
 }

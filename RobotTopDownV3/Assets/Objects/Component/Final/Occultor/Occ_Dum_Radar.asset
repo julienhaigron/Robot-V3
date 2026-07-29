@@ -23,7 +23,7 @@ MonoBehaviour:
   creditCost: 0
   recyclingDurationAmount: 1
   reparingDurationAmount: 1
-  soundCamo: 25
+  soundCamo: 0.25
   visualCamo: 0
   thermicCamo: 0
   statBonuses: []

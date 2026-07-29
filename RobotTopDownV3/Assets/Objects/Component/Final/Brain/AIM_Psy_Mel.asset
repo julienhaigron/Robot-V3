@@ -24,8 +24,8 @@ MonoBehaviour:
   recyclingDurationAmount: 1
   reparingDurationAmount: 1
   chipsetSlotAvailable: 2
-  agility: 55
-  distanceAccuracy: 15
-  distanceEvasion: 5
-  meleeEvasion: 40
+  agility: 0.55
+  distanceAccuracy: 0.15
+  distanceEvasion: 0.05
+  meleeEvasion: 0.4
   knownedStates: 0100000000000000

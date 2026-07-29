@@ -9,8 +9,6 @@ public class RepairStationPanel : AUIPanel
 	[SerializeField] private ComponentSlot[] m_repairingSlots;
 	[SerializeField] private ComponentFullDisplay m_hoveredComponentFullInfoDisplay;
 
-	RepairStationStructureUpgrade StructureUpgrade => GameAssets.current.game.structureUpgrades[StructureUpgradePopup.StructureType.RepairStation] as RepairStationStructureUpgrade;
-
 	private System.Func<GameDatas.PlayerSave.Equipment, bool> InventoryGridPredicate => item => item != null && item.isDamaged;
 
 	private void Awake ()
@@ -24,7 +22,7 @@ public class RepairStationPanel : AUIPanel
 
 	public void Init ()
 	{
-		int maxSlotAmount = StructureUpgrade.GetCurrentMaxRepairedComponentSlotAmountPerLevel();
+		int maxSlotAmount = GameAssets.current.game.RepairStationStructureUpgrade.GetCurrentMaxRepairedComponentSlotAmountPerLevel();
 
 		for (int currentSlotInSaveAmount = GameDatas.current.currentPlayerSave.dayData.repairingComponents.Count; currentSlotInSaveAmount < maxSlotAmount; currentSlotInSaveAmount++)
 			GameDatas.current.currentPlayerSave.dayData.repairingComponents.Add(new());

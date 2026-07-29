@@ -175,7 +175,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &2978754702243592132
 RectTransform:
   m_ObjectHideFlags: 0
@@ -578,10 +578,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: RTD::ComponentDisplay
   m_canvasGroup: {fileID: 4247666706934973399}
+  m_outlineImg: {fileID: 0}
   m_icon: {fileID: 1859022535642274209}
   m_titleTMP: {fileID: 7976625015440776609}
   m_corpIcon: {fileID: 5842747591915714696}
-  m_componentIcon: {fileID: 760606062375800685}
+  m_componentTypeIcon: {fileID: 760606062375800685}
   m_priceBackground: {fileID: 2284315951445266622}
   m_priceTMP: {fileID: 8406335976896276568}
   m_descriptionTMP: {fileID: 3917091200702969981}

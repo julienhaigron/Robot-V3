@@ -30,6 +30,10 @@ public class GameAssets : ScriptableObject
         //public List<GridData> maps = new();
         public SerializableDictionary<MissionDataEnumID, MissionData> missions = new();
         public SerializableDictionary<StructureUpgradePopup.StructureType, StructureUpgrade> structureUpgrades = new();
+        public ShopStructureUpgrade ShopStructureUpgrade => structureUpgrades[StructureUpgradePopup.StructureType.Shop] as ShopStructureUpgrade;
+        public HangarStructureUpgrade HangarStructureUpgrade => structureUpgrades[StructureUpgradePopup.StructureType.Hangar] as HangarStructureUpgrade;
+        public RecyclerStructureUpgrade RecyclerStructureUpgrade => structureUpgrades[StructureUpgradePopup.StructureType.Recycler] as RecyclerStructureUpgrade;
+        public RepairStationStructureUpgrade RepairStationStructureUpgrade => structureUpgrades[StructureUpgradePopup.StructureType.RepairStation] as RepairStationStructureUpgrade;
 
         [Title("Entity")]
         public Entity defaultEntity;

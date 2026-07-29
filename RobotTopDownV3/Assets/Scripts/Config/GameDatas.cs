@@ -144,7 +144,7 @@ public partial class GameDatas : ScriptableObject
 				NewCycle();
 
 			//new items in shop
-			for (int i = 0; i < (GameAssets.current.game.structureUpgrades[StructureUpgradePopup.StructureType.Shop] as ShopStructureUpgrade).GetMaxItemAmount(); i++)
+			for (int i = 0; i < GameAssets.current.game.ShopStructureUpgrade.GetMaxItemAmount(); i++)
 			{
 				EntityEquipmentData equipmentData = GameAssets.current.equipments.Values.ToArray().RandomElement();
 				dayData.itemsInShop.Add(new() { component = new() { ID = equipmentData.name + current.currentPlayerSave.equipmentCounter++, dataID = equipmentData.name, isDamaged = false }, isFrozen = false });

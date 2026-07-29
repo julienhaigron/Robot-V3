@@ -24,6 +24,6 @@ MonoBehaviour:
   recyclingDurationAmount: 1
   reparingDurationAmount: 1
   soundCamo: 0
-  visualCamo: 25
+  visualCamo: 0.25
   thermicCamo: 0
   statBonuses: []

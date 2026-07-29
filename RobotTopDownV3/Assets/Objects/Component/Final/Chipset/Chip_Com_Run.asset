@@ -27,4 +27,4 @@ MonoBehaviour:
   - conditionType: 6
     bonus:
       type: 22
-      value: 35
+      value: 0.35

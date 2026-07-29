@@ -9,8 +9,6 @@ public class RecyclePanel : AUIPanel
 	[SerializeField] private ComponentSlot[] m_recyclingSlots;
 	[SerializeField] private ComponentFullDisplay m_hoveredComponentFullInfoDisplay;
 
-	RecyclerStructureUpgrade StructureUpgrade => GameAssets.current.game.structureUpgrades[StructureUpgradePopup.StructureType.Recycler] as RecyclerStructureUpgrade;
-
 	private System.Func<GameDatas.PlayerSave.Equipment, bool> InventoryGridPredicate => item => item != null /*&& item.isDamaged*/;
 
 	private void Awake ()
@@ -24,7 +22,7 @@ public class RecyclePanel : AUIPanel
 
 	public void Init ()
 	{
-		int maxSlotAmount = StructureUpgrade.GetCurrentMaxRecyclingSlotAmount();
+		int maxSlotAmount = GameAssets.current.game.RecyclerStructureUpgrade.GetCurrentMaxRecyclingSlotAmount();
 
 		for (int currentSlotInSaveAmount = GameDatas.current.currentPlayerSave.dayData.currentlyRecyclingComponents.Count ; currentSlotInSaveAmount < maxSlotAmount; currentSlotInSaveAmount++)
 			GameDatas.current.currentPlayerSave.dayData.currentlyRecyclingComponents.Add(new());

@@ -16,7 +16,12 @@ public static class CsvTypeConverter
         else if (_targetType == typeof(int))
             return int.Parse(_rawValue);
         else if (_targetType == typeof(float))
-            return float.Parse(_rawValue);
+		{
+            if (float.TryParse(_rawValue, out float value) && value > 1)
+                return value / 100f;
+            else
+                return float.Parse(_rawValue);
+		}
         else if (_targetType == typeof(ulong))
             return ulong.Parse(_rawValue);
         else if (_targetType == typeof(bool))

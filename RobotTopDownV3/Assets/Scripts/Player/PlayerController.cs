@@ -224,7 +224,7 @@ public class PlayerController : Singleton<PlayerController>
 		if (m_turnManager.currentPhase != TurnManager.TurnPhase.Recording)
 			return;
 
-		AEntityAction action = EntityActionDisplay.SelectedDisplay != null 
+		AEntityAction action = EntityActionDisplay.SelectedDisplay != null
 			? (m_turnManager.hasModActionSelected ? EntityActionDisplay.SelectedDisplay.RecordedAction.freeAction : EntityActionDisplay.SelectedDisplay.RecordedAction.action)
 			: (m_turnManager.hasModActionSelected ? m_turnManager.CurrentModActionSelected : m_turnManager.CurrentActionSelected);
 
@@ -246,7 +246,7 @@ public class PlayerController : Singleton<PlayerController>
 				}
 			}
 			else*/
-				m_turnManager.CurrentActionTargetTiles.Remove(_tile);
+			m_turnManager.CurrentActionTargetTiles.Remove(_tile);
 		}
 		else if (m_selectedEntity != null && m_actionDisplays.ContainsKey(m_selectedEntity.ID) && m_actionDisplays[m_selectedEntity.ID].Count > 0)
 		{
@@ -307,43 +307,46 @@ public class PlayerController : Singleton<PlayerController>
 		if (m_selectedEntity == null || _tile == m_hoveredTile || EntityActionDisplay.SelectedDisplay != null || !_tile.CanInteract)
 			return;
 
-		ClearGhostActionOnTileDisplay();
-
-		int totalCostSpend = 0;
-		bool didContainTile = false;
-
 		m_hoveredTile = _tile;
-		if (m_actionDisplays.ContainsKey(m_selectedEntity.ID))
+
+		if (TurnManager.Instance.currentPhase == TurnManager.TurnPhase.Recording)
 		{
-			foreach (ActionDisplayOnTile display in m_actionDisplays[m_selectedEntity.ID])
+			ClearGhostActionOnTileDisplay();
+			int totalCostSpend = 0;
+			bool didContainTile = false;
+			
+			if (m_actionDisplays.ContainsKey(m_selectedEntity.ID))
 			{
-				if (display.DestinationTile == _tile)
+				foreach (ActionDisplayOnTile display in m_actionDisplays[m_selectedEntity.ID])
 				{
-					totalCostSpend = display.RecordedAction.action.TimeAtEnd;
-					didContainTile = true;
-					break;
+					if (display.DestinationTile == _tile)
+					{
+						totalCostSpend = display.RecordedAction.action.TimeAtEnd;
+						didContainTile = true;
+						break;
+					}
 				}
 			}
+			AEntityAction currentSelectedAction = EntityActionDisplay.SelectedDisplay != null
+				? (m_turnManager.hasModActionSelected ? EntityActionDisplay.SelectedDisplay.RecordedAction.freeAction : EntityActionDisplay.SelectedDisplay.RecordedAction.action)
+				: (m_turnManager.hasModActionSelected ? m_turnManager.CurrentModActionSelected : m_turnManager.CurrentActionSelected);
+
+			if (!didContainTile)
+				GridManager.Instance.BFS(GridManager.Instance.Tiles[m_turnManager.GetLastRegisteredPositionOfEntity(m_selectedEntity.ID)]
+					, m_turnManager.RemainingActionToken[m_selectedEntity.ID] * currentSelectedAction.Data.movementSpeed, null, true, false);
+
+			bool isTargetValid = m_turnManager.currentPhase == TurnManager.TurnPhase.Recording && _tile.CanInteract;
+			int distanceToTarget = isTargetValid ? _tile.Distance : 0;
+			int specificTokenCount = didContainTile ? totalCostSpend : (GameConfig.current.game.actionTokenPerRound - m_turnManager.RemainingActionToken[m_selectedEntity.ID]) + distanceToTarget;
+
+			if (isTargetValid)
+			{
+				if (currentSelectedAction.Data.codeType == EntityActionData.ActionCodeType.MoveThenAttack || currentSelectedAction.Data.codeType == EntityActionData.ActionCodeType.TargetTileMove)
+					currentSelectedAction.positionAtActionEndID = _tile.coordinates.ID;
+			}
+
+			m_turnManager.RefreshActionDisplay(m_selectedEntity.ID, false, specificTokenCount);
 		}
-		AEntityAction currentSelectedAction = EntityActionDisplay.SelectedDisplay != null
-			? (m_turnManager.hasModActionSelected ? EntityActionDisplay.SelectedDisplay.RecordedAction.freeAction : EntityActionDisplay.SelectedDisplay.RecordedAction.action)
-			: (m_turnManager.hasModActionSelected ? m_turnManager.CurrentModActionSelected : m_turnManager.CurrentActionSelected);
-
-		if (!didContainTile)
-			GridManager.Instance.BFS(GridManager.Instance.Tiles[m_turnManager.GetLastRegisteredPositionOfEntity(m_selectedEntity.ID)]
-				, m_turnManager.RemainingActionToken[m_selectedEntity.ID] * currentSelectedAction.Data.movementSpeed, null, true, false);
-
-		bool isTargetValid = m_turnManager.currentPhase == TurnManager.TurnPhase.Recording && _tile.CanInteract;
-		int distanceToTarget = isTargetValid ? _tile.Distance : 0;
-		int specificTokenCount = didContainTile ? totalCostSpend : (GameConfig.current.game.actionTokenPerRound - m_turnManager.RemainingActionToken[m_selectedEntity.ID]) + distanceToTarget;
-
-		if (isTargetValid)
-		{
-			if (currentSelectedAction.Data.codeType == EntityActionData.ActionCodeType.MoveThenAttack || currentSelectedAction.Data.codeType == EntityActionData.ActionCodeType.TargetTileMove)
-				currentSelectedAction.positionAtActionEndID = _tile.coordinates.ID;
-		}
-
-		m_turnManager.RefreshActionDisplay(m_selectedEntity.ID, false, specificTokenCount);
 
 	}
 

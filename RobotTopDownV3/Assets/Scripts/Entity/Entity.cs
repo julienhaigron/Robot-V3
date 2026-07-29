@@ -293,15 +293,16 @@ public class Entity : MonoBehaviour
 	{
 		onNewRoundBegin?.Invoke();
 
-		foreach (EntityStatusEnumID status in m_status.ToArray())
+		foreach (EntityStatusEnumID statusID in m_status.ToArray())
 		{
-			if (m_remainingDurationToActiveStatuses.ContainsKey(GameAssets.current.game.entityStatus[status])
-				&& m_remainingDurationToActiveStatuses[GameAssets.current.game.entityStatus[status]] <= 0)
+			AEntityStatus status = GameAssets.current.game.entityStatus[statusID];
+			if (m_remainingDurationToActiveStatuses.ContainsKey(status)
+				&& m_remainingDurationToActiveStatuses[status] <= 0)
 			{
-				RemoveStatus(status);
+				RemoveStatus(statusID);
 			}
 
-			GameAssets.current.game.entityStatus[status].ApplyStatusEffect(m_remainingDurationToActiveStatuses[GameAssets.current.game.entityStatus[status]]--, this);
+			GameAssets.current.game.entityStatus[statusID].ApplyStatusEffect(m_remainingDurationToActiveStatuses.ContainsKey(status) ? m_remainingDurationToActiveStatuses[GameAssets.current.game.entityStatus[statusID]]-- : 0, this);
 		}
 
 		foreach (EntityEquipmentData.StatBonusBuff buff in m_statBuffs.ToArray())

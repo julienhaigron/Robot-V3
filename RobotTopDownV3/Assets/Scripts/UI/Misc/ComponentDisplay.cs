@@ -43,9 +43,9 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 	public void Init ( EntitySavedData _unitData, GameDatas.PlayerSave.Equipment _componentSavedData, DisplayMode _displayMode )
 	{
 		m_savedData = _componentSavedData;
-		if(_componentSavedData != null)
+		if(_componentSavedData != null && _componentSavedData.TryGetData(out EntityEquipmentData data))
 		{
-			m_componentData = _componentSavedData.GetData<EntityEquipmentData>();
+			m_componentData = data;
 			m_componentTypeIcon.sprite = GameAssets.current.ui.componentIcons[m_componentData.GetEquipmentType()];
 			m_corpIcon.sprite = GameAssets.current.ui.corporationsIcons[m_componentData.faction];
 			m_icon.sprite = m_componentData.icon;

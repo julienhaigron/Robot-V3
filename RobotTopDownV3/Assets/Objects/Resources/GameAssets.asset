@@ -149,17 +149,16 @@ MonoBehaviour:
     critIcon: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
     statusDisplayPrefab: {fileID: 4648805977819339727, guid: a644c3a9cc6d76d49933b728bcd7e368, type: 3}
     damageIconPerType:
-      keys: 000000000100000002000000030000000400000005000000060000000700000008000000
+      keys: 0000000001000000020000000300000004000000050000000600000007000000
       values:
-      - {fileID: -750808196, guid: c2bd876b34d633845b45c8192d7dda8b, type: 3}
-      - {fileID: 1555034717, guid: c2bd876b34d633845b45c8192d7dda8b, type: 3}
-      - {fileID: 1929565888, guid: c2bd876b34d633845b45c8192d7dda8b, type: 3}
-      - {fileID: 1166528338, guid: c2bd876b34d633845b45c8192d7dda8b, type: 3}
-      - {fileID: 391578092, guid: c2bd876b34d633845b45c8192d7dda8b, type: 3}
-      - {fileID: 2009907212, guid: c2bd876b34d633845b45c8192d7dda8b, type: 3}
+      - {fileID: 1886013092, guid: c2bd876b34d633845b45c8192d7dda8b, type: 3}
       - {fileID: -472502760, guid: c2bd876b34d633845b45c8192d7dda8b, type: 3}
-      - {fileID: -698634207, guid: c2bd876b34d633845b45c8192d7dda8b, type: 3}
-      - {fileID: -480893360, guid: c2bd876b34d633845b45c8192d7dda8b, type: 3}
+      - {fileID: 0}
+      - {fileID: 0}
+      - {fileID: 0}
+      - {fileID: 0}
+      - {fileID: 0}
+      - {fileID: 0}
     tileGroundMaterials:
       keys: 000000000100000002000000030000000400000005000000
       values:
@@ -200,13 +199,14 @@ MonoBehaviour:
       - {fileID: -1771133569, guid: b61920d2917644949a125f8a6af0e45c, type: 3}
       - {fileID: -1160498796, guid: b61920d2917644949a125f8a6af0e45c, type: 3}
     corporationsIcons:
-      keys: 0000000001000000020000000300000004000000
+      keys: 000000000100000002000000030000000400000005000000
       values:
       - {fileID: 21300000, guid: 03da9b037a0d27b4db02f45130a6cb28, type: 3}
       - {fileID: 1022364126, guid: 31cee7fbc7dacf5449ac2bd80b7b4b88, type: 3}
       - {fileID: -527731599, guid: 31cee7fbc7dacf5449ac2bd80b7b4b88, type: 3}
       - {fileID: -723296476, guid: 31cee7fbc7dacf5449ac2bd80b7b4b88, type: 3}
       - {fileID: 1717960602, guid: 31cee7fbc7dacf5449ac2bd80b7b4b88, type: 3}
+      - {fileID: -1742903103, guid: 31cee7fbc7dacf5449ac2bd80b7b4b88, type: 3}
     corporationsColors:
       keys: 0100000002000000030000000400000000000000
       values:

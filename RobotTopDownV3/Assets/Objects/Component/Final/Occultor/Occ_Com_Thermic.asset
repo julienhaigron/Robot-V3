@@ -25,5 +25,5 @@ MonoBehaviour:
   reparingDurationAmount: 1
   soundCamo: 0
   visualCamo: 0
-  thermicCamo: 26
+  thermicCamo: 0.26
   statBonuses: []
