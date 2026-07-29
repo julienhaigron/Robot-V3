@@ -59,14 +59,19 @@ public class HangarPanel : AUIPanel
 			}
 		}
 
-		m_addNewEntityBtn.SetInteractability(GameDatas.current.currentPlayerSave.squadUnits.Count < HangarUpgrade.GetCurrentMaxHangarUnit());	
-		m_maxUnitInSquadTMP.text = "Active squad: " + GameDatas.current.currentPlayerSave.squadUnits.Count +  "/" + HangarUpgrade.GetCurrentMaxHangarUnit();
-		m_maxUnitInHangarTMP.text = "Inactive unit: " + GameDatas.current.currentPlayerSave.allBuiltUnits.Count + "/" + HangarUpgrade.GetCurrentMaxUnitAmount();
+		RefreshTexts();
+	}
+
+	public void RefreshTexts ()
+	{
+		m_addNewEntityBtn.SetInteractability(GameDatas.current.currentPlayerSave.squadUnits.Count < HangarUpgrade.GetCurrentMaxHangarUnit());
+		int squadCount = GameDatas.current.currentPlayerSave.squadUnits.Count;
+		m_maxUnitInSquadTMP.text = "Active squad: " + squadCount + "/" + HangarUpgrade.GetCurrentMaxHangarUnit();
+		m_maxUnitInHangarTMP.text = "Inactive unit: " + (GameDatas.current.currentPlayerSave.allBuiltUnits.Count - GameDatas.current.currentPlayerSave.squadUnits.Count) + "/" + HangarUpgrade.GetCurrentMaxUnitAmount();
 
 		int totalEnergyUsed = 0;
 		foreach (EntitySavedData savedEntity in GameDatas.current.currentPlayerSave.squadUnits)
 			totalEnergyUsed += savedEntity.GetTotalEnergyUsed();
 		m_maxEnergyCostInSquadTMP.text = "Energy: " + totalEnergyUsed + "/" + HangarUpgrade.GetCurrentMaxSquadEnergyAmount();
-
 	}
 }

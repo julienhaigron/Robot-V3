@@ -23,11 +23,21 @@ public class EndLevelEntityDisplay : MonoBehaviour
         m_mainComponentSlots[EntityEquipmentData.EquipmentType.Reactor].Init(_data.ReactorData.icon, _data.reactor.isDamaged);
         m_mainComponentSlots[EntityEquipmentData.EquipmentType.NeuronalMembrane].Init(_data.NeuronalMembraneData.icon, _data.neuronalMembrane.isDamaged);
 
-        for (int i = 0; i < _data.arms.Length; i++)
-            m_subComponentSlots[EntityEquipmentData.EquipmentType.Frame].slots[i].Init(_data.arms[i].GetData<EntityEquipmentData>().icon, _data.arms[i].isDamaged);
+        for (int i = 0; i < m_subComponentSlots[EntityEquipmentData.EquipmentType.NeuronalMembrane].slots.Count; i++)
+        {
+            if (i >= _data.arms.Length)
+                m_subComponentSlots[EntityEquipmentData.EquipmentType.NeuronalMembrane].slots[i].Hide();
+            else
+                m_subComponentSlots[EntityEquipmentData.EquipmentType.NeuronalMembrane].slots[i].Init(_data.arms[i].GetData<EntityEquipmentData>().icon, _data.arms[i].isDamaged);
+        }
 
-        for (int i = 0; i < _data.auxiliar.Length; i++)
-            m_subComponentSlots[EntityEquipmentData.EquipmentType.NeuronalMembrane].slots[i].Init(_data.auxiliar[i].GetData<EntityEquipmentData>().icon, _data.auxiliar[i].isDamaged);
+        for (int i = 0; i < m_subComponentSlots[EntityEquipmentData.EquipmentType.Frame].slots.Count; i++)
+        {
+            if (i >= _data.auxiliar.Length)
+                m_subComponentSlots[EntityEquipmentData.EquipmentType.Frame].slots[i].Hide();
+            else
+                m_subComponentSlots[EntityEquipmentData.EquipmentType.Frame].slots[i].Init(_data.auxiliar[i].GetData<EntityEquipmentData>().icon, _data.auxiliar[i].isDamaged);
+        }
 
         for (int i = 0; i < _data.chipsets.Length; i++)
 		{
