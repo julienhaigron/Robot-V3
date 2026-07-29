@@ -85,7 +85,7 @@ public class Entity : MonoBehaviour
 	[Serializable]
 	public enum EntityState
 	{
-		Guarding,
+		NoAIChange,
 		Patroling,
 		Fleeing //to add
 	}

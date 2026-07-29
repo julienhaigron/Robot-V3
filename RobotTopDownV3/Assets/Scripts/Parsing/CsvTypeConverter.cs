@@ -190,7 +190,7 @@ public static class CsvTypeConverter
             if (string.IsNullOrEmpty(_rawValue))
                 return null;
             List<EntityEquipmentData.SecondaryStat> stats = new();
-            string[] rawStats = _rawValue.Split(",");
+            string[] rawStats = _rawValue.Replace(" ", "").Split(",");
             foreach (string rawStat in rawStats)
                 stats.Add((EntityEquipmentData.SecondaryStat)Convert(rawStat.Replace("[", "").Replace("]", ""), typeof(EntityEquipmentData.SecondaryStat)));
 
@@ -220,7 +220,7 @@ public static class CsvTypeConverter
             if (string.IsNullOrEmpty(_rawValue))
                 return null;
             List<ChipsetEquipmentData.ConditionalStatBonus> stats = new();
-            string[] rawStats = _rawValue.Split(",");
+            string[] rawStats = _rawValue.Replace(" ", "").Split(",");
             foreach (string rawStat in rawStats)
                 stats.Add((ChipsetEquipmentData.ConditionalStatBonus)Convert(rawStat.Replace("[", "").Replace("]", ""), typeof(ChipsetEquipmentData.ConditionalStatBonus)));
 
@@ -252,7 +252,7 @@ public static class CsvTypeConverter
             if (string.IsNullOrEmpty(_rawValue))
                 return null;
             List<AEntityPassiveEffect.PassiveEffectContainer> stats = new();
-            string[] rawStats = _rawValue.Split(",");
+            string[] rawStats = _rawValue.Replace(" ", "").Split(",");
             foreach (string rawStat in rawStats)
                 stats.Add((AEntityPassiveEffect.PassiveEffectContainer)Convert(rawStat.Replace("[", "").Replace("]", ""), typeof(AEntityPassiveEffect.PassiveEffectContainer)));
 
@@ -280,7 +280,7 @@ public static class CsvTypeConverter
         }
         else if (_targetType == typeof(Entity.EntityState[]))
         {
-            string[] raw = _rawValue.Split(",");
+            string[] raw = _rawValue.Replace(" ", "").Split(",");
 
             List<Entity.EntityState> result = new();
             foreach (string item in raw)
@@ -292,7 +292,7 @@ public static class CsvTypeConverter
         }
         else if (_targetType == typeof(WeaponEquipmentData.DamageType[]))
         {
-            string[] raw = _rawValue.Split(",");
+            string[] raw = _rawValue.Replace(" ", "").Split(",");
 
             List<WeaponEquipmentData.DamageType> result = new();
             foreach (string item in raw)

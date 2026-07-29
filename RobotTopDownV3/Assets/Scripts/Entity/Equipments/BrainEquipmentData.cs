@@ -18,7 +18,7 @@ public class BrainEquipmentData : EntityEquipmentData
     [BoxGroup(GroupID = "Stat"), Parsing("Melee Dodge")]
     public float meleeEvasion = .25f;
 
-    [BoxGroup(GroupID = "AI")]
+    [BoxGroup(GroupID = "AI"), Parsing("States")]
     public Entity.EntityState[] knownedStates;
 
     public override StatDescription[] GetDesciption ()

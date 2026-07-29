@@ -89,7 +89,7 @@ public class EntityAIPlugin : EntityPlugin
 			waitAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.Wait], null, m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID, _recordedAction.action.timeAtStart);
 			resultInfo.ReplaceAction(waitAction, "Unit is stun");
 		}
-		else if (_recordedAction.entityState == Entity.EntityState.Guarding)
+		else if (_recordedAction.entityState == Entity.EntityState.NoAIChange)
 		{
 			//no action change if in guard
 		}
@@ -175,7 +175,7 @@ public class EntityAIPlugin : EntityPlugin
 					}
 				}
 			}
-			else if (_recordedAction.entityState == Entity.EntityState.Guarding)
+			else if (_recordedAction.entityState == Entity.EntityState.NoAIChange)
 			{
 				//rotate weapon or move toward enemy if too far
 				if (!isAtCorrectOrientation)
