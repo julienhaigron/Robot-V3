@@ -149,8 +149,17 @@ MonoBehaviour:
     critIcon: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
     statusDisplayPrefab: {fileID: 4648805977819339727, guid: a644c3a9cc6d76d49933b728bcd7e368, type: 3}
     damageIconPerType:
-      keys: 
-      values: []
+      keys: 000000000100000002000000030000000400000005000000060000000700000008000000
+      values:
+      - {fileID: -750808196, guid: c2bd876b34d633845b45c8192d7dda8b, type: 3}
+      - {fileID: 1555034717, guid: c2bd876b34d633845b45c8192d7dda8b, type: 3}
+      - {fileID: 1929565888, guid: c2bd876b34d633845b45c8192d7dda8b, type: 3}
+      - {fileID: 1166528338, guid: c2bd876b34d633845b45c8192d7dda8b, type: 3}
+      - {fileID: 391578092, guid: c2bd876b34d633845b45c8192d7dda8b, type: 3}
+      - {fileID: 2009907212, guid: c2bd876b34d633845b45c8192d7dda8b, type: 3}
+      - {fileID: -472502760, guid: c2bd876b34d633845b45c8192d7dda8b, type: 3}
+      - {fileID: -698634207, guid: c2bd876b34d633845b45c8192d7dda8b, type: 3}
+      - {fileID: -480893360, guid: c2bd876b34d633845b45c8192d7dda8b, type: 3}
     tileGroundMaterials:
       keys: 000000000100000002000000030000000400000005000000
       values:
