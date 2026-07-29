@@ -56,46 +56,52 @@ public class EndLevelPopup : AUIPopup
 		m_allocatedRewardPoint = _gameResult == GameResult.Win ? 5 : _gameResult == GameResult.Draw ? 3 : 2;
 		/*if (!_missionData.areRewardsRandom)
 		{*/
-			List<CurrencyType> currencies = _missionData.currencyRewards.Keys.ToList();
-			for (int i = 0; i < m_rewardCurrencyDisplays.Length; i++)
+		List<CurrencyType> currencies = _missionData.currencyRewards.Keys.ToList();
+		for (int i = 0; i < m_rewardCurrencyDisplays.Length; i++)
+		{
+			if (_missionData.currencyRewards.Keys.Count > i)
 			{
-				if (_missionData.currencyRewards.Keys.Count > i)
-				{
-					m_rewardCurrencyDisplays[i].Show();
-					m_rewardCurrencyDisplays[i].Init(currencies[i], _missionData.currencyRewards[currencies[i]], true, OnInterractWithRewardBtn);
-				}
-				else
-					m_rewardCurrencyDisplays[i].Hide();
-
+				m_rewardCurrencyDisplays[i].Show();
+				m_rewardCurrencyDisplays[i].Init(currencies[i], _missionData.currencyRewards[currencies[i]], true, OnInterractWithRewardBtn);
+				if (_gameResult == GameResult.Win)
+					m_rewardCurrencyDisplays[i].SetIsSelected(true);
 			}
+			else
+				m_rewardCurrencyDisplays[i].Hide();
 
-			for (int i = 0; i < m_rewardComponentDisplays.Length; i++)
+		}
+
+		for (int i = 0; i < m_rewardComponentDisplays.Length; i++)
+		{
+			if (_missionData.equipmentRewards.Count > i)
 			{
-				if (_missionData.equipmentRewards.Count > i)
-				{
-					m_rewardComponentDisplays[i].Show();
-					m_rewardComponentDisplays[i].Init(_missionData.equipmentRewards[i], OnInterractWithRewardBtn);
-				}
-				else
-					m_rewardComponentDisplays[i].Hide();
+				m_rewardComponentDisplays[i].Show();
+				m_rewardComponentDisplays[i].Init(_missionData.equipmentRewards[i], OnInterractWithRewardBtn);
+				if (_gameResult == GameResult.Win)
+					m_rewardCurrencyDisplays[i].SetIsSelected(true);
 			}
+			else
+				m_rewardComponentDisplays[i].Hide();
+		}
 
-			for (int i = 0; i < m_rewardUnitsDisplays.Length; i++)
+		for (int i = 0; i < m_rewardUnitsDisplays.Length; i++)
+		{
+			if (_missionData.unitReward.Count > i)
 			{
-				if (_missionData.unitReward.Count > i)
-				{
-					m_rewardUnitsDisplays[i].Show();
-					m_rewardUnitsDisplays[i].Init(_missionData.unitReward[i], OnInterractWithRewardBtn);
-				}
-				else
-					m_rewardUnitsDisplays[i].Hide();
+				m_rewardUnitsDisplays[i].Show();
+				m_rewardUnitsDisplays[i].Init(_missionData.unitReward[i], OnInterractWithRewardBtn);
+				if (_gameResult == GameResult.Win)
+					m_rewardCurrencyDisplays[i].SetIsSelected(true);
 			}
+			else
+				m_rewardUnitsDisplays[i].Hide();
+		}
 		/*}
 		else
 		{
 			//TODO : design rng rules
 		}*/
-		
+
 	}
 
 	private void OnInterractWithRewardBtn ()
@@ -166,8 +172,8 @@ public class EndLevelPopup : AUIPopup
 			if (display.IsSelected)
 				display.UnitPreset.AddToUnits();
 
-		Close();
 		GameManager.Instance.GoBackToHub();
+		Close();
 	}
 
 }

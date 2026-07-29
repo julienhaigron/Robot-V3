@@ -32,6 +32,7 @@ public class FTUEManager : SingletonPersistant<FTUEManager>
 
 
 	public const string FTUEID = "FTUESequence";
+	public bool isInit = false;
 
 	public void AddTutorialHighlightZone ( TutorialHighlightZone _highlightZone )
 	{
@@ -47,13 +48,15 @@ public class FTUEManager : SingletonPersistant<FTUEManager>
 
 	public void InitFTUE ()
 	{
-		if (GameDatas.current.currentPlayerSave.sequencesProgressions.ContainsKey(FTUEID) && GameDatas.current.currentPlayerSave.sequencesProgressions[FTUEID] == -1)
+		if (GameDatas.current.currentPlayerSave.sequencesProgressions.ContainsKey(FTUEID) && GameDatas.current.currentPlayerSave.sequencesProgressions[FTUEID] == -1
+			|| isInit)
 			return;
 
 #if UNITY_EDITOR
 		if (GameConfig.current.debug.skipFTUE)
 			return;
 #endif
+		isInit = true;
 		FTUESequence ftueSequence = new(FTUEID);
 
 		ftueSequence.Append(MicroTuto0());

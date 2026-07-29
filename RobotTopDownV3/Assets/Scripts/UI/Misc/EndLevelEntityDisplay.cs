@@ -20,8 +20,8 @@ public class EndLevelEntityDisplay : MonoBehaviour
 
         m_mainComponentSlots[EntityEquipmentData.EquipmentType.Frame].Init(_data.FrameData.icon, _data.frame.isDamaged);
         m_mainComponentSlots[EntityEquipmentData.EquipmentType.Brain].Init(_data.BrainData.icon, _data.brain.isDamaged);
-        m_mainComponentSlots[EntityEquipmentData.EquipmentType.Reactor].Init(_data.BrainData.icon, _data.brain.isDamaged);
-        m_mainComponentSlots[EntityEquipmentData.EquipmentType.NeuronalMembrane].Init(_data.BrainData.icon, _data.brain.isDamaged);
+        m_mainComponentSlots[EntityEquipmentData.EquipmentType.Reactor].Init(_data.ReactorData.icon, _data.reactor.isDamaged);
+        m_mainComponentSlots[EntityEquipmentData.EquipmentType.NeuronalMembrane].Init(_data.NeuronalMembraneData.icon, _data.neuronalMembrane.isDamaged);
 
         for (int i = 0; i < _data.arms.Length; i++)
             m_subComponentSlots[EntityEquipmentData.EquipmentType.Frame].slots[i].Init(_data.arms[i].GetData<EntityEquipmentData>().icon, _data.arms[i].isDamaged);

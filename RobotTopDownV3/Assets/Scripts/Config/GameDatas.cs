@@ -103,7 +103,8 @@ public partial class GameDatas : ScriptableObject
 
 		//tutos
 		public bool didStartTuto = false;
-		public bool DidFirstIntroLevel => sequencesProgressions.ContainsKey(FTUEManager.FTUEID) && sequencesProgressions[FTUEManager.FTUEID] > 0 && sequencesProgressions[FTUEManager.FTUEID] != -1;
+		public bool DidFirstIntroLevel => sequencesProgressions.ContainsKey(FTUEManager.FTUEID) 
+			&& (sequencesProgressions[FTUEManager.FTUEID] > 0 || sequencesProgressions[FTUEManager.FTUEID] != -1);
 		public SerializableDictionary<string, int> sequencesProgressions = new SerializableDictionary<string, int>();
 
 		[Serializable]

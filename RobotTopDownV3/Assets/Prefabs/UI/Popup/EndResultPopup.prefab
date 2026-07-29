@@ -915,6 +915,7 @@ MonoBehaviour:
   - {fileID: 8142531106742754354}
   - {fileID: 8169211710953412985}
   m_unitDisplay:
+  - {fileID: 5780107535752630866}
   - {fileID: 7525726284965860533}
   - {fileID: 2215532161437502595}
   - {fileID: 4996169343539982504}
@@ -979,15 +980,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.GridLayoutGroup
   m_Padding:
-    m_Left: -13
+    m_Left: -68
     m_Right: 0
     m_Top: -14
     m_Bottom: 0
   m_ChildAlignment: 0
   m_StartCorner: 0
   m_StartAxis: 0
-  m_CellSize: {x: 450, y: 140}
-  m_Spacing: {x: -72.87, y: -32.19}
+  m_CellSize: {x: 550, y: 140}
+  m_Spacing: {x: -162.2, y: -32.19}
   m_Constraint: 1
   m_ConstraintCount: 2
 --- !u!1 &8184656268273904621
@@ -2871,6 +2872,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 3007154986017364918, guid: 7f51436feb55ff848a759ca5ada7c7d0, type: 3}
   m_PrefabInstance: {fileID: 7300179151688740117}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &5780107535752630866 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3852938811168702279, guid: 7f51436feb55ff848a759ca5ada7c7d0, type: 3}
+  m_PrefabInstance: {fileID: 7300179151688740117}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f12324cc4cb378e478b394fdc19b0890, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: RTD::EndLevelEntityDisplay
 --- !u!1001 &7697103162464659845
 PrefabInstance:
   m_ObjectHideFlags: 0

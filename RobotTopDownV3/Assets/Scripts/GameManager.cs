@@ -112,7 +112,7 @@ public class GameManager : SingletonPersistant<GameManager>
 			if (!GameDatas.current.currentPlayerSave.didStartTuto)
 			{
 				foreach (UnitPreset unitPreset in FTUEManager.Instance.playerStartingSquadUnits)
-				unitPreset.AddToUnits();
+					unitPreset.AddToUnits();
 				GameDatas.current.currentPlayerSave.didStartTuto = true;
 			}
 
