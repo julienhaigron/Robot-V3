@@ -256,18 +256,20 @@ public class GameManager : SingletonPersistant<GameManager>
 		}
 	}
 
-	public void EndGame ( bool _isSuccessfull )
+	public void EndGame ( EndLevelPopup.GameResult _gameResult )
 	{
 		GameDatas.current.currentPlayerSave.NewDay();
 		//SaveMacroChanges();
 
-		if (_isSuccessfull)
+		if (_gameResult == EndLevelPopup.GameResult.Win)
 			LogConsole.AddLog("Victory", LogConsole.LogEventType.DebugSys);
-		else
+		else if(_gameResult == EndLevelPopup.GameResult.Loose)
 			LogConsole.AddLog("Defeat", LogConsole.LogEventType.DebugSys);
+		else
+			LogConsole.AddLog("Draw", LogConsole.LogEventType.DebugSys);
 
 		UIManager.Instance.ClosePanel<InGamePanel>(true);
-		UIManager.Instance.OpenPopup<EndLevelPopup>().Init(_isSuccessfull, m_currentMission);
+		UIManager.Instance.OpenPopup<EndLevelPopup>().Init(_gameResult, m_currentMission);
 		m_fogCanvas.gameObject.SetActive(false);
 	}
 

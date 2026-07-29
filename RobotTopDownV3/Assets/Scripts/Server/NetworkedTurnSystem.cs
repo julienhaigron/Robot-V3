@@ -33,7 +33,8 @@ public class NetworkedTurnSystem : NetworkBehaviour
 	{
 		if (_isPlayerOneDead || _isPlayerTwoDead)
 		{
-            TurnManager.Instance.EndLevel(!_isPlayerOneDead);
+            EndLevelPopup.GameResult result = _isPlayerOneDead && _isPlayerOneDead ? EndLevelPopup.GameResult.Draw : _isPlayerOneDead ? EndLevelPopup.GameResult.Loose : EndLevelPopup.GameResult.Win;
+            TurnManager.Instance.EndLevel(result);
 		}
 		else
 		{

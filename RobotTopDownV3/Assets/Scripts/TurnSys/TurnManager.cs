@@ -1034,7 +1034,8 @@ public class TurnManager : Singleton<TurnManager>
 		{
 			if (_isPlayerOneDead || _isPlayerTwoDead)
 			{
-				EndLevel(!_isPlayerOneDead);
+				EndLevelPopup.GameResult result = _isPlayerOneDead && _isPlayerOneDead ? EndLevelPopup.GameResult.Draw : _isPlayerOneDead ? EndLevelPopup.GameResult.Loose : EndLevelPopup.GameResult.Win;
+				EndLevel(result);
 			}
 			else
 			{
@@ -1047,7 +1048,8 @@ public class TurnManager : Singleton<TurnManager>
 			{
 				if (_isPlayerOneDead || _isPlayerTwoDead)
 				{
-					EndLevel(!_isPlayerOneDead && OnlinePlayerInstance.Self.IsHost);
+					EndLevelPopup.GameResult result = _isPlayerOneDead && _isPlayerOneDead ? EndLevelPopup.GameResult.Draw : _isPlayerOneDead ? EndLevelPopup.GameResult.Loose : EndLevelPopup.GameResult.Win;
+					EndLevel(result);
 				}
 				else
 				{
@@ -1060,13 +1062,13 @@ public class TurnManager : Singleton<TurnManager>
 	}
 
 	[Button]
-	public void EndLevel ( bool _isSuccess )
+	public void EndLevel ( EndLevelPopup.GameResult _gameResult)
 	{
 		if (currentPhase == TurnPhase.Off)
 			return;
 
 		currentPhase = TurnPhase.Off;
-		GameManager.Instance.EndGame(_isSuccess);
+		GameManager.Instance.EndGame(_gameResult);
 		onEndLevel?.Invoke();
 	}
 

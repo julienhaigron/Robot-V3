@@ -1,0 +1,53 @@
+using UnityEngine;
+using TMPro;
+using System.Collections.Generic;
+
+public class EndLevelEntityDisplay : MonoBehaviour
+{
+    [SerializeField] private TextMeshProUGUI m_nameTMP;
+    [SerializeField] private SerializableDictionary<EntityEquipmentData.EquipmentType, DamagedSlotDisplay> m_mainComponentSlots;
+    [SerializeField] private SerializableDictionary<EntityEquipmentData.EquipmentType, SubDamagedSlotContainer> m_subComponentSlots;
+
+    [System.Serializable]
+    public class SubDamagedSlotContainer
+    {
+        public List<DamagedSlotDisplay> slots = new();
+    }
+
+    public void Init( EntitySavedData _data )
+	{
+        m_nameTMP.text = _data.name;
+
+        m_mainComponentSlots[EntityEquipmentData.EquipmentType.Frame].Init(_data.FrameData.icon, _data.frame.isDamaged);
+        m_mainComponentSlots[EntityEquipmentData.EquipmentType.Brain].Init(_data.BrainData.icon, _data.brain.isDamaged);
+        m_mainComponentSlots[EntityEquipmentData.EquipmentType.Reactor].Init(_data.BrainData.icon, _data.brain.isDamaged);
+        m_mainComponentSlots[EntityEquipmentData.EquipmentType.NeuronalMembrane].Init(_data.BrainData.icon, _data.brain.isDamaged);
+
+        for (int i = 0; i < _data.arms.Length; i++)
+            m_subComponentSlots[EntityEquipmentData.EquipmentType.Frame].slots[i].Init(_data.arms[i].GetData<EntityEquipmentData>().icon, _data.arms[i].isDamaged);
+
+        for (int i = 0; i < _data.auxiliar.Length; i++)
+            m_subComponentSlots[EntityEquipmentData.EquipmentType.NeuronalMembrane].slots[i].Init(_data.auxiliar[i].GetData<EntityEquipmentData>().icon, _data.auxiliar[i].isDamaged);
+
+        for (int i = 0; i < _data.chipsets.Length; i++)
+		{
+            if (i >= _data.chipsets.Length)
+                m_subComponentSlots[EntityEquipmentData.EquipmentType.Brain].slots[i].Hide();
+            else
+                m_subComponentSlots[EntityEquipmentData.EquipmentType.Brain].slots[i].Init(_data.chipsets[i].GetData<EntityEquipmentData>().icon, _data.chipsets[i].isDamaged);
+		}
+
+    }
+
+    public void Show ()
+    {
+        gameObject.SetActive(true);
+    }
+
+    public void Hide ()
+    {
+        gameObject.SetActive(false);
+    }
+
+
+}

@@ -101,7 +101,7 @@ public class MissionPanel : AUIPanel
 			if (_missionBtn.MissionData.equipmentRewards.Count > i)
 			{
 				m_componentRewardDisplays[i].Show();
-				m_componentRewardDisplays[i].Init(_missionBtn.MissionData.equipmentRewards[i]);
+				m_componentRewardDisplays[i].Init(_missionBtn.MissionData.equipmentRewards[i], null);
 			}
 			else
 				m_componentRewardDisplays[i].Hide();
@@ -113,7 +113,7 @@ public class MissionPanel : AUIPanel
 			if (_missionBtn.MissionData.currencyRewards.Keys.Count > i)
 			{
 				m_currencyRewardDisplays[i].Show();
-				m_currencyRewardDisplays[i].Init(keys[i], _missionBtn.MissionData.currencyRewards[keys[i]], true);
+				m_currencyRewardDisplays[i].Init(keys[i], _missionBtn.MissionData.currencyRewards[keys[i]], true, null);
 			}
 			else
 				m_currencyRewardDisplays[i].Hide();

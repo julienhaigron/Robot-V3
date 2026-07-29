@@ -221,6 +221,25 @@ public partial class GameDatas : ScriptableObject
 				return null;
 
 			Equipment equipment = new() { ID = newID, dataID = _data.name };
+			/*int slotCount = 0;
+			if(_data is FrameEquipmentData frameData)
+			{
+				slotCount += frameData.armouringSlotAvailable;
+				slotCount += frameData.occultorSlotAvailable;
+			}
+			else if(_data is BrainEquipmentData brainData)
+			{
+				slotCount += brainData.chipsetSlotAvailable;
+			}
+			else if(_data is NeuronalMembraneEquipmentData nmData)
+			{
+				slotCount += nmData.equipmentSlotAvailable;
+			}
+			List<bool> slots = new();
+			for(int i = 0; i < slotCount; i++)
+				slots.Add(false);
+			equipment.areSlotsDamaged = slots.ToArray();*/
+
 			equipmentInventory.Add(equipment);
 			equipmentCounter++;
 
@@ -236,8 +255,6 @@ public partial class GameDatas : ScriptableObject
 		{
 			EntitySavedData newEntity = new();
 			newEntity.name = "New Unit";
-			//newEntity.frame = new() { ID = _frame.name + equipmentCounter++, dataID = _frame.name };
-			//newEntity.currentHp = newEntity.GetMaxHealth();
 			squadUnits.Add(newEntity);
 
 			return newEntity;
@@ -249,12 +266,14 @@ public partial class GameDatas : ScriptableObject
 			public string ID;
 			public string dataID;
 			public bool isDamaged = false;
+			//public bool[] areSlotsDamaged;
 
 			public void NetworkSerialize<T> ( BufferSerializer<T> serializer ) where T : IReaderWriter
 			{
 				serializer.SerializeValue(ref ID);
 				serializer.SerializeValue(ref dataID);
 				serializer.SerializeValue(ref isDamaged);
+				//serializer.SerializeValue(ref areSlotsDamaged);
 			}
 
 			public T GetData<T> () where T : EntityEquipmentData

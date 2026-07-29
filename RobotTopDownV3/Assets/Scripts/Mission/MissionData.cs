@@ -24,7 +24,7 @@ public class MissionData : ScriptableEnum<MissionDataEnumID>
         DestroyItem
 	}
 
-    public bool areRewardsRandom = false;
+    //public bool areRewardsRandom = false;
     public SerializableDictionary<CurrencyType, ulong> currencyRewards;
     public List<EntityEquipmentData> equipmentRewards;
     public List<UnitPreset> unitReward;

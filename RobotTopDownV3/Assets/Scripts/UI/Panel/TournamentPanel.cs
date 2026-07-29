@@ -132,7 +132,7 @@ public class TournamentPanel : AUIPanel
 			if (_data.equipmentRewards.Count > i)
 			{
 				m_componentRewardDisplays[i].Show();
-				m_componentRewardDisplays[i].Init(_data.equipmentRewards[i]);
+				m_componentRewardDisplays[i].Init(_data.equipmentRewards[i], null);
 			}
 			else
 				m_componentRewardDisplays[i].Hide();
@@ -144,7 +144,7 @@ public class TournamentPanel : AUIPanel
 			if (_data.currencyRewards.Keys.Count > i)
 			{
 				m_currencyRewardDisplays[i].Show();
-				m_currencyRewardDisplays[i].Init(keys[i], _data.currencyRewards[keys[i]], true);
+				m_currencyRewardDisplays[i].Init(keys[i], _data.currencyRewards[keys[i]], true, null);
 			}
 			else
 				m_currencyRewardDisplays[i].Hide();
