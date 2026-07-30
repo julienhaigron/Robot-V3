@@ -18,8 +18,8 @@ public class BrainEquipmentData : EntityEquipmentData
     [BoxGroup(GroupID = "Stat"), Parsing("Melee Dodge")]
     public float meleeEvasion = .25f;
 
-    [BoxGroup(GroupID = "AI"), Parsing("States")]
-    public Entity.EntityState[] knownedStates;
+    /*[BoxGroup(GroupID = "AI"), Parsing("States")]
+    public Entity.EntityState[] knownedStates;*/
 
     public override StatDescription[] GetDesciption ()
     {
@@ -30,9 +30,9 @@ public class BrainEquipmentData : EntityEquipmentData
         description.Add(new() { ID = SecondaryStat.StatType.DistanceAccuracy, title = "Distance Accuracy", floatValue = distanceAccuracy, stringValue = (distanceAccuracy * 100f) + " %"});
         description.Add(new() { ID = SecondaryStat.StatType.DistanceEvasion, title = "Distance Evasion", floatValue = distanceEvasion, stringValue = (distanceEvasion * 100f) + " %"});
         string allStatesInString = "";
-        for (int i = 0; i < knownedStates.Length; i++)
+        /*for (int i = 0; i < knownedStates.Length; i++)
             allStatesInString += knownedStates[i].ToString() + (i+1 < knownedStates.Length ? ", " : "");
-        description.Add(new() { ID = SecondaryStat.StatType.States, title = "Knowned States", floatValue = 0, stringValue = allStatesInString });
+        description.Add(new() { ID = SecondaryStat.StatType.States, title = "Knowned States", floatValue = 0, stringValue = allStatesInString });*/
 
         return description.ToArray();
     }

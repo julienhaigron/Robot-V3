@@ -121,7 +121,7 @@ public class Entity : MonoBehaviour
 			m_knownedPassiveEffectsPerAction.Add(actionID, _data.GetPassiveEffects(actionID));
 		}
 
-		m_knownedStates.AddRange(_data.BrainData.knownedStates);
+		m_knownedStates.AddRange(GameAssets.current.game.states);
 	}
 
 	private Dictionary<EntityActionEnumID, List<string>> GetAllActions ()

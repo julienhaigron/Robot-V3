@@ -39,6 +39,7 @@ public class GameAssets : ScriptableObject
         public Entity defaultEntity;
         public GhostEntity baseGhost;
         public GhostItem baseItem;
+        public List<Entity.EntityState> states;
 
         public WeaponCone weaponCone;
 
