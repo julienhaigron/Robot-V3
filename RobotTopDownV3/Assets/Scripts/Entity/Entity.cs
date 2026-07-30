@@ -301,8 +301,8 @@ public class Entity : MonoBehaviour
 			{
 				RemoveStatus(statusID);
 			}
-
-			GameAssets.current.game.entityStatus[statusID].ApplyStatusEffect(m_remainingDurationToActiveStatuses.ContainsKey(status) ? m_remainingDurationToActiveStatuses[GameAssets.current.game.entityStatus[statusID]]-- : 0, this);
+			else
+				GameAssets.current.game.entityStatus[statusID].ApplyStatusEffect(m_remainingDurationToActiveStatuses.ContainsKey(status) ? m_remainingDurationToActiveStatuses[GameAssets.current.game.entityStatus[statusID]]-- : 0, this);
 		}
 
 		foreach (EntityEquipmentData.StatBonusBuff buff in m_statBuffs.ToArray())
