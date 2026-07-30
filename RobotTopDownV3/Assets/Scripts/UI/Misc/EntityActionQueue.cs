@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Sirenix.OdinInspector;
 using System.Linq;
+using System;
 
 public class EntityActionQueue : MonoBehaviour
 {
@@ -21,6 +22,8 @@ public class EntityActionQueue : MonoBehaviour
 	[Title("PriorityQueue")]
 	[SerializeField] private Transform m_actionPriorityQueueTfm;
 	[SerializeField] private Image m_selectedActionIcon;
+	[SerializeField] private BaseButton m_leftActionTypeBtn;
+	[SerializeField] private BaseButton m_rightActionTypeBtn;
 	[SerializeField] private PriorityQueueActionSlot[] m_priorityQueueActionSlots;
 	public PriorityQueueActionSlot[] PriorityQueueSlots => m_priorityQueueActionSlots;
 
@@ -31,6 +34,7 @@ public class EntityActionQueue : MonoBehaviour
 	[SerializeField] private float m_baseActionPriorityQueueElementHeight = 54.5f;
 
 	private int? m_currentEntitySelected;
+	private EntityActionData.MainActionType m_currentMainType;
 
 	[System.Serializable]
 	public class StateLine
@@ -45,10 +49,12 @@ public class EntityActionQueue : MonoBehaviour
 		TurnManager.onActionAdded += OnActionAdded;
 		TurnManager.onActionRemoved += OnActionRemoved;
 		TurnManager.onEndInputPhase += OnEndInputPhase;
+		m_leftActionTypeBtn.onClick += OnClickLeftActionTypeBtn;
+		m_rightActionTypeBtn.onClick += OnClickRightActionTypeBtn;
 
-		foreach(Entity.EntityState state in m_stateLines.Keys)
+		foreach (Entity.EntityState state in m_stateLines.Keys)
 		{
-			for(int i = 0; i < m_stateLines[state].slots.Length; i++)
+			for (int i = 0; i < m_stateLines[state].slots.Length; i++)
 			{
 				m_stateLines[state].slots[i].Init(state, i);
 			}
@@ -69,6 +75,8 @@ public class EntityActionQueue : MonoBehaviour
 		TurnManager.onActionRemoved -= OnActionRemoved;
 		TurnManager.onEndInputPhase -= OnEndInputPhase;
 		TurnManager.onActionSelected -= OnActionSelected;
+		m_leftActionTypeBtn.onClick -= OnClickLeftActionTypeBtn;
+		m_rightActionTypeBtn.onClick -= OnClickRightActionTypeBtn;
 	}
 
 	private void OnEndInputPhase ()
@@ -82,9 +90,9 @@ public class EntityActionQueue : MonoBehaviour
 		RefreshVisual(_entityID);
 	}
 
-	private void OnActionSelected (AEntityAction _selectedAction)
+	private void OnActionSelected ( AEntityAction _selectedAction )
 	{
-		RefreshPriorityQueue(m_currentEntitySelected);
+		RefreshPriorityQueue(m_currentEntitySelected, TurnManager.Instance.CurrentActionSelected.Data.GetMainActionType());
 	}
 
 	private void OnActionAdded ( TurnManager.RecordedAction _newRecordedAction )
@@ -95,6 +103,18 @@ public class EntityActionQueue : MonoBehaviour
 	private void OnActionRemoved ( TurnManager.RecordedAction _removedRecordedAction )
 	{
 		RefreshVisual(_removedRecordedAction.performingEntityID);
+	}
+
+	private void OnClickLeftActionTypeBtn ()
+	{
+		EntityActionData.MainActionType leftType = (EntityActionData.MainActionType)(((int)m_currentMainType + 2) % 3);
+		RefreshPriorityQueue(m_currentEntitySelected, leftType);
+	}
+
+	private void OnClickRightActionTypeBtn ()
+	{
+		EntityActionData.MainActionType rightType = (EntityActionData.MainActionType)(((int)m_currentMainType + 1) % 3);
+		RefreshPriorityQueue(m_currentEntitySelected, rightType);
 	}
 
 	public void Init ()
@@ -120,7 +140,7 @@ public class EntityActionQueue : MonoBehaviour
 		//states
 		RefreshStateQueue();
 
-		RefreshPriorityQueue(_entityID);
+		RefreshPriorityQueue(_entityID, TurnManager.Instance.CurrentActionSelected.Data.GetMainActionType());
 
 		/*m_actionTokenDisplay.UpdateValue(m_turnManager.RemainingActionToken[_entityID.Value]
 			, _suffix: "/" + GameConfig.current.game.actionTokenPerRound);*/
@@ -183,13 +203,13 @@ public class EntityActionQueue : MonoBehaviour
 			int totalCost = 0;
 			for (int i = 0; i < m_stateLines[state].slots.Length; i++)
 			{
-				if(recordedActions.Length > i)
+				if (recordedActions.Length > i)
 				{
 					m_stateLines[state].slots[i].RefresSizeAndPosition(recordedActions[i].action.TotalDuration, recordedActions[i].action.timeAtStart);
 					m_stateLines[state].slots[i].Show();
 					totalCost += recordedActions[i].action.TotalDuration;
 				}
-				else if(totalCost < 10)
+				else if (totalCost < 10)
 				{
 					m_stateLines[state].slots[i].RefresSizeAndPosition(1, totalCost);
 					m_stateLines[state].slots[i].Show();
@@ -202,7 +222,7 @@ public class EntityActionQueue : MonoBehaviour
 		}
 	}
 
-	private void RefreshPriorityQueue ( int? _entityID )
+	private void RefreshPriorityQueue ( int? _entityID, EntityActionData.MainActionType _mainType )
 	{
 		if (_entityID == null)
 		{
@@ -212,12 +232,11 @@ public class EntityActionQueue : MonoBehaviour
 			m_actionPriorityQueueTfm.gameObject.SetActive(false);
 			return;
 		}
-
+		m_currentMainType = _mainType;
 		m_actionPriorityQueueTfm.gameObject.SetActive(true);
-		EntityActionData.MainActionType mainType = TurnManager.Instance.CurrentActionSelected.Data.GetMainActionType();
-		m_selectedActionIcon.sprite = GameAssets.current.ui.mainActionTypeIcons[mainType];
+		m_selectedActionIcon.sprite = GameAssets.current.ui.mainActionTypeIcons[_mainType];
 
-		List<EntityActionEnumID> actionPriorityQueue = new(PlayerController.Instance.SelectedEntity.AI.ActionPriorityQueues[mainType].priorityQueue);
+		List<EntityActionEnumID> actionPriorityQueue = new(PlayerController.Instance.SelectedEntity.AI.ActionPriorityQueues[_mainType].priorityQueue);
 		//actionPriorityQueue.Remove(TurnManager.Instance.CurrentActionTypeSelected);
 
 		Vector2 newSize = (m_actionPriorityQueueTfm.transform as RectTransform).sizeDelta;
@@ -262,14 +281,14 @@ public class EntityActionQueue : MonoBehaviour
 		{
 			for (int i = from; i < to; i++)
 			{
-				m_priorityQueueActionSlots[i].SetDisplay( m_priorityQueueActionSlots[i + 1].Display);
+				m_priorityQueueActionSlots[i].SetDisplay(m_priorityQueueActionSlots[i + 1].Display);
 			}
 		}
 		else
 		{
 			for (int i = from; i > to; i--)
 			{
-				m_priorityQueueActionSlots[i].SetDisplay( m_priorityQueueActionSlots[i - 1].Display);
+				m_priorityQueueActionSlots[i].SetDisplay(m_priorityQueueActionSlots[i - 1].Display);
 			}
 		}
 
@@ -281,7 +300,7 @@ public class EntityActionQueue : MonoBehaviour
 	[SerializeField] private EntityActionEnumID[] testActions;
 
 	[Button]
-	private void EditorTest (bool _isEntitySelected)
+	private void EditorTest ( bool _isEntitySelected )
 	{
 		int timeAtStart = 0;
 		for (int i = 0; i < m_actionDisplays.Length; i++)

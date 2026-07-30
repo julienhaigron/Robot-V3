@@ -15,10 +15,16 @@ public class SquadUnitFullMicroDisplay : MonoBehaviour
 	[SerializeField] private TextMeshProUGUI m_hpValueTMP;
 	[SerializeField] private Image m_mainFactionIconImg;
 	[SerializeField] private TextMeshProUGUI m_mainFactionPercentageTMP;
-	[SerializeField] private StatDisplay[] m_statDisplays;
 	[SerializeField] private StatusDisplay[] m_statusDisplays;
-	[SerializeField] private EntityEquipmentData.SecondaryStat.StatType[] m_displayStaticStatsFilter;
-	[SerializeField] private EntityEquipmentData.SecondaryStat.StatType[] m_displayConditionalStatsFilter;
+
+	[SerializeField] private EntityEquipmentData.SecondaryStat.StatType[] m_conditionalStat;
+	[SerializeField] private EntityEquipmentData.SecondaryStat.StatType[] m_damagesSectionFilter;
+	[SerializeField] private EntityEquipmentData.SecondaryStat.StatType[] m_resistanceSectionFilter;
+	[SerializeField] private EntityEquipmentData.SecondaryStat.StatType[] m_statusSectionFilter;
+	[SerializeField] private SerializableDictionary<EntityEquipmentData.SecondaryStat.StatType, StatDisplay> m_staticDisplays;
+	[SerializeField] private StatSectionDisplay m_damageSectionDisplay;
+	[SerializeField] private StatSectionDisplay m_resistanceSectionDisplay;
+	[SerializeField] private StatSectionDisplay m_statusSectionDisplay;
 
 	private void Awake ()
 	{
@@ -49,29 +55,55 @@ public class SquadUnitFullMicroDisplay : MonoBehaviour
 
 		SerializableDictionary<EntityEquipmentData.SecondaryStat.StatType, EntityEquipmentData.StatDescription> statsDescriptions = entity.Data.GetStatsDesciptions();
 		List<EntityEquipmentData.SecondaryStat.StatType> keys = statsDescriptions.Keys.ToList();
-		foreach(EntityEquipmentData.SecondaryStat.StatType stat in keys.ToArray())
-		{
-			bool conditionalPredicate = m_displayConditionalStatsFilter.Contains(stat) 
-				&& (statsDescriptions[stat].floatValue != 0 || statsDescriptions[stat].Format == EntityEquipmentData.SecondaryStat.StatTypeFormat.String || statsDescriptions[stat].Format == EntityEquipmentData.SecondaryStat.StatTypeFormat.Cell);
-			bool staticPredicate = m_displayStaticStatsFilter.Contains(stat);
-			if (!conditionalPredicate && !staticPredicate)
-				keys.Remove(stat);
-		}
 		List<EntityEquipmentData.SecondaryStat.StatType> order = GameConfig.current.ui.statsDisplayOrder.ToList();
 		keys.OrderByDescending(e => order.IndexOf(e));
 
-		for (int i = 0; i < m_statDisplays.Length; i++)
+		foreach(EntityEquipmentData.SecondaryStat.StatType statType in m_staticDisplays.Keys)
 		{
-			if (keys.Count <= i)
-				m_statDisplays[i].gameObject.SetActive(false);
-			else
+			if (statsDescriptions.ContainsKey(statType) && (!m_conditionalStat.Contains(statType) || statsDescriptions[statType].floatValue > 0))
 			{
-				m_statDisplays[i].gameObject.SetActive(true);
-				m_statDisplays[i].Init(statsDescriptions[keys[i]]);
+				m_staticDisplays[statType].gameObject.SetActive(true);
+				m_staticDisplays[statType].Init(statsDescriptions[statType]);
 			}
+			else
+				m_staticDisplays[statType].gameObject.SetActive(false);
 		}
 
-		for(int i = 0; i < m_statusDisplays.Length; i++)
+		List<EntityEquipmentData.StatDescription> damageStats = new();
+		List<EntityEquipmentData.StatDescription> resStats = new();
+		List<EntityEquipmentData.StatDescription> statusStats = new();
+		foreach (EntityEquipmentData.SecondaryStat.StatType statType in keys)
+		{
+			if (m_damagesSectionFilter.Contains(statType))
+				damageStats.Add(statsDescriptions[statType]);
+			else if (m_resistanceSectionFilter.Contains(statType))
+				resStats.Add(statsDescriptions[statType]);
+			else if (m_statusSectionFilter.Contains(statType))
+				statusStats.Add(statsDescriptions[statType]);
+		}
+		if(damageStats.Count > 0)
+		{
+			m_damageSectionDisplay.Init("Damages", damageStats);
+			m_damageSectionDisplay.gameObject.SetActive(true);
+		}
+		else
+			m_damageSectionDisplay.gameObject.SetActive(false);
+		if (resStats.Count > 0)
+		{
+			m_resistanceSectionDisplay.Init("Resistances", resStats);
+			m_resistanceSectionDisplay.gameObject.SetActive(true);
+		}
+		else
+			m_resistanceSectionDisplay.gameObject.SetActive(false);
+		if (statusStats.Count > 0)
+		{
+			m_statusSectionDisplay.Init("Status stats", statusStats);
+			m_statusSectionDisplay.gameObject.SetActive(true);
+		}
+		else
+			m_statusSectionDisplay.gameObject.SetActive(false);
+
+		for (int i = 0; i < m_statusDisplays.Length; i++)
 		{
 			if (entity.Status.Count <= i)
 				m_statusDisplays[i].Hide();
