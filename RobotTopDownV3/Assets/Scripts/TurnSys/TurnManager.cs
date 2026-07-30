@@ -595,6 +595,7 @@ public class TurnManager : Singleton<TurnManager>
 			trackedEvents.ResetAllValues();
 
 		onStartInputPhase?.Invoke();
+		//PlayerController.Instance.SelectEntity(GameManager.Instance.PlayersEntityAnchor[GameManager.Instance.PlayerID].Entities[0]);
 
 		if (GameManager.Instance.IsOnline && GameManager.Instance.Lobby.IsServer)
 			NetworkTaskOrchestrator.Instance.LaunchClientTask("InputPhase", EndInputPhase);

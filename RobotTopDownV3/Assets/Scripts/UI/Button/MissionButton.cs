@@ -29,11 +29,10 @@ public class MissionButton : BaseButton, IPointerEnterHandler, IPointerExitHandl
 		m_missionData = GameAssets.current.game.missions[_missionID];
 		string title = m_missionData.missionName;
 		string description = m_missionData.GetDescription();
-		//m_tooltipTrigger.Init(title, description);
-
-		//m_icon.sprite = m_missionData.icon;
 		m_name.text = title;
 		m_description.text = description;
+
+		SetHasUnselected();
 	}
 
 	public void SetHasSelected ()
@@ -51,6 +50,10 @@ public class MissionButton : BaseButton, IPointerEnterHandler, IPointerExitHandl
 	[Button]
 	protected override void OnClick ()
 	{
+		if (m_isSelected)
+			SetHasUnselected();
+		else
+			SetHasSelected();
 		onAnyMissionSelected?.Invoke(this);
 
 		base.OnClick();

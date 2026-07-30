@@ -42,6 +42,9 @@ public class MissionPanel : AUIPanel
 		base.OnShowStarted();
 
 		RefreshMissionBtns();
+
+		m_currentMissionSelected = m_missionBtns[0];
+		m_currentMissionSelected.SetHasSelected();
 	}
 
 	private void OnClickStartMission ()

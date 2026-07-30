@@ -182,7 +182,7 @@ public partial class GameDatas : ScriptableObject
 			public List<MissionDataEnumID> selectedMissionsIds = new();
 			public MissionDataEnumID[] roundsDatas;
 
-			public bool didSelectMissions = false;
+			public bool didSelectMissions => GameDatas.current.currentPlayerSave.cycleData.selectedMissionsIds.Count > 0;
 			public bool hasInitTournament = false;
 
 			public void StartTournament ()
@@ -200,9 +200,9 @@ public partial class GameDatas : ScriptableObject
 		[Button]
 		public void NewCycle ()
 		{
-			cycleData.didSelectMissions = false;
 			cycleData.hasInitTournament = false;
 			cycleData.roundsDatas = new MissionDataEnumID[3];
+			cycleData.selectedMissionsIds.Clear();
 			//missions
 			cycleData.availableMissionsIds.Clear();
 			for (int i = 0; i < GameConfig.current.game.missionAmountInMissionSelectionPanel; i++)
@@ -339,14 +339,6 @@ public partial class GameDatas : ScriptableObject
 
 			NewDay();
 			dayCount = 0;
-
-#if UNITY_EDITOR
-			if (GameConfig.current.debug.skipFTUE)
-				return;
-#endif
-			cycleData.availableMissionsIds.Clear();
-			for (int i = 0; i < FTUEManager.Instance.Cycle1Missions.Length; i++)
-				cycleData.availableMissionsIds.Add(FTUEManager.Instance.Cycle1Missions[i].enumID);
 		}
 
 		#region Currencies
