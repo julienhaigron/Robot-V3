@@ -4,8 +4,9 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using DG.Tweening;
+using UnityEngine.EventSystems;
 
-public class ActionButton : BaseButton
+public class ActionButton : BaseButton, IPointerEnterHandler, IPointerExitHandler
 {
 	protected static ActionButton m_selectedBtn;
 	public static ActionButton SelectedBtn => m_selectedBtn;
@@ -117,4 +118,14 @@ public class ActionButton : BaseButton
 		RefreshVisual();
 	}
 
+	public void OnPointerEnter ( PointerEventData eventData )
+	{
+		EntityActionData data = GameAssets.current.game.entityActionsData[m_actionType];
+		ToolTipManager.Instance.Show(data.displayName, data.GetDescription());
+	}
+
+	public void OnPointerExit ( PointerEventData eventData )
+	{
+		ToolTipManager.Instance.Hide();
+	}
 }

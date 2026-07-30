@@ -3,8 +3,9 @@ using UnityEngine.UI;
 using TMPro;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.EventSystems;
 
-public class StatSectionDisplay : MonoBehaviour
+public class StatSectionDisplay : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
 	[SerializeField] private TextMeshProUGUI m_titleTMP;
 	[SerializeField] private Image[] m_statIcons;
@@ -28,5 +29,16 @@ public class StatSectionDisplay : MonoBehaviour
 		}
 	}
 
+	public void OnPointerEnter ( PointerEventData eventData )
+	{
+		string description = "";
+		foreach (EntityEquipmentData.StatDescription statDesc in m_statsDescriptions)
+			description += statDesc.ID + ": " + statDesc.stringValue +"\n";
+		ToolTipManager.Instance.Show(m_titleTMP.text, description);
+	}
 
+	public void OnPointerExit ( PointerEventData eventData )
+	{
+		ToolTipManager.Instance.Hide();
+	}
 }

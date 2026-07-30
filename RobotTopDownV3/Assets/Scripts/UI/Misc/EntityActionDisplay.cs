@@ -75,7 +75,7 @@ public class EntityActionDisplay :
 
 	public void OnPointerClick ( PointerEventData eventData )
 	{
-		if (TurnManager.Instance.currentPhase != TurnManager.TurnPhase.Recording)
+		if (TurnManager.Instance.currentPhase != TurnManager.TurnPhase.Recording || !gameObject.activeInHierarchy)
 			return;
 
 		bool clickedModAction = eventData.pointerPressRaycast.gameObject == m_modActionIconImg.gameObject;
@@ -124,14 +124,14 @@ public class EntityActionDisplay :
 
 	public void OnPointerEnter ( PointerEventData eventData )
 	{
-		if (m_selectedDisplay == this || m_recordedAction == null || TurnManager.Instance.currentPhase != TurnManager.TurnPhase.Recording)
+		if (m_selectedDisplay == this || m_recordedAction == null || TurnManager.Instance.currentPhase != TurnManager.TurnPhase.Recording || !gameObject.activeInHierarchy)
 			return;
 		TurnManager.Instance.RefreshActionDisplay(m_recordedAction.action.performingEntityID, false, m_recordedAction.action.TimeAtEnd);
 	}
 
 	public void OnPointerExit ( PointerEventData eventData )
 	{
-		if (m_selectedDisplay == this || m_recordedAction == null || TurnManager.Instance.currentPhase != TurnManager.TurnPhase.Recording)
+		if (m_selectedDisplay == this || m_recordedAction == null || TurnManager.Instance.currentPhase != TurnManager.TurnPhase.Recording || !gameObject.activeInHierarchy)
 			return;
 		else if (m_selectedDisplay == null)
 			TurnManager.Instance.RefreshActionDisplay(m_recordedAction.action.performingEntityID, false, TurnManager.Instance.RecordedActions[m_recordedAction.action.performingEntityID].ToArray()[^1].action.TimeAtEnd);
