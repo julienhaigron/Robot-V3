@@ -7,12 +7,12 @@ using DG.Tweening;
 using Sirenix.OdinInspector;
 using UnityEngine.EventSystems;
 
-public class MissionButton : BaseButton, IPointerEnterHandler
+public class MissionButton : BaseButton, IPointerEnterHandler, IPointerExitHandler
 {
 	public static System.Action<MissionButton> onAnyMissionSelected;
 	public static System.Action<MissionButton> onAnyMissionHovered;
 
-	[SerializeField] private Image m_icon;
+	//[SerializeField] private Image m_icon;
 	[SerializeField] private TextMeshProUGUI m_name;
 	[SerializeField] private TextMeshProUGUI m_description;
 	[SerializeField] private Image m_outlineImg;
@@ -59,6 +59,11 @@ public class MissionButton : BaseButton, IPointerEnterHandler
 	public void OnPointerEnter ( PointerEventData eventData )
 	{
 		onAnyMissionHovered?.Invoke(this);
+	}
+	
+	public void OnPointerExit ( PointerEventData eventData )
+	{
+		onAnyMissionHovered?.Invoke(null);
 	}
 
 

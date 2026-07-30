@@ -56,7 +56,7 @@ public class SelectMissionPanel : AUIPanel
 
 	private void OnAnyMissionHovered ( MissionButton _missionBtn )
 	{
-		if (!gameObject.activeInHierarchy || _missionBtn == m_currentMissionHovered)
+		if (_missionBtn == null || !gameObject.activeInHierarchy || _missionBtn == m_currentMissionHovered)
 			return;
 
 		m_currentMissionHovered = _missionBtn;

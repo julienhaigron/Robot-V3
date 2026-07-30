@@ -1067,6 +1067,11 @@ public class TurnManager : Singleton<TurnManager>
 		if (currentPhase == TurnPhase.Off)
 			return;
 
+		m_recordedActionInput.Clear();
+		m_actionsToPlay.Clear();
+		m_actionsBeingDone.Clear();
+		m_remainingActionToken.Clear();
+
 		currentPhase = TurnPhase.Off;
 		GameManager.Instance.EndGame(_gameResult);
 		onEndLevel?.Invoke();

@@ -26,12 +26,15 @@ public class MissionPanel : AUIPanel
 	[SerializeField] private CurrencyRewardDisplay[] m_currencyRewardDisplays;
 
 	private MissionButton m_currentMissionHovered;
+	private MissionButton m_currentMissionSelected;
 
 	private void Awake ()
 	{
 		m_tutoBtn.Init(MissionDataEnumID.Tuto);
-		MissionButton.onAnyMissionHovered += OnAnyMissionSelected;
+		MissionButton.onAnyMissionHovered += OnAnyMissionHovered;
+		MissionButton.onAnyMissionSelected += OnAnyMissionSelected;
 		UnitMissionDisplay.onAnyUnitHovered += OnAnyUnitHovered;
+		m_startMissionBtn.onClick += OnClickStartMission;
 	}
 
 	protected override void OnShowStarted ()
@@ -39,6 +42,14 @@ public class MissionPanel : AUIPanel
 		base.OnShowStarted();
 
 		RefreshMissionBtns();
+	}
+
+	private void OnClickStartMission ()
+	{
+		if (m_currentMissionSelected.MissionData.preMissionDialogue != null)
+			DialogueManager.Instance.PlayDialogue(m_currentMissionSelected.MissionData.preMissionDialogue, () => GameManager.Instance.SetupLevel(m_currentMissionSelected.MissionData));
+		else
+			GameManager.Instance.SetupLevel(m_currentMissionSelected.MissionData);
 	}
 
 	private void RefreshMissionBtns ()
@@ -82,12 +93,18 @@ public class MissionPanel : AUIPanel
 				m_unitDisplays[i].Hide();
 		}
 
-		OnAnyMissionSelected(m_missionBtns[0]);
+		OnAnyMissionHovered(m_missionBtns[0]);
 		OnAnyUnitHovered(m_unitDisplays[0]);
 	}
 
-	private void OnAnyMissionSelected ( MissionButton _missionBtn )
+	private void OnAnyMissionHovered ( MissionButton _missionBtn )
 	{
+		if(_missionBtn == null)
+		{
+			if (m_currentMissionSelected != null)
+				OnAnyMissionHovered(m_currentMissionSelected);
+			return;
+		}
 		if (!gameObject.activeInHierarchy || _missionBtn == m_currentMissionHovered)
 			return;
 
@@ -118,6 +135,11 @@ public class MissionPanel : AUIPanel
 			else
 				m_currencyRewardDisplays[i].Hide();
 		}
+	}
+
+	private void OnAnyMissionSelected (MissionButton _missionButton)
+	{
+		m_currentMissionSelected = _missionButton;
 	}
 
 	private void OnAnyUnitHovered ( UnitMissionDisplay _display )
