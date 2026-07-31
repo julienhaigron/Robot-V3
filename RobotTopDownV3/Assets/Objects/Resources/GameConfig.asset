@@ -107,10 +107,8 @@ MonoBehaviour:
     editorLoadDatasFromGamedatasFile: 1
   parsing:
     baseParsableScriptablePerType:
-      keys:
-      - WeaponEquipmentData
-      values:
-      - {fileID: 11400000, guid: f4244f10f226692459c0d1dfce572068, type: 2}
+      keys: []
+      values: []
     componentsSpreadSheetID: 1AeQujaBf6YdyVQRD2gBNWazoosesi46DpAoY5b6hrt8
     componentGUIDPerPage:
       keys: 000000000100000002000000030000000400000005000000060000000700000008000000

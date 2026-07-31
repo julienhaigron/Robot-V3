@@ -1,4 +1,4 @@
-//GENERATED 57
+//GENERATED 61
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -50,5 +50,9 @@ public enum EntityActionEnumID
 	Sweep_Shot_Minigun,
 	Targeted_Salves,
 
+	GraviPatate,
+	FireTir,
+	Stun_Plasma,
+	Boom_Plasma,
 	//#END#ENTITYACTIONENUMID#//
 }

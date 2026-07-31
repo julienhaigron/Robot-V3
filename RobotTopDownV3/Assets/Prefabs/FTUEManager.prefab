@@ -58,7 +58,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 4c89a94e7d2857c498bf0005d49fc66a, type: 2}
   - {fileID: 11400000, guid: fdc7f87acacf686458108fdeea27097e, type: 2}
   playerStartingSquadUnits:
-  - {fileID: 11400000, guid: d28947dc83a7a1443b4921b154669294, type: 2}
+  - {fileID: 11400000, guid: 3e13ee75cad91f0488a32592d8600052, type: 2}
+  - {fileID: 11400000, guid: 6f66868e0c3eb6648a54206da5b2998a, type: 2}
   m_firstTutoDialogues:
   - {fileID: 11400000, guid: b43449e284014ce45b31f2d4d0526f22, type: 2}
   - {fileID: 11400000, guid: b43449e284014ce45b31f2d4d0526f22, type: 2}
@@ -85,3 +86,4 @@ MonoBehaviour:
   m_day5TutoDialogues:
   - {fileID: 11400000, guid: b43449e284014ce45b31f2d4d0526f22, type: 2}
   - {fileID: 11400000, guid: b43449e284014ce45b31f2d4d0526f22, type: 2}
+  isInit: 0

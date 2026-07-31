@@ -19,8 +19,7 @@ MonoBehaviour:
   brain: {fileID: 11400000, guid: 2261c00c52c27a646bda5aea69e4bb9b, type: 2}
   neuronalMembrane: {fileID: 11400000, guid: 80795059694745a4dafaaed676086d59, type: 2}
   arms: []
-  auxiliary:
-  - {fileID: 11400000, guid: 4dbe7e3974d2f3648804159965aa4200, type: 2}
+  auxiliary: []
   chipsets: []
   icon: {fileID: 0}
   isInvocation: 0

@@ -28,4 +28,3 @@ MonoBehaviour:
   distanceAccuracy: 0
   distanceEvasion: 0
   meleeEvasion: 0
-  knownedStates: 0100000000000000
