@@ -9,19 +9,21 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9e73bc741ebbdc840b41c9a3b0e4d4b6, type: 3}
-  m_Name: NeurInt_Start_Thermic
-  m_EditorClassIdentifier: RTD::NeuronalMembraneEquipmentData
-  spreadsheetId: https://docs.google.com/spreadsheets/d/1AeQujaBf6YdyVQRD2gBNWazoosesi46DpAoY5b6hrt8/export?format=csv&gid=916485654
+  m_Script: {fileID: 11500000, guid: 4eb1c374dfb5c8d42891de9c422c2eb2, type: 3}
+  m_Name: Occ_Broken
+  m_EditorClassIdentifier: RTD::OccultorEquipmentData
+  spreadsheetId: https://docs.google.com/spreadsheets/d/1AeQujaBf6YdyVQRD2gBNWazoosesi46DpAoY5b6hrt8/export?format=csv&gid=1085589491
   faction: 6
   icon: {fileID: 0}
-  displayName: NeurInt_Start_Thermic
+  displayName: Occ_Broken
   energyCost: 0
   knownedActions: 
   passiveEffects: []
   statusHitProbability: 0.5
-  creditCost: 60
+  creditCost: 50
   recyclingDurationAmount: 1
   reparingDurationAmount: 1
-  equipmentSlotAvailable: 2
-  visionType: 1
+  soundCamo: -10
+  visualCamo: -10
+  thermicCamo: -10
+  statBonuses: []

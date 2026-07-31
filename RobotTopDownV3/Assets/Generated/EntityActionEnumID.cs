@@ -1,4 +1,4 @@
-//GENERATED 61
+//GENERATED 63
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -54,5 +54,6 @@ public enum EntityActionEnumID
 	FireTir,
 	Stun_Plasma,
 	Boom_Plasma,
+	Push_Plasma,
 	//#END#ENTITYACTIONENUMID#//
 }

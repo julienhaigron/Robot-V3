@@ -9,19 +9,18 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9e73bc741ebbdc840b41c9a3b0e4d4b6, type: 3}
-  m_Name: NeurInt_Start_Thermic
-  m_EditorClassIdentifier: RTD::NeuronalMembraneEquipmentData
-  spreadsheetId: https://docs.google.com/spreadsheets/d/1AeQujaBf6YdyVQRD2gBNWazoosesi46DpAoY5b6hrt8/export?format=csv&gid=916485654
+  m_Script: {fileID: 11500000, guid: 73da1a7b01684d94b9134ed939d3e96f, type: 3}
+  m_Name: Arm_Broken
+  m_EditorClassIdentifier: RTD::ArmorEquipmentData
+  spreadsheetId: https://docs.google.com/spreadsheets/d/1AeQujaBf6YdyVQRD2gBNWazoosesi46DpAoY5b6hrt8/export?format=csv&gid=286759946
   faction: 6
   icon: {fileID: 0}
-  displayName: NeurInt_Start_Thermic
+  displayName: Arm_Broken
   energyCost: 0
   knownedActions: 
   passiveEffects: []
   statusHitProbability: 0.5
-  creditCost: 60
+  creditCost: 50
   recyclingDurationAmount: 1
   reparingDurationAmount: 1
-  equipmentSlotAvailable: 2
-  visionType: 1
+  statBonuses: []

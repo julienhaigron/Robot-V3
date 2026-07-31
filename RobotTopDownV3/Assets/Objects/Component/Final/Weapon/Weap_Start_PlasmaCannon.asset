@@ -17,10 +17,10 @@ MonoBehaviour:
   icon: {fileID: 0}
   displayName: Plasma Cannon
   energyCost: 20
-  knownedActions: 2d0000002c000000
+  knownedActions: 2d0000002c0000002e000000
   passiveEffects: []
   statusHitProbability: 0.5
-  creditCost: 0
+  creditCost: 35
   recyclingDurationAmount: 1
   reparingDurationAmount: 1
   prefab: {fileID: 0}

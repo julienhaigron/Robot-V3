@@ -20,7 +20,7 @@ MonoBehaviour:
   knownedActions: 
   passiveEffects: []
   statusHitProbability: 0.5
-  creditCost: 0
+  creditCost: 60
   recyclingDurationAmount: 1
   reparingDurationAmount: 1
   chipsetSlotAvailable: 0
