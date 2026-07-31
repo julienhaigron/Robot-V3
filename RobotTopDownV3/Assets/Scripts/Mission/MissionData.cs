@@ -19,9 +19,11 @@ public class MissionData : ScriptableEnum<MissionDataEnumID>
     public MissionType type;
     public enum MissionType
 	{
-        MME,
-        CapturePosition,
-        DestroyItem
+        Extermination,
+        DefenseDeZone,
+        ControleDePoint,
+        Construction,
+        Sabotage,
 	}
 
     //public bool areRewardsRandom = false;
