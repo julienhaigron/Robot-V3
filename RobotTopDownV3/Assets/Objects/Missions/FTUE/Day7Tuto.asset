@@ -10,17 +10,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f71a1187493589744bad6fd241af4c7b, type: 3}
-  m_Name: Day6Tuto
+  m_Name: Day7Tuto
   m_EditorClassIdentifier: RTD::MissionData
   enumID: 8
   missionName: Day6Tuto
   icon: {fileID: 21300000, guid: 03da9b037a0d27b4db02f45130a6cb28, type: 3}
   preMissionDialogue: {fileID: 0}
   afterMissionDialogue: {fileID: 0}
-  map: {fileID: 11400000, guid: 64ecda1cd3f80754ea1b80f6e59aa196, type: 2}
+  map: {fileID: 11400000, guid: c3537d1f355bba74992761f975cfb358, type: 2}
   enemies:
-  - {fileID: 11400000, guid: 3cea4ca1d17080547a35225eb12892eb, type: 2}
+  - {fileID: 11400000, guid: 3e4f3c47b4ebef348a686bbfcf7f8550, type: 2}
   type: 0
+  areRewardsRandom: 0
   currencyRewards:
     keys: 01000000
     values: 1e00000000000000
