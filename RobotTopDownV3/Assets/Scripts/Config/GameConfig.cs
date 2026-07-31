@@ -48,6 +48,7 @@ public partial class GameConfig : ScriptableObject
 		public SerializableDictionary<Tile.TileDirectionType, float> entityFlankRatio = new();
 		public float entityMovementEvasionBonus = 2;
 		public float entityCoverBonus = 2;
+		//public int SerializableDictionary<EntityActionData., > maxSlotAmountPerType
 		public SerializableDictionary<NeuronalMembraneEquipmentData.VisionTypes, int> rangePerVisionType;
 		public SerializableDictionary<WeaponEquipmentData.DistanceType, float> distanceTypeSpreadEvaluation;
 		public SerializableDictionary<WeaponEquipmentData.DamageType, WeaponEquipmentData.DamageCategory> damageCategoryPerDamageType;

@@ -141,8 +141,8 @@ public class Tile : MonoBehaviour
 		if (_data != null)
 		{
 			SetGroundType(_data.groundType);
-			if (_data.groundType == TileGroundType.Wall)
-				SetupWall(_data.wallType, _data.orientation);
+			if (_data.groundType == TileGroundType.Wall || _data.groundType == TileGroundType.Cover)
+				SetupWall(_data.wallType, _data.orientation, _data.groundType == TileGroundType.Cover);
 			else
 				RemoveWall();
 		}
@@ -160,14 +160,14 @@ public class Tile : MonoBehaviour
 		UnityEditor.EditorUtility.SetDirty(this);
 	}
 
-	public void SetupWall ( Wall.WallType _wallType, int _orientation )
+	public void SetupWall ( Wall.WallType _wallType, int _orientation, bool _isCover )
 	{
 		if (m_wall == null)
 			m_wall = gameObject.AddComponent<Wall>();
 		//m_wall = UnityEditor.Undo.AddComponent<Wall>(gameObject);
 
 		m_wall.LinkWithTile(this);
-		m_wall.SetWallType(_wallType);
+		m_wall.SetWallType(_wallType, _isCover);
 		m_wall.Rotate(_orientation);
 	}
 
@@ -205,7 +205,7 @@ public class Tile : MonoBehaviour
 
 	public bool IsObstacle ( bool _isThisTurn )
 	{
-		if (m_groundType == TileGroundType.Wall && m_wall.Health > 0)
+		if ((m_groundType == TileGroundType.Wall || m_groundType == TileGroundType.Cover) && m_wall.Health > 0)
 			return true;
 		else if (m_groundType == TileGroundType.Void)
 			return true;
@@ -219,7 +219,7 @@ public class Tile : MonoBehaviour
 
 	public bool CanSeeThrough ()
 	{
-		if (m_groundType == TileGroundType.Wall && m_wall.Health > 0)
+		if ((m_groundType == TileGroundType.Wall || m_groundType == TileGroundType.Cover) && m_wall.Health > 0)
 			return false;
 
 		if (m_status.Contains(EntityStatusEnumID.Smoked))
