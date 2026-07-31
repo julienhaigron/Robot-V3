@@ -20,11 +20,11 @@ MonoBehaviour:
   knownedActions: 12000000
   passiveEffects: []
   statusHitProbability: 0.5
-  creditCost: 0
+  creditCost: 60
   recyclingDurationAmount: 1
   reparingDurationAmount: 1
   prefab: {fileID: 4673310249167116355, guid: 206cf16509b1846479a1f553fd6add2d, type: 3}
   maxHealth: 100
-  armouringSlotAvailable: 0
-  occultorSlotAvailable: 0
+  armouringSlotAvailable: 1
+  occultorSlotAvailable: 1
   statBonuses: []
