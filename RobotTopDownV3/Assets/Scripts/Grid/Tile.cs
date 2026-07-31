@@ -219,7 +219,7 @@ public class Tile : MonoBehaviour
 
 	public bool CanSeeThrough ()
 	{
-		if ((m_groundType == TileGroundType.Wall || m_groundType == TileGroundType.Cover) && m_wall.Health > 0)
+		if ((m_groundType == TileGroundType.Wall) && m_wall.Health > 0)
 			return false;
 
 		if (m_status.Contains(EntityStatusEnumID.Smoked))
