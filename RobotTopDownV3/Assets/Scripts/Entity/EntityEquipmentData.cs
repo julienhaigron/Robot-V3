@@ -44,7 +44,8 @@ public class EntityEquipmentData : AParsableScriptableObject
 		Psy,
 		Paladin,
 		Commando,
-		Dummy
+		Dummy,
+		Starting
 	}
 
 	[System.Serializable]
