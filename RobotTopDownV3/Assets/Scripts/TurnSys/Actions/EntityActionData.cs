@@ -152,7 +152,7 @@ public class EntityActionData : AParsableScriptableObject
 	[ShowIf("@codeType == ActionCodeType.InvokeEntity || codeType == ActionCodeType.InvokeItem")] public int invocationCountLimit = 1;
 	[ShowIf("@type == ActionType.Movement || codeType == ActionCodeType.MoveThenAttack ")] public int movementSpeed = 1;
 
-	
+
 	public enum MainActionType
 	{
 		Attack,
@@ -272,18 +272,52 @@ public class EntityActionData : AParsableScriptableObject
 
 	#region Getters
 
-	public bool ContainsEffect(EntityPassiveEffectEnumID _enumID, out AEntityPassiveEffect.PassiveEffectContainer _passiveEffect)
+	public string GetDescription ()
 	{
-		foreach(AEntityPassiveEffect.PassiveEffectContainer effectContainer in passiveEffects)
+		MainActionType mainType = GetMainActionType();
+		string description = "";
+		description += "Type : " + mainType + "\n";
+		description += "Cost : (" + m_tokenPreparationDuration + "," + tokenDuration + "," + m_tokenCooldown + ")\n";
+		description += "\n";
+		if (mainType == MainActionType.Movement)
+			description += "Speed : "+ movementSpeed + "\n";
+		else
 		{
-			if(effectContainer.enumID == _enumID)
+			description += "Target: " + maxTargetAmount + " " + targetType + "\n";
+			description += aoeType != AOEType.Noone ? "AoE: " + aoeType + " of range " + aoeMinEffectRange + "-" + aoeMaxEffectRange + ":\n" : "";
+			if (mainType == MainActionType.Attack) 
+				description += "Hit amount: " + hitAmount + ":\n";
+			if (baseDamages != null && baseDamages.Keys.Count > 0)
+			{
+				description += "Damages: ";
+				foreach (KeyValuePair<WeaponEquipmentData.DamageType, int> pair in baseDamages)
+					description += pair.Value + " " + pair.Key + ", ";
+				description += "\n";
+			}
+		}
+		if (passiveEffects != null && passiveEffects.Length > 0)
+		{
+			description += "Effects: ";
+			foreach (AEntityPassiveEffect.PassiveEffectContainer passiveEffect in passiveEffects)
+				description += passiveEffect.ToString() + ", ";
+			description += "\n";
+		}
+
+		return description;
+	}
+
+	public bool ContainsEffect ( EntityPassiveEffectEnumID _enumID, out AEntityPassiveEffect.PassiveEffectContainer _passiveEffect )
+	{
+		foreach (AEntityPassiveEffect.PassiveEffectContainer effectContainer in passiveEffects)
+		{
+			if (effectContainer.enumID == _enumID)
 			{
 				_passiveEffect = effectContainer;
 				return true;
 			}
 		}
 
-		_passiveEffect = new AEntityPassiveEffect.PassiveEffectContainer() { enumID = EntityPassiveEffectEnumID.Unknown, conditionType = Condition.ConditionType.Noone};
+		_passiveEffect = new AEntityPassiveEffect.PassiveEffectContainer() { enumID = EntityPassiveEffectEnumID.Unknown, conditionType = Condition.ConditionType.Noone };
 		return false;
 	}
 
@@ -365,7 +399,7 @@ public class EntityActionData : AParsableScriptableObject
 
 		return totalDamageFactor;
 	}
-	
+
 	public int GetHitAmount ( AEntityAction _action, Entity _performingEntity, Entity _targetEntity )
 	{
 		if (_action != null && _performingEntity != null && ContainsEffect(EntityPassiveEffectEnumID.HitAmountBoost, out AEntityPassiveEffect.PassiveEffectContainer effectContainer)
@@ -397,26 +431,26 @@ public class EntityActionData : AParsableScriptableObject
 			}
 		}*/
 
-		if(aoeType != AOEType.Noone)
+		if (aoeType != AOEType.Noone)
 		{
 			switch (aoeType)
 			{
 				case AOEType.Chain:
 					maxChainedTarget = _data.GetValue<int>("AoE Extra Values");
 					break;
-				/*case AOEType.Cone:
-					coneType = _data.GetValue<ConeType>("AoE Extra Values");
-					break;*/
+					/*case AOEType.Cone:
+						coneType = _data.GetValue<ConeType>("AoE Extra Values");
+						break;*/
 			}
 
-			if(aoECenterType == AOECenterType.Self)
+			if (aoECenterType == AOECenterType.Self)
 			{
 				aoeMinEffectRange = minDistance;
 				aoeMaxEffectRange = maxDistance;
 			}
 		}
 
-		if(codeType == ActionCodeType.InvokeItem)
+		if (codeType == ActionCodeType.InvokeItem)
 			invocatedItem = _data.GetValue<AItemData>("Special Extra Values");
 	}
 }

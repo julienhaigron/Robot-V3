@@ -114,6 +114,8 @@ public class GameManager : SingletonPersistant<GameManager>
 				foreach (UnitPreset unitPreset in FTUEManager.Instance.playerStartingSquadUnits)
 					unitPreset.AddToUnits();
 				GameDatas.current.currentPlayerSave.didStartTuto = true;
+				for (int i = 0; i < FTUEManager.Instance.Cycle1Missions.Length; i++)
+					GameDatas.current.currentPlayerSave.cycleData.selectedMissionsIds.Add(FTUEManager.Instance.Cycle1Missions[i].enumID);
 			}
 
 			SetupLevel(FTUEManager.Instance.Cycle1Missions[0]);

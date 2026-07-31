@@ -55,7 +55,6 @@ MonoBehaviour:
   m_tooltipPanel: {fileID: 2600365319845872510}
   m_tooltipTitleTMP: {fileID: 5156995696289117262}
   m_tooltipDescriptionTMP: {fileID: 5260099924271217400}
-  m_backgroundRect: {fileID: 7279138125162510553}
   m_offset: {x: -10, y: 10}
   m_fadeDuration: 0.2
 --- !u!114 &1155012189743850741
@@ -361,54 +360,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 3843985081077340458, guid: ee68b42770717e74cbc24828a44e68e2, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: -17.159668
-      objectReference: {fileID: 0}
-    - target: {fileID: 3961141869412917823, guid: ee68b42770717e74cbc24828a44e68e2, type: 3}
-      propertyPath: m_Pivot.x
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3961141869412917823, guid: ee68b42770717e74cbc24828a44e68e2, type: 3}
-      propertyPath: m_Pivot.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3961141869412917823, guid: ee68b42770717e74cbc24828a44e68e2, type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3961141869412917823, guid: ee68b42770717e74cbc24828a44e68e2, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3961141869412917823, guid: ee68b42770717e74cbc24828a44e68e2, type: 3}
-      propertyPath: m_AnchorMin.x
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3961141869412917823, guid: ee68b42770717e74cbc24828a44e68e2, type: 3}
-      propertyPath: m_AnchorMin.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3961141869412917823, guid: ee68b42770717e74cbc24828a44e68e2, type: 3}
-      propertyPath: m_SizeDelta.x
-      value: 380
-      objectReference: {fileID: 0}
-    - target: {fileID: 3961141869412917823, guid: ee68b42770717e74cbc24828a44e68e2, type: 3}
-      propertyPath: m_SizeDelta.y
-      value: 380
-      objectReference: {fileID: 0}
-    - target: {fileID: 3961141869412917823, guid: ee68b42770717e74cbc24828a44e68e2, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: -190
-      objectReference: {fileID: 0}
-    - target: {fileID: 3961141869412917823, guid: ee68b42770717e74cbc24828a44e68e2, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 190
-      objectReference: {fileID: 0}
-    - target: {fileID: 7552904686989858583, guid: ee68b42770717e74cbc24828a44e68e2, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 1.1433105
-      objectReference: {fileID: 0}
     - target: {fileID: 8640761160988121496, guid: ee68b42770717e74cbc24828a44e68e2, type: 3}
       propertyPath: m_Name
       value: ToolTIp
@@ -452,10 +403,5 @@ MonoBehaviour:
 --- !u!224 &5696496837999032453 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2085863394632114787, guid: ee68b42770717e74cbc24828a44e68e2, type: 3}
-  m_PrefabInstance: {fileID: 6051848363989064422}
-  m_PrefabAsset: {fileID: 0}
---- !u!224 &7279138125162510553 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 3961141869412917823, guid: ee68b42770717e74cbc24828a44e68e2, type: 3}
   m_PrefabInstance: {fileID: 6051848363989064422}
   m_PrefabAsset: {fileID: 0}

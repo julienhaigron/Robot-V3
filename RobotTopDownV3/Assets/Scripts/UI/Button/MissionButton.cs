@@ -7,12 +7,12 @@ using DG.Tweening;
 using Sirenix.OdinInspector;
 using UnityEngine.EventSystems;
 
-public class MissionButton : BaseButton, IPointerEnterHandler
+public class MissionButton : BaseButton, IPointerEnterHandler, IPointerExitHandler
 {
 	public static System.Action<MissionButton> onAnyMissionSelected;
 	public static System.Action<MissionButton> onAnyMissionHovered;
 
-	[SerializeField] private Image m_icon;
+	//[SerializeField] private Image m_icon;
 	[SerializeField] private TextMeshProUGUI m_name;
 	[SerializeField] private TextMeshProUGUI m_description;
 	[SerializeField] private Image m_outlineImg;
@@ -29,11 +29,10 @@ public class MissionButton : BaseButton, IPointerEnterHandler
 		m_missionData = GameAssets.current.game.missions[_missionID];
 		string title = m_missionData.missionName;
 		string description = m_missionData.GetDescription();
-		//m_tooltipTrigger.Init(title, description);
-
-		//m_icon.sprite = m_missionData.icon;
 		m_name.text = title;
 		m_description.text = description;
+
+		SetHasUnselected();
 	}
 
 	public void SetHasSelected ()
@@ -51,6 +50,10 @@ public class MissionButton : BaseButton, IPointerEnterHandler
 	[Button]
 	protected override void OnClick ()
 	{
+		if (m_isSelected)
+			SetHasUnselected();
+		else
+			SetHasSelected();
 		onAnyMissionSelected?.Invoke(this);
 
 		base.OnClick();
@@ -59,6 +62,11 @@ public class MissionButton : BaseButton, IPointerEnterHandler
 	public void OnPointerEnter ( PointerEventData eventData )
 	{
 		onAnyMissionHovered?.Invoke(this);
+	}
+	
+	public void OnPointerExit ( PointerEventData eventData )
+	{
+		onAnyMissionHovered?.Invoke(null);
 	}
 
 

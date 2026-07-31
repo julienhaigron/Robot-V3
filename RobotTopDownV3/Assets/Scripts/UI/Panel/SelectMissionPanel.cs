@@ -56,7 +56,7 @@ public class SelectMissionPanel : AUIPanel
 
 	private void OnAnyMissionHovered ( MissionButton _missionBtn )
 	{
-		if (!gameObject.activeInHierarchy || _missionBtn == m_currentMissionHovered)
+		if (_missionBtn == null || !gameObject.activeInHierarchy || _missionBtn == m_currentMissionHovered)
 			return;
 
 		m_currentMissionHovered = _missionBtn;
@@ -94,16 +94,8 @@ public class SelectMissionPanel : AUIPanel
 			return;
 
 		if (_missionBtn.IsSelected)
-		{
-			GameDatas.current.currentPlayerSave.cycleData.didSelectMissions = GameDatas.current.currentPlayerSave.cycleData.selectedMissionsIds.Count > 0;
-			GameDatas.current.currentPlayerSave.cycleData.selectedMissionsIds.Remove(_missionBtn.MissionData.enumID);
-			_missionBtn.SetHasUnselected();
-		}
-		else
-		{
-			_missionBtn.SetHasSelected();
 			GameDatas.current.currentPlayerSave.cycleData.selectedMissionsIds.Add(_missionBtn.MissionData.enumID);
-			GameDatas.current.currentPlayerSave.cycleData.didSelectMissions = true;
-		}
+		else
+			GameDatas.current.currentPlayerSave.cycleData.selectedMissionsIds.Remove(_missionBtn.MissionData.enumID);
 	}
 }

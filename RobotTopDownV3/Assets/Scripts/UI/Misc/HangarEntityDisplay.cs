@@ -29,7 +29,7 @@ public class HangarEntityDisplay : MonoBehaviour
         m_savedData = _data;
         m_isSelected = _isSelected;
         m_nameTMP.text = _data.name;
-
+        m_isSelected = _isSelected;
         m_selectGO.SetActive(_isSelected);
 
         m_mainComponentSlots[EntityEquipmentData.EquipmentType.Frame].Init(_data.FrameData.icon, _data.frame.isDamaged);

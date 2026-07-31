@@ -27,6 +27,11 @@ public abstract class AEntityPassiveEffect : ScriptableEnum<EntityPassiveEffectE
 			serializer.SerializeValue(ref centerType);
 			serializer.SerializeValue(ref effectRange);
 		}
+
+		public override string ToString ()
+		{
+			return enumID + (conditionType != Condition.ConditionType.Noone ? "if " + conditionType : "");
+		}
 	}
 
 	public virtual void ApplyEffect ( Entity _performingEntity, Entity _targetEntity, PassiveEffectContainer _effectContainer )

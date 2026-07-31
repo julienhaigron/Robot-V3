@@ -210,6 +210,7 @@ public sealed class InGamePanel : AUIPanel
 		}
 
 		TurnManager.onEndInputPhase?.Invoke();
+		OnEntitySelected(null);
 
 		if (!GameManager.Instance.IsOnline)
 			TurnManager.Instance.EndInputPhase();
