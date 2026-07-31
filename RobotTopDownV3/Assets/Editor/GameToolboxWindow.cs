@@ -38,7 +38,7 @@ public class GameToolboxWindow : EditorWindow
 			GameAssets.current.ReloadAll();
 		}
 
-		if (GUILayout.Button("Parse all components", group))
+		if (GUILayout.Button("Parse all Components", group))
 		{
 			ParseAllComponents();
 			GameAssets.current.ReloadAll();
