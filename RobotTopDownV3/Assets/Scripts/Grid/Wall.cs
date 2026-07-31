@@ -108,7 +108,7 @@ public class Wall : MonoBehaviour
 		GameObject wallPrefab = PrefabUtility.InstantiatePrefab(GameAssets.current.game.baseWallVisualPerType[_type], m_linkedTile.transform) as GameObject;
 		m_linkedTile.WallPartsParent = wallPrefab.transform;
 		Transform partsParent = wallPrefab.transform.GetChild(0);
-		partsParent.localScale = new Vector3(1f, .5f, 1f);
+		partsParent.localScale = new Vector3(1f, m_isCover ? .5f : 1, 1f);
 		for (int i = partsParent.childCount - 1; i >= 0; i--)
 		{
 			Transform tfm = partsParent.GetChild(i);
