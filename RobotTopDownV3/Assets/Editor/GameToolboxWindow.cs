@@ -33,48 +33,26 @@ public class GameToolboxWindow : EditorWindow
 
 		if (GUILayout.Button("Parse all Actions", group))
 		{
-			CsvImporter.ImportFromUrl<EntityActionData>(MakeUrl(GameConfig.current.parsing.actionSpreadSheetID
-				, GameConfig.current.parsing.actionGUIDPerPage[EntityActionData.ActionType.Movement]), "Assets/Objects/Actions/Final/Movement");
-			CsvImporter.ImportFromUrl<EntityActionData>(MakeUrl(GameConfig.current.parsing.actionSpreadSheetID
-				, GameConfig.current.parsing.actionGUIDPerPage[EntityActionData.ActionType.DistanceAttack]), "Assets/Objects/Actions/Final/Tir");
-			CsvImporter.ImportFromUrl<EntityActionData>(MakeUrl(GameConfig.current.parsing.actionSpreadSheetID
-				, GameConfig.current.parsing.actionGUIDPerPage[EntityActionData.ActionType.MeleeAttack]), "Assets/Objects/Actions/Final/Melee");
-			CsvImporter.ImportFromUrl<EntityActionData>(MakeUrl(GameConfig.current.parsing.actionSpreadSheetID
-				, GameConfig.current.parsing.actionGUIDPerPage[EntityActionData.ActionType.Special]), "Assets/Objects/Actions/Final/Special");
+			ParseAllActions();
+			GenerateAllEnums();
+			GameAssets.current.ReloadAll();
 		}
 
 		if (GUILayout.Button("Parse all components", group))
 		{
-			CsvImporter.ImportFromUrl<FrameEquipmentData>(MakeUrl(GameConfig.current.parsing.componentsSpreadSheetID, GameConfig.current.parsing.componentGUIDPerPage[EntityEquipmentData.EquipmentType.Frame])
-				, "Assets/Objects/Component/Final/Frame");
-			CsvImporter.ImportFromUrl<ReactorEquipmentData>(MakeUrl(GameConfig.current.parsing.componentsSpreadSheetID, GameConfig.current.parsing.componentGUIDPerPage[EntityEquipmentData.EquipmentType.Reactor])
-				, "Assets/Objects/Component/Final/Reactor");
-			CsvImporter.ImportFromUrl<BrainEquipmentData>(MakeUrl(GameConfig.current.parsing.componentsSpreadSheetID, GameConfig.current.parsing.componentGUIDPerPage[EntityEquipmentData.EquipmentType.Brain])
-				, "Assets/Objects/Component/Final/Brain");
-			CsvImporter.ImportFromUrl<WeaponEquipmentData>(MakeUrl(GameConfig.current.parsing.componentsSpreadSheetID, GameConfig.current.parsing.componentGUIDPerPage[EntityEquipmentData.EquipmentType.Weapon])
-				, "Assets/Objects/Component/Final/Weapon");
-			CsvImporter.ImportFromUrl<NeuronalMembraneEquipmentData>(MakeUrl(GameConfig.current.parsing.componentsSpreadSheetID, GameConfig.current.parsing.componentGUIDPerPage[EntityEquipmentData.EquipmentType.NeuronalMembrane])
-				, "Assets/Objects/Component/Final/NeuronalMembrane");
-			CsvImporter.ImportFromUrl<ToolEquipmentData>(MakeUrl(GameConfig.current.parsing.componentsSpreadSheetID, GameConfig.current.parsing.componentGUIDPerPage[EntityEquipmentData.EquipmentType.Tool])
-				, "Assets/Objects/Component/Final/Tool");
-			CsvImporter.ImportFromUrl<ArmorEquipmentData>(MakeUrl(GameConfig.current.parsing.componentsSpreadSheetID, GameConfig.current.parsing.componentGUIDPerPage[EntityEquipmentData.EquipmentType.Armor])
-				, "Assets/Objects/Component/Final/Armor");
-			CsvImporter.ImportFromUrl<OccultorEquipmentData>(MakeUrl(GameConfig.current.parsing.componentsSpreadSheetID, GameConfig.current.parsing.componentGUIDPerPage[EntityEquipmentData.EquipmentType.Occultor])
-				, "Assets/Objects/Component/Final/Occultor");
-			CsvImporter.ImportFromUrl<ChipsetEquipmentData>(MakeUrl(GameConfig.current.parsing.componentsSpreadSheetID, GameConfig.current.parsing.componentGUIDPerPage[EntityEquipmentData.EquipmentType.Chipset])
-				, "Assets/Objects/Component/Final/Chipset");
+			ParseAllComponents();
+			GameAssets.current.ReloadAll();
 		}
 
 		if(GUILayout.Button("Parse all Units", group))
 		{
-			CsvImporter.ImportFromUrl<UnitPreset>(MakeUrl(GameConfig.current.parsing.unitSpreadSheetID, "0")
-				, "Assets/Objects/UnitPreset/Final");
+			ParseAllUnits();
 		}
 		EditorGUILayout.EndVertical();
 
 		EndBox();
 
-		if (GUILayout.Button("Check misssing data", group))
+		/*if (GUILayout.Button("Check misssing data", group))
 			CheckMissingData();
 
 		if (GUILayout.Button("Load new assets into GameAssets"))
@@ -83,6 +61,58 @@ public class GameToolboxWindow : EditorWindow
 			GameAssets.current.ReloadAll();
 		}
 
+		if(GUILayout.Button("Parse all others"))
+		{
+			ParseAllActions();
+			GenerateAllEnums();
+			ParseAllComponents();
+			ParseAllUnits();
+			GameAssets.current.ReloadAll();
+		}*/
+
+	}
+
+	private void ParseAllActions ()
+	{
+		CsvImporter.ImportFromUrl<EntityActionData>(MakeUrl(GameConfig.current.parsing.actionSpreadSheetID
+				, GameConfig.current.parsing.actionGUIDPerPage[EntityActionData.ActionType.Movement]), "Assets/Objects/Actions/Final/Movement");
+		CsvImporter.ImportFromUrl<EntityActionData>(MakeUrl(GameConfig.current.parsing.actionSpreadSheetID
+			, GameConfig.current.parsing.actionGUIDPerPage[EntityActionData.ActionType.DistanceAttack]), "Assets/Objects/Actions/Final/Tir");
+		CsvImporter.ImportFromUrl<EntityActionData>(MakeUrl(GameConfig.current.parsing.actionSpreadSheetID
+			, GameConfig.current.parsing.actionGUIDPerPage[EntityActionData.ActionType.MeleeAttack]), "Assets/Objects/Actions/Final/Melee");
+		CsvImporter.ImportFromUrl<EntityActionData>(MakeUrl(GameConfig.current.parsing.actionSpreadSheetID
+			, GameConfig.current.parsing.actionGUIDPerPage[EntityActionData.ActionType.Special]), "Assets/Objects/Actions/Final/Special");
+		Debug.Log("Parsed all actions");
+	}
+
+	private void ParseAllComponents ()
+	{
+		CsvImporter.ImportFromUrl<FrameEquipmentData>(MakeUrl(GameConfig.current.parsing.componentsSpreadSheetID, GameConfig.current.parsing.componentGUIDPerPage[EntityEquipmentData.EquipmentType.Frame])
+				, "Assets/Objects/Component/Final/Frame");
+		CsvImporter.ImportFromUrl<ReactorEquipmentData>(MakeUrl(GameConfig.current.parsing.componentsSpreadSheetID, GameConfig.current.parsing.componentGUIDPerPage[EntityEquipmentData.EquipmentType.Reactor])
+			, "Assets/Objects/Component/Final/Reactor");
+		CsvImporter.ImportFromUrl<BrainEquipmentData>(MakeUrl(GameConfig.current.parsing.componentsSpreadSheetID, GameConfig.current.parsing.componentGUIDPerPage[EntityEquipmentData.EquipmentType.Brain])
+			, "Assets/Objects/Component/Final/Brain");
+		CsvImporter.ImportFromUrl<WeaponEquipmentData>(MakeUrl(GameConfig.current.parsing.componentsSpreadSheetID, GameConfig.current.parsing.componentGUIDPerPage[EntityEquipmentData.EquipmentType.Weapon])
+			, "Assets/Objects/Component/Final/Weapon");
+		CsvImporter.ImportFromUrl<NeuronalMembraneEquipmentData>(MakeUrl(GameConfig.current.parsing.componentsSpreadSheetID, GameConfig.current.parsing.componentGUIDPerPage[EntityEquipmentData.EquipmentType.NeuronalMembrane])
+			, "Assets/Objects/Component/Final/NeuronalMembrane");
+		CsvImporter.ImportFromUrl<ToolEquipmentData>(MakeUrl(GameConfig.current.parsing.componentsSpreadSheetID, GameConfig.current.parsing.componentGUIDPerPage[EntityEquipmentData.EquipmentType.Tool])
+			, "Assets/Objects/Component/Final/Tool");
+		CsvImporter.ImportFromUrl<ArmorEquipmentData>(MakeUrl(GameConfig.current.parsing.componentsSpreadSheetID, GameConfig.current.parsing.componentGUIDPerPage[EntityEquipmentData.EquipmentType.Armor])
+			, "Assets/Objects/Component/Final/Armor");
+		CsvImporter.ImportFromUrl<OccultorEquipmentData>(MakeUrl(GameConfig.current.parsing.componentsSpreadSheetID, GameConfig.current.parsing.componentGUIDPerPage[EntityEquipmentData.EquipmentType.Occultor])
+			, "Assets/Objects/Component/Final/Occultor");
+		CsvImporter.ImportFromUrl<ChipsetEquipmentData>(MakeUrl(GameConfig.current.parsing.componentsSpreadSheetID, GameConfig.current.parsing.componentGUIDPerPage[EntityEquipmentData.EquipmentType.Chipset])
+			, "Assets/Objects/Component/Final/Chipset");
+		Debug.Log("Parsed all components");
+	}
+
+	private void ParseAllUnits ()
+	{
+		CsvImporter.ImportFromUrl<UnitPreset>(MakeUrl(GameConfig.current.parsing.unitSpreadSheetID, "0")
+				, "Assets/Objects/UnitPreset/Final");
+		Debug.Log("Parsed all units");
 	}
 
 	private void CheckMissingData ()
@@ -94,6 +124,7 @@ public class GameToolboxWindow : EditorWindow
 	{
 		EntityActionDataEditor.ComputeEnum();
 		ScriptableEnumAutoEditor.GenerateAllEnums();
+		Debug.Log("Parsed all new auto generated enums");
 	}
 
 	private string MakeUrl(string _spreadsheetID, string _sheetName )
