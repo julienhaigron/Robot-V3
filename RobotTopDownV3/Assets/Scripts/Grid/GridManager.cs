@@ -82,11 +82,11 @@ public class GridManager : Singleton<GridManager>
 			if (_isEditorMode)
 			{
 				m_tiles[i].SetGroundType(groundType);
-				if (groundType == TileGroundType.Wall)
+				if (groundType == TileGroundType.Wall || groundType == TileGroundType.Cover)
 				{
-					m_tiles[i].SetupWall(GridData.tiles[i].wallType, GridData.tiles[i].orientation);
+					m_tiles[i].SetupWall(GridData.tiles[i].wallType, GridData.tiles[i].orientation, groundType == TileGroundType.Cover);
 				}
-				else if (m_tiles[i].Wall != null && groundType == TileGroundType.Wall)
+				else if (m_tiles[i].Wall != null && (groundType == TileGroundType.Wall || groundType == TileGroundType.Cover))
 				{
 					m_tiles[i].RemoveWall();
 				}
@@ -183,8 +183,8 @@ public class GridManager : Singleton<GridManager>
 		{
 			GridData.tiles[i] = new GridData.TileData
 				(m_tiles[i].GroundType,
-				m_tiles[i].GroundType == TileGroundType.Wall ? m_tiles[i].Wall.Type : Wall.WallType.VerticalStrait,
-				m_tiles[i].GroundType == TileGroundType.Wall ? m_tiles[i].Wall.Orientation : 0);
+				m_tiles[i].GroundType == TileGroundType.Wall || m_tiles[i].GroundType == TileGroundType.Cover ? m_tiles[i].Wall.Type : Wall.WallType.VerticalStrait,
+				m_tiles[i].GroundType == TileGroundType.Wall || m_tiles[i].GroundType == TileGroundType.Cover ? m_tiles[i].Wall.Orientation : 0);
 		}
 
 		EditorUtility.SetDirty(m_gridData);
@@ -198,11 +198,11 @@ public class GridManager : Singleton<GridManager>
 		{
 			GridData.TileData tileData = m_gridData.tiles[counter++];
 
-			if (tile.GroundType != TileGroundType.Wall)
+			if (tile.GroundType != TileGroundType.Wall && tile.GroundType == TileGroundType.Cover)
 			{
 				tile.RemoveWall();
 			}
-			else if (tile.GroundType == TileGroundType.Wall)
+			else if (tile.GroundType == TileGroundType.Wall || tile.GroundType == TileGroundType.Cover)
 			{
 				if (tile.Wall != null && tile.WallPartsParent.childCount > 0)
 				{
@@ -211,7 +211,7 @@ public class GridManager : Singleton<GridManager>
 						DestroyImmediate(tile.WallPartsParent.GetChild(i).gameObject);
 					}
 				}
-				tile.SetupWall(tileData.wallType, tileData.orientation);
+				tile.SetupWall(tileData.wallType, tileData.orientation, tile.GroundType == TileGroundType.Cover);
 			}
 
 			EditorUtility.SetDirty(tile);
@@ -732,7 +732,7 @@ public class GridManager : Singleton<GridManager>
 		List<Tile> tilesInLine = GetTilesInRay(Tiles[attackerPosition], Tiles[defenderPosition], _didAttackerWinPFC);
 		foreach(Tile tile in tilesInLine)
 		{
-			if (tile.GroundType == TileGroundType.Wall)
+			if (tile.GroundType == TileGroundType.Wall || tile.GroundType == TileGroundType.Cover)
 				return true;
 		}
 
@@ -1195,10 +1195,11 @@ public enum TileGroundType
 {
 	Empty,
 	Wall,
-	Door,
+	Note,
 	PlayerSpawn,
 	EnemySpawn,
-	Void
+	Void,
+	Cover
 }
 
 public static class HexDirectionExtensions

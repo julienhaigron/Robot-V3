@@ -127,8 +127,8 @@ public class GridTool : EditorTool
 		Undo.RecordObject(tile.Wall, "Paint Tile");*/
 		//Undo.RecordObject(GridManager.Instance.gridData, "Paint Tile");
 		tile.SetGroundType(GridManager.Instance.currentGroundBrushSelected);
-		if (GridManager.Instance.currentGroundBrushSelected == TileGroundType.Wall)
-			tile.SetupWall(Wall.WallType.VerticalStrait, 0);
+		if (GridManager.Instance.currentGroundBrushSelected == TileGroundType.Wall || GridManager.Instance.currentGroundBrushSelected == TileGroundType.Cover)
+			tile.SetupWall(Wall.WallType.VerticalStrait, 0, GridManager.Instance.currentGroundBrushSelected == TileGroundType.Cover);
 		else
 			tile.RemoveWall();
 		//EditorUtility.SetDirty(tile);
@@ -174,7 +174,7 @@ public class GridTool : EditorTool
 			//Undo.RecordObject(tile.Wall, "Change Wall Type");
 			Wall.WallType next =
 				(Wall.WallType)(((int)tile.Wall.Type + 1) % (int)Wall.WallType.Total);
-			tile.Wall.SetWallType(next);
+			tile.Wall.SetWallType(next, tile.GroundType == TileGroundType.Cover);
 			e.Use();
 		}
 	}

@@ -166,7 +166,7 @@ MonoBehaviour:
       - {fileID: 0}
       - {fileID: 0}
     tileGroundMaterials:
-      keys: 000000000100000002000000030000000400000005000000
+      keys: 00000000010000000200000003000000040000000500000006000000
       values:
       - {fileID: 2100000, guid: 1a73847705538ca408ca82d46b2a6c03, type: 2}
       - {fileID: 2100000, guid: 0b6a1d286fb392946b3aff8e369309ae, type: 2}
@@ -174,6 +174,7 @@ MonoBehaviour:
       - {fileID: 2100000, guid: 5a74236f5abc9fc46989ccb45e89d5ca, type: 2}
       - {fileID: 2100000, guid: 2c14c5a2e53fe36408684304ef27fbdb, type: 2}
       - {fileID: 2100000, guid: c65f36483b36c4e4caba44a8049333c6, type: 2}
+      - {fileID: 2100000, guid: 24f7c4ba999a6324792457ddb337bb5d, type: 2}
     entityStateMaterials:
       keys: 000000000100000002000000
       values:

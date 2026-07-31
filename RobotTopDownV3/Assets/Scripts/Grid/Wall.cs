@@ -28,6 +28,8 @@ public class Wall : MonoBehaviour
 	[SerializeField] private WallType m_type = WallType.VerticalStrait;
 	public WallType Type { get { return m_type; } set { m_type = value; } }
 
+	private bool m_isCover;
+
 	[Serializable]
 	public enum WallType
 	{
@@ -79,12 +81,13 @@ public class Wall : MonoBehaviour
 	}
 
 #if UNITY_EDITOR
-	public void SetWallType(WallType _type )
+	public void SetWallType(WallType _type, bool _isCover )
 	{
 		//Rotate(0);
 		//Undo.RecordObject(this, "Set Wall Type");
 		//Undo.RecordObject(m_linkedTile, "Set Wall Type 2");
 		m_type = _type;
+		m_isCover = _isCover;
 
 		foreach(GameObject go in m_wallParts)
 		{
@@ -104,9 +107,11 @@ public class Wall : MonoBehaviour
 		
 		GameObject wallPrefab = PrefabUtility.InstantiatePrefab(GameAssets.current.game.baseWallVisualPerType[_type], m_linkedTile.transform) as GameObject;
 		m_linkedTile.WallPartsParent = wallPrefab.transform;
-		for (int i = wallPrefab.transform.childCount - 1; i >= 0; i--)
+		Transform partsParent = wallPrefab.transform.GetChild(0);
+		partsParent.localScale = new Vector3(1f, .5f, 1f);
+		for (int i = partsParent.childCount - 1; i >= 0; i--)
 		{
-			Transform tfm = wallPrefab.transform.GetChild(i);
+			Transform tfm = partsParent.GetChild(i);
 			/*Vector3 localPosition = tfm.localPosition;
 			tfm.parent = m_linkedTile.WallPartsParent;
 			tfm.localPosition = localPosition;*/
@@ -170,7 +175,7 @@ public class Wall : MonoBehaviour
 		if (Handles.Button(transform.position + Vector3.back, Quaternion.identity, size, pickSize, Utils.LinkHandleCap))
 		{
 			WallType nextWallType = (WallType)((int)++Type % (int)WallType.Total);
-			SetWallType(nextWallType);
+			SetWallType(nextWallType, m_isCover);
 		}
 	}
 
