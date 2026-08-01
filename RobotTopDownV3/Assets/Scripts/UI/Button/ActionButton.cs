@@ -19,6 +19,7 @@ public class ActionButton : BaseButton, IPointerEnterHandler, IPointerExitHandle
 
 	protected EntityActionEnumID m_actionType;
 	protected string m_linkedEquipmentData;
+	private bool m_isOnlyVisual = false;
 
 	protected void Awake ()
 	{
@@ -42,8 +43,17 @@ public class ActionButton : BaseButton, IPointerEnterHandler, IPointerExitHandle
 		m_icon.sprite = data.icon;
 		/*m_name.text = data.displayName;
 		m_tokenCost.text = data.GetTokenTotalCost(null, null, null).ToString();*/
-
+		m_isOnlyVisual = false;
 		RefreshVisual();
+	}
+
+	public void InitEntityConfigPanelMode( EntityActionEnumID _action )
+	{
+		m_actionType = _action;
+		EntityActionData data = GameAssets.current.game.entityActionsData[_action];
+		m_icon.sprite = data.icon;
+		m_isOnlyVisual = true;
+		SetInteractability(true);
 	}
 
 	protected void RefreshInteractability ()
@@ -93,6 +103,9 @@ public class ActionButton : BaseButton, IPointerEnterHandler, IPointerExitHandle
 
 	protected override void OnClick ()
 	{
+		if (m_isOnlyVisual)
+			return;
+
 		Select();
 		TurnManager.Instance.SetCurrentActionSelected(m_actionType, m_linkedEquipmentData, true);
 		base.OnClick();

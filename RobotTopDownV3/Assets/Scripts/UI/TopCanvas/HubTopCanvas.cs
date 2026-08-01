@@ -53,8 +53,8 @@ public class HubTopCanvas : AUITopCanvas
 			case CurrencyType.PsyCredit:
 			case CurrencyType.CommandoCredit:
 			case CurrencyType.PaladinCredit:
-				int percentage = 0;
-				m_currencyDisplays[_type].Text.text = percentage + " % - " + GameDatas.current.currentPlayerSave.currencies[_type].ToString() + "r";
+				//int percentage = 0;
+				m_currencyDisplays[_type].Text.text = /*percentage + " % - " + */GameDatas.current.currentPlayerSave.currencies[_type].ToString() + "r";
 				break;
 		}
 	}
@@ -136,8 +136,8 @@ public class HubTopCanvas : AUITopCanvas
 			}
 			m_upgradeStructureBtn.gameObject.SetActive(true);
 			m_shopFactionCurrencyDisplay.Show();
-			m_factionProgressionTMP.text = percentage + " %";
-			m_factionProgressionFill.fillAmount = (float)percentage / 100f;
+			/*m_factionProgressionTMP.text = percentage + " %";
+			m_factionProgressionFill.fillAmount = (float)percentage / 100f;*/
 		}
 		else
 		{
@@ -148,10 +148,10 @@ public class HubTopCanvas : AUITopCanvas
 			m_upgradeStructureBtn.gameObject.SetActive(UIManager.Instance.currentPanel is not TournamentPanel or MissionPanel);
 			m_currencyDisplays[CurrencyType.SoftCurrency].Text.text = GameDatas.current.currentPlayerSave.currencies[CurrencyType.SoftCurrency].ToString();
 
-			int percentage = 0;
-			m_currencyDisplays[CurrencyType.CommandoCredit].Text.text = percentage + " % - " + GameDatas.current.currentPlayerSave.currencies[CurrencyType.CommandoCredit].ToString() + "r";
-			m_currencyDisplays[CurrencyType.PaladinCredit].Text.text = percentage + " % - " + GameDatas.current.currentPlayerSave.currencies[CurrencyType.PaladinCredit].ToString() + "r";
-			m_currencyDisplays[CurrencyType.PsyCredit].Text.text = percentage + " % - " + GameDatas.current.currentPlayerSave.currencies[CurrencyType.PsyCredit].ToString() + "r";
+			//int percentage = 0;
+			m_currencyDisplays[CurrencyType.CommandoCredit].Text.text = /*percentage + " % - " + */GameDatas.current.currentPlayerSave.currencies[CurrencyType.CommandoCredit].ToString() + "r";
+			m_currencyDisplays[CurrencyType.PaladinCredit].Text.text = /*percentage + " % - " + */GameDatas.current.currentPlayerSave.currencies[CurrencyType.PaladinCredit].ToString() + "r";
+			m_currencyDisplays[CurrencyType.PsyCredit].Text.text = /*percentage + " % - " + */GameDatas.current.currentPlayerSave.currencies[CurrencyType.PsyCredit].ToString() + "r";
 		}
 
 		RefreshDayDisplay();

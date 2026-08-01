@@ -6,7 +6,9 @@ using Sirenix.OdinInspector;
 public class FTUEManager : SingletonPersistant<FTUEManager>
 {
 	[SerializeField] private MissionData[] m_cycle1Missions;
-	public MissionData[] Cycle1Missions => m_cycle1Missions;
+	public MissionData[] Cycle1MatchMissions => m_cycle1Missions;
+	[SerializeField] private MissionData[] m_cycle1TournamentMissions;
+	public MissionData[] Cycle1TournamentMissions => m_cycle1TournamentMissions;
 	public UnitPreset[] playerStartingSquadUnits;
 
 	[Title("MicroTuto0")]

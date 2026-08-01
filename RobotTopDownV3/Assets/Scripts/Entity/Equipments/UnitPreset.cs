@@ -6,6 +6,7 @@ using Sirenix.OdinInspector;
 [CreateAssetMenu(fileName = "UnitPreset", menuName = "ScriptableObject/UnitPreset", order = 1)]
 public class UnitPreset : AParsableScriptableObject
 {
+    [Parsing("Name")]
     public string displayName;
     [OnValueChanged("@RefreshTotalEnergyCostRemaining()"), Parsing("Frame")]
     public FrameEquipmentData frame;

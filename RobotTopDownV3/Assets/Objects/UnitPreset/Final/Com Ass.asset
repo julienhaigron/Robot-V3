@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Com Ass
   m_EditorClassIdentifier: RTD::UnitPreset
   spreadsheetId: https://docs.google.com/spreadsheets/d/1PpT7zhUyvnxNfQoW6Z8a4ntcJ83OzwLOVkCfgDB5bX0/export?format=csv&gid=0
-  displayName: 
+  displayName: Com Ass
   frame: {fileID: 11400000, guid: 43c7245edaa9b9e47b50d3fcab7152f2, type: 2}
   reactor: {fileID: 11400000, guid: 7a3cc8b99d81a7e4ca5e3e6858ad54ce, type: 2}
   brain: {fileID: 11400000, guid: 246f5c41b0229ed42af562c847a5ad62, type: 2}

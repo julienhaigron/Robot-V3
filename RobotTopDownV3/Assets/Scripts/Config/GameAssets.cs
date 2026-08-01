@@ -35,6 +35,9 @@ public class GameAssets : ScriptableObject
         public RecyclerStructureUpgrade RecyclerStructureUpgrade => structureUpgrades[StructureUpgradePopup.StructureType.Recycler] as RecyclerStructureUpgrade;
         public RepairStationStructureUpgrade RepairStationStructureUpgrade => structureUpgrades[StructureUpgradePopup.StructureType.RepairStation] as RepairStationStructureUpgrade;
 
+        [Title("Tournament")]
+        public MissionData[] tournamentMissionsPool;
+
         [Title("Entity")]
         public Entity defaultEntity;
         public GhostEntity baseGhost;

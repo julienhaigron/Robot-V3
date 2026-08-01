@@ -74,7 +74,8 @@ public class GameManager : SingletonPersistant<GameManager>
 				UIManager.Instance.OpenPanel<SelectMissionPanel>();
 			else if (m_returnFromMatch)
 			{
-				UIManager.Instance.OpenPanel<SoloHubPanel>();
+				if(GameDatas.current.currentPlayerSave.didUnlockRetuurnToHubPopup)
+					UIManager.Instance.OpenPanel<SoloHubPanel>();
 				UIManager.Instance.OpenPopup<ReturnToHubPopup>().Init();
 			}
 			else
@@ -112,13 +113,16 @@ public class GameManager : SingletonPersistant<GameManager>
 			if (!GameDatas.current.currentPlayerSave.didStartTuto)
 			{
 				foreach (UnitPreset unitPreset in FTUEManager.Instance.playerStartingSquadUnits)
+				{
 					unitPreset.AddToUnits();
+
+				}
 				GameDatas.current.currentPlayerSave.didStartTuto = true;
-				for (int i = 0; i < FTUEManager.Instance.Cycle1Missions.Length; i++)
-					GameDatas.current.currentPlayerSave.cycleData.selectedMissionsIds.Add(FTUEManager.Instance.Cycle1Missions[i].enumID);
+				for (int i = 0; i < FTUEManager.Instance.Cycle1MatchMissions.Length; i++)
+					GameDatas.current.currentPlayerSave.cycleData.selectedMissionsIds.Add(FTUEManager.Instance.Cycle1MatchMissions[i].enumID);
 			}
 
-			SetupLevel(FTUEManager.Instance.Cycle1Missions[0]);
+			SetupLevel(FTUEManager.Instance.Cycle1MatchMissions[0]);
 		}
 	}
 
@@ -239,23 +243,6 @@ public class GameManager : SingletonPersistant<GameManager>
 		_itemData.OnInvokeItem(_invocatorTool, newItem);
 
 		return newItem;
-	}
-
-	public void LevelCompletionCheck ( out bool _isPlayerOneDead, out bool _isPlayerTwoDead )
-	{
-		_isPlayerOneDead = true;
-		_isPlayerTwoDead = true;
-		foreach (Entity enemy in m_playersEntityAnchor[0].Entities)
-		{
-			if (enemy.Equipment.IsDead == false)
-				_isPlayerOneDead = false;
-		}
-
-		foreach (Entity ally in m_playersEntityAnchor[1].Entities)
-		{
-			if (ally.Equipment.IsDead == false)
-				_isPlayerTwoDead = false;
-		}
 	}
 
 	public void EndGame ( EndLevelPopup.GameResult _gameResult )

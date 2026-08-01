@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Psy Snper
   m_EditorClassIdentifier: RTD::UnitPreset
   spreadsheetId: https://docs.google.com/spreadsheets/d/1PpT7zhUyvnxNfQoW6Z8a4ntcJ83OzwLOVkCfgDB5bX0/export?format=csv&gid=0
-  displayName: 
+  displayName: Psy Snper
   frame: {fileID: 11400000, guid: 0760ff3ec2d2069488bd568c0e6f10fe, type: 2}
   reactor: {fileID: 11400000, guid: b1c05e19e370ef5428211e2972ae8fc7, type: 2}
   brain: {fileID: 11400000, guid: e64ae5713a4f1cc4d8f5860649a8788e, type: 2}

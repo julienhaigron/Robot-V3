@@ -51,6 +51,7 @@ MonoBehaviour:
       - {fileID: 11400000, guid: 8463f427f2e71a5448135f40294b8ede, type: 2}
       - {fileID: 11400000, guid: de361b9c89c15db40abe80156bcb83e8, type: 2}
       - {fileID: 11400000, guid: f2fde0f8f8fd985409096250c61b13b3, type: 2}
+    tournamentMissionsPool: []
     defaultEntity: {fileID: 4673310249167116355, guid: 206cf16509b1846479a1f553fd6add2d, type: 3}
     baseGhost: {fileID: 7839904307103858393, guid: bee3bc7545f82b54babded2b3df64c96, type: 3}
     baseItem: {fileID: 831952569120969770, guid: f125b6baae3a1ab4c9203e208c4db9f3, type: 3}
@@ -206,7 +207,7 @@ MonoBehaviour:
       - {fileID: -1771133569, guid: b61920d2917644949a125f8a6af0e45c, type: 3}
       - {fileID: -1160498796, guid: b61920d2917644949a125f8a6af0e45c, type: 3}
     corporationsIcons:
-      keys: 000000000100000002000000030000000400000005000000
+      keys: 00000000010000000200000003000000040000000500000006000000
       values:
       - {fileID: 21300000, guid: 03da9b037a0d27b4db02f45130a6cb28, type: 3}
       - {fileID: 1022364126, guid: 31cee7fbc7dacf5449ac2bd80b7b4b88, type: 3}
@@ -214,14 +215,17 @@ MonoBehaviour:
       - {fileID: -723296476, guid: 31cee7fbc7dacf5449ac2bd80b7b4b88, type: 3}
       - {fileID: 1717960602, guid: 31cee7fbc7dacf5449ac2bd80b7b4b88, type: 3}
       - {fileID: -1742903103, guid: 31cee7fbc7dacf5449ac2bd80b7b4b88, type: 3}
+      - {fileID: -1742903103, guid: 31cee7fbc7dacf5449ac2bd80b7b4b88, type: 3}
     corporationsColors:
-      keys: 0100000002000000030000000400000000000000
+      keys: 01000000020000000300000004000000000000000600000005000000
       values:
       - {r: 0, g: 0.6733866, b: 1, a: 1}
       - {r: 0.39703226, g: 0, b: 1, a: 1}
       - {r: 1, g: 0.5013487, b: 0, a: 1}
       - {r: 1, g: 0, b: 0, a: 1}
       - {r: 1, g: 1, b: 1, a: 0}
+      - {r: 0.48235294, g: 0.48235294, b: 0.48235294, a: 1}
+      - {r: 0.4811321, g: 0.4811321, b: 0.4811321, a: 1}
     mainActionTypeIcons:
       keys: 000000000100000002000000
       values:

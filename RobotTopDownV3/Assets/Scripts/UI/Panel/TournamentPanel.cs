@@ -60,7 +60,7 @@ public class TournamentPanel : AUIPanel
 			if (GameDatas.current.currentPlayerSave.squadUnits.Count > i)
 			{
 				m_unitDisplays[i].Show();
-				m_unitDisplays[i].Init(GameDatas.current.currentPlayerSave.squadUnits[i]);
+				m_unitDisplays[i].Init(GameDatas.current.currentPlayerSave.squadUnits[i], false);
 			}
 			else
 				m_unitDisplays[i].Hide();
@@ -73,7 +73,7 @@ public class TournamentPanel : AUIPanel
 			{
 				if (missiondata.enemies.Length > i)
 				{
-					m_round1SquadUnits[i].Init(missiondata.enemies[i].GetSavedData());
+					m_round1SquadUnits[i].Init(missiondata.enemies[i].GetSavedData(), false);
 					m_round1SquadUnits[i].Show();
 				}
 				else
@@ -92,7 +92,7 @@ public class TournamentPanel : AUIPanel
 			{
 				if (missiondata.enemies.Length > i)
 				{
-					m_round2SquadUnits[i].Init(missiondata.enemies[i].GetSavedData());
+					m_round2SquadUnits[i].Init(missiondata.enemies[i].GetSavedData(), false);
 					m_round2SquadUnits[i].Show();
 				}
 				else
@@ -110,7 +110,7 @@ public class TournamentPanel : AUIPanel
 			{
 				if (missiondata.enemies.Length > i)
 				{
-					m_round3SquadUnits[i].Init(missiondata.enemies[i].GetSavedData());
+					m_round3SquadUnits[i].Init(missiondata.enemies[i].GetSavedData(), false);
 					m_round3SquadUnits[i].Show();
 				}
 				else
@@ -191,7 +191,7 @@ public class TournamentPanel : AUIPanel
 		if (_display == null || _display.Data == null)
 			return;
 
-		m_hoveredUnitDisplay.Init(_display.Data);
+		m_hoveredUnitDisplay.Init(_display.Data, false);
 
 		//set unit stats
 		SerializableDictionary<EntityEquipmentData.SecondaryStat.StatType, EntityEquipmentData.StatDescription> statsDescriptions = _display.Data.GetStatsDesciptions();

@@ -1199,7 +1199,8 @@ public enum TileGroundType
 	PlayerSpawn,
 	EnemySpawn,
 	Void,
-	Cover
+	Cover,
+	Trigger
 }
 
 public static class HexDirectionExtensions

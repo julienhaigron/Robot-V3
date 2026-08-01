@@ -11,23 +11,29 @@ public class UnitMissionDisplay : MonoBehaviour, IPointerEnterHandler
     [SerializeField] private Image m_mainIcon;
     [SerializeField] private Image m_subIcon;
 	[SerializeField] private BaseButton m_openConfigPanelBtn;
+	[SerializeField] private BaseButton m_selectBtn;
+	[SerializeField] private GameObject m_selectGO;
+	[SerializeField] private GameObject m_isDamagedGO;
 
 	private EntitySavedData m_data;
 	public EntitySavedData Data => m_data;
+	private bool m_isSelected;
 
 	private void Awake ()
 	{
 		m_openConfigPanelBtn.onClick += OnClickOpenConfigPanel;
+		m_selectBtn.onClick += OnClickSelect;
 	}
 
-	public void Init(EntitySavedData _data)
+	public void Init(EntitySavedData _data, bool _isSelected )
 	{
 		m_data = _data;
 
 		m_nameTMP.text = _data.name;
-       /* m_mainIcon.sprite = _data.icon;
-        m_subIcon.sprite = */
-    }
+		m_isSelected = _isSelected;
+		m_selectGO.SetActive(_isSelected);
+		m_isDamagedGO.SetActive(_data.IsDamaged());
+	}
 
 	public void Show ()
 	{
@@ -39,9 +45,32 @@ public class UnitMissionDisplay : MonoBehaviour, IPointerEnterHandler
 		gameObject.SetActive(false);
 	}
 
+	private void OnClickSelect ()
+	{
+		if (UIManager.Instance.currentPanel is MissionPanel or TournamentPanel)
+			return;
+
+		if (!m_isSelected && m_data.CanAddToSquad())
+		{
+			m_isSelected = true;
+			GameDatas.current.currentPlayerSave.squadUnits.Add(m_data);
+		}
+		else if (m_isSelected)
+		{
+			m_isSelected = false;
+			GameDatas.current.currentPlayerSave.squadUnits.Remove(m_data);
+		}
+		m_selectGO.SetActive(m_isSelected);
+
+		HubManager.Instance.RefreshSquadEntities();
+		UIManager.Instance.GetPanel<HangarPanel>().RefreshTexts();
+
+	}
+
 	private void OnClickOpenConfigPanel ()
 	{
-		UIManager.Instance.OpenPanel<EntityConfigPanel>().Init(m_data, true);
+		bool isInMissionPanel = UIManager.Instance.currentPanel is MissionPanel or TournamentPanel;
+		UIManager.Instance.OpenPanel<EntityConfigPanel>().Init(m_data, isInMissionPanel);
 	}
 
 	public void OnPointerEnter ( PointerEventData eventData )
