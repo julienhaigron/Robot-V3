@@ -112,13 +112,16 @@ public class GameManager : SingletonPersistant<GameManager>
 			if (!GameDatas.current.currentPlayerSave.didStartTuto)
 			{
 				foreach (UnitPreset unitPreset in FTUEManager.Instance.playerStartingSquadUnits)
+				{
 					unitPreset.AddToUnits();
+
+				}
 				GameDatas.current.currentPlayerSave.didStartTuto = true;
-				for (int i = 0; i < FTUEManager.Instance.Cycle1Missions.Length; i++)
-					GameDatas.current.currentPlayerSave.cycleData.selectedMissionsIds.Add(FTUEManager.Instance.Cycle1Missions[i].enumID);
+				for (int i = 0; i < FTUEManager.Instance.Cycle1MatchMissions.Length; i++)
+					GameDatas.current.currentPlayerSave.cycleData.selectedMissionsIds.Add(FTUEManager.Instance.Cycle1MatchMissions[i].enumID);
 			}
 
-			SetupLevel(FTUEManager.Instance.Cycle1Missions[0]);
+			SetupLevel(FTUEManager.Instance.Cycle1MatchMissions[0]);
 		}
 	}
 

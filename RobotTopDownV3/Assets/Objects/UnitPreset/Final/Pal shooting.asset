@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Pal shooting
   m_EditorClassIdentifier: RTD::UnitPreset
   spreadsheetId: https://docs.google.com/spreadsheets/d/1PpT7zhUyvnxNfQoW6Z8a4ntcJ83OzwLOVkCfgDB5bX0/export?format=csv&gid=0
-  displayName: 
+  displayName: Pal shooting
   frame: {fileID: 11400000, guid: 87df72651c07907459ff44adab1b8a57, type: 2}
   reactor: {fileID: 11400000, guid: beac1d6f7cf67734dbff4c5a3bf1b0c5, type: 2}
   brain: {fileID: 11400000, guid: d3b5454e8f24dd8479d6b0af25c664a8, type: 2}

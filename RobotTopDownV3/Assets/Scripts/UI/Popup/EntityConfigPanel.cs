@@ -9,7 +9,6 @@ using System.Linq;
 public class EntityConfigPanel : AUIPanel
 {
 
-	[SerializeField] private TMP_InputField m_unitNameInputField;
 
 	[SerializeField] private SerializableDictionary<EntityEquipmentData.EquipmentType, ComponentSlot> m_mainComponentSlotDictionary;
 	[SerializeField] private SerializableDictionary<EntityEquipmentData.EquipmentType, SubSlotContainer> m_subComponentSlotDictionary;
@@ -20,7 +19,9 @@ public class EntityConfigPanel : AUIPanel
 	[SerializeField] private SerializableDictionary<EntityEquipmentData.EquipmentType, BaseButton> m_componentTypeFilterBtnDictionary = new();
 
 	[Title("Unit")]
+	[SerializeField] private TMP_InputField m_unitNameInputField;
 	[SerializeField] private BaseButton m_renameBtn;
+	[SerializeField] private ActionButton[] m_actionBtns;
 	[SerializeField] private StatDisplay[] m_unitStatDisplays;
 	[SerializeField] private Image m_dominentCorpoIcon;
 	[SerializeField] private EntityEquipmentData.SecondaryStat.StatType[] m_displayStaticStatsFilter;
@@ -193,6 +194,24 @@ public class EntityConfigPanel : AUIPanel
 
 	private void RefreshVisuals ()
 	{
+		//actions
+		List<EntityActionEnumID> actions = new();
+		foreach (GameDatas.PlayerSave.Equipment equipmentData in m_entityData.GetAllEquipments())
+		{
+			if (equipmentData.TryGetData(out EntityEquipmentData data))
+				actions.AddRange(data.knownedActions);
+		}
+		for (int i = 0; i < m_actionBtns.Length; i++)
+		{
+			if (actions.Count > i)
+			{
+				m_actionBtns[i].InitEntityConfigPanelMode(actions[i]);
+				m_actionBtns[i].SetVisible(_isVisible: true, _isInstant: true);
+			}
+			else
+				m_actionBtns[i].SetVisible(_isVisible: false, _isInstant: true);
+		}
+
 		//set unit stats
 		SerializableDictionary<EntityEquipmentData.SecondaryStat.StatType, EntityEquipmentData.StatDescription> statsDescriptions = m_entityData.GetStatsDesciptions();
 		List<EntityEquipmentData.SecondaryStat.StatType> keys = statsDescriptions.Keys.ToList();

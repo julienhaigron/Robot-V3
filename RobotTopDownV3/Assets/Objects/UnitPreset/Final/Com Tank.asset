@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Com Tank
   m_EditorClassIdentifier: RTD::UnitPreset
   spreadsheetId: https://docs.google.com/spreadsheets/d/1PpT7zhUyvnxNfQoW6Z8a4ntcJ83OzwLOVkCfgDB5bX0/export?format=csv&gid=0
-  displayName: 
+  displayName: Com Tank
   frame: {fileID: 11400000, guid: 7682b7a54cde6fd44b4e4927f8febe2c, type: 2}
   reactor: {fileID: 11400000, guid: bba42464362d2dd40b90ff19ee0fe28d, type: 2}
   brain: {fileID: 11400000, guid: d436e6c3b7bc32245883dc7f1150d4d8, type: 2}

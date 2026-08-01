@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Start_Status
   m_EditorClassIdentifier: RTD::UnitPreset
   spreadsheetId: https://docs.google.com/spreadsheets/d/1PpT7zhUyvnxNfQoW6Z8a4ntcJ83OzwLOVkCfgDB5bX0/export?format=csv&gid=0
-  displayName: 
+  displayName: Start_Status
   frame: {fileID: 11400000, guid: e421ab8c104f64a40849677562aa7d27, type: 2}
   reactor: {fileID: 11400000, guid: 8d685cbde0310b841b0827252aac0531, type: 2}
   brain: {fileID: 11400000, guid: 816d6b4f3efca864286716e3ea955e49, type: 2}

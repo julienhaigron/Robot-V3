@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Pal_Melee
   m_EditorClassIdentifier: RTD::UnitPreset
   spreadsheetId: https://docs.google.com/spreadsheets/d/1PpT7zhUyvnxNfQoW6Z8a4ntcJ83OzwLOVkCfgDB5bX0/export?format=csv&gid=0
-  displayName: 
+  displayName: Pal melee
   frame: {fileID: 11400000, guid: 4a16fc8f0f36aa342bc962b3c36dbec4, type: 2}
   reactor: {fileID: 11400000, guid: 5ebac2dff26ca13488df52673dc88b67, type: 2}
   brain: {fileID: 11400000, guid: 9d85a19bd2d143c458f6ec5eace5cfe4, type: 2}

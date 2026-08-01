@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Psy Tank
   m_EditorClassIdentifier: RTD::UnitPreset
   spreadsheetId: https://docs.google.com/spreadsheets/d/1PpT7zhUyvnxNfQoW6Z8a4ntcJ83OzwLOVkCfgDB5bX0/export?format=csv&gid=0
-  displayName: 
+  displayName: Psy Tank
   frame: {fileID: 11400000, guid: c587a392cbf393944837a66143c3eb51, type: 2}
   reactor: {fileID: 11400000, guid: 851deacda29124747956e98faffb70d3, type: 2}
   brain: {fileID: 11400000, guid: db967ec8af3c1404aaa7fe7fa2e6b4ac, type: 2}

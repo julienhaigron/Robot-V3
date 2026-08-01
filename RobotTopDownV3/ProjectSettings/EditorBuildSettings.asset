@@ -23,6 +23,30 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/HubScene.unity
     guid: 826e7b235e8c61b4b8d9eee5f90754f5
+  - enabled: 1
+    path: Assets/Scenes/FTUE/Day0Tuto.unity
+    guid: e66d81656d18efc4e89c6a77824481f6
+  - enabled: 1
+    path: Assets/Scenes/FTUE/Day1Tuto.unity
+    guid: c4b1e54bbfc5d254b8424a3ae0ee75f6
+  - enabled: 1
+    path: Assets/Scenes/FTUE/Day2Tuto.unity
+    guid: 3368c764b7c4b334ba5ae2e2676ee3a1
+  - enabled: 1
+    path: Assets/Scenes/FTUE/Day3Tuto.unity
+    guid: 6e55d71cdf36d9e4eae1fa9bc772868d
+  - enabled: 1
+    path: Assets/Scenes/FTUE/Day4Tuto.unity
+    guid: 6ba26b97237c69f42a43b13bd7e77de6
+  - enabled: 1
+    path: Assets/Scenes/FTUE/Day5Tuto.unity
+    guid: ff60c13806118794694b30ca84432fbe
+  - enabled: 1
+    path: Assets/Scenes/FTUE/Day6Tuto.unity
+    guid: e82554a7399ab874ba7cba2df055e533
+  - enabled: 1
+    path: Assets/Scenes/FTUE/Day7Tuto.unity
+    guid: fa2cee248a9fb3640bbe191b111087a9
   m_configObjects:
     com.unity.dt.app-ui: {fileID: 11400000, guid: 1b1c20d82303e4b5781c3ef50ac1449f, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2da90cdffd3702b458769b7a7a8aaf67, type: 3}

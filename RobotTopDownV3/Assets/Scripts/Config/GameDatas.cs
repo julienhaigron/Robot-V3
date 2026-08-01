@@ -73,21 +73,21 @@ public partial class GameDatas : ScriptableObject
 		public int lastPlayerSaveSelectedID = -1;
 	}
 
-	public void CreateSave (string _saveName)
+	public void CreateSave ( string _saveName )
 	{
 		PlayerSave newSave = new PlayerSave();
 		newSave.saveName = _saveName;
 		playerSaves.Add(newSave);
 		newSave.Initialize();
 	}
-	
+
 	[System.Serializable]
 	public class PlayerSave
 	{
 		public string saveName;
 		public List<EntitySavedData> allBuiltUnits = new();
 		public List<EntitySavedData> squadUnits = new();
-		public List<Equipment> equipmentInventory = new ();
+		public List<Equipment> equipmentInventory = new();
 		public int equipmentCounter = 0;
 
 		public SerializableDictionary<CurrencyType, ulong> currencies = new SerializableDictionary<CurrencyType, ulong>();
@@ -188,12 +188,25 @@ public partial class GameDatas : ScriptableObject
 			public void StartTournament ()
 			{
 				hasInitTournament = true;
-
-				//TODO : design tournament matchup
 				roundsDatas = new MissionDataEnumID[3];
-				roundsDatas[0] = GameAssets.current.game.missions.Keys.ToList().RandomElement();
-				roundsDatas[1] = GameAssets.current.game.missions.Keys.ToList().RandomElement();
-				roundsDatas[2] = GameAssets.current.game.missions.Keys.ToList().RandomElement();
+
+				bool hasScriptedTournament = current.currentPlayerSave.cycleCount == 0;
+#if UNITY_EDITOR
+				if (GameConfig.current.debug.skipFTUE)
+					hasScriptedTournament = false;
+#endif
+				if (hasScriptedTournament)
+				{
+					roundsDatas[0] = FTUEManager.Instance.Cycle1TournamentMissions[0].enumID;
+					roundsDatas[1] = FTUEManager.Instance.Cycle1TournamentMissions[1].enumID;
+					roundsDatas[2] = FTUEManager.Instance.Cycle1TournamentMissions[2].enumID;
+				}
+				else
+				{
+					roundsDatas[0] = GameAssets.current.game.tournamentMissionsPool.ToList().RandomElement().enumID;
+					roundsDatas[1] = GameAssets.current.game.tournamentMissionsPool.ToList().RandomElement().enumID;
+					roundsDatas[2] = GameAssets.current.game.tournamentMissionsPool.ToList().RandomElement().enumID;
+				}
 			}
 		}
 
@@ -250,11 +263,11 @@ public partial class GameDatas : ScriptableObject
 			equipmentInventory.Remove(_data);
 		}
 
-		public EntitySavedData AddNewUnit ( EntitySavedData _newUnit)
+		public EntitySavedData AddNewUnit ( EntitySavedData _newUnit )
 		{
 			//_newUnit.name = "New Unit";
 
-			if(_newUnit.CanAddToSquad())
+			if (_newUnit.CanAddToSquad())
 				squadUnits.Add(_newUnit);
 			allBuiltUnits.Add(_newUnit);
 
@@ -542,7 +555,7 @@ public partial class GameDatas : ScriptableObject
 			try
 			{
 				JsonUtility.FromJsonOverwrite(jsonDatas, gameDatasToOverride);
-					Debug.Log("Datas Loaded with override from Json.");
+				Debug.Log("Datas Loaded with override from Json.");
 			}
 			catch (Exception e)
 			{
@@ -637,7 +650,7 @@ public partial class GameDatas : ScriptableObject
 	{
 		//meta.Initialize();
 
-		
+
 		Debug.Log("Game Datas Initialized.");
 	}
 

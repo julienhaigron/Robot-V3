@@ -53,10 +53,10 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 417b10a5886f32743823118c49c05109, type: 2}
   - {fileID: 11400000, guid: 375f382f2fe6ced4a856eff99f23c657, type: 2}
   - {fileID: 11400000, guid: 5edf076e2e7fa7f40899398bd8eacf95, type: 2}
+  m_cycle1TournamentMissions:
   - {fileID: 11400000, guid: 7d2b176a03b632347870b1b5839a68d1, type: 2}
   - {fileID: 11400000, guid: 8bc950661f8e4a04a95934b9a4f2fc57, type: 2}
   - {fileID: 11400000, guid: 4c89a94e7d2857c498bf0005d49fc66a, type: 2}
-  - {fileID: 11400000, guid: fdc7f87acacf686458108fdeea27097e, type: 2}
   playerStartingSquadUnits:
   - {fileID: 11400000, guid: 3e13ee75cad91f0488a32592d8600052, type: 2}
   - {fileID: 11400000, guid: 6f66868e0c3eb6648a54206da5b2998a, type: 2}

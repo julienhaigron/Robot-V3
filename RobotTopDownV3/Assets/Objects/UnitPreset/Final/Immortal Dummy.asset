@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Immortal Dummy
   m_EditorClassIdentifier: RTD::UnitPreset
   spreadsheetId: https://docs.google.com/spreadsheets/d/1PpT7zhUyvnxNfQoW6Z8a4ntcJ83OzwLOVkCfgDB5bX0/export?format=csv&gid=0
-  displayName: 
+  displayName: Immortal Dummy
   frame: {fileID: 11400000, guid: e4248e78ccf9fcb4796c826550740460, type: 2}
   reactor: {fileID: 11400000, guid: 3ac6affda30deee4e8b82cd8c469bd25, type: 2}
   brain: {fileID: 11400000, guid: 2261c00c52c27a646bda5aea69e4bb9b, type: 2}

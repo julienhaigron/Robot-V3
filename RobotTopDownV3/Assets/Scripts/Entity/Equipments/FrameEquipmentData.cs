@@ -70,7 +70,7 @@ public class EntitySavedData : INetworkSerializable
 	public bool CanAddToSquad ()
 	{
 		bool hasCapacity = GameDatas.current.currentPlayerSave.squadUnits.Count < GameAssets.current.game.HangarStructureUpgrade.GetCurrentMaxUnitAmount();
-		return hasCapacity && IsUnitValid();
+		return hasCapacity /*&& IsUnitValid()*/;
 	}
 
 	public bool IsUnitValid ()

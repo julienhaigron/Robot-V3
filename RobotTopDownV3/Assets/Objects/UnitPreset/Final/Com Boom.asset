@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Com Boom
   m_EditorClassIdentifier: RTD::UnitPreset
   spreadsheetId: https://docs.google.com/spreadsheets/d/1PpT7zhUyvnxNfQoW6Z8a4ntcJ83OzwLOVkCfgDB5bX0/export?format=csv&gid=0
-  displayName: 
+  displayName: Com Boom
   frame: {fileID: 11400000, guid: f0d89cda3a489574bb15359812754f17, type: 2}
   reactor: {fileID: 11400000, guid: 88f577e3846778f4dab826a73531a020, type: 2}
   brain: {fileID: 11400000, guid: b2360bdeda8a14446b4491c06619e98b, type: 2}
