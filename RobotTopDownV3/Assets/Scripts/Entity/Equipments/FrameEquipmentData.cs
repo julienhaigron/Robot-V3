@@ -87,6 +87,15 @@ public class EntitySavedData : INetworkSerializable
 		return true;
 	}
 
+	public bool IsDamaged ()
+	{
+		foreach (GameDatas.PlayerSave.Equipment ep in GetAllEquipments())
+			if (ep.isDamaged)
+				return true;
+		
+		return false;
+	}
+
 	public int GetTotalEnergyUsed ()
 	{
 		int totalEnergyUsed = 0;
