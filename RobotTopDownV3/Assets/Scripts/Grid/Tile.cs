@@ -190,6 +190,7 @@ public class Tile : MonoBehaviour
 		GridData.TileData data = GridManager.Instance.GridData.tiles[coordinates.ID];
 		Debug.Log(coordinates.ID + " : " + data.groundType + " ; " + data.wallType + " ; " + data.orientation);
 	}
+
 #endif
 
 	public Tile GetNeighbor ( HexDirection _direction )
@@ -219,7 +220,7 @@ public class Tile : MonoBehaviour
 
 	public bool CanSeeThrough ()
 	{
-		if ((m_groundType == TileGroundType.Wall) && m_wall.Health > 0)
+		if (m_groundType == TileGroundType.Wall && m_wall.Health > 0)
 			return false;
 
 		if (m_status.Contains(EntityStatusEnumID.Smoked))

@@ -112,9 +112,6 @@ public class Wall : MonoBehaviour
 		for (int i = partsParent.childCount - 1; i >= 0; i--)
 		{
 			Transform tfm = partsParent.GetChild(i);
-			/*Vector3 localPosition = tfm.localPosition;
-			tfm.parent = m_linkedTile.WallPartsParent;
-			tfm.localPosition = localPosition;*/
 			//Undo.AddComponent<WallSelector>(tfm.gameObject).Link(this);
 			tfm.gameObject.AddComponent<WallSelector>().Link(this);
 			m_wallParts.Add(tfm.gameObject);

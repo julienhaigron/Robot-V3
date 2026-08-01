@@ -29,12 +29,11 @@ public class NetworkedTurnSystem : NetworkBehaviour
 	}
 
 	[ClientRpc(RequireOwnership = false)]
-	public void EndRoundClientRPC ( bool _isPlayerOneDead, bool _isPlayerTwoDead )
+	public void EndRoundClientRPC (bool _isFinished, EndLevelPopup.GameResult _result )
 	{
-		if (_isPlayerOneDead || _isPlayerTwoDead)
+		if (_isFinished)
 		{
-            EndLevelPopup.GameResult result = _isPlayerOneDead && _isPlayerOneDead ? EndLevelPopup.GameResult.Draw : _isPlayerOneDead ? EndLevelPopup.GameResult.Loose : EndLevelPopup.GameResult.Win;
-            TurnManager.Instance.EndLevel(result);
+            TurnManager.Instance.EndLevel(_result);
 		}
 		else
 		{

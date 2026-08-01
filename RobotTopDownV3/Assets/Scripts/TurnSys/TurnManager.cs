@@ -564,7 +564,7 @@ public class TurnManager : Singleton<TurnManager>
 			if (EntityActionDisplay.SelectedDisplay != null && entityID == _selectedEntityID.Value)
 				lastRecordedAction = EntityActionDisplay.SelectedDisplay.RecordedAction;
 			if (_selectedEntityID.HasValue)
-				PlayerController.Instance.AddGhostEntityAt(entity, _specificTokenCount == -1 ? 
+				PlayerController.Instance.AddGhostEntityAt(entity, _specificTokenCount == -1 ?
 					lastRecordedPosition : GridManager.Instance.Tiles[lastRecordedAction.action.positionAtActionEndID], lastRecordedOrientation);
 		}
 
@@ -1029,41 +1029,73 @@ public class TurnManager : Singleton<TurnManager>
 	{
 		LogConsole.AddLog("EndRound", LogConsole.LogEventType.DebugSys);
 
-		//check if finish level condition (all enemy killed || all ally killed)
-		GameManager.Instance.LevelCompletionCheck(out bool _isPlayerOneDead, out bool _isPlayerTwoDead);
+		bool idGameFinished = IsGameFinished(out bool _playerOneWin, out bool _playerTwoWin);
+		EndLevelPopup.GameResult result = _playerOneWin && _playerTwoWin ? EndLevelPopup.GameResult.Draw : (GameManager.Instance.PlayerID == 0 ? _playerTwoWin : _playerOneWin) ? EndLevelPopup.GameResult.Loose : EndLevelPopup.GameResult.Win;
 		if (!GameManager.Instance.IsOnline)
 		{
-			if (_isPlayerOneDead || _isPlayerTwoDead)
-			{
-				EndLevelPopup.GameResult result = _isPlayerOneDead && _isPlayerOneDead ? EndLevelPopup.GameResult.Draw : _isPlayerOneDead ? EndLevelPopup.GameResult.Loose : EndLevelPopup.GameResult.Win;
+			if (idGameFinished)
 				EndLevel(result);
-			}
 			else
-			{
 				StartInputPhase();
-			}
 		}
 		else
 		{
 			if (m_networkedTurnSystem.IsServer && !m_networkedTurnSystem.IsHost)
 			{
-				if (_isPlayerOneDead || _isPlayerTwoDead)
-				{
-					EndLevelPopup.GameResult result = _isPlayerOneDead && _isPlayerOneDead ? EndLevelPopup.GameResult.Draw : _isPlayerOneDead ? EndLevelPopup.GameResult.Loose : EndLevelPopup.GameResult.Win;
+				if (idGameFinished)
 					EndLevel(result);
-				}
 				else
-				{
 					StartInputPhase();
-				}
 			}
-			m_networkedTurnSystem.EndRoundClientRPC(_isPlayerOneDead, _isPlayerTwoDead);
+			m_networkedTurnSystem.EndRoundClientRPC(idGameFinished, result);
 		}
 
 	}
 
+	private bool IsGameFinished ( out bool _playerOneWin, out bool _playerTwoWin )
+	{
+		switch (GameManager.Instance.CurrentMission.type)
+		{
+			case MissionData.MissionType.Extermination:
+				_playerOneWin = true;
+				_playerTwoWin = true;
+				foreach (Entity ally in GameManager.Instance.PlayersEntityAnchor[0].Entities)
+				{
+					if (!ally.Equipment.IsDead)
+						_playerTwoWin = false;
+				}
+				foreach (Entity enemy in GameManager.Instance.PlayersEntityAnchor[1].Entities)
+				{
+					if (!enemy.Equipment.IsDead)
+						_playerOneWin = false;
+				}
+
+				return !_playerOneWin && !_playerTwoWin;
+			case MissionData.MissionType.DefenseDeZone:
+				_playerOneWin = false;
+				_playerTwoWin = false;
+				return false;
+			case MissionData.MissionType.ControleDePoint:
+				_playerOneWin = false;
+				_playerTwoWin = false;
+				return false;
+			case MissionData.MissionType.Construction:
+				_playerOneWin = false;
+				_playerTwoWin = false;
+				return false;
+			case MissionData.MissionType.Sabotage:
+				_playerOneWin = false;
+				_playerTwoWin = false;
+				return false;
+			default:
+				_playerOneWin = false;
+				_playerTwoWin = false;
+				return false;
+		}
+	}
+
 	[Button]
-	public void EndLevel ( EndLevelPopup.GameResult _gameResult)
+	public void EndLevel ( EndLevelPopup.GameResult _gameResult )
 	{
 		if (currentPhase == TurnPhase.Off)
 			return;

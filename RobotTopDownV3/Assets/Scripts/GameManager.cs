@@ -241,23 +241,6 @@ public class GameManager : SingletonPersistant<GameManager>
 		return newItem;
 	}
 
-	public void LevelCompletionCheck ( out bool _isPlayerOneDead, out bool _isPlayerTwoDead )
-	{
-		_isPlayerOneDead = true;
-		_isPlayerTwoDead = true;
-		foreach (Entity enemy in m_playersEntityAnchor[0].Entities)
-		{
-			if (enemy.Equipment.IsDead == false)
-				_isPlayerOneDead = false;
-		}
-
-		foreach (Entity ally in m_playersEntityAnchor[1].Entities)
-		{
-			if (ally.Equipment.IsDead == false)
-				_isPlayerTwoDead = false;
-		}
-	}
-
 	public void EndGame ( EndLevelPopup.GameResult _gameResult )
 	{
 		GameDatas.current.currentPlayerSave.NewDay();
