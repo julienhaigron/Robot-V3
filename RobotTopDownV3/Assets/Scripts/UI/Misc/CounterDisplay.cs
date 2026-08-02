@@ -10,18 +10,11 @@ using UnityEngine;
 
 public class CounterDisplay : MonoBehaviour
 {
-	[Title("Text Refs only")] //note don't need to add the refs of the icons they are set on start
+	[Title("Text Refs only")]
 	[SerializeField] private TMP_Text[] m_counterTextArray;
-
-	public List<RectTransformAnimation> rectTfmAnimationList;
-	public List<GraphicColorAnimation> graphicColorAnimationList;
 
 	[FoldoutGroup("Particles")]
 	public bool useParticleSystems = true;
-	/*[FoldoutGroup("Particles")]
-	public ParticleImage loopUpdatePI;
-	[FoldoutGroup("Particles")]
-	public ParticleImage burstUpdatePI;*/
 	[FoldoutGroup("Particles")]
 	public ParticleSystem loopUpdatePS;
 	[FoldoutGroup("Particles")]
@@ -45,39 +38,6 @@ public class CounterDisplay : MonoBehaviour
 	public Vector2 loopUpdateMinMaxDuration = new Vector2(0.5f, 1.5f);
 	[FoldoutGroup("Value Animation Config")]
 	public bool animateOnUpdate = true;//bounce
-	[FoldoutGroup("Value Animation Config")]
-	public bool animateOnlyWhenIncreasing = true;
-	[FoldoutGroup("Value Animation Config")]
-	public bool bounceOnLoopUpdateFinished = true;
-
-	[FoldoutGroup("Value Animation Config")]
-	public bool animateColorOnUpdate = false;
-	[FoldoutGroup("Value Animation Config")]
-	[ShowIf("animateColorOnUpdate")]
-	public GraphicColorAnimation.AnimationType onBurstUpdateColorAnimation = GraphicColorAnimation.AnimationType.CustomColorOpaqueFadeToOriginalColor;
-	[FoldoutGroup("Value Animation Config")]
-	[ShowIf("animateColorOnUpdate")]
-	public GraphicColorAnimation.AnimationType onLoopUpdateColorAnimation = GraphicColorAnimation.AnimationType.CustomColorInfiniteBlink;
-	[FoldoutGroup("Value Animation Config")]
-	[ShowIf("animateColorOnUpdate")]
-	public bool useBlinkCustomColor = true;
-	[FoldoutGroup("Value Animation Config")]
-	[ShowIf("@animateColorOnUpdate && useBlinkCustomColor")]
-	public Color blinkCustomColor = ExtendedColor.HexToColor("#8ED854");
-
-	[FoldoutGroup("Value Animation Config")]
-	public bool onlyBlinkText = true;
-	[FoldoutGroup("Value Animation Config")]
-	public bool onlyShakeText = true;
-	[FoldoutGroup("Value Animation Config")]
-	public bool showCounterBubble = false;
-	[FoldoutGroup("Value Animation Config")]
-	[ShowIf("showCounterBubble")] public bool showChangeBubbleOnlyWhenIncreasing = true;
-	[FoldoutGroup("Value Animation Config")]
-	[ShowIf("showCounterBubble")] public bool bubbleShowStackedValue = true;
-	[FoldoutGroup("Value Animation Config")]
-	[ShowIf("showCounterBubble")]
-	[SerializeField] private CounterDisplayBubble m_counterBubble;
 
 	[Title("Text Config")]
 	public string defaultPrefix;
@@ -151,10 +111,6 @@ public class CounterDisplay : MonoBehaviour
 	{
 		m_textTween?.Kill(true);
 		m_currentValue = m_finalValue;
-		for (int i = 0; i < rectTfmAnimationList.Count; i++)
-		{
-			rectTfmAnimationList[i].UpdateLoopStatus();
-		}
 		ApplyTextToCounterText(m_currentValue);
 	}
 
@@ -169,7 +125,6 @@ public class CounterDisplay : MonoBehaviour
 
 		if (_useEngineeringNotation ?? useEngineerNotationPerDefault)
 			m_sb.Append(_value.ToString());
-			//m_sb.Append(MathHelper.ConvertToEngineeringNotation((long)_value));
 		else
 			m_sb.Append(_value.ToString(_stringFormat));
 
@@ -182,7 +137,6 @@ public class CounterDisplay : MonoBehaviour
 	{
 		float intervalBetweenUpdateCall = Time.unscaledTime - m_lastUpdateCallTime;
 		m_lastUpdateCallTime = Time.unscaledTime;
-		//0.1f
 
 		float diff = Mathf.Abs(_value - m_finalValue);
 		if (m_currentAndFinalValuesInitialized && diff == 0) return;
@@ -190,19 +144,11 @@ public class CounterDisplay : MonoBehaviour
 		m_isIncreasing = (_value - m_finalValue) > 0;
 		bool playPS = _playParticles ?? animateOnUpdate;
 
-		//BUBBLE
-		if (showCounterBubble)
-		{
-			if (!showChangeBubbleOnlyWhenIncreasing || m_isIncreasing)
-				m_counterBubble.ShowBubble(!bubbleShowStackedValue, _value - m_finalValue);
-		}
-
 		bool diffIsEnoughToLaunchLoopUpdate = false;
 
 		if (diff > minDiffToLoopUpdate)
 			diffIsEnoughToLaunchLoopUpdate = (diff / (Mathf.Abs(m_finalValue) + 1)) > minDiffRatioToLoopUpdate;
 
-		//BURST UPDATE
 		if (_forceBurstUpdate || ((!diffIsEnoughToLaunchLoopUpdate || forceBurstUpdate) && (_duration == null || _duration == 0f) && intervalBetweenUpdateCall > 0.1f))
 		{
 			StopAllAnimation();
@@ -217,28 +163,11 @@ public class CounterDisplay : MonoBehaviour
 						burstUpdatePS.Play();
 					}
 				}
-				/*else if (burstUpdatePI != null)
-				{
-					if (useParticleSystems && playPS && (!playPSOnlyWhenIncreasing || m_isIncreasing))
-					{
-						burstUpdatePI.Stop();
-						burstUpdatePI.Play();
-					}
-				}*/
-
-				if (!animateOnlyWhenIncreasing || m_isIncreasing)
-				{
-					DoPunchScale();
-
-					if (animateColorOnUpdate)
-						PlayColorAnimation(onBurstUpdateColorAnimation, useBlinkCustomColor ? blinkCustomColor : null);
-				}
 			}
 			_onUpdateComplete?.Invoke();
 		}
-		else //LOOP UPDATE
+		else 
 		{
-			//already in loop
 			if (TextTweenIsPlaying)
 			{
 				m_textTween.Kill();
@@ -256,7 +185,7 @@ public class CounterDisplay : MonoBehaviour
 					_onUpdateComplete?.Invoke();
 				});
 			}
-			else //startLoop
+			else
 			{
 				StopAllAnimation();
 
@@ -269,25 +198,6 @@ public class CounterDisplay : MonoBehaviour
 							loopUpdatePS.Stop();
 							loopUpdatePS.Play();
 						}
-					}
-					/*else if (loopUpdatePI != null)
-					{
-						if (useParticleSystems && playPS && (!playPSOnlyWhenIncreasing || m_isIncreasing))
-						{
-							loopUpdatePI.Stop();
-							loopUpdatePI.Play();
-						}
-					}*/
-
-					if (!animateOnlyWhenIncreasing || m_isIncreasing)
-					{
-						for (int i = 0; i < rectTfmAnimationList.Count; i++)
-						{
-							rectTfmAnimationList[i].SetScaleLoopActive(true);
-						}
-
-						if (animateColorOnUpdate)
-							PlayColorAnimation(onLoopUpdateColorAnimation, useBlinkCustomColor ? blinkCustomColor : null);
 					}
 				}
 
@@ -317,102 +227,6 @@ public class CounterDisplay : MonoBehaviour
 		{
 			if (loopUpdatePS != null && useParticleSystems && loopUpdatePS.isPlaying)
 				loopUpdatePS.Stop();
-			/*if (loopUpdatePI != null && useParticleSystems)
-				loopUpdatePI.Stop();*/
-
-			for (int i = 0; i < rectTfmAnimationList.Count; i++)
-			{
-				rectTfmAnimationList[i].SetScaleLoopActive(false);
-			}
-
-			if (animateColorOnUpdate)
-				ResetColorAnimation();
-		}
-
-		if (bounceOnLoopUpdateFinished)
-		{
-			if (!animateOnlyWhenIncreasing || m_isIncreasing)
-				DoPunchScale();
-		}
-	}
-
-	public void DoPunchScale ()
-	{
-		for (int i = 0; i < rectTfmAnimationList.Count; i++)
-		{
-			rectTfmAnimationList[i].DoPunchScale();
-		}
-	}
-
-	public void DoScale ()
-	{
-		for (int i = 0; i < rectTfmAnimationList.Count; i++)
-		{
-			rectTfmAnimationList[i].DoScale();
-		}
-	}
-
-	public void DoAnchorPos ()
-	{
-		for (int i = 0; i < rectTfmAnimationList.Count; i++)
-		{
-			rectTfmAnimationList[i].DoAnchorPos();
-		}
-	}
-
-	public void DoPunchAnchorPosition ()
-	{
-		for (int i = 0; i < rectTfmAnimationList.Count; i++)
-		{
-			rectTfmAnimationList[i].DoPunchAnchorPosition();
-		}
-	}
-
-	public void PlayColorAnimation ( GraphicColorAnimation.AnimationType _animationType, Color? _customTargetColor = null )
-	{
-		//just set enable
-		for (int i = 0; i < graphicColorAnimationList.Count; i++)
-		{
-			if (onlyBlinkText && i > 0) break;
-
-			graphicColorAnimationList[i].PlayAnimation(_animationType, null, _customTargetColor);
-		}
-	}
-
-	public void DoShakeBlink ( Color? _blinkColor = null )
-	{
-		for (int i = 0; i < graphicColorAnimationList.Count; i++)
-		{
-			if (onlyBlinkText && i > 0) break;
-
-			graphicColorAnimationList[i].PlayAnimation(GraphicColorAnimation.AnimationType.RedLimitedCountBlink, null, _blinkColor);
-		}
-
-		for (int i = 0; i < rectTfmAnimationList.Count; i++)
-		{
-			if (onlyShakeText && i > 0) break;
-
-			rectTfmAnimationList[i].DoPunchAnchorPosition();
-		}
-	}
-
-	public bool ColorAnimationIsPlaying ()
-	{
-		foreach (GraphicColorAnimation anim in graphicColorAnimationList)
-		{
-			if (anim.IsPlaying)
-				return true;
-		}
-		return false;
-	}
-
-	public void ResetColorAnimation ( float _duration = 0.5f )
-	{
-		for (int i = 0; i < graphicColorAnimationList.Count; i++)
-		{
-			if (onlyBlinkText && i > 0) break;
-
-			graphicColorAnimationList[i].ResetColor(_duration);
 		}
 	}
 
@@ -422,20 +236,6 @@ public class CounterDisplay : MonoBehaviour
 	void UpdateDebugValue ( float _value )
 	{
 		UpdateValue(_value);
-	}
-
-	[FoldoutGroup("Debug")]
-	[Button()]
-	void TestColorAnimation ( GraphicColorAnimation.AnimationType _animationType, Color? _customTargetColor = null )
-	{
-		PlayColorAnimation(_animationType, _customTargetColor);
-	}
-
-	[FoldoutGroup("Debug")]
-	[Button()]
-	void TestShakeBlink ()
-	{
-		DoShakeBlink();
 	}
 
 	private void Reset ()

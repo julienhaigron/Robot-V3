@@ -41,7 +41,7 @@ public class FlyingNumberManager : MonoBehaviour
 		public float yOffsetOnOverLapMax = 10f;
 		[Space()]
 		public Color textColor = Color.white;
-		public GraphicColorAnimation.AnimationType defaultColorAnimation = GraphicColorAnimation.AnimationType.RedLimitedCountBlink;
+		//public GraphicColorAnimation.AnimationType defaultColorAnimation = GraphicColorAnimation.AnimationType.RedLimitedCountBlink;
 		public bool useAnimationCustomColor = false;
 		public Color customColorAnimation = Color.red;
 
@@ -72,7 +72,7 @@ public class FlyingNumberManager : MonoBehaviour
 			yAddedOffsetOnOverLap = _ref.yAddedOffsetOnOverLap;
 			yOffsetOnOverLapMax = _ref.yOffsetOnOverLapMax;
 			textColor = _ref.textColor;
-			defaultColorAnimation = _ref.defaultColorAnimation;
+			//defaultColorAnimation = _ref.defaultColorAnimation;
 			useAnimationCustomColor = _ref.useAnimationCustomColor;
 			customColorAnimation = _ref.customColorAnimation;
 		}
@@ -160,19 +160,6 @@ public class FlyingNumberManager : MonoBehaviour
 	}
 	private float m_currentOverlapOffset = 0f;
 
-	/*public void ShowNumber ( float _value, CurrencyType _currencyType, bool _blink = false, bool _playPS = false, float _iconScale = 1f )
-	{
-		if (!gameObject.activeInHierarchy)
-			return;
-
-		TryHidingVisible();
-		FlyingNumber instance = GetNumberInstance(GameAssets.current.currencies[_currencyType].icon.GetHashCode());
-		instance.config = new FlyingNumberConfig(config);
-		instance.SetIconAndMergeIndex(_currencyType, _iconScale);
-
-		InstanceDoAnimation(instance, _value, _blink, _playPS);
-	}*/
-
 	public void ShowNumber ( float _value, Sprite _iconSprite, bool _blink = false, bool _playPS = false, float _iconScale = 1f )
 	{
 		if (!gameObject.activeInHierarchy)
@@ -245,7 +232,6 @@ public class FlyingNumberManager : MonoBehaviour
 				return m_flyingNumberList[i];
 		}
 
-		//when no instance usable or mergable add one
 		FlyingNumber instance = Instantiate((m_UIflyingNumberPrefab ?? m_flyingNumberPrefab), m_flyingNumberParent);
 		instance.onFinished += OnInstanceFinished;
 		m_flyingNumberList.Add(instance);
@@ -265,25 +251,5 @@ public class FlyingNumberManager : MonoBehaviour
 	[SerializeField] private bool m_testBlink;
 	[FoldoutGroup("Test")]
 	[SerializeField] private bool m_playPS;
-
-	/*[FoldoutGroup("Test")]
-	[Button("test A")]
-	void TestCurrencyA ( CurrencyType _testCurrency )
-	{
-		if (_testCurrency != CurrencyType.Unknown)
-			ShowNumber(m_testValue, _testCurrency, m_testBlink, m_playPS);
-		else
-			ShowNumber(m_testValue, m_testBlink, m_playPS);
-	}
-
-	[FoldoutGroup("Test")]
-	[Button("test B")]
-	void TestCurrencyB ( CurrencyType _testCurrency )
-	{
-		if (_testCurrency != CurrencyType.Unknown)
-			ShowNumber(m_testValue, _testCurrency, m_testBlink, m_playPS);
-		else
-			ShowNumber(m_testValue, m_testBlink, m_playPS);
-	}*/
 #endif
 }

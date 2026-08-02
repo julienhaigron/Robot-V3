@@ -17,15 +17,9 @@ public class AUIPanel : AUIWindow
 	{
 		base.OnHideFinished();
 		SetCanvasEnable(false);
-		//UIManager.Instance.OnPanelClosed(this);
 	}
 
 #if UNITY_EDITOR
-	/*protected *//*override*//* void Reset ()
-	{
-		base.Reset();
-		CreateSideContainer();
-	}*/
 
 	[FoldoutGroup("EditorBtns")]
 	[Button("Open")]

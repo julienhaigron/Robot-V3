@@ -150,7 +150,7 @@ public class GameManager : SingletonPersistant<GameManager>
 			anchor.Entities.Clear();
 		}
 
-		UIManager.Instance.ClosePanel<InGamePanel>();
+		UIManager.Instance.ClosePanel<InGamePanel>(true);
 		LoadSaveAndGoToHub(GameDatas.current.game.lastPlayerSaveSelectedID);
 	}
 

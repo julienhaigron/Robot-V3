@@ -63,14 +63,6 @@ public class FlyingNumber : MonoBehaviour
 		}
 	}
 
-	/*public void SetIconAndMergeIndex ( CurrencyType _currencyType, float _iconScale = 1f )
-	{
-		Currency c = GameAssets.current.currencies[_currencyType];
-		SetIconAndMergeIndex(c.icon, _iconScale);
-
-		m_mergeIndex = c.icon.GetHashCode();
-	}*/
-
 	public virtual void SetIconAndMergeIndex ( Sprite _iconSprite, float _iconScale = 1f )
 	{
 		if (_iconSprite != null && m_iconSpriteRdr != null)
@@ -122,9 +114,6 @@ public class FlyingNumber : MonoBehaviour
 		//SetColor
 		m_counterDisplay.TextColor = config.textColor;
 
-		//SetBlink
-		SetBlink(false);
-
 		//set alpha
 		FadeAllAlphas(0f, 0f, config.ignoreTimeScale);
 
@@ -143,8 +132,6 @@ public class FlyingNumber : MonoBehaviour
 			m_counterDisplay.burstUpdatePS.transform.localPosition = m_idlePosition;
 		if (m_counterDisplay.loopUpdatePS != null)
 			m_counterDisplay.loopUpdatePS.transform.localPosition = m_idlePosition;
-
-		//PI are not used in world
 	}
 
 	protected virtual void FadeAllAlphas ( float _alpha, float _duration, bool _ignoreTimeScale )
@@ -170,17 +157,6 @@ public class FlyingNumber : MonoBehaviour
 	protected void SetColors ()
 	{
 		m_counterDisplay.TextColor = config.textColor;
-	}
-
-	protected void SetBlink ( bool _active )
-	{
-		/*foreach (GraphicColorAnimation blink in m_counterDisplay.graphicColorAnimationList)
-		{
-			if (!_active)
-				blink.ResetColor();
-			else
-				blink.PlayAnimation(config.defaultColorAnimation, null, config.useAnimationCustomColor ? config.customColorAnimation : null);
-		}*/
 	}
 
 	public void DoAnimation ( float _newValue, float _yOffset, bool _blink, bool _playPS )
@@ -217,7 +193,6 @@ public class FlyingNumber : MonoBehaviour
 		}
 
 		SetAngle();
-		SetBlink(_blink);
 
 		bool diffIsEnoughToLaunchLoopUpdate = (_newValue > 0 && _newValue > 3) || (_newValue < 0 && _newValue < -3);
 		if (m_currentValue > 0)
@@ -246,9 +221,6 @@ public class FlyingNumber : MonoBehaviour
 		//reset all
 		ResetAtHiddenState(_yOffset, _playPS);
 
-		//set blink
-		SetBlink(_blink);
-
 		//SHOW
 		m_currentState = NumberState.Showing;
 		isMergable = true;
@@ -263,7 +235,6 @@ public class FlyingNumber : MonoBehaviour
 		else
 		{
 			m_counterDisplay.SetValueInstant(m_currentValue, true, Prefix, config.suffix, config.useEngineeringNotation, config.stringFormat);
-			m_counterDisplay.DoScale();//the scale animation is used instead to have a different animation on update (punchscale)
 
 			if (_playPS)
 				PlayBurstParticle();

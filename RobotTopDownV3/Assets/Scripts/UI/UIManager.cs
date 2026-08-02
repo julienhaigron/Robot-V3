@@ -156,41 +156,13 @@ public sealed class UIManager : SingletonPersistant<UIManager>
 		if (currentPanel != null)
 		{
 			currentPanel.CanClick = false;
-
 			currentPanel.Close(0f, _closePreviousInstant);
-			/*if (!_additive)
-			{
-				HashSet<AUIWindow> panelToClose = new(oppenedPanels);
-				foreach (AUIWindow item in panelToClose)
-				{
-					item.Close(0f, _closePreviousInstant);
-				}
-
-				//currentPanel.Close(0f, _closePreviousInstant);
-			}*/
 
 			if (_pushHistory)
 				previousPanels.Add(currentPanel.GetType());
 
-			//oppenedPanels.Add(panelsDictionary[_type]);
-
-			//wait for the end of close to show next
 			if (!_additive && !_closePreviousInstant && !_closeAndOpenSimultaneous)
-			{
-				//the next Panel will be activated OnPanelClosed
-				/*this.currentPanel.OnCloseAnimationFinishedAction += () =>
-				{
-					this.currentPanel.SetCanvasEnable(false);
-					this.panels[_type].SetCanvasEnable(true);
-					this.panels[_type].ShowWindow(_showDelay, _showInstant);
-					this.currentPanel = this.panels[_type];
-					#if DEBUG
-					if (m_showLog)
-						Debug.Log("AUIManager - Open panel [" + _type.Name + "].");
-					#endif
-				};*/
 				return (nextPanel);
-			}
 		}
 		else
 			rootPanel = nextPanel;
@@ -199,10 +171,6 @@ public sealed class UIManager : SingletonPersistant<UIManager>
 		nextPanel.ShowWindow(m_nextShowPanelDelay, m_nextShowPanelInstant);
 		currentPanel = nextPanel;
 		OnFocusedWindowChanged(_showInstant);
-/*#if UNITY_EDITOR
-		if (ApplicationManager.config.debug.showUIManagerLog)
-			Debug.Log("AUIManager - Open panel [" + _type.Name + "].");
-#endif*/
 		nextPanel = null;
 		return currentPanel;
 	}
@@ -219,18 +187,7 @@ public sealed class UIManager : SingletonPersistant<UIManager>
 		if (this.panelsDictionary.ContainsKey(_type) == false)
 			throw new Exception(this.GetType().Name + " - Do not have panel [" + _type.Name + "].");
 
-/*#if UNITY_EDITOR
-		if (ApplicationManager.config.debug.showUIManagerLog)
-			Debug.Log("AUIManager - Closing panel [" + _type.Name + "].");
-#endif*/
-
 		AUIPanel panel = this.panelsDictionary[_type];
-
-		/*if (this.previousPanels.Count == 0 && this.currentPanel != null && panel == this.currentPanel)
-		{
-			Debug.LogWarning(this.GetType().Name + " - You attempting to close manually the root panel");
-			return;
-		}*/
 
 		if (panel.CanvasEnabled)
 			panel.Close(0f, _instant);
@@ -367,10 +324,6 @@ public sealed class UIManager : SingletonPersistant<UIManager>
 
 	void OnFocusedWindowChanged ( bool _instant )
 	{
-		//Set right Currencies List
-		//FocusedAUIWindow.topCurrencyVisibleList
-		//InputManager.inputArea.CancelInput();
-
 		onFocusedWindowChanged?.Invoke();
 	}
 
