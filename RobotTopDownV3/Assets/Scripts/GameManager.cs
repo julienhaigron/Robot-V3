@@ -128,8 +128,18 @@ public class GameManager : SingletonPersistant<GameManager>
 		LoadingManager.Instance.LoadScene(_mission.map.name
 		, () =>
 		{
-			if (UIManager.Instance.currentPanel != null && UIManager.Instance.currentPanel is StartMenuPanel)
-				UIManager.Instance.ClosePanel<StartMenuPanel>(true);
+			if (UIManager.Instance.currentPanel != null)
+			{
+				if (UIManager.Instance.GetTopCanvas<HubTopCanvas>().Visible)
+					UIManager.Instance.HideTopCanvas<HubTopCanvas>();
+
+				if (UIManager.Instance.currentPanel is StartMenuPanel)
+					UIManager.Instance.ClosePanel<StartMenuPanel>(true);
+				else if (UIManager.Instance.currentPanel is MissionPanel)
+					UIManager.Instance.ClosePanel<MissionPanel>(true);
+				else if (UIManager.Instance.currentPanel is TournamentPanel)
+					UIManager.Instance.ClosePanel<TournamentPanel>(true);
+			}
 		}
 		, () =>
 		{
