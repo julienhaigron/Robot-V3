@@ -42,11 +42,6 @@ public class GridManager : Singleton<GridManager>
 		new Vector2Int(-1,  1), // 5
 	};
 
-	/*private Tile m_lastBFSOriginTile;
-	public Tile LastBFSOriginTile => m_lastBFSOriginTile;
-	private int m_lastBFSMaxDistance;
-	public int LastBFSMaxDistance => m_lastBFSMaxDistance;*/
-
 	#region Editor
 #if UNITY_EDITOR
 

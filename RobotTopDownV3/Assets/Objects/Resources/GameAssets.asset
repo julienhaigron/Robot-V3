@@ -156,16 +156,17 @@ MonoBehaviour:
     critIcon: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
     statusDisplayPrefab: {fileID: 4648805977819339727, guid: a644c3a9cc6d76d49933b728bcd7e368, type: 3}
     damageIconPerType:
-      keys: 0000000001000000020000000300000004000000050000000600000007000000
+      keys: 000000000100000002000000030000000400000005000000060000000700000008000000
       values:
+      - {fileID: -656856360, guid: c2bd876b34d633845b45c8192d7dda8b, type: 3}
+      - {fileID: 1120056339, guid: c2bd876b34d633845b45c8192d7dda8b, type: 3}
+      - {fileID: 1610691468, guid: c2bd876b34d633845b45c8192d7dda8b, type: 3}
+      - {fileID: 505274985, guid: c2bd876b34d633845b45c8192d7dda8b, type: 3}
+      - {fileID: -2063237932, guid: c2bd876b34d633845b45c8192d7dda8b, type: 3}
       - {fileID: 1886013092, guid: c2bd876b34d633845b45c8192d7dda8b, type: 3}
-      - {fileID: -472502760, guid: c2bd876b34d633845b45c8192d7dda8b, type: 3}
-      - {fileID: 0}
-      - {fileID: 0}
-      - {fileID: 0}
-      - {fileID: 0}
-      - {fileID: 0}
-      - {fileID: 0}
+      - {fileID: 617914117, guid: c2bd876b34d633845b45c8192d7dda8b, type: 3}
+      - {fileID: -948536400, guid: c2bd876b34d633845b45c8192d7dda8b, type: 3}
+      - {fileID: 9435870, guid: c2bd876b34d633845b45c8192d7dda8b, type: 3}
     tileGroundMaterials:
       keys: 00000000010000000200000003000000040000000500000006000000
       values:

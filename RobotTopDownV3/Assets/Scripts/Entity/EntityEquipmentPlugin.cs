@@ -250,11 +250,11 @@ public class EntityEquipmentPlugin : EntityPlugin
 		GridManager.Instance.BFS(from, maxDistance, null, _isThisTurn, ignoreObstacles);
 
 		int nbOfRayPerAngle = 1;
-		int totalNbOfRay = usedWeapon.Data.visionConeRange * nbOfRayPerAngle;
+		int totalNbOfRay = 60 * nbOfRayPerAngle;
 		for (int i = 0; i < totalNbOfRay; i++)
 		{
 			//calculate angle
-			float rayAngle = Mathf.LerpAngle(angle - (usedWeapon.Data.visionConeRange / 2), angle + (usedWeapon.Data.visionConeRange / 2), (float)i / (float)totalNbOfRay);
+			float rayAngle = Mathf.LerpAngle(angle - (60f / 2), angle + (60f / 2), (float)i / (float)totalNbOfRay);
 			rayAngle += 90f;
 			//get position in at angle Y at distance X from linkedEntity
 			if (rayAngle < 0)

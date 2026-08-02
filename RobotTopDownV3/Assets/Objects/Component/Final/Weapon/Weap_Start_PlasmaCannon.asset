@@ -24,7 +24,7 @@ MonoBehaviour:
   recyclingDurationAmount: 1
   reparingDurationAmount: 1
   prefab: {fileID: 0}
-  visionConeRange: 0
+  visionConeRange: 60
   attackAnimationSuccessId: 
   attackAnimationFailureId: 
   isTwoHanded: 0

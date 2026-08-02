@@ -10,7 +10,6 @@ public class WeaponEquipmentData : EntityEquipmentData
 
     //public int accuracy;
     //public SerializableDictionary<DamageType, int> baseDamages;
-    public int visionConeRange;
     public enum DistanceType
 	{
         Close,
