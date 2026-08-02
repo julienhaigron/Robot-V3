@@ -1,11 +1,11 @@
 using UnityEngine;
 using System;
 
-public class WalkOnTIleTask : Task
+public class WalkOnTileTask : Task
 {
     private readonly TileGroundType groundType;
 
-    public WalkOnTIleTask ( string _description, Func<TaskManager.TaskContext, bool> _startPredicate, TileGroundType _groundType )
+    public WalkOnTileTask ( string _description, Func<TaskManager.TaskContext, bool> _startPredicate, TileGroundType _groundType )
         : base(_description, _startPredicate)
     {
         this.groundType = _groundType;

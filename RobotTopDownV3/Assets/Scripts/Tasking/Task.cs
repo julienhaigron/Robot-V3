@@ -22,6 +22,7 @@ public abstract class Task
 	{
 		Description = _description;
 		m_startPredicate = _startPredicate;
+		IsCompleted = false;
 	}
 
 	public void SetSkipPredicate ( Func<TaskManager.TaskContext, bool> _skipPredicate )

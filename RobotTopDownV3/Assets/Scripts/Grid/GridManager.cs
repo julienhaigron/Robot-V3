@@ -306,6 +306,40 @@ public class GridManager : Singleton<GridManager>
 
 	public List<Tile> GetTilesInVisionRange ( Tile from, int maxDist, bool ignoreObstacles, bool isThisTurn )
 	{
+		List<Tile> tilesInRange = new();
+		TileCoordinates origin = from.coordinates;
+
+		for (int x = -maxDist; x <= maxDist; x++)
+		{
+			for (int y = Mathf.Max(-maxDist, -x - maxDist); y <= Mathf.Min(maxDist, -x + maxDist); y++)
+			{
+				int z = -x - y;
+
+				TileCoordinates coord = new TileCoordinates(origin.X + x, origin.Z + z, -1 );
+				Tile tile = coord.GetTile();
+
+				if (tile == null)
+					continue;
+
+				if (tile == from)
+				{
+					tilesInRange.Add(tile);
+					tile.IsVisibleFromSelectedEntity = true;
+					continue;
+				}
+
+				bool visible = ignoreObstacles || IsVisionLineClear(from, tile, isThisTurn);
+				tile.IsVisibleFromSelectedEntity = visible;
+
+				if (visible)
+					tilesInRange.Add(tile);
+			}
+		}
+
+		return tilesInRange;
+	}
+	/*public List<Tile> GetTilesInVisionRange ( Tile from, int maxDist, bool ignoreObstacles, bool isThisTurn )
+	{
 		List<Tile> visible = new();
 
 		foreach (Tile tile in m_tiles)
@@ -326,7 +360,7 @@ public class GridManager : Singleton<GridManager>
 		}
 
 		return visible;
-	}
+	}*/
 
 	public List<Tile> GetTilesInAoERange (EntityActionData.AOEType _type, Entity _caster, Tile _from, Tile _targetTile, int _minDistance, int _maxDistance, int _extraValue, bool _isThisTurn = false )
 	{

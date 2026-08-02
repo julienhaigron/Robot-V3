@@ -183,9 +183,9 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2201455186253164166}
-  - {fileID: 7655725646069541550}
   - {fileID: 7186168577646518175}
   - {fileID: 7389524019519472008}
+  - {fileID: 7655725646069541550}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
@@ -880,8 +880,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_counterTextArray:
   - {fileID: 5061616815391933833}
-  rectTfmAnimationList: []
-  graphicColorAnimationList: []
   useParticleSystems: 1
   loopUpdatePS: {fileID: 0}
   burstUpdatePS: {fileID: 0}
@@ -892,19 +890,6 @@ MonoBehaviour:
   loopUpdateTicIncrementDuration: 0.01
   loopUpdateMinMaxDuration: {x: 0.5, y: 1.5}
   animateOnUpdate: 1
-  animateOnlyWhenIncreasing: 1
-  bounceOnLoopUpdateFinished: 1
-  animateColorOnUpdate: 0
-  onBurstUpdateColorAnimation: 7
-  onLoopUpdateColorAnimation: 2
-  useBlinkCustomColor: 1
-  blinkCustomColor: {r: 0.5568628, g: 0.84705883, b: 0.32941177, a: 1}
-  onlyBlinkText: 1
-  onlyShakeText: 1
-  showCounterBubble: 0
-  showChangeBubbleOnlyWhenIncreasing: 1
-  bubbleShowStackedValue: 1
-  m_counterBubble: {fileID: 0}
   defaultPrefix: 
   defaultSuffix: 
   useEngineerNotationPerDefault: 0
@@ -6428,11 +6413,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4089774982011291642, guid: d4b64a824f89b934f85c452aaf5023bf, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: -129
       objectReference: {fileID: 0}
     - target: {fileID: 4089774982011291642, guid: d4b64a824f89b934f85c452aaf5023bf, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 0
+      value: -116
       objectReference: {fileID: 0}
     - target: {fileID: 4089774982011291642, guid: d4b64a824f89b934f85c452aaf5023bf, type: 3}
       propertyPath: m_LocalPosition.x
@@ -6464,11 +6449,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4089774982011291642, guid: d4b64a824f89b934f85c452aaf5023bf, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: -17.5
       objectReference: {fileID: 0}
     - target: {fileID: 4089774982011291642, guid: d4b64a824f89b934f85c452aaf5023bf, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: 43
       objectReference: {fileID: 0}
     - target: {fileID: 4089774982011291642, guid: d4b64a824f89b934f85c452aaf5023bf, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -6480,6 +6465,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4089774982011291642, guid: d4b64a824f89b934f85c452aaf5023bf, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8701097646464515666, guid: d4b64a824f89b934f85c452aaf5023bf, type: 3}
+      propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []

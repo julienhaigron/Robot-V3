@@ -19,12 +19,14 @@ public class DialogueHighlightTask : Task
 
         TutorialHighlightZone highlightZone = FTUEManager.Instance.RegisterdTutorialHighlightZones[highlightZoneID];
 
-        highlightZone.Show();
-        highlightZone.onInteract += CompleteTask;
         if (_context.UI.currentPanel is InGamePanel inGamePanel)
-            inGamePanel.TutoConsole.PlayDialogue(dialogue, CompleteTask);
-        else
+            inGamePanel.TutoConsole.PlayDialogue(dialogue, CompleteTask, highlightZoneID);
+		else
+		{
+            highlightZone.Show();
+            highlightZone.onInteract += CompleteTask;
             _context.Dialogue.PlayDialogue(dialogue, CompleteTask);
+		}
     }
 
     private void CompleteTask ()

@@ -80,9 +80,9 @@ public class FTUEManager : SingletonPersistant<FTUEManager>
 		TaskSequence tutoSequence = new("MicroTuto0");
 
 		//input phase
-		tutoSequence.Append(new DialogueTask("Select Unit", ( context ) => context.Game.CurrentMission != null && context.Game.CurrentMission.enumID == m_cycle1Missions[0].enumID
+		tutoSequence.Append(new DialogueHighlightTask("Select Unit", ( context ) => context.Game.CurrentMission != null && context.Game.CurrentMission.enumID == m_cycle1Missions[0].enumID
 			&& context.UI.currentPanel is InGamePanel
-		, m_firstTutoDialogues[0]));
+		, m_firstTutoDialogues[0], "squadUnitsBtns"));
 		tutoSequence.Append(new DialogueHighlightTask("Action explenation", (context) => context.Player.SelectedEntity != null
 		, m_firstTutoDialogues[1], "actionBtns"));
 		tutoSequence.Append(new DialogueHighlightTask("Action Queue explenation", (context) => context.Turn.RecordedActions.ContainsKey(firstPlayerEntityID) && context.Turn.RecordedActions[firstPlayerEntityID].Count > 0
@@ -93,6 +93,7 @@ public class FTUEManager : SingletonPersistant<FTUEManager>
 		, m_firstTutoDialogues[3], "logs"));
 
 		//input phase
+		tutoSequence.Append(new WalkOnTileTask("Wait for unit to walk on trigger tile", null, TileGroundType.Trigger));
 		tutoSequence.Append(new DialogueHighlightTask("State explenation", (context) => context.Log.Logs.ContainsKey(LogConsole.LogEventType.AttackRoll)
 		, m_firstTutoDialogues[4], "logs"));
 		tutoSequence.Append(new DialogueHighlightTask("Attack rolls explenation", ( context ) => context.Log.Logs.ContainsKey(LogConsole.LogEventType.Damage)
