@@ -712,7 +712,7 @@ public class GridManager : Singleton<GridManager>
 			{
 				foreach (RaycastHit hit in hits)
 				{
-					if (hit.collider.transform.parent.parent.parent.TryGetComponent(out Tile tile) && !tile.CanSeeThrough())
+					if (hit.collider.transform.parent.parent.parent.TryGetComponent(out Tile tile) && !tile.CanSeeThrough() && tile != _to)
 						return false;
 				}
 
