@@ -1070,27 +1070,27 @@ public class TurnManager : Singleton<TurnManager>
 						_playerOneWin = false;
 				}
 
-				return !_playerOneWin && !_playerTwoWin;
+				return _playerOneWin || _playerTwoWin;
 			case MissionData.MissionType.DefenseDeZone:
 				_playerOneWin = false;
 				_playerTwoWin = false;
-				return false;
+				return _playerOneWin || _playerTwoWin;
 			case MissionData.MissionType.ControleDePoint:
 				_playerOneWin = false;
 				_playerTwoWin = false;
-				return false;
+				return _playerOneWin || _playerTwoWin;
 			case MissionData.MissionType.Construction:
 				_playerOneWin = false;
 				_playerTwoWin = false;
-				return false;
+				return _playerOneWin || _playerTwoWin;
 			case MissionData.MissionType.Sabotage:
 				_playerOneWin = false;
 				_playerTwoWin = false;
-				return false;
+				return _playerOneWin || _playerTwoWin;
 			default:
 				_playerOneWin = false;
 				_playerTwoWin = false;
-				return false;
+				return _playerOneWin || _playerTwoWin;
 		}
 	}
 
