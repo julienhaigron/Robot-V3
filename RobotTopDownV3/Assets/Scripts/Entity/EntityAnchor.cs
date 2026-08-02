@@ -41,6 +41,11 @@ public class EntityAnchor : MonoBehaviour
 		m_spawnCoordinates.Add(newSpawn);
 	}
 
+	public void ClearSpawns ()
+	{
+		m_spawnCoordinates.Clear();
+	}
+
 	public void Init (List<EntitySavedData> _robots, int _playerID)
 	{
 		int unitCount = 0;

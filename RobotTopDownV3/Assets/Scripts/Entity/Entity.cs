@@ -11,6 +11,7 @@ public class Entity : MonoBehaviour
 	public Action onDeselect;
 	public Action<AEntityAction> onStartPerformAction;
 	public Action onEndPerformAction;
+	public Action onEndTick;
 	public Action onNewRoundBegin;
 	public Action<EntityStatusEnumID> onStatusAdded;
 	public Action<EntityStatusEnumID> onStatusRemoved;
@@ -321,6 +322,11 @@ public class Entity : MonoBehaviour
 		m_isPerforming = true;
 		m_state = _state;
 		onStartPerformAction?.Invoke(_action);
+	}
+
+	public void EndTick ()
+	{
+		onEndTick?.Invoke();
 	}
 
 	public void EndPerformAction ()

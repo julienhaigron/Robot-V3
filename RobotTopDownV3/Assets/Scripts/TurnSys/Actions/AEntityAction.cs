@@ -160,6 +160,7 @@ public abstract class AEntityAction : INetworkSerializable
 		else if (enumID != EntityActionEnumID.Unknowned && enumID != EntityActionEnumID.Wait)
 			LogConsole.AddLog(performingEntityID + " in " + (lifetime <= preparationDuration ? "preparation " : "cooldown ") + ToString(), LogConsole.LogEventType.ActionResolution);
 
+		PerformingEntity.EndTick();
 		onEndTick?.Invoke(performingEntityID, didEndAction);
 	}
 

@@ -267,7 +267,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 			{
 				if (hitInfo.transform.TryGetComponent(out Tile tile) && !tilesInRange.Contains(tile)
 					&& (ignoreObstacles || GridManager.Instance.IsVisionLineClear(m_linkedEntity.Displacement.Coordinates.GetTile(), tile, _isThisTurn))
-					&& tile.Distance > minDistance)
+					&& tile.Distance >= minDistance)
 				{
 					tilesInRange.Add(tile);
 				}

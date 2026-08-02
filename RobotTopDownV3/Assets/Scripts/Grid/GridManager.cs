@@ -69,6 +69,8 @@ public class GridManager : Singleton<GridManager>
 		m_entitiesVisions.Clear();
 		m_entitiesVisions.Add(0, new(new Dictionary<Entity, List<Tile>>()));
 		m_entitiesVisions.Add(1, new(new Dictionary<Entity, List<Tile>>()));
+		GameManager.Instance.PlayersEntityAnchor[0].ClearSpawns();
+		GameManager.Instance.PlayersEntityAnchor[1].ClearSpawns();
 
 		for (int i = 0; i < m_tiles.Length; i++)
 		{

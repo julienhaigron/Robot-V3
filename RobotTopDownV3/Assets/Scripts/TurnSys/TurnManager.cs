@@ -13,6 +13,7 @@ public class TurnManager : Singleton<TurnManager>
 	public static Action<AEntityAction> onActionSelected;
 	public static Action onStartInputPhase;
 	public static Action onEndInputPhase;
+	public static Action onEndPlayPhase;
 	public static Action onNewRoundStart;
 	public static Action onEndLevel;
 
@@ -995,6 +996,8 @@ public class TurnManager : Singleton<TurnManager>
 
 	private void EndRoundTick ()
 	{
+		onEndPlayPhase?.Invoke();
+
 		if (currentPhase != TurnPhase.Playing)
 		{
 			Debug.Log("Server ended tick " + currentTick);
