@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using Sirenix.OdinInspector;
+using DG.Tweening;
 
 public class AUIWindow : UICanvasParent
 {
@@ -10,7 +11,7 @@ public class AUIWindow : UICanvasParent
 	public Action onWindowClosed;
 
 	[SerializeField] protected GameObject m_blockClickGO;
-	[SerializeField] protected List<MoveFadeRTV> m_RectTfmVisibilityList;
+	[SerializeField] protected CanvasGroup[] m_canvasGroupVisibilityArray;
 	[SerializeField] protected bool m_overrideDurations = false;
 	[ShowIf("m_overrideDurations")]
 	[SerializeField] protected float m_showDuration = 0.3f;
@@ -36,9 +37,12 @@ public class AUIWindow : UICanvasParent
 
 	protected virtual void SetContainersVisible ( bool _visible, float? _duration = null )
 	{
-		for (int i = 0; i < m_RectTfmVisibilityList.Count; i++)
+		for(int i = 0; i < m_canvasGroupVisibilityArray.Length; i++)
 		{
-			m_RectTfmVisibilityList[i].SetVisible(_visible, _duration);
+			if (!_duration.HasValue)
+				m_canvasGroupVisibilityArray[i].alpha = _visible ? 1f : 0f;
+			else
+				m_canvasGroupVisibilityArray[i].DOFade(_visible ? 1f : 0f, _duration.Value);
 		}
 	}
 
@@ -54,11 +58,15 @@ public class AUIWindow : UICanvasParent
 		if (m_hideCoroutine != null)
 			StopCoroutine(m_hideCoroutine);
 
-		if (gameObject.activeSelf)
+		if(_delay == 0f && _instant)
+		{
+			OnHideStarted();
+			SetContainersVisible(false, null);
+			OnHideFinished();
+		}
+		else if (gameObject.activeSelf)
 			m_hideCoroutine = StartCoroutine(HideCR(_delay, _instant));
 	}
-
-
 
 	protected virtual IEnumerator HideCR ( float _delay, bool _instant )
 	{
@@ -93,7 +101,13 @@ public class AUIWindow : UICanvasParent
 		if (m_hideCoroutine != null)
 			StopCoroutine(m_hideCoroutine);
 
-		if (gameObject.activeSelf)
+		if (_delay == 0f && _instant)
+		{
+			OnShowStarted();
+			SetContainersVisible(true, null);
+			OnShowFinished();
+		}
+		else if (gameObject.activeSelf)
 			m_showCoroutine = StartCoroutine(ShowCR(_delay, _instant));
 	}
 

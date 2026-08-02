@@ -17,8 +17,6 @@ public class GameManager : SingletonPersistant<GameManager>
 	[SerializeField] private LobbyManager m_lobby;
 	public LobbyManager Lobby => m_lobby;
 
-	[SerializeField] private LoadingElement m_mainLoadingElement;
-
 	[Title("Offline")]
 	[SerializeField] private MissionData m_currentMission;
 	public MissionData CurrentMission => m_currentMission;
@@ -58,35 +56,7 @@ public class GameManager : SingletonPersistant<GameManager>
 
 	private void Start ()
 	{
-		SceneManager.sceneLoaded += OnSceneLoaded;
-
 		m_fogCanvas.gameObject.SetActive(false);
-		m_mainLoadingElement.Load();
-	}
-
-	private void OnSceneLoaded ( Scene _scene, LoadSceneMode _mode )
-	{
-		if (string.Equals(_scene.name, GameConfig.current.game.hubSceneName))
-		{
-			UIManager.Instance.ShowTopCanvas<HubTopCanvas>();
-
-			if(!GameDatas.current.currentPlayerSave.cycleData.didSelectMissions)
-				UIManager.Instance.OpenPanel<SelectMissionPanel>();
-			else if (m_returnFromMatch)
-			{
-				if(GameDatas.current.currentPlayerSave.didUnlockRetuurnToHubPopup)
-					UIManager.Instance.OpenPanel<SoloHubPanel>();
-				UIManager.Instance.OpenPopup<ReturnToHubPopup>().Init();
-			}
-			else
-				UIManager.Instance.OpenPanel<SoloHubPanel>();
-		}
-		else if (string.Equals(_scene.name, GameConfig.current.game.startScreenSceneName))
-		{
-			UIManager.Instance.OpenPanel<StartMenuPanel>();
-		}
-		else if (m_currentMission != null)
-			StartGame();
 	}
 
 	public void LoadSaveAndGoToHub ( int _saveID )
@@ -102,10 +72,29 @@ public class GameManager : SingletonPersistant<GameManager>
 			doesTuto = false;
 #endif
 
-		//TODO : add TransitionPanel
-
 		if (!doesTuto)
-			SceneManager.LoadSceneAsync(GameConfig.current.game.hubSceneName);
+		{
+			LoadingManager.Instance.LoadScene(GameConfig.current.game.hubSceneName
+			, () =>
+			{
+				UIManager.Instance.ClosePanel<StartMenuPanel>(true);
+			}
+			, () =>
+			{
+				UIManager.Instance.ShowTopCanvas<HubTopCanvas>();
+
+				if (!GameDatas.current.currentPlayerSave.cycleData.didSelectMissions)
+					UIManager.Instance.OpenPanel<SelectMissionPanel>();
+				else if (m_returnFromMatch)
+				{
+					if (GameDatas.current.currentPlayerSave.didUnlockRetuurnToHubPopup)
+						UIManager.Instance.OpenPopup<ReturnToHubPopup>().Init();
+					UIManager.Instance.OpenPanel<SoloHubPanel>();
+				}
+				else
+					UIManager.Instance.OpenPanel<SoloHubPanel>();
+			});
+		}
 		else
 		{
 			//TODO : play introduction video/animation before throwing player into gameplay
@@ -136,7 +125,16 @@ public class GameManager : SingletonPersistant<GameManager>
 			m_playerTwoEntityDatas.Add(ennemi.GetSavedData());
 		}
 
-		SceneManager.LoadSceneAsync(_mission.map.name);
+		LoadingManager.Instance.LoadScene(_mission.map.name
+		, () =>
+		{
+			if (UIManager.Instance.currentPanel != null && UIManager.Instance.currentPanel is StartMenuPanel)
+				UIManager.Instance.ClosePanel<StartMenuPanel>(true);
+		}
+		, () =>
+		{
+			StartGame();
+		});
 	}
 
 	public void GoBackToHub ()
@@ -152,19 +150,23 @@ public class GameManager : SingletonPersistant<GameManager>
 			anchor.Entities.Clear();
 		}
 
+		UIManager.Instance.ClosePanel<InGamePanel>();
 		LoadSaveAndGoToHub(GameDatas.current.game.lastPlayerSaveSelectedID);
 	}
 
 	public void GoToStartScreen ()
 	{
-		UIManager.Instance.HideTopCanvas<HubTopCanvas>();
-		SceneManager.LoadSceneAsync(GameConfig.current.game.startScreenSceneName);
+		LoadingManager.Instance.LoadScene(GameConfig.current.game.startScreenSceneName
+		, () =>
+		{
+			UIManager.Instance.HideTopCanvas<HubTopCanvas>();
+			UIManager.Instance.ClosePanel<SoloHubPanel>(true);
+		}
+		, () =>
+		{
+			UIManager.Instance.OpenPanel<StartMenuPanel>();
+		});
 	}
-
-	/*public MissionData GetRandomLevel ()
-	{
-		return GameAssets.current.game.missions.Values.ToList().RandomElement();
-	}*/
 
 
 	public void StartGame ()
@@ -252,7 +254,7 @@ public class GameManager : SingletonPersistant<GameManager>
 
 		if (_gameResult == EndLevelPopup.GameResult.Win)
 			LogConsole.AddLog("Victory", LogConsole.LogEventType.DebugSys);
-		else if(_gameResult == EndLevelPopup.GameResult.Loose)
+		else if (_gameResult == EndLevelPopup.GameResult.Loose)
 			LogConsole.AddLog("Defeat", LogConsole.LogEventType.DebugSys);
 		else
 			LogConsole.AddLog("Draw", LogConsole.LogEventType.DebugSys);

@@ -4,32 +4,27 @@ using System.Collections.Generic;
 using System.Xml.Linq;
 using UnityEngine;
 
+[DisallowMultipleComponent()]
+[RequireComponent(typeof(LoadingElement))]
 public class ObjectsPooling : SingletonPersistant<ObjectsPooling>
 {
+	[SerializeField] private LoadingElement m_loadingElement;
 	[SerializeField] private Transform m_mainParent;
 	[SerializeField] private PoolData[] m_pools;
 
 	private Dictionary<PoolData, Stack<PoolElement>> m_availablePoolElements = new();
 	private Dictionary<PoolData, List<PoolElement>> m_everyPoolElements = new();
 	private Dictionary<PoolData, Transform> m_everyPoolTfm = new();
-	private LoadingElement m_loadingElement;
 
-	/*public override void Awake ()
+	public override void Awake ()
 	{
 		base.Awake();
-		m_loadingElement = GetComponent<LoadingElement>();
 		m_loadingElement.onLoadingStarted += Load;
 	}
 
 	public void Load ()
 	{
 		m_loadingElement.onLoadingStarted -= Load;
-		StartCoroutine(LoadCoroutine());
-	}*/
-
-	public override void Awake ()
-	{
-		base.Awake();
 		StartCoroutine(LoadCoroutine());
 	}
 
@@ -61,7 +56,7 @@ public class ObjectsPooling : SingletonPersistant<ObjectsPooling>
 			yield return null;
 		}
 
-		//m_loadingElement.EndLoading(true);
+		m_loadingElement.EndLoading(true);
 	}
 
 	public static PoolElement GetElement ( PoolData _pool, Vector3 _position = default, Quaternion _rotation = default )

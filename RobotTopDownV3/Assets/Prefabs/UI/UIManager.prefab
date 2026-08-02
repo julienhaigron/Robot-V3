@@ -74,6 +74,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_firstPanelToOpen: {fileID: 5871314188434281512}
   m_topLayer: {fileID: 6869486710332118330}
+  m_loadingScreenCanvasGroup: {fileID: 6352420732726784264}
 --- !u!223 &451615098775654068
 Canvas:
   m_ObjectHideFlags: 0
@@ -352,7 +353,10 @@ PrefabInstance:
       propertyPath: m_SortingLayer
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 2349679169950997967, guid: 67b1d76e8b3c5204c87a5620116eabd4, type: 3}
+    - {fileID: 6585200402289286071, guid: 67b1d76e8b3c5204c87a5620116eabd4, type: 3}
+    - {fileID: 3076565504944158922, guid: 67b1d76e8b3c5204c87a5620116eabd4, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -469,7 +473,8 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 3473420389895744650, guid: 38f599b83b6a68a40b92dbab5df4030d, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -1381,7 +1386,8 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: -50
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 1602319238217449730, guid: 680b8f856186de74e8a5b21241e62c6b, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -1989,7 +1995,10 @@ PrefabInstance:
       propertyPath: m_SizeDelta.x
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 6585200402289286071, guid: f37dd7cc452733444b26f4b4c3dbe1e3, type: 3}
+    - {fileID: 2349679169950997967, guid: f37dd7cc452733444b26f4b4c3dbe1e3, type: 3}
+    - {fileID: 3076565504944158922, guid: f37dd7cc452733444b26f4b4c3dbe1e3, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -2209,7 +2218,8 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.x
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 3076565504944158922, guid: 5aecf39267fd3c04399644faffb72a5a, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -3837,6 +3847,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 323324818004252597, guid: 4c7a8251924df3c4e869651eddb86358, type: 3}
+      propertyPath: m_Alpha
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8364345404157484499, guid: 4c7a8251924df3c4e869651eddb86358, type: 3}
       propertyPath: m_Name
       value: TopLayer
@@ -3846,6 +3860,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4c7a8251924df3c4e869651eddb86358, type: 3}
+--- !u!225 &6352420732726784264 stripped
+CanvasGroup:
+  m_CorrespondingSourceObject: {fileID: 323324818004252597, guid: 4c7a8251924df3c4e869651eddb86358, type: 3}
+  m_PrefabInstance: {fileID: 6653218297342305981}
+  m_PrefabAsset: {fileID: 0}
 --- !u!224 &6869486710332118330 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 216642337410610055, guid: 4c7a8251924df3c4e869651eddb86358, type: 3}

@@ -5,7 +5,6 @@ using System;
 
 public class AUITopCanvas : UICanvasParent
 {
-	[SerializeField] protected MoveFadeRTV m_rectVisbility;
 	[SerializeField] protected bool m_visibleAtStart = true;
 	[SerializeField] protected bool m_setCanvasEnableWithVisibility = false;
 	protected bool m_visible;
@@ -20,28 +19,16 @@ public class AUITopCanvas : UICanvasParent
 	{
 		m_visible = _visible;
 
-		if (_visible)
-			gameObject.SetActive(true);
-
-		if (m_setCanvasEnableWithVisibility)
-		{
-			if (_visible)
-				SetCanvasEnable(true);
-			else
-				m_rectVisbility.onTweenFinishAction += DisableCanvas;
-		}
-
-		m_rectVisbility.SetVisible(_visible, _duration, _delay, _onFinishAction);
+		gameObject.SetActive(_visible);
 	}
 
 	protected virtual void ResetToHiddenState ()
 	{
-		m_rectVisbility.SetVisible(false, 0f);
+		gameObject.SetActive(false);
 	}
 
 	protected virtual void DisableCanvas ()
 	{
-		m_rectVisbility.onTweenFinishAction = null;
 		SetCanvasEnable(false);
 	}
 

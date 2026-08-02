@@ -551,7 +551,6 @@ GameObject:
   - component: {fileID: 1513715173495577050}
   - component: {fileID: 7959367595841032641}
   - component: {fileID: 8470455265519678516}
-  - component: {fileID: 1602319238217449730}
   m_Layer: 5
   m_Name: HubTopCanvas
   m_TagString: Untagged
@@ -604,7 +603,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: RTD::TopBanner
   m_canvas: {fileID: 7959367595841032641}
   m_raycaster: {fileID: 8470455265519678516}
-  m_rectVisbility: {fileID: 1602319238217449730}
   m_visibleAtStart: 0
   m_setCanvasEnableWithVisibility: 0
   m_upgradeStructureBtn: {fileID: 4243951006580360987}
@@ -668,46 +666,6 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 8183
---- !u!114 &1602319238217449730
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 882994413963191568}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c3f41b5e97f16ef47a521b71d731ca54, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: RTD::MoveFadeRTV
-  m_canvasGroup: {fileID: 0}
-  m_rectTfm: {fileID: 689159027426597952}
-  m_tweenConfig:
-    showDelay: 0
-    showDuration: 0.3
-    showEase: 6
-    showEaseCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    hideDelay: 0
-    hideDuration: 0.2
-    hideEase: 5
-    hideEaseCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    useCustomEaseCurve: 0
-  m_ignoreTimeScale: 1
-  m_setCanvasInteractibilityOnVisible: 1
-  m_specifyPoses: 0
-  hideOffset: {x: 0, y: 150, z: 0}
-  m_hiddenPos: {x: 0, y: 0, z: 0}
-  m_visiblePos: {x: 0, y: 0, z: 0}
 --- !u!1 &1026402557947446184
 GameObject:
   m_ObjectHideFlags: 0

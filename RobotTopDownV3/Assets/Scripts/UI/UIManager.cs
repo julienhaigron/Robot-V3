@@ -16,6 +16,9 @@ public sealed class UIManager : SingletonPersistant<UIManager>
 	[SerializeField] private Transform m_topLayer;
 	public Transform TopLayer => m_topLayer;
 
+	[SerializeField] private CanvasGroup m_loadingScreenCanvasGroup;
+	public CanvasGroup LoadingScreenCanvasGroup => m_loadingScreenCanvasGroup;
+
 	private static List<AUIPanel> m_panels;
 	private static List<AUIPopup> m_popups;
 	private static List<AUITopCanvas> m_topCanvases;
@@ -207,7 +210,7 @@ public sealed class UIManager : SingletonPersistant<UIManager>
 	public void ClosePanel<T> ( bool _instant = false )
 	{
 		Type type = typeof(T);
-		this.ClosePanel(type);
+		this.ClosePanel(type, _instant);
 	}
 
 	private void ClosePanel ( Type _type, bool _instant = false )
@@ -223,44 +226,16 @@ public sealed class UIManager : SingletonPersistant<UIManager>
 
 		AUIPanel panel = this.panelsDictionary[_type];
 
-		if (this.previousPanels.Count == 0 && this.currentPanel != null && panel == this.currentPanel)
+		/*if (this.previousPanels.Count == 0 && this.currentPanel != null && panel == this.currentPanel)
 		{
 			Debug.LogWarning(this.GetType().Name + " - You attempting to close manually the root panel");
 			return;
-		}
+		}*/
 
 		if (panel.CanvasEnabled)
 			panel.Close(0f, _instant);
 
 		this.previousPanels.Remove(_type);
-	}
-
-	public void ReOpenPreviousPanel ()
-	{
-		this.ClosePanel(this.currentPanel.GetType());
-
-		Type lastPanelType;
-		if (previousPanels.Count == 0)
-			lastPanelType = default(Type);
-		int last = previousPanels.Count - 1;
-		lastPanelType = previousPanels[last];
-		previousPanels.RemoveAt(last);
-
-		AUIPanel panel = this.panelsDictionary[lastPanelType];
-/*#if UNITY_EDITOR
-		if (ApplicationManager.config.debug.showUIManagerLog)
-			Debug.Log("AUIManager - Reopenig panel [" + panel.GetType().Name + "].");
-#endif*/
-
-		if (!panel.CanvasEnabled)
-		{
-			panel.gameObject.SetActive(true);
-			panel.ShowWindow(0f, false);
-		}
-		else
-			panel.CanClick = true;
-
-		this.currentPanel = panel;
 	}
 
 	public T GetPanel<T> () where T : AUIPanel
@@ -270,18 +245,6 @@ public sealed class UIManager : SingletonPersistant<UIManager>
 		if (this.panelsDictionary.ContainsKey(type) == false)
 			throw new Exception(this.GetType().Name + " - Do not have panel [" + type.Name + "].");
 		return (this.panelsDictionary[type] as T);
-	}
-
-
-	public void AddPanel ( AUIPanel _aUIPanel )
-	{
-		if (!m_panels.Contains(_aUIPanel))
-			m_panels.Add(_aUIPanel);
-	}
-
-	public void RemovePanel ( AUIPanel _aUIPanel )
-	{
-		m_panels.Remove(_aUIPanel);
 	}
 
 	#endregion
@@ -366,25 +329,6 @@ public sealed class UIManager : SingletonPersistant<UIManager>
 		return (this.popupsDictionary[type] as T);
 	}
 
-	public void CloseActivePopup ( bool _forceClose = false )
-	{
-		if (this.activePopup == null)
-			return;
-
-
-		/*if (!_forceClose && !this.activePopup.BackInputAllowed())
-		{
-#if UNITY_EDITOR
-			if (ApplicationManager.config.debug.showUIManagerLog)
-				Debug.LogWarning("AUIManger - Current popup cannot be closed from user Input");
-#endif
-			return;
-		}*/
-
-		this.activePopup.Close(0, _forceClose);
-		this.activePopup = null;
-	}
-
 	private void SetActivePopup ( AUIPopup _popup )
 	{
 		if (!m_popups.Contains(_popup))
@@ -419,28 +363,6 @@ public sealed class UIManager : SingletonPersistant<UIManager>
 			OpenPopup(_popup);
 		}
 		onChangeScreen?.Invoke();
-	}
-
-	/*public void OpenProcessingPopup ( string _message )
-	{
-		m_processingPopup.gameObject.SetActive(true);
-		m_processingPopup.message = _message;
-	}
-
-	public void CloseProcessingPopup ()
-	{
-		m_processingPopup.gameObject.SetActive(false);
-	}*/
-
-	public void InvokeNowOrAtPopupClose ( Action _action )
-	{
-		if (!HaveAnActivePopup())
-			_action?.Invoke();
-		else
-		{
-			_action += () => activePopup.onWindowClosed -= _action;
-			activePopup.onWindowClosed += _action;
-		}
 	}
 
 	void OnFocusedWindowChanged ( bool _instant )

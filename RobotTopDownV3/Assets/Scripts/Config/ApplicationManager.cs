@@ -7,7 +7,7 @@ using UnityEngine;
 public partial class ApplicationManager : SingletonPersistant<ApplicationManager>
 {
 
-	LoadingElement m_loadingElement;
+	[SerializeField] LoadingElement m_loadingElement;
 
 	[Header("Objects")]
 	[SerializeField] private GameAssets m_gameAssets;
@@ -52,7 +52,6 @@ public partial class ApplicationManager : SingletonPersistant<ApplicationManager
 	public override void Awake ()
 	{
 		base.Awake();
-		m_loadingElement = GetComponent<LoadingElement>();
 		m_loadingElement.onLoadingStarted += Load;
 	}
 
@@ -71,8 +70,6 @@ public partial class ApplicationManager : SingletonPersistant<ApplicationManager
 			return;
 		}
 
-		//ApplicationManager.config.app.UpdateFramerate();
-
 		int newWidth = Mathf.RoundToInt(Screen.width * .75f);
 		int newHeight = Mathf.RoundToInt(Screen.height * .75f);
 		Screen.SetResolution(newWidth, newHeight, Screen.fullScreen);
@@ -83,7 +80,6 @@ public partial class ApplicationManager : SingletonPersistant<ApplicationManager
 	IEnumerator LoadCoroutine ()
 	{
 		config.Initialize();
-		//assets.Initialize();
 
 #if UNITY_EDITOR
 		if (m_gameDatas.preventSave)
@@ -113,16 +109,14 @@ public partial class ApplicationManager : SingletonPersistant<ApplicationManager
         m_gameDatas.Load();
 #endif
 
-		//GameDatas.current.player.RefreshStatsValues();
 		m_loadingElement.SetProgress(0.5f);
 		yield return null;
-		//TimeManager.InitTimeManager();
 		m_loadingElement.EndLoading(true);
 	}
 
 	public void SaveApplication ()
 	{
-		if (m_loadingElement.loadingProcessFinished)
+		if (m_loadingElement.DidFinishedLoading)
 		{
 			GameDatas.Save();
 		}
