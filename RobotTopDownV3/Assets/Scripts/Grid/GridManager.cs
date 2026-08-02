@@ -289,58 +289,6 @@ public class GridManager : Singleton<GridManager>
 		return path;
 	}
 
-	/*public List<Tile> GetLine ( Tile _from, Tile _to )
-	{
-		List<Tile> results = new();
-
-		TileCoordinates a = _from.coordinates;
-		TileCoordinates b = _to.coordinates;
-
-		int N = a.DistanceTo(b);
-
-		for (int i = 0; i <= N; i++)
-		{
-			float t = N == 0 ? 0f : (float)i / N;
-
-			CubeF lerp = CubeLerp(a, b, t);
-			TileCoordinates coord = CubeRound(lerp);
-
-			Tile tile = coord.GetTile();
-			if (tile != null && !results.Contains(tile))
-				results.Add(tile);
-		}
-
-		return results;
-	}*/
-	public CubeF CubeLerp ( TileCoordinates a, TileCoordinates b, float t )
-	{
-		return new CubeF(
-			Mathf.Lerp(a.X, b.X, t),
-			Mathf.Lerp(a.Y, b.Y, t),
-			Mathf.Lerp(a.Z, b.Z, t)
-		);
-	}
-
-	public TileCoordinates CubeRound ( CubeF f )
-	{
-		int rx = Mathf.RoundToInt(f.x);
-		int ry = Mathf.RoundToInt(f.y);
-		int rz = Mathf.RoundToInt(f.z);
-
-		float dx = Mathf.Abs(rx - f.x);
-		float dy = Mathf.Abs(ry - f.y);
-		float dz = Mathf.Abs(rz - f.z);
-
-		if (dx > dy && dx > dz)
-			rx = -ry - rz;
-		else if (dy > dz)
-			ry = -rx - rz;
-		else
-			rz = -rx - ry;
-
-		return new TileCoordinates(rx, rz, -1);
-	}
-
 	public List<Entity> GetEntitiesInRange ( Tile _from, int _maxDist, bool _isThisTurn )
 	{
 		List<Entity> entitiesInRange = new();
@@ -484,13 +432,13 @@ public class GridManager : Singleton<GridManager>
 			TileCoordinates c = CubeRound(f);
 
 			Tile mainTile = c.GetTile();
-			if (mainTile == _from)
-				continue;
-
-			if (mainTile == null || mainTile.IsObstacle(_isThisTurn))
+			if (mainTile == null)
 				break;
 
-			TryAdd(c, tilesInRange, _isThisTurn);
+			tilesInRange.Add(mainTile);
+
+			if (mainTile.IsObstacle(_isThisTurn) && mainTile != _to)
+				break;
 
 			if (!isInSplitLine)
 				continue;
@@ -546,6 +494,35 @@ public class GridManager : Singleton<GridManager>
 		(-1, 1, 0), (-1, 0, 1), (0, -1, 1)
 	};
 
+	public CubeF CubeLerp ( TileCoordinates a, TileCoordinates b, float t )
+	{
+		return new CubeF(
+			Mathf.Lerp(a.X, b.X, t),
+			Mathf.Lerp(a.Y, b.Y, t),
+			Mathf.Lerp(a.Z, b.Z, t)
+		);
+	}
+
+	public TileCoordinates CubeRound ( CubeF f )
+	{
+		int rx = Mathf.RoundToInt(f.x);
+		int ry = Mathf.RoundToInt(f.y);
+		int rz = Mathf.RoundToInt(f.z);
+
+		float dx = Mathf.Abs(rx - f.x);
+		float dy = Mathf.Abs(ry - f.y);
+		float dz = Mathf.Abs(rz - f.z);
+
+		if (dx > dy && dx > dz)
+			rx = -ry - rz;
+		else if (dy > dz)
+			ry = -rx - rz;
+		else
+			rz = -rx - ry;
+
+		return new TileCoordinates(rx, rz, -1);
+	}
+
 	private TileCoordinates CubeNeighbor ( TileCoordinates c, int direction )
 	{
 		var dir = CubeDirections[direction];
@@ -555,7 +532,7 @@ public class GridManager : Singleton<GridManager>
 	void TryAdd ( TileCoordinates c, List<Tile> set, bool _isThisTurn )
 	{
 		Tile t = c.GetTile();
-		if (t != null && !t.IsObstacle(_isThisTurn))
+		if (t != null/* && !t.IsObstacle(_isThisTurn)*/)
 			set.Add(t);
 	}
 
@@ -691,32 +668,11 @@ public class GridManager : Singleton<GridManager>
 		return tilesInRange;
 	}
 
-	public bool IsVisionLineClear ( Tile _from, Tile _to, bool _isThisTurn )
+	public bool IsVisionLineClear ( Tile from, Tile to, bool isThisTurn )
 	{
-		int rayAmount = 7;
-		float distBetweenRay = Tile.innerRadius / (float)rayAmount;
-		Vector3 ab = (_to.transform.position - _from.transform.position).normalized;
-		Vector3 perp = Vector3.Cross(ab, Vector3.up).normalized;
-		for (int i = 0; i < rayAmount; i++)
-		{
-			float offset = (i - (rayAmount - 1) * 0.5f) * distBetweenRay;
-			Vector3 rayOrigin = _from.transform.position + perp * offset;
+		List<Tile> ray = GetTilesInRay(from, to, isThisTurn);
 
-			Vector3 direction = (_to.transform.position - rayOrigin).normalized;
-			float distance = Vector3.Distance(rayOrigin, _to.transform.position);
-			RaycastHit[] hits = Physics.RaycastAll(rayOrigin, direction, distance, GameConfig.current.input.wallRayCastLayer);
-			if (hits != null)
-			{
-				foreach (RaycastHit hit in hits)
-				{
-					if (hit.collider.transform.parent.parent.parent.TryGetComponent(out Tile tile) && !tile.CanSeeThrough() && tile != _to)
-						return false;
-				}
-
-			}
-		}
-
-		return true;
+		return ray.Contains(to);
 	}
 
 	public bool IsThereCoverBeween ( Entity _attacker, Entity _target, bool _didAttackerWinPFC )
