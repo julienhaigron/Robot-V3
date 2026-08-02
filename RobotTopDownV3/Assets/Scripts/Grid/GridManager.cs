@@ -304,55 +304,28 @@ public class GridManager : Singleton<GridManager>
 		return entitiesInRange;
 	}
 
-	public List<Tile> GetTilesInVisionRange ( Tile _from, int _maxDist, bool _ignoreObstacles, bool _isThisTurn )
+	public List<Tile> GetTilesInVisionRange ( Tile from, int maxDist, bool ignoreObstacles, bool isThisTurn )
 	{
-		List<Tile> tilesInRange = new();
-		tilesInRange.Add(_from);
+		List<Tile> visible = new();
 
-		for (int i = 0; i < m_tiles.Length; i++)
+		foreach (Tile tile in m_tiles)
 		{
-			m_tiles[i].Distance = int.MaxValue;
-			//m_tiles[i].UI.ResetOutline();
+			if (tile == null)
+				continue;
+
+			int distance = from.coordinates.DistanceTo(tile.coordinates);
+
+			if (distance > maxDist)
+				continue;
+
+			bool canSee = ignoreObstacles || IsVisionLineClear(from, tile, isThisTurn);
+			tile.IsVisibleFromSelectedEntity = canSee;
+
+			if (canSee)
+				visible.Add(tile);
 		}
 
-		Queue<Tile> frontier = new Queue<Tile>();
-		_from.Distance = 0;
-		frontier.Enqueue(_from);
-
-		while (frontier.Count > 0)
-		{
-			Tile current = frontier.Dequeue();
-			for (int i = 0; i < 6; i++)
-			{
-				//yield return new WaitForSeconds(1 / 60f);
-				Tile neighbor = current.GetNeighbor((HexDirection)i);
-
-				if (neighbor == null || neighbor.Distance != int.MaxValue)
-				{
-					continue;
-				}
-
-				//max distance
-				if (current.Distance + 1 > _maxDist)
-				{
-					continue;
-				}
-
-				//obstacle
-				if (_ignoreObstacles || IsVisionLineClear(_from, neighbor, _isThisTurn))
-				{
-					tilesInRange.Add(neighbor);
-					neighbor.IsVisibleFromSelectedEntity = true;
-				}
-				else
-					neighbor.IsVisibleFromSelectedEntity = false;
-
-				neighbor.Distance = current.Distance + 1;
-				frontier.Enqueue(neighbor);
-			}
-		}
-
-		return tilesInRange;
+		return visible;
 	}
 
 	public List<Tile> GetTilesInAoERange (EntityActionData.AOEType _type, Entity _caster, Tile _from, Tile _targetTile, int _minDistance, int _maxDistance, int _extraValue, bool _isThisTurn = false )
