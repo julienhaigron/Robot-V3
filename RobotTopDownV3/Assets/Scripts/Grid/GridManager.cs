@@ -92,9 +92,9 @@ public class GridManager : Singleton<GridManager>
 			{
 				m_tiles[i].SetActiveFOW(NeuronalMembraneEquipmentData.VisionTypes.Optic, true, true);
 
-				if (groundType == TileGroundType.PlayerSpawn)
+				if (groundType == TileGroundType.StaticPlayerSpawn)
 					GameManager.Instance.PlayersEntityAnchor[0].AddSpawn(m_tiles[i].coordinates, true);
-				else if (groundType == TileGroundType.EnemySpawn)
+				else if (groundType == TileGroundType.StaticEnemySpawn)
 					GameManager.Instance.PlayersEntityAnchor[1].AddSpawn(m_tiles[i].coordinates, false);
 			}
 
@@ -1156,11 +1156,13 @@ public enum TileGroundType
 	Empty,
 	Wall,
 	Note,
-	PlayerSpawn,
-	EnemySpawn,
+	StaticPlayerSpawn,
+	StaticEnemySpawn,
 	Void,
 	Cover,
-	Trigger
+	Trigger,
+	DynamicPlayerSpawn,
+	DynamicEnemySpawn,
 }
 
 public static class HexDirectionExtensions
