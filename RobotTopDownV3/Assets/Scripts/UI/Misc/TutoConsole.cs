@@ -87,7 +87,10 @@ public class TutoConsole : MonoBehaviour
 		DialogueData.Line line = m_currentDialogueData.dialogue.lines[m_currentLineIndex];
 		TutorialHighlightZone highlightZone = string.IsNullOrEmpty(m_currentDialogueData.highlightedZoneId) ? null : FTUEManager.Instance.RegisterdTutorialHighlightZones[m_currentDialogueData.highlightedZoneId];
 		if (m_currentLineIndex == 0 && highlightZone != null)
+		{
+
 			highlightZone.Show();
+		}
 
 		m_characterNameTMP.text = line.characterName;
 		m_dialogueImg.sprite = line.characterSprite;

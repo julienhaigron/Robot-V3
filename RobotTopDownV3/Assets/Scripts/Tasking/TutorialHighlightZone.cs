@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class TutorialHighlightZone : MonoBehaviour
 {
+	public static TutorialHighlightZone currentActiveHighlightZone;
 	public System.Action onInteract;
 
 	[SerializeField] private GameObject m_highlight;
@@ -15,11 +16,16 @@ public class TutorialHighlightZone : MonoBehaviour
 
 	public void Show ()
 	{
+		if (currentActiveHighlightZone != null)
+			currentActiveHighlightZone.Hide();
+
+		currentActiveHighlightZone = this;
 		m_highlight.SetActive(true);
 	}
 
 	public void Hide ()
 	{
 		m_highlight.SetActive(false);
+		currentActiveHighlightZone = null;
 	}
 }
