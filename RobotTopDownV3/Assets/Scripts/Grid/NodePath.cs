@@ -8,8 +8,8 @@ public class NodePath : MonoBehaviour
 	[SerializeField] private Mesh m_arrowMesh;
 	[SerializeField] private Tile[] m_path;
 	public Tile[] Path => m_path;
-	[SerializeField] private TileCoordinates[] m_coordonatePath;
-	public TileCoordinates[] CoordonatePath => m_coordonatePath;
+	[SerializeField, HideInInspector] private TileCoordinates[] m_coordonatePath;
+	//public TileCoordinates[] CoordonatePath => m_coordonatePath;
 
 	public Tile GetNextTile ( Tile _currentTile )
 	{
@@ -43,6 +43,22 @@ public class NodePath : MonoBehaviour
 		}
 
 		m_coordonatePath = coordonates.ToArray();
+	}
+
+	[Button]
+	private void LoadTilesFromCoordonates ()
+	{
+		List<Tile> tiles = new();
+		Tile[] allTilesInScene = FindObjectsByType<Tile>(FindObjectsSortMode.None);
+		foreach (TileCoordinates coordonate in m_coordonatePath)
+		{
+			foreach(Tile tile in allTilesInScene)
+			{
+				if (tile.coordinates.ID == coordonate.ID)
+					tiles.Add(tile);
+			}
+		}
+		m_path = tiles.ToArray();
 	}
 
 	private void OnDrawGizmosSelected ()
