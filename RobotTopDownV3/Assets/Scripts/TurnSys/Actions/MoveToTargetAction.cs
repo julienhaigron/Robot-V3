@@ -77,21 +77,21 @@ public class MoveToTargetAction : AEntityAction
 
 		for (int i = 0; i < movementAmount; i++)
 		{
-			List<Tile> tilesInRange = new();
+			/*List<Tile> tilesInRange = new();
 			foreach (string weaponId in PerformingEntity.Equipment.Weapons.Keys)
 				tilesInRange.AddRange(PerformingEntity.Equipment.GetTilesInWeaponRange(this, weaponId, true));
 
 			foreach (Tile tile in tilesInRange)
 			{
 				tile.UI.SetOutlineColor(Color.blue);
-			}
+			}*/
 			GameManager.Instance.GetEntityFromID(performingEntityID).Displacement.MoveToTile(targetTileIDs[i], null, true, movementSpeed);
 
 			yield return new WaitForSeconds(movementSpeed);
-			foreach (Tile tile in tilesInRange)
+			/*foreach (Tile tile in tilesInRange)
 			{
 				tile.UI.ResetOutline();
-			}
+			}*/
 		}
 
 		EndTick();

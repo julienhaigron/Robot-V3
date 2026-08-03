@@ -22,9 +22,9 @@ public class GridManager : Singleton<GridManager>
 
 	private struct PlayerVisionRangeInfo
 	{
-		public Dictionary<Entity, List<Tile>> entitiesVisionRange;
+		public Dictionary<Entity, HashSet<Tile>> entitiesVisionRange;
 
-		public PlayerVisionRangeInfo ( Dictionary<Entity, List<Tile>> _entitiesVisionRange = null )
+		public PlayerVisionRangeInfo ( Dictionary<Entity, HashSet<Tile>> _entitiesVisionRange = null )
 		{
 			entitiesVisionRange = _entitiesVisionRange;
 		}
@@ -67,8 +67,8 @@ public class GridManager : Singleton<GridManager>
 		//GenerateGrid(_data.height, _data.width);
 
 		m_entitiesVisions.Clear();
-		m_entitiesVisions.Add(0, new(new Dictionary<Entity, List<Tile>>()));
-		m_entitiesVisions.Add(1, new(new Dictionary<Entity, List<Tile>>()));
+		m_entitiesVisions.Add(0, new(new Dictionary<Entity, HashSet<Tile>>()));
+		m_entitiesVisions.Add(1, new(new Dictionary<Entity, HashSet<Tile>>()));
 		GameManager.Instance.PlayersEntityAnchor[0].ClearSpawns();
 		GameManager.Instance.PlayersEntityAnchor[1].ClearSpawns();
 
@@ -923,7 +923,7 @@ public class GridManager : Singleton<GridManager>
 		Tile from = _entity.Displacement.Coordinates.GetTile();
 		from.SetActiveFOW(_entity.Data.NeuronalMembraneData.visionType, false, true);
 		int range = GameConfig.current.game.rangePerVisionType[_entity.Data.NeuronalMembraneData.visionType];
-		List<Tile> tileInEntityRange = GetTilesInVisionRange(from, range, false, true);
+		HashSet<Tile> tileInEntityRange = GetTilesInVisionRange(from, range, false, true).ToHashSet();
 
 		foreach (Tile tile in tileInEntityRange)
 		{
@@ -971,9 +971,9 @@ public class GridManager : Singleton<GridManager>
 			return;
 		}
 
-		List<Tile> previousTilesInRangeList = new(m_entitiesVisions[_entity.OwnerID].entitiesVisionRange[_entity]);
+		HashSet<Tile> previousTilesInRangeList = new(m_entitiesVisions[_entity.OwnerID].entitiesVisionRange[_entity]);
 		int range = GameConfig.current.game.rangePerVisionType[_entity.Data.NeuronalMembraneData.visionType];
-		List<Tile> newTilesInRangeList = GetTilesInVisionRange(_entity.Displacement.Coordinates.GetTile(), range, false, true);
+		HashSet<Tile> newTilesInRangeList = GetTilesInVisionRange(_entity.Displacement.Coordinates.GetTile(), range, false, true).ToHashSet();
 		m_entitiesVisions[_entity.OwnerID].entitiesVisionRange[_entity] = new(newTilesInRangeList);
 
 		foreach (Tile tile in newTilesInRangeList)
