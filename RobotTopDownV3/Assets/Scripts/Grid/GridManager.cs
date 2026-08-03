@@ -92,10 +92,10 @@ public class GridManager : Singleton<GridManager>
 			{
 				m_tiles[i].SetActiveFOW(NeuronalMembraneEquipmentData.VisionTypes.Optic, true, true);
 
-				if (groundType == TileGroundType.StaticPlayerSpawn)
-					GameManager.Instance.PlayersEntityAnchor[0].AddSpawn(m_tiles[i].coordinates, true);
-				else if (groundType == TileGroundType.StaticEnemySpawn)
-					GameManager.Instance.PlayersEntityAnchor[1].AddSpawn(m_tiles[i].coordinates, false);
+				if (groundType == TileGroundType.StaticPlayerSpawn || groundType == TileGroundType.DynamicPlayerSpawn)
+					GameManager.Instance.PlayersEntityAnchor[0].AddSpawn(m_tiles[i].coordinates, true, groundType == TileGroundType.StaticPlayerSpawn);
+				else if (groundType == TileGroundType.StaticEnemySpawn || groundType == TileGroundType.DynamicPlayerSpawn)
+					GameManager.Instance.PlayersEntityAnchor[1].AddSpawn(m_tiles[i].coordinates, false, groundType == TileGroundType.StaticEnemySpawn);
 			}
 
 		}
@@ -1163,6 +1163,7 @@ public enum TileGroundType
 	Trigger,
 	DynamicPlayerSpawn,
 	DynamicEnemySpawn,
+	Structure
 }
 
 public static class HexDirectionExtensions

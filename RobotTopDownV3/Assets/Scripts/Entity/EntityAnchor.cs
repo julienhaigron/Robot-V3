@@ -9,41 +9,48 @@ public class EntityAnchor : MonoBehaviour
 	private List<Entity> m_entities = new();
     public List<Entity> Entities => m_entities;
 
-	[SerializeField] private List<Spawn> m_spawnCoordinates = new();
+	[SerializeField] private List<Spawn> m_staticSpawnCoordinates = new();
+	[SerializeField] private List<Spawn> m_dynamicSpawnCoordinates = new();
 
 	[System.Serializable]
 	public struct Spawn
 	{
 		public enum InitializationState { Success, Failure}
 
-		public Spawn(TileCoordinates _coordinates, bool _isFirstSide )
+		public Spawn(TileCoordinates _coordinates, bool _isFirstSide, bool _isStatic )
 		{
 			isFirstSide = _isFirstSide;
 			coordinates = _coordinates;
+			isStatic = _isStatic;
 			initializationState = InitializationState.Success;
 		}
 
-		public Spawn(TileCoordinates _coordinates, InitializationState _state, bool _isFirstSide )
+		public Spawn(TileCoordinates _coordinates, InitializationState _state, bool _isFirstSide, bool _isStatic )
 		{
 			isFirstSide = _isFirstSide;
 			coordinates = _coordinates;
+			isStatic = _isStatic;
 			initializationState = _state;
 		}
 
 		public bool isFirstSide;
 		public TileCoordinates coordinates;
+		public bool isStatic;
 		public InitializationState initializationState;
 	}
 
-	public void AddSpawn( TileCoordinates _coordinates, bool _isFirstSide )
+	public void AddSpawn( TileCoordinates _coordinates, bool _isFirstSide, bool _isStatic )
 	{
-		Spawn newSpawn = new Spawn(_coordinates, _isFirstSide);
-		m_spawnCoordinates.Add(newSpawn);
+		Spawn newSpawn = new Spawn(_coordinates, _isFirstSide, _isStatic);
+		if(_isStatic)
+			m_staticSpawnCoordinates.Add(newSpawn);
+		else
+			m_dynamicSpawnCoordinates.Add(newSpawn);
 	}
 
 	public void ClearSpawns ()
 	{
-		m_spawnCoordinates.Clear();
+		m_staticSpawnCoordinates.Clear();
 	}
 
 	public void Init (List<EntitySavedData> _robots, int _playerID)
@@ -57,14 +64,20 @@ public class EntityAnchor : MonoBehaviour
 
 	private Spawn GetRandomAvailableSpawnPosition ()
 	{
-		//TODO : make it random
-		foreach(Spawn spawn in m_spawnCoordinates)
+		foreach(Spawn spawn in m_staticSpawnCoordinates)
 		{
 			if (spawn.coordinates.IsOccupied(true) == null)
 				return spawn;
 		}
 
-		return new Spawn(new TileCoordinates(0, 0, 0), Spawn.InitializationState.Failure, true);
+		if(m_dynamicSpawnCoordinates != null && m_dynamicSpawnCoordinates.Count > 0)
+		{
+			Spawn randomSpawn = m_dynamicSpawnCoordinates.RandomElement();
+			m_dynamicSpawnCoordinates.Remove(randomSpawn);
+			return randomSpawn;
+		}
+
+		return new Spawn(new TileCoordinates(0, 0, 0), Spawn.InitializationState.Failure, true, false);
 	}
 
 	private void SpawnEntity ( EntitySavedData _entityData, int _entityID, int _playerID)
@@ -79,7 +92,7 @@ public class EntityAnchor : MonoBehaviour
 	{
 		Entity entity = Instantiate(_entityData.FrameData.prefab, transform);
 		m_entities.Add(entity);
-		entity.Init(_entityData, new Spawn(GridManager.Instance.Tiles[_tileID].coordinates, Spawn.InitializationState.Success, true), _entityID, _playerID);
+		entity.Init(_entityData, new Spawn(GridManager.Instance.Tiles[_tileID].coordinates, Spawn.InitializationState.Success, true, true), _entityID, _playerID);
 		onEntityAdded?.Invoke(entity);
 
 		TurnManager.Instance.AddEntityMidGame(entity, _onEndSpawn);
