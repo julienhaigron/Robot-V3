@@ -9,6 +9,9 @@ public class TutorialHighlightZone : MonoBehaviour
 	[SerializeField] private string m_id;
 	public string ID => m_id;
 
+	private bool m_isVisible = false;
+	public bool IsVisible => m_isVisible;
+
 	private void Awake ()
 	{
 		FTUEManager.Instance.AddTutorialHighlightZone(this);
@@ -20,6 +23,7 @@ public class TutorialHighlightZone : MonoBehaviour
 			currentActiveHighlightZone.Hide();
 
 		currentActiveHighlightZone = this;
+		m_isVisible = true;
 		m_highlight.SetActive(true);
 	}
 
@@ -27,5 +31,6 @@ public class TutorialHighlightZone : MonoBehaviour
 	{
 		m_highlight.SetActive(false);
 		currentActiveHighlightZone = null;
+		m_isVisible = false;
 	}
 }

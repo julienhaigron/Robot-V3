@@ -96,6 +96,10 @@ MonoBehaviour:
   m_raycaster: {fileID: 6534208298994374191}
   m_blockClickGO: {fileID: 1862865783987743521}
   m_canvasGroupVisibilityArray: []
+  m_highlighZones:
+  - {fileID: 376008201758894306}
+  - {fileID: 5778537638277423511}
+  - {fileID: 5938861900402195876}
   m_overrideDurations: 0
   m_showDuration: 0.3
   m_hideDuration: 0.3
@@ -2889,6 +2893,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1700dcea303636345b061bf6cecc070b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &5778537638277423511 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2205323360995365093, guid: 35aa8c499663558499cbd39f26fe1d0b, type: 3}
+  m_PrefabInstance: {fileID: 5668796853559226738}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a5d70cf56b41154297fd1bdab52fe59, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: RTD::TutorialHighlightZone
+--- !u!114 &5938861900402195876 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2071813999345601750, guid: 35aa8c499663558499cbd39f26fe1d0b, type: 3}
+  m_PrefabInstance: {fileID: 5668796853559226738}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a5d70cf56b41154297fd1bdab52fe59, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: RTD::TutorialHighlightZone
 --- !u!224 &8270069824971423877 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 4354607023986749943, guid: 35aa8c499663558499cbd39f26fe1d0b, type: 3}
@@ -3136,6 +3162,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 420f8a6569c75a24483053c75a3593ce, type: 3}
+--- !u!114 &376008201758894306 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8649819158064326586, guid: 420f8a6569c75a24483053c75a3593ce, type: 3}
+  m_PrefabInstance: {fileID: 9024525108482543448}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a5d70cf56b41154297fd1bdab52fe59, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: RTD::TutorialHighlightZone
 --- !u!224 &6592745127036302101 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2757239841247575117, guid: 420f8a6569c75a24483053c75a3593ce, type: 3}

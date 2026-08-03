@@ -232,7 +232,13 @@ MonoBehaviour:
   m_canvas: {fileID: 5515089855900459242}
   m_raycaster: {fileID: 6534208298994374191}
   m_blockClickGO: {fileID: 1862865783987743521}
-  m_RectTfmVisibilityList: []
+  m_canvasGroupVisibilityArray: []
+  m_highlighZones:
+  - {fileID: 9089537727268212039}
+  - {fileID: 4480341141248060768}
+  - {fileID: 5715945392643680111}
+  - {fileID: 5259867336134500395}
+  - {fileID: 8136691779481699493}
   m_overrideDurations: 0
   m_showDuration: 0.3
   m_hideDuration: 0.3
@@ -2571,6 +2577,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 4089774982011291642, guid: d4b64a824f89b934f85c452aaf5023bf, type: 3}
   m_PrefabInstance: {fileID: 4567132382515485477}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &4480341141248060768 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 93705002080302661, guid: d4b64a824f89b934f85c452aaf5023bf, type: 3}
+  m_PrefabInstance: {fileID: 4567132382515485477}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a5d70cf56b41154297fd1bdab52fe59, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: RTD::TutorialHighlightZone
 --- !u!1001 &5310347912886507118
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2672,6 +2689,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d4b64a824f89b934f85c452aaf5023bf, type: 3}
+--- !u!114 &5259867336134500395 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 93705002080302661, guid: d4b64a824f89b934f85c452aaf5023bf, type: 3}
+  m_PrefabInstance: {fileID: 5310347912886507118}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a5d70cf56b41154297fd1bdab52fe59, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: RTD::TutorialHighlightZone
 --- !u!224 &8175134930767335828 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 4089774982011291642, guid: d4b64a824f89b934f85c452aaf5023bf, type: 3}
@@ -3186,6 +3214,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d4b64a824f89b934f85c452aaf5023bf, type: 3}
+--- !u!114 &5715945392643680111 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 93705002080302661, guid: d4b64a824f89b934f85c452aaf5023bf, type: 3}
+  m_PrefabInstance: {fileID: 5629488810462204202}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a5d70cf56b41154297fd1bdab52fe59, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: RTD::TutorialHighlightZone
 --- !u!224 &8565347941533013712 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 4089774982011291642, guid: d4b64a824f89b934f85c452aaf5023bf, type: 3}
@@ -3428,6 +3467,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 4089774982011291642, guid: d4b64a824f89b934f85c452aaf5023bf, type: 3}
   m_PrefabInstance: {fileID: 8189723508292809440}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &8136691779481699493 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 93705002080302661, guid: d4b64a824f89b934f85c452aaf5023bf, type: 3}
+  m_PrefabInstance: {fileID: 8189723508292809440}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a5d70cf56b41154297fd1bdab52fe59, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: RTD::TutorialHighlightZone
 --- !u!1001 &8941198152078709260
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3800,3 +3850,14 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 4089774982011291642, guid: d4b64a824f89b934f85c452aaf5023bf, type: 3}
   m_PrefabInstance: {fileID: 9180709149547772674}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &9089537727268212039 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 93705002080302661, guid: d4b64a824f89b934f85c452aaf5023bf, type: 3}
+  m_PrefabInstance: {fileID: 9180709149547772674}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a5d70cf56b41154297fd1bdab52fe59, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: RTD::TutorialHighlightZone

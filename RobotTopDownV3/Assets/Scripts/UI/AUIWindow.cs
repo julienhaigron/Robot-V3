@@ -12,6 +12,7 @@ public class AUIWindow : UICanvasParent
 
 	[SerializeField] protected GameObject m_blockClickGO;
 	[SerializeField] protected CanvasGroup[] m_canvasGroupVisibilityArray;
+	[SerializeField] private TutorialHighlightZone[] m_highlighZones; 
 	[SerializeField] protected bool m_overrideDurations = false;
 	[ShowIf("m_overrideDurations")]
 	[SerializeField] protected float m_showDuration = 0.3f;
@@ -48,6 +49,11 @@ public class AUIWindow : UICanvasParent
 
 	public virtual void Close ( float _delay = 0f, bool _instant = false )
 	{
+		foreach(TutorialHighlightZone zone in m_highlighZones)
+		{
+			if (zone.IsVisible)
+				zone.Hide();
+		}
 		HideWindow(_delay, _instant);
 	}
 

@@ -245,7 +245,9 @@ MonoBehaviour:
   m_canvas: {fileID: 5515089855900459242}
   m_raycaster: {fileID: 6534208298994374191}
   m_blockClickGO: {fileID: 1862865783987743521}
-  m_RectTfmVisibilityList: []
+  m_canvasGroupVisibilityArray: []
+  m_highlighZones:
+  - {fileID: 8836442727768938574}
   m_overrideDurations: 0
   m_showDuration: 0.3
   m_hideDuration: 0.3
@@ -7000,6 +7002,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 4089774982011291642, guid: d4b64a824f89b934f85c452aaf5023bf, type: 3}
   m_PrefabInstance: {fileID: 8929989229365964299}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &8836442727768938574 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 93705002080302661, guid: d4b64a824f89b934f85c452aaf5023bf, type: 3}
+  m_PrefabInstance: {fileID: 8929989229365964299}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a5d70cf56b41154297fd1bdab52fe59, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: RTD::TutorialHighlightZone
 --- !u!1001 &9084733517285972060
 PrefabInstance:
   m_ObjectHideFlags: 0
