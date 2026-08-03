@@ -44,4 +44,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3e49b1a0b441b504e9376ce0a5da1756, type: 3}
   m_Name: 
   m_EditorClassIdentifier: RTD::NodePath
+  m_arrowMesh: {fileID: 4630422319408697161, guid: d9fed3dbfffa78f4d9c46919743dea8e, type: 3}
   m_path: []
