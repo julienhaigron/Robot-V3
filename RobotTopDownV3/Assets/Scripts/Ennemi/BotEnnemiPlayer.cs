@@ -49,7 +49,7 @@ public class BotEnnemiPlayer : MonoBehaviour
 					thisActionPath.Add(lastDestination.coordinates.ID);
 				}
 				movementAction.targetTileIDs = thisActionPath.ToArray();
-				TurnManager.Instance.AddAction(_entity.ID, movementAction, Entity.EntityState.Patroling);
+				TurnManager.Instance.AddAction(_entity.ID, movementAction, Entity.EntityState.NoAIChange);
 
 				i += movementAction.TotalDuration;
 			}
