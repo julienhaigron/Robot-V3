@@ -76,7 +76,7 @@ public class Entity : MonoBehaviour
 	[SerializeField, ReadOnly] private bool m_isPerforming = false;
 
 	public int ID;
-	public int PlayerOwnerID;
+	//public int PlayerOwnerID;
 
 	private bool m_isVisible = false;
 	public bool IsVisible => m_isVisible;

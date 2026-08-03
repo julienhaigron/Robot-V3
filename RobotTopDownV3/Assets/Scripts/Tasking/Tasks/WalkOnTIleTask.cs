@@ -13,7 +13,7 @@ public class WalkOnTileTask : Task
 
     private void OnAnyEntityWalkOnTile (Entity _walkingEntity)
 	{
-        if (_walkingEntity.PlayerOwnerID == GameManager.Instance.PlayerID && _walkingEntity.Displacement.Coordinates.GetTile().GroundType == groundType)
+        if (_walkingEntity.OwnerID == GameManager.Instance.PlayerID && _walkingEntity.Displacement.Coordinates.GetTile().GroundType == groundType)
 		{
             EntityDisplacementPlugin.onAnyEntityMovement -= OnAnyEntityWalkOnTile;
             Complete();

@@ -325,8 +325,15 @@ public class EntityAIPlugin : EntityPlugin
 
 	private List<Entity> VisionCheck ( AEntityAction _action, bool _isThisTurn = true )
 	{
+		m_entitiesInVisionRange.Clear();
 		int range = GameConfig.current.game.rangePerVisionType[m_linkedEntity.Data.NeuronalMembraneData.visionType];
-		m_entitiesInVisionRange = GridManager.Instance.GetEntitiesInRange(m_linkedEntity.Displacement.Coordinates.GetTile(), range, _isThisTurn);
+		HashSet<Tile> tilesInRange = GridManager.Instance.EntitiesVisions[m_linkedEntity.OwnerID].entitiesVisionRange[m_linkedEntity];
+		foreach(Tile tile in tilesInRange)
+		{
+			if(tile.TryGetEntity(_isThisTurn, out Entity entity))
+				m_entitiesInVisionRange.Add(entity);
+		}
+		//m_entitiesInVisionRange = GridManager.Instance.GetEntitiesInRange(m_linkedEntity.Displacement.Coordinates.GetTile(), range, _isThisTurn);
 
 		return m_entitiesInVisionRange;
 	}
