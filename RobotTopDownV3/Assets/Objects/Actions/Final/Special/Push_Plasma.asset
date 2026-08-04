@@ -47,7 +47,6 @@ MonoBehaviour:
   baseDamages:
     keys: 
     values: 
-  appliableStatus: []
   statusHitProbability: 1
   passiveEffects:
   - enumID: 11
