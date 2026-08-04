@@ -47,7 +47,6 @@ MonoBehaviour:
   baseDamages:
     keys: 
     values: 
-  appliableStatus: []
   statusHitProbability: 0
   passiveEffects: []
   invocatedEntity: {fileID: 0}

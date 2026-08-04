@@ -47,8 +47,6 @@ MonoBehaviour:
   baseDamages:
     keys: 01000000
     values: 05000000
-  appliableStatus:
-  - {fileID: 11400000, guid: 8e5bfd61c7b1163409a1714c5cc52df9, type: 2}
   statusHitProbability: 1
   passiveEffects:
   - enumID: 2
