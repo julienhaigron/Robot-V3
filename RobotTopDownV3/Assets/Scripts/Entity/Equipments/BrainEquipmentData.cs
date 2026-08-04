@@ -29,8 +29,8 @@ public class BrainEquipmentData : EntityEquipmentData
         description.Add(new() { ID = SecondaryStat.StatType.MeleeEvasion, title = "Melee Evasion", floatValue = meleeEvasion, stringValue = (meleeEvasion * 100f) + " %"});
         description.Add(new() { ID = SecondaryStat.StatType.DistanceAccuracy, title = "Distance Accuracy", floatValue = distanceAccuracy, stringValue = (distanceAccuracy * 100f) + " %"});
         description.Add(new() { ID = SecondaryStat.StatType.DistanceEvasion, title = "Distance Evasion", floatValue = distanceEvasion, stringValue = (distanceEvasion * 100f) + " %"});
-        string allStatesInString = "";
-        /*for (int i = 0; i < knownedStates.Length; i++)
+        /*string allStatesInString = "";
+        for (int i = 0; i < knownedStates.Length; i++)
             allStatesInString += knownedStates[i].ToString() + (i+1 < knownedStates.Length ? ", " : "");
         description.Add(new() { ID = SecondaryStat.StatType.States, title = "Knowned States", floatValue = 0, stringValue = allStatesInString });*/
 

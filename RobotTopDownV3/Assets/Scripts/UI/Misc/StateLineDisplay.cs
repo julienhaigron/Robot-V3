@@ -23,7 +23,7 @@ public class StateLineDisplay :
 	private StateLineSlot m_originalSlot; 
 	private StateLineSlot m_hoveredSlot;
 
-	private bool m_dropSucceeded;
+	//private bool m_dropSucceeded;
 	private TurnManager.RecordedAction m_recordedAction;
 
 	/*private void Awake ()
@@ -65,7 +65,7 @@ public class StateLineDisplay :
 
 	public void OnBeginDrag ( PointerEventData eventData )
 	{
-		m_dropSucceeded = false;
+		//m_dropSucceeded = false;
 
 		m_originalParent = transform.parent;
 
@@ -126,7 +126,7 @@ public class StateLineDisplay :
 
 		slot.SetDisplay(this);
 
-		m_dropSucceeded = true;
+		//m_dropSucceeded = true;
 
 		OnDnDropEnded(slot);
 	}

@@ -22,7 +22,7 @@ public class PriorityQueueActionDisplay :
     private PriorityQueueActionSlot m_originalSlot;
 	public PriorityQueueActionSlot OriginalSlot => m_originalSlot;
 
-	private bool m_dropSucceeded;
+	//private bool m_dropSucceeded;
 	private EntityActionQueue m_queue;
 
 	private EntityActionEnumID m_actionEnumID;
@@ -51,7 +51,7 @@ public class PriorityQueueActionDisplay :
 
 	public void OnBeginDrag ( PointerEventData eventData )
 	{
-		m_dropSucceeded = false;
+		//m_dropSucceeded = false;
 
 		m_originalParent = transform.parent;
 
@@ -99,7 +99,7 @@ public class PriorityQueueActionDisplay :
 		m_queue.Move(this, slot);
 		//slot.SetDisplay(this);
 
-		m_dropSucceeded = true;
+		//m_dropSucceeded = true;
 
 		OnDnDropEnded(slot);
 	}

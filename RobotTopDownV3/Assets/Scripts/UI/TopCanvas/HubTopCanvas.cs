@@ -120,7 +120,6 @@ public class HubTopCanvas : AUITopCanvas
 					displayPair.Value.Hide();
 
 			EntityEquipmentData.EntityFaction selectedFaction = UIManager.Instance.GetPanel<ShopPanel>().CurrentFaction;
-			int percentage = 0;
 
 			switch (selectedFaction)
 			{
@@ -136,7 +135,8 @@ public class HubTopCanvas : AUITopCanvas
 			}
 			m_upgradeStructureBtn.gameObject.SetActive(true);
 			m_shopFactionCurrencyDisplay.Show();
-			/*m_factionProgressionTMP.text = percentage + " %";
+			/*int percentage = 0;
+			m_factionProgressionTMP.text = percentage + " %";
 			m_factionProgressionFill.fillAmount = (float)percentage / 100f;*/
 		}
 		else

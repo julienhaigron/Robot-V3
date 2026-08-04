@@ -73,7 +73,7 @@ public class Entity : MonoBehaviour
 
 	[SerializeField, ReadOnly] private EntityActionData m_lastActionPerformed;
 	public EntityActionData LastActionPerformedData => m_lastActionPerformed == null ? GameConfig.current.game.defaultStartAction : m_lastActionPerformed;
-	[SerializeField, ReadOnly] private bool m_isPerforming = false;
+	//[SerializeField, ReadOnly] private bool m_isPerforming = false;
 
 	private HashSet<EntityActionEnumID> m_usedActionsThisGame = new();
 	public HashSet<EntityActionEnumID> UsedActionsThisGame => m_usedActionsThisGame;
@@ -331,7 +331,7 @@ public class Entity : MonoBehaviour
 		if (_action.Data.type != EntityActionData.ActionType.Rotation)
 			m_lastActionPerformed = _action.Data;
 
-		m_isPerforming = true;
+		//m_isPerforming = true;
 		m_state = _state;
 		onStartPerformAction?.Invoke(_action);
 	}
@@ -343,7 +343,7 @@ public class Entity : MonoBehaviour
 
 	public void EndPerformAction ()
 	{
-		m_isPerforming = true;
+		//m_isPerforming = false;
 		onEndPerformAction?.Invoke();
 	}
 

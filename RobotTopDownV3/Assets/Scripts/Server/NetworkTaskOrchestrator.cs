@@ -70,8 +70,9 @@ public class NetworkTaskOrchestrator : NetworkBehaviour
     }*/
 
     //call this when implementing
-    [ServerRpc(RequireOwnership = false)]
-    public void NotifyTaskEndToServerRPC ( string _requestId, ServerRpcParams _rpcParams = default )
+    //[ServerRpc(RequireOwnership = false)]
+    [Rpc(SendTo.Server)]
+    public void NotifyTaskEndToServerRPC ( string _requestId, RpcParams _rpcParams = default )
     {
         ulong clientId = _rpcParams.Receive.SenderClientId;
 

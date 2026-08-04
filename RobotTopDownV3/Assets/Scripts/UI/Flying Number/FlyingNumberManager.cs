@@ -243,13 +243,4 @@ public class FlyingNumberManager : MonoBehaviour
 		if (ShowOrIdleCount == 0)
 			m_currentOverlapOffset = 0f;
 	}
-
-#if UNITY_EDITOR
-	[FoldoutGroup("Test")]
-	[SerializeField] private float m_testValue = 1f;
-	[FoldoutGroup("Test")]
-	[SerializeField] private bool m_testBlink;
-	[FoldoutGroup("Test")]
-	[SerializeField] private bool m_playPS;
-#endif
 }

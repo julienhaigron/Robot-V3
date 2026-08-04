@@ -90,6 +90,7 @@ public class LobbySelectionPanel : AUIPanel
                 }
                 catch (Exception e)
                 {
+                    Debug.Log("Error, probably client crash: " + e);
                     // do nothing - assuming this is a port clash
                     continue;
                 }

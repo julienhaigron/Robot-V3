@@ -6,9 +6,9 @@ using System.Linq;
 
 public class NetworkedTurnSystem : NetworkBehaviour
 {
-
-	[ClientRpc(RequireOwnership = false)]
-	public void StartPlayPhaseClientRPC ( TurnManager.RecordedEntityActionsContainer[] _entitiesRecordedActions )
+    //[ClientRpc(RequireOwnership = false)]
+    [Rpc(SendTo.ClientsAndHost)]
+    public void StartPlayPhaseClientRPC ( TurnManager.RecordedEntityActionsContainer[] _entitiesRecordedActions )
 	{
 		for (int i = 0; i < _entitiesRecordedActions.Length; i++)
 		{
@@ -28,8 +28,9 @@ public class NetworkedTurnSystem : NetworkBehaviour
         TurnManager.Instance.PlayThisRoundActions();
 	}
 
-	[ClientRpc(RequireOwnership = false)]
-	public void EndRoundClientRPC (bool _isFinished, EndLevelPopup.GameResult _result )
+    //[ClientRpc(RequireOwnership = false)]
+    [Rpc(SendTo.ClientsAndHost)]
+    public void EndRoundClientRPC (bool _isFinished, EndLevelPopup.GameResult _result )
 	{
 		if (_isFinished)
 		{

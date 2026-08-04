@@ -32,7 +32,8 @@ public class OnlinePlayerInstance : NetworkBehaviour
 		GameManager.Instance.Lobby.AddPlayerInstance(this, IsOwner);
 	}
 
-	[ClientRpc(RequireOwnership = false)]
+	//[ClientRpc(RequireOwnership = false)]
+	[Rpc(SendTo.ClientsAndHost)]
 	public void SendPlayerInfosClientRPC(int _connectionIndex, PlayerSettingsInfo _infos )
 	{
 		GameManager.Instance.Lobby.Players[_connectionIndex].infos = _infos;
@@ -40,8 +41,9 @@ public class OnlinePlayerInstance : NetworkBehaviour
 	}
 
 
-    [ServerRpc(RequireOwnership = false)]
-    public void EndInputPhaseServerRPC ( ulong _senderPlayerID, TurnManager.RecordedEntityActionsContainer[] _entitiesRecordedActions )
+	//[ServerRpc(RequireOwnership = false)]
+	[Rpc(SendTo.Server)]
+	public void EndInputPhaseServerRPC ( ulong _senderPlayerID, TurnManager.RecordedEntityActionsContainer[] _entitiesRecordedActions )
     {
         if (Self.OwnerClientId != _senderPlayerID)
         {
