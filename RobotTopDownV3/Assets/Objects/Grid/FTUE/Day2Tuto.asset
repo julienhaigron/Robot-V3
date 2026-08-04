@@ -15,9 +15,9 @@ MonoBehaviour:
   width: 30
   height: 30
   tiles:
-  - groundType: 9
-    wallType: 0
-    orientation: 0
+  - groundType: 1
+    wallType: 8
+    orientation: 5
   - groundType: 1
     wallType: 1
     orientation: 0
@@ -1779,7 +1779,7 @@ MonoBehaviour:
   - groundType: 0
     wallType: 0
     orientation: 0
-  - groundType: 7
+  - groundType: 0
     wallType: 0
     orientation: 0
   - groundType: 1
@@ -1866,7 +1866,7 @@ MonoBehaviour:
   - groundType: 0
     wallType: 0
     orientation: 0
-  - groundType: 7
+  - groundType: 0
     wallType: 0
     orientation: 0
   - groundType: 1
@@ -1950,7 +1950,7 @@ MonoBehaviour:
   - groundType: 0
     wallType: 0
     orientation: 0
-  - groundType: 7
+  - groundType: 0
     wallType: 0
     orientation: 0
   - groundType: 0
@@ -1993,7 +1993,7 @@ MonoBehaviour:
     wallType: 0
     orientation: 0
   - groundType: 1
-    wallType: 1
+    wallType: 0
     orientation: 3
   - groundType: 5
     wallType: 0
@@ -2350,7 +2350,7 @@ MonoBehaviour:
     wallType: 1
     orientation: 0
   - groundType: 1
-    wallType: 7
+    wallType: 15
     orientation: 0
   - groundType: 5
     wallType: 0
@@ -2599,8 +2599,8 @@ MonoBehaviour:
     wallType: 0
     orientation: 0
   - groundType: 1
-    wallType: 0
-    orientation: 0
+    wallType: 15
+    orientation: 1
   - groundType: 1
     wallType: 7
     orientation: 4
@@ -2617,8 +2617,8 @@ MonoBehaviour:
     wallType: 0
     orientation: 0
   - groundType: 1
-    wallType: 4
-    orientation: 3
+    wallType: 15
+    orientation: 5
   - groundType: 1
     wallType: 7
     orientation: 2
@@ -2686,8 +2686,8 @@ MonoBehaviour:
     wallType: 1
     orientation: 0
   - groundType: 1
-    wallType: 1
-    orientation: 0
+    wallType: 10
+    orientation: 2
   - groundType: 1
     wallType: 1
     orientation: 0
