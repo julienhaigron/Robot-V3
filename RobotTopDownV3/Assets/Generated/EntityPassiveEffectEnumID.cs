@@ -28,6 +28,7 @@ public enum EntityPassiveEffectEnumID
 	MaxAoERangeUp,
 	DoubleDamage,
 	QuickDraw,
+	ApplyDoomStatus,
 	//#END#ENTITYPASSIVEEFFECTENUMID#//
 
 }
