@@ -19,10 +19,12 @@ MonoBehaviour:
   afterMissionDialogue: {fileID: 0}
   map: {fileID: 11400000, guid: 1199de602dbcd784f8123cfdb98a47ed, type: 2}
   enemies:
-  - {fileID: 11400000, guid: 3cea4ca1d17080547a35225eb12892eb, type: 2}
+  - {fileID: 11400000, guid: 1c85df873b4fc1e439a591aa8186b838, type: 2}
   type: 0
   currencyRewards:
-    keys: 01000000
-    values: 1e00000000000000
-  equipmentRewards: []
+    keys: 
+    values: 
+  equipmentRewards:
+  - {fileID: 11400000, guid: 8d685cbde0310b841b0827252aac0531, type: 2}
+  - {fileID: 11400000, guid: 3499e7ddca115c449b1adb941d14e2e7, type: 2}
   unitReward: []

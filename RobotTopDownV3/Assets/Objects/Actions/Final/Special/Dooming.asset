@@ -48,7 +48,13 @@ MonoBehaviour:
     keys: 
     values: 
   statusHitProbability: 1
-  passiveEffects: []
+  passiveEffects:
+  - enumID: 25
+    conditionType: 0
+    targetType: 1
+    aoeType: 0
+    centerType: 0
+    effectRange: {x: -1, y: -1}
   invocatedEntity: {fileID: 0}
   invocatedItem: {fileID: 0}
   invocationCountLimit: 1
