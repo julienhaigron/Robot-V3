@@ -440,7 +440,8 @@ public class EntityActionData : AParsableScriptableObject
 		foreach(AEntityPassiveEffect.PassiveEffectContainer pe in passiveEffects)
 		{
 			if(Condition.UseConditionPredicate(_action, _performingEntity, _targetEntity, pe.conditionType)
-				&& GameAssets.current.game.entityEffects[pe.enumID] is ApplyStatusPassiveEffect applyStatusPassiveEffect)
+				&& GameAssets.current.game.entityEffects[pe.enumID] is ApplyStatusPassiveEffect applyStatusPassiveEffect
+				&& GameAssets.current.game.entityStatus[applyStatusPassiveEffect.statusApplied])
 				appliedStatuses.Add(GameAssets.current.game.entityStatus[applyStatusPassiveEffect.statusApplied]);
 		}
 

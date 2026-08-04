@@ -76,7 +76,10 @@ public class AttackAction : AEntityAction
 					attackInfo.areStatusesSuccess = new bool[attackInfo.statusIds.Length];
 					for (int i = 0; i < attackInfo.statusIds.Length; i++)
 					{
-						attackInfo.areStatusesSuccess[i] = PerformingEntity.Equipment.StatusRoll(targetEntity, GameAssets.current.game.entityStatus[(EntityStatusEnumID)attackInfo.statusIds[i]]
+						if (!appliedStatuses[i].doesNeedRoll)
+							attackInfo.areStatusesSuccess[i] = true;
+						else
+							attackInfo.areStatusesSuccess[i] = PerformingEntity.Equipment.StatusRoll(targetEntity, GameAssets.current.game.entityStatus[(EntityStatusEnumID)attackInfo.statusIds[i]]
 							, this, GameAssets.current.equipments[linkedEquipmentId]);
 					}
 
