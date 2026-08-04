@@ -48,6 +48,7 @@ public class Wall : MonoBehaviour
 		VerticalReverseYAngle,
 		XCross,
 		LnYAngle,
+		TriWall,
 		Total
 	}
 	//TODO :
