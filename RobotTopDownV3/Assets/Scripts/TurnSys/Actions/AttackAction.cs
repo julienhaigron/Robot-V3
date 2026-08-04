@@ -69,9 +69,10 @@ public class AttackAction : AEntityAction
 
 				if (attackInfo.isAttackSuccessfull)
 				{
-					attackInfo.statusIds = new short[Data.appliableStatus.Length];
-					for (int i = 0; i < Data.appliableStatus.Length; i++)
-						attackInfo.statusIds[i] = (short)Data.appliableStatus[i].enumID;
+					List<AEntityStatus> appliedStatuses = Data.GetAppliedStatuses(this, PerformingEntity, targetEntity);
+					attackInfo.statusIds = new short[appliedStatuses.Count];
+					for (int i = 0; i < appliedStatuses.Count; i++)
+						attackInfo.statusIds[i] = (short)appliedStatuses[i].enumID;
 					attackInfo.areStatusesSuccess = new bool[attackInfo.statusIds.Length];
 					for (int i = 0; i < attackInfo.statusIds.Length; i++)
 					{

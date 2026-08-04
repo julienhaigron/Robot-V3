@@ -20,7 +20,7 @@ public class Condition
 	public static bool UseConditionPredicate ( AEntityAction _action, Entity _entity, Entity _targetEntity, ConditionType _conditionType )
 	{
 		if (_action == null || _entity == null)
-			return false;
+			return _conditionType == ConditionType.Noone;
 
 		bool isLive = TurnManager.Instance.currentPhase != TurnManager.TurnPhase.Recording;
 

@@ -9,10 +9,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0da801fdaaf5bb449b09c27fde47641b, type: 3}
+  m_Script: {fileID: 11500000, guid: 46f2307e71bc86d4d86071ca004df873, type: 3}
   m_Name: Doom
-  m_EditorClassIdentifier: 
-  enumID: 0
-  duration: 1
+  m_EditorClassIdentifier: RTD::DoomStatus
+  enumID: 7
+  duration: 3
+  doesNeedRoll: 1
   icon: {fileID: 0}
   groundPrefab: {fileID: 0}

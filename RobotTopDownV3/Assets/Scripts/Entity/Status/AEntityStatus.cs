@@ -5,6 +5,7 @@ using System;
 public abstract class AEntityStatus : ScriptableEnum<EntityStatusEnumID>
 {
     public int duration = 1;
+    public bool doesNeedRoll = false;
 
     public Sprite icon;
     public GameObject groundPrefab;
@@ -15,10 +16,10 @@ public abstract class AEntityStatus : ScriptableEnum<EntityStatusEnumID>
 
     }
 
-    public virtual void OnRemoveStatusEffect( Entity _entity )
-	{
+    public virtual void OnRemoveStatusEffect ( Entity _entity )
+    {
 
-	}
+    }
 
     public virtual void ApplyStatus(Tile _tile )
 	{

@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bcf46ade3227be342aab417801abed59, type: 3}
   m_Name: QuickDraw
   m_EditorClassIdentifier: RTD::QuickDrawPassiveEffect
-  enumID: 0
+  enumID: 24
   displayName: 
   reductionAmount: 1

@@ -139,8 +139,8 @@ public class EntityActionData : AParsableScriptableObject
 	[Parsing("Base damages")]
 	public SerializableDictionary<WeaponEquipmentData.DamageType, int> baseDamages;
 
-	[Title("Effect"), Parsing("Appliable Status")]
-	public AEntityStatus[] appliableStatus;
+	/*[Title("Effect"), Parsing("Appliable Status")]
+	public AEntityStatus[] appliableStatus;*/
 	[Parsing("Status Hit Probability")]
 	public float statusHitProbability;
 	[Parsing("Passif")]
@@ -431,6 +431,20 @@ public class EntityActionData : AParsableScriptableObject
 		}
 
 		return hitAmount;
+	}
+
+	public List<AEntityStatus> GetAppliedStatuses ( AEntityAction _action, Entity _performingEntity, Entity _targetEntity )
+	{
+		List<AEntityStatus> appliedStatuses = new();
+
+		foreach(AEntityPassiveEffect.PassiveEffectContainer pe in passiveEffects)
+		{
+			if(Condition.UseConditionPredicate(_action, _performingEntity, _targetEntity, pe.conditionType)
+				&& GameAssets.current.game.entityEffects[pe.enumID] is ApplyStatusPassiveEffect applyStatusPassiveEffect)
+				appliedStatuses.Add(GameAssets.current.game.entityStatus[applyStatusPassiveEffect.statusApplied]);
+		}
+
+		return appliedStatuses;
 	}
 
 	#endregion
