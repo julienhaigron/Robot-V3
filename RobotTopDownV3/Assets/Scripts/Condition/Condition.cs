@@ -13,7 +13,8 @@ public class Condition
 		Traveled6Tiles, 
 		IsInPreaparation, 
 		IsInCooldown, 
-		Cells12FromStart 
+		Cells12FromStart,
+		DidNotUseThisGame
 	}
 
 	public static bool UseConditionPredicate ( AEntityAction _action, Entity _entity, Entity _targetEntity, ConditionType _conditionType )
@@ -53,6 +54,10 @@ public class Condition
 				bool recordCheck4 = TurnManager.Instance.TrackedEventsPerEntity[_entity.ID].traveledTileCountThisTurn >= 12;
 				bool liveCheck4 = _entity.Displacement.TraveledTileTotalCount >= 12;
 				return isLive ? liveCheck4 : recordCheck4;
+			case ConditionType.DidNotUseThisGame:
+				bool recordCheck5 = !TurnManager.Instance.TrackedEventsPerEntity[_entity.ID].usedActionThisTurn.Contains(_action.enumID);
+				bool liveCheck5 = !_entity.UsedActionsThisGame.Contains(_action.enumID);
+				return isLive ? liveCheck5 : recordCheck5; 
 		}
 	}
 }

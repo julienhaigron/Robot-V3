@@ -63,12 +63,14 @@ public class TurnManager : Singleton<TurnManager>
 		public int firstTimeEntityMoved;
 		public int firstTimeEntityAttacked;
 		public int traveledTileCountThisTurn;
+		public HashSet<EntityActionEnumID> usedActionThisTurn = new();
 
 		public void ResetAllValues ()
 		{
 			firstTimeEntityMoved = -1;
 			firstTimeEntityAttacked = -1;
 			traveledTileCountThisTurn = 0;
+			usedActionThisTurn = new();
 		}
 	}
 
@@ -191,7 +193,8 @@ public class TurnManager : Singleton<TurnManager>
 		m_trackedEventsPerEntity.Add(_entity.ID, new TrackedEntityEvents()
 		{
 			firstTimeEntityMoved = -1,
-			firstTimeEntityAttacked = -1
+			firstTimeEntityAttacked = -1,
+			traveledTileCountThisTurn = 0
 		});
 	}
 
@@ -511,6 +514,8 @@ public class TurnManager : Singleton<TurnManager>
 				}
 				if (recordedAction.action.Data.type == EntityActionData.ActionType.DistanceAttack || recordedAction.action.Data.type == EntityActionData.ActionType.MeleeAttack)
 					pair.Value.firstTimeEntityAttacked = recordedAction.action.timeAtStart;
+				if (!pair.Value.usedActionThisTurn.Contains(recordedAction.type))
+					pair.Value.usedActionThisTurn.Add(recordedAction.type);
 			}
 		}
 	}

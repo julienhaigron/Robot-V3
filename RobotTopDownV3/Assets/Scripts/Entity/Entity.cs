@@ -75,6 +75,9 @@ public class Entity : MonoBehaviour
 	public EntityActionData LastActionPerformedData => m_lastActionPerformed == null ? GameConfig.current.game.defaultStartAction : m_lastActionPerformed;
 	[SerializeField, ReadOnly] private bool m_isPerforming = false;
 
+	private HashSet<EntityActionEnumID> m_usedActionsThisGame = new();
+	public HashSet<EntityActionEnumID> UsedActionsThisGame => m_usedActionsThisGame;
+
 	public int ID;
 	//public int PlayerOwnerID;
 
@@ -122,7 +125,13 @@ public class Entity : MonoBehaviour
 			m_knownedPassiveEffectsPerAction.Add(actionID, _data.GetPassiveEffects(actionID));
 		}
 
+		foreach (GameDatas.PlayerSave.Equipment eq in _data.GetAllEquipments())
+		{
+			m_allPassiveEffects.AddRange(eq.GetData<EntityEquipmentData>().passiveEffects);
+		}
+
 		m_knownedStates.AddRange(GameAssets.current.game.states);
+		m_usedActionsThisGame.Clear();
 	}
 
 	private Dictionary<EntityActionEnumID, List<string>> GetAllActions ()
@@ -316,6 +325,9 @@ public class Entity : MonoBehaviour
 
 	public void StartPerformAction ( AEntityAction _action, EntityState _state )
 	{
+		if (!m_usedActionsThisGame.Contains(_action.enumID))
+			m_usedActionsThisGame.Add(_action.enumID);
+
 		if (_action.Data.type != EntityActionData.ActionType.Rotation)
 			m_lastActionPerformed = _action.Data;
 
