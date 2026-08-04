@@ -64,7 +64,7 @@ public class InGameLogConsole : MonoBehaviour
 			oldest.Discard();
 		}
 
-		Canvas.ForceUpdateCanvases();
+		LayoutRebuilder.MarkLayoutForRebuild(m_content as RectTransform);
 		m_scrollRect.verticalNormalizedPosition = 0f;
 	}
 
