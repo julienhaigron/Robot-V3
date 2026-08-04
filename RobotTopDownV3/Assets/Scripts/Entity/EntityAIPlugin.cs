@@ -107,7 +107,7 @@ public class EntityAIPlugin : EntityPlugin
 
 		EntityActionData movementAction = GetMovementAction();
 		bool canMove = !m_linkedEntity.Status.Contains(EntityStatusEnumID.Stun) && !m_linkedEntity.Status.Contains(EntityStatusEnumID.Rooted) && movementAction != null;
-		bool hasEnemyInWeaponRange = HasEnemyWeaponInRange(out List<Entity> enemies, out EntityActionEnumID attackEnumID, out string equipmentID);
+		bool hasEnemyInWeaponRange = HasEnemyInWeaponRange(out List<Entity> enemies, out EntityActionEnumID attackEnumID, out string equipmentID);
 		bool hasEnemyInVisionRange = HasEnemyInVisionRange();
 
 		if (m_linkedEntity.Status.Contains(EntityStatusEnumID.Stun))
@@ -304,7 +304,7 @@ public class EntityAIPlugin : EntityPlugin
 
 	#region Vision
 
-	private bool HasEnemyWeaponInRange ( out List<Entity> _enemies, out EntityActionEnumID _attackEnumID, out string _equipmentID )
+	private bool HasEnemyInWeaponRange ( out List<Entity> _enemies, out EntityActionEnumID _attackEnumID, out string _equipmentID )
 	{
 		if (m_entitiesInActionRangeInfos == null || m_entitiesInActionRangeInfos.Count == 0)
 		{
@@ -364,7 +364,8 @@ public class EntityAIPlugin : EntityPlugin
 		foreach (System.Tuple<EntityActionData, string> pair in GetAvailableAttackAction())
 		{
 			AEntityAction relatedAction = _action.enumID == pair.Item1.enumID ? _action : TurnManager.Instance.GetAction(GameAssets.current.game.entityActionsData[pair.Item1.enumID], m_linkedEntity.ID, pair.Item2, _action.timeAtStart);
-			List<Tile> tilesInWeaponCone = m_linkedEntity.Equipment.GetTilesInWeaponRange(relatedAction, pair.Item2);
+			
+			List<Tile> tilesInWeaponCone =  m_linkedEntity.Equipment.GetTilesInWeaponRange(relatedAction, pair.Item2, _isThisTurn);
 			tilesInRange.AddRange(tilesInWeaponCone);
 			foreach (Tile tile in tilesInWeaponCone)
 			{

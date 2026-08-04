@@ -21,7 +21,8 @@ public class ApplyEffectAction : SpecialAction
 			{
 				Entity user = GameManager.Instance.GetEntityFromID(performingEntityID);
 				int maxDist = Data.GetMaxRange(this, PerformingEntity, null);
-				List<Tile> tilesInEffectRange = GridManager.Instance.GetTilesInVisionRange(GridManager.Instance.Tiles[TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntityID)], maxDist, false, true);
+				int minDist = Data.minDistance;
+				List<Tile> tilesInEffectRange = GridManager.Instance.GetTilesInVisionRange(GridManager.Instance.Tiles[TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntityID)], minDist, maxDist, false, true, false);
 				foreach (Tile tile in tilesInEffectRange)
 				{
 					if (Data.targetType == EntityActionData.TargetType.Tile)

@@ -154,7 +154,8 @@ public class AttackAction : AEntityAction
 		Weapon attackingWeapon = user.Equipment.Weapons[linkedEquipmentId];
 		Tile from = GridManager.Instance.Tiles[TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntityID)];
 		int maxDist = Data.GetMaxRange(this, PerformingEntity, null);
-		GridManager.Instance.GetTilesInVisionRange(from, maxDist, attackIgnoresObstacles, true);
+		//GridManager.Instance.GetTilesInVisionRange(from, maxDist, attackIgnoresObstacles, true, false);
+		user.Equipment.GetTilesInWeaponRange(this, linkedEquipmentId, false);
 	}
 
 	public override bool TileInteractPredicate ( Tile _tile )

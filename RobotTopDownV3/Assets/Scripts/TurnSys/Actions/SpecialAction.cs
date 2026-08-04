@@ -53,7 +53,8 @@ public class SpecialAction : AEntityAction
 			return true;
 
 		int maxDist = Data.GetMaxRange(this, PerformingEntity, null);
-		bool isInRange = GridManager.Instance.GetTilesInVisionRange(GridManager.Instance.Tiles[TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntityID)], maxDist, false, true).Contains(_tile);
+		int minDist = Data.minDistance;
+		bool isInRange = GridManager.Instance.GetTilesInVisionRange(GridManager.Instance.Tiles[TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntityID)], minDist, maxDist, false, true, false).Contains(_tile);
 
 		if (Data.targetType == EntityActionData.TargetType.Tile && isInRange)
 			return true;

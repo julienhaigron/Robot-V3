@@ -99,24 +99,24 @@ public class MoveThenAttackAction : AttackAction
 
 	protected override void Perform ( Entity.EntityState _state )
 	{
-		List<Tile> tilesInRange = new();
+		/*List<Tile> tilesInRange = new();
 		foreach (string weaponId in PerformingEntity.Equipment.Weapons.Keys)
 			tilesInRange.AddRange(PerformingEntity.Equipment.GetTilesInWeaponRange(this, weaponId, true));
 
 		foreach (Tile tile in tilesInRange)
 		{
 			tile.UI.SetOutlineColor(Color.blue);
-		}
+		}*/
 
 		//move to targetTile
 		if (positionAfterMovementID != -1/* && thisActionDestination.GetEntity(false) == null*/)
 		{
 			GameManager.Instance.GetEntityFromID(performingEntityID).Displacement.MoveToTile((int)positionAfterMovementID, () =>
 			{
-				foreach (Tile tile in tilesInRange)
+				/*foreach (Tile tile in tilesInRange)
 				{
 					tile.UI.ResetOutline();
-				}
+				}*/
 				base.Perform(_state);
 			});
 
@@ -125,10 +125,10 @@ public class MoveThenAttackAction : AttackAction
 		{
 			DG.Tweening.DOVirtual.DelayedCall(GameConfig.current.game.actionDuration, () =>
 			{
-				foreach (Tile tile in tilesInRange)
+				/*foreach (Tile tile in tilesInRange)
 				{
 					tile.UI.ResetOutline();
-				}
+				}*/
 				base.Perform(_state);
 			});
 		}

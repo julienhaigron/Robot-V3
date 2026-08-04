@@ -247,11 +247,13 @@ public class EntityEquipmentPlugin : EntityPlugin
 			break;
 		}
 
-		GridManager.Instance.BFS(from, maxDistance, null, _isThisTurn, ignoreObstacles);
-
-		int nbOfRayPerAngle = 1;
-		int totalNbOfRay = 60 * nbOfRayPerAngle;
-		for (int i = 0; i < totalNbOfRay; i++)
+		switch (_action.Data.aoeType)
+		{
+			case EntityActionData.AOEType.Noone:
+				/*GridManager.Instance.BFS(from, maxDistance, null, _isThisTurn, ignoreObstacles);
+				int nbOfRayPerAngle = 1;
+				int totalNbOfRay = 60 * nbOfRayPerAngle;
+				for (int i = 0; i < totalNbOfRay; i++)
 		{
 			//calculate angle
 			float rayAngle = Mathf.LerpAngle(angle - (60f / 2), angle + (60f / 2), (float)i / (float)totalNbOfRay);
@@ -272,7 +274,28 @@ public class EntityEquipmentPlugin : EntityPlugin
 					tilesInRange.Add(tile);
 				}
 			}
+		}*/
+			case EntityActionData.AOEType.LargeArc:
+			case EntityActionData.AOEType.ThinArc:
+			case EntityActionData.AOEType.Chain:
+			case EntityActionData.AOEType.Ray:
+				tilesInRange.AddRange(GridManager.Instance.GetTilesInArc(from, minDistance, maxDistance, m_linkedEntity.Displacement.CurrentOrientation, ignoreObstacles, _action.Data.aoeType == EntityActionData.AOEType.LargeArc, _isThisTurn));
+				break;
+			case EntityActionData.AOEType.LargeCone:
+			case EntityActionData.AOEType.ThinCone:
+				if (_action.Data.aoECenterType == EntityActionData.AOECenterType.Self)
+					tilesInRange.AddRange(GridManager.Instance.GetTilesInCone(from, minDistance, maxDistance, m_linkedEntity.Displacement.CurrentOrientation, _action.Data.aoeType, _isThisTurn));
+				else
+					tilesInRange.AddRange(GridManager.Instance.GetTilesInArc(from, minDistance, maxDistance, m_linkedEntity.Displacement.CurrentOrientation, ignoreObstacles, false, _isThisTurn));
+				break;
+			case EntityActionData.AOEType.Circle:
+				if (_action.Data.aoECenterType == EntityActionData.AOECenterType.Self)
+					tilesInRange.AddRange(GridManager.Instance.GetTilesInVisionRange(from, minDistance, maxDistance, ignoreObstacles, _isThisTurn, false));
+				else
+					tilesInRange.AddRange(GridManager.Instance.GetTilesInArc(from, minDistance, maxDistance, m_linkedEntity.Displacement.CurrentOrientation, ignoreObstacles, false, _isThisTurn));
+				break;
 		}
+
 
 		return tilesInRange;
 	}

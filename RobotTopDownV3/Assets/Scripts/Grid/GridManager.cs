@@ -24,7 +24,7 @@ public class GridManager : Singleton<GridManager>
 	{
 		public Dictionary<Entity, HashSet<Tile>> entitiesVisionRange;
 
-		public PlayerVisionRangeInfo ( Dictionary<Entity, HashSet<Tile>> _entitiesVisionRange = null)
+		public PlayerVisionRangeInfo ( Dictionary<Entity, HashSet<Tile>> _entitiesVisionRange = null )
 		{
 			this.entitiesVisionRange = _entitiesVisionRange ?? new();
 		}
@@ -239,25 +239,6 @@ public class GridManager : Singleton<GridManager>
 
 	#region Utils
 
-	public Tile GetTileAtOrientation ( Tile _from, int _orientation )
-	{
-		return _from.Neighbors[_orientation];
-	}
-
-	public List<Tile> GetTilesAtDistance ( Tile _center, int _distance, bool _isThisTurn = false )
-	{
-		List<Tile> result = new();
-		List<Tile> candidates = GetTilesInVisionRange(_center, _distance, false, _isThisTurn);
-
-		foreach (Tile tile in candidates)
-		{
-			if (_center.Distance == _distance)
-				result.Add(tile);
-		}
-
-		return result;
-	}
-
 	public List<Tile> GetPath ( Tile _from, Tile _to, bool _isThisTurn, bool _ignoreObstacles = false )
 	{
 		BFS(_from, _to: _to, _isThisTurn: _isThisTurn, _ignoreObstacles: _ignoreObstacles);
@@ -296,7 +277,7 @@ public class GridManager : Singleton<GridManager>
 		List<Entity> entitiesInRange = new();
 
 		//List<Tile> tilesInRange = GetTilesInVisionRange(_from, _maxDist, false, _isThisTurn);
-		List<Tile> tilesInRange = GetTilesInVisionRange(_from, _maxDist, false, _isThisTurn);
+		List<Tile> tilesInRange = GetTilesInVisionRange(_from, 1, _maxDist, false, _isThisTurn, false);
 		foreach (Tile tile in tilesInRange)
 		{
 			Entity entity = tile.GetEntity(_isThisTurn);
@@ -307,38 +288,38 @@ public class GridManager : Singleton<GridManager>
 		return entitiesInRange;
 	}
 
-	public List<Tile> GetTilesInVisionRange ( Tile _from, int _maxDist, bool _ignoreObstacles, bool _isThisTurn )
+	public List<Tile> GetTilesInVisionRange ( Tile _from, int _minDist, int _maxDist, bool _ignoreObstacles, bool _isThisTurn, bool _applyVisibilityChanges )
 	{
 		List<Tile> tilesInRange = new();
 		TileCoordinates origin = _from.coordinates;
-
 		for (int x = -_maxDist; x <= _maxDist; x++)
 		{
 			for (int y = Mathf.Max(-_maxDist, -x - _maxDist); y <= Mathf.Min(_maxDist, -x + _maxDist); y++)
 			{
 				int z = -x - y;
 
-				TileCoordinates coord = new TileCoordinates(origin.X + x, origin.Z + z, -1 );
-				Tile tile = coord.GetTile();
-
-				if (tile == null)
+				int dist = Mathf.Max(Mathf.Abs(x), Mathf.Abs(y), Mathf.Abs(z));
+				if (dist < _minDist)
 					continue;
 
+				TileCoordinates coord = new TileCoordinates(origin.X + x, origin.Z + z, -1);
+				Tile tile = coord.GetTile();
+				if (tile == null)
+					continue;
 				if (tile == _from)
 				{
 					tilesInRange.Add(tile);
-					tile.IsVisibleFromSelectedEntity = true;
+					if (_applyVisibilityChanges)
+						tile.IsVisibleFromSelectedEntity = true;
 					continue;
 				}
-
 				bool visible = _ignoreObstacles || IsVisionLineClear(_from, tile, _isThisTurn);
-				tile.IsVisibleFromSelectedEntity = visible;
-
+				if (_applyVisibilityChanges)
+					tile.IsVisibleFromSelectedEntity = visible;
 				if (visible)
 					tilesInRange.Add(tile);
 			}
 		}
-
 		return tilesInRange;
 	}
 	/*public List<Tile> GetTilesInVisionRange ( Tile from, int maxDist, bool ignoreObstacles, bool isThisTurn )
@@ -365,7 +346,7 @@ public class GridManager : Singleton<GridManager>
 		return visible;
 	}*/
 
-	public List<Tile> GetTilesInAoERange (EntityActionData.AOEType _type, Entity _caster, Tile _from, Tile _targetTile, int _minDistance, int _maxDistance, int _extraValue, bool _isThisTurn = false )
+	public List<Tile> GetTilesInAoERange ( EntityActionData.AOEType _type, Entity _caster, Tile _from, Tile _targetTile, int _minDistance, int _maxDistance, int _extraValue, bool _isThisTurn = false )
 	{
 		List<Tile> tilesInRange = new();
 		int orientation = _caster.Displacement.CurrentOrientation;
@@ -373,7 +354,8 @@ public class GridManager : Singleton<GridManager>
 		switch (_type)
 		{
 			case EntityActionData.AOEType.Circle:
-				tilesInRange.AddRange(GetTilesInVisionRange(_from, _maxDistance, false, _isThisTurn));
+				
+				tilesInRange.AddRange(GetTilesInVisionRange(_from, _minDistance, _maxDistance, false, _isThisTurn, false));
 				break;
 			case EntityActionData.AOEType.Ray:
 
@@ -382,28 +364,18 @@ public class GridManager : Singleton<GridManager>
 			case EntityActionData.AOEType.LargeCone:
 			case EntityActionData.AOEType.ThinCone:
 
-				tilesInRange.AddRange(GetTilesInCone(_from, _maxDistance, orientation, _type, _isThisTurn));
+				tilesInRange.AddRange(GetTilesInCone(_from, _minDistance, _maxDistance, orientation, _type, _isThisTurn));
 				break;
 			case EntityActionData.AOEType.ThinArc:
 			case EntityActionData.AOEType.LargeArc:
 
-				bool largeArc = _type == EntityActionData.AOEType.LargeArc;
-				for (int d = _minDistance; d <= _maxDistance; d++)
-				{
-					List<Tile> ring = GetTilesAtDistance(_from, d, _isThisTurn);
-					foreach (Tile tile in ring)
-					{
-						if (IsInArc(_from, tile, (HexDirection)orientation, largeArc))
-							tilesInRange.Add(tile);
-					}
-				}
-
+				tilesInRange.AddRange(GetTilesInArc(_from, _minDistance, _maxDistance, orientation, true, _type == EntityActionData.AOEType.LargeArc, _isThisTurn));
 				break;
 			case EntityActionData.AOEType.Chain:
-				List<Tile> tilesInVisionRange = GetTilesInVisionRange(_from, _maxDistance, false, _isThisTurn);
+				List<Tile> tilesInVisionRange = GetTilesInVisionRange(_from, _minDistance, _maxDistance, false, _isThisTurn, false);
 				foreach (Tile tile in tilesInVisionRange)
 				{
-					if (!tile.GetEntity(_isThisTurn).IsAlliedTo(_caster.OwnerID) && tile.Distance < _minDistance)
+					if (!tile.GetEntity(_isThisTurn).IsAlliedTo(_caster.OwnerID))
 						tilesInRange.Add(tile);
 
 					if (tilesInRange.Count >= _extraValue + 1)
@@ -416,6 +388,20 @@ public class GridManager : Singleton<GridManager>
 		{
 			if (tile.Distance < _minDistance)
 				tilesInRange.Remove(tile);
+		}
+
+		return tilesInRange;
+	}
+
+	public HashSet<Tile> GetTilesInArc ( Tile _from, int _minDistance, int _maxDistance, int _orientation, bool _ignoreObstacles, bool _isLargeArc, bool _isThisTurn )
+	{
+		HashSet<Tile> tilesInRange = new();
+
+		List<Tile> candidates = GetTilesInVisionRange(_from, _minDistance, _maxDistance, _ignoreObstacles, _isThisTurn, false);
+		foreach (Tile tile in candidates)
+		{
+			if (IsInArc(_from, tile, (HexDirection)_orientation, _isLargeArc))
+				tilesInRange.Add(tile);
 		}
 
 		return tilesInRange;
@@ -546,7 +532,7 @@ public class GridManager : Singleton<GridManager>
 			set.Add(t);
 	}
 
-	public List<Tile> GetTilesInCone ( Tile _from, int _distance, int _orientation, EntityActionData.AOEType _type, bool _isThisTurn )
+	public List<Tile> GetTilesInCone ( Tile _from, int _minDistance, int _maxDistance, int _orientation, EntityActionData.AOEType _type, bool _isThisTurn )
 	{
 		List<Tile> tilesInRange = new();
 
@@ -578,7 +564,7 @@ public class GridManager : Singleton<GridManager>
 
 		Tile leftestTile = previousLine[0];
 		Tile rightestTile = previousLine[^1];
-		for (; cursor < _distance - 1; cursor++)
+		for (; cursor < _maxDistance - 1; cursor++)
 		{
 			List<Tile> newLine = new();
 
@@ -675,6 +661,10 @@ public class GridManager : Singleton<GridManager>
 			previousLine = new(newLine);
 		}
 
+		for (int i = tilesInRange.Count - 1; i >= 0; i--)
+			if (tilesInRange[i].Distance < _minDistance)
+				tilesInRange.RemoveAt(i);
+
 		return tilesInRange;
 	}
 
@@ -693,7 +683,7 @@ public class GridManager : Singleton<GridManager>
 		//int attackOrientation = GetClosestOrientation(m_tiles[attackerPosition], m_tiles[defenderPosition]);
 
 		List<Tile> tilesInLine = GetTilesInRay(Tiles[attackerPosition], Tiles[defenderPosition], _didAttackerWinPFC, true);
-		foreach(Tile tile in tilesInLine)
+		foreach (Tile tile in tilesInLine)
 		{
 			if ((tile.GroundType == TileGroundType.Wall || tile.GroundType == TileGroundType.Cover) && tile.Wall.RegisteredHealth > 0)
 			{
@@ -862,44 +852,22 @@ public class GridManager : Singleton<GridManager>
 		int dy = _target.coordinates.Y - _origin.coordinates.Y;
 		int dz = _target.coordinates.Z - _origin.coordinates.Z;
 
-		var forward = TileCoordinates.ForwardVectors[(int)_facing];
-		int forwardValue =
-			dx * forward.x +
-			dy * forward.y +
-			dz * forward.z;
-
-		if (forwardValue <= 0)
-			return false;
-
-		int distance = _origin.coordinates.DistanceTo(_target.coordinates);
-
-		int sideA;
-		int sideB;
+		int forward = 0;
+		int side = 0;
 
 		switch (_facing)
 		{
-			case HexDirection.NE:
-			case HexDirection.SW:
-				sideA = Mathf.Abs(dy);
-				sideB = Mathf.Abs(dz);
-				break;
-
-			case HexDirection.E:
-			case HexDirection.W:
-				sideA = Mathf.Abs(dx);
-				sideB = Mathf.Abs(dy);
-				break;
-
-			default: // SE / NW
-				sideA = Mathf.Abs(dx);
-				sideB = Mathf.Abs(dz);
-				break;
+			case HexDirection.NE: forward = dx; side = dy; break;
+			case HexDirection.E: forward = -dy; side = dz; break;
+			case HexDirection.SE: forward = dz; side = dx; break;
+			case HexDirection.SW: forward = -dx; side = dy; break;
+			case HexDirection.W: forward = dy; side = dz; break;
+			case HexDirection.NW: forward = -dz; side = dx; break;
 		}
 
-		int lateral = Mathf.Max(sideA, sideB);
-		int maxLateral = _largeArc ? distance : distance / 2;
+		if (forward <= 0) return false;
 
-		return lateral <= maxLateral;
+		return Mathf.Abs(side) * 2 <= forward;
 	}
 
 	#endregion
@@ -927,9 +895,9 @@ public class GridManager : Singleton<GridManager>
 		Tile from = _entity.Displacement.Coordinates.GetTile();
 		int range = GameConfig.current.game.rangePerVisionType[_entity.Data.NeuronalMembraneData.visionType];
 
-		HashSet<Tile> tilesInVision = GetTilesInVisionRange(from, range, false, true).ToHashSet();
+		HashSet<Tile> tilesInVision = GetTilesInVisionRange(from, 0, range, false, true, true).ToHashSet();
 		visionInfo.entitiesVisionRange.Add(_entity, tilesInVision);
-		
+
 		if (_entity.IsAlliedTo(GameManager.Instance.PlayerID))
 		{
 			foreach (Tile tile in tilesInVision)
@@ -961,8 +929,8 @@ public class GridManager : Singleton<GridManager>
 		HashSet<Tile> previousVision = visionInfo.entitiesVisionRange[_entity];
 		int range = GameConfig.current.game.rangePerVisionType[_entity.Data.NeuronalMembraneData.visionType];
 
-		HashSet<Tile> newVision = GetTilesInVisionRange(_entity.Displacement.Coordinates.GetTile(), range
-			, false, true).ToHashSet();
+		HashSet<Tile> newVision = GetTilesInVisionRange(_entity.Displacement.Coordinates.GetTile(), 0, range
+			, false, true, true).ToHashSet();
 		HashSet<Tile> addedTiles = new(newVision);
 		addedTiles.ExceptWith(previousVision);
 		HashSet<Tile> removedTiles = new(previousVision);
@@ -1093,7 +1061,7 @@ public struct TileCoordinates
 			  + Mathf.Abs(Z - other.Z)) / 2;
 	}
 
-	public bool IsEqualTo(TileCoordinates _otherCoordinates )
+	public bool IsEqualTo ( TileCoordinates _otherCoordinates )
 	{
 		return _otherCoordinates.X == X && _otherCoordinates.Y == Y && _otherCoordinates.Z == Z;
 	}
@@ -1111,15 +1079,15 @@ public struct TileCoordinates
 
 	public static readonly (int x, int y, int z)[] ForwardVectors =
 	{
-		( 1,-1, 0), // NE
-		( 1, 0,-1), // E
-		( 0, 1,-1), // SE
-		(-1, 1, 0), // SW
-		(-1, 0, 1), // W
-		( 0,-1, 1), // NW
+		( 1, 0,-1), // NE
+		( 1,-1, 0), // E
+		( 0,-1, 1), // SE
+		(-1, 0, 1), // SW
+		(-1, 1, 0), // W
+		( 0, 1,-1), // NW
 	};
 
-	public int Dot ((int x, int y, int z) _a, (int x, int y, int z) _b )
+	public int Dot ( (int x, int y, int z) _a, (int x, int y, int z) _b )
 	{
 		return _a.x * _b.x +
 			   _a.y * _b.y +
