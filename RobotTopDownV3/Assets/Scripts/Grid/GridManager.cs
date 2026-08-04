@@ -23,17 +23,15 @@ public class GridManager : Singleton<GridManager>
 	public class PlayerVisionRangeInfo
 	{
 		public Dictionary<Entity, HashSet<Tile>> entitiesVisionRange;
-		public Dictionary<Tile, int> tileVisibilityCount;
 
-		public PlayerVisionRangeInfo ( Dictionary<Entity, HashSet<Tile>> entitiesVisionRange = null
-			, Dictionary<Tile, int> tileVisibilityCount = null )
+		public PlayerVisionRangeInfo ( Dictionary<Entity, HashSet<Tile>> _entitiesVisionRange = null)
 		{
-			this.entitiesVisionRange = entitiesVisionRange ?? new();
-			this.tileVisibilityCount = tileVisibilityCount ?? new();
+			this.entitiesVisionRange = _entitiesVisionRange ?? new();
 		}
 	}
 	private Dictionary<int, PlayerVisionRangeInfo> m_entitiesVisions = new();
 	public Dictionary<int, PlayerVisionRangeInfo> EntitiesVisions => m_entitiesVisions;
+	private readonly Dictionary<Tile, int> m_localVisionCount = new();
 
 	private static readonly Vector2Int[] HexDirectionOffsets =
 	{
@@ -379,7 +377,7 @@ public class GridManager : Singleton<GridManager>
 				break;
 			case EntityActionData.AOEType.Ray:
 
-				tilesInRange.AddRange(GetTilesInRay(_from, _targetTile, _isThisTurn));
+				tilesInRange.AddRange(GetTilesInRay(_from, _targetTile, _isThisTurn, false));
 				break;
 			case EntityActionData.AOEType.LargeCone:
 			case EntityActionData.AOEType.ThinCone:
@@ -423,7 +421,7 @@ public class GridManager : Singleton<GridManager>
 		return tilesInRange;
 	}
 
-	public List<Tile> GetTilesInRay ( Tile _from, Tile _to, bool _isThisTurn )
+	public List<Tile> GetTilesInRay ( Tile _from, Tile _to, bool _isThisTurn, bool _isVision )
 	{
 		List<Tile> tilesInRange = new();
 
@@ -449,7 +447,7 @@ public class GridManager : Singleton<GridManager>
 
 			tilesInRange.Add(mainTile);
 
-			if (mainTile.IsObstacle(_isThisTurn) && mainTile != _to)
+			if ((_isVision ? !mainTile.CanSeeThrough() : mainTile.IsObstacle(_isThisTurn)) && mainTile != _to)
 				break;
 
 			if (!isInSplitLine)
@@ -682,7 +680,7 @@ public class GridManager : Singleton<GridManager>
 
 	public bool IsVisionLineClear ( Tile from, Tile to, bool isThisTurn )
 	{
-		List<Tile> ray = GetTilesInRay(from, to, isThisTurn);
+		List<Tile> ray = GetTilesInRay(from, to, isThisTurn, true);
 
 		return ray.Contains(to);
 	}
@@ -694,7 +692,7 @@ public class GridManager : Singleton<GridManager>
 		int defenderPosition = !_didAttackerWinPFC ? TurnManager.Instance.GetPositionOfEntityAtEndOfRound(_target.ID) : TurnManager.Instance.GetPositionOfEntityAtEndOfRound(_target.ID);
 		//int attackOrientation = GetClosestOrientation(m_tiles[attackerPosition], m_tiles[defenderPosition]);
 
-		List<Tile> tilesInLine = GetTilesInRay(Tiles[attackerPosition], Tiles[defenderPosition], _didAttackerWinPFC);
+		List<Tile> tilesInLine = GetTilesInRay(Tiles[attackerPosition], Tiles[defenderPosition], _didAttackerWinPFC, true);
 		foreach(Tile tile in tilesInLine)
 		{
 			if (tile.GroundType == TileGroundType.Wall || tile.GroundType == TileGroundType.Cover)
@@ -932,11 +930,13 @@ public class GridManager : Singleton<GridManager>
 
 		HashSet<Tile> tilesInVision = GetTilesInVisionRange(from, range, false, true).ToHashSet();
 		visionInfo.entitiesVisionRange.Add(_entity, tilesInVision);
+		
+		if (_entity.IsAlliedTo(GameManager.Instance.PlayerID))
+		{
+			foreach (Tile tile in tilesInVision)
+				AddVisionTile(tile, _entity.Data.NeuronalMembraneData.visionType);
+		}
 
-		foreach (Tile tile in tilesInVision)
-			AddVisionTile(visionInfo, tile, _entity.Data.NeuronalMembraneData.visionType);
-
-		//m_entitiesVisions[_entity.OwnerID] = visionInfo;
 		FogOfWarRenderer.Instance.MarkDirty();
 	}
 
@@ -951,12 +951,13 @@ public class GridManager : Singleton<GridManager>
 
 		if (!visionInfo.entitiesVisionRange.TryGetValue(_entity, out HashSet<Tile> tilesInVision))
 			return;
-
-		foreach (Tile tile in tilesInVision)
-			RemoveVisionTile(visionInfo, tile, _entity.Data.NeuronalMembraneData.visionType);
+		if (_entity.IsAlliedTo(GameManager.Instance.PlayerID))
+		{
+			foreach (Tile tile in tilesInVision)
+				RemoveVisionTile(tile, _entity.Data.NeuronalMembraneData.visionType);
+		}
 
 		visionInfo.entitiesVisionRange.Remove(_entity);
-		//m_entitiesVisions[_entity.OwnerID] = visionInfo;
 		FogOfWarRenderer.Instance.MarkDirty();
 	}
 
@@ -981,10 +982,13 @@ public class GridManager : Singleton<GridManager>
 		HashSet<Tile> removedTiles = new(previousVision);
 		removedTiles.ExceptWith(newVision);
 
-		foreach (Tile tile in removedTiles)
-			RemoveVisionTile(visionInfo, tile, _entity.Data.NeuronalMembraneData.visionType);
-		foreach (Tile tile in addedTiles)
-			AddVisionTile(visionInfo, tile, _entity.Data.NeuronalMembraneData.visionType);
+		if (_entity.IsAlliedTo(GameManager.Instance.PlayerID))
+		{
+			foreach (Tile tile in removedTiles)
+				RemoveVisionTile(tile, _entity.Data.NeuronalMembraneData.visionType);
+			foreach (Tile tile in addedTiles)
+				AddVisionTile(tile, _entity.Data.NeuronalMembraneData.visionType);
+		}
 
 		visionInfo.entitiesVisionRange[_entity] = newVision;
 		m_entitiesVisions[_entity.OwnerID] = visionInfo;
@@ -1005,33 +1009,33 @@ public class GridManager : Singleton<GridManager>
 		return false;
 	}*/
 
-	private void AddVisionTile ( PlayerVisionRangeInfo _visionInfo, Tile _tile, NeuronalMembraneEquipmentData.VisionTypes _visionType )
+	private void AddVisionTile ( Tile _tile, NeuronalMembraneEquipmentData.VisionTypes _visionType )
 	{
-		if (!_visionInfo.tileVisibilityCount.TryGetValue(_tile, out int count))
+		if (!m_localVisionCount.TryGetValue(_tile, out int count))
 			count = 0;
 
 		count++;
-		_visionInfo.tileVisibilityCount[_tile] = count;
+		m_localVisionCount[_tile] = count;
 
 		if (count == 1)
 			_tile.SetActiveFOW(_visionType, false, false);
 	}
 
-	private void RemoveVisionTile ( PlayerVisionRangeInfo visionInfo, Tile tile, NeuronalMembraneEquipmentData.VisionTypes visionType )
+	private void RemoveVisionTile ( Tile tile, NeuronalMembraneEquipmentData.VisionTypes visionType )
 	{
-		if (!visionInfo.tileVisibilityCount.TryGetValue(tile, out int count))
+		if (m_localVisionCount.TryGetValue(tile, out int count))
 			return;
 
 		count--;
 
 		if (count <= 0)
 		{
-			visionInfo.tileVisibilityCount.Remove(tile);
+			m_localVisionCount.Remove(tile);
 			tile.SetActiveFOW(visionType, true, false);
 		}
 		else
 		{
-			visionInfo.tileVisibilityCount[tile] = count;
+			m_localVisionCount[tile] = count;
 		}
 	}
 

@@ -9,8 +9,7 @@ public class LogPoolElement : PoolElement
 
 	public void Init(string _content )
 	{
-		m_text.text = _content;
-        m_text.ForceMeshUpdate();
+		m_text.SetText(_content);
 
         float preferredHeight = m_text.GetPreferredValues().y;
         m_layoutElement.preferredHeight = preferredHeight + 8f;
