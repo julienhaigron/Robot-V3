@@ -852,22 +852,13 @@ public class GridManager : Singleton<GridManager>
 		int dy = _target.coordinates.Y - _origin.coordinates.Y;
 		int dz = _target.coordinates.Z - _origin.coordinates.Z;
 
-		int forward = 0;
-		int side = 0;
-
-		switch (_facing)
-		{
-			case HexDirection.NE: forward = dx; side = dy; break;
-			case HexDirection.E: forward = -dy; side = dz; break;
-			case HexDirection.SE: forward = dz; side = dx; break;
-			case HexDirection.SW: forward = -dx; side = dy; break;
-			case HexDirection.W: forward = dy; side = dz; break;
-			case HexDirection.NW: forward = -dz; side = dx; break;
-		}
+		var (fx, fy, fz) = TileCoordinates.ForwardVectors[(int)_facing];
+		int forward = dx * fx + dy * fy + dz * fz;
 
 		if (forward <= 0) return false;
+		int side = dx * fz - dz * fx;
 
-		return Mathf.Abs(side) * 2 <= forward;
+		return Mathf.Abs(side) <= (_largeArc ? forward : forward / 2);
 	}
 
 	#endregion
@@ -1079,12 +1070,18 @@ public struct TileCoordinates
 
 	public static readonly (int x, int y, int z)[] ForwardVectors =
 	{
-		( 1, 0,-1), // NE
-		( 1,-1, 0), // E
-		( 0,-1, 1), // SE
-		(-1, 0, 1), // SW
-		(-1, 1, 0), // W
-		( 0, 1,-1), // NW
+		/*( 1,-1, 0), // NE
+		( 1, 0,-1), // E
+		( 0, 1,-1), // SE
+		(-1, 1, 0), // SW
+		(-1, 0, 1), // W
+		( 0,-1, 1), // NW*/
+		( 0,-1, 1), // NE  (ancien NW)
+    ( 1,-1, 0), // E   (ancien NE)
+    ( 1, 0,-1), // SE  (ancien E)
+    ( 0, 1,-1), // SW  (ancien SE)
+    (-1, 1, 0), // W   (ancien SW)
+    (-1, 0, 1), // NW  (ancien W)
 	};
 
 	public int Dot ( (int x, int y, int z) _a, (int x, int y, int z) _b )
