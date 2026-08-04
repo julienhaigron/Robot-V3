@@ -82,7 +82,7 @@ public class GameToolboxWindow : EditorWindow
 			, GameConfig.current.parsing.actionGUIDPerPage[EntityActionData.ActionType.MeleeAttack]), "Assets/Objects/Actions/Final/Melee");
 		CsvImporter.ImportFromUrl<EntityActionData>(MakeUrl(GameConfig.current.parsing.actionSpreadSheetID
 			, GameConfig.current.parsing.actionGUIDPerPage[EntityActionData.ActionType.Special]), "Assets/Objects/Actions/Final/Special");
-		Debug.Log("Parsed all actions");
+		Debug.Log("Action parsing initiated");
 	}
 
 	private void ParseAllComponents ()
@@ -105,14 +105,14 @@ public class GameToolboxWindow : EditorWindow
 			, "Assets/Objects/Component/Final/Occultor");
 		CsvImporter.ImportFromUrl<ChipsetEquipmentData>(MakeUrl(GameConfig.current.parsing.componentsSpreadSheetID, GameConfig.current.parsing.componentGUIDPerPage[EntityEquipmentData.EquipmentType.Chipset])
 			, "Assets/Objects/Component/Final/Chipset");
-		Debug.Log("Parsed all components");
+		Debug.Log("Components parsing initiated");
 	}
 
 	private void ParseAllUnits ()
 	{
 		CsvImporter.ImportFromUrl<UnitPreset>(MakeUrl(GameConfig.current.parsing.unitSpreadSheetID, "0")
 				, "Assets/Objects/UnitPreset/Final");
-		Debug.Log("Parsed all units");
+		Debug.Log("Unit parsing initiated");
 	}
 
 	private void CheckMissingData ()
