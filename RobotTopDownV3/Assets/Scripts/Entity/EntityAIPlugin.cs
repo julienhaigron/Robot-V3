@@ -97,12 +97,18 @@ public class EntityAIPlugin : EntityPlugin
 			//already started doing an action so no changes
 			return resultInfo;
 		}
+		else if (m_linkedEntity.Equipment.IsDead)
+		{
+			//we dont handle it here
+			return resultInfo;
+		}
 
 		DOAllPrewarmCheck(_recordedAction.action);
 
 		EntityActionData movementAction = GetMovementAction();
 		bool canMove = !m_linkedEntity.Status.Contains(EntityStatusEnumID.Stun) && !m_linkedEntity.Status.Contains(EntityStatusEnumID.Rooted) && movementAction != null;
 		bool hasEnemyInWeaponRange = HasEnemyWeaponInRange(out List<Entity> enemies, out EntityActionEnumID attackEnumID, out string equipmentID);
+		bool hasEnemyInVisionRange = HasEnemyInVisionRange();
 
 		if (m_linkedEntity.Status.Contains(EntityStatusEnumID.Stun))
 		{
@@ -140,7 +146,19 @@ public class EntityAIPlugin : EntityPlugin
 			attackAction.Init(GameAssets.current.game.entityActionsData[attackAction.enumID], equipmentID, m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID, _recordedAction.action.timeAtStart);
 			resultInfo.ReplaceAction(attackAction, "Has enemy in range");
 		}
-		else if (canMove && HasEnemyInVisionRange() && !hasEnemyInWeaponRange)
+		else if(canMove && !hasEnemyInVisionRange)
+		{
+			int orientationTowardTarget = GridManager.Instance.GetClosestOrientation(m_linkedEntity.Displacement.Coordinates.GetTile(), GridManager.Instance.Tiles[_recordedAction.action.positionAtActionEndID]);
+			bool isAtCorrectOrientation = orientationTowardTarget == m_linkedEntity.Displacement.CurrentOrientation;
+			if (!isAtCorrectOrientation)
+			{
+				RotateEntityAction rotateAction = (TurnManager.Instance.GetAction(EntityActionEnumID.RotateEntity, m_linkedEntity.ID, null, _recordedAction.timeAtStart) as RotateEntityAction);
+				rotateAction.targetedOrientationID = orientationTowardTarget;
+				rotateAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.RotateEntity], null, m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID, _recordedAction.action.timeAtStart);
+				resultInfo.ReplaceFreeAction(rotateAction, "Unit in vision but not in correct orientation");
+			}
+		}
+		else if (canMove && hasEnemyInVisionRange && !hasEnemyInWeaponRange)
 		{
 			Entity closestEntity = GetClosestEnemyInVisionRange(true);
 			bool isEntityInRangeWeaponsPossibleRange = IsEntityInWeaponPossibleRange(closestEntity, out string _weapon, true);
@@ -161,7 +179,7 @@ public class EntityAIPlugin : EntityPlugin
 					if (!isAtCorrectOrientation)
 					{
 						RotateEntityAction rotateAction = (TurnManager.Instance.GetAction(EntityActionEnumID.RotateEntity, m_linkedEntity.ID, null, _recordedAction.timeAtStart) as RotateEntityAction);
-						rotateAction.targetedOrientationID = GridManager.Instance.GetClosestOrientation(m_linkedEntity.Displacement.Coordinates.GetTile(), closestEntity.Displacement.Coordinates.GetTile());
+						rotateAction.targetedOrientationID = orientationTowardTarget;
 						rotateAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.RotateEntity], null, m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID, _recordedAction.action.timeAtStart);
 						resultInfo.ReplaceFreeAction(rotateAction, "Unit in vision but not in correct orientation");
 					}
@@ -214,7 +232,7 @@ public class EntityAIPlugin : EntityPlugin
 
 			}
 		}
-		else if (!canMove && (_recordedAction.action.Data.type == EntityActionData.ActionType.Movement || _recordedAction.action.Data.type == EntityActionData.ActionType.Rotation
+		else if (!canMove && _recordedAction.type != EntityActionEnumID.Wait && (_recordedAction.action.Data.type == EntityActionData.ActionType.Movement || _recordedAction.action.Data.type == EntityActionData.ActionType.Rotation
 			 || _recordedAction.action.Data.codeType == EntityActionData.ActionCodeType.MoveThenAttack))
 		{
 			WaitAction waitAction = (TurnManager.Instance.GetAction(EntityActionEnumID.Wait, m_linkedEntity.ID, null, _recordedAction.timeAtStart) as WaitAction);

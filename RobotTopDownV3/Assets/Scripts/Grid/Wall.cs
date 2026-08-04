@@ -29,6 +29,8 @@ public class Wall : MonoBehaviour
 	public WallType Type { get { return m_type; } set { m_type = value; } }
 
 	private bool m_isCover;
+	private int m_registeredHealth;
+	public int RegisteredHealth => m_registeredHealth;
 
 	[Serializable]
 	public enum WallType
@@ -51,18 +53,31 @@ public class Wall : MonoBehaviour
 		TriWall,
 		Total
 	}
-	//TODO :
-	// => Destructible feature
-	// => cover feature
 
-	//EDITOR :
-	// - lier le visuel d'un mur facilement à une tile
-	// - déterminé + visualiser la "coverability" d'un mur, angle
-	// - tourner un mur
-
-	public void LinkWithTile ( Tile m_tile )
+	private void Awake ()
 	{
-		m_linkedTile = m_tile;
+		m_registeredHealth = m_hp;
+	}
+
+	public void Init ( Tile _tile , WallType _type, bool _isCover, int _orientation )
+	{
+		m_registeredHealth = m_hp;
+		LinkWithTile(_tile);
+		SetWallType(_type, _isCover);
+		Rotate(_orientation);
+	}
+
+	public void LinkWithTile ( Tile _tile )
+	{
+		m_linkedTile = _tile;
+	}
+
+	public void RegisterDamage( Dictionary<WeaponEquipmentData.DamageType, int> _damages )
+	{
+		foreach (KeyValuePair<WeaponEquipmentData.DamageType, int> pair in _damages)
+		{
+			m_registeredHealth -= pair.Value;
+		}
 	}
 
 	public void TakeDamage(Dictionary<WeaponEquipmentData.DamageType, int> _damages )

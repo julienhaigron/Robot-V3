@@ -685,7 +685,7 @@ public class GridManager : Singleton<GridManager>
 		return ray.Contains(to);
 	}
 
-	public bool IsThereCoverBeween ( Entity _attacker, Entity _target, bool _didAttackerWinPFC )
+	public bool IsThereCoverBeween ( Entity _attacker, Entity _target, bool _didAttackerWinPFC, out Tile _cover )
 	{
 		// Orientation depuis l’attaquant vers la cible
 		int attackerPosition = _didAttackerWinPFC ? TurnManager.Instance.GetPositionOfEntityAtEndOfRound(_attacker.ID) : TurnManager.Instance.GetPositionOfEntityAtEndOfRound(_attacker.ID);
@@ -695,10 +695,14 @@ public class GridManager : Singleton<GridManager>
 		List<Tile> tilesInLine = GetTilesInRay(Tiles[attackerPosition], Tiles[defenderPosition], _didAttackerWinPFC, true);
 		foreach(Tile tile in tilesInLine)
 		{
-			if (tile.GroundType == TileGroundType.Wall || tile.GroundType == TileGroundType.Cover)
+			if ((tile.GroundType == TileGroundType.Wall || tile.GroundType == TileGroundType.Cover) && tile.Wall.RegisteredHealth > 0)
+			{
+				_cover = tile;
 				return true;
+			}
 		}
 
+		_cover = null;
 		return false;
 	}
 
@@ -916,13 +920,8 @@ public class GridManager : Singleton<GridManager>
 
 	public void OnNewEntity ( Entity _entity )
 	{
-		int playerId = _entity.OwnerID;
-
-		if (!_entity.IsAlliedTo(playerId))
-		{
+		if (!_entity.IsAlliedTo(GameManager.Instance.PlayerID))
 			_entity.SetVisibility(false, NeuronalMembraneEquipmentData.VisionTypes.Optic);
-			return;
-		}
 
 		PlayerVisionRangeInfo visionInfo = m_entitiesVisions[_entity.OwnerID];
 		Tile from = _entity.Displacement.Coordinates.GetTile();
@@ -942,11 +941,6 @@ public class GridManager : Singleton<GridManager>
 
 	public void OnEntityDeath ( Entity _entity )
 	{
-		int playerId = _entity.OwnerID;
-
-		if (!_entity.IsAlliedTo(playerId))
-			return;
-
 		PlayerVisionRangeInfo visionInfo = m_entitiesVisions[_entity.OwnerID];
 
 		if (!visionInfo.entitiesVisionRange.TryGetValue(_entity, out HashSet<Tile> tilesInVision))
@@ -963,14 +957,6 @@ public class GridManager : Singleton<GridManager>
 
 	public void OnEntityMovement ( Entity _entity )
 	{
-		int playerId = _entity.OwnerID;
-
-		if (!_entity.IsAlliedTo(playerId))
-		{
-			_entity.SetVisibility( _entity.Displacement.Coordinates.GetTile().IsVisible, NeuronalMembraneEquipmentData.VisionTypes.Optic);
-			return;
-		}
-
 		PlayerVisionRangeInfo visionInfo = m_entitiesVisions[_entity.OwnerID];
 		HashSet<Tile> previousVision = visionInfo.entitiesVisionRange[_entity];
 		int range = GameConfig.current.game.rangePerVisionType[_entity.Data.NeuronalMembraneData.visionType];
@@ -994,20 +980,6 @@ public class GridManager : Singleton<GridManager>
 		m_entitiesVisions[_entity.OwnerID] = visionInfo;
 		FogOfWarRenderer.Instance.MarkDirty();
 	}
-
-	/*private bool IsTileVisibleByAnotherEntity ( int _ownerId, Entity _ignoredEntity, Tile _tile )
-	{
-		foreach (var pair in m_entitiesVisions[_ownerId].entitiesVisionRange)
-		{
-			if (pair.Key == _ignoredEntity)
-				continue;
-
-			if (pair.Value.Contains(_tile))
-				return true;
-		}
-
-		return false;
-	}*/
 
 	private void AddVisionTile ( Tile _tile, NeuronalMembraneEquipmentData.VisionTypes _visionType )
 	{

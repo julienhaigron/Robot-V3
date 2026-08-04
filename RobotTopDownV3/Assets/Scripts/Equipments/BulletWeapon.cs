@@ -63,7 +63,7 @@ public class BulletWeapon : Weapon
 				? _targetPosition + perpendicular * distance
 				: _targetPosition - perpendicular * distance;
 
-			m_user.Skin.VisualyAimAt(_attackAction.linkedEquipmentId, adjacentPos);
+			m_user.Skin.VisualyAimAt(_attackAction.linkedEquipmentId, _attackInfo.hittedTileID == -1 ? adjacentPos : GridManager.Instance.Tiles[_attackInfo.hittedTileID].Wall.transform.position);
 		}
 
 		yield return m_aimDurationWFS;

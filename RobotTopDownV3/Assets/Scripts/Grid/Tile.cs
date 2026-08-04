@@ -166,9 +166,7 @@ public class Tile : MonoBehaviour
 			m_wall = gameObject.AddComponent<Wall>();
 		//m_wall = UnityEditor.Undo.AddComponent<Wall>(gameObject);
 
-		m_wall.LinkWithTile(this);
-		m_wall.SetWallType(_wallType, _isCover);
-		m_wall.Rotate(_orientation);
+		m_wall.Init(this, _wallType, m_groundType == TileGroundType.Cover, _orientation);
 	}
 
 	public void RemoveWall ()
@@ -206,7 +204,7 @@ public class Tile : MonoBehaviour
 
 	public bool IsObstacle ( bool _isThisTurn )
 	{
-		if ((m_groundType == TileGroundType.Wall || m_groundType == TileGroundType.Cover) && m_wall.Health > 0)
+		if ((m_groundType == TileGroundType.Wall || m_groundType == TileGroundType.Cover) && (_isThisTurn ? m_wall.RegisteredHealth > 0 : m_wall.Health > 0))
 			return true;
 		else if (m_groundType == TileGroundType.Void)
 			return true;

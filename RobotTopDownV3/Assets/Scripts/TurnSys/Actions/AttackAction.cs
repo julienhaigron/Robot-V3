@@ -16,6 +16,7 @@ public class AttackAction : AEntityAction
 		public int[] damages;
 		public short[] damageTypes;
 		public int pfcResult;
+		public int hittedTileID;
 		public void NetworkSerialize<T> ( BufferSerializer<T> serializer ) where T : IReaderWriter
 		{
 			serializer.SerializeValue(ref isAttackSuccessfull);
@@ -24,6 +25,7 @@ public class AttackAction : AEntityAction
 			serializer.SerializeValue(ref damages);
 			serializer.SerializeValue(ref damageTypes);
 			serializer.SerializeValue(ref pfcResult);
+			serializer.SerializeValue(ref hittedTileID);
 		}
 	}
 
@@ -65,8 +67,9 @@ public class AttackAction : AEntityAction
 			{
 				SingleAttackInfo attackInfo = attacksInfos[attackCount];
 				Entity targetEntity = GameManager.Instance.GetEntityFromID(targetedEntityIDs[attackCount]);
-				attackInfo.isAttackSuccessfull = Data.aoeType != EntityActionData.AOEType.Noone ? true : PerformingEntity.Equipment.AttackRoll(this, attackInfo, targetEntity);
-
+				Tile coverHitted = null;
+				attackInfo.isAttackSuccessfull = Data.aoeType != EntityActionData.AOEType.Noone ? true : PerformingEntity.Equipment.AttackRoll(this, attackInfo, targetEntity, out coverHitted);
+				attackInfo.hittedTileID = coverHitted == null ? -1 : coverHitted.coordinates.ID;
 				if (attackInfo.isAttackSuccessfull)
 				{
 					List<AEntityStatus> appliedStatuses = Data.GetAppliedStatuses(this, PerformingEntity, targetEntity);
@@ -85,6 +88,9 @@ public class AttackAction : AEntityAction
 
 					Dictionary<WeaponEquipmentData.DamageType, int> damagesDealt =
 						PerformingEntity.Equipment.Weapons[linkedEquipmentId].GetDamages(PerformingEntity, targetEntity, this, (EntityActionData.PFCResultType)attackInfo.pfcResult);
+
+					if (coverHitted != null)
+						coverHitted.Wall.RegisterDamage(damagesDealt);
 
 					List<int> tmpDamages = new();
 					List<short> tmpDamageTypes = new();

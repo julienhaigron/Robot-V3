@@ -287,10 +287,11 @@ public class EntityEquipmentPlugin : EntityPlugin
 		return GridManager.Instance.GetTilesInAoERange(_action.Data.aoeType, m_linkedEntity, from, _targetTile, minDistance, maxDistance, extraValue, _isThisTurn);
 	}
 
-	public bool AttackRoll ( AttackAction _attackAction, AttackAction.SingleAttackInfo _singleAttackInfo, Entity _targetEntity )
+	public bool AttackRoll ( AttackAction _attackAction, AttackAction.SingleAttackInfo _singleAttackInfo, Entity _targetEntity, out Tile _coverTile )
 	{
 		WeaponEquipmentData usedWeapon = m_weapons[_attackAction.linkedEquipmentId].Data;
 		bool doesWinPFC = _singleAttackInfo.pfcResult == (int)EntityActionData.PFCResultType.FirstWins;
+		bool isThereCoverBetween = GridManager.Instance.IsThereCoverBeween(_attackAction.PerformingEntity, _targetEntity, doesWinPFC, out _coverTile);
 
 		float targetCamo = _targetEntity.Data.GetStaticStealthBonus(true)
 			+ (_targetEntity.HowIsUnitVisible == NeuronalMembraneEquipmentData.VisionTypes.Optic ? _targetEntity.GetAdditionaryStatBonus(EntityEquipmentData.SecondaryStat.StatType.VisualCamo, null)
@@ -300,7 +301,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 		float evationRatio = _attackAction.Data.type == EntityActionData.ActionType.DistanceAttack
 				? _targetEntity.Data.BrainData.distanceEvasion + _targetEntity.GetAdditionaryStatBonus(EntityEquipmentData.SecondaryStat.StatType.DistanceEvasion, null)
 				: _targetEntity.Data.BrainData.meleeEvasion + _targetEntity.GetAdditionaryStatBonus(EntityEquipmentData.SecondaryStat.StatType.MeleeEvasion, null);
-		float coverRatio = GridManager.Instance.IsThereCoverBeween(_attackAction.PerformingEntity, _targetEntity, doesWinPFC)
+		float coverRatio = isThereCoverBetween
 				? GameConfig.current.game.entityCoverBonus
 				: 0f;
 		//float distanceRatio = GameConfig.current.game.distanceTypeSpreadEvaluation[GetWeaponDistanceTypeFrom(_targetEntity, _attackAction, doesWinPFC)];
@@ -329,6 +330,9 @@ public class EntityEquipmentPlugin : EntityPlugin
 
 		float roll = Random.Range(0f, 1f);
 		bool isAttackSuccessful = finalScore >= 1f || finalScore >= roll;
+
+		if (isAttackSuccessful || !isThereCoverBetween || roll > GameConfig.current.game.entityCoverBonus)
+			_coverTile = null;
 
 		StringBuilder detailsBuilder = new();
 		detailsBuilder.AppendLine($"<b>{m_linkedEntity.ID}</b> attacks <b>{_targetEntity.ID}</b>");

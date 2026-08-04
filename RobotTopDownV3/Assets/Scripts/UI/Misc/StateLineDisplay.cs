@@ -37,6 +37,7 @@ public class StateLineDisplay :
 		m_recordedAction = _recordedAction;
 		m_canvas = _slot.Canvas;
 		m_originalSlot = _slot;
+		m_timeAtStart = _recordedAction.action.timeAtStart;
 
 		_slot.SetDisplay(this);
 
