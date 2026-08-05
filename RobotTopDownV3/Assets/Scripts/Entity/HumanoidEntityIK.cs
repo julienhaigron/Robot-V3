@@ -28,15 +28,15 @@ public class HumanoidEntityIK : MonoBehaviour
 		m_defaultHandPivotRotation = handGrabSocket.localRotation;
 	}
 
-	[ContextMenu("Setup Bodyparts")]
+	[Button()]
 	private void SetupBodyparts ()
 	{
 		animator = GetComponent<Animator>();
-		bodypartsTransform.Add(CharacterBodyPart.RightHand, FindObjectContainingName("RightHand", transform));
-		bodypartsTransform.Add(CharacterBodyPart.LeftHand, FindObjectContainingName("LeftHand", transform));
-		bodypartsTransform.Add(CharacterBodyPart.Spine, FindObjectContainingName("Spine", transform));
-		bodypartsTransform.Add(CharacterBodyPart.RightFoot, FindObjectContainingName("RightFoot", transform));
-		bodypartsTransform.Add(CharacterBodyPart.LeftFoot, FindObjectContainingName("LeftFoot", transform));
+		bodypartsTransform.Add(CharacterBodyPart.RightHand, FindObjectContainingName("hand.right", transform));
+		bodypartsTransform.Add(CharacterBodyPart.LeftHand, FindObjectContainingName("hand.left", transform));
+		bodypartsTransform.Add(CharacterBodyPart.Spine, FindObjectContainingName("spine1", transform));
+		bodypartsTransform.Add(CharacterBodyPart.RightFoot, FindObjectContainingName("foot.right", transform));
+		bodypartsTransform.Add(CharacterBodyPart.LeftFoot, FindObjectContainingName("foot.left", transform));
 	}
 
 	private void Reset ()
