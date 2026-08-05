@@ -53,6 +53,8 @@ public class GameManager : SingletonPersistant<GameManager>
 
 	private List<Item> m_items = new();
 	public List<Item> Items => m_items;
+	private Dictionary<int, int> m_playersPoints = new();
+	public Dictionary<int, int> PlayersPoints => m_playersPoints;
 
 	private void Start ()
 	{
@@ -120,6 +122,7 @@ public class GameManager : SingletonPersistant<GameManager>
 	{
 		m_currentMission = _mission;
 		m_playerTwoEntityDatas = new();
+		m_playersPoints.Clear();
 		foreach (UnitPreset ennemi in _mission.enemies)
 		{
 			m_playerTwoEntityDatas.Add(ennemi.GetSavedData());
@@ -195,6 +198,19 @@ public class GameManager : SingletonPersistant<GameManager>
 				ennemies.Add(ennemi.GetSavedData());
 			}
 			m_playersEntityAnchor[1].Init(ennemies, 1);
+			if (m_currentMission.type == MissionData.MissionType.Assassinat)
+			{
+				m_playersEntityAnchor[0].SpawnEntity(m_currentMission.kingUnit.GetSavedData(), 0);
+				m_playersEntityAnchor[1].SpawnEntity(m_currentMission.kingUnit.GetSavedData(), 1);
+			}
+			if (m_currentMission.type == MissionData.MissionType.Construction || m_currentMission.type == MissionData.MissionType.Sabotage)
+			{
+				foreach (UnitPreset preset in m_currentMission.allies)
+				{
+					m_playersEntityAnchor[0].SpawnEntity(preset.GetSavedData(), 0);
+					m_playersEntityAnchor[1].SpawnEntity(preset.GetSavedData(), 1);
+				}
+			}
 		}
 		else if (m_currentGameMode == GameMode.Online)
 		{
@@ -255,6 +271,14 @@ public class GameManager : SingletonPersistant<GameManager>
 		_itemData.OnInvokeItem(_invocatorTool, newItem);
 
 		return newItem;
+	}
+
+	public void AddPointsToPlayer ( int _playerID, int _amount )
+	{
+		if (m_playersPoints.ContainsKey(_playerID))
+			m_playersPoints[_playerID] += _amount;
+		else
+			m_playersPoints.Add(_playerID, _amount);
 	}
 
 	public void EndGame ( EndLevelPopup.GameResult _gameResult )

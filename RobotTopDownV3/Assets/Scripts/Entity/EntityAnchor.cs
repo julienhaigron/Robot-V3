@@ -8,9 +8,15 @@ public class EntityAnchor : MonoBehaviour
 
 	private List<Entity> m_entities = new();
     public List<Entity> Entities => m_entities;
+	private Entity m_king;
+    public Entity King => m_king;
 
 	[SerializeField] private List<Spawn> m_staticSpawnCoordinates = new();
-	[SerializeField] private List<Spawn> m_dynamicSpawnCoordinates = new();
+	[SerializeField] private List<Spawn> m_dynamicSpawnCoordinates = new(); 
+	private HashSet<Tile> m_zones = new();
+	public HashSet<Tile> Zones => m_zones;
+	private HashSet<Tile> m_structures = new();
+	public HashSet<Tile> Structures => m_structures;
 
 	[System.Serializable]
 	public struct Spawn
@@ -48,18 +54,30 @@ public class EntityAnchor : MonoBehaviour
 			m_dynamicSpawnCoordinates.Add(newSpawn);
 	}
 
-	public void ClearSpawns ()
+	public void Clear ()
 	{
 		m_staticSpawnCoordinates.Clear();
+		m_dynamicSpawnCoordinates.Clear();
+		m_zones.Clear();
+		m_structures.Clear();
 	}
 
 	public void Init (List<EntitySavedData> _robots, int _playerID)
 	{
-		int unitCount = 0;
 		foreach(EntitySavedData robotData in _robots)
 		{
-			SpawnEntity(robotData, (100 * _playerID) + unitCount++, _playerID); //0 - 99 id slots for units per player
+			SpawnEntity(robotData, _playerID);
 		}
+	}
+
+	public void AddStructure ( Tile _tile )
+	{
+		m_structures.Add(_tile);
+	}
+
+	public void AddZone ( Tile _tile )
+	{
+		m_zones.Add(_tile);
 	}
 
 	private Spawn GetRandomAvailableSpawnPosition ()
@@ -80,12 +98,18 @@ public class EntityAnchor : MonoBehaviour
 		return new Spawn(new TileCoordinates(0, 0, 0), Spawn.InitializationState.Failure, true, false);
 	}
 
-	private void SpawnEntity ( EntitySavedData _entityData, int _entityID, int _playerID)
+	public void SpawnEntity ( EntitySavedData _entityData, int _playerID)
 	{
+		int entityID = (100 * _playerID) + m_entities.Count; //0 - 99 id slots for units per player
 		Entity entity = Instantiate(_entityData.FrameData.prefab, transform);
 		m_entities.Add(entity);
-		entity.Init(_entityData, GetRandomAvailableSpawnPosition(), _entityID, _playerID);
+		entity.Init(_entityData, GetRandomAvailableSpawnPosition(), entityID, _playerID);
 		onEntityAdded?.Invoke(entity);
+	}
+
+	private void RegisterEntityAsKing(Entity _kingEntity )
+	{
+		m_king = _kingEntity;
 	}
 
 	public void SpawnEntityDuringPlay ( EntitySavedData _entityData, int _entityID, int _playerID, int _tileID, System.Action _onEndSpawn = null )

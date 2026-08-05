@@ -71,8 +71,8 @@ public class GridManager : Singleton<GridManager>
 		m_entitiesVisions.Clear();
 		m_entitiesVisions.Add(0, new(new Dictionary<Entity, HashSet<Tile>>()));
 		m_entitiesVisions.Add(1, new(new Dictionary<Entity, HashSet<Tile>>()));
-		GameManager.Instance.PlayersEntityAnchor[0].ClearSpawns();
-		GameManager.Instance.PlayersEntityAnchor[1].ClearSpawns();
+		GameManager.Instance.PlayersEntityAnchor[0].Clear();
+		GameManager.Instance.PlayersEntityAnchor[1].Clear();
 
 		for (int i = 0; i < m_tiles.Length; i++)
 		{
@@ -98,6 +98,14 @@ public class GridManager : Singleton<GridManager>
 					GameManager.Instance.PlayersEntityAnchor[0].AddSpawn(m_tiles[i].coordinates, true, groundType == TileGroundType.StaticPlayerSpawn);
 				else if (groundType == TileGroundType.StaticEnemySpawn || groundType == TileGroundType.DynamicPlayerSpawn)
 					GameManager.Instance.PlayersEntityAnchor[1].AddSpawn(m_tiles[i].coordinates, false, groundType == TileGroundType.StaticEnemySpawn);
+				else if(groundType == TileGroundType.PlayerStructure)
+					GameManager.Instance.PlayersEntityAnchor[0].AddStructure(m_tiles[i]);
+				else if (groundType == TileGroundType.EnemyStructure)
+					GameManager.Instance.PlayersEntityAnchor[1].AddStructure(m_tiles[i]);
+				else if (groundType == TileGroundType.Zone)
+					GameManager.Instance.PlayersEntityAnchor[0].AddZone(m_tiles[i]);
+				/*else if (groundType == TileGroundType.EnemyZone)
+					GameManager.Instance.PlayersEntityAnchor[1].AddZone(m_tiles[i]);*/
 			}
 
 		}
@@ -1123,7 +1131,9 @@ public enum TileGroundType
 	Trigger,
 	DynamicPlayerSpawn,
 	DynamicEnemySpawn,
-	Structure
+	PlayerStructure,
+	EnemyStructure,
+	Zone
 }
 
 public static class HexDirectionExtensions

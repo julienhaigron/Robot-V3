@@ -37,6 +37,8 @@ public class Tile : MonoBehaviour
 
 	[SerializeField] private Wall m_wall;
 	public Wall Wall { get { return m_wall; } set { m_wall = value; } }
+	[SerializeField] private Wall m_structure;
+	public Wall Structure { get { return m_structure; } set { m_structure = value; } }
 
 	private List<EntityStatusEnumID> m_status = new();
 	public List<EntityStatusEnumID> Status => m_status;
@@ -145,6 +147,10 @@ public class Tile : MonoBehaviour
 				SetupWall(_data.wallType, _data.orientation, _data.groundType == TileGroundType.Cover);
 			else
 				RemoveWall();
+			if (_data.groundType == TileGroundType.PlayerStructure || _data.groundType == TileGroundType.EnemyStructure)
+				SetupStructure();
+			else
+				RemoveStructure();
 		}
 
 		//SetActiveFOW(NeuronalMembraneEquipmentData.VisionTypes.Optical, false, true);
@@ -170,6 +176,28 @@ public class Tile : MonoBehaviour
 	}
 
 	public void RemoveWall ()
+	{
+		if (m_wall != null)
+		{
+			foreach (GameObject wallPart in m_wall.WallParts)
+				DestroyImmediate(wallPart);
+			m_wall.WallParts.Clear();
+
+			DestroyImmediate(m_wall);
+			m_wall = null;
+		}
+	}
+
+	public void SetupStructure ( )
+	{
+		if (m_wall == null)
+			m_wall = gameObject.AddComponent<Wall>();
+		//m_wall = UnityEditor.Undo.AddComponent<Wall>(gameObject);
+
+		m_wall.InitStructure(this);
+	}
+
+	public void RemoveStructure ()
 	{
 		if (m_wall != null)
 		{

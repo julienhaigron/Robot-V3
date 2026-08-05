@@ -67,6 +67,13 @@ public class Wall : MonoBehaviour
 		Rotate(_orientation);
 	}
 
+	public void InitStructure(Tile _tile )
+	{
+		m_registeredHealth = m_hp;
+		LinkWithTile(_tile);
+		SetWallType(WallType.VerticalStrait, false);
+	}
+
 	public void LinkWithTile ( Tile _tile )
 	{
 		m_linkedTile = _tile;

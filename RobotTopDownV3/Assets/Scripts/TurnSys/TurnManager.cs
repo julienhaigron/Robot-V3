@@ -1062,44 +1062,111 @@ public class TurnManager : Singleton<TurnManager>
 
 	private bool IsGameFinished ( out bool _playerOneWin, out bool _playerTwoWin )
 	{
+		bool isPlayerOneAlive = false;
+		bool isPlayerTwolive = false;
+		foreach (Entity ally in GameManager.Instance.PlayersEntityAnchor[0].Entities)
+			if (!ally.Equipment.IsDead)
+				isPlayerOneAlive = true;
+
+		foreach (Entity enemy in GameManager.Instance.PlayersEntityAnchor[1].Entities)
+			if (!enemy.Equipment.IsDead)
+				isPlayerTwolive = true;
+
+		_playerOneWin = !isPlayerTwolive;
+		_playerTwoWin = !isPlayerOneAlive;
 		switch (GameManager.Instance.CurrentMission.type)
 		{
 			case MissionData.MissionType.Extermination:
-				_playerOneWin = true;
-				_playerTwoWin = true;
-				foreach (Entity ally in GameManager.Instance.PlayersEntityAnchor[0].Entities)
-				{
-					if (!ally.Equipment.IsDead)
-						_playerTwoWin = false;
-				}
-				foreach (Entity enemy in GameManager.Instance.PlayersEntityAnchor[1].Entities)
-				{
-					if (!enemy.Equipment.IsDead)
-						_playerOneWin = false;
-				}
-
-				return _playerOneWin || _playerTwoWin;
+				//nothing else to check
+				break;
 			case MissionData.MissionType.DefenseDeZone:
-				_playerOneWin = false;
-				_playerTwoWin = false;
-				return _playerOneWin || _playerTwoWin;
+				foreach(Tile zoneCenterTile in GameManager.Instance.PlayersEntityAnchor[0].Zones)
+				{
+					bool areAllEntityOfSameTeam1 = true;
+					int teamID1 = -1;
+					foreach(Tile tile in GridManager.Instance.GetTilesInVisionRange(zoneCenterTile, 0, GameConfig.current.game.zoneRange, true, false, false))
+					{
+						if (!tile.TryGetEntity(true, out Entity entity))
+							continue;
+
+						if (teamID1 != -1 && entity.OwnerID != teamID1)
+						{
+							areAllEntityOfSameTeam1 = false;
+							break;
+						}
+						else
+							teamID1 = entity.OwnerID;
+					}
+					if (areAllEntityOfSameTeam1)
+						GameManager.Instance.AddPointsToPlayer(teamID1, 1);
+				}
+				if (GameManager.Instance.PlayersPoints[0] >= 5)
+					_playerOneWin = true;
+				if (GameManager.Instance.PlayersPoints[1] >= 5)
+					_playerTwoWin = true;
+				break;
 			case MissionData.MissionType.ControleDePoint:
-				_playerOneWin = false;
-				_playerTwoWin = false;
-				return _playerOneWin || _playerTwoWin;
+				
+				bool areAllEntityOfSameTeam2 = true;
+				int teamID2 = -1;
+				foreach (Tile zoneCenterTile in GameManager.Instance.PlayersEntityAnchor[0].Zones)
+				{
+					foreach (Tile tile in GridManager.Instance.GetTilesInVisionRange(zoneCenterTile, 0, GameConfig.current.game.zoneRange, true, false, false))
+					{
+						if (!tile.TryGetEntity(true, out Entity entity))
+							continue;
+
+						if (teamID2 != -1 && entity.OwnerID != teamID2)
+						{
+							areAllEntityOfSameTeam2 = false;
+							break;
+						}
+						else
+							teamID2 = entity.OwnerID;
+					}
+					if (!areAllEntityOfSameTeam2)
+						break;
+				}
+				if (areAllEntityOfSameTeam2)
+				{
+					if (teamID2 == 0)
+						_playerOneWin = true;
+					else
+						_playerTwoWin = true;
+				}
+				break;
 			case MissionData.MissionType.Construction:
-				_playerOneWin = false;
-				_playerTwoWin = false;
-				return _playerOneWin || _playerTwoWin;
+				//TBD
+				break;
 			case MissionData.MissionType.Sabotage:
-				_playerOneWin = false;
-				_playerTwoWin = false;
-				return _playerOneWin || _playerTwoWin;
-			default:
-				_playerOneWin = false;
-				_playerTwoWin = false;
-				return _playerOneWin || _playerTwoWin;
+				bool areAllPlayerOneStructureDead = true;
+				bool areAllPlayerTwoStructureDead = true;
+				foreach (Tile structureTile in GameManager.Instance.PlayersEntityAnchor[0].Structures)
+				{
+					if (structureTile.Structure.Health > 0)
+						areAllPlayerOneStructureDead = false;
+				}
+				foreach (Tile structureTile in GameManager.Instance.PlayersEntityAnchor[1].Structures)
+				{
+					if (structureTile.Structure.Health > 0)
+						areAllPlayerTwoStructureDead = false;
+				}
+				if(areAllPlayerOneStructureDead)
+					_playerTwoWin = true;
+				if(areAllPlayerTwoStructureDead)
+					_playerOneWin = true;
+				
+				break;
+			case MissionData.MissionType.Assassinat:
+				if(GameManager.Instance.PlayersEntityAnchor[0].King.Equipment.IsDead)
+					_playerTwoWin = true;
+				if(GameManager.Instance.PlayersEntityAnchor[1].King.Equipment.IsDead)
+					_playerOneWin = true;
+
+				break;
 		}
+		
+		return _playerOneWin || _playerTwoWin;
 	}
 
 	[Button]

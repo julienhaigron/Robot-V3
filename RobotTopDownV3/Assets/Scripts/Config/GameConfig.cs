@@ -30,6 +30,9 @@ public partial class GameConfig : ScriptableObject
 		public int nbOfDayInCycle = 7;
 		public int maxInventoryCapacity = 80;
 
+		[Title("Micro")]
+		public int zoneRange = 2;
+
 		[Title("Actions")]
 		public EntityActionData defaultStartAction;
 		public float actionDuration = 1f;
