@@ -138,13 +138,12 @@ public class TournamentPanel : AUIPanel
 				m_componentRewardDisplays[i].Hide();
 		}
 
-		List<CurrencyType> keys = _data.currencyRewards.Keys.ToList();
 		for (int i = 0; i < m_currencyRewardDisplays.Length; i++)
 		{
-			if (_data.currencyRewards.Keys.Count > i)
+			if (_data.currencyRewards.Length > i)
 			{
 				m_currencyRewardDisplays[i].Show();
-				m_currencyRewardDisplays[i].Init(keys[i], _data.currencyRewards[keys[i]], true, null);
+				m_currencyRewardDisplays[i].Init(_data.currencyRewards[i].type, _data.currencyRewards[i].amount, true, null);
 			}
 			else
 				m_currencyRewardDisplays[i].Hide();

@@ -54,21 +54,18 @@ public class EndLevelPopup : AUIPopup
 
 		//rewards
 		m_allocatedRewardPoint = _gameResult == GameResult.Win ? 5 : _gameResult == GameResult.Draw ? 3 : 2;
-		/*if (!_missionData.areRewardsRandom)
-		{*/
-		List<CurrencyType> currencies = _missionData.currencyRewards.Keys.ToList();
+
 		for (int i = 0; i < m_rewardCurrencyDisplays.Length; i++)
 		{
-			if (_missionData.currencyRewards.Keys.Count > i)
+			if (_missionData.currencyRewards.Length > i)
 			{
 				m_rewardCurrencyDisplays[i].Show();
-				m_rewardCurrencyDisplays[i].Init(currencies[i], _missionData.currencyRewards[currencies[i]], true, OnInterractWithRewardBtn);
+				m_rewardCurrencyDisplays[i].Init(_missionData.currencyRewards[i].type, _missionData.currencyRewards[i].amount, true, OnInterractWithRewardBtn);
 				if (_gameResult == GameResult.Win)
 					m_rewardCurrencyDisplays[i].SetIsSelected(true);
 			}
 			else
 				m_rewardCurrencyDisplays[i].Hide();
-
 		}
 
 		for (int i = 0; i < m_rewardComponentDisplays.Length; i++)
@@ -96,11 +93,6 @@ public class EndLevelPopup : AUIPopup
 			else
 				m_rewardUnitsDisplays[i].Hide();
 		}
-		/*}
-		else
-		{
-			//TODO : design rng rules
-		}*/
 
 	}
 

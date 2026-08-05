@@ -27,7 +27,15 @@ public class MissionData : ScriptableEnum<MissionDataEnumID>
 	}
 
     //public bool areRewardsRandom = false;
-    public SerializableDictionary<CurrencyType, ulong> currencyRewards;
+    public CurrencyReward[] currencyRewards;
+
+    [System.Serializable]
+    public class CurrencyReward
+	{
+        public CurrencyType type;
+        public ulong amount;
+    }
+
     public List<EntityEquipmentData> equipmentRewards;
     public List<UnitPreset> unitReward;
 

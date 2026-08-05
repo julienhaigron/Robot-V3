@@ -75,13 +75,12 @@ public class SelectMissionPanel : AUIPanel
 				m_componentRewardDisplays[i].Hide();
 		}
 
-		List<CurrencyType> keys = _missionBtn.MissionData.currencyRewards.Keys.ToList();
 		for (int i = 0; i < m_currencyRewardDisplays.Length; i++)
 		{
-			if (_missionBtn.MissionData.currencyRewards.Keys.Count > i)
+			if (_missionBtn.MissionData.currencyRewards.Length > i)
 			{
 				m_currencyRewardDisplays[i].Show();
-				m_currencyRewardDisplays[i].Init(keys[i], _missionBtn.MissionData.currencyRewards[keys[i]], true, null);
+				m_currencyRewardDisplays[i].Init(_missionBtn.MissionData.currencyRewards[i].type, _missionBtn.MissionData.currencyRewards[i].amount, true, null);
 			}
 			else
 				m_currencyRewardDisplays[i].Hide();

@@ -23,9 +23,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: f1c8471b909fdef48a7095c3bc0262e1, type: 2}
   - {fileID: 11400000, guid: b61e831c62b27bf45977d92c240a7352, type: 2}
   type: 0
-  currencyRewards:
-    keys: 
-    values: 
+  currencyRewards: []
   equipmentRewards:
   - {fileID: 11400000, guid: fc8376e620bda264a92c001ce5c29514, type: 2}
   - {fileID: 11400000, guid: 3bc5f635f2642c34e92eabe5df018c72, type: 2}
