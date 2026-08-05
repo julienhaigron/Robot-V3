@@ -4,6 +4,7 @@ using System.Collections.Generic;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
+using Sirenix.OdinInspector;
 
 [CreateAssetMenu(fileName = "MissionData", menuName = "ScriptableObject/MissionData")]
 public class MissionData : ScriptableEnum<MissionDataEnumID>
@@ -25,6 +26,9 @@ public class MissionData : ScriptableEnum<MissionDataEnumID>
         Construction,
         Sabotage,
 	}
+
+    [ShowIf("@type == MissionType.Construction || type == MissionType.Sabotage ")]
+    public UnitPreset[] allies;
 
     //public bool areRewardsRandom = false;
     public CurrencyReward[] currencyRewards;
