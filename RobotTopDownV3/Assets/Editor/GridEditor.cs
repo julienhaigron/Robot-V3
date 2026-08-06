@@ -37,7 +37,13 @@ public class GridEditor : Editor
 		}
 		if (GUILayout.Button("Fix Grid"))
 		{
-			GridManager.Instance.FixTiles();
+			gridManager.FixTiles();
+		}
+		if(GUILayout.Button("Empty Grid"))
+		{
+			gridManager.GridData.tiles = new GridData.TileData[gridManager.GridData.height * gridManager.GridData.width];
+			gridManager.GenerateGrid();
+			gridManager.SaveGrid();
 		}
 	}
 
