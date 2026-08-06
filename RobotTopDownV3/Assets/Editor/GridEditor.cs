@@ -41,9 +41,10 @@ public class GridEditor : Editor
 		}
 		if(GUILayout.Button("Empty Grid"))
 		{
-			gridManager.GridData.tiles = new GridData.TileData[gridManager.GridData.height * gridManager.GridData.width];
+			gridManager.EmptyGridTypesInScene();
+			/*gridManager.GridData.tiles = new GridData.TileData[gridManager.GridData.height * gridManager.GridData.width];
 			gridManager.GenerateGrid();
-			gridManager.SaveGrid();
+			gridManager.SaveGrid();*/
 		}
 	}
 
@@ -185,7 +186,7 @@ public class GridTool : EditorTool
 			tile.Wall.SetWallType(next, tile.GroundType == TileGroundType.Cover);
 			e.Use();
 		}
-		else if (e.keyCode == KeyCode.T)
+		else if (e.keyCode == KeyCode.R)
 		{
 			Wall.WallType next =
 				(Wall.WallType)(((int)tile.Wall.Type - 1) % (int)Wall.WallType.Total);

@@ -45,9 +45,10 @@ public class GridEditorWindows : EditorWindow
 
 		if (GUILayout.Button("Empty Grid"))
 		{
-			GridManager.Instance.GridData.tiles = new GridData.TileData[GridManager.Instance.GridData.height * GridManager.Instance.GridData.width];
+			GridManager.Instance.EmptyGridTypesInScene();
+			/*GridManager.Instance.GridData.tiles = new GridData.TileData[GridManager.Instance.GridData.height * GridManager.Instance.GridData.width];
 			GridManager.Instance.GenerateGrid();
-			GridManager.Instance.SaveGrid();
+			GridManager.Instance.SaveGrid();*/
 		}
 
 		EditorGUILayout.EndHorizontal();

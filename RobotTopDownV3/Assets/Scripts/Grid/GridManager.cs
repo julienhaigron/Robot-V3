@@ -136,6 +136,15 @@ public class GridManager : Singleton<GridManager>
 		//InitFOW();
 	}
 
+	public void EmptyGridTypesInScene ()
+	{
+		foreach(Tile tile in m_tiles)
+		{
+			tile.SetGroundType(TileGroundType.Empty);
+			tile.RemoveWall();
+		}
+	}
+
 	private void CreateTile ( int _x, int _z, int _i, GridData.TileData _data = null )
 	{
 		Vector3 position;
