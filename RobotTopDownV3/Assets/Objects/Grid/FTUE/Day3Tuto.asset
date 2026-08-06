@@ -423,7 +423,7 @@ MonoBehaviour:
   - groundType: 0
     wallType: 0
     orientation: 0
-  - groundType: 0
+  - groundType: 4
     wallType: 0
     orientation: 0
   - groundType: 0
