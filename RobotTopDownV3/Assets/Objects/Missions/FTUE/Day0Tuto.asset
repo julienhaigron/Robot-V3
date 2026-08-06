@@ -20,9 +20,11 @@ MonoBehaviour:
   map: {fileID: 11400000, guid: d8afdd042a3da2545b273c4705222f0c, type: 2}
   enemies:
   - {fileID: 11400000, guid: 9836f91ed23168045825c58159b00445, type: 2}
-  - {fileID: 11400000, guid: 3cea4ca1d17080547a35225eb12892eb, type: 2}
   - {fileID: 11400000, guid: ee259ca15552e6049977310aa169701b, type: 2}
+  - {fileID: 11400000, guid: 3cea4ca1d17080547a35225eb12892eb, type: 2}
   type: 0
+  allies: []
+  kingUnit: {fileID: 0}
   currencyRewards: []
   equipmentRewards: []
   unitReward:
