@@ -93,6 +93,8 @@ public class Wall : MonoBehaviour
 		{
 			m_hp -= pair.Value;
 		}
+		if (m_hp < m_registeredHealth)
+			m_registeredHealth = m_hp;
 		if (m_hp <= 0)
 			Destroy();
 	}

@@ -279,20 +279,20 @@ public class EntityEquipmentPlugin : EntityPlugin
 			case EntityActionData.AOEType.ThinArc:
 			case EntityActionData.AOEType.Chain:
 			case EntityActionData.AOEType.Ray:
-				tilesInRange.AddRange(GridManager.Instance.GetTilesInArc(from, minDistance, maxDistance, m_linkedEntity.Displacement.CurrentOrientation, ignoreObstacles, _action.Data.aoeType == EntityActionData.AOEType.LargeArc, _isThisTurn));
+				tilesInRange.AddRange(GridManager.Instance.GetTilesInVisionCone(from, minDistance, maxDistance, m_linkedEntity.Displacement.CurrentOrientation, ignoreObstacles, _isThisTurn));
 				break;
 			case EntityActionData.AOEType.LargeCone:
 			case EntityActionData.AOEType.ThinCone:
 				if (_action.Data.aoECenterType == EntityActionData.AOECenterType.Self)
 					tilesInRange.AddRange(GridManager.Instance.GetTilesInCone(from, minDistance, maxDistance, m_linkedEntity.Displacement.CurrentOrientation, _action.Data.aoeType, _isThisTurn));
 				else
-					tilesInRange.AddRange(GridManager.Instance.GetTilesInArc(from, minDistance, maxDistance, m_linkedEntity.Displacement.CurrentOrientation, ignoreObstacles, false, _isThisTurn));
+					tilesInRange.AddRange(GridManager.Instance.GetTilesInVisionCone(from, minDistance, maxDistance, m_linkedEntity.Displacement.CurrentOrientation, ignoreObstacles, _isThisTurn));
 				break;
 			case EntityActionData.AOEType.Circle:
 				if (_action.Data.aoECenterType == EntityActionData.AOECenterType.Self)
 					tilesInRange.AddRange(GridManager.Instance.GetTilesInVisionRange(from, minDistance, maxDistance, ignoreObstacles, _isThisTurn, false));
 				else
-					tilesInRange.AddRange(GridManager.Instance.GetTilesInArc(from, minDistance, maxDistance, m_linkedEntity.Displacement.CurrentOrientation, ignoreObstacles, false, _isThisTurn));
+					tilesInRange.AddRange(GridManager.Instance.GetTilesInVisionCone(from, minDistance, maxDistance, m_linkedEntity.Displacement.CurrentOrientation, ignoreObstacles, _isThisTurn));
 				break;
 		}
 

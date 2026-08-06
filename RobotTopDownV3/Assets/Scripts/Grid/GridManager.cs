@@ -71,8 +71,11 @@ public class GridManager : Singleton<GridManager>
 		m_entitiesVisions.Clear();
 		m_entitiesVisions.Add(0, new(new Dictionary<Entity, HashSet<Tile>>()));
 		m_entitiesVisions.Add(1, new(new Dictionary<Entity, HashSet<Tile>>()));
-		GameManager.Instance.PlayersEntityAnchor[0].Clear();
-		GameManager.Instance.PlayersEntityAnchor[1].Clear();
+		if (!_isEditorMode)
+		{
+			GameManager.Instance.PlayersEntityAnchor[0].Clear();
+			GameManager.Instance.PlayersEntityAnchor[1].Clear();
+		}
 
 		for (int i = 0; i < m_tiles.Length; i++)
 		{
@@ -98,7 +101,7 @@ public class GridManager : Singleton<GridManager>
 					GameManager.Instance.PlayersEntityAnchor[0].AddSpawn(m_tiles[i].coordinates, true, groundType == TileGroundType.StaticPlayerSpawn);
 				else if (groundType == TileGroundType.StaticEnemySpawn || groundType == TileGroundType.DynamicPlayerSpawn)
 					GameManager.Instance.PlayersEntityAnchor[1].AddSpawn(m_tiles[i].coordinates, false, groundType == TileGroundType.StaticEnemySpawn);
-				else if(groundType == TileGroundType.PlayerStructure)
+				else if (groundType == TileGroundType.PlayerStructure)
 					GameManager.Instance.PlayersEntityAnchor[0].AddStructure(m_tiles[i]);
 				else if (groundType == TileGroundType.EnemyStructure)
 					GameManager.Instance.PlayersEntityAnchor[1].AddStructure(m_tiles[i]);
@@ -205,7 +208,7 @@ public class GridManager : Singleton<GridManager>
 		{
 			GridData.TileData tileData = m_gridData.tiles[counter++];
 
-			if (tile.GroundType != TileGroundType.Wall && tile.GroundType == TileGroundType.Cover)
+			if (tile.GroundType != TileGroundType.Wall && tile.GroundType != TileGroundType.Cover)
 			{
 				tile.RemoveWall();
 			}
@@ -362,7 +365,7 @@ public class GridManager : Singleton<GridManager>
 		switch (_type)
 		{
 			case EntityActionData.AOEType.Circle:
-				
+
 				tilesInRange.AddRange(GetTilesInVisionRange(_from, _minDistance, _maxDistance, false, _isThisTurn, false));
 				break;
 			case EntityActionData.AOEType.Ray:
@@ -680,7 +683,7 @@ public class GridManager : Singleton<GridManager>
 	{
 		HashSet<Tile> result = new();
 
-		List<Tile> candidates = GetTilesInVisionRange( _from, _minDistance, _maxDistance, _ignoreObstacles, _isThisTurn, false);
+		List<Tile> candidates = GetTilesInVisionRange(_from, _minDistance, _maxDistance, _ignoreObstacles, _isThisTurn, false);
 
 		foreach (Tile tile in candidates)
 		{
@@ -691,53 +694,19 @@ public class GridManager : Singleton<GridManager>
 		return result;
 	}
 
-	private bool IsInVisionCone ( Tile _origin, Tile _target, HexDirection _facing )
+	public bool IsInVisionCone ( Tile _origin, Tile _target, HexDirection _facing )
 	{
 		int dx = _target.coordinates.X - _origin.coordinates.X;
 		int dy = _target.coordinates.Y - _origin.coordinates.Y;
 		int dz = _target.coordinates.Z - _origin.coordinates.Z;
 
-		int forward;
-		int side;
-
-		switch (_facing)
-		{
-			case HexDirection.NE:
-				forward = dx;
-				side = dz;
-				break;
-			case HexDirection.E:
-				forward = -dy;
-				side = dz;
-				break;
-			case HexDirection.SE:
-				forward = -dz;
-				side = dx;
-				break;
-			case HexDirection.SW:
-				forward = -dx;
-				side = -dz;
-				break;
-			case HexDirection.W:
-				forward = dy;
-				side = -dz;
-				break;
-			case HexDirection.NW:
-				forward = dz;
-				side = -dx;
-				break;
-			default:
-				return false;
-		}
-
+		var (fx, fy, fz) = TileCoordinates.ForwardVectors[(int)_facing];
+		int forward = dx * fx + dy * fy + dz * fz;
 		if (forward <= 0)
 			return false;
 
-		int distance = _origin.coordinates.DistanceTo(_target.coordinates);
-
-		if (distance != forward)
-			return false;
-
+		int distance = Mathf.Max(Mathf.Abs(dx), Mathf.Max(Mathf.Abs(dy), Mathf.Abs(dz)));
+		int side = dx * fz - dz * fx;
 		int halfWidth = distance / 2;
 
 		return Mathf.Abs(side) <= halfWidth;
@@ -756,6 +725,8 @@ public class GridManager : Singleton<GridManager>
 		int attackerPosition = _didAttackerWinPFC ? TurnManager.Instance.GetPositionOfEntityAtEndOfRound(_attacker.ID) : TurnManager.Instance.GetPositionOfEntityAtEndOfRound(_attacker.ID);
 		int defenderPosition = !_didAttackerWinPFC ? TurnManager.Instance.GetPositionOfEntityAtEndOfRound(_target.ID) : TurnManager.Instance.GetPositionOfEntityAtEndOfRound(_target.ID);
 		//int attackOrientation = GetClosestOrientation(m_tiles[attackerPosition], m_tiles[defenderPosition]);
+
+		//here
 
 		List<Tile> tilesInLine = GetTilesInRay(Tiles[attackerPosition], Tiles[defenderPosition], _didAttackerWinPFC, true);
 		foreach (Tile tile in tilesInLine)
@@ -831,13 +802,13 @@ public class GridManager : Singleton<GridManager>
 		return angle;
 	}
 
-	public void ClearTileOutile ()
+	/*public void ClearTileOutile ()
 	{
 		for (int i = 0; i < m_tiles.Length; i++)
 		{
 			m_tiles[i].UI.ResetOutline();
 		}
-	}
+	}*/
 
 	public void BFS ( Tile _from, int _maxDistance = -1, Tile _to = null, bool _isThisTurn = false, bool _ignoreObstacles = false )
 	{

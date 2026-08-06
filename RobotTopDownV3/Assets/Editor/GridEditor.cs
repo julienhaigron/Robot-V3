@@ -164,22 +164,31 @@ public class GridTool : EditorTool
 		if (!hit.transform.parent.TryGetComponent(out Tile tile) || tile.Wall == null)
 			return;
 
-		if (e.keyCode == KeyCode.R)
+
+		if (e.keyCode == KeyCode.F)
 		{
 			//Undo.RecordObject(GridManager.Instance.gridData, "Rotate Wall");
 			//Undo.RecordObject(tile, "Rotate Wall");
 			//Undo.RecordObject(tile.Wall, "Rotate Wall");
+			tile.Wall.RotateLeft();
+			e.Use();
+		}
+		else if (e.keyCode == KeyCode.G)
+		{
 			tile.Wall.RotateRight();
 			e.Use();
 		}
-
-		if (e.keyCode == KeyCode.T)
+		else if (e.keyCode == KeyCode.T)
 		{
-			//Undo.RecordObject(GridManager.Instance.gridData, "Change Wall Type");
-			//Undo.RecordObject(tile, "Change Wall Type");
-			//Undo.RecordObject(tile.Wall, "Change Wall Type");
 			Wall.WallType next =
 				(Wall.WallType)(((int)tile.Wall.Type + 1) % (int)Wall.WallType.Total);
+			tile.Wall.SetWallType(next, tile.GroundType == TileGroundType.Cover);
+			e.Use();
+		}
+		else if (e.keyCode == KeyCode.T)
+		{
+			Wall.WallType next =
+				(Wall.WallType)(((int)tile.Wall.Type - 1) % (int)Wall.WallType.Total);
 			tile.Wall.SetWallType(next, tile.GroundType == TileGroundType.Cover);
 			e.Use();
 		}

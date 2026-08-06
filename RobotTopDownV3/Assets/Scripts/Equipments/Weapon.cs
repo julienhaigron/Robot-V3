@@ -51,7 +51,7 @@ public class Weapon : MonoBehaviour
 		m_attackCR = StartCoroutine(PerformAttackCR(_attackAction));
 	}
 	
-	protected virtual IEnumerator PerformAttackCR ( AttackAction _attackAction )
+	protected IEnumerator PerformAttackCR ( AttackAction _attackAction )
 	{
 		int lastSuccessfullAttackIndex = -1;
 		for (int i = 0; i < _attackAction.attacksInfos.Length; i++)
@@ -165,7 +165,7 @@ public class Weapon : MonoBehaviour
 		yield return m_singleAttackDuration;
 	}
 
-	protected virtual List<Entity> GetTargets (AttackAction _attackAction, int _attackIndex )
+	protected List<Entity> GetTargets (AttackAction _attackAction, int _attackIndex )
 	{
 		List<Entity> targets = new();
 		EntityActionData attackData = GameAssets.current.game.entityActionsData[_attackAction.enumID];
@@ -174,12 +174,17 @@ public class Weapon : MonoBehaviour
 		{
 			foreach (Tile tile in m_user.Equipment.GetTilesInAoERange(_attackAction, GridManager.Instance.Tiles[_attackAction.targetTileIDs[_attackIndex]]))
 			{
+				tile.UI.SetOutlineColor(Color.red);
 				if (tile.TryGetEntity(true, out Entity entity))
 					targets.Add(entity);
 			}
 		}
 		else
-			targets.Add(GameManager.Instance.GetEntityFromID(_attackAction.targetedEntityIDs[_attackIndex]));
+		{
+			Entity target = GameManager.Instance.GetEntityFromID(_attackAction.targetedEntityIDs[_attackIndex]);
+			target.Displacement.Coordinates.GetTile().UI.SetOutlineColor(Color.red);
+			targets.Add(target);
+		}
 
 		return targets;
 	}

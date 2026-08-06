@@ -31,11 +31,6 @@ public class TileUIPlugin : MonoBehaviour
 		m_outline.color = Color.black;
 	}
 
-	public void EnableOutline ()
-	{
-		m_outline.enabled = true;
-	}
-
 	public void SetOutlineColor ( Color color )
 	{
 		m_outline.color = color;

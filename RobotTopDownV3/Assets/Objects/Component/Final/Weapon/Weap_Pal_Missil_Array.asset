@@ -27,4 +27,4 @@ MonoBehaviour:
   attackAnimationSuccessId: 
   attackAnimationFailureId: 
   isTwoHanded: 0
-  singleAttackAnimationDuration: 0
+  singleAttackAnimationDuration: 0.3

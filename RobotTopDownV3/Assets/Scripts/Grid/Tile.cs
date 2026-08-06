@@ -145,12 +145,13 @@ public class Tile : MonoBehaviour
 			SetGroundType(_data.groundType);
 			if (_data.groundType == TileGroundType.Wall || _data.groundType == TileGroundType.Cover)
 				SetupWall(_data.wallType, _data.orientation, _data.groundType == TileGroundType.Cover);
-			else
-				RemoveWall();
-			if (_data.groundType == TileGroundType.PlayerStructure || _data.groundType == TileGroundType.EnemyStructure)
+			else if (_data.groundType == TileGroundType.PlayerStructure || _data.groundType == TileGroundType.EnemyStructure)
 				SetupStructure();
 			else
+			{
+				RemoveWall();
 				RemoveStructure();
+			}
 		}
 
 		//SetActiveFOW(NeuronalMembraneEquipmentData.VisionTypes.Optical, false, true);
