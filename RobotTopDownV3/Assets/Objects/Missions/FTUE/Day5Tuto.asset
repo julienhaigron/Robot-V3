@@ -19,7 +19,8 @@ MonoBehaviour:
   afterMissionDialogue: {fileID: 0}
   map: {fileID: 11400000, guid: 454b040d02ec9424d83e130d512ab9f8, type: 2}
   enemies:
-  - {fileID: 11400000, guid: 3cea4ca1d17080547a35225eb12892eb, type: 2}
+  - {fileID: 11400000, guid: c92ee65d97d70a64aa6fabe82a6c54b1, type: 2}
+  - {fileID: 11400000, guid: 51718069453269f48b37aa23b67dce55, type: 2}
   type: 0
   allies: []
   kingUnit: {fileID: 0}
