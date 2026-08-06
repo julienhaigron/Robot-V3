@@ -14,6 +14,7 @@ public class EntitySkinPlugin : EntityPlugin
 	public HumanoidEntityIK IK => m_humanoidEntityIK;
 
 	[SerializeField] private SerializableDictionary<EntityActionData.ActionType, string> m_animationKeyPerActionDictionary;
+	[SerializeField] private string m_idleAnimationKey;
 
 
 	public override void Init ( EntitySavedData _entityData )
@@ -28,7 +29,12 @@ public class EntitySkinPlugin : EntityPlugin
 	public void OnStartActionPerform (AEntityAction _action)
 	{
 		m_animator.speed = 1;
-		if (m_animationKeyPerActionDictionary.ContainsKey(_action.Data.type))
+		if(_action.enumID == EntityActionEnumID.Wait)
+		{
+			//m_animator.SetTrigger(m_idleAnimationKey);
+
+		}
+		else if (m_animationKeyPerActionDictionary.ContainsKey(_action.Data.type))
 			m_animator.SetTrigger(m_animationKeyPerActionDictionary[_action.Data.type]);
 	}
 
