@@ -936,11 +936,11 @@ public class GridManager : Singleton<GridManager>
 
 	public void OnNewEntity ( Entity _entity )
 	{
-		if (!_entity.IsAlliedTo(GameManager.Instance.PlayerID))
+		Tile from = _entity.Displacement.Coordinates.GetTile();
+		if (!_entity.IsAlliedTo(GameManager.Instance.PlayerID) && !from.IsVisible)
 			_entity.SetVisibility(false, NeuronalMembraneEquipmentData.VisionTypes.Optic);
 
 		PlayerVisionRangeInfo visionInfo = m_entitiesVisions[_entity.OwnerID];
-		Tile from = _entity.Displacement.Coordinates.GetTile();
 		int range = GameConfig.current.game.rangePerVisionType[_entity.Data.NeuronalMembraneData.visionType];
 
 		HashSet<Tile> tilesInVision = GetTilesInVisionRange(from, 0, range, false, true, true).ToHashSet();
