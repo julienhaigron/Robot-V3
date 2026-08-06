@@ -194,7 +194,7 @@ public class PlayerController : Singleton<PlayerController>
 
 	public void SelectEntity ( Entity _entity )
 	{
-		if (m_selectedEntity == _entity)
+		if (m_selectedEntity == _entity && _entity != null)
 		{
 			m_selectedEntity.Deselect();
 			m_selectedEntity = null;
@@ -214,8 +214,9 @@ public class PlayerController : Singleton<PlayerController>
 			m_selectedEntity.Deselect();
 			//onEntitySelected?.Invoke(null);
 			m_selectedEntity = _entity;
-			onEntitySelected?.Invoke(m_selectedEntity.ID);
-			m_selectedEntity.Select();
+			onEntitySelected?.Invoke(m_selectedEntity == null ? null : m_selectedEntity.ID);
+			if(m_selectedEntity != null)
+				m_selectedEntity.Select();
 		}
 	}
 
@@ -354,7 +355,7 @@ public class PlayerController : Singleton<PlayerController>
 
 	private void OnEndInputPhase ()
 	{
-		m_selectedEntity = null;
+		SelectEntity(null);
 		ClearActionOnTileDisplay();
 		ClearGhostActionOnTileDisplay();
 		ClearGhostEntitiesAndItems();
@@ -362,7 +363,7 @@ public class PlayerController : Singleton<PlayerController>
 
 	private void OnEndLevel ()
 	{
-		m_selectedEntity = null;
+		SelectEntity(null);
 		ClearActionOnTileDisplay();
 		ClearGhostActionOnTileDisplay();
 

@@ -18,6 +18,7 @@ MonoBehaviour:
   game:
     nbOfDayInCycle: 7
     maxInventoryCapacity: 80
+    zoneRange: 2
     defaultStartAction: {fileID: 0}
     actionDuration: 1
     entityRotationDuration: 0.5
@@ -35,8 +36,8 @@ MonoBehaviour:
       - 0.1
       - 0.2
       - 0.4
-    entityMovementEvasionBonus: 2
-    entityCoverBonus: 2
+    entityMovementEvasionBonus: 0.2
+    entityCoverBonus: 0.2
     rangePerVisionType:
       keys: 000000000100000002000000
       values: 0a0000000500000014000000

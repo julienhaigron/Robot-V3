@@ -22,7 +22,7 @@ public class WeaponEquipmentData : EntityEquipmentData
     public string attackAnimationSuccessId;
     public string attackAnimationFailureId;
     public bool isTwoHanded = false;
-    public float singleAttackAnimationDuration;
+    public float singleAttackAnimationDuration = .3f;
 
     public enum DamageType
 	{
