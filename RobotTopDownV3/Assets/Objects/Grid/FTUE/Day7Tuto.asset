@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 37ef5237e0304794c954eedd6aca2264, type: 3}
   m_Name: Day7Tuto
   m_EditorClassIdentifier: 
-  width: 19
+  width: 18
   height: 13
   tiles:
   - groundType: 0
@@ -198,10 +198,10 @@ MonoBehaviour:
   - groundType: 0
     wallType: 0
     orientation: 0
-  - groundType: 8
+  - groundType: 0
     wallType: 0
     orientation: 0
-  - groundType: 8
+  - groundType: 0
     wallType: 0
     orientation: 0
   - groundType: 0
@@ -222,10 +222,10 @@ MonoBehaviour:
   - groundType: 0
     wallType: 0
     orientation: 0
-  - groundType: 8
+  - groundType: 0
     wallType: 0
     orientation: 0
-  - groundType: 8
+  - groundType: 0
     wallType: 0
     orientation: 0
   - groundType: 0
@@ -255,13 +255,13 @@ MonoBehaviour:
   - groundType: 0
     wallType: 0
     orientation: 0
-  - groundType: 8
+  - groundType: 0
     wallType: 0
     orientation: 0
-  - groundType: 8
+  - groundType: 0
     wallType: 0
     orientation: 0
-  - groundType: 8
+  - groundType: 0
     wallType: 0
     orientation: 0
   - groundType: 0
@@ -279,13 +279,13 @@ MonoBehaviour:
   - groundType: 0
     wallType: 0
     orientation: 0
-  - groundType: 8
+  - groundType: 0
     wallType: 0
     orientation: 0
-  - groundType: 8
+  - groundType: 0
     wallType: 0
     orientation: 0
-  - groundType: 8
+  - groundType: 0
     wallType: 0
     orientation: 0
   - groundType: 0
@@ -308,45 +308,9 @@ MonoBehaviour:
     orientation: 0
   - groundType: 0
     wallType: 0
-    orientation: 0
-  - groundType: 1
-    wallType: 3
-    orientation: 0
-  - groundType: 1
-    wallType: 1
-    orientation: 0
-  - groundType: 1
-    wallType: 1
-    orientation: 0
-  - groundType: 1
-    wallType: 1
-    orientation: 0
-  - groundType: 6
-    wallType: 1
     orientation: 0
-  - groundType: 6
-    wallType: 1
-    orientation: 0
-  - groundType: 6
-    wallType: 1
-    orientation: 0
-  - groundType: 6
-    wallType: 1
-    orientation: 0
-  - groundType: 1
-    wallType: 1
-    orientation: 0
-  - groundType: 1
-    wallType: 1
-    orientation: 0
-  - groundType: 1
-    wallType: 1
-    orientation: 0
-  - groundType: 1
-    wallType: 1
-    orientation: 0
-  - groundType: 1
-    wallType: 6
+  - groundType: 0
+    wallType: 0
     orientation: 0
   - groundType: 0
     wallType: 0
@@ -366,7 +330,7 @@ MonoBehaviour:
   - groundType: 0
     wallType: 0
     orientation: 0
-  - groundType: 1
+  - groundType: 0
     wallType: 0
     orientation: 0
   - groundType: 0
@@ -402,7 +366,7 @@ MonoBehaviour:
   - groundType: 0
     wallType: 0
     orientation: 0
-  - groundType: 1
+  - groundType: 0
     wallType: 0
     orientation: 0
   - groundType: 0
@@ -423,45 +387,42 @@ MonoBehaviour:
   - groundType: 0
     wallType: 0
     orientation: 0
-  - groundType: 1
-    wallType: 2
+  - groundType: 0
+    wallType: 0
     orientation: 0
-  - groundType: 1
-    wallType: 1
+  - groundType: 0
+    wallType: 0
     orientation: 0
-  - groundType: 1
-    wallType: 1
+  - groundType: 0
+    wallType: 0
     orientation: 0
-  - groundType: 1
-    wallType: 1
+  - groundType: 0
+    wallType: 0
     orientation: 0
-  - groundType: 6
-    wallType: 1
+  - groundType: 0
+    wallType: 0
     orientation: 0
-  - groundType: 6
-    wallType: 1
+  - groundType: 0
+    wallType: 0
     orientation: 0
-  - groundType: 6
-    wallType: 1
+  - groundType: 0
+    wallType: 0
     orientation: 0
-  - groundType: 6
-    wallType: 1
+  - groundType: 0
+    wallType: 0
     orientation: 0
-  - groundType: 1
-    wallType: 1
+  - groundType: 0
+    wallType: 0
     orientation: 0
-  - groundType: 1
-    wallType: 1
+  - groundType: 0
+    wallType: 0
     orientation: 0
-  - groundType: 1
-    wallType: 1
+  - groundType: 0
+    wallType: 0
     orientation: 0
-  - groundType: 1
-    wallType: 1
+  - groundType: 0
+    wallType: 0
     orientation: 0
-  - groundType: 1
-    wallType: 5
-    orientation: 3
   - groundType: 0
     wallType: 0
     orientation: 0
@@ -483,13 +444,13 @@ MonoBehaviour:
   - groundType: 0
     wallType: 0
     orientation: 0
-  - groundType: 9
+  - groundType: 0
     wallType: 0
     orientation: 0
-  - groundType: 9
+  - groundType: 0
     wallType: 0
     orientation: 0
-  - groundType: 9
+  - groundType: 0
     wallType: 0
     orientation: 0
   - groundType: 0
@@ -507,13 +468,13 @@ MonoBehaviour:
   - groundType: 0
     wallType: 0
     orientation: 0
-  - groundType: 9
+  - groundType: 0
     wallType: 0
     orientation: 0
-  - groundType: 9
+  - groundType: 0
     wallType: 0
     orientation: 0
-  - groundType: 9
+  - groundType: 0
     wallType: 0
     orientation: 0
   - groundType: 0
@@ -540,10 +501,10 @@ MonoBehaviour:
   - groundType: 0
     wallType: 0
     orientation: 0
-  - groundType: 9
+  - groundType: 0
     wallType: 0
     orientation: 0
-  - groundType: 9
+  - groundType: 0
     wallType: 0
     orientation: 0
   - groundType: 0
@@ -564,10 +525,10 @@ MonoBehaviour:
   - groundType: 0
     wallType: 0
     orientation: 0
-  - groundType: 9
+  - groundType: 0
     wallType: 0
     orientation: 0
-  - groundType: 9
+  - groundType: 0
     wallType: 0
     orientation: 0
   - groundType: 0
