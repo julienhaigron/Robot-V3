@@ -19,6 +19,8 @@ public class FrameEquipmentData : EntityEquipmentData
 	public int occultorSlotAvailable = 2;
 	[BoxGroup(GroupID = "Stat"), Parsing("SecondaryStat")]
 	public SecondaryStat[] statBonuses;
+	[Parsing("Is immortal")]
+	public bool isImmortal;
 
 	public override StatDescription[] GetDesciption ()
 	{

@@ -85,7 +85,6 @@ public class TurnManager : Singleton<TurnManager>
 		}
 	}
 
-	//why is this a struct?
 	[Serializable]
 	public class RecordedAction : INetworkSerializable
 	{
@@ -97,6 +96,7 @@ public class TurnManager : Singleton<TurnManager>
 		public AEntityAction action;
 		public EntityActionEnumID freeActionType;
 		public AEntityAction freeAction;
+		public bool isFreeActionPlayedFirst = false;
 
 		public void NetworkSerialize<T> ( BufferSerializer<T> serializer ) where T : IReaderWriter
 		{
@@ -137,13 +137,15 @@ public class TurnManager : Singleton<TurnManager>
 				}
 				freeAction.NetworkSerialize(serializer);
 			}
+			serializer.SerializeValue(ref isFreeActionPlayedFirst);
 		}
 
-		public void AddActionMod ( AEntityAction _actionMod )
+		public void AddActionMod ( AEntityAction _actionMod, bool _isPlayedFirst )
 		{
 			_actionMod.OnModActionAdded(action);
 			freeActionType = _actionMod.enumID;
 			freeAction = _actionMod;
+			isFreeActionPlayedFirst = _isPlayedFirst;
 		}
 	}
 
@@ -908,17 +910,31 @@ public class TurnManager : Singleton<TurnManager>
 		if (_recordedAction.freeActionType != EntityActionEnumID.Wait
 			&& _recordedAction.freeActionType != EntityActionEnumID.Unknowned)
 		{
-			_recordedAction.action.onEndTick = ( performingEntity, didEndAction ) =>
+
+			if (_recordedAction.isFreeActionPlayedFirst)
 			{
-				_recordedAction.freeAction.onEndTick = OnActionEndTick;
+				_recordedAction.freeAction.onEndTick = ( performingEntity, didEndAction ) =>
+				{
+					_recordedAction.action.onEndTick = OnActionEndTick;
+					_recordedAction.action.PerformTick(_recordedAction.entityState);
+				};
 				_recordedAction.freeAction.PerformTick(_recordedAction.entityState);
-			};
+			}
+			else
+			{
+				_recordedAction.action.onEndTick = ( performingEntity, didEndAction ) =>
+				{
+					_recordedAction.freeAction.onEndTick = OnActionEndTick;
+					_recordedAction.freeAction.PerformTick(_recordedAction.entityState);
+				};
+				_recordedAction.action.PerformTick(_recordedAction.entityState);
+			}
 		}
 		else
+		{
 			_recordedAction.action.onEndTick = OnActionEndTick;
-
-		//LogConsole.AddLog(_recordedAction.performingEntityID + " performes " + _recordedAction.action.ToString() + " in state " + _recordedAction.entityState, LogConsole.LogEventType.DebugSys);
-		_recordedAction.action.PerformTick(_recordedAction.entityState);
+			_recordedAction.action.PerformTick(_recordedAction.entityState);
+		}
 	}
 
 	private void OnActionEndTick ( int _performingEntityID, bool _didEndAction )
@@ -1065,11 +1081,11 @@ public class TurnManager : Singleton<TurnManager>
 		bool isPlayerOneAlive = false;
 		bool isPlayerTwolive = false;
 		foreach (Entity ally in GameManager.Instance.PlayersEntityAnchor[0].Entities)
-			if (!ally.Equipment.IsDead)
+			if (!ally.Equipment.IsDead && !ally.Data.FrameData.isImmortal)
 				isPlayerOneAlive = true;
 
 		foreach (Entity enemy in GameManager.Instance.PlayersEntityAnchor[1].Entities)
-			if (!enemy.Equipment.IsDead)
+			if (!enemy.Equipment.IsDead && !enemy.Data.FrameData.isImmortal)
 				isPlayerTwolive = true;
 
 		_playerOneWin = !isPlayerTwolive;
@@ -1080,11 +1096,11 @@ public class TurnManager : Singleton<TurnManager>
 				//nothing else to check
 				break;
 			case MissionData.MissionType.DefenseDeZone:
-				foreach(Tile zoneCenterTile in GameManager.Instance.PlayersEntityAnchor[0].Zones)
+				foreach (Tile zoneCenterTile in GameManager.Instance.PlayersEntityAnchor[0].Zones)
 				{
 					bool areAllEntityOfSameTeam1 = true;
 					int teamID1 = -1;
-					foreach(Tile tile in GridManager.Instance.GetTilesInVisionRange(zoneCenterTile, 0, GameConfig.current.game.zoneRange, true, false, false))
+					foreach (Tile tile in GridManager.Instance.GetTilesInVisionRange(zoneCenterTile, 0, GameConfig.current.game.zoneRange, true, false, false))
 					{
 						if (!tile.TryGetEntity(true, out Entity entity))
 							continue;
@@ -1106,7 +1122,7 @@ public class TurnManager : Singleton<TurnManager>
 					_playerTwoWin = true;
 				break;
 			case MissionData.MissionType.ControleDePoint:
-				
+
 				bool areAllEntityOfSameTeam2 = true;
 				int teamID2 = -1;
 				foreach (Tile zoneCenterTile in GameManager.Instance.PlayersEntityAnchor[0].Zones)
@@ -1151,21 +1167,21 @@ public class TurnManager : Singleton<TurnManager>
 					if (structureTile.Structure.Health > 0)
 						areAllPlayerTwoStructureDead = false;
 				}
-				if(areAllPlayerOneStructureDead)
+				if (areAllPlayerOneStructureDead)
 					_playerTwoWin = true;
-				if(areAllPlayerTwoStructureDead)
+				if (areAllPlayerTwoStructureDead)
 					_playerOneWin = true;
-				
+
 				break;
 			case MissionData.MissionType.Assassinat:
-				if(GameManager.Instance.PlayersEntityAnchor[0].King.Equipment.IsDead)
+				if (GameManager.Instance.PlayersEntityAnchor[0].King.Equipment.IsDead)
 					_playerTwoWin = true;
-				if(GameManager.Instance.PlayersEntityAnchor[1].King.Equipment.IsDead)
+				if (GameManager.Instance.PlayersEntityAnchor[1].King.Equipment.IsDead)
 					_playerOneWin = true;
 
 				break;
 		}
-		
+
 		return _playerOneWin || _playerTwoWin;
 	}
 
