@@ -96,21 +96,6 @@ MonoBehaviour:
   - groundType: 0
     wallType: 0
     orientation: 0
-  - groundType: 0
-    wallType: 0
-    orientation: 0
-  - groundType: 8
-    wallType: 0
-    orientation: 0
-  - groundType: 8
-    wallType: 0
-    orientation: 0
-  - groundType: 8
-    wallType: 0
-    orientation: 0
-  - groundType: 8
-    wallType: 0
-    orientation: 0
   - groundType: 8
     wallType: 0
     orientation: 0
@@ -121,39 +106,6 @@ MonoBehaviour:
     wallType: 0
     orientation: 0
   - groundType: 0
-    wallType: 0
-    orientation: 0
-  - groundType: 5
-    wallType: 0
-    orientation: 0
-  - groundType: 5
-    wallType: 0
-    orientation: 0
-  - groundType: 5
-    wallType: 0
-    orientation: 0
-  - groundType: 5
-    wallType: 0
-    orientation: 0
-  - groundType: 5
-    wallType: 0
-    orientation: 0
-  - groundType: 5
-    wallType: 0
-    orientation: 0
-  - groundType: 5
-    wallType: 0
-    orientation: 0
-  - groundType: 5
-    wallType: 0
-    orientation: 0
-  - groundType: 5
-    wallType: 0
-    orientation: 0
-  - groundType: 5
-    wallType: 0
-    orientation: 0
-  - groundType: 5
     wallType: 0
     orientation: 0
   - groundType: 0
@@ -168,10 +120,43 @@ MonoBehaviour:
   - groundType: 8
     wallType: 0
     orientation: 0
-  - groundType: 8
+  - groundType: 0
     wallType: 0
     orientation: 0
-  - groundType: 8
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 0
     wallType: 0
     orientation: 0
   - groundType: 8
@@ -184,6 +169,21 @@ MonoBehaviour:
     wallType: 0
     orientation: 0
   - groundType: 0
+    wallType: 0
+    orientation: 0
+  - groundType: 0
+    wallType: 0
+    orientation: 0
+  - groundType: 0
+    wallType: 0
+    orientation: 0
+  - groundType: 8
+    wallType: 0
+    orientation: 0
+  - groundType: 8
+    wallType: 0
+    orientation: 0
+  - groundType: 8
     wallType: 0
     orientation: 0
   - groundType: 0
@@ -231,11 +231,11 @@ MonoBehaviour:
   - groundType: 1
     wallType: 1
     orientation: 0
-  - groundType: 1
-    wallType: 1
+  - groundType: 0
+    wallType: 0
     orientation: 0
-  - groundType: 1
-    wallType: 1
+  - groundType: 0
+    wallType: 0
     orientation: 0
   - groundType: 1
     wallType: 1
@@ -591,6 +591,417 @@ MonoBehaviour:
   - groundType: 0
     wallType: 0
     orientation: 0
+  - groundType: 0
+    wallType: 0
+    orientation: 0
+  - groundType: 0
+    wallType: 0
+    orientation: 0
+  - groundType: 0
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 0
+    wallType: 0
+    orientation: 0
+  - groundType: 0
+    wallType: 0
+    orientation: 0
+  - groundType: 0
+    wallType: 0
+    orientation: 0
+  - groundType: 0
+    wallType: 0
+    orientation: 0
+  - groundType: 0
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 0
+    wallType: 0
+    orientation: 0
+  - groundType: 0
+    wallType: 0
+    orientation: 0
+  - groundType: 0
+    wallType: 0
+    orientation: 0
+  - groundType: 0
+    wallType: 0
+    orientation: 0
+  - groundType: 0
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 0
+    wallType: 0
+    orientation: 0
+  - groundType: 0
+    wallType: 0
+    orientation: 0
+  - groundType: 0
+    wallType: 0
+    orientation: 0
+  - groundType: 0
+    wallType: 0
+    orientation: 0
+  - groundType: 0
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 0
+    wallType: 0
+    orientation: 0
+  - groundType: 0
+    wallType: 0
+    orientation: 0
+  - groundType: 0
+    wallType: 0
+    orientation: 0
+  - groundType: 0
+    wallType: 0
+    orientation: 0
+  - groundType: 0
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 0
+    wallType: 0
+    orientation: 0
+  - groundType: 0
+    wallType: 0
+    orientation: 0
+  - groundType: 0
+    wallType: 0
+    orientation: 0
+  - groundType: 0
+    wallType: 0
+    orientation: 0
+  - groundType: 0
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 0
+    wallType: 0
+    orientation: 0
+  - groundType: 0
+    wallType: 0
+    orientation: 0
+  - groundType: 6
+    wallType: 1
+    orientation: 2
+  - groundType: 0
+    wallType: 0
+    orientation: 0
+  - groundType: 0
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 0
+    wallType: 0
+    orientation: 0
+  - groundType: 0
+    wallType: 0
+    orientation: 0
+  - groundType: 6
+    wallType: 1
+    orientation: 1
+  - groundType: 0
+    wallType: 0
+    orientation: 0
+  - groundType: 0
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 0
+    wallType: 0
+    orientation: 0
+  - groundType: 0
+    wallType: 0
+    orientation: 0
+  - groundType: 6
+    wallType: 1
+    orientation: 2
+  - groundType: 0
+    wallType: 0
+    orientation: 0
+  - groundType: 0
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 0
+    wallType: 0
+    orientation: 0
+  - groundType: 0
+    wallType: 0
+    orientation: 0
+  - groundType: 6
+    wallType: 1
+    orientation: 1
+  - groundType: 0
+    wallType: 0
+    orientation: 0
+  - groundType: 0
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 0
+    wallType: 0
+    orientation: 0
+  - groundType: 0
+    wallType: 0
+    orientation: 0
+  - groundType: 6
+    wallType: 1
+    orientation: 2
+  - groundType: 0
+    wallType: 0
+    orientation: 0
+  - groundType: 0
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 0
+    wallType: 0
+    orientation: 0
+  - groundType: 0
+    wallType: 0
+    orientation: 0
+  - groundType: 6
+    wallType: 1
+    orientation: 1
+  - groundType: 0
+    wallType: 0
+    orientation: 0
+  - groundType: 0
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 0
+    wallType: 0
+    orientation: 0
+  - groundType: 0
+    wallType: 0
+    orientation: 0
+  - groundType: 6
+    wallType: 1
+    orientation: 2
+  - groundType: 0
+    wallType: 0
+    orientation: 0
+  - groundType: 0
+    wallType: 0
+    orientation: 0
+  - groundType: 0
+    wallType: 0
+    orientation: 0
+  - groundType: 0
+    wallType: 0
+    orientation: 0
+  - groundType: 0
+    wallType: 0
+    orientation: 0
+  - groundType: 0
+    wallType: 0
+    orientation: 0
+  - groundType: 0
+    wallType: 0
+    orientation: 0
+  - groundType: 0
+    wallType: 0
+    orientation: 0
   - groundType: 6
     wallType: 1
     orientation: 1
@@ -639,13 +1050,13 @@ MonoBehaviour:
   - groundType: 0
     wallType: 0
     orientation: 0
-  - groundType: 5
+  - groundType: 0
     wallType: 0
     orientation: 0
-  - groundType: 5
+  - groundType: 0
     wallType: 0
     orientation: 0
-  - groundType: 5
+  - groundType: 0
     wallType: 0
     orientation: 0
   - groundType: 0
@@ -655,477 +1066,66 @@ MonoBehaviour:
     wallType: 0
     orientation: 0
   - groundType: 6
+    wallType: 1
+    orientation: 1
+  - groundType: 0
+    wallType: 0
+    orientation: 0
+  - groundType: 0
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 0
+    wallType: 0
+    orientation: 0
+  - groundType: 0
+    wallType: 0
+    orientation: 0
+  - groundType: 1
     wallType: 7
-    orientation: 0
-  - groundType: 0
-    wallType: 0
-    orientation: 0
-  - groundType: 0
-    wallType: 0
-    orientation: 0
-  - groundType: 5
-    wallType: 0
-    orientation: 0
-  - groundType: 5
-    wallType: 0
-    orientation: 0
-  - groundType: 5
-    wallType: 0
-    orientation: 0
-  - groundType: 5
-    wallType: 0
-    orientation: 0
-  - groundType: 5
-    wallType: 0
-    orientation: 0
-  - groundType: 5
-    wallType: 0
-    orientation: 0
-  - groundType: 5
-    wallType: 0
-    orientation: 0
-  - groundType: 5
-    wallType: 0
-    orientation: 0
-  - groundType: 5
-    wallType: 0
-    orientation: 0
-  - groundType: 0
-    wallType: 0
-    orientation: 0
-  - groundType: 0
-    wallType: 0
-    orientation: 0
-  - groundType: 6
-    wallType: 7
-    orientation: 3
-  - groundType: 0
-    wallType: 0
-    orientation: 0
-  - groundType: 0
-    wallType: 0
-    orientation: 0
-  - groundType: 5
-    wallType: 0
-    orientation: 0
-  - groundType: 5
-    wallType: 0
-    orientation: 0
-  - groundType: 0
-    wallType: 0
-    orientation: 0
-  - groundType: 0
-    wallType: 0
-    orientation: 0
-  - groundType: 6
-    wallType: 1
-    orientation: 2
-  - groundType: 0
-    wallType: 0
-    orientation: 0
-  - groundType: 0
-    wallType: 0
-    orientation: 0
-  - groundType: 5
-    wallType: 0
-    orientation: 0
-  - groundType: 5
-    wallType: 0
-    orientation: 0
-  - groundType: 5
-    wallType: 0
-    orientation: 0
-  - groundType: 5
-    wallType: 0
-    orientation: 0
-  - groundType: 5
-    wallType: 0
-    orientation: 0
-  - groundType: 5
-    wallType: 0
-    orientation: 0
-  - groundType: 5
-    wallType: 0
-    orientation: 0
-  - groundType: 5
-    wallType: 0
-    orientation: 0
-  - groundType: 0
-    wallType: 0
-    orientation: 0
-  - groundType: 0
-    wallType: 0
-    orientation: 0
-  - groundType: 6
-    wallType: 1
     orientation: 1
-  - groundType: 0
-    wallType: 0
-    orientation: 0
-  - groundType: 0
-    wallType: 0
-    orientation: 0
-  - groundType: 5
-    wallType: 0
-    orientation: 0
-  - groundType: 5
-    wallType: 0
-    orientation: 0
-  - groundType: 5
-    wallType: 0
-    orientation: 0
-  - groundType: 5
-    wallType: 0
-    orientation: 0
-  - groundType: 0
-    wallType: 0
-    orientation: 0
-  - groundType: 0
-    wallType: 0
-    orientation: 0
-  - groundType: 6
-    wallType: 1
-    orientation: 2
-  - groundType: 0
-    wallType: 0
-    orientation: 0
-  - groundType: 0
-    wallType: 0
-    orientation: 0
-  - groundType: 5
-    wallType: 0
-    orientation: 0
-  - groundType: 5
-    wallType: 0
-    orientation: 0
-  - groundType: 5
-    wallType: 0
-    orientation: 0
-  - groundType: 5
-    wallType: 0
-    orientation: 0
-  - groundType: 5
-    wallType: 0
-    orientation: 0
-  - groundType: 5
-    wallType: 0
-    orientation: 0
-  - groundType: 5
-    wallType: 0
-    orientation: 0
-  - groundType: 0
-    wallType: 0
-    orientation: 0
-  - groundType: 0
-    wallType: 0
-    orientation: 0
-  - groundType: 6
-    wallType: 1
-    orientation: 1
-  - groundType: 0
-    wallType: 0
-    orientation: 0
-  - groundType: 0
-    wallType: 0
-    orientation: 0
-  - groundType: 5
-    wallType: 0
-    orientation: 0
-  - groundType: 5
-    wallType: 0
-    orientation: 0
-  - groundType: 5
-    wallType: 0
-    orientation: 0
-  - groundType: 5
-    wallType: 0
-    orientation: 0
-  - groundType: 0
-    wallType: 0
-    orientation: 0
-  - groundType: 0
-    wallType: 0
-    orientation: 0
-  - groundType: 6
-    wallType: 1
-    orientation: 2
-  - groundType: 0
-    wallType: 0
-    orientation: 0
-  - groundType: 0
-    wallType: 0
-    orientation: 0
-  - groundType: 5
-    wallType: 0
-    orientation: 0
-  - groundType: 5
-    wallType: 0
-    orientation: 0
-  - groundType: 5
-    wallType: 0
-    orientation: 0
-  - groundType: 5
-    wallType: 0
-    orientation: 0
-  - groundType: 5
-    wallType: 0
-    orientation: 0
-  - groundType: 5
-    wallType: 0
-    orientation: 0
-  - groundType: 0
-    wallType: 0
-    orientation: 0
-  - groundType: 0
-    wallType: 0
-    orientation: 0
-  - groundType: 6
-    wallType: 1
-    orientation: 1
-  - groundType: 0
-    wallType: 0
-    orientation: 0
-  - groundType: 0
-    wallType: 0
-    orientation: 0
-  - groundType: 5
-    wallType: 0
-    orientation: 0
-  - groundType: 5
-    wallType: 0
-    orientation: 0
-  - groundType: 5
-    wallType: 0
-    orientation: 0
-  - groundType: 5
-    wallType: 0
-    orientation: 0
-  - groundType: 5
-    wallType: 0
-    orientation: 0
-  - groundType: 5
-    wallType: 0
-    orientation: 0
-  - groundType: 0
-    wallType: 0
-    orientation: 0
-  - groundType: 0
-    wallType: 0
-    orientation: 0
-  - groundType: 6
-    wallType: 1
-    orientation: 2
-  - groundType: 0
-    wallType: 0
-    orientation: 0
-  - groundType: 0
-    wallType: 0
-    orientation: 0
-  - groundType: 5
-    wallType: 0
-    orientation: 0
-  - groundType: 5
-    wallType: 0
-    orientation: 0
-  - groundType: 5
-    wallType: 0
-    orientation: 0
-  - groundType: 5
-    wallType: 0
-    orientation: 0
-  - groundType: 5
-    wallType: 0
-    orientation: 0
-  - groundType: 0
-    wallType: 0
-    orientation: 0
-  - groundType: 0
-    wallType: 0
-    orientation: 0
-  - groundType: 6
-    wallType: 1
-    orientation: 1
-  - groundType: 0
-    wallType: 0
-    orientation: 0
-  - groundType: 0
-    wallType: 0
-    orientation: 0
-  - groundType: 5
-    wallType: 0
-    orientation: 0
-  - groundType: 5
-    wallType: 0
-    orientation: 0
-  - groundType: 5
-    wallType: 0
-    orientation: 0
-  - groundType: 5
-    wallType: 0
-    orientation: 0
-  - groundType: 5
-    wallType: 0
-    orientation: 0
-  - groundType: 5
-    wallType: 0
-    orientation: 0
-  - groundType: 0
-    wallType: 0
-    orientation: 0
-  - groundType: 0
-    wallType: 0
-    orientation: 0
-  - groundType: 6
-    wallType: 1
-    orientation: 2
-  - groundType: 0
-    wallType: 0
-    orientation: 0
-  - groundType: 0
-    wallType: 0
-    orientation: 0
-  - groundType: 0
-    wallType: 0
-    orientation: 0
-  - groundType: 0
-    wallType: 0
-    orientation: 0
-  - groundType: 0
-    wallType: 0
-    orientation: 0
-  - groundType: 0
-    wallType: 0
-    orientation: 0
-  - groundType: 0
-    wallType: 0
-    orientation: 0
-  - groundType: 0
-    wallType: 0
-    orientation: 0
-  - groundType: 6
-    wallType: 1
-    orientation: 1
-  - groundType: 0
-    wallType: 0
-    orientation: 0
-  - groundType: 0
-    wallType: 0
-    orientation: 0
-  - groundType: 5
-    wallType: 0
-    orientation: 0
-  - groundType: 5
-    wallType: 0
-    orientation: 0
-  - groundType: 5
-    wallType: 0
-    orientation: 0
-  - groundType: 5
-    wallType: 0
-    orientation: 0
-  - groundType: 5
-    wallType: 0
-    orientation: 0
-  - groundType: 5
-    wallType: 0
-    orientation: 0
-  - groundType: 5
-    wallType: 0
-    orientation: 0
-  - groundType: 5
-    wallType: 0
-    orientation: 0
-  - groundType: 0
-    wallType: 0
-    orientation: 0
-  - groundType: 0
-    wallType: 0
-    orientation: 0
-  - groundType: 6
-    wallType: 1
-    orientation: 2
-  - groundType: 0
-    wallType: 0
-    orientation: 0
-  - groundType: 0
-    wallType: 0
-    orientation: 0
-  - groundType: 0
-    wallType: 0
-    orientation: 0
-  - groundType: 0
-    wallType: 0
-    orientation: 0
-  - groundType: 0
-    wallType: 0
-    orientation: 0
-  - groundType: 0
-    wallType: 0
-    orientation: 0
-  - groundType: 0
-    wallType: 0
-    orientation: 0
-  - groundType: 6
-    wallType: 1
-    orientation: 1
-  - groundType: 0
-    wallType: 0
-    orientation: 0
-  - groundType: 0
-    wallType: 0
-    orientation: 0
-  - groundType: 5
-    wallType: 0
-    orientation: 0
-  - groundType: 5
-    wallType: 0
-    orientation: 0
-  - groundType: 5
-    wallType: 0
-    orientation: 0
-  - groundType: 5
-    wallType: 0
-    orientation: 0
-  - groundType: 5
-    wallType: 0
-    orientation: 0
-  - groundType: 5
-    wallType: 0
-    orientation: 0
-  - groundType: 5
-    wallType: 0
-    orientation: 0
-  - groundType: 5
-    wallType: 0
-    orientation: 0
-  - groundType: 0
-    wallType: 0
-    orientation: 0
-  - groundType: 0
-    wallType: 0
-    orientation: 0
-  - groundType: 6
-    wallType: 7
-    orientation: 1
-  - groundType: 6
+  - groundType: 1
     wallType: 1
     orientation: 0
-  - groundType: 6
+  - groundType: 1
     wallType: 1
     orientation: 0
-  - groundType: 6
+  - groundType: 0
+    wallType: 0
+    orientation: 0
+  - groundType: 0
+    wallType: 0
+    orientation: 0
+  - groundType: 1
     wallType: 1
     orientation: 0
-  - groundType: 6
+  - groundType: 1
     wallType: 1
     orientation: 0
-  - groundType: 6
-    wallType: 1
-    orientation: 0
-  - groundType: 6
-    wallType: 1
-    orientation: 0
-  - groundType: 6
+  - groundType: 1
     wallType: 7
     orientation: 2
   - groundType: 0
@@ -1167,21 +1167,6 @@ MonoBehaviour:
   - groundType: 0
     wallType: 0
     orientation: 0
-  - groundType: 0
-    wallType: 0
-    orientation: 0
-  - groundType: 9
-    wallType: 0
-    orientation: 0
-  - groundType: 9
-    wallType: 0
-    orientation: 0
-  - groundType: 9
-    wallType: 0
-    orientation: 0
-  - groundType: 9
-    wallType: 0
-    orientation: 0
   - groundType: 9
     wallType: 0
     orientation: 0
@@ -1192,39 +1177,6 @@ MonoBehaviour:
     wallType: 0
     orientation: 0
   - groundType: 0
-    wallType: 0
-    orientation: 0
-  - groundType: 0
-    wallType: 0
-    orientation: 0
-  - groundType: 5
-    wallType: 0
-    orientation: 0
-  - groundType: 5
-    wallType: 0
-    orientation: 0
-  - groundType: 5
-    wallType: 0
-    orientation: 0
-  - groundType: 5
-    wallType: 0
-    orientation: 0
-  - groundType: 5
-    wallType: 0
-    orientation: 0
-  - groundType: 5
-    wallType: 0
-    orientation: 0
-  - groundType: 5
-    wallType: 0
-    orientation: 0
-  - groundType: 5
-    wallType: 0
-    orientation: 0
-  - groundType: 5
-    wallType: 0
-    orientation: 0
-  - groundType: 5
     wallType: 0
     orientation: 0
   - groundType: 0
@@ -1242,7 +1194,40 @@ MonoBehaviour:
   - groundType: 9
     wallType: 0
     orientation: 0
-  - groundType: 9
+  - groundType: 0
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 5
+    wallType: 0
+    orientation: 0
+  - groundType: 0
     wallType: 0
     orientation: 0
   - groundType: 9
@@ -1252,6 +1237,21 @@ MonoBehaviour:
     wallType: 0
     orientation: 0
   - groundType: 0
+    wallType: 0
+    orientation: 0
+  - groundType: 0
+    wallType: 0
+    orientation: 0
+  - groundType: 0
+    wallType: 0
+    orientation: 0
+  - groundType: 0
+    wallType: 0
+    orientation: 0
+  - groundType: 9
+    wallType: 0
+    orientation: 0
+  - groundType: 9
     wallType: 0
     orientation: 0
   - groundType: 0

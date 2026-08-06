@@ -21,8 +21,8 @@ MonoBehaviour:
   enemies:
   - {fileID: 11400000, guid: 3cea4ca1d17080547a35225eb12892eb, type: 2}
   type: 0
-  currencyRewards:
-    keys: 01000000
-    values: 1e00000000000000
+  allies: []
+  kingUnit: {fileID: 0}
+  currencyRewards: []
   equipmentRewards: []
   unitReward: []
