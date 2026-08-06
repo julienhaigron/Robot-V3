@@ -165,6 +165,7 @@ public class GridTool : EditorTool
 		if (!hit.transform.parent.TryGetComponent(out Tile tile) || tile.Wall == null)
 			return;
 
+		int Wrap ( int value, int max ) => (value % max + max) % max;
 
 		if (e.keyCode == KeyCode.F)
 		{
@@ -188,9 +189,8 @@ public class GridTool : EditorTool
 		}
 		else if (e.keyCode == KeyCode.R)
 		{
-			Wall.WallType next =
-				(Wall.WallType)(((int)tile.Wall.Type - 1) % (int)Wall.WallType.Total);
-			tile.Wall.SetWallType(next, tile.GroundType == TileGroundType.Cover);
+			Wall.WallType previous = (Wall.WallType)Wrap((int)tile.Wall.Type - 1, (int)Wall.WallType.Total);
+			tile.Wall.SetWallType(previous, tile.GroundType == TileGroundType.Cover);
 			e.Use();
 		}
 	}
