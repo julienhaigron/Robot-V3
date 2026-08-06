@@ -42,6 +42,14 @@ public class GridEditorWindows : EditorWindow
 		{
 			GridManager.Instance.FixTiles();
 		}
+
+		if (GUILayout.Button("Empty Grid"))
+		{
+			GridManager.Instance.GridData.tiles = new GridData.TileData[GridManager.Instance.GridData.height * GridManager.Instance.GridData.width];
+			GridManager.Instance.GenerateGrid();
+			GridManager.Instance.SaveGrid();
+		}
+
 		EditorGUILayout.EndHorizontal();
 
 		//GridManager.Instance.isGroundBrushSelected = EditorGUILayout.Toggle("IsGroundBrushSelected: ", GridManager.Instance.isGroundBrushSelected, group);

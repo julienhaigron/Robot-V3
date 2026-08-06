@@ -676,6 +676,73 @@ public class GridManager : Singleton<GridManager>
 		return tilesInRange;
 	}
 
+	public HashSet<Tile> GetTilesInVisionCone ( Tile _from, int _minDistance, int _maxDistance, int _orientation, bool _ignoreObstacles, bool _isThisTurn )
+	{
+		HashSet<Tile> result = new();
+
+		List<Tile> candidates = GetTilesInVisionRange( _from, _minDistance, _maxDistance, _ignoreObstacles, _isThisTurn, false);
+
+		foreach (Tile tile in candidates)
+		{
+			if (IsInVisionCone(_from, tile, (HexDirection)_orientation))
+				result.Add(tile);
+		}
+
+		return result;
+	}
+
+	private bool IsInVisionCone ( Tile _origin, Tile _target, HexDirection _facing )
+	{
+		int dx = _target.coordinates.X - _origin.coordinates.X;
+		int dy = _target.coordinates.Y - _origin.coordinates.Y;
+		int dz = _target.coordinates.Z - _origin.coordinates.Z;
+
+		int forward;
+		int side;
+
+		switch (_facing)
+		{
+			case HexDirection.NE:
+				forward = dx;
+				side = dz;
+				break;
+			case HexDirection.E:
+				forward = -dy;
+				side = dz;
+				break;
+			case HexDirection.SE:
+				forward = -dz;
+				side = dx;
+				break;
+			case HexDirection.SW:
+				forward = -dx;
+				side = -dz;
+				break;
+			case HexDirection.W:
+				forward = dy;
+				side = -dz;
+				break;
+			case HexDirection.NW:
+				forward = dz;
+				side = -dx;
+				break;
+			default:
+				return false;
+		}
+
+		if (forward <= 0)
+			return false;
+
+		int distance = _origin.coordinates.DistanceTo(_target.coordinates);
+
+		if (distance != forward)
+			return false;
+
+		int halfWidth = distance / 2;
+
+		return Mathf.Abs(side) <= halfWidth;
+	}
+
 	public bool IsVisionLineClear ( Tile from, Tile to, bool isThisTurn )
 	{
 		List<Tile> ray = GetTilesInRay(from, to, isThisTurn, true);
