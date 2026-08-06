@@ -691,53 +691,19 @@ public class GridManager : Singleton<GridManager>
 		return result;
 	}
 
-	private bool IsInVisionCone ( Tile _origin, Tile _target, HexDirection _facing )
+	public bool IsInVisionCone ( Tile _origin, Tile _target, HexDirection _facing )
 	{
 		int dx = _target.coordinates.X - _origin.coordinates.X;
 		int dy = _target.coordinates.Y - _origin.coordinates.Y;
 		int dz = _target.coordinates.Z - _origin.coordinates.Z;
 
-		int forward;
-		int side;
-
-		switch (_facing)
-		{
-			case HexDirection.NE:
-				forward = dx;
-				side = dz;
-				break;
-			case HexDirection.E:
-				forward = -dy;
-				side = dz;
-				break;
-			case HexDirection.SE:
-				forward = -dz;
-				side = dx;
-				break;
-			case HexDirection.SW:
-				forward = -dx;
-				side = -dz;
-				break;
-			case HexDirection.W:
-				forward = dy;
-				side = -dz;
-				break;
-			case HexDirection.NW:
-				forward = dz;
-				side = -dx;
-				break;
-			default:
-				return false;
-		}
-
+		var (fx, fy, fz) = TileCoordinates.ForwardVectors[(int)_facing];
+		int forward = dx * fx + dy * fy + dz * fz;
 		if (forward <= 0)
 			return false;
 
-		int distance = _origin.coordinates.DistanceTo(_target.coordinates);
-
-		if (distance != forward)
-			return false;
-
+		int distance = Mathf.Max(Mathf.Abs(dx), Mathf.Max(Mathf.Abs(dy), Mathf.Abs(dz)));
+		int side = dx * fz - dz * fx;
 		int halfWidth = distance / 2;
 
 		return Mathf.Abs(side) <= halfWidth;
