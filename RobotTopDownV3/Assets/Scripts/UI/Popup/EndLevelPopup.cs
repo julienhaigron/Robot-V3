@@ -75,7 +75,7 @@ public class EndLevelPopup : AUIPopup
 				m_rewardComponentDisplays[i].Show();
 				m_rewardComponentDisplays[i].Init(_missionData.equipmentRewards[i], OnInterractWithRewardBtn);
 				if (_gameResult == GameResult.Win)
-					m_rewardCurrencyDisplays[i].SetIsSelected(true);
+					m_rewardComponentDisplays[i].SetIsSelected(true);
 			}
 			else
 				m_rewardComponentDisplays[i].Hide();
@@ -88,7 +88,7 @@ public class EndLevelPopup : AUIPopup
 				m_rewardUnitsDisplays[i].Show();
 				m_rewardUnitsDisplays[i].Init(_missionData.unitReward[i], OnInterractWithRewardBtn);
 				if (_gameResult == GameResult.Win)
-					m_rewardCurrencyDisplays[i].SetIsSelected(true);
+					m_rewardUnitsDisplays[i].SetIsSelected(true);
 			}
 			else
 				m_rewardUnitsDisplays[i].Hide();

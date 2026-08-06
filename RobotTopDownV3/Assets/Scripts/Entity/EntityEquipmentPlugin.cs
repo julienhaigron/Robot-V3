@@ -484,6 +484,11 @@ public class EntityEquipmentPlugin : EntityPlugin
 
 	public void TakeDamage ( TakeDamageCallback _damageInfo )
 	{
+		if (m_linkedEntity.Data.FrameData.isImmortal)
+		{
+			onHealthChangeDamage?.Invoke(_damageInfo);
+			return;
+		}
 		//apply flat damage reduction (ex: Shield)
 		Dictionary<WeaponEquipmentData.DamageType, int> damages = new(_damageInfo.damages);
 		if (_damageInfo.entityAttacker != null)

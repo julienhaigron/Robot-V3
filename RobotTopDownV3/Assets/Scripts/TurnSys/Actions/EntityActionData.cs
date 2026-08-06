@@ -21,6 +21,8 @@ public class EntityActionData : AParsableScriptableObject
 	public int tokenDuration = 1;
 	[Parsing("Is Mod Action")]
 	public bool isModAction = false;
+	[ShowIf("@isModAction")]
+	public bool isPlayedFirst = true;
 
 	[Title("Animation")]
 	public string preparationAnimationKey;

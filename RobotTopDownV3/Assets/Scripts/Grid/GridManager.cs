@@ -730,25 +730,27 @@ public class GridManager : Singleton<GridManager>
 
 	public bool IsThereCoverBeween ( Entity _attacker, Entity _target, bool _didAttackerWinPFC, out Tile _cover )
 	{
-		// Orientation depuis l’attaquant vers la cible
+		_cover = null;
 		int attackerPosition = _didAttackerWinPFC ? TurnManager.Instance.GetPositionOfEntityAtEndOfRound(_attacker.ID) : TurnManager.Instance.GetPositionOfEntityAtEndOfRound(_attacker.ID);
 		int defenderPosition = !_didAttackerWinPFC ? TurnManager.Instance.GetPositionOfEntityAtEndOfRound(_target.ID) : TurnManager.Instance.GetPositionOfEntityAtEndOfRound(_target.ID);
 		//int attackOrientation = GetClosestOrientation(m_tiles[attackerPosition], m_tiles[defenderPosition]);
 
-		
+		float highestCoverValue = -1;
 
 		List<Tile> tilesInLine = GetTilesInRay(Tiles[attackerPosition], Tiles[defenderPosition], _didAttackerWinPFC, true);
 		foreach (Tile tile in tilesInLine)
 		{
-			if ((tile.GroundType == TileGroundType.Wall || tile.GroundType == TileGroundType.Cover) && tile.Wall.RegisteredHealth > 0)
+			if (GameConfig.current.game.coverBonusPerGroundType.ContainsKey(tile.GroundType))
 			{
-				_cover = tile;
-				return true;
+				if (tile.Wall.RegisteredHealth > 0 && GameConfig.current.game.coverBonusPerGroundType[tile.GroundType] > highestCoverValue)
+					highestCoverValue = GameConfig.current.game.coverBonusPerGroundType[tile.GroundType];
+
+				if(_cover == null || UnityEngine.Random.Range(0f, 1f) >= (highestCoverValue / GameConfig.current.game.coverBonusPerGroundType[tile.GroundType]))
+					_cover = tile;
 			}
 		}
 
-		_cover = null;
-		return false;
+		return _cover != null;
 	}
 
 	public Tile.TileDirectionType GetHitTileSide ( Entity _from, Entity _to, bool _didAttackerWinPFC )
