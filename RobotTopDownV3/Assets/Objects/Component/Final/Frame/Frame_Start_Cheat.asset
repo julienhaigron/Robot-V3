@@ -23,8 +23,9 @@ MonoBehaviour:
   creditCost: 0
   recyclingDurationAmount: 1
   reparingDurationAmount: 1
-  prefab: {fileID: 0}
+  prefab: {fileID: 4673310249167116355, guid: 7708763548fed0349b1e4327e08f34c7, type: 3}
   maxHealth: 200
   armouringSlotAvailable: 2
   occultorSlotAvailable: 2
   statBonuses: []
+  isImmortal: 0

@@ -27,7 +27,7 @@ Transform:
   m_GameObject: {fileID: 529478190741356514}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 6.81, y: 10.25, z: -1.75}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -457,7 +457,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c3c1800c74466494d86369113a96512f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_spawnCoordinates: []
+  m_staticSpawnCoordinates: []
+  m_dynamicSpawnCoordinates: []
 --- !u!1 &6305636635451735966
 GameObject:
   m_ObjectHideFlags: 0
@@ -1060,7 +1061,7 @@ Transform:
   m_GameObject: {fileID: 8827588866973903840}
   serializedVersion: 2
   m_LocalRotation: {x: 0.5, y: 0, z: 0, w: 0.8660254}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 10.25, z: -1.755}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1113,7 +1114,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c3c1800c74466494d86369113a96512f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_spawnCoordinates: []
+  m_staticSpawnCoordinates: []
+  m_dynamicSpawnCoordinates: []
 --- !u!1 &9106128514747867737
 GameObject:
   m_ObjectHideFlags: 0
