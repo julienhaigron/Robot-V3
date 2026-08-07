@@ -213,12 +213,8 @@ public class MoveToTargetAction : AEntityAction
 			}
 		}*/
 
-		//here
-		//- do not use targetTile to know if action in still valid
-		//- didnt check if _otherMoveToTargetAction.targetTileIDs is null
-
-
 		else if (_otherAction is MoveToTargetAction _otherMoveToTargetAction && _otherMoveToTargetAction.targetTileIDs != null && _otherMoveToTargetAction.targetTileIDs.Any(tileID => targetTileIDs.Contains(tileID)))
+
 		{
 			int roll = UnityEngine.Random.Range((int)0, 2);
 			if (roll == 0)

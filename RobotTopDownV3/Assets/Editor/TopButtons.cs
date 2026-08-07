@@ -93,7 +93,7 @@ public class TopButtons
 		GUILayout.Space(ToolbarStyles.topSpace);
 		GUILayout.BeginHorizontal();
 
-		/*string savedObjectID = EditorPrefs.GetString("SelectedObjectID");
+		string savedObjectID = EditorPrefs.GetString("SelectedObjectID");
 		bool isSceneObject = EditorPrefs.GetBool("IsSceneObject");
 
 		string activeObjectName = "None";
@@ -102,7 +102,7 @@ public class TopButtons
 		{
 			if (isSceneObject)
 			{
-				activeObj = EditorUtility.EntityIdToObject(EntityId.FromULong(ulong.Parse(savedObjectID)));
+				activeObj = EditorUtility.EntityIdToObject(int.Parse(savedObjectID));
 				if (activeObj == null)
 				{
 					activeObj = GameObject.Find(EditorPrefs.GetString("SelectedObjectName"));
@@ -145,7 +145,7 @@ public class TopButtons
 			var activeGO = Selection.activeGameObject;
 			if (activeGO != null && activeGO.IsSceneBound())
 			{
-				EditorPrefs.SetString("SelectedObjectID", activeGO.gameObject.GetEntityId().ToString());
+				EditorPrefs.SetString("SelectedObjectID", activeGO.gameObject.GetInstanceID().ToString());
 				EditorPrefs.SetString("SelectedObjectName", activeGO.gameObject.name);
 				EditorPrefs.SetBool("IsSceneObject", true);
 			}
@@ -158,7 +158,7 @@ public class TopButtons
 					EditorPrefs.SetBool("IsSceneObject", false);
 				}
 			}
-		}*/
+		}
 
 		GUILayout.Space(16f);
 
