@@ -46,7 +46,7 @@ namespace SandolkakosDigital.EditorUtils
                 .GetType()
                 .GetMethod("ExpandTreeViewItem", BindingFlags.NonPublic | BindingFlags.Instance);
 
-            methodInfo.Invoke(sceneHierarchy, new object[] { go.GetInstanceID(), expand });
+            methodInfo.Invoke(sceneHierarchy, new object[] { go.GetEntityId(), expand });
         }
 
         /// <summary>
@@ -60,7 +60,7 @@ namespace SandolkakosDigital.EditorUtils
                 .GetType()
                 .GetMethod("SetExpandedRecursive", BindingFlags.Public | BindingFlags.Instance);
 
-            methodInfo.Invoke(sceneHierarchy, new object[] { go.GetInstanceID(), expand });
+            methodInfo.Invoke(sceneHierarchy, new object[] { go.GetEntityId(), expand });
         }
 
         private static object GetSceneHierarchy()
