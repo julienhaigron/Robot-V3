@@ -33,7 +33,7 @@ public class InvokeEntityAction : SpecialAction
 		bool doesSelfHaveConflict = false;
 		bool doesOtherHaveConflict = false;
 
-		if (_otherAction is MoveToTargetAction _otherMoveToTargetAction && _otherMoveToTargetAction.targetTileIDs.Any(e => targetTileIDs.Contains(e)))
+		if (_otherAction is MoveToTargetAction _otherMoveToTargetAction && _otherMoveToTargetAction.targetTileIDs != null && _otherMoveToTargetAction.targetTileIDs.Any(e => targetTileIDs.Contains(e)))
 		{
 			if (result == EntityActionData.PFCResultType.FirstWins)
 			{

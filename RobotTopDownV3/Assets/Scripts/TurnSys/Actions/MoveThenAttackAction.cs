@@ -60,7 +60,7 @@ public class MoveThenAttackAction : AttackAction
 				isActionCanceled = true;
 			}
 		}
-		else */if (_otherAction is MoveToTargetAction && (_otherAction as MoveToTargetAction).targetTileIDs.Contains(positionAfterMovementID))
+		else */if (_otherAction is MoveToTargetAction otherMoveToTarget && otherMoveToTarget.targetTileIDs != null && otherMoveToTarget.targetTileIDs.Contains(positionAfterMovementID))
 		{
 			int roll = UnityEngine.Random.Range((int)0, 2);
 			if (roll == 0)
