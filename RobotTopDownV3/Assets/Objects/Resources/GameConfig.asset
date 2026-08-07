@@ -28,7 +28,7 @@ MonoBehaviour:
     cameraRotationStep: 90
     cameraMovementBoundsOffset: {x: 7, y: 5}
     cameraZoomSpeed: 5
-    cameraZoomBounds: {x: 5, y: 10.5}
+    cameraZoomBounds: {x: -5, y: 10.5}
     entityFlankRatio:
       keys: 00000000010000000200000003000000
       values:
@@ -38,6 +38,12 @@ MonoBehaviour:
       - 0.4
     entityMovementEvasionBonus: 0.2
     entityCoverBonus: 0.2
+    coverBonusPerGroundType:
+      keys: 060000000a0000000b000000
+      values:
+      - 0.2
+      - 0.1
+      - 0.1
     rangePerVisionType:
       keys: 000000000100000002000000
       values: 0a0000000500000014000000

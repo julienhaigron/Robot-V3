@@ -169,13 +169,8 @@ public class EntityAIPlugin : EntityPlugin
 			{
 				//only rotate weapon, no movement if entity is too far
 				TargetEntity(closestEntity);
-				if (isEntityInRangeWeaponsPossibleRange)
+				if (!isAtCorrectOrientation && isEntityInRangeWeaponsPossibleRange)
 				{
-					/*//should performing entity stop moving ?
-					WaitAction waitAction = (TurnManager.Instance.GetAction(EntityActionEnumID.Wait, m_linkedEntity.ID) as WaitAction);
-					waitAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.Wait], m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID);
-					resultInfo.ReplaceAction(waitAction);*/
-
 					if (!isAtCorrectOrientation)
 					{
 						RotateEntityAction rotateAction = (TurnManager.Instance.GetAction(EntityActionEnumID.RotateEntity, m_linkedEntity.ID, null, _recordedAction.timeAtStart) as RotateEntityAction);
@@ -221,7 +216,7 @@ public class EntityAIPlugin : EntityPlugin
 				{
 					TargetEntity(closestEntity);
 					RotateEntityAction rotateAction = (TurnManager.Instance.GetAction(EntityActionEnumID.RotateEntity, m_linkedEntity.ID, null, _recordedAction.timeAtStart) as RotateEntityAction);
-					rotateAction.targetedOrientationID = GridManager.Instance.GetClosestOrientation(m_linkedEntity.Displacement.Coordinates.GetTile(), closestEntity.Displacement.Coordinates.GetTile());
+					rotateAction.targetedOrientationID = orientationTowardTarget;
 					rotateAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.RotateEntity], null, m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID, _recordedAction.action.timeAtStart);
 					resultInfo.ReplaceFreeAction(rotateAction, "Unit in vision but not in correct orientation");
 				}

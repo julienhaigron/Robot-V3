@@ -96,7 +96,6 @@ public class TurnManager : Singleton<TurnManager>
 		public AEntityAction action;
 		public EntityActionEnumID freeActionType;
 		public AEntityAction freeAction;
-		public bool isFreeActionPlayedFirst = false;
 
 		public void NetworkSerialize<T> ( BufferSerializer<T> serializer ) where T : IReaderWriter
 		{
@@ -137,7 +136,6 @@ public class TurnManager : Singleton<TurnManager>
 				}
 				freeAction.NetworkSerialize(serializer);
 			}
-			serializer.SerializeValue(ref isFreeActionPlayedFirst);
 		}
 
 		public void AddActionMod ( AEntityAction _actionMod, bool _isPlayedFirst )
@@ -145,7 +143,6 @@ public class TurnManager : Singleton<TurnManager>
 			_actionMod.OnModActionAdded(action);
 			freeActionType = _actionMod.enumID;
 			freeAction = _actionMod;
-			isFreeActionPlayedFirst = _isPlayedFirst;
 		}
 	}
 
@@ -569,11 +566,14 @@ public class TurnManager : Singleton<TurnManager>
 				}
 			}
 
-			if (EntityActionDisplay.SelectedDisplay != null && entityID == _selectedEntityID.Value)
-				lastRecordedAction = EntityActionDisplay.SelectedDisplay.RecordedAction;
 			if (_selectedEntityID.HasValue)
+			{
+				if (EntityActionDisplay.SelectedDisplay != null && entityID == _selectedEntityID.Value)
+					lastRecordedAction = EntityActionDisplay.SelectedDisplay.RecordedAction;
+
 				PlayerController.Instance.AddGhostEntityAt(entity, _specificTokenCount == -1 ?
 					lastRecordedPosition : GridManager.Instance.Tiles[lastRecordedAction.action.positionAtActionEndID], lastRecordedOrientation);
+			}
 		}
 
 		if (_selectedEntityID.HasValue && _specificTokenCount != -1 && currentSelectedAction != null)
@@ -910,8 +910,7 @@ public class TurnManager : Singleton<TurnManager>
 		if (_recordedAction.freeActionType != EntityActionEnumID.Wait
 			&& _recordedAction.freeActionType != EntityActionEnumID.Unknowned)
 		{
-
-			if (_recordedAction.isFreeActionPlayedFirst)
+			if (_recordedAction.freeAction.Data.isPlayedFirst)
 			{
 				_recordedAction.freeAction.onEndTick = ( performingEntity, didEndAction ) =>
 				{
