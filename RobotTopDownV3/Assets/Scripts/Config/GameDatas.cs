@@ -264,11 +264,11 @@ public partial class GameDatas : ScriptableObject
 			equipmentInventory.Remove(_data);
 		}
 
-		public EntitySavedData AddNewUnit ( EntitySavedData _newUnit )
+		public EntitySavedData AddNewUnit ( EntitySavedData _newUnit, bool _addToSquad )
 		{
 			//_newUnit.name = "New Unit";
 
-			if (_newUnit.CanAddToSquad())
+			if (_addToSquad && _newUnit.CanAddToSquad())
 				squadUnits.Add(_newUnit);
 			allBuiltUnits.Add(_newUnit);
 

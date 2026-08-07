@@ -17,7 +17,7 @@ public class ComponentRewardDisplay : MonoBehaviour
     public EntityEquipmentData Component => m_component;
     private System.Action m_onSelected;
 
-    public void Init(EntityEquipmentData _component, System.Action _onSelected)
+    public void Init(EntityEquipmentData _component, System.Action _onSelected, bool _isLockedOnSelected = false )
 	{
         m_component = _component;
         m_nameTMP.text = _component.displayName;
@@ -25,9 +25,17 @@ public class ComponentRewardDisplay : MonoBehaviour
         System.Tuple<CurrencyType, ulong> price = _component.GetPrice();
         m_priceTMP.text = price.Item2.ToString();
         //m_subIcon.sprite = 
-        SetIsSelected(false);
-        m_onSelected = _onSelected;
-        m_btn.onClick = OnClick;
+        if (_isLockedOnSelected)
+        {
+            SetIsSelected(true);
+            m_btn.SetInteractability(false);
+        }
+        else
+        {
+            SetIsSelected(false);
+            m_onSelected = _onSelected;
+            m_btn.onClick = OnClick;
+        }
     }
 
     private void OnClick ()

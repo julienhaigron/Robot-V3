@@ -105,7 +105,7 @@ public class GameManager : SingletonPersistant<GameManager>
 			{
 				foreach (UnitPreset unitPreset in FTUEManager.Instance.playerStartingSquadUnits)
 				{
-					unitPreset.AddToUnits();
+					unitPreset.AddToUnits(true);
 
 				}
 				GameDatas.current.currentPlayerSave.didStartTuto = true;
@@ -224,6 +224,7 @@ public class GameManager : SingletonPersistant<GameManager>
 		onStartLevel?.Invoke();
 
 		m_fogCanvas.gameObject.SetActive(true);
+		CameraManager.Instance.TeleportCameraTo(m_playersEntityAnchor[PlayerID].Entities[0].transform.position, Quaternion.identity);
 		TurnManager.Instance.StartInputPhase();
 	}
 

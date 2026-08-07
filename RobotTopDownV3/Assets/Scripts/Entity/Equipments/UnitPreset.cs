@@ -82,9 +82,9 @@ public class UnitPreset : AParsableScriptableObject
     }
 
     [Button]
-    public void AddToUnits ()
+    public void AddToUnits (bool _addToSquadIfAble)
 	{
-        GameDatas.current.currentPlayerSave.AddNewUnit(GetSavedData());
+        GameDatas.current.currentPlayerSave.AddNewUnit(GetSavedData(), _addToSquadIfAble);
     }
 
 	protected override string GetSheetID ()

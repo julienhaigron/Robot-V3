@@ -17,16 +17,24 @@ public class CurrencyRewardDisplay : MonoBehaviour
 	private ulong m_value;
 	public ulong Value => m_value;
 
-	public void Init(CurrencyType _type, ulong _value, bool _displaySuffix, System.Action _onSelected )
+	public void Init(CurrencyType _type, ulong _value, bool _displaySuffix, System.Action _onSelected, bool _isLockedOnSelected = false )
 	{
 		m_currencyType = _type;
 		m_value = _value;
         m_valueTMP.text = _value.ToString() + (_displaySuffix ? GameAssets.current.currencies[_type].suffix : "");
         m_icon.sprite = GameAssets.current.currencies[_type].icon;
 
-		SetIsSelected(false);
-		m_onSelected = _onSelected;
-		m_btn.onClick = OnClick;
+		if (_isLockedOnSelected)
+		{
+			SetIsSelected(true);
+			m_btn.SetInteractability(false);
+		}
+		else
+		{
+			SetIsSelected(false);
+			m_onSelected = _onSelected;
+			m_btn.onClick = OnClick;
+		}
 	}
 
 	private void OnClick ()
