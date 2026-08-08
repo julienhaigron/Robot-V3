@@ -174,10 +174,4 @@ public class HumanoidEntityIK : MonoBehaviour
 
 		handGrabSocket = socket.transform;
 	}
-
-	/*[Button, ShowIf("handGrabSocket")]
-	private void FixHandGrabSocketPosition ()
-	{
-		handGrabSocket.localPosition = new Vector3(0.000280000007f, 0.00132000004f, 0.000859999971f);
-	}*/
 }
