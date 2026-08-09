@@ -15,8 +15,10 @@ public class HumanoidEntityIK : MonoBehaviour
 
 	public Transform handGrabSocket;
 
-	public Transform rightHandTarget;
-	public Transform leftHandtarget;
+	//public Transform rightHandTarget;
+	//public Transform leftHandtarget;
+	public Vector3? rightHandTarget;
+	public Vector3? leftHandTarget;
 
 	protected Quaternion m_defaultHandPivotRotation;
 
@@ -84,27 +86,27 @@ public class HumanoidEntityIK : MonoBehaviour
 
 	private void OnAnimatorIK ( int _layerIndex )
 	{
-		if (rightHandTarget != null)
+		if (rightHandTarget != null && rightHandTarget.HasValue)
 		{
 			animator.SetIKPositionWeight(AvatarIKGoal.RightHand, 1f);
-			animator.SetIKPosition(AvatarIKGoal.RightHand, rightHandTarget.position);
+			animator.SetIKPosition(AvatarIKGoal.RightHand, rightHandTarget.Value);
 		}
 		else
 		{
 			animator.SetIKPositionWeight(AvatarIKGoal.RightHand, 0f);
-			animator.SetIKRotationWeight(AvatarIKGoal.RightHand, 0f);
+			//animator.SetIKRotationWeight(AvatarIKGoal.RightHand, 0f);
 		}
-		if (leftHandtarget != null)
+		if (leftHandTarget != null && leftHandTarget.HasValue)
 		{
 			animator.SetIKPositionWeight(AvatarIKGoal.LeftHand, 1f);
-			animator.SetIKPosition(AvatarIKGoal.LeftHand, leftHandtarget.position);
-			animator.SetIKRotationWeight(AvatarIKGoal.LeftHand, 1f);
-			animator.SetIKRotation(AvatarIKGoal.LeftHand, leftHandtarget.rotation);
+			animator.SetIKPosition(AvatarIKGoal.LeftHand, leftHandTarget.Value);
+			/*animator.SetIKRotationWeight(AvatarIKGoal.LeftHand, 1f);
+			animator.SetIKRotation(AvatarIKGoal.LeftHand, leftHandtarget.rotation);*/
 		}
 		else
 		{
 			animator.SetIKPositionWeight(AvatarIKGoal.LeftHand, 0f);
-			animator.SetIKRotationWeight(AvatarIKGoal.LeftHand, 0f);
+			//animator.SetIKRotationWeight(AvatarIKGoal.LeftHand, 0f);
 		}
 	}
 

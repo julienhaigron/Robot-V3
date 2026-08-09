@@ -62,7 +62,7 @@ public class EntitySkinPlugin : EntityPlugin
 		else
 		{
 			//add ik to according hand
-			m_animator.SetTrigger("RightHandAim");
+			//m_animator.SetTrigger("RightHandAim");
 			m_humanoidEntityIK.rightHandTarget = _aimedPosition;
 			m_humanoidEntityIK.Aim(_aimedPosition);
 		}
