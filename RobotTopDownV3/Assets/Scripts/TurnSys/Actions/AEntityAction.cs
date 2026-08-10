@@ -32,6 +32,8 @@ public abstract class AEntityAction : INetworkSerializable
 	public int timeAtStart = 0;
 	public int TimeAtStartPerform => timeAtStart + preparationDuration;
 	public int TimeAtEnd => timeAtStart + TotalDuration;
+	private bool m_isPerforming = false;
+	public bool IsPerforming => m_isPerforming;
 
 	public bool IsPerformingAtTick ( int _tick )
 	{
@@ -143,6 +145,7 @@ public abstract class AEntityAction : INetworkSerializable
 
 	public virtual void OnStartPerform ( Entity.EntityState _state )
 	{
+		m_isPerforming = true;
 		PerformingEntity.StartPerformAction(this, _state);
 	}
 
@@ -166,6 +169,7 @@ public abstract class AEntityAction : INetworkSerializable
 
 	protected virtual void EndAction ()
 	{
+		m_isPerforming = false;
 		PerformingEntity.EndPerformAction();
 	}
 

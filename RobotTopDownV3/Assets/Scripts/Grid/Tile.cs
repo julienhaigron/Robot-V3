@@ -47,8 +47,8 @@ public class Tile : MonoBehaviour
 	private Dictionary<EntityStatusEnumID, GameObject> m_statusVisuals = new();
 
 	//Content on tile
-	private TileContent m_currentContent = new() { itemID = -1, entityID = -1 };
-	private TileContent m_nextTurnActionContent = new() { itemID = -1, entityID = -1 };
+	//private TileContent m_currentContent = new() { itemID = -1, entityID = -1 };
+	//private TileContent m_nextTurnActionContent = new() { itemID = -1, entityID = -1 };
 	private TileContent[] m_plannedContentsPerTick;
 
 	[Serializable]
@@ -59,6 +59,18 @@ public class Tile : MonoBehaviour
 
 		public Entity Entity => GameManager.Instance.GetEntityFromID(entityID);
 		public Item Item => GameManager.Instance.GetItemFromID(itemID);
+
+		public void Reset ()
+		{
+			entityID = -1;
+			itemID = -1;
+		}
+
+		public void Copy(TileContent _otherContent )
+		{
+			entityID = _otherContent.entityID;
+			itemID = _otherContent.itemID;
+		}
 	}
 
 	public enum TileDirectionType
@@ -98,20 +110,22 @@ public class Tile : MonoBehaviour
 
 	#endregion
 
-	/*private void Awake ()
-	{
-		m_neighbors = new Tile[6];
-	}*/
-
 	private void Awake ()
 	{
 		TurnManager.onActionAdded += OnActionAdded;
 		TurnManager.onActionRemoved += OnActionRemoved;
 		TurnManager.onActionSelected += OnActionSelected;
-		TurnManager.onEndInputPhase += OnEndInputPhase;
 		TurnManager.onStartInputPhase += OnStartInputPhase;
+		TurnManager.onEndInputPhase += OnEndInputPhase;
 		TurnManager.onNewRoundStart += OnRoundStart;
+		TurnManager.onEndPlayPhase += OnPlayPhaseEnd;
 		PlayerController.onEntitySelected += OnEntitySelected;
+
+		m_plannedContentsPerTick = new TileContent[GameConfig.current.game.actionTokenPerRound+1];
+		for (int i = 0; i < GameConfig.current.game.actionTokenPerRound + 1; i++)
+		{
+			m_plannedContentsPerTick[i] = new() { entityID = -1, itemID = -1 };
+		}
 	}
 
 	private void OnDestroy ()
@@ -119,9 +133,10 @@ public class Tile : MonoBehaviour
 		TurnManager.onActionAdded -= OnActionAdded;
 		TurnManager.onActionRemoved -= OnActionRemoved;
 		TurnManager.onActionSelected -= OnActionSelected;
-		TurnManager.onEndInputPhase -= OnEndInputPhase;
 		TurnManager.onStartInputPhase -= OnStartInputPhase;
+		TurnManager.onEndInputPhase -= OnEndInputPhase;
 		TurnManager.onNewRoundStart -= OnRoundStart;
+		TurnManager.onEndPlayPhase -= OnPlayPhaseEnd;
 		PlayerController.onEntitySelected -= OnEntitySelected;
 	}
 
@@ -131,13 +146,6 @@ public class Tile : MonoBehaviour
 	public void Init ( int _x, int _y, GridData.TileData _data = null )
 	{
 		m_neighbors = new Tile[6];
-		m_plannedContentsPerTick = new TileContent[GameConfig.current.game.actionTokenPerRound];
-		for (int i = 0; i < GameConfig.current.game.actionTokenPerRound; i++)
-		{
-			m_plannedContentsPerTick[i] = new() { entityID = -1, itemID = -1 };
-		}
-		m_currentContent = new() { entityID = -1, itemID = -1 };
-		m_nextTurnActionContent = new() { entityID = -1, itemID = -1 };
 
 		m_ui.SetPosition(_x, _y);
 		if (_data != null)
@@ -233,13 +241,14 @@ public class Tile : MonoBehaviour
 
 	public bool IsObstacle ( bool _isThisTurn )
 	{
+		int currentTick = TurnManager.currentTick;
 		if ((m_groundType == TileGroundType.Wall || m_groundType == TileGroundType.Cover) && (_isThisTurn ? m_wall.RegisteredHealth > 0 : m_wall.Health > 0))
 			return true;
 		else if (m_groundType == TileGroundType.Void)
 			return true;
-		else if (_isThisTurn && m_currentContent.Item != null && !m_currentContent.Item.Data.CanWalkThroughPredicate(m_currentContent.Item.LinkedData, m_currentContent.Item, _isThisTurn))
+		else if (_isThisTurn && m_plannedContentsPerTick[currentTick].Item != null && !m_plannedContentsPerTick[currentTick].Item.Data.CanWalkThroughPredicate(m_plannedContentsPerTick[currentTick].Item.LinkedData, m_plannedContentsPerTick[currentTick].Item, _isThisTurn))
 			return true;
-		else if (!_isThisTurn && m_nextTurnActionContent.Item != null && !m_nextTurnActionContent.Item.Data.CanWalkThroughPredicate(m_nextTurnActionContent.Item.LinkedData, m_nextTurnActionContent.Item, _isThisTurn))
+		else if (!_isThisTurn && m_plannedContentsPerTick[currentTick+1].Item != null && !m_plannedContentsPerTick[currentTick + 1].Item.Data.CanWalkThroughPredicate(m_plannedContentsPerTick[currentTick + 1].Item.LinkedData, m_plannedContentsPerTick[currentTick + 1].Item, _isThisTurn))
 			return true;
 
 		return false;
@@ -256,6 +265,11 @@ public class Tile : MonoBehaviour
 		return true;
 	}
 
+	#endregion
+
+
+	#region Turn sys
+
 	public void OnEntityEnter ( Entity _enteringEntity, bool _isFromTeleportation )
 	{
 		if (m_groundType == TileGroundType.Void && !_enteringEntity.Status.Contains(EntityStatusEnumID.Flying))
@@ -265,14 +279,9 @@ public class Tile : MonoBehaviour
 			_enteringEntity.Equipment.TakeDamage(new EntityEquipmentPlugin.TakeDamageCallback() { damages = damages });
 		}
 
-		if (m_currentContent.Item != null)
-			m_currentContent.Item.OnTileEnter(_enteringEntity, _isFromTeleportation);
+		if (m_plannedContentsPerTick[TurnManager.currentTick].Item != null)
+			m_plannedContentsPerTick[TurnManager.currentTick].Item.OnTileEnter(_enteringEntity, _isFromTeleportation);
 	}
-
-	#endregion
-
-
-	#region Turn sys
 
 	private void OnEntitySelected ( int? _entityID )
 	{
@@ -305,11 +314,14 @@ public class Tile : MonoBehaviour
 	private void OnStartInputPhase ()
 	{
 		m_canInteract = false;
-		m_plannedContentsPerTick = new TileContent[GameConfig.current.game.actionTokenPerRound];
-		for (int i = 0; i < GameConfig.current.game.actionTokenPerRound; i++)
-		{
-			m_plannedContentsPerTick[i] = new() { entityID = -1, itemID = -1 };
-		}
+		if (m_plannedContentsPerTick[^1].entityID != -1)
+		for(int i = 1; i< GameConfig.current.game.actionTokenPerRound+1; i++)
+			m_plannedContentsPerTick[i].Reset();
+	}
+
+	private void OnPlayPhaseEnd ()
+	{
+		m_plannedContentsPerTick[0].Copy(m_plannedContentsPerTick[^1]);
 	}
 
 	private void OnEndInputPhase ()
@@ -320,8 +332,8 @@ public class Tile : MonoBehaviour
 
 	public void NewPhase ()
 	{
-		SetEntity(m_currentContent.Entity, false);
-		SetItem(m_currentContent.Item, false);
+		SetEntity(m_plannedContentsPerTick[TurnManager.currentTick].Entity, false);
+		SetItem(m_plannedContentsPerTick[TurnManager.currentTick].Item, false);
 	}
 
 	private void OnRoundStart ()
@@ -337,62 +349,65 @@ public class Tile : MonoBehaviour
 
 	public void SetEntity ( Entity _entity, bool _isThisTurn )
 	{
-		if (_isThisTurn)
+		m_plannedContentsPerTick[TurnManager.currentTick + (_isThisTurn ? 0 : 1)].entityID = _entity == null ? -1 : _entity.ID;
+		/*if (_isThisTurn)
 			m_currentContent.entityID = _entity == null ? -1 : _entity.ID;
 		else
-			m_nextTurnActionContent.entityID = _entity == null ? -1 : _entity.ID;
+			m_nextTurnActionContent.entityID = _entity == null ? -1 : _entity.ID;*/
 	}
 
 	public Entity GetEntity ( bool _isThisTurn )
 	{
-		if (_isThisTurn)
+		return m_plannedContentsPerTick[TurnManager.currentTick + (_isThisTurn ? 0 : 1)].Entity;
+		/*if (_isThisTurn)
 			return m_currentContent.Entity;
 		else
-			return m_nextTurnActionContent.Entity;
+			return m_nextTurnActionContent.Entity;*/
 	}
 
 	public bool TryGetEntity ( bool _isThisTurn, out Entity _entity )
 	{
+		int currentTick = TurnManager.currentTick;
 		if (_isThisTurn)
 		{
-			_entity = m_currentContent.Entity;
-			return m_currentContent.Entity != null;
+			_entity = m_plannedContentsPerTick[currentTick].Entity;
+			return m_plannedContentsPerTick[currentTick].Entity != null;
 		}
 		else
 		{
-			_entity = m_nextTurnActionContent.Entity;
-			return m_nextTurnActionContent.Entity != null;
+			_entity = m_plannedContentsPerTick[currentTick + 1].Entity;
+			return m_plannedContentsPerTick[currentTick + 1].Entity != null;
 		}
 	}
 
 	public void SetItem ( Item _item, bool _isThisTurn )
 	{
 		if (_isThisTurn)
-			m_currentContent.itemID = _item == null ? -1 : _item.ID;
+			m_plannedContentsPerTick[TurnManager.currentTick].itemID = _item == null ? -1 : _item.ID;
 		else
-			m_nextTurnActionContent.itemID = _item == null ? -1 : _item.ID;
+			m_plannedContentsPerTick[TurnManager.currentTick+1].itemID = _item == null ? -1 : _item.ID;
 	}
 
 	public bool TryGetItem ( bool _isThisTurn, out Item _item )
 	{
 		if (_isThisTurn)
 		{
-			_item = m_currentContent.Item;
-			return m_currentContent.Item != null;
+			_item = m_plannedContentsPerTick[TurnManager.currentTick].Item;
+			return m_plannedContentsPerTick[TurnManager.currentTick].Item != null;
 		}
 		else
 		{
-			_item = m_nextTurnActionContent.Item;
-			return m_nextTurnActionContent.Item != null;
+			_item = m_plannedContentsPerTick[TurnManager.currentTick + 1].Item;
+			return m_plannedContentsPerTick[TurnManager.currentTick + 1].Item != null;
 		}
 	}
 
 	public Item GetItem ( bool _isThisTurn )
 	{
 		if (_isThisTurn)
-			return m_currentContent.Item;
+			return m_plannedContentsPerTick[TurnManager.currentTick].Item;
 		else
-			return m_nextTurnActionContent.Item;
+			return m_plannedContentsPerTick[TurnManager.currentTick + 1].Item;
 	}
 
 	public bool TryGetPlannedItemAt ( int _time, out Item _item )
@@ -449,7 +464,7 @@ public class Tile : MonoBehaviour
 		m_isVisible = !_isActive;
 		m_ui.SetActiveFOW(!m_isVisible, _isInstant);
 
-		if (m_currentContent.Entity != null)
-			m_currentContent.Entity.SetVisibility(m_isVisible, _visionType);
+		if (m_plannedContentsPerTick[TurnManager.currentTick].Entity != null)
+			m_plannedContentsPerTick[TurnManager.currentTick].Entity.SetVisibility(m_isVisible, _visionType);
 	}
 }

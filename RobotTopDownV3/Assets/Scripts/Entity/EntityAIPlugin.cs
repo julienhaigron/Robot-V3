@@ -260,7 +260,7 @@ public class EntityAIPlugin : EntityPlugin
 			{
 				foreach (string equipmentID in m_linkedEntity.ComponentLinkedToAction[actionEnumID])
 				{
-					if (Condition.UseConditionPredicate(TurnManager.Instance.GetAction(actionEnumID, m_linkedEntity.ID, m_linkedEntity.ComponentLinkedToAction[actionEnumID][0], TurnManager.Instance.currentTick)
+					if (Condition.UseConditionPredicate(TurnManager.Instance.GetAction(actionEnumID, m_linkedEntity.ID, m_linkedEntity.ComponentLinkedToAction[actionEnumID][0], TurnManager.currentTick)
 						, m_linkedEntity, m_lastEntitiesTargeted.Count > 0 ? m_lastEntitiesTargeted[0] : null, data.conditionType))
 					{
 						actionEquipmentPairs.Add(new(GameAssets.current.game.entityActionsData[actionEnumID], equipmentID));
@@ -280,7 +280,7 @@ public class EntityAIPlugin : EntityPlugin
 			foreach(EntityActionEnumID actionEnumID in m_actionPriorityQueues[EntityActionData.MainActionType.Movement].priorityQueue)
 			{
 				EntityActionData data = GameAssets.current.game.entityActionsData[actionEnumID];
-				if (Condition.UseConditionPredicate( TurnManager.Instance.GetAction(actionEnumID, m_linkedEntity.ID, m_linkedEntity.ComponentLinkedToAction[actionEnumID][0], TurnManager.Instance.currentTick)
+				if (Condition.UseConditionPredicate( TurnManager.Instance.GetAction(actionEnumID, m_linkedEntity.ID, m_linkedEntity.ComponentLinkedToAction[actionEnumID][0], TurnManager.currentTick)
 						, m_linkedEntity, m_lastEntitiesTargeted.Count > 0 ? m_lastEntitiesTargeted[0] : null, data.conditionType))
 				{
 					return data;
@@ -420,7 +420,7 @@ public class EntityAIPlugin : EntityPlugin
 		{
 			foreach (EntityActionEnumID actionID in weapon.Data.knownedActions)
 			{
-				if (GameAssets.current.game.entityActionsData[actionID].GetMaxRange(TurnManager.Instance.GetAction(actionID, m_linkedEntity.ID, weapon.ID, TurnManager.Instance.currentTick), m_linkedEntity, _entity) >= _entity.Displacement.Coordinates.GetTile().Distance)
+				if (GameAssets.current.game.entityActionsData[actionID].GetMaxRange(TurnManager.Instance.GetAction(actionID, m_linkedEntity.ID, weapon.ID, TurnManager.currentTick), m_linkedEntity, _entity) >= _entity.Displacement.Coordinates.GetTile().Distance)
 				{
 					_weapon = weapon.ID;
 					return true;

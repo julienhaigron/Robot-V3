@@ -537,6 +537,9 @@ public class EntityEquipmentPlugin : EntityPlugin
 
 	private void Death ()
 	{
+		if (m_linkedEntity.LastPerformedAction != null && m_linkedEntity.LastPerformedAction.IsPerforming)
+			m_linkedEntity.LastPerformedAction.CancelAction();
+		
 		m_linkedEntity.Displacement.Coordinates.GetTile().SetEntity(null, true);
 
 		m_isDead = true;

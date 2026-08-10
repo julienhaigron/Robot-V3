@@ -16,6 +16,8 @@ public class TurnManager : Singleton<TurnManager>
 	public static Action onEndPlayPhase;
 	public static Action onNewRoundStart;
 	public static Action onEndLevel;
+	
+	public static int currentTick = 0;
 
 	[SerializeField] private NetworkedTurnSystem m_networkedTurnSystem;
 
@@ -51,7 +53,6 @@ public class TurnManager : Singleton<TurnManager>
 
 	public enum TurnPhase { Recording, Calculating, Playing, Off }
 	public TurnPhase currentPhase = TurnPhase.Off;
-	public int currentTick = 0;
 	public bool hasModActionSelected = false;
 
 	//prevision
@@ -74,10 +75,10 @@ public class TurnManager : Singleton<TurnManager>
 		}
 	}
 
-	private List<InPlayEvent> m_inPlayEventBeingDone = new();
-	public class InPlayEvent
+	private List<RecordedEvent> m_inPlayEventBeingDone = new();
+	public class RecordedEvent
 	{
-		public Action<InPlayEvent> onEventFinished;
+		public Action<RecordedEvent> onEventFinished;
 
 		public void EndEvent ()
 		{
@@ -1002,13 +1003,13 @@ public class TurnManager : Singleton<TurnManager>
 		}
 	}
 
-	public void AddGameEvent ( InPlayEvent _newGameEvent )
+	public void AddGameEvent ( RecordedEvent _newGameEvent )
 	{
 		_newGameEvent.onEventFinished += OnGameEventEnded;
 		m_inPlayEventBeingDone.Add(_newGameEvent);
 	}
 
-	private void OnGameEventEnded ( InPlayEvent _event )
+	private void OnGameEventEnded ( RecordedEvent _event )
 	{
 		m_inPlayEventBeingDone.Remove(_event);
 		TryEndRoundTick();

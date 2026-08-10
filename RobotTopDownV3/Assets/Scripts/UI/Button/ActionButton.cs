@@ -63,7 +63,7 @@ public class ActionButton : BaseButton, IPointerEnterHandler, IPointerExitHandle
 
 		int entityID = PlayerController.Instance.SelectedEntity.ID;
 		int timeAtStart = TurnManager.Instance.RecordedActions.ContainsKey(entityID) && TurnManager.Instance.RecordedActions[entityID].Count > 0
-			? TurnManager.Instance.RecordedActions[entityID].ToArray()[^1].action.TimeAtEnd : TurnManager.Instance.currentTick;
+			? TurnManager.Instance.RecordedActions[entityID].ToArray()[^1].action.TimeAtEnd : TurnManager.currentTick;
 
 		AEntityAction action = TurnManager.Instance.GetAction(m_actionType, PlayerController.Instance.SelectedEntity.ID, m_linkedEquipmentData, timeAtStart);
 		SetInteractability(Condition.UseConditionPredicate(action, PlayerController.Instance.SelectedEntity, null, action.Data.conditionType));

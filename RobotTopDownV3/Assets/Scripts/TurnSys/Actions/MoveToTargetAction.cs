@@ -52,6 +52,14 @@ public class MoveToTargetAction : AEntityAction
 	public override void CancelAction ()
 	{
 		base.CancelAction();
+		if (targetTileIDs == null)
+			return;
+
+		foreach (int tileID in targetTileIDs)
+		{
+			if(GridManager.Instance.Tiles[tileID].TryGetEntity(false, out Entity entity) && entity.ID == performingEntityID)
+				GridManager.Instance.Tiles[tileID].SetEntity(null, _isThisTurn: false);
+		}
 	}
 
 	protected override void Perform ( Entity.EntityState _state )
@@ -219,7 +227,6 @@ public class MoveToTargetAction : AEntityAction
 		}*/
 
 		else if (_otherAction is MoveToTargetAction _otherMoveToTargetAction && _otherMoveToTargetAction.targetTileIDs != null && _otherMoveToTargetAction.targetTileIDs.Any(tileID => targetTileIDs.Contains(tileID)))
-
 		{
 			int roll = UnityEngine.Random.Range((int)0, 2);
 			if (roll == 0)

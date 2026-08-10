@@ -73,6 +73,8 @@ public class Entity : MonoBehaviour
 
 	[SerializeField, ReadOnly] private EntityActionData m_lastActionPerformed;
 	public EntityActionData LastActionPerformedData => m_lastActionPerformed == null ? GameConfig.current.game.defaultStartAction : m_lastActionPerformed;
+	private AEntityAction m_lastPerformedAction;
+	public AEntityAction LastPerformedAction => m_lastPerformedAction;
 	//[SerializeField, ReadOnly] private bool m_isPerforming = false;
 
 	private HashSet<EntityActionEnumID> m_usedActionsThisGame = new();
@@ -85,6 +87,7 @@ public class Entity : MonoBehaviour
 	public bool IsVisible => m_isVisible;
 	private NeuronalMembraneEquipmentData.VisionTypes m_howIsUnitVisible;
 	public NeuronalMembraneEquipmentData.VisionTypes HowIsUnitVisible => m_howIsUnitVisible;
+
 
 	[Serializable]
 	public enum EntityState
@@ -328,8 +331,11 @@ public class Entity : MonoBehaviour
 		if (!m_usedActionsThisGame.Contains(_action.enumID))
 			m_usedActionsThisGame.Add(_action.enumID);
 
-		if (_action.Data.type != EntityActionData.ActionType.Rotation)
+		if (!_action.Data.isModAction)
+		{
 			m_lastActionPerformed = _action.Data;
+			m_lastPerformedAction = _action;
+		}
 
 		//m_isPerforming = true;
 		m_state = _state;

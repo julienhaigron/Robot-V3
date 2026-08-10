@@ -24,7 +24,7 @@ public class PushOrPullPassiveEffect : AEntityPassiveEffect
 			if (destination.GroundType == TileGroundType.Void)
 				break;
 		}
-		TurnManager.InPlayEvent movementEvent = new();
+		TurnManager.RecordedEvent movementEvent = new();
 		TurnManager.Instance.AddGameEvent(movementEvent);
 		_targetEntity.Displacement.MoveToTile(destination.coordinates.ID, movementEvent.EndEvent, false);
 
