@@ -11,6 +11,7 @@ public class HangarEntityDisplay : MonoBehaviour
     [SerializeField] private GameObject m_selectGO;
 
     private EntitySavedData m_savedData;
+    private int m_index;
     private bool m_isSelected;
 
     [System.Serializable]
@@ -24,10 +25,10 @@ public class HangarEntityDisplay : MonoBehaviour
         m_selectBtn.onClick += OnClickSelect;
     }
 
-	public void Init( EntitySavedData _data, bool _isSelected )
+	public void Init( EntitySavedData _data, int _index, bool _isSelected )
 	{
         m_savedData = _data;
-        m_isSelected = _isSelected;
+        m_index = _index;
         m_nameTMP.text = _data.name;
         m_isSelected = _isSelected;
         m_selectGO.SetActive(_isSelected);
@@ -78,12 +79,12 @@ public class HangarEntityDisplay : MonoBehaviour
         if (!m_isSelected && m_savedData.CanAddToSquad())
 		{
             m_isSelected = true;
-            GameDatas.current.currentPlayerSave.squadUnits.Add(m_savedData);
+            GameDatas.current.currentPlayerSave.squadUnitsIndex.Add(m_index);
 		}
         else if (m_isSelected)
         {
             m_isSelected = false;
-            GameDatas.current.currentPlayerSave.squadUnits.Remove(m_savedData);
+            GameDatas.current.currentPlayerSave.squadUnitsIndex.Remove(m_index);
         }
         m_selectGO.SetActive(m_isSelected);
 

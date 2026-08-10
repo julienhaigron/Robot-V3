@@ -49,6 +49,11 @@ public class MoveToTargetAction : AEntityAction
 		GameManager.Instance.GetEntityFromID(performingEntityID).Displacement.Coordinates.GetTile().SetEntity(null, _isThisTurn: false);
 	}
 
+	public override void CancelAction ()
+	{
+		base.CancelAction();
+	}
+
 	protected override void Perform ( Entity.EntityState _state )
 	{
 		base.Perform(_state);

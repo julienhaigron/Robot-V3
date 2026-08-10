@@ -87,10 +87,10 @@ public class MissionPanel : AUIPanel
 
 		for (int i = 0; i < m_unitDisplays.Length; i++)
 		{
-			if (GameDatas.current.currentPlayerSave.squadUnits.Count > i)
+			if (GameDatas.current.currentPlayerSave.squadUnitsIndex.Count > i)
 			{
 				m_unitDisplays[i].Show();
-				m_unitDisplays[i].Init(GameDatas.current.currentPlayerSave.squadUnits[i], false);
+				m_unitDisplays[i].Init(GameDatas.current.currentPlayerSave.allBuiltUnits[GameDatas.current.currentPlayerSave.squadUnitsIndex[i]], i, false);
 			}
 			else
 				m_unitDisplays[i].Hide();
@@ -150,7 +150,7 @@ public class MissionPanel : AUIPanel
 		if (_display == null || _display.Data == null)
 			return;
 
-		m_hoveredUnitDisplay.Init(_display.Data, false);
+		m_hoveredUnitDisplay.Init(_display.Data, _display.Index, false);
 
 		//set unit stats
 		SerializableDictionary<EntityEquipmentData.SecondaryStat.StatType, EntityEquipmentData.StatDescription> statsDescriptions = _display.Data.GetStatsDesciptions();

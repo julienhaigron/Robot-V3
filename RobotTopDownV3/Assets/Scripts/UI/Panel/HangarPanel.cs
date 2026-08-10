@@ -51,8 +51,8 @@ public class HangarPanel : AUIPanel
 			else
 			{
 				EntitySavedData entityData = GameDatas.current.currentPlayerSave.allBuiltUnits[i];
-				bool isInSquad = GameDatas.current.currentPlayerSave.squadUnits.Contains(entityData);
-				m_hangarUnits[i].Init(entityData, isInSquad);
+				bool isInSquad = GameDatas.current.currentPlayerSave.squadUnitsIndex.Contains(i);
+				m_hangarUnits[i].Init(entityData, i, isInSquad);
 				m_hangarUnits[i].Show();
 			}
 		}
@@ -62,13 +62,13 @@ public class HangarPanel : AUIPanel
 
 	public void RefreshTexts ()
 	{
-		m_addNewEntityBtn.SetInteractability(GameDatas.current.currentPlayerSave.squadUnits.Count < GameAssets.current.game.HangarStructureUpgrade.GetCurrentMaxHangarUnit());
-		int squadCount = GameDatas.current.currentPlayerSave.squadUnits.Count;
+		m_addNewEntityBtn.SetInteractability(GameDatas.current.currentPlayerSave.squadUnitsIndex.Count < GameAssets.current.game.HangarStructureUpgrade.GetCurrentMaxHangarUnit());
+		int squadCount = GameDatas.current.currentPlayerSave.squadUnitsIndex.Count;
 		m_maxUnitInSquadTMP.text = "Active squad: " + squadCount + "/" + GameAssets.current.game.HangarStructureUpgrade.GetCurrentMaxHangarUnit();
-		m_maxUnitInHangarTMP.text = "Inactive unit: " + (GameDatas.current.currentPlayerSave.allBuiltUnits.Count - GameDatas.current.currentPlayerSave.squadUnits.Count) + "/" + GameAssets.current.game.HangarStructureUpgrade.GetCurrentMaxUnitAmount();
+		m_maxUnitInHangarTMP.text = "Inactive unit: " + (GameDatas.current.currentPlayerSave.allBuiltUnits.Count - GameDatas.current.currentPlayerSave.squadUnitsIndex.Count) + "/" + GameAssets.current.game.HangarStructureUpgrade.GetCurrentMaxUnitAmount();
 
 		int totalEnergyUsed = 0;
-		foreach (EntitySavedData savedEntity in GameDatas.current.currentPlayerSave.squadUnits)
+		foreach (EntitySavedData savedEntity in GameDatas.current.currentPlayerSave.GetSquadEntitiesData())
 			totalEnergyUsed += savedEntity.GetTotalEnergyUsed();
 		m_maxEnergyCostInSquadTMP.text = "Energy: " + totalEnergyUsed + "/" + GameAssets.current.game.HangarStructureUpgrade.GetCurrentMaxSquadEnergyAmount();
 	}

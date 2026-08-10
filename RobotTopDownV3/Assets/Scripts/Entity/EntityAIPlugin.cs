@@ -131,6 +131,12 @@ public class EntityAIPlugin : EntityPlugin
 
 			AttackAction attackAction = (TurnManager.Instance.GetAction(attackEnumID, m_linkedEntity.ID, equipmentID, _recordedAction.timeAtStart) as AttackAction);
 
+			if(attackAction == null)
+			{
+				Debug.LogError("error, action " + attackEnumID + " isnt an AttackAction code type", gameObject);
+				return resultInfo;
+			}
+
 			int maxAmount = Mathf.Min(attackAction.Data.GetMaxTargetAmount(attackAction, m_linkedEntity, null), m_lastEntitiesTargeted.Count);
 			int[] targetTilesID = new int[maxAmount];
 			int[] targetEntitiesID = new int[maxAmount];
@@ -322,7 +328,7 @@ public class EntityAIPlugin : EntityPlugin
 			}
 
 			_enemies.OrderBy(e => e.Displacement.Coordinates.GetTile().Distance);
-			return true;
+			return _enemies.Count > 0;
 		}
 	}
 

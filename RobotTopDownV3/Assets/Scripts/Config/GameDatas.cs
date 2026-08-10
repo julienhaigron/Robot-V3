@@ -86,7 +86,7 @@ public partial class GameDatas : ScriptableObject
 	{
 		public string saveName;
 		public List<EntitySavedData> allBuiltUnits = new();
-		public List<EntitySavedData> squadUnits = new();
+		public List<int> squadUnitsIndex = new();
 		public List<Equipment> equipmentInventory = new();
 		public int equipmentCounter = 0;
 
@@ -227,6 +227,15 @@ public partial class GameDatas : ScriptableObject
 			cycleCount++;
 		}
 
+		public List<EntitySavedData> GetSquadEntitiesData ()
+		{
+			List<EntitySavedData> squadData = new();
+			foreach (int entityIndex in squadUnitsIndex)
+				squadData.Add(allBuiltUnits[entityIndex]);
+
+			return squadData;
+		}
+
 		public Equipment AddEquipmentToInventory ( EntityEquipmentData _data )
 		{
 			string newID = _data == null ? null : _data.name + equipmentCounter;
@@ -269,7 +278,7 @@ public partial class GameDatas : ScriptableObject
 			//_newUnit.name = "New Unit";
 
 			if (_addToSquad && _newUnit.CanAddToSquad())
-				squadUnits.Add(_newUnit);
+				squadUnitsIndex.Add(allBuiltUnits.Count);
 			allBuiltUnits.Add(_newUnit);
 
 			return _newUnit;

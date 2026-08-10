@@ -194,7 +194,7 @@ public class GameManager : SingletonPersistant<GameManager>
 		if (m_currentGameMode == GameMode.Offline)
 		{
 			LogConsole.AddLog("Start OfflineGame", LogConsole.LogEventType.DebugSys);
-			m_playersEntityAnchor[0].Init(GameDatas.current.currentPlayerSave.squadUnits, 0);
+			m_playersEntityAnchor[0].Init(GameDatas.current.currentPlayerSave.GetSquadEntitiesData(), 0);
 			List<EntitySavedData> ennemies = new();
 			foreach (UnitPreset ennemi in m_currentMission.enemies)
 			{
@@ -330,7 +330,7 @@ public class GameManager : SingletonPersistant<GameManager>
 	{
 		bool isValid = true;
 
-		foreach (EntitySavedData entityData in GameDatas.current.currentPlayerSave.squadUnits)
+		foreach (EntitySavedData entityData in GameDatas.current.currentPlayerSave.GetSquadEntitiesData())
 		{
 			if (!entityData.IsUnitValid())
 				isValid = false;

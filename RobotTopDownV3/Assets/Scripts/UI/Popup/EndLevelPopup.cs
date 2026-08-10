@@ -45,9 +45,9 @@ public class EndLevelPopup : AUIPopup
 				int destroiedComponentAmount = remainingHealthPercentage > .5f ? 0 : remainingHealthPercentage > .25f ? 1 : remainingHealthPercentage > 0 ? 2 : 3;
 
 				if (destroiedComponentAmount > 0)
-					DamageRandomComponents(GameDatas.current.currentPlayerSave.squadUnits[i], destroiedComponentAmount);
+					DamageRandomComponents(GameDatas.current.currentPlayerSave.allBuiltUnits[GameDatas.current.currentPlayerSave.squadUnitsIndex[i]], destroiedComponentAmount);
 
-				m_unitDisplay[i].Init(GameDatas.current.currentPlayerSave.squadUnits[i]);
+				m_unitDisplay[i].Init(GameDatas.current.currentPlayerSave.allBuiltUnits[GameDatas.current.currentPlayerSave.squadUnitsIndex[i]]);
 				m_unitDisplay[i].Show();
 			}
 		}

@@ -43,19 +43,20 @@ public class HubManager : Singleton<HubManager>
 
 	public void RefreshSquadEntities ()
 	{
-		foreach(EntitySavedData entityData in m_squadEntities.Keys.ToArray())
+		List<EntitySavedData> squadData = GameDatas.current.currentPlayerSave.GetSquadEntitiesData();
+		foreach (EntitySavedData entityData in m_squadEntities.Keys.ToArray())
 		{
-			if (!GameDatas.current.currentPlayerSave.squadUnits.Contains(entityData))
+			if (!squadData.Contains(entityData))
 			{
 				Destroy(m_squadEntities[entityData].gameObject);
 				m_squadEntities.Remove(entityData);
 			}
 		}
 
-		for(int i = 0; i < GameDatas.current.currentPlayerSave.squadUnits.Count; i++) 
+		for(int i = 0; i < squadData.Count; i++) 
 		{
 			if(i >= m_squadEntities.Count)
-				AddEntity(GameDatas.current.currentPlayerSave.squadUnits[i]);
+				AddEntity(squadData[i]);
 
 			//entity.RefreshHangarVisual ?
 		}
