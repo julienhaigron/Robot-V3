@@ -50,7 +50,7 @@ public class Weapon : MonoBehaviour
 
 		m_attackCR = StartCoroutine(PerformAttackCR(_attackAction));
 	}
-	
+
 	protected IEnumerator PerformAttackCR ( AttackAction _attackAction )
 	{
 		int lastSuccessfullAttackIndex = -1;
@@ -76,7 +76,7 @@ public class Weapon : MonoBehaviour
 
 		yield return OnEndAttackingCR(_attackAction);
 
-		if(lastSuccessfullAttackIndex == -1)
+		if (lastSuccessfullAttackIndex == -1)
 			EndAttack(_attackAction);
 
 		m_attackCR = null;
@@ -86,7 +86,7 @@ public class Weapon : MonoBehaviour
 
 	protected virtual void OnStartAttacking ( AttackAction _attackAction )
 	{
-			
+
 	}
 
 	protected virtual void OnStartSingleAttack ( AttackAction _attackAction, int _attackIndex, AttackAction.SingleAttackInfo _attackInfo )
@@ -99,9 +99,9 @@ public class Weapon : MonoBehaviour
 		yield return null;
 	}
 
-	protected virtual IEnumerator PerformSingleAttackCR (AttackAction _attackAction, int _attackIndex, AttackAction.SingleAttackInfo _attackInfo, int _lastSuccessfullAttackIndex )
+	protected virtual IEnumerator PerformSingleAttackCR ( AttackAction _attackAction, int _attackIndex, AttackAction.SingleAttackInfo _attackInfo, int _lastSuccessfullAttackIndex )
 	{
-		yield return ApplyAttackCR (_attackAction, _attackIndex, _attackInfo);
+		yield return ApplyAttackCR(_attackAction, _attackIndex, _attackInfo);
 
 		if (_attackIndex == _lastSuccessfullAttackIndex)
 			EndAttack(m_lastPerformedAction);
@@ -165,7 +165,7 @@ public class Weapon : MonoBehaviour
 		yield return m_singleAttackDuration;
 	}
 
-	protected List<Entity> GetTargets (AttackAction _attackAction, int _attackIndex )
+	protected List<Entity> GetTargets ( AttackAction _attackAction, int _attackIndex )
 	{
 		List<Entity> targets = new();
 		EntityActionData attackData = GameAssets.current.game.entityActionsData[_attackAction.enumID];
@@ -189,7 +189,7 @@ public class Weapon : MonoBehaviour
 		return targets;
 	}
 
-	protected virtual List<Entity> GetPassiveEffectTargets( AttackAction _attackAction, AEntityPassiveEffect.PassiveEffectContainer _passiveEffect, int _attackIndex )
+	protected virtual List<Entity> GetPassiveEffectTargets ( AttackAction _attackAction, AEntityPassiveEffect.PassiveEffectContainer _passiveEffect, int _attackIndex )
 	{
 		List<Entity> targets = new();
 
@@ -198,11 +198,11 @@ public class Weapon : MonoBehaviour
 		else
 		{
 			Tile target = GridManager.Instance.Tiles[_attackAction.targetTileIDs[_attackIndex]];
-			Tile from = _passiveEffect.centerType == EntityActionData.AOECenterType.Self 
+			Tile from = _passiveEffect.centerType == EntityActionData.AOECenterType.Self
 				? m_user.Displacement.Coordinates.GetTile() : target;
 			int minDistance = _passiveEffect.effectRange.x != -1 ? _passiveEffect.effectRange.x : _attackAction.Data.aoeMinEffectRange;
 			int maxDistance = _passiveEffect.effectRange.y != -1 ? _passiveEffect.effectRange.y : _attackAction.Data.aoeMaxEffectRange;
-			foreach(Tile tile in GridManager.Instance.GetTilesInAoERange(_passiveEffect.aoeType, m_user, from, target, minDistance, maxDistance, _attackAction.Data.maxChainedTarget, true))
+			foreach (Tile tile in GridManager.Instance.GetTilesInAoERange(_passiveEffect.aoeType, m_user, from, target, minDistance, maxDistance, _attackAction.Data.maxChainedTarget, true))
 			{
 				if (tile.TryGetEntity(true, out Entity entity))
 					targets.Add(entity);
@@ -216,23 +216,32 @@ public class Weapon : MonoBehaviour
 	{
 		Dictionary<WeaponEquipmentData.DamageType, int> damages = new();
 
-		for (int i = 0; i < _attackInfo.damageTypes.Length; i++)
-			damages.Add( (WeaponEquipmentData.DamageType) _attackInfo.damageTypes[i], _attackInfo.damages[i]);
+		if (_attackInfo != null && _attackInfo.damageTypes != null)
+		{
+			for (int i = 0; i < _attackInfo.damageTypes.Length; i++)
+				damages.Add((WeaponEquipmentData.DamageType)_attackInfo.damageTypes[i], _attackInfo.damages[i]);
+		}
 
 		return damages;
 	}
 
 	protected virtual void ApplyStatuses ( Entity _target, AttackAction.SingleAttackInfo _attackInfo )
 	{
-		for (int i = 0; i < _attackInfo.areStatusesSuccess.Length; i++)
+		if (_attackInfo != null && _attackInfo.areStatusesSuccess != null)
 		{
-			if (_attackInfo.areStatusesSuccess[i])
-				_target.AddStatus((EntityStatusEnumID)_attackInfo.statusIds[i]);
+			for (int i = 0; i < _attackInfo.areStatusesSuccess.Length; i++)
+			{
+				if (_attackInfo.areStatusesSuccess[i])
+					_target.AddStatus((EntityStatusEnumID)_attackInfo.statusIds[i]);
+			}
 		}
 	}
 
 	protected virtual void ApplyEffects ( Entity _target, AEntityPassiveEffect.PassiveEffectContainer _passiveEffect )
 	{
+		if (m_lastPerformedAction == null || m_lastPerformedAction.effects == null)
+			return;
+
 		foreach (AEntityPassiveEffect.PassiveEffectContainer passiveEffectID in m_lastPerformedAction.effects)
 			GameAssets.current.game.entityEffects[passiveEffectID.enumID].ApplyEffect(m_user, _target, passiveEffectID);
 

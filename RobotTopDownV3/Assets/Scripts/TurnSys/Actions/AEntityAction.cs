@@ -32,7 +32,7 @@ public abstract class AEntityAction : INetworkSerializable
 	public int timeAtStart = 0;
 	public int TimeAtStartPerform => timeAtStart + preparationDuration;
 	public int TimeAtEnd => timeAtStart + TotalDuration;
-	private bool m_isPerforming = false;
+	protected bool m_isPerforming = false;
 	public bool IsPerforming => m_isPerforming;
 
 	public bool IsPerformingAtTick ( int _tick )

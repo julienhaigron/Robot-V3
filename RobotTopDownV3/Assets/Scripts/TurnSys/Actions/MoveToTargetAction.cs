@@ -4,6 +4,7 @@ using UnityEngine;
 using System;
 using Unity.Netcode;
 using System.Linq;
+using DG.Tweening;
 
 public class MoveToTargetAction : AEntityAction
 {
@@ -13,6 +14,9 @@ public class MoveToTargetAction : AEntityAction
 
 	public int finalTargetTileID = -1;
 	public enum MoveActionMode { Coordinate, Entity }
+
+	private Coroutine m_performCR;
+	private Tween m_movementTween;
 
 	public override void NetworkSerialize<T> ( BufferSerializer<T> serializer )
 	{
@@ -60,6 +64,16 @@ public class MoveToTargetAction : AEntityAction
 			if(GridManager.Instance.Tiles[tileID].TryGetEntity(false, out Entity entity) && entity.ID == performingEntityID)
 				GridManager.Instance.Tiles[tileID].SetEntity(null, _isThisTurn: false);
 		}
+
+		if (m_isPerforming)
+		{
+			if (m_performCR != null)
+				GameManager.Instance.StopCoroutine(m_performCR);
+			if (m_movementTween != null && m_movementTween.IsActive())
+				m_movementTween.Kill();
+
+			EndTick();
+		}
 	}
 
 	protected override void Perform ( Entity.EntityState _state )
@@ -69,11 +83,11 @@ public class MoveToTargetAction : AEntityAction
 		//move to targetTile
 		if (targetTileIDs != null && targetTileIDs.Length > 0 && finalTargetTileID != -1/* && thisActionDestination.GetEntity(false) == null*/)
 		{
-			GameManager.Instance.StartCoroutine(PerformCR());
+			m_performCR = GameManager.Instance.StartCoroutine(PerformCR());
 		}
 		else
 		{
-			DG.Tweening.DOVirtual.DelayedCall(GameConfig.current.game.actionDuration, () =>
+			m_movementTween = DOVirtual.DelayedCall(GameConfig.current.game.actionDuration, () =>
 			{
 				EndTick();
 			});
@@ -98,7 +112,7 @@ public class MoveToTargetAction : AEntityAction
 			{
 				tile.UI.SetOutlineColor(Color.blue);
 			}*/
-			GameManager.Instance.GetEntityFromID(performingEntityID).Displacement.MoveToTile(targetTileIDs[i], null, true, movementSpeed);
+			m_movementTween = GameManager.Instance.GetEntityFromID(performingEntityID).Displacement.MoveToTile(targetTileIDs[i], null, true, movementSpeed);
 
 			yield return new WaitForSeconds(movementSpeed);
 			/*foreach (Tile tile in tilesInRange)

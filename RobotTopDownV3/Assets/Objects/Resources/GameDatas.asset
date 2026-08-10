@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 981045e478386cb49abf7ac83a4ac935, type: 3}
   m_Name: GameDatas
   m_EditorClassIdentifier: 
-  preventSave: 0
+  preventSave: 1
   app:
     hapticEnabled: 1
     musicVolume: 1

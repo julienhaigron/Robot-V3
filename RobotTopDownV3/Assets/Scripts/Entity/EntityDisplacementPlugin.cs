@@ -66,7 +66,7 @@ public class EntityDisplacementPlugin : EntityPlugin
 		onAnyEntitySpawn.Invoke(m_linkedEntity);
 	}
 
-	public void MoveToTile( int _tileID,  System.Action onMovementDoneAction, bool _overrideMovementSpeed = false, float _overritenMovementSpeed = 0)
+	public Tween MoveToTile( int _tileID,  System.Action onMovementDoneAction, bool _overrideMovementSpeed = false, float _overritenMovementSpeed = 0)
 	{
 		if(m_coordinate.GetTile().GetEntity(true) == m_linkedEntity)
 			m_coordinate.GetTile().SetEntity(null, _isThisTurn: true);
@@ -92,9 +92,10 @@ public class EntityDisplacementPlugin : EntityPlugin
 
 		//refresh fow
 		onAnyEntityMovement?.Invoke(m_linkedEntity);
+		return m_movementTween;
 	}
 
-	public void TeleportToTile(int _tileID, System.Action onMovementDoneAction )
+	public Tween TeleportToTile (int _tileID, System.Action onMovementDoneAction )
 	{
 		if (m_coordinate.GetTile().GetEntity(true) == m_linkedEntity)
 			m_coordinate.GetTile().SetEntity(null, _isThisTurn: true);
@@ -116,6 +117,7 @@ public class EntityDisplacementPlugin : EntityPlugin
 		//refresh fow
 		onMovementDoneAction?.Invoke();
 		onAnyEntityMovement?.Invoke(m_linkedEntity);
+		return m_movementTween;
 	}
 
 	public void Rotate ( int _orientation, float _duration = 0f, System.Action _onEndPerform = null )

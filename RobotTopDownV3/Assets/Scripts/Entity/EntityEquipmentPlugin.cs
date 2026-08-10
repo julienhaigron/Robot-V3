@@ -393,6 +393,8 @@ public class EntityEquipmentPlugin : EntityPlugin
 			detailsBuilder.AppendLine($"Hit Chance: {(finalScore * 100f):F0}%");
 			detailsBuilder.AppendLine($"Roll: {roll:F2}");
 			detailsBuilder.AppendLine(isAttackSuccessful ? "<color=green><b>Hit Success</b></color>" : "<color=red><b>Hit Failed</b></color>");
+			if(_coverTile != null)
+				detailsBuilder.AppendLine($"Will hit tile : {_coverTile.coordinates.ID}");
 		}
 
 		string detailsDescription = detailsBuilder.ToString();

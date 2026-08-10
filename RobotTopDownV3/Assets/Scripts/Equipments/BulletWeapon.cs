@@ -73,9 +73,6 @@ public class BulletWeapon : Weapon
 
 	protected override IEnumerator PerformSingleAttackCR ( AttackAction _attackAction, int _attackIndex, AttackAction.SingleAttackInfo _attackInfo, int _lastSuccessfullAttackIndex )
 	{
-		if (!_attackInfo.isAttackSuccessfull)
-			yield break;
-		
 		if (_attackAction.Data.aoeType == EntityActionData.AOEType.Noone || (_attackAction.Data.aoeType == EntityActionData.AOEType.Circle && _attackAction.Data.targetType != EntityActionData.TargetType.Self))
 		{
 			Entity targetEntity = GetTargets(_attackAction, _attackIndex)[0];
@@ -84,6 +81,9 @@ public class BulletWeapon : Weapon
 		}
 		else
 		{
+			if (!_attackInfo.isAttackSuccessfull)
+				yield break;
+
 			//handle aoe perform anims
 			List<Entity> targets = GetTargets(_attackAction, _attackIndex);
 			Dictionary<WeaponEquipmentData.DamageType, int> damages = BuildDamageDictionary(_attackInfo);
@@ -108,7 +108,7 @@ public class BulletWeapon : Weapon
 					//ApplyEffects(entity);
 				}
 			}
-			foreach(AEntityPassiveEffect.PassiveEffectContainer pe in m_lastPerformedAction.effects)
+			foreach (AEntityPassiveEffect.PassiveEffectContainer pe in m_lastPerformedAction.effects)
 			{
 				List<Entity> effectsTargets = GetPassiveEffectTargets(_attackAction, pe, _attackIndex);
 				foreach (Entity entity in effectsTargets)
@@ -119,7 +119,7 @@ public class BulletWeapon : Weapon
 
 	#region Shoot Animations
 
-	private IEnumerator ShootAtEntityAnim ( AttackAction _attackAction, int _attackIndex, AttackAction.SingleAttackInfo _attackInfo, int _lastSuccessfullAttackIndex, Entity _targetEntity)
+	private IEnumerator ShootAtEntityAnim ( AttackAction _attackAction, int _attackIndex, AttackAction.SingleAttackInfo _attackInfo, int _lastSuccessfullAttackIndex, Entity _targetEntity )
 	{
 		bool hasTrajectoryProjectileBuff = m_lastPerformedAction.effects.Any(e => e.enumID == EntityPassiveEffectEnumID.TrajectoryControl);
 		int hitAmount = _attackAction.Data.GetHitAmount(_attackAction, m_user, _targetEntity);
