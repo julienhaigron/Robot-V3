@@ -13,6 +13,7 @@ public class OpenPanelTask<T> : Task where T : AUIPanel
     protected override void OnStart ( TaskManager.TaskContext _context )
     {
         base.OnStart(_context);
-        _context.UI.OpenPanel<T>();
+        _context.UI.OpenPanel<T>(_showInstant: true);
+        Complete();
     }
 }

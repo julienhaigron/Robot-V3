@@ -15,14 +15,14 @@ public class TutoConsole : MonoBehaviour
 	[SerializeField] private TextMeshProUGUI m_characterNameTMP;
 	[SerializeField] private Image m_dialogueImg;
 	[SerializeField] private BaseButton m_previousBtn;
-    [SerializeField] private BaseButton m_nextBtn;
+	[SerializeField] private BaseButton m_nextBtn;
 
 	[Title("Parameters")]
 	[SerializeField] private float m_charactersPerSecond = 30f;
 
-    private List<TutoDialogueContainer> m_allDialogs = new();
-    public List<TutoDialogueContainer> AllDialogs => m_allDialogs;
-	
+	private List<TutoDialogueContainer> m_allDialogs = new();
+	public List<TutoDialogueContainer> AllDialogs => m_allDialogs;
+
 	[Serializable]
 	public class TutoDialogueContainer
 	{
@@ -36,7 +36,7 @@ public class TutoConsole : MonoBehaviour
 	private bool m_waitingForNextLine;
 	private int m_currentLineIndex;
 	private Tween m_currentTextTween;
-	private bool m_didEndLastDialogue = false;
+	private bool m_didEndLastDialogue = true;
 
 	private void Awake ()
 	{
@@ -55,31 +55,35 @@ public class TutoConsole : MonoBehaviour
 		m_allDialogs.Clear();
 
 		Hide(true);
-    }
+	}
 
-    public void Show (bool _isInstant)
+	public void Show ( bool _isInstant )
 	{
 		m_dialogueParent.SetActive(true);
 	}
-    
-    public void Hide ( bool _isInstant )
+
+	public void Hide ( bool _isInstant )
 	{
 		m_dialogueParent.SetActive(false);
 	}
 
-	public void PlayDialogue(DialogueData _dialogueData, Action _onDialogueEnded, string _higlightedZoneID = "")
+	public void PlayDialogue ( DialogueData _dialogueData, Action _onDialogueEnded, string _higlightedZoneID = "" )
 	{
 		m_onDialogueEnded = _onDialogueEnded;
 		m_allDialogs.Add(new() { dialogue = _dialogueData, highlightedZoneId = _higlightedZoneID });
-		m_currentDialogueIndex = m_allDialogs.Count - 1;
-		m_currentDialogueData = m_allDialogs[m_currentDialogueIndex];
-		m_currentLineIndex = 0;
 
-		m_didEndLastDialogue = false;
-		m_currentTextTween?.Kill();
-		Show(false);
+		if (m_didEndLastDialogue)
+		{
+			m_currentDialogueIndex = m_allDialogs.Count - 1;
+			m_currentDialogueData = m_allDialogs[m_currentDialogueIndex];
+			m_currentLineIndex = 0;
+			m_currentTextTween?.Kill();
+			m_didEndLastDialogue = false;
 
-		DisplayCurrentLine();
+			Show(false);
+			DisplayCurrentLine();
+		}
+
 	}
 
 	private void DisplayCurrentLine ()
@@ -118,23 +122,35 @@ public class TutoConsole : MonoBehaviour
 	{
 		m_didEndLastDialogue = true;
 		//Hide(false);
+		m_characterNameTMP.text = "";
+		m_dialogueTMP.text = "";
+		m_dialogueImg.sprite = null;
 
-		Action previousAction = new(m_onDialogueEnded);
-		m_onDialogueEnded -= previousAction;
-		previousAction?.Invoke();
+		if (!string.IsNullOrEmpty(m_currentDialogueData.highlightedZoneId))
+			FTUEManager.Instance.RegisterdTutorialHighlightZones[m_currentDialogueData.highlightedZoneId].Hide();
+
+		if (m_onDialogueEnded != null)
+		{
+			Action previousAction = new(m_onDialogueEnded);
+			m_onDialogueEnded -= previousAction;
+			previousAction?.Invoke();
+		}
 
 		RefreshButtons();
 	}
 
 	private void RefreshButtons ()
 	{
-		bool canGoPrevious = m_currentDialogueIndex > 0 || m_currentLineIndex > 0;
+		bool canGoPrevious = m_currentDialogueIndex > 0 || m_currentLineIndex > 0
+			|| m_didEndLastDialogue;
 
-		bool canGoNext = m_currentDialogueIndex < m_allDialogs.Count - 1 ||
-			(/*!m_didEndLastDialogue &&  */m_currentLineIndex < m_currentDialogueData.dialogue.lines.Count - 1);
+		bool canGoNext = m_currentDialogueIndex < m_allDialogs.Count - 1
+			|| !m_didEndLastDialogue
+			|| (m_currentLineIndex < m_currentDialogueData.dialogue.lines.Count - 1);
 
 		m_previousBtn.SetInteractability(canGoPrevious);
 		m_nextBtn.SetInteractability(canGoNext);
+		m_nextBtn.SetVisible(canGoNext, true);
 	}
 
 	private void OnClickPreviousLineOrDialogue ()
@@ -145,17 +161,19 @@ public class TutoConsole : MonoBehaviour
 		if (m_currentTextTween.IsActive())
 		{
 			m_currentTextTween.Complete();
-			return;
 		}
-
-		if (m_currentLineIndex > 0)
+		else if (m_currentLineIndex > 0)
 		{
 			m_currentLineIndex--;
 			DisplayCurrentLine();
-			return;
 		}
-
-		if (m_currentDialogueIndex > 0)
+		else if (m_didEndLastDialogue)
+		{
+			m_didEndLastDialogue = false;
+			m_currentLineIndex = m_currentDialogueData.dialogue.lines.Count - 1;
+			DisplayCurrentLine();
+		}
+		else if (m_currentDialogueIndex > 0)
 		{
 			m_currentDialogueIndex--;
 			m_currentDialogueData = m_allDialogs[m_currentDialogueIndex];
@@ -173,16 +191,10 @@ public class TutoConsole : MonoBehaviour
 		{
 			m_currentTextTween.Complete();
 		}
-		/*else if(!m_didEndLastDialogue && m_currentLineIndex + 1 >= m_currentDialogueData.lines.Count)
-		{
-			EndDialogue();
-		}*/
 		else if (m_currentLineIndex < m_currentDialogueData.dialogue.lines.Count - 1)
 		{
 			m_currentLineIndex++;
 			DisplayCurrentLine();
-			if(!m_didEndLastDialogue && m_currentLineIndex + 1 == m_currentDialogueData.dialogue.lines.Count)
-				EndDialogue();
 		}
 		else if (m_currentDialogueIndex < m_allDialogs.Count - 1)
 		{
@@ -190,6 +202,10 @@ public class TutoConsole : MonoBehaviour
 			m_currentDialogueData = m_allDialogs[m_currentDialogueIndex];
 			m_currentLineIndex = 0;
 			DisplayCurrentLine();
+		}
+		else if (!m_didEndLastDialogue && m_currentLineIndex + 1 == m_currentDialogueData.dialogue.lines.Count)
+		{
+			EndDialogue();
 		}
 	}
 }

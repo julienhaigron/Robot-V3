@@ -20,7 +20,10 @@ public class DialogueHighlightTask : Task
         TutorialHighlightZone highlightZone = FTUEManager.Instance.RegisterdTutorialHighlightZones[highlightZoneID];
 
         if (_context.UI.currentPanel is InGamePanel inGamePanel)
-            inGamePanel.TutoConsole.PlayDialogue(dialogue, CompleteTask, highlightZoneID);
+		{
+            inGamePanel.TutoConsole.PlayDialogue(dialogue, null, highlightZoneID);
+            Complete();
+        }
 		else
 		{
             highlightZone.Show();
@@ -33,15 +36,16 @@ public class DialogueHighlightTask : Task
     {
         if (IsCompleted)
             return;
-
+        TutorialHighlightZone highlightZone = FTUEManager.Instance.RegisterdTutorialHighlightZones[highlightZoneID];
+        highlightZone.Hide();
         Complete();
     }
 
-    protected override void OnComplete ()
+    /*protected override void OnComplete ()
     {
         TutorialHighlightZone highlightZone = FTUEManager.Instance.RegisterdTutorialHighlightZones[highlightZoneID];
-        highlightZone.Hide();
-        highlightZone.onInteract -= CompleteTask;
+        //highlightZone.Hide();
+        //highlightZone.onInteract -= CompleteTask;
         base.OnComplete();
-    }
+    }*/
 }

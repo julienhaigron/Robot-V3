@@ -61,29 +61,29 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 3e13ee75cad91f0488a32592d8600052, type: 2}
   - {fileID: 11400000, guid: 6f66868e0c3eb6648a54206da5b2998a, type: 2}
   m_firstTutoDialogues:
-  - {fileID: 11400000, guid: b43449e284014ce45b31f2d4d0526f22, type: 2}
-  - {fileID: 11400000, guid: b43449e284014ce45b31f2d4d0526f22, type: 2}
-  - {fileID: 11400000, guid: b43449e284014ce45b31f2d4d0526f22, type: 2}
-  - {fileID: 11400000, guid: b43449e284014ce45b31f2d4d0526f22, type: 2}
-  - {fileID: 11400000, guid: b43449e284014ce45b31f2d4d0526f22, type: 2}
-  - {fileID: 11400000, guid: b43449e284014ce45b31f2d4d0526f22, type: 2}
+  - {fileID: 11400000, guid: dd0d68087c9e9de4481be528c632e296, type: 2}
+  - {fileID: 11400000, guid: 58ce08ba576f12943b7c1576674af9a4, type: 2}
+  - {fileID: 11400000, guid: ee4274986c419ac4d9edda7d3857eaba, type: 2}
+  - {fileID: 11400000, guid: 8df74ab18e196d447931bcadea21d2c6, type: 2}
+  - {fileID: 11400000, guid: 3020b5480ff8c134db69e94ed09a0918, type: 2}
+  - {fileID: 11400000, guid: ab6917deee2ad8b4ea55445515a015e8, type: 2}
   m_day1TutoDialogues:
-  - {fileID: 11400000, guid: b43449e284014ce45b31f2d4d0526f22, type: 2}
-  - {fileID: 11400000, guid: b43449e284014ce45b31f2d4d0526f22, type: 2}
-  - {fileID: 11400000, guid: b43449e284014ce45b31f2d4d0526f22, type: 2}
-  - {fileID: 11400000, guid: b43449e284014ce45b31f2d4d0526f22, type: 2}
-  - {fileID: 11400000, guid: b43449e284014ce45b31f2d4d0526f22, type: 2}
+  - {fileID: 11400000, guid: 25d81795daf20e84bb772ec67ac7cf0b, type: 2}
+  - {fileID: 11400000, guid: e7e882158e028344db3ddc6204c83466, type: 2}
+  - {fileID: 11400000, guid: badecd1528f9dc34a8db201c42ed4f28, type: 2}
+  - {fileID: 11400000, guid: 25da7f754fdf67b46b467c9dbe27ecd5, type: 2}
+  - {fileID: 11400000, guid: ee95cbe6de1d5fa4cb0a7598a09a13ed, type: 2}
   m_day2TutoDialogues:
-  - {fileID: 11400000, guid: b43449e284014ce45b31f2d4d0526f22, type: 2}
-  - {fileID: 11400000, guid: b43449e284014ce45b31f2d4d0526f22, type: 2}
-  - {fileID: 11400000, guid: b43449e284014ce45b31f2d4d0526f22, type: 2}
+  - {fileID: 11400000, guid: 66a0a614007855b4587aba416bc9a5c0, type: 2}
+  - {fileID: 11400000, guid: db79403f47986af44857b255a091ae20, type: 2}
+  - {fileID: 11400000, guid: 1383be7cc3beb504f891ffcc82d27dac, type: 2}
   m_day3TutoDialogues:
-  - {fileID: 11400000, guid: b43449e284014ce45b31f2d4d0526f22, type: 2}
-  - {fileID: 11400000, guid: b43449e284014ce45b31f2d4d0526f22, type: 2}
+  - {fileID: 11400000, guid: 74ddcf49b3be02544aabdc5d4d98bb19, type: 2}
+  - {fileID: 11400000, guid: f2687b1d0339c834d8670d1601e553d6, type: 2}
   m_day4TutoDialogues:
-  - {fileID: 11400000, guid: b43449e284014ce45b31f2d4d0526f22, type: 2}
-  - {fileID: 11400000, guid: b43449e284014ce45b31f2d4d0526f22, type: 2}
+  - {fileID: 11400000, guid: d522551e421b0674c9a8a89d96030a45, type: 2}
+  - {fileID: 11400000, guid: 4fde318bb9ec3e946bbc3006f61f9d48, type: 2}
   m_day5TutoDialogues:
-  - {fileID: 11400000, guid: b43449e284014ce45b31f2d4d0526f22, type: 2}
-  - {fileID: 11400000, guid: b43449e284014ce45b31f2d4d0526f22, type: 2}
+  - {fileID: 11400000, guid: aa6bef8be22ecdc488e7f36f91d13ec2, type: 2}
+  - {fileID: 11400000, guid: cb1166c808861104ca2018066f900960, type: 2}
   isInit: 0

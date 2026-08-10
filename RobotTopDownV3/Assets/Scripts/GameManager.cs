@@ -7,8 +7,6 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : SingletonPersistant<GameManager>
 {
-	public static Action onStartLevel;
-
 	[SerializeField] private Canvas m_fogCanvas;
 
 	[SerializeField] private EntityAnchor[] m_playersEntityAnchor;
@@ -81,6 +79,7 @@ public class GameManager : SingletonPersistant<GameManager>
 			{
 				UIManager.Instance.ClosePanel<StartMenuPanel>(true);
 			}
+			, null
 			, () =>
 			{
 				UIManager.Instance.ShowTopCanvas<HubTopCanvas>();
@@ -143,10 +142,14 @@ public class GameManager : SingletonPersistant<GameManager>
 				else if (UIManager.Instance.currentPanel is TournamentPanel)
 					UIManager.Instance.ClosePanel<TournamentPanel>(true);
 			}
+
+			//StartGame();
 		}
+		, StartGame
 		, () =>
 		{
-			StartGame();
+			UIManager.Instance.OpenPanel<InGamePanel>().Init();
+			TurnManager.Instance.StartInputPhase();
 		});
 	}
 
@@ -175,6 +178,7 @@ public class GameManager : SingletonPersistant<GameManager>
 			UIManager.Instance.HideTopCanvas<HubTopCanvas>();
 			UIManager.Instance.ClosePanel<SoloHubPanel>(true);
 		}
+		, null
 		, () =>
 		{
 			UIManager.Instance.OpenPanel<StartMenuPanel>();
@@ -186,7 +190,6 @@ public class GameManager : SingletonPersistant<GameManager>
 	{
 		TurnManager.Instance.Init();
 		GridManager.Instance.LoadGrid();
-		UIManager.Instance.HideTopCanvas<HubTopCanvas>();
 
 		if (m_currentGameMode == GameMode.Offline)
 		{
@@ -219,13 +222,11 @@ public class GameManager : SingletonPersistant<GameManager>
 			m_playersEntityAnchor[0].Init(m_playerOneEntityDatas, 0);
 			m_playersEntityAnchor[1].Init(m_playerTwoEntityDatas, 1);
 		}
-
-		UIManager.Instance.OpenPanel<InGamePanel>().Init();
-		onStartLevel?.Invoke();
-
 		m_fogCanvas.gameObject.SetActive(true);
 		CameraManager.Instance.TeleportCameraTo(m_playersEntityAnchor[PlayerID].Entities[0].transform.position, Quaternion.identity);
-		TurnManager.Instance.StartInputPhase();
+
+		/*UIManager.Instance.OpenPanel<InGamePanel>().Init();
+		TurnManager.Instance.StartInputPhase();*/
 	}
 
 	public bool GetEntityFromID ( out Entity _entity, int _entityID )

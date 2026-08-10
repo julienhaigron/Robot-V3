@@ -7,10 +7,12 @@ using DG.Tweening;
 
 public class LoadingManager : SingletonPersistant<LoadingManager>
 {
+	public static Action onStartFadeOut;
 	[SerializeField] private LoadingElement[] m_loadingElements;
 
 	private List<LoadingElement> m_awaitingLoadingElementList = new();
 	private Action m_onLoadFinished;
+	private Action m_onSceneLoaded;
 	private Coroutine m_loadingCR;
 	private bool m_isLoading = false;
 	public bool IsLoading => m_isLoading;
@@ -51,13 +53,14 @@ public class LoadingManager : SingletonPersistant<LoadingManager>
 	}
 
 
-	public void LoadScene ( string _sceneName, Action _onStartLoadFinished, Action _onLoadFinished )
+	public void LoadScene ( string _sceneName, Action _onStartLoadFinished, Action _onSceneLoaded, Action _onLoadFinished )
 	{
 		if (m_isLoading)
 			return;
 
 		m_isLoading = true;
 		m_onLoadFinished = _onLoadFinished;
+		m_onSceneLoaded = _onSceneLoaded;
 
 		UIManager.Instance.LoadingScreenCanvasGroup.DOFade(1f, .3f).OnComplete(() =>
 		{
@@ -68,12 +71,16 @@ public class LoadingManager : SingletonPersistant<LoadingManager>
 
 	private void OnSceneLoaded ( Scene _scene, LoadSceneMode _mode )
 	{
+		m_onSceneLoaded?.Invoke();
+
 		if (m_isLoading)
 			EndLoad();
 	}
 
 	private void EndLoad ()
 	{
+		onStartFadeOut?.Invoke();
+
 		m_isLoading = false; 
 		if (!m_didFinishInitialLoad)
 		{

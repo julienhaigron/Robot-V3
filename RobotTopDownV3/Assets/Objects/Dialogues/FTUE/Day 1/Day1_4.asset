@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5140234df1cbcb640bad62a1df6c5324, type: 3}
+  m_Name: Day1_4
+  m_EditorClassIdentifier: RTD::DialogueData
+  lines:
+  - characterName: League Employee
+    characterSprite: {fileID: 21300000, guid: 3ab256982cae8674388ec2dcdc0a1743, type: 3}
+    isSpriteOnLeft: 1
+    sentence: Blabla statut, visible dans le log

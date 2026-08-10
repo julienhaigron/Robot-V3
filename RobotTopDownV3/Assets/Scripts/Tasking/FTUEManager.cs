@@ -108,6 +108,7 @@ public class FTUEManager : SingletonPersistant<FTUEManager>
 		TaskSequence tutoSequence = new("Day1Tuto");
 
 		//macro
+		tutoSequence.Append(new WaitEndLoadingTask("Wait for end loading", ( context ) => GameDatas.current.currentPlayerSave.dayCount == 1));
 		tutoSequence.Append(new OpenPanelTask<HangarPanel>("Send player directly to hangar", ( context ) => context.UI.currentPanel is SoloHubPanel 
 			&& GameDatas.current.currentPlayerSave.dayCount == 1));
 		tutoSequence.Append(new DialogueHighlightTask("Squad Explenation", ( context ) => context.UI.currentPanel is HangarPanel
@@ -120,7 +121,7 @@ public class FTUEManager : SingletonPersistant<FTUEManager>
 		//micro
 		tutoSequence.Append(new DialogueTask("Blabla PFC + Sous-type d’action", ( context ) => context.UI.currentPanel is InGamePanel
 		, m_day1TutoDialogues[3]));
-		tutoSequence.Append(new DialogueHighlightTask("Blabla statut, visible dans le log”", ( context ) => context.Log.Logs.ContainsKey(LogConsole.LogEventType.Status)
+		tutoSequence.Append(new DialogueHighlightTask("Blabla statut, visible dans le log", ( context ) => context.Log.Logs.ContainsKey(LogConsole.LogEventType.Status)
 		, m_day1TutoDialogues[4], "logs"));
 
 		tutoSequence.SetSkipPredicate(( context ) => GameDatas.current.currentPlayerSave.dayCount > 1);

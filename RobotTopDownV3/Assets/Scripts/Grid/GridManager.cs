@@ -973,6 +973,9 @@ public class GridManager : Singleton<GridManager>
 
 	public void OnEntityMovement ( Entity _entity )
 	{
+		if (!m_entitiesVisions.ContainsKey(_entity.OwnerID) || !m_entitiesVisions[_entity.OwnerID].entitiesVisionRange.ContainsKey(_entity))
+			return;
+
 		PlayerVisionRangeInfo visionInfo = m_entitiesVisions[_entity.OwnerID];
 		HashSet<Tile> previousVision = visionInfo.entitiesVisionRange[_entity];
 		int range = GameConfig.current.game.rangePerVisionType[_entity.Data.NeuronalMembraneData.visionType];
