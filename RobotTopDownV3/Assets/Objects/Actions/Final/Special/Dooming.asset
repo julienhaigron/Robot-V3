@@ -21,6 +21,7 @@ MonoBehaviour:
   m_tokenCooldown: 0
   tokenDuration: 1
   isModAction: 0
+  isPlayedFirst: 1
   preparationAnimationKey: 
   afterPerformAnimationKey: 
   onPerformSingleAttackSFXID: 0
@@ -29,7 +30,7 @@ MonoBehaviour:
   previousActionAttackModificator: 0
   type: 4
   subType: 6
-  codeType: 0
+  codeType: 5
   targetType: 1
   trajectoryType: 0
   minDistance: 1

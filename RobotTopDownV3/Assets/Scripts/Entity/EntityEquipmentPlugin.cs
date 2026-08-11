@@ -542,7 +542,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 		if (m_linkedEntity.LastPerformedAction != null && m_linkedEntity.LastPerformedAction.IsPerforming)
 			m_linkedEntity.LastPerformedAction.CancelAction();
 		
-		m_linkedEntity.Displacement.Coordinates.GetTile().SetEntity(null, true);
+		m_linkedEntity.Displacement.Coordinates.GetTile().ClearEntityAnyTurn(m_linkedEntity);
 
 		m_isDead = true;
 		onDeath?.Invoke(m_linkedEntity.ID);

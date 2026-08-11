@@ -21,6 +21,7 @@ MonoBehaviour:
   m_tokenCooldown: 0
   tokenDuration: 1
   isModAction: 0
+  isPlayedFirst: 1
   preparationAnimationKey: 
   afterPerformAnimationKey: 
   onPerformSingleAttackSFXID: 0

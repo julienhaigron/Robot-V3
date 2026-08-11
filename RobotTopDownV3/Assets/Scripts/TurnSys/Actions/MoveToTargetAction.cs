@@ -62,7 +62,7 @@ public class MoveToTargetAction : AEntityAction
 		foreach (int tileID in targetTileIDs)
 		{
 			if(GridManager.Instance.Tiles[tileID].TryGetEntity(false, out Entity entity) && entity.ID == performingEntityID)
-				GridManager.Instance.Tiles[tileID].SetEntity(null, _isThisTurn: false);
+				GridManager.Instance.Tiles[tileID].ClearEntityAnyTurn(performingEntityID);
 		}
 
 		if (m_isPerforming)
