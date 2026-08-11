@@ -22,6 +22,7 @@ public class Weapon : MonoBehaviour
 	protected Coroutine m_attackCR;
 	protected AttackAction m_lastPerformedAction;
 	protected Action m_onPerformAttackEnd;
+	protected HashSet<Tile> m_targetedTiles = new();
 
 	private WaitForSeconds m_singleAttackDuration;
 
@@ -174,6 +175,7 @@ public class Weapon : MonoBehaviour
 		{
 			foreach (Tile tile in m_user.Equipment.GetTilesInAoERange(_attackAction, GridManager.Instance.Tiles[_attackAction.targetTileIDs[_attackIndex]]))
 			{
+				m_targetedTiles.Add(tile);
 				tile.UI.SetOutlineColor(Color.red);
 				if (tile.TryGetEntity(true, out Entity entity))
 					targets.Add(entity);
@@ -182,7 +184,9 @@ public class Weapon : MonoBehaviour
 		else
 		{
 			Entity target = GameManager.Instance.GetEntityFromID(_attackAction.targetedEntityIDs[_attackIndex]);
-			target.Displacement.Coordinates.GetTile().UI.SetOutlineColor(Color.red);
+			Tile targetTile = target.Displacement.Coordinates.GetTile();
+			targetTile.UI.SetOutlineColor(Color.red);
+				m_targetedTiles.Add(targetTile);
 			targets.Add(target);
 		}
 
@@ -252,6 +256,9 @@ public class Weapon : MonoBehaviour
 	protected virtual void EndAttack ( AttackAction _attackAction )
 	{
 		m_onPerformAttackEnd?.Invoke();
+		foreach (Tile tile in m_targetedTiles)
+			tile.UI.ResetOutline();
+		m_targetedTiles.Clear();
 	}
 
 	public virtual Dictionary<WeaponEquipmentData.DamageType, int> GetDamages ( Entity _user, Entity _target, AEntityAction _action, EntityActionData.PFCResultType _pfcResultType )

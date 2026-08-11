@@ -549,7 +549,7 @@ MonoBehaviour:
   m_consoleExpandedXPos: 0
   m_consoleCollapsedXPos: 318
   m_duration: 0.3
-  m_visibleEventType: 0400000002000000060000000700000008000000
+  m_visibleEventType: 02000000060000000700000008000000
   m_logTmpPoolData: {fileID: 11400000, guid: a06db61f4d4efb443a74263e65e896ce, type: 2}
   m_content: {fileID: 2459052710642681712}
   m_maxVisibleLogs: 150
