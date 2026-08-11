@@ -1,14 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
-using System.Linq;
-using Sirenix.OdinInspector;
+using DG.Tweening;
 
 public class SquadUnitDisplayList : MonoBehaviour
 {
+	[SerializeField] private RectTransform m_rtfm;
 	[SerializeField] private UnitMacroDisplay[] m_displays;
 	[SerializeField] private UnitMacroDisplay m_soloDisplay;
+	[SerializeField] private Vector3 m_hiddenPosition;
+	[SerializeField] private Vector3 m_visiblePosition;
 	// Start is called once before the first execution of Update after the MonoBehaviour is created
 
 	public void Init ()
@@ -35,6 +36,27 @@ public class SquadUnitDisplayList : MonoBehaviour
 				else
 					m_displays[i].Hide();
 			}
+		}
+
+	}
+
+	public void Show (float _duration)
+	{
+		if (_duration == 0)
+			m_rtfm.anchoredPosition = m_visiblePosition;
+		else
+		{
+			m_rtfm.DOAnchorPos(m_visiblePosition, _duration);
+		}
+	}
+
+	public void Hide ( float _duration )
+	{
+		if (_duration == 0)
+			m_rtfm.anchoredPosition = m_hiddenPosition;
+		else
+		{
+			m_rtfm.DOAnchorPos(m_hiddenPosition, _duration);
 		}
 	}
 }

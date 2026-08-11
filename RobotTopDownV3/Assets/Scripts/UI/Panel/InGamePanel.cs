@@ -101,11 +101,20 @@ public sealed class InGamePanel : AUIPanel
 	private void OnStartInputPhase ()
 	{
 		m_phaseTitleTmp.text = "Input Phase";
+
+		m_squadUnitDisplayList.Show(m_animationDuration);
+		if(m_tutoConsole.AllDialogs.Count > 0)
+			m_tutoConsole.Show(false);
+		m_endPhaseButton.SetVisible(true, false);
 	}
 
 	private void OnEndInputPhase ()
 	{
 		m_phaseTitleTmp.text = "Play Phase";
+
+		m_squadUnitDisplayList.Hide(m_animationDuration);
+		m_tutoConsole.Hide(false);
+		m_endPhaseButton.SetVisible(false, false);
 	}
 
 	private void OnClickEndPhaseBtn ()
