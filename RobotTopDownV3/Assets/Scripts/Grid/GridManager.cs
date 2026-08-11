@@ -994,6 +994,8 @@ public class GridManager : Singleton<GridManager>
 			foreach (Tile tile in addedTiles)
 				AddVisionTile(tile, _entity.Data.NeuronalMembraneData.visionType);
 		}
+		else if (_entity.Displacement.Coordinates.GetTile().IsVisible)
+			_entity.SetVisibility(false, NeuronalMembraneEquipmentData.VisionTypes.Optic);
 
 		visionInfo.entitiesVisionRange[_entity] = newVision;
 		m_entitiesVisions[_entity.OwnerID] = visionInfo;
@@ -1014,7 +1016,7 @@ public class GridManager : Singleton<GridManager>
 
 	private void RemoveVisionTile ( Tile tile, NeuronalMembraneEquipmentData.VisionTypes visionType )
 	{
-		if (m_localVisionCount.TryGetValue(tile, out int count))
+		if (!m_localVisionCount.TryGetValue(tile, out int count))
 			return;
 
 		count--;
