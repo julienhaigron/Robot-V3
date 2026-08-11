@@ -188,7 +188,7 @@ public class EntityAIPlugin : EntityPlugin
 					List<Tile> pathToEnemy = GridManager.Instance.GetPath(closestEntity.Displacement.Coordinates.GetTile(), m_linkedEntity.Displacement.Coordinates.GetTile(), true);
 					if (pathToEnemy == null || pathToEnemy.Count < 2 
 						|| (currentActionMainType == EntityActionData.MainActionType.Movement && _recordedAction.action.targetTileIDs != null && _recordedAction.action.targetTileIDs.Length > 0 
-							&& pathToEnemy[^1].coordinates.ID == _recordedAction.action.targetTileIDs[0]))
+							&& pathToEnemy[^1].Distance >= GridManager.Instance.Tiles[_recordedAction.action.targetTileIDs[0]].Distance))
 						return resultInfo;
 
 					//do not change movement target if current target is as close as new one
@@ -366,7 +366,7 @@ public class EntityAIPlugin : EntityPlugin
 		{
 			AEntityAction relatedAction = _action.enumID == pair.Item1.enumID ? _action : TurnManager.Instance.GetAction(GameAssets.current.game.entityActionsData[pair.Item1.enumID], m_linkedEntity.ID, pair.Item2, _action.timeAtStart);
 			
-			List<Tile> tilesInWeaponCone =  m_linkedEntity.Equipment.GetTilesInWeaponRange(relatedAction, pair.Item2, _isThisTurn);
+			List<Tile> tilesInWeaponCone =  m_linkedEntity.Equipment.GetTilesInWeaponRange(relatedAction, _isThisTurn);
 			tilesInRange.AddRange(tilesInWeaponCone);
 			foreach (Tile tile in tilesInWeaponCone)
 			{

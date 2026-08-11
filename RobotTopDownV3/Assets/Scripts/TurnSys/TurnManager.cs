@@ -480,6 +480,21 @@ public class TurnManager : Singleton<TurnManager>
 		return m_recordedActionInput[_entityID].ToArray()[^1].action.positionAtActionEndID;
 	}
 
+	public int GetLastRegisteredOrientationOfEntity(int _entityID )
+	{
+		int orientation = GameManager.Instance.GetEntityFromID(_entityID).Displacement.CurrentOrientation;
+		if (!m_recordedActionInput.ContainsSerializedKey(_entityID) || m_recordedActionInput[_entityID] == null || m_recordedActionInput[_entityID].Count == 0)
+			return orientation;
+
+		foreach(RecordedAction recordedAction in m_recordedActionInput[_entityID])
+		{
+			if (recordedAction.freeActionType == EntityActionEnumID.RotateEntity)
+				orientation = (recordedAction.freeAction as RotateEntityAction).targetedOrientationID;
+		}
+
+		return orientation;
+	}
+
 	public int GetPositionOfEntityAtEndOfRound ( int _entityID )
 	{
 		if (currentPhase != TurnPhase.Calculating)

@@ -8,6 +8,9 @@ public class AttackAction : AEntityAction
 {
 	public SingleAttackInfo[] attacksInfos;
 
+	//for client only
+	private HashSet<Tile> m_tilesInRange;
+
 	public class SingleAttackInfo : INetworkSerializable
 	{
 		public bool isAttackSuccessfull;
@@ -146,28 +149,23 @@ public class AttackAction : AEntityAction
 	public override void OnSelectActionTileInteractPredicatePrewarm ()
 	{
 		base.OnSelectActionTileInteractPredicatePrewarm();
-
-		//for all tiles overall distance calculation
-		bool attackIgnoresObstacles = (Data.type == EntityActionData.ActionType.DistanceAttack && effects.Any(e => e.enumID == EntityPassiveEffectEnumID.TrajectoryControl))
-			|| Data.trajectoryType == EntityActionData.TrajectoryType.Mortar;
 		Entity user = GameManager.Instance.GetEntityFromID(performingEntityID);
-		Weapon attackingWeapon = user.Equipment.Weapons[linkedEquipmentId];
 		Tile from = GridManager.Instance.Tiles[TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntityID)];
-		int maxDist = Data.GetMaxRange(this, PerformingEntity, null);
-		//GridManager.Instance.GetTilesInVisionRange(from, maxDist, attackIgnoresObstacles, true, false);
-		user.Equipment.GetTilesInWeaponRange(this, linkedEquipmentId, false);
+		int orientation = TurnManager.Instance.GetLastRegisteredOrientationOfEntity(performingEntityID);
+		m_tilesInRange = user.Equipment.GetTilesInWeaponRange(this, false, from, orientation).ToHashSet();
 	}
 
 	public override bool TileInteractPredicate ( Tile _tile )
 	{
-		if (Data.targetType == EntityActionData.TargetType.Self && _tile.coordinates.ID == TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntityID))
+		return m_tilesInRange.Contains(_tile);
+		/*if (Data.targetType == EntityActionData.TargetType.Self && _tile.coordinates.ID == TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntityID))
 			return true;
 
-		if (Data.targetType == EntityActionData.TargetType.Tile && _tile.IsVisibleFromSelectedEntity)
-			return true;
+		if ((Data.targetType == EntityActionData.TargetType.Tile || Data.targetType == EntityActionData.TargetType.OtherEntity)
+			&& _tile.Distance >= Data.minDistance && _tile.Distance <= Data.maxDistance)
+			return Data.targetType == EntityActionData.TargetType.Tile ? true : _tile.GetEntity(true) != null;
 
-		Entity entity = _tile.GetEntity(true);
-		return entity != null && _tile.IsVisibleFromSelectedEntity && !entity.IsAlliedTo(GameManager.Instance.GetEntityFromID(performingEntityID).OwnerID);
+		return false;*/
 	}
 
 	public override void GhostDisplay ( Entity.EntityState _state )

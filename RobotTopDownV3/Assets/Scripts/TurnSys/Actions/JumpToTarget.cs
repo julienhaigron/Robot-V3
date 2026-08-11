@@ -51,9 +51,9 @@ public class JumpToTarget : AEntityAction
 
 		for (int i = 0; i < movementAmount; i++)
 		{
-			List<Tile> tilesInRange = new();
+			/*List<Tile> tilesInRange = new();
 			foreach (string weaponId in PerformingEntity.Equipment.Weapons.Keys)
-				tilesInRange.AddRange(PerformingEntity.Equipment.GetTilesInWeaponRange(this, weaponId, true));
+				tilesInRange.AddRange(PerformingEntity.Equipment.GetTilesInWeaponRange(this, true));*/
 /*
 			foreach (Tile tile in tilesInRange)
 			{

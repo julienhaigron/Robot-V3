@@ -230,15 +230,18 @@ public class EntityEquipmentPlugin : EntityPlugin
 		m_linkedEntity.Displacement.Rotate(_tile, false);
 	}*/
 
-	public List<Tile> GetTilesInWeaponRange ( AEntityAction _action, string _weaponID, bool _isThisTurn = false )
+	public List<Tile> GetTilesInWeaponRange ( AEntityAction _action, bool _isThisTurn = false )
+	{
+		Tile from = _isThisTurn ? m_linkedEntity.Displacement.Coordinates.GetTile() : GridManager.Instance.Tiles[_action.supposedPositionAtActionStartID];
+		int orientation = m_linkedEntity.Displacement.CurrentOrientation;
+		return GetTilesInWeaponRange(_action, _isThisTurn, from, orientation);
+	}
+
+	public List<Tile> GetTilesInWeaponRange( AEntityAction _action, bool _isThisTurn, Tile _from, int _orientation )
 	{
 		List<Tile> tilesInRange = new();
-		Weapon usedWeapon = m_weapons[_weaponID];
-
-		float angle = GridManager.Instance.FromOrientationToAngle(m_linkedEntity.Displacement.CurrentOrientation);
 		int maxDistance = _action.Data.GetMaxRange(_action, m_linkedEntity, null);
 		int minDistance = _action.Data.minDistance;
-		Tile from = _isThisTurn ? m_linkedEntity.Displacement.Coordinates.GetTile() : GridManager.Instance.Tiles[_action.supposedPositionAtActionStartID];
 
 		bool ignoreObstacles = false;
 		foreach (AEntityPassiveEffect.PassiveEffectContainer passiveContainer in _action.effects)
@@ -250,49 +253,24 @@ public class EntityEquipmentPlugin : EntityPlugin
 		switch (_action.Data.aoeType)
 		{
 			case EntityActionData.AOEType.Noone:
-				/*GridManager.Instance.BFS(from, maxDistance, null, _isThisTurn, ignoreObstacles);
-				int nbOfRayPerAngle = 1;
-				int totalNbOfRay = 60 * nbOfRayPerAngle;
-				for (int i = 0; i < totalNbOfRay; i++)
-		{
-			//calculate angle
-			float rayAngle = Mathf.LerpAngle(angle - (60f / 2), angle + (60f / 2), (float)i / (float)totalNbOfRay);
-			rayAngle += 90f;
-			//get position in at angle Y at distance X from linkedEntity
-			if (rayAngle < 0)
-				rayAngle += 360;
-
-			float radians = rayAngle * Mathf.Deg2Rad;
-			Vector3 aimedPosition = new Vector3(Mathf.Sin(radians), 0, Mathf.Cos(radians));
-			RaycastHit[] hits = Physics.RaycastAll(m_linkedEntity.Displacement.Coordinates.GetTile().transform.position, aimedPosition * maxDistance, maxDistance * (2 * Tile.innerRadius), GameConfig.current.input.tileInternRayCastLayer);
-			foreach (RaycastHit hitInfo in hits)
-			{
-				if (hitInfo.transform.TryGetComponent(out Tile tile) && !tilesInRange.Contains(tile)
-					&& (ignoreObstacles || GridManager.Instance.IsVisionLineClear(m_linkedEntity.Displacement.Coordinates.GetTile(), tile, _isThisTurn))
-					&& tile.Distance >= minDistance)
-				{
-					tilesInRange.Add(tile);
-				}
-			}
-		}*/
 			case EntityActionData.AOEType.LargeArc:
 			case EntityActionData.AOEType.ThinArc:
 			case EntityActionData.AOEType.Chain:
 			case EntityActionData.AOEType.Ray:
-				tilesInRange.AddRange(GridManager.Instance.GetTilesInVisionCone(from, minDistance, maxDistance, m_linkedEntity.Displacement.CurrentOrientation, ignoreObstacles, _isThisTurn));
+				tilesInRange.AddRange(GridManager.Instance.GetTilesInVisionCone(_from, minDistance, maxDistance, _orientation, ignoreObstacles, _isThisTurn));
 				break;
 			case EntityActionData.AOEType.LargeCone:
 			case EntityActionData.AOEType.ThinCone:
 				if (_action.Data.aoECenterType == EntityActionData.AOECenterType.Self)
-					tilesInRange.AddRange(GridManager.Instance.GetTilesInCone(from, minDistance, maxDistance, m_linkedEntity.Displacement.CurrentOrientation, _action.Data.aoeType, _isThisTurn));
+					tilesInRange.AddRange(GridManager.Instance.GetTilesInCone(_from, minDistance, maxDistance, _orientation, _action.Data.aoeType, _isThisTurn));
 				else
-					tilesInRange.AddRange(GridManager.Instance.GetTilesInVisionCone(from, minDistance, maxDistance, m_linkedEntity.Displacement.CurrentOrientation, ignoreObstacles, _isThisTurn));
+					tilesInRange.AddRange(GridManager.Instance.GetTilesInVisionCone(_from, minDistance, maxDistance, _orientation, ignoreObstacles, _isThisTurn));
 				break;
 			case EntityActionData.AOEType.Circle:
 				if (_action.Data.aoECenterType == EntityActionData.AOECenterType.Self)
-					tilesInRange.AddRange(GridManager.Instance.GetTilesInVisionRange(from, minDistance, maxDistance, ignoreObstacles, _isThisTurn, false));
+					tilesInRange.AddRange(GridManager.Instance.GetTilesInVisionRange(_from, minDistance, maxDistance, ignoreObstacles, _isThisTurn, false));
 				else
-					tilesInRange.AddRange(GridManager.Instance.GetTilesInVisionCone(from, minDistance, maxDistance, m_linkedEntity.Displacement.CurrentOrientation, ignoreObstacles, _isThisTurn));
+					tilesInRange.AddRange(GridManager.Instance.GetTilesInVisionCone(_from, minDistance, maxDistance, _orientation, ignoreObstacles, _isThisTurn));
 				break;
 		}
 
@@ -302,7 +280,6 @@ public class EntityEquipmentPlugin : EntityPlugin
 
 	public List<Tile> GetTilesInAoERange ( AttackAction _action, Tile _targetTile, bool _isThisTurn = false )
 	{
-		EntityActionData attackData = GameAssets.current.game.entityActionsData[_action.enumID];
 		int maxDistance = _action.Data.aoECenterType == EntityActionData.AOECenterType.Self ? _action.Data.GetMaxRange(_action, m_linkedEntity, null) : _action.Data.GetAoEMaxRange(_action, m_linkedEntity, null);
 		int minDistance = _action.Data.aoECenterType == EntityActionData.AOECenterType.Self ? _action.Data.minDistance : _action.Data.aoeMinEffectRange;
 		Tile from = _action.Data.aoECenterType == EntityActionData.AOECenterType.Self ? _action.PerformingEntity.Displacement.Coordinates.GetTile() : _targetTile;

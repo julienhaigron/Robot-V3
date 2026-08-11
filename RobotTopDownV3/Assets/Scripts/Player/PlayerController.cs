@@ -53,6 +53,7 @@ public class PlayerController : Singleton<PlayerController>
 	private SerializableDictionary<int, List<ActionDisplayOnTile>> m_tempActionDisplays = new();
 	private SerializableDictionary<int, List<RotationActionDisplay>> m_rotationActionDisplays = new();
 	private SerializableDictionary<int, GhostEntity> m_ghostEntities = new();
+	public SerializableDictionary<int, GhostEntity> GhostEntities => m_ghostEntities;
 	private SerializableDictionary<int, GhostItem> m_ghostItems = new();
 
 	public override void Awake ()
