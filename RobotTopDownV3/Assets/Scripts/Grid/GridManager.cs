@@ -994,9 +994,9 @@ public class GridManager : Singleton<GridManager>
 			foreach (Tile tile in addedTiles)
 				AddVisionTile(tile, _entity.Data.NeuronalMembraneData.visionType);
 		}
-		else if (_entity.Displacement.Coordinates.GetTile().IsVisible)
-			_entity.SetVisibility(false, NeuronalMembraneEquipmentData.VisionTypes.Optic);
-
+		else
+			_entity.SetVisibility(_entity.Displacement.Coordinates.GetTile().IsVisible, NeuronalMembraneEquipmentData.VisionTypes.Optic);
+		
 		visionInfo.entitiesVisionRange[_entity] = newVision;
 		m_entitiesVisions[_entity.OwnerID] = visionInfo;
 		FogOfWarRenderer.Instance.MarkDirty();
