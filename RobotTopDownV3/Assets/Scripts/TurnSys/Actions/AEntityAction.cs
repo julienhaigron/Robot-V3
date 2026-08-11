@@ -86,9 +86,6 @@ public abstract class AEntityAction : INetworkSerializable
 
 	public virtual void RegisterInteraction ( Tile _tile )
 	{
-		/*if (_tile.GetEntity(true))
-			targetedEntityID = _tile.GetEntity(true).ID;
-		targetTileID = _tile.coordinates.ID;*/
 		int maxTargetAmount = Data.GetMaxTargetAmount(this, PerformingEntity, _tile.GetEntity(true));
 		TurnManager.Instance.AddTargetTileInCurrentAction(_tile);
 

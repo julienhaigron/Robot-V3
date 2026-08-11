@@ -10,6 +10,7 @@ public class AttackAction : AEntityAction
 
 	//for client only
 	private HashSet<Tile> m_tilesInRange;
+	private int m_orientation;
 
 	public class SingleAttackInfo : INetworkSerializable
 	{
@@ -65,7 +66,7 @@ public class AttackAction : AEntityAction
 			//targetedEntityID = PerformingEntity.AI.TargetedEntity.ID;
 			if (Data.aoeType != EntityActionData.AOEType.Noone)
 				LogConsole.AddLog("Automatic hit on targets due to AoE type", LogConsole.LogEventType.AttackRoll);
-			
+
 			for (int attackCount = 0; attackCount < attacksInfos.Length; attackCount++)
 			{
 				SingleAttackInfo attackInfo = attacksInfos[attackCount];
@@ -141,6 +142,8 @@ public class AttackAction : AEntityAction
 
 	}
 
+	#region Input
+
 	public override void Display ( TurnManager.RecordedAction _recordedAction )
 	{
 		//TODO ?
@@ -151,21 +154,59 @@ public class AttackAction : AEntityAction
 		base.OnSelectActionTileInteractPredicatePrewarm();
 		Entity user = GameManager.Instance.GetEntityFromID(performingEntityID);
 		Tile from = GridManager.Instance.Tiles[TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntityID)];
-		int orientation = TurnManager.Instance.GetLastRegisteredOrientationOfEntity(performingEntityID);
-		m_tilesInRange = user.Equipment.GetTilesInWeaponRange(this, false, from, orientation).ToHashSet();
+		int maxTargetAmount = Data.GetMaxTargetAmount(this, PerformingEntity, null);
+		m_tilesInRange = null;
+
+		if (maxTargetAmount > 1 && TurnManager.Instance.CurrentActionTargetTiles.Count > 1)
+		{
+			int currentOrientation = GridManager.Instance.GetClosestOrientation(from, TurnManager.Instance.CurrentActionTargetTiles[0]);
+			m_tilesInRange = user.Equipment.GetTilesInWeaponRange(this, false, from, currentOrientation).ToHashSet();
+		}
+		else
+		{
+			m_tilesInRange = new();
+			for (int i = 0; i < 6; i++)
+			{
+				foreach (Tile tile in user.Equipment.GetTilesInWeaponRange(this, false, from, i))
+					m_tilesInRange.Add(tile);
+			}
+		}
 	}
 
 	public override bool TileInteractPredicate ( Tile _tile )
 	{
-		return m_tilesInRange.Contains(_tile);
-		/*if (Data.targetType == EntityActionData.TargetType.Self && _tile.coordinates.ID == TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntityID))
+		if (m_tilesInRange.Contains(_tile))
+		{
+			Tile from = GridManager.Instance.Tiles[TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntityID)];
+			m_orientation = GridManager.Instance.GetClosestOrientation(from, _tile);
 			return true;
+		}
+		return false;
+	}
 
-		if ((Data.targetType == EntityActionData.TargetType.Tile || Data.targetType == EntityActionData.TargetType.OtherEntity)
-			&& _tile.Distance >= Data.minDistance && _tile.Distance <= Data.maxDistance)
-			return Data.targetType == EntityActionData.TargetType.Tile ? true : _tile.GetEntity(true) != null;
+	public override void RegisterInteraction ( Tile _tile )
+	{
+		Tile from = GridManager.Instance.Tiles[TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntityID)];
+		int currentOrientation = TurnManager.Instance.GetLastRegisteredOrientationOfEntity(performingEntityID);
+		if (GridManager.Instance.GetClosestOrientation(from, _tile) == currentOrientation)
+		{
+			base.RegisterInteraction(_tile);
+		}
+		else
+		{
+			int maxTargetAmount = Data.GetMaxTargetAmount(this, PerformingEntity, _tile.GetEntity(true));
+			TurnManager.Instance.AddTargetTileInCurrentAction(_tile);
 
-		return false;*/
+			if (_tile.TryGetPlannedItemAt(timeAtStart, out Item item))
+				item.Data.OnRegisterInteraction(this, item);
+
+			if (TurnManager.Instance.CurrentActionTargetTiles.Count == maxTargetAmount)
+			{
+				RotateEntityAction modAction = TurnManager.Instance.GetAction(GameAssets.current.game.entityActionsData[EntityActionEnumID.RotateEntity], performingEntityID, null, timeAtStart) as RotateEntityAction;
+				TurnManager.Instance.RegisterActionAndMod(performingEntityID, TurnManager.Instance.CurrentActionSelected, modAction, TurnManager.Instance.CurrentStateTypeSelected);
+				TurnManager.Instance.RefreshActionDisplay(performingEntityID, true);
+			}
+		}
 	}
 
 	public override void GhostDisplay ( Entity.EntityState _state )
@@ -181,4 +222,6 @@ public class AttackAction : AEntityAction
 			tile.UI.SetOutlineColor(Color.blue);
 		}
 	}
+
+	#endregion
 }

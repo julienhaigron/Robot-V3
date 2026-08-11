@@ -384,6 +384,51 @@ public class TurnManager : Singleton<TurnManager>
 
 	}
 
+	public bool RegisterActionAndMod( int _entityID, AEntityAction _action, AEntityAction _modAction, Entity.EntityState _state )
+	{
+		if (m_recordedActionInput.ContainsKey(_entityID) == false)
+			m_recordedActionInput.Add(_entityID, new());
+
+		if (m_remainingActionToken[_entityID] <= 0)
+			return false;
+
+		if (m_currentActionTargetTiles != null && m_currentActionTargetTiles.Count > 0)
+		{
+			List<int> entitiesIds = new();
+			List<int> tilesIds = new();
+			foreach (Tile tile in m_currentActionTargetTiles)
+			{
+				if (tile.TryGetEntity(true, out Entity entity))
+					entitiesIds.Add(entity.ID);
+				tilesIds.Add(tile.coordinates.ID);
+			}
+			_action.targetedEntityIDs = entitiesIds.ToArray();
+			_action.targetTileIDs = tilesIds.ToArray();
+		}
+		m_currentActionTargetTiles.Clear();
+
+		RecordedAction recordedAction = new RecordedAction
+		{
+			timeAtStart = _action.timeAtStart,
+			type = _action.enumID,
+			performingEntityID = _entityID,
+			action = _action,
+			entityState = _state,
+			freeAction = _modAction,
+			freeActionType = _modAction.enumID
+		};
+
+		m_recordedActionInput[_entityID].Enqueue(recordedAction);
+		m_remainingActionToken[_entityID] -= _action.TotalDuration;
+
+		TrackedEventCheck();
+
+		LogConsole.AddLog("Add " + _action.ToString() + " action to queue.", LogConsole.LogEventType.InputPhase);
+		//Update action display on grid + UI
+		onActionAdded?.Invoke(recordedAction);
+		return true;
+	}
+
 	public bool AddAction ( int _entityID, EntityActionEnumID _actionType, Entity.EntityState _state, string _linkedEquipmentID )
 	{
 		AEntityAction action = null;
