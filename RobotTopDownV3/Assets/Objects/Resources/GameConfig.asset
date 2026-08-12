@@ -25,7 +25,7 @@ MonoBehaviour:
     actionTokenPerRound: 10
     cameraMovementSpeed: 15
     cameraRotationDuration: 0.5
-    cameraRotationStep: 90
+    cameraRotationStep: 60
     cameraMovementBoundsOffset: {x: 7, y: 5}
     cameraZoomSpeed: 5
     cameraZoomBounds: {x: -5, y: 10.5}
