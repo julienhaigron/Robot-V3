@@ -533,8 +533,9 @@ public class TurnManager : Singleton<TurnManager>
 
 		foreach(RecordedAction recordedAction in m_recordedActionInput[_entityID])
 		{
-			if (recordedAction.freeActionType == EntityActionEnumID.RotateEntity)
-				orientation = (recordedAction.freeAction as RotateEntityAction).targetedOrientationID;
+			if (recordedAction.freeActionType == EntityActionEnumID.RotateEntity && recordedAction.freeAction is RotateEntityAction rotateEntityAction
+				&& rotateEntityAction.targetedOrientationID != null && rotateEntityAction.targetedOrientationID.Length > 0)
+				orientation = rotateEntityAction.targetedOrientationID[^1];
 		}
 
 		return orientation;
@@ -621,10 +622,9 @@ public class TurnManager : Singleton<TurnManager>
 				if (_specificTokenCount != -1 && totalCost <= _specificTokenCount)
 				{
 					lastRecordedPosition = GridManager.Instance.Tiles[recordedAction.action.positionAtActionEndID];
-					if (recordedAction.action.enumID == EntityActionEnumID.RotateEntity)
-						lastRecordedOrientation = (recordedAction.action as RotateEntityAction).targetedOrientationID;
-					else if (recordedAction.freeAction != null && recordedAction.freeAction.enumID == EntityActionEnumID.RotateEntity)
-						lastRecordedOrientation = (recordedAction.freeAction as RotateEntityAction).targetedOrientationID;
+					if (recordedAction.freeActionType == EntityActionEnumID.RotateEntity && recordedAction.freeAction is RotateEntityAction rotateEntityAction
+						&& rotateEntityAction.targetedOrientationID != null && rotateEntityAction.targetedOrientationID.Length > 0)
+						lastRecordedOrientation = rotateEntityAction.targetedOrientationID[^1];
 				}
 			}
 
@@ -970,7 +970,8 @@ public class TurnManager : Singleton<TurnManager>
 	private void PlayActionTick ( RecordedAction _recordedAction )
 	{
 		if (_recordedAction.freeActionType != EntityActionEnumID.Wait
-			&& _recordedAction.freeActionType != EntityActionEnumID.Unknowned)
+			&& _recordedAction.freeActionType != EntityActionEnumID.Unknowned
+			&& _recordedAction.action.IsPerformingAtTick(currentTick))
 		{
 			if (_recordedAction.freeAction.Data.isPlayedFirst)
 			{

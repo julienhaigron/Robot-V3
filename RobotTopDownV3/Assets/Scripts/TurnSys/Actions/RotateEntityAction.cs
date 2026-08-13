@@ -6,7 +6,7 @@ using System.Linq;
 
 public class RotateEntityAction : AEntityAction
 {
-	public int targetedOrientationID = -1; //0 - 5
+	public int[] targetedOrientationID; //0 - 5
 
 	public override void NetworkSerialize<T> ( BufferSerializer<T> serializer )
 	{
@@ -18,7 +18,8 @@ public class RotateEntityAction : AEntityAction
 	{
 		targetTileIDs = new int[1];
 		targetTileIDs[0] = _tile.coordinates.ID;
-		targetedOrientationID = GridManager.Instance.GetClosestOrientation(PerformingEntity.Displacement.Coordinates.GetTile(), _tile);
+		int orientation = GridManager.Instance.GetClosestOrientation(PerformingEntity.Displacement.Coordinates.GetTile(), _tile);
+		targetedOrientationID = new int[1]{ orientation };
 
 		base.RegisterInteraction(_tile);
 	}
@@ -37,14 +38,14 @@ public class RotateEntityAction : AEntityAction
 
 	protected override void Perform ( Entity.EntityState _state )
 	{
-		if(targetedOrientationID == -1)
+		if(targetedOrientationID == null || targetedOrientationID.Length < lifetime)
 		{
 			//shouldnt happen
 			EndTick();
 		}
 		else
 		{
-			PerformingEntity.Displacement.Rotate(targetedOrientationID, GameConfig.current.game.entityRotationDuration, EndTick);
+			PerformingEntity.Displacement.Rotate(targetedOrientationID[lifetime], GameConfig.current.game.entityRotationDuration, EndTick);
 		}
 
 		base.Perform(_state);
@@ -67,6 +68,13 @@ public class RotateEntityAction : AEntityAction
 		display.transform.LookAt(destination);
 
 		PlayerController.Instance.AddRotationActionDisplay(display, performingEntityID);
+	}
+
+	public override void OnSelectActionTileInteractPredicatePrewarm ()
+	{
+		base.OnSelectActionTileInteractPredicatePrewarm();
+		Tile from = GridManager.Instance.Tiles[TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntityID)];
+		GridManager.Instance.BFS(from, 1, null, true, false);
 	}
 
 	public override bool TileInteractPredicate ( Tile _tile )

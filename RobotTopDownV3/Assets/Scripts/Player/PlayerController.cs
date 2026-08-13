@@ -189,6 +189,7 @@ public class PlayerController : Singleton<PlayerController>
 			if (_tile.CanInteract)
 			{
 				m_turnManager.CurrentActionSelected.RegisterInteraction(_tile);
+				m_turnManager.CurrentActionSelected.OnSelectActionTileInteractPredicatePrewarm();
 			}
 		}
 	}

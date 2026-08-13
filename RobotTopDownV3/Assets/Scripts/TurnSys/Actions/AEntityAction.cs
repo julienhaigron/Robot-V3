@@ -92,7 +92,7 @@ public abstract class AEntityAction : INetworkSerializable
 		if (_tile.TryGetPlannedItemAt(timeAtStart, out Item item))
 			item.Data.OnRegisterInteraction(this, item);
 
-		if (TurnManager.Instance.CurrentActionTargetTiles.Count == maxTargetAmount)
+		if (TurnManager.Instance.CurrentActionTargetTiles.Count == (maxTargetAmount * Data.tokenDuration))
 		{
 			TurnManager.Instance.RegisterAction(performingEntityID, TurnManager.Instance.CurrentActionSelected, TurnManager.Instance.CurrentStateTypeSelected);
 			TurnManager.Instance.RefreshActionDisplay(performingEntityID, true);
@@ -121,7 +121,7 @@ public abstract class AEntityAction : INetworkSerializable
 			OnStartPerform(_state);
 
 		//if (lifetime == preparationDuration + 1)
-		if (IsPerformingAtTick(timeAtStart + lifetime))
+		if (IsPerformingAtTick(timeAtStart + lifetime) || Data.isModAction)
 		{
 			if(enumID != EntityActionEnumID.Unknowned && enumID != EntityActionEnumID.Wait)
 				LogConsole.AddLog(performingEntityID + " performes " + ToString(), LogConsole.LogEventType.ActionResolution);

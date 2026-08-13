@@ -10,7 +10,7 @@ public class AttackAction : AEntityAction
 
 	//for client only
 	private HashSet<Tile> m_tilesInRange;
-	private int m_orientation;
+	private List<int> m_orientations = new();
 
 	public class SingleAttackInfo : INetworkSerializable
 	{
@@ -154,14 +154,12 @@ public class AttackAction : AEntityAction
 		base.OnSelectActionTileInteractPredicatePrewarm();
 		Entity user = GameManager.Instance.GetEntityFromID(performingEntityID);
 		Tile from = GridManager.Instance.Tiles[TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntityID)];
+		int currentOrientation = TurnManager.Instance.GetLastRegisteredOrientationOfEntity(performingEntityID);
 		int maxTargetAmount = Data.GetMaxTargetAmount(this, PerformingEntity, null);
 		m_tilesInRange = null;
 
-		if (maxTargetAmount > 1 && TurnManager.Instance.CurrentActionTargetTiles.Count > 1)
-		{
-			int currentOrientation = GridManager.Instance.GetClosestOrientation(from, TurnManager.Instance.CurrentActionTargetTiles[0]);
-			m_tilesInRange = user.Equipment.GetTilesInWeaponRange(this, false, from, currentOrientation).ToHashSet();
-		}
+		if (TurnManager.Instance.CurrentActionTargetTiles.Count % maxTargetAmount != 0)
+			m_tilesInRange = user.Equipment.GetTilesInWeaponRange(this, false, from, m_orientations.Count == 0 ? currentOrientation : m_orientations[^1]).ToHashSet();
 		else
 		{
 			m_tilesInRange = new();
@@ -175,37 +173,41 @@ public class AttackAction : AEntityAction
 
 	public override bool TileInteractPredicate ( Tile _tile )
 	{
-		if (m_tilesInRange.Contains(_tile))
-		{
-			Tile from = GridManager.Instance.Tiles[TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntityID)];
-			m_orientation = GridManager.Instance.GetClosestOrientation(from, _tile);
+		if (m_tilesInRange.Contains(_tile)
+			&& (Data.targetType == EntityActionData.TargetType.Tile || _tile.TryGetEntity(true, out Entity entity)))
 			return true;
-		}
-		return false;
+		else
+			return false;
 	}
 
 	public override void RegisterInteraction ( Tile _tile )
 	{
 		Tile from = GridManager.Instance.Tiles[TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntityID)];
 		int currentOrientation = TurnManager.Instance.GetLastRegisteredOrientationOfEntity(performingEntityID);
-		if (GridManager.Instance.GetClosestOrientation(from, _tile) == currentOrientation)
+		int targetOrientation = GridManager.Instance.GetClosestOrientation(from, _tile);
+		if (currentOrientation == targetOrientation && m_orientations.Count == 0)
 		{
 			base.RegisterInteraction(_tile);
+			return;
 		}
-		else
+
+		int maxTargetAmount = Data.GetMaxTargetAmount(this, PerformingEntity, _tile.GetEntity(true));
+		if (TurnManager.Instance.CurrentActionTargetTiles == null || TurnManager.Instance.CurrentActionTargetTiles.Count % maxTargetAmount == 0)
+			m_orientations.Add(targetOrientation);
+
+		TurnManager.Instance.AddTargetTileInCurrentAction(_tile);
+
+		if (_tile.TryGetPlannedItemAt(timeAtStart, out Item item))
+			item.Data.OnRegisterInteraction(this, item);
+
+		if (TurnManager.Instance.CurrentActionTargetTiles.Count == maxTargetAmount * Data.tokenDuration)
 		{
-			int maxTargetAmount = Data.GetMaxTargetAmount(this, PerformingEntity, _tile.GetEntity(true));
-			TurnManager.Instance.AddTargetTileInCurrentAction(_tile);
-
-			if (_tile.TryGetPlannedItemAt(timeAtStart, out Item item))
-				item.Data.OnRegisterInteraction(this, item);
-
-			if (TurnManager.Instance.CurrentActionTargetTiles.Count == maxTargetAmount)
-			{
-				RotateEntityAction modAction = TurnManager.Instance.GetAction(GameAssets.current.game.entityActionsData[EntityActionEnumID.RotateEntity], performingEntityID, null, timeAtStart) as RotateEntityAction;
-				TurnManager.Instance.RegisterActionAndMod(performingEntityID, TurnManager.Instance.CurrentActionSelected, modAction, TurnManager.Instance.CurrentStateTypeSelected);
-				TurnManager.Instance.RefreshActionDisplay(performingEntityID, true);
-			}
+			RotateEntityAction modAction = TurnManager.Instance.GetAction(GameAssets.current.game.entityActionsData[EntityActionEnumID.RotateEntity], performingEntityID, null, timeAtStart) as RotateEntityAction;
+			modAction.targetTileIDs = new int[1];
+			modAction.targetTileIDs[0] = _tile.coordinates.ID;
+			modAction.targetedOrientationID = m_orientations.ToArray();
+			TurnManager.Instance.RegisterActionAndMod(performingEntityID, TurnManager.Instance.CurrentActionSelected, modAction, TurnManager.Instance.CurrentStateTypeSelected);
+			TurnManager.Instance.RefreshActionDisplay(performingEntityID, true);
 		}
 	}
 
