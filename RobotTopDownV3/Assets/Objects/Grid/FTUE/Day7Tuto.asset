@@ -375,10 +375,10 @@ MonoBehaviour:
   - groundType: 1
     wallType: 15
     orientation: 0
-  - groundType: 0
+  - groundType: 5
     wallType: 0
     orientation: 0
-  - groundType: 0
+  - groundType: 5
     wallType: 0
     orientation: 0
   - groundType: 1
