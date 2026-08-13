@@ -262,6 +262,9 @@ public class EntityAIPlugin : EntityPlugin
 		foreach (EntityActionEnumID actionEnumID in m_linkedEntity.ComponentLinkedToAction.Keys)
 		{
 			EntityActionData data = GameAssets.current.game.entityActionsData[actionEnumID];
+			if (data.GetTokenTotalCost(null, m_linkedEntity, null) > (GameConfig.current.game.actionTokenPerRound - TurnManager.currentTick - 1))
+				continue;
+
 			if (data.type == EntityActionData.ActionType.DistanceAttack || data.type == EntityActionData.ActionType.MeleeAttack)
 			{
 				foreach (string equipmentID in m_linkedEntity.ComponentLinkedToAction[actionEnumID])

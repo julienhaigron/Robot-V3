@@ -23,6 +23,9 @@ public class BotEnnemiPlayer : MonoBehaviour
 
 		foreach (Entity entity in GameManager.Instance.PlayersEntityAnchor[1].Entities)
 		{
+			if (entity.Equipment.IsDead)
+				continue;
+
 			DetermineEntityActions(entity);
 		}
 	}

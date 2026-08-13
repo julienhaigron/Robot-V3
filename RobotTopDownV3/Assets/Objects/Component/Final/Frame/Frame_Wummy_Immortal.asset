@@ -28,3 +28,4 @@ MonoBehaviour:
   armouringSlotAvailable: 0
   occultorSlotAvailable: 0
   statBonuses: []
+  isImmortal: 1

@@ -783,7 +783,8 @@ public class TurnManager : Singleton<TurnManager>
 
 				EntityAIPlugin.CheckActionResultInfo resultInfo = GameManager.Instance.GetEntityFromID(entityID).AI.CheckAction(recordedAction);
 
-				if (resultInfo.isActionChanging && resultInfo.replacementReasonTxt != null)
+				if (GameManager.Instance.GetEntityFromID(entityID).IsAlliedTo(GameManager.Instance.PlayerID) 
+					&& resultInfo.isActionChanging && resultInfo.replacementReasonTxt != null)
 					LogConsole.AddLog(resultInfo.replacementReasonTxt/* + ", action " + recordedAction.action + " replaced to " + resultInfo.replacedAction*/, LogConsole.LogEventType.AICheck);
 
 				if (recordedAction.action.lifetime > 0 || !resultInfo.isActionChanging)

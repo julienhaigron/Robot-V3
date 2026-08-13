@@ -26,6 +26,12 @@ public class Weapon : MonoBehaviour
 
 	private WaitForSeconds m_singleAttackDuration;
 
+	public class WeaponTarget
+	{
+		public Entity targetEntity;
+		public Tile targetTile;
+	}
+
 	public virtual void Init ( Entity _user, WeaponEquipmentData _data, bool _isFirstSide )
 	{
 		m_user = _user;
@@ -132,27 +138,30 @@ public class Weapon : MonoBehaviour
 		if (!_attackInfo.isAttackSuccessfull)
 			yield break;
 
-		List<Entity> targets = GetTargets(_attackAction, _attackIndex);
+		List<WeaponTarget> targets = GetTargets(_attackAction, _attackIndex);
 		Dictionary<WeaponEquipmentData.DamageType, int> damages = BuildDamageDictionary(_attackInfo);
 
 		foreach (ParticleSystem ps in m_onPerformPS)
 			ps.Play();
 		SoundManager.Instance.Play(_attackAction.Data.onPerformSingleAttackSFXID);
 
-		foreach (Entity entity in targets)
+		foreach (WeaponTarget target in targets)
 		{
-			int hitAmount = _attackAction.Data.GetHitAmount(_attackAction, m_user, entity);
+			Entity targetEntity = target.targetEntity != null ? target.targetEntity : target.targetTile.GetEntity(true);
+			if (targetEntity == null)
+				continue;
+			int hitAmount = _attackAction.Data.GetHitAmount(_attackAction, m_user, targetEntity);
 
 			for (int i = 0; i < hitAmount; i++)
 			{
-				entity.Equipment.TakeDamage(new EntityEquipmentPlugin.TakeDamageCallback()
+				targetEntity.Equipment.TakeDamage(new EntityEquipmentPlugin.TakeDamageCallback()
 				{
 					entityAttacker = m_user,
-					entityTargeted = entity,
+					entityTargeted = targetEntity,
 					damages = damages
 				});
 
-				ApplyStatuses(entity, _attackInfo);
+				ApplyStatuses(targetEntity, _attackInfo);
 				//ApplyEffects(entity);
 			}
 		}
@@ -166,9 +175,9 @@ public class Weapon : MonoBehaviour
 		yield return m_singleAttackDuration;
 	}
 
-	protected List<Entity> GetTargets ( AttackAction _attackAction, int _attackIndex )
+	protected List<WeaponTarget> GetTargets ( AttackAction _attackAction, int _attackIndex )
 	{
-		List<Entity> targets = new();
+		List<WeaponTarget> targets = new();
 		EntityActionData attackData = GameAssets.current.game.entityActionsData[_attackAction.enumID];
 
 		if (attackData.aoeType != EntityActionData.AOEType.Noone)
@@ -178,7 +187,9 @@ public class Weapon : MonoBehaviour
 				m_targetedTiles.Add(tile);
 				tile.UI.SetOutlineColor(Color.red);
 				if (tile.TryGetEntity(true, out Entity entity))
-					targets.Add(entity);
+					targets.Add(new() { targetTile = tile, targetEntity = entity });
+				else
+					targets.Add(new() { targetTile = tile, targetEntity = null});
 			}
 		}
 		else
@@ -186,8 +197,8 @@ public class Weapon : MonoBehaviour
 			Entity target = GameManager.Instance.GetEntityFromID(_attackAction.targetedEntityIDs[_attackIndex * _attackAction.ActiveLifetime]);
 			Tile targetTile = target.Displacement.Coordinates.GetTile();
 			targetTile.UI.SetOutlineColor(Color.red);
-				m_targetedTiles.Add(targetTile);
-			targets.Add(target);
+			m_targetedTiles.Add(targetTile);
+			targets.Add(new() { targetTile = targetTile, targetEntity = target });
 		}
 
 		return targets;
