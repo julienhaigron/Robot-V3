@@ -9,6 +9,8 @@ using UnityEditor;
 
 public class Wall : MonoBehaviour
 {
+	public static Action onAnyWallDestruct;
+
 	[SerializeField] private List<GameObject> m_wallParts = new();
 	public List<GameObject> WallParts => m_wallParts;
 
@@ -103,6 +105,7 @@ public class Wall : MonoBehaviour
 	{
 		foreach (GameObject go in m_wallParts)
 			go.SetActive(false);
+		onAnyWallDestruct?.Invoke();
 	}
 
 #if UNITY_EDITOR

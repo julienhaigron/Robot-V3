@@ -138,7 +138,7 @@ public class GridManager : Singleton<GridManager>
 
 	public void EmptyGridTypesInScene ()
 	{
-		foreach(Tile tile in m_tiles)
+		foreach (Tile tile in m_tiles)
 		{
 			tile.SetGroundType(TileGroundType.Empty);
 			tile.RemoveWall();
@@ -244,6 +244,7 @@ public class GridManager : Singleton<GridManager>
 	{
 		base.Awake();
 		//InputManager.onTileSelected += OnTileSelected;
+		Wall.onAnyWallDestruct += OnWallDestruction;
 		EntityDisplacementPlugin.onAnyEntityMovement += OnEntityMovement;
 		EntityDisplacementPlugin.onAnyEntitySpawn += OnNewEntity;
 		EntityEquipmentPlugin.onAnyEntityDeath += OnEntityDeath;
@@ -252,6 +253,7 @@ public class GridManager : Singleton<GridManager>
 	private void OnDestroy ()
 	{
 		//InputManager.onTileSelected -= OnTileSelected;
+		Wall.onAnyWallDestruct -= OnWallDestruction;
 		EntityDisplacementPlugin.onAnyEntityMovement -= OnEntityMovement;
 		EntityDisplacementPlugin.onAnyEntitySpawn -= OnNewEntity;
 		EntityEquipmentPlugin.onAnyEntityDeath -= OnEntityDeath;
@@ -745,7 +747,7 @@ public class GridManager : Singleton<GridManager>
 				if (tile.Wall.RegisteredHealth > 0 && GameConfig.current.game.coverBonusPerGroundType[tile.GroundType] > highestCoverValue)
 					highestCoverValue = GameConfig.current.game.coverBonusPerGroundType[tile.GroundType];
 
-				if(_cover == null || UnityEngine.Random.Range(0f, 1f) >= (highestCoverValue / GameConfig.current.game.coverBonusPerGroundType[tile.GroundType]))
+				if (_cover == null || UnityEngine.Random.Range(0f, 1f) >= (highestCoverValue / GameConfig.current.game.coverBonusPerGroundType[tile.GroundType]))
 					_cover = tile;
 			}
 		}
@@ -996,9 +998,48 @@ public class GridManager : Singleton<GridManager>
 		}
 		else
 			_entity.SetVisibility(_entity.Displacement.Coordinates.GetTile().IsVisible, NeuronalMembraneEquipmentData.VisionTypes.Optic);
-		
+
 		visionInfo.entitiesVisionRange[_entity] = newVision;
 		m_entitiesVisions[_entity.OwnerID] = visionInfo;
+		FogOfWarRenderer.Instance.MarkDirty();
+	}
+
+	public void OnWallDestruction ()
+	{
+		foreach (var ownerVision in m_entitiesVisions.Values)
+		{
+			foreach (var entityVision in ownerVision.entitiesVisionRange)
+			{
+				Entity entity = entityVision.Key;
+				int range = GameConfig.current.game.rangePerVisionType[entity.Data.NeuronalMembraneData.visionType];
+
+				HashSet<Tile> previousVision = entityVision.Value;
+				HashSet<Tile> newVision = GetTilesInVisionRange(entity.Displacement.Coordinates.GetTile(), 0, range, false, true, true).ToHashSet();
+
+				if (entity.IsAlliedTo(GameManager.Instance.PlayerID))
+				{
+					HashSet<Tile> addedTiles = new(newVision);
+					addedTiles.ExceptWith(previousVision);
+
+					HashSet<Tile> removedTiles = new(previousVision);
+					removedTiles.ExceptWith(newVision);
+
+					foreach (Tile tile in removedTiles)
+						RemoveVisionTile(tile, entity.Data.NeuronalMembraneData.visionType);
+
+					foreach (Tile tile in addedTiles)
+						AddVisionTile(tile, entity.Data.NeuronalMembraneData.visionType);
+				}
+				else
+				{
+					entity.SetVisibility(entity.Displacement.Coordinates.GetTile().IsVisible
+						, NeuronalMembraneEquipmentData.VisionTypes.Optic);
+				}
+
+				ownerVision.entitiesVisionRange[entity] = newVision;
+			}
+		}
+
 		FogOfWarRenderer.Instance.MarkDirty();
 	}
 
