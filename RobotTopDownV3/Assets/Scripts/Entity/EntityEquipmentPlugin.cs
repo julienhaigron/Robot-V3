@@ -521,6 +521,10 @@ public class EntityEquipmentPlugin : EntityPlugin
 		
 		m_linkedEntity.Displacement.Coordinates.GetTile().ClearEntityAnyTurn(m_linkedEntity);
 
+		string detailsDescription = m_linkedEntity.ID + " died";
+		//LogConsole.LogDetails details = new("death_" + LogConsole.Instance.LogsDetails.Keys.Count, "Damage Details", detailsDescription);
+		LogConsole.AddLog(detailsDescription, LogConsole.LogEventType.Damage/*, details*/);
+
 		m_isDead = true;
 		onDeath?.Invoke(m_linkedEntity.ID);
 		onAnyEntityDeath?.Invoke(m_linkedEntity);
