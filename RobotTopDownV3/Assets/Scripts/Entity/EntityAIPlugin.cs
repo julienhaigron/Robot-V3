@@ -20,6 +20,7 @@ public class EntityAIPlugin : EntityPlugin
 
 	private struct EntityInRangeInfo
 	{
+		public Tile tile;
 		public Entity entity;
 		public EntityActionEnumID actionID;
 		public string linkedEquipmentID;
@@ -77,7 +78,7 @@ public class EntityAIPlugin : EntityPlugin
 
 	private void OnEndTick ()
 	{
-		foreach(Tile tile in m_activeAttackRangeTiles)
+		foreach (Tile tile in m_activeAttackRangeTiles)
 		{
 			tile.UI.ResetOutline();
 		}
@@ -129,19 +130,24 @@ public class EntityAIPlugin : EntityPlugin
 
 			AttackAction attackAction = (TurnManager.Instance.GetAction(attackEnumID, m_linkedEntity.ID, equipmentID, _recordedAction.timeAtStart) as AttackAction);
 
-			if(attackAction == null)
+			if (attackAction == null)
 			{
 				Debug.LogError("error, action " + attackEnumID + " isnt an AttackAction code type", gameObject);
 				return resultInfo;
 			}
 
-			int maxAmount = Mathf.Min(attackAction.Data.GetMaxTargetAmount(attackAction, m_linkedEntity, null), m_lastEntitiesTargeted.Count);
+			bool shouldAddTileInDirectionToTarget = attackAction.Data.aoeType != EntityActionData.AOEType.Noone && attackAction.Data.aoECenterType == EntityActionData.AOECenterType.Self;
+			Tile from = m_linkedEntity.Displacement.Coordinates.GetTile();
+			//int maxAmount = Mathf.Min(attackAction.Data.GetMaxTargetAmount(attackAction, m_linkedEntity, null), m_lastEntitiesTargeted.Count);
+			int maxAmount = attackAction.Data.GetMaxTargetAmount(attackAction, m_linkedEntity, null) * attackAction.actualDuration;
 			int[] targetTilesID = new int[maxAmount];
 			int[] targetEntitiesID = new int[maxAmount];
 			for (int i = 0; i < maxAmount; i++)
 			{
-				targetTilesID[i] = m_lastEntitiesTargeted[i].Displacement.Coordinates.ID;
-				targetEntitiesID[i] = m_lastEntitiesTargeted[i].ID;
+				targetTilesID[i] = shouldAddTileInDirectionToTarget
+					? from.GetNeighbor((HexDirection)GridManager.Instance.GetClosestOrientation(from, m_lastEntitiesTargeted[i % m_lastEntitiesTargeted.Count].Displacement.Coordinates.GetTile())).coordinates.ID
+					: m_lastEntitiesTargeted[i % m_lastEntitiesTargeted.Count].Displacement.Coordinates.ID;
+				targetEntitiesID[i] = m_lastEntitiesTargeted[i % m_lastEntitiesTargeted.Count].ID;
 			}
 
 			attackAction.linkedEquipmentId = equipmentID;
@@ -150,7 +156,7 @@ public class EntityAIPlugin : EntityPlugin
 			attackAction.Init(GameAssets.current.game.entityActionsData[attackAction.enumID], equipmentID, m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID, _recordedAction.action.timeAtStart);
 			resultInfo.ReplaceAction(attackAction, "Has enemy in range, action replaced with " + attackAction);
 		}
-		else if(canMove && !hasEnemyInVisionRange)
+		else if (canMove && !hasEnemyInVisionRange)
 		{
 			int orientationTowardTarget = GridManager.Instance.GetClosestOrientation(m_linkedEntity.Displacement.Coordinates.GetTile(), GridManager.Instance.Tiles[_recordedAction.action.positionAtActionEndID]);
 			bool isAtCorrectOrientation = orientationTowardTarget == m_linkedEntity.Displacement.CurrentOrientation;
@@ -178,7 +184,7 @@ public class EntityAIPlugin : EntityPlugin
 					if (!isAtCorrectOrientation)
 					{
 						RotateEntityAction rotateAction = (TurnManager.Instance.GetAction(EntityActionEnumID.RotateEntity, m_linkedEntity.ID, null, _recordedAction.timeAtStart) as RotateEntityAction);
-						rotateAction.targetedOrientationID = new int[1] { orientationTowardTarget }; ;
+						rotateAction.targetedOrientationID = new int[1] { orientationTowardTarget };
 						rotateAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.RotateEntity], null, m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID, _recordedAction.action.timeAtStart);
 						resultInfo.ReplaceFreeAction(rotateAction, "Rotates toward target");
 					}
@@ -186,8 +192,8 @@ public class EntityAIPlugin : EntityPlugin
 				else
 				{
 					List<Tile> pathToEnemy = GridManager.Instance.GetPath(closestEntity.Displacement.Coordinates.GetTile(), m_linkedEntity.Displacement.Coordinates.GetTile(), true);
-					if (pathToEnemy == null || pathToEnemy.Count < 2 
-						|| (currentActionMainType == EntityActionData.MainActionType.Movement && _recordedAction.action.targetTileIDs != null && _recordedAction.action.targetTileIDs.Length > 0 
+					if (pathToEnemy == null || pathToEnemy.Count < 2
+						|| (currentActionMainType == EntityActionData.MainActionType.Movement && _recordedAction.action.targetTileIDs != null && _recordedAction.action.targetTileIDs.Length > 0
 							&& pathToEnemy[^1].Distance >= GridManager.Instance.Tiles[_recordedAction.action.targetTileIDs[0]].Distance))
 						return resultInfo;
 
@@ -275,35 +281,70 @@ public class EntityAIPlugin : EntityPlugin
 
 	public EntityActionData GetMovementAction ()
 	{
-		if (m_actionPriorityQueues.ContainsKey(EntityActionData.MainActionType.Movement))
-		{
-			foreach(EntityActionEnumID actionEnumID in m_actionPriorityQueues[EntityActionData.MainActionType.Movement].priorityQueue)
-			{
-				EntityActionData data = GameAssets.current.game.entityActionsData[actionEnumID];
-				if (Condition.UseConditionPredicate( TurnManager.Instance.GetAction(actionEnumID, m_linkedEntity.ID, m_linkedEntity.ComponentLinkedToAction[actionEnumID][0], TurnManager.currentTick)
-						, m_linkedEntity, m_lastEntitiesTargeted.Count > 0 ? m_lastEntitiesTargeted[0] : null, data.conditionType))
-				{
-					return data;
-				}
-			}
+		if (!m_actionPriorityQueues.ContainsKey(EntityActionData.MainActionType.Movement))
 			return null;
-		}
-		else
-		{
-			/*foreach (EntityActionEnumID actionEnumID in m_linkedEntity.KnownedActions)
-			{
-				EntityActionData data = GameAssets.current.game.entityActionsData[actionEnumID];
-				if (data.type == EntityActionData.ActionType.Movement && Condition.UseConditionPredicate
-					(TurnManager.Instance.GetAction(actionEnumID, m_linkedEntity.ID, m_linkedEntity.ComponentLinkedToAction[actionEnumID][0], TurnManager.Instance.currentTick)
-						, m_linkedEntity, m_lastEntitiesTargeted.Count > 0 ? m_lastEntitiesTargeted[0] : null, data.conditionType))
-					return data;
-			}*/
 
-			return null;
+		foreach (EntityActionEnumID actionEnumID in m_actionPriorityQueues[EntityActionData.MainActionType.Movement].priorityQueue)
+		{
+			EntityActionData data = GameAssets.current.game.entityActionsData[actionEnumID];
+			if (Condition.UseConditionPredicate(TurnManager.Instance.GetAction(actionEnumID, m_linkedEntity.ID, m_linkedEntity.ComponentLinkedToAction[actionEnumID][0], TurnManager.currentTick)
+					, m_linkedEntity, m_lastEntitiesTargeted.Count > 0 ? m_lastEntitiesTargeted[0] : null, data.conditionType))
+			{
+				return data;
+			}
 		}
+		return null;
+
 	}
 
 	#region Vision
+
+	private List<Entity> VisionCheck ( AEntityAction _action, bool _isThisTurn = true )
+	{
+		m_entitiesInVisionRange.Clear();
+		int range = GameConfig.current.game.rangePerVisionType[m_linkedEntity.Data.NeuronalMembraneData.visionType];
+		HashSet<Tile> tilesInRange = GridManager.Instance.EntitiesVisions[m_linkedEntity.OwnerID].entitiesVisionRange[m_linkedEntity];
+		foreach (Tile tile in tilesInRange)
+		{
+			if (tile.TryGetEntity(_isThisTurn, out Entity entity) && !entity.IsAlliedTo(m_linkedEntity.OwnerID))
+				m_entitiesInVisionRange.Add(entity);
+		}
+		//m_entitiesInVisionRange = GridManager.Instance.GetEntitiesInRange(m_linkedEntity.Displacement.Coordinates.GetTile(), range, _isThisTurn);
+
+		return m_entitiesInVisionRange;
+	}
+
+	private bool HasEnemyInVisionRange ()
+	{
+		foreach (Entity entity in m_entitiesInVisionRange)
+		{
+			if (!entity.IsAlliedTo(m_linkedEntity.OwnerID))
+				return true;
+		}
+		return false;
+	}
+
+	private List<EntityInRangeInfo> WeaponCheck ( AEntityAction _action, bool _isThisTurn = true )
+	{
+		m_entitiesInActionRangeInfos.Clear();
+
+		List<Tile> tilesInRange = new();
+		foreach (System.Tuple<EntityActionData, string> pair in GetAvailableAttackAction())
+		{
+			AEntityAction relatedAction = _action.enumID == pair.Item1.enumID ? _action : TurnManager.Instance.GetAction(GameAssets.current.game.entityActionsData[pair.Item1.enumID], m_linkedEntity.ID, pair.Item2, _action.timeAtStart);
+
+			List<Tile> tilesInWeaponCone = m_linkedEntity.Equipment.GetTilesInWeaponRange(relatedAction, _isThisTurn);
+			tilesInRange.AddRange(tilesInWeaponCone);
+			foreach (Tile tile in tilesInWeaponCone)
+			{
+				Entity entityOnTile = tile.GetEntity(_isThisTurn);
+				if (entityOnTile != null && !entityOnTile.IsAlliedTo(m_linkedEntity.OwnerID))
+					m_entitiesInActionRangeInfos.Add(new() { tile = tile, actionID = pair.Item1.enumID, entity = entityOnTile, linkedEquipmentID = pair.Item2 });
+			}
+		}
+		DisplayActiveAttackRange(tilesInRange);
+		return m_entitiesInActionRangeInfos;
+	}
 
 	private bool HasEnemyInWeaponRange ( out List<Entity> _enemies, out EntityActionEnumID _attackEnumID, out string _equipmentID )
 	{
@@ -332,81 +373,18 @@ public class EntityAIPlugin : EntityPlugin
 		}
 	}
 
-	private bool HasEnemyInVisionRange ()
-	{
-		foreach (Entity entity in m_entitiesInVisionRange)
-		{
-			if (!entity.IsAlliedTo(m_linkedEntity.OwnerID))
-				return true;
-		}
-		return false;
-	}
-
-	private List<Entity> VisionCheck ( AEntityAction _action, bool _isThisTurn = true )
-	{
-		m_entitiesInVisionRange.Clear();
-		int range = GameConfig.current.game.rangePerVisionType[m_linkedEntity.Data.NeuronalMembraneData.visionType];
-		HashSet<Tile> tilesInRange = GridManager.Instance.EntitiesVisions[m_linkedEntity.OwnerID].entitiesVisionRange[m_linkedEntity];
-		foreach(Tile tile in tilesInRange)
-		{
-			if(tile.TryGetEntity(_isThisTurn, out Entity entity) && !entity.IsAlliedTo(m_linkedEntity.OwnerID))
-				m_entitiesInVisionRange.Add(entity);
-		}
-		//m_entitiesInVisionRange = GridManager.Instance.GetEntitiesInRange(m_linkedEntity.Displacement.Coordinates.GetTile(), range, _isThisTurn);
-
-		return m_entitiesInVisionRange;
-	}
-
-	private List<EntityInRangeInfo> WeaponCheck ( AEntityAction _action, bool _isThisTurn = true )
-	{
-		m_entitiesInActionRangeInfos.Clear();
-
-		List<Tile> tilesInRange = new();
-		foreach (System.Tuple<EntityActionData, string> pair in GetAvailableAttackAction())
-		{
-			AEntityAction relatedAction = _action.enumID == pair.Item1.enumID ? _action : TurnManager.Instance.GetAction(GameAssets.current.game.entityActionsData[pair.Item1.enumID], m_linkedEntity.ID, pair.Item2, _action.timeAtStart);
-			
-			List<Tile> tilesInWeaponCone =  m_linkedEntity.Equipment.GetTilesInWeaponRange(relatedAction, _isThisTurn);
-			tilesInRange.AddRange(tilesInWeaponCone);
-			foreach (Tile tile in tilesInWeaponCone)
-			{
-				Entity entityOnTile = tile.GetEntity(_isThisTurn);
-				if (entityOnTile != null && !entityOnTile.IsAlliedTo(m_linkedEntity.OwnerID))
-					m_entitiesInActionRangeInfos.Add(new() { actionID = pair.Item1.enumID, entity = entityOnTile, linkedEquipmentID = pair.Item2 });
-			}
-		}
-		DisplayActiveAttackRange(tilesInRange);
-		return m_entitiesInActionRangeInfos;
-	}
-
-	private void DisplayActiveAttackRange(List<Tile> _tilesInRange )
+	private void DisplayActiveAttackRange ( List<Tile> _tilesInRange )
 	{
 		m_activeAttackRangeTiles = _tilesInRange;
-		foreach(Tile tile in _tilesInRange)
+		foreach (Tile tile in _tilesInRange)
 		{
 			tile.UI.SetOutlineColor(Color.blue);
 		}
 	}
 
-
-
-
 	#endregion
 
 	#region Targeting
-
-	public bool IsEntityInWeaponRange ( Entity _targetEntity, string _attackingWeaponId )
-	{
-		foreach (EntityInRangeInfo entityInfo in m_entitiesInActionRangeInfos)
-		{
-			if (entityInfo.entity == _targetEntity && string.Equals(entityInfo.linkedEquipmentID, _attackingWeaponId))
-			{
-				return true;
-			}
-		}
-
-		return false;
-	}
 
 	public bool IsEntityInWeaponPossibleRange ( Entity _entity, out string _weapon, bool _isThisTurn = true )
 	{

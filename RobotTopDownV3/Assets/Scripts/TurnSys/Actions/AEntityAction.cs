@@ -27,6 +27,7 @@ public abstract class AEntityAction : INetworkSerializable
 	public int actualDuration = 1;
 	public int cooldownDuration = 0;
 	public int TotalDuration => preparationDuration + actualDuration + cooldownDuration;
+	public int ActiveLifetime => lifetime - preparationDuration;
 
 	public int lifetime = 0;
 	public int timeAtStart = 0;

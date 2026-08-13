@@ -6,11 +6,13 @@ using System.Linq;
 
 public class AttackAction : AEntityAction
 {
-	public SingleAttackInfo[] attacksInfos;
+	public SingleAttackInfo[] attacksInfos; //reset at each active tick
 
 	//for client only
 	private HashSet<Tile> m_tilesInRange;
 	private List<int> m_orientations = new();
+
+	private bool m_didCheckConflict = false; //client only and used only for targetType == Tile
 
 	public class SingleAttackInfo : INetworkSerializable
 	{
@@ -43,17 +45,31 @@ public class AttackAction : AEntityAction
 	{
 		base.ConflictCheckPrewarm();
 
-		attacksInfos = new SingleAttackInfo[targetedEntityIDs.Length];
+		int maxTarget = targetTileIDs.Length / actualDuration;
+		attacksInfos = new SingleAttackInfo[maxTarget];
 		for (int i = 0; i < attacksInfos.Length; i++)
 			attacksInfos[i] = new();
 	}
 
 	public override ActionConflictResultInfo CheckConflict ( AEntityAction _otherAction, bool _isCheck = true )
 	{
-		for (int i = 0; i < targetedEntityIDs.Length; i++)
+		if (m_didCheckConflict)
+			return new() { isFirstActionConflicted = false, isSecondActionConflicted = false };
+
+		if (Data.targetType == EntityActionData.TargetType.Tile)
 		{
-			if (targetedEntityIDs[i] == _otherAction.performingEntityID)
-				attacksInfos[i].pfcResult = (int)EntityActionData.PFC(Data, _otherAction.Data);
+			for (int i = 0; i < attacksInfos.Length; i++)
+				attacksInfos[i].pfcResult = (int)EntityActionData.PFCResultType.Equal;
+
+			m_didCheckConflict = true;
+		}
+		else
+		{
+			for (int i = 0 ; i < attacksInfos.Length; i++)
+			{
+				if (targetedEntityIDs[i] == _otherAction.performingEntityID)
+					attacksInfos[i].pfcResult = (int)EntityActionData.PFC(Data, _otherAction.Data);
+			}
 		}
 
 		return new() { isFirstActionConflicted = false, isSecondActionConflicted = false };
@@ -70,7 +86,7 @@ public class AttackAction : AEntityAction
 			for (int attackCount = 0; attackCount < attacksInfos.Length; attackCount++)
 			{
 				SingleAttackInfo attackInfo = attacksInfos[attackCount];
-				Entity targetEntity = GameManager.Instance.GetEntityFromID(targetedEntityIDs[attackCount]);
+				Entity targetEntity = GameManager.Instance.GetEntityFromID(targetedEntityIDs[attackCount * ActiveLifetime]);
 				Tile coverHitted = null;
 				attackInfo.isAttackSuccessfull = Data.aoeType != EntityActionData.AOEType.Noone ? true : PerformingEntity.Equipment.AttackRoll(this, attackInfo, targetEntity, out coverHitted);
 				attackInfo.hittedTileID = coverHitted == null ? -1 : coverHitted.coordinates.ID;
@@ -118,7 +134,7 @@ public class AttackAction : AEntityAction
 	protected override void Perform ( Entity.EntityState _state )
 	{
 		PerformingEntity.AI.DOAllPrewarmCheck(this);
-		if (targetedEntityIDs == null)
+		if (targetedEntityIDs == null && Data.targetType != EntityActionData.TargetType.Tile)
 		{
 			Debug.LogError("No target error");
 			base.Perform(_state);

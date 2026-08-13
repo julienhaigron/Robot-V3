@@ -173,7 +173,7 @@ public class Weapon : MonoBehaviour
 
 		if (attackData.aoeType != EntityActionData.AOEType.Noone)
 		{
-			foreach (Tile tile in m_user.Equipment.GetTilesInAoERange(_attackAction, GridManager.Instance.Tiles[_attackAction.targetTileIDs[_attackIndex]]))
+			foreach (Tile tile in m_user.Equipment.GetTilesInAoERange(_attackAction, GridManager.Instance.Tiles[_attackAction.targetTileIDs[_attackIndex * _attackAction.ActiveLifetime]]))
 			{
 				m_targetedTiles.Add(tile);
 				tile.UI.SetOutlineColor(Color.red);
@@ -183,7 +183,7 @@ public class Weapon : MonoBehaviour
 		}
 		else
 		{
-			Entity target = GameManager.Instance.GetEntityFromID(_attackAction.targetedEntityIDs[_attackIndex]);
+			Entity target = GameManager.Instance.GetEntityFromID(_attackAction.targetedEntityIDs[_attackIndex * _attackAction.ActiveLifetime]);
 			Tile targetTile = target.Displacement.Coordinates.GetTile();
 			targetTile.UI.SetOutlineColor(Color.red);
 				m_targetedTiles.Add(targetTile);
@@ -198,10 +198,10 @@ public class Weapon : MonoBehaviour
 		List<Entity> targets = new();
 
 		if (_passiveEffect.aoeType == EntityActionData.AOEType.Noone)
-			targets.Add(GameManager.Instance.GetEntityFromID(_attackAction.targetedEntityIDs[_attackIndex]));
+			targets.Add(GameManager.Instance.GetEntityFromID(_attackAction.targetedEntityIDs[_attackIndex * _attackAction.ActiveLifetime]));
 		else
 		{
-			Tile target = GridManager.Instance.Tiles[_attackAction.targetTileIDs[_attackIndex]];
+			Tile target = GridManager.Instance.Tiles[_attackAction.targetTileIDs[_attackIndex * _attackAction.ActiveLifetime]];
 			Tile from = _passiveEffect.centerType == EntityActionData.AOECenterType.Self
 				? m_user.Displacement.Coordinates.GetTile() : target;
 			int minDistance = _passiveEffect.effectRange.x != -1 ? _passiveEffect.effectRange.x : _attackAction.Data.aoeMinEffectRange;
