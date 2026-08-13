@@ -74,7 +74,29 @@ public class GameManager : SingletonPersistant<GameManager>
 
 		if (!doesTuto)
 		{
-			LoadingManager.Instance.LoadScene(GameConfig.current.game.hubSceneName
+			LoadHubScene();
+		}
+		else if (!GameDatas.current.currentPlayerSave.didStartTuto)
+		{
+			//TODO : play introduction video/animation before throwing player into gameplay
+
+			foreach (UnitPreset unitPreset in FTUEManager.Instance.playerStartingSquadUnits)
+			{
+				unitPreset.AddToUnits(true);
+
+			}
+			GameDatas.current.currentPlayerSave.didStartTuto = true;
+			for (int i = 0; i < FTUEManager.Instance.Cycle1MatchMissions.Length; i++)
+				GameDatas.current.currentPlayerSave.cycleData.selectedMissionsIds.Add(FTUEManager.Instance.Cycle1MatchMissions[i].enumID);
+
+
+			SetupLevel(FTUEManager.Instance.Cycle1MatchMissions[0]);
+		}
+	}
+
+	private void LoadHubScene ()
+	{
+		LoadingManager.Instance.LoadScene(GameConfig.current.game.hubSceneName
 			, () =>
 			{
 				UIManager.Instance.ClosePanel<StartMenuPanel>(true);
@@ -95,25 +117,6 @@ public class GameManager : SingletonPersistant<GameManager>
 				else
 					UIManager.Instance.OpenPanel<SoloHubPanel>();
 			});
-		}
-		else
-		{
-			//TODO : play introduction video/animation before throwing player into gameplay
-
-			if (!GameDatas.current.currentPlayerSave.didStartTuto)
-			{
-				foreach (UnitPreset unitPreset in FTUEManager.Instance.playerStartingSquadUnits)
-				{
-					unitPreset.AddToUnits(true);
-
-				}
-				GameDatas.current.currentPlayerSave.didStartTuto = true;
-				for (int i = 0; i < FTUEManager.Instance.Cycle1MatchMissions.Length; i++)
-					GameDatas.current.currentPlayerSave.cycleData.selectedMissionsIds.Add(FTUEManager.Instance.Cycle1MatchMissions[i].enumID);
-			}
-
-			SetupLevel(FTUEManager.Instance.Cycle1MatchMissions[0]);
-		}
 	}
 
 	[Button]
@@ -167,7 +170,7 @@ public class GameManager : SingletonPersistant<GameManager>
 		}
 
 		UIManager.Instance.ClosePanel<InGamePanel>(true);
-		LoadSaveAndGoToHub(GameDatas.current.game.lastPlayerSaveSelectedID);
+		LoadHubScene();
 	}
 
 	public void GoToStartScreen ()

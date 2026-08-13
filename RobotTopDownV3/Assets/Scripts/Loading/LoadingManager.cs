@@ -71,7 +71,12 @@ public class LoadingManager : SingletonPersistant<LoadingManager>
 
 	private void OnSceneLoaded ( Scene _scene, LoadSceneMode _mode )
 	{
-		m_onSceneLoaded?.Invoke();
+		if (m_onSceneLoaded != null)
+		{
+			Action previousAction = new(m_onSceneLoaded);
+			m_onSceneLoaded -= previousAction;
+			previousAction?.Invoke();
+		}
 
 		if (m_isLoading)
 			EndLoad();
@@ -79,9 +84,14 @@ public class LoadingManager : SingletonPersistant<LoadingManager>
 
 	private void EndLoad ()
 	{
-		onStartFadeOut?.Invoke();
+		if (onStartFadeOut != null)
+		{
+			Action previousAction = new(onStartFadeOut);
+			onStartFadeOut -= previousAction;
+			previousAction?.Invoke();
+		}
 
-		m_isLoading = false; 
+		m_isLoading = false;
 		if (!m_didFinishInitialLoad)
 		{
 			m_didFinishInitialLoad = true;
@@ -90,7 +100,12 @@ public class LoadingManager : SingletonPersistant<LoadingManager>
 
 		UIManager.Instance.LoadingScreenCanvasGroup.DOFade(0f, .3f).OnComplete(() =>
 		{
-			m_onLoadFinished?.Invoke();
+			if (m_onLoadFinished != null)
+			{
+				Action previousAction = new(m_onLoadFinished);
+				m_onLoadFinished -= previousAction;
+				previousAction?.Invoke();
+			}
 		});
 	}
 }

@@ -157,7 +157,7 @@ public class EntityAIPlugin : EntityPlugin
 			if (!isAtCorrectOrientation)
 			{
 				RotateEntityAction rotateAction = (TurnManager.Instance.GetAction(EntityActionEnumID.RotateEntity, m_linkedEntity.ID, null, _recordedAction.timeAtStart) as RotateEntityAction);
-				rotateAction.targetedOrientationID = orientationTowardTarget;
+				rotateAction.targetedOrientationID = new int[1] { orientationTowardTarget };
 				rotateAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.RotateEntity], null, m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID, _recordedAction.action.timeAtStart);
 				resultInfo.ReplaceFreeAction(rotateAction, null);
 			}
@@ -178,7 +178,7 @@ public class EntityAIPlugin : EntityPlugin
 					if (!isAtCorrectOrientation)
 					{
 						RotateEntityAction rotateAction = (TurnManager.Instance.GetAction(EntityActionEnumID.RotateEntity, m_linkedEntity.ID, null, _recordedAction.timeAtStart) as RotateEntityAction);
-						rotateAction.targetedOrientationID = orientationTowardTarget;
+						rotateAction.targetedOrientationID = new int[1] { orientationTowardTarget }; ;
 						rotateAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.RotateEntity], null, m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID, _recordedAction.action.timeAtStart);
 						resultInfo.ReplaceFreeAction(rotateAction, "Rotates toward target");
 					}
@@ -209,7 +209,7 @@ public class EntityAIPlugin : EntityPlugin
 					if (!isAtCorrectOrientation)
 					{
 						RotateEntityAction rotateAction = (TurnManager.Instance.GetAction(EntityActionEnumID.RotateEntity, m_linkedEntity.ID, null, _recordedAction.timeAtStart) as RotateEntityAction);
-						rotateAction.targetedOrientationID = GridManager.Instance.GetClosestOrientation(m_linkedEntity.Displacement.Coordinates.GetTile(), closestEntity.Displacement.Coordinates.GetTile());
+						rotateAction.targetedOrientationID = new int[1] { GridManager.Instance.GetClosestOrientation(m_linkedEntity.Displacement.Coordinates.GetTile(), closestEntity.Displacement.Coordinates.GetTile()) };
 						rotateAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.RotateEntity], null, m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID, _recordedAction.action.timeAtStart);
 						resultInfo.ReplaceFreeAction(rotateAction, "Rotate toward target");
 					}
