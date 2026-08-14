@@ -103,6 +103,18 @@ public class EntityAIPlugin : EntityPlugin
 			//we dont handle it here
 			return resultInfo;
 		}
+		else if (m_linkedEntity.Status.Contains(EntityStatusEnumID.Stun))
+		{
+			WaitAction waitAction = (TurnManager.Instance.GetAction(EntityActionEnumID.Wait, m_linkedEntity.ID, null, _recordedAction.timeAtStart) as WaitAction);
+			waitAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.Wait], null, m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID, _recordedAction.action.timeAtStart);
+			resultInfo.ReplaceAction(waitAction, "Unit is stun");
+			return resultInfo;
+		}
+		else if (_recordedAction.entityState == Entity.EntityState.NoAIChange)
+		{
+			//no action change if in guard
+			return resultInfo;
+		}
 
 		DOAllPrewarmCheck(_recordedAction.action);
 
@@ -112,17 +124,7 @@ public class EntityAIPlugin : EntityPlugin
 		bool hasEnemyInVisionRange = HasEnemyInVisionRange();
 		EntityActionData.MainActionType currentActionMainType = _recordedAction.action.Data.GetMainActionType();
 
-		if (m_linkedEntity.Status.Contains(EntityStatusEnumID.Stun))
-		{
-			WaitAction waitAction = (TurnManager.Instance.GetAction(EntityActionEnumID.Wait, m_linkedEntity.ID, null, _recordedAction.timeAtStart) as WaitAction);
-			waitAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.Wait], null, m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID, _recordedAction.action.timeAtStart);
-			resultInfo.ReplaceAction(waitAction, "Unit is stun");
-		}
-		else if (_recordedAction.entityState == Entity.EntityState.NoAIChange)
-		{
-			//no action change if in guard
-		}
-		else if (hasEnemyInWeaponRange && currentActionMainType != EntityActionData.MainActionType.Attack)
+		if (hasEnemyInWeaponRange && currentActionMainType != EntityActionData.MainActionType.Attack)
 		{
 			// if eneemy in weapon range
 			//  => shoot directly
@@ -305,14 +307,13 @@ public class EntityAIPlugin : EntityPlugin
 	private List<Entity> VisionCheck ( AEntityAction _action, bool _isThisTurn = true )
 	{
 		m_entitiesInVisionRange.Clear();
-		int range = GameConfig.current.game.rangePerVisionType[m_linkedEntity.Data.NeuronalMembraneData.visionType];
 		HashSet<Tile> tilesInRange = GridManager.Instance.EntitiesVisions[m_linkedEntity.OwnerID].entitiesVisionRange[m_linkedEntity];
 		foreach (Tile tile in tilesInRange)
 		{
-			if (tile.TryGetEntity(_isThisTurn, out Entity entity) && !entity.IsAlliedTo(m_linkedEntity.OwnerID))
+			int entityID = tile.GetEntityId(_isThisTurn);
+			if (entityID != -1 && GameManager.Instance.GetEntityFromID(out Entity entity, entityID) && !entity.IsAlliedTo(m_linkedEntity.OwnerID))
 				m_entitiesInVisionRange.Add(entity);
 		}
-		//m_entitiesInVisionRange = GridManager.Instance.GetEntitiesInRange(m_linkedEntity.Displacement.Coordinates.GetTile(), range, _isThisTurn);
 
 		return m_entitiesInVisionRange;
 	}

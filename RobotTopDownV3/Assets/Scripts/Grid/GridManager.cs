@@ -331,42 +331,16 @@ public class GridManager : Singleton<GridManager>
 				if (tile == _from)
 				{
 					tilesInRange.Add(tile);
-					if (_applyVisibilityChanges)
-						tile.IsVisibleFromSelectedEntity = true;
 					continue;
 				}
-				bool visible = _ignoreObstacles || IsVisionLineClear(_from, tile, _isThisTurn);
-				if (_applyVisibilityChanges)
-					tile.IsVisibleFromSelectedEntity = visible;
+				bool visible = _ignoreObstacles || (_applyVisibilityChanges ? IsVisionLineClear(_from, tile, _isThisTurn) : tile.IsVisible);
 				if (visible)
 					tilesInRange.Add(tile);
 			}
 		}
 		return tilesInRange;
 	}
-	/*public List<Tile> GetTilesInVisionRange ( Tile from, int maxDist, bool ignoreObstacles, bool isThisTurn )
-	{
-		List<Tile> visible = new();
 
-		foreach (Tile tile in m_tiles)
-		{
-			if (tile == null)
-				continue;
-
-			int distance = from.coordinates.DistanceTo(tile.coordinates);
-
-			if (distance > maxDist)
-				continue;
-
-			bool canSee = ignoreObstacles || IsVisionLineClear(from, tile, isThisTurn);
-			tile.IsVisibleFromSelectedEntity = canSee;
-
-			if (canSee)
-				visible.Add(tile);
-		}
-
-		return visible;
-	}*/
 
 	public List<Tile> GetTilesInAoERange ( EntityActionData.AOEType _type, Entity _caster, Tile _from, Tile _targetTile, int _minDistance, int _maxDistance, int _extraValue, bool _isThisTurn = false )
 	{

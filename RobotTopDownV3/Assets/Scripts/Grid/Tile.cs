@@ -95,19 +95,6 @@ public class Tile : MonoBehaviour
 		}
 	}
 
-	private bool m_IsVisibleFromSelectedEntity;
-	public bool IsVisibleFromSelectedEntity
-	{
-		get
-		{
-			return m_IsVisibleFromSelectedEntity;
-		}
-		set
-		{
-			m_IsVisibleFromSelectedEntity = value;
-		}
-	}
-
 	#endregion
 
 	private void Awake ()
@@ -382,6 +369,11 @@ public class Tile : MonoBehaviour
 			return m_currentContent.Entity;
 		else
 			return m_nextTurnActionContent.Entity;*/
+	}
+
+	public int GetEntityId (bool _isThisTurn )
+	{
+		return m_plannedContentsPerTick[TurnManager.currentTick + (_isThisTurn ? 0 : 1)].entityID;
 	}
 
 	public bool TryGetEntity ( bool _isThisTurn, out Entity _entity )
