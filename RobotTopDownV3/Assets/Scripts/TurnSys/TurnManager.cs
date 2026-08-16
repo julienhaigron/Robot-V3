@@ -1080,16 +1080,22 @@ public class TurnManager : Singleton<TurnManager>
 
 	private void EndRoundTick ()
 	{
-		onEndPlayPhase?.Invoke();
-
 		if (currentPhase != TurnPhase.Playing)
 		{
 			Debug.Log("Server ended tick " + currentTick);
 			return; //error is here
 		}
+
+		onEndPlayPhase?.Invoke();
 		LogConsole.AddLog("Server ended tick " + currentTick, LogConsole.LogEventType.DebugSys);
-		if (m_recordedActionInput.Keys.Count == 0 || currentTick >= GameConfig.current.game.actionTokenPerRound - 1)
-			EndTurn(); //end turn
+
+		bool isGameFinished = IsGameFinished(out bool _playerOneWin, out bool _playerTwoWin);
+		EndLevelPopup.GameResult result = _playerOneWin && _playerTwoWin ? EndLevelPopup.GameResult.Draw : (GameManager.Instance.PlayerID == 0 ? _playerTwoWin : _playerOneWin) ? EndLevelPopup.GameResult.Loose : EndLevelPopup.GameResult.Win;
+
+		if (isGameFinished)
+			EndTurn(true, result);
+		else if (m_recordedActionInput.Keys.Count == 0 || currentTick >= GameConfig.current.game.actionTokenPerRound - 1)
+			EndTurn(false, result); //end turn
 		else
 		{
 			currentTick++;
@@ -1112,16 +1118,14 @@ public class TurnManager : Singleton<TurnManager>
 		m_actionsBeingDone.Remove(_entityID);
 	}
 
-	private void EndTurn ()
+	private void EndTurn (bool _isGameFinished, EndLevelPopup.GameResult _result)
 	{
 		LogConsole.AddLog("EndRound", LogConsole.LogEventType.DebugSys);
 
-		bool idGameFinished = IsGameFinished(out bool _playerOneWin, out bool _playerTwoWin);
-		EndLevelPopup.GameResult result = _playerOneWin && _playerTwoWin ? EndLevelPopup.GameResult.Draw : (GameManager.Instance.PlayerID == 0 ? _playerTwoWin : _playerOneWin) ? EndLevelPopup.GameResult.Loose : EndLevelPopup.GameResult.Win;
 		if (!GameManager.Instance.IsOnline)
 		{
-			if (idGameFinished)
-				EndLevel(result);
+			if (_isGameFinished)
+				EndLevel(_result);
 			else
 				StartInputPhase();
 		}
@@ -1129,12 +1133,12 @@ public class TurnManager : Singleton<TurnManager>
 		{
 			if (m_networkedTurnSystem.IsServer && !m_networkedTurnSystem.IsHost)
 			{
-				if (idGameFinished)
-					EndLevel(result);
+				if (_isGameFinished)
+					EndLevel(_result);
 				else
 					StartInputPhase();
 			}
-			m_networkedTurnSystem.EndRoundClientRPC(idGameFinished, result);
+			m_networkedTurnSystem.EndRoundClientRPC(_isGameFinished, _result);
 		}
 
 	}
