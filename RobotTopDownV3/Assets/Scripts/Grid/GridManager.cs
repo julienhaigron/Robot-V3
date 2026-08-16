@@ -310,7 +310,7 @@ public class GridManager : Singleton<GridManager>
 		return entitiesInRange;
 	}
 
-	public List<Tile> GetTilesInVisionRange ( Tile _from, int _minDist, int _maxDist, bool _ignoreObstacles, bool _isThisTurn, bool _applyVisibilityChanges )
+	/*public List<Tile> GetTilesInVisionRange ( Tile _from, int _minDist, int _maxDist, bool _ignoreObstacles, bool _isThisTurn, bool _applyVisibilityChanges )
 	{
 		List<Tile> tilesInRange = new();
 		TileCoordinates origin = _from.coordinates;
@@ -340,7 +340,57 @@ public class GridManager : Singleton<GridManager>
 		}
 		return tilesInRange;
 	}
+*/
 
+	public List<Tile> GetTilesInVisionRange ( Tile _from, int _minDist, int _maxDist, bool _ignoreObstacles, bool _isThisTurn, bool _applyVisibilityChanges )
+	{
+		List<Tile> tilesInRange = new();
+		TileCoordinates origin = _from.coordinates;
+
+		Dictionary<Tile, bool> visibilityCache = new() { [_from] = true };
+
+		for (int dist = 0; dist <= _maxDist; dist++)
+		{
+			for (int x = -dist; x <= dist; x++)
+			{
+				for (int y = Mathf.Max(-dist, -x - dist); y <= Mathf.Min(dist, -x + dist); y++)
+				{
+					int z = -x - y;
+					if (Mathf.Max(Mathf.Abs(x), Mathf.Abs(y), Mathf.Abs(z)) != dist)
+						continue;
+
+					TileCoordinates coord = new TileCoordinates(origin.X + x, origin.Z + z, -1);
+					Tile tile = coord.GetTile();
+					if (tile == null) continue;
+
+					bool visible;
+					if (tile == _from || _ignoreObstacles)
+						visible = true;
+					else if (!_applyVisibilityChanges)
+						visible = tile.IsVisible;
+					else
+					{
+						// Tuile parente sur la ligne origine -> tile, à distance dist-1
+						float t = (dist - 1f) / dist;
+						TileCoordinates parentCoord = CubeRound(CubeLerp(origin, coord, t));
+						Tile parentTile = parentCoord.GetTile();
+
+						bool parentVisible = parentTile != null
+							&& visibilityCache.TryGetValue(parentTile, out bool pv) && pv;
+						bool parentSeeThrough = parentTile == _from || (parentTile != null && parentTile.CanSeeThrough());
+
+						visible = parentVisible && parentSeeThrough;
+					}
+
+					visibilityCache[tile] = visible;
+
+					if (dist >= _minDist && visible)
+						tilesInRange.Add(tile);
+				}
+			}
+		}
+		return tilesInRange;
+	}
 
 	public List<Tile> GetTilesInAoERange ( EntityActionData.AOEType _type, Entity _caster, Tile _from, Tile _targetTile, int _minDistance, int _maxDistance, int _extraValue, bool _isThisTurn = false )
 	{
@@ -412,7 +462,8 @@ public class GridManager : Singleton<GridManager>
 		Vector2 origin = new Vector2(_from.transform.position.x, _from.transform.position.z);
 		Vector2 destination = new Vector2(_to.transform.position.x, _to.transform.position.z);
 		float angle = GetAngleFrom(origin, destination);
-		bool isInSplitLine = (angle - 30f) % 60f == 0f;
+		//bool isInSplitLine = (angle - 30f) % 60f == 0f;
+		bool isInSplitLine = Mathf.Abs(Mathf.Repeat(angle - 30f, 60f)) < 0.001f;
 
 		int N = a.DistanceTo(b);
 
@@ -699,9 +750,25 @@ public class GridManager : Singleton<GridManager>
 
 	public bool IsVisionLineClear ( Tile from, Tile to, bool isThisTurn )
 	{
-		List<Tile> ray = GetTilesInRay(from, to, isThisTurn, true);
+		TileCoordinates a = from.coordinates;
+		TileCoordinates b = to.coordinates;
+		int N = a.DistanceTo(b);
+		if (N == 0) return true;
 
-		return ray.Contains(to);
+		for (int i = 0; i <= N; i++)
+		{
+			float t = (float)i / N;
+			CubeF f = CubeLerp(a, b, t);
+			TileCoordinates c = CubeRound(f);
+			Tile mainTile = c.GetTile();
+			if (mainTile == null)
+				return false;
+			if (mainTile == to)
+				return true; // atteint la cible, rien ne bloque
+			if (!mainTile.CanSeeThrough())
+				return false;
+		}
+		return true;
 	}
 
 	public bool IsThereCoverBeween ( Entity _attacker, Entity _target, bool _didAttackerWinPFC, out Tile _cover )
