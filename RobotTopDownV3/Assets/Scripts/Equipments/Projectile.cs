@@ -95,7 +95,7 @@ public class Projectile : PoolElement
 		}
 	}
 
-	public virtual void SetProjectileData ( ProjectileData _projectileData )
+	protected virtual void SetProjectileData ( ProjectileData _projectileData )
 	{
 		m_projectileData = _projectileData;
 
@@ -154,7 +154,7 @@ public class Projectile : PoolElement
 		m_rb.isKinematic = false;
 
 		Vector3 start = transform.position;
-		Vector3 target = m_projectileData.destination;
+		Vector3 target = m_projectileData.Destination;
 
 		float gravity = Mathf.Abs(Physics.gravity.y);
 		float verticalVelocity = m_projectileData.speed.y;
@@ -173,7 +173,7 @@ public class Projectile : PoolElement
 		m_rb.isKinematic = false;
 
 		Vector3 start = transform.position;
-		Vector3 target = m_projectileData.destination;
+		Vector3 target = m_projectileData.Destination;
 
 		float gravity = Mathf.Abs(Physics.gravity.y);
 		Vector3 displacement = target - start;
@@ -192,7 +192,7 @@ public class Projectile : PoolElement
 		m_didHitSomething = false;
 		m_rb.isKinematic = false;
 
-		Vector3 dir = (m_projectileData.destination - transform.position).normalized;
+		Vector3 dir = (m_projectileData.Destination - transform.position).normalized;
 		m_rb.linearVelocity = dir * m_projectileData.speed.x + Vector3.up * m_projectileData.speed.y;
 
 		m_onHitEntity = _onHitEntity;
@@ -206,7 +206,7 @@ public class Projectile : PoolElement
 		m_onHitEntity = _onHitEntity;
 		m_onDespawnNoEntityHit = _onProjectileDespawn;
 
-		Vector3 destination = m_projectileData.destination;
+		Vector3 destination = m_projectileData.Destination;
 		float duration = Vector3.Distance(transform.position, destination) / m_projectileData.speed.x;
 
 		transform.LookAt(destination);
@@ -258,8 +258,42 @@ public struct ProjectileData
 {
 	public Entity owner;
 	public Vector2 speed;
-	public Vector3 destination;
+
 	public EntityActionData attackData;
 	public WeaponEquipmentData weapon;
 	public SfxId onHitSFXID;
+	
+	public enum TargetType { Tile, Entity, Wall}
+	public TargetType targetType;
+	public Tile targetTile;
+	public Entity targetEntity;
+	public Wall targetWall;
+	//public Vector3 destination;
+
+	public Vector3 Destination
+	{
+		get
+		{
+			switch (targetType)
+			{
+				case TargetType.Tile:
+					return targetTile.coordinates.GetTile().transform.position;
+				case TargetType.Entity:
+					return targetEntity.Skin.Center.position;
+				case TargetType.Wall:
+					return targetWall.Center;
+			}
+
+			Debug.LogError("Projectile target error, projectile wasnt initialized");
+			return Vector3.zero;
+		}
+	}
+
+	public void SetTarget( TargetType _targetType, Tile _targetTile = null, Entity _targetEntity = null, Wall _targetWall = null )
+	{
+		targetType = _targetType;
+		targetTile = _targetTile;
+		targetEntity = _targetEntity;
+		targetWall = _targetWall;
+	}
 }

@@ -34,6 +34,14 @@ public class Wall : MonoBehaviour
 	private int m_registeredHealth;
 	public int RegisteredHealth => m_registeredHealth;
 
+	public Vector3 Center
+	{
+		get
+		{
+			return transform.position + ((m_isCover ? .5f : 1f) * Vector3.up);
+		}
+	}
+
 	[Serializable]
 	public enum WallType
 	{

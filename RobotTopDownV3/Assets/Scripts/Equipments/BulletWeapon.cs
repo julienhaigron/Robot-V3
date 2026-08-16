@@ -134,13 +134,16 @@ public class BulletWeapon : Weapon
 		{
 			owner = m_user,
 			speed = Vector2.right * m_speed,
-			destination = _attackAction.Data.targetType == EntityActionData.TargetType.Tile
-				? GridManager.Instance.Tiles[_attackAction.targetTileIDs[_attackIndex * _attackAction.ActiveLifetime]].coordinates.GetTile().transform.position
-				: GameManager.Instance.GetEntityFromID(_attackAction.targetedEntityIDs[_attackIndex * _attackAction.ActiveLifetime]).Displacement.Coordinates.GetTile().transform.position,
 			attackData = _attackAction.Data,
 			weapon = m_data,
 			onHitSFXID = _attackAction.Data.onSingleAttackHitSFXID
 		};
+		ProjectileData.TargetType targetType = !_attackInfo.isAttackSuccessfull && _attackInfo.hittedTileID != -1
+			? ProjectileData.TargetType.Wall :  _attackAction.Data.targetType == EntityActionData.TargetType.Tile
+			? ProjectileData.TargetType.Tile : ProjectileData.TargetType.Entity;
+		bulletData.SetTarget(targetType, targetType == ProjectileData.TargetType.Tile ? GridManager.Instance.Tiles[_attackInfo.hittedTileID] : null
+			, targetType == ProjectileData.TargetType.Entity ? _target.targetEntity : null
+			, targetType == ProjectileData.TargetType.Wall ? GridManager.Instance.Tiles[_attackInfo.hittedTileID].Wall : null);
 
 		for (int i = 0; i < hitAmount; i++)
 		{
