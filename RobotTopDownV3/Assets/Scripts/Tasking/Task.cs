@@ -25,9 +25,10 @@ public abstract class Task
 		IsCompleted = false;
 	}
 
-	public void SetSkipPredicate ( Func<TaskManager.TaskContext, bool> _skipPredicate )
+	public Task SetSkipPredicate ( Func<TaskManager.TaskContext, bool> _skipPredicate )
 	{
 		m_skipPredicate = _skipPredicate;
+		return this;
 	}
 
 	public bool TryStart ( TaskManager.TaskContext _context )
