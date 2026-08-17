@@ -141,7 +141,7 @@ public class BulletWeapon : Weapon
 		ProjectileData.TargetType targetType = !_attackInfo.isAttackSuccessfull && _attackInfo.hittedTileID != -1
 			? ProjectileData.TargetType.Wall :  _attackAction.Data.targetType == EntityActionData.TargetType.Tile
 			? ProjectileData.TargetType.Tile : ProjectileData.TargetType.Entity;
-		bulletData.SetTarget(targetType, targetType == ProjectileData.TargetType.Tile ? GridManager.Instance.Tiles[_attackAction.targetTileIDs[_attackIndex]] : null
+		bulletData.SetTarget(targetType, targetType == ProjectileData.TargetType.Tile ? _target.targetTile : null
 			, targetType == ProjectileData.TargetType.Entity ? _target.targetEntity : null
 			, targetType == ProjectileData.TargetType.Wall ? GridManager.Instance.Tiles[_attackInfo.hittedTileID].Wall : null);
 
