@@ -34,7 +34,8 @@ public class FTUEManager : SingletonPersistant<FTUEManager>
 
 
 	public const string FTUEID = "FTUESequence";
-	public bool isInit = false;
+	private bool m_isInit = false;
+	public bool IsInit => m_isInit;
 
 	public void AddTutorialHighlightZone ( TutorialHighlightZone _highlightZone )
 	{
@@ -51,14 +52,14 @@ public class FTUEManager : SingletonPersistant<FTUEManager>
 	public void InitFTUE ()
 	{
 		if (GameDatas.current.currentPlayerSave.sequencesProgressions.ContainsKey(FTUEID) && GameDatas.current.currentPlayerSave.sequencesProgressions[FTUEID] == -1
-			|| isInit)
+			|| m_isInit)
 			return;
 
 #if UNITY_EDITOR
 		if (GameConfig.current.debug.skipFTUE)
 			return;
 #endif
-		isInit = true;
+		m_isInit = true;
 		FTUESequence ftueSequence = new(FTUEID);
 
 		ftueSequence.Append(MicroTuto0());
@@ -118,7 +119,7 @@ public class FTUEManager : SingletonPersistant<FTUEManager>
 		, m_day1TutoDialogues[2], "startMissionBtn"));
 
 		//micro
-		tutoSequence.Append(new DialogueTask("Action types explenation", ( context ) => context.Game.CurrentMission.enumID == MissionDataEnumID.Day1Tuto
+		tutoSequence.Append(new DialogueTask("Action types explenation", ( context ) => context.Game.CurrentMission != null && context.Game.CurrentMission.enumID == MissionDataEnumID.Day1Tuto
 		, m_day1TutoDialogues[3]));
 		tutoSequence.Append(new DialogueHighlightTask("Movement actions explenations", null, m_day1TutoDialogues[4], "actionBtns"));
 		tutoSequence.Append(new DialogueTask("Distance attack actions explenations", null, m_day1TutoDialogues[5]));
@@ -163,9 +164,6 @@ public class FTUEManager : SingletonPersistant<FTUEManager>
 		, m_day3TutoDialogues[0], "hangarBtn"));
 		tutoSequence.Append(new DialogueHighlightTask("Blabla recyclage donne gold", ( context ) => context.UI.currentPanel is HangarPanel
 		, m_day3TutoDialogues[1], "recycleBtn"));
-
-		here
-		//see comments in FTUE Doc
 
 		//micro
 		tutoSequence.Append(new DialogueTask("Présentation nemesis", ( context ) => context.Game.CurrentMission.enumID == MissionDataEnumID.Day3Tuto

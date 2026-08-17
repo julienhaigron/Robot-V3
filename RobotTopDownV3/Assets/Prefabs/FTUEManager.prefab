@@ -73,13 +73,20 @@ MonoBehaviour:
   - {fileID: 11400000, guid: badecd1528f9dc34a8db201c42ed4f28, type: 2}
   - {fileID: 11400000, guid: 25da7f754fdf67b46b467c9dbe27ecd5, type: 2}
   - {fileID: 11400000, guid: ee95cbe6de1d5fa4cb0a7598a09a13ed, type: 2}
+  - {fileID: 11400000, guid: 6b61efdb88bfecc44a6e211a0d5c2a86, type: 2}
+  - {fileID: 11400000, guid: a56f930818e5ede489c30ab52720fccb, type: 2}
+  - {fileID: 11400000, guid: f8e2fa9ad07feb14dae066bc3aeb3d81, type: 2}
+  - {fileID: 11400000, guid: d29688ac1647c3b4aaf0fd1684a6ac69, type: 2}
   m_day2TutoDialogues:
   - {fileID: 11400000, guid: 66a0a614007855b4587aba416bc9a5c0, type: 2}
   - {fileID: 11400000, guid: db79403f47986af44857b255a091ae20, type: 2}
   - {fileID: 11400000, guid: 1383be7cc3beb504f891ffcc82d27dac, type: 2}
+  - {fileID: 11400000, guid: d546bcb85427d414c9df5891ba1bc4a8, type: 2}
   m_day3TutoDialogues:
   - {fileID: 11400000, guid: 74ddcf49b3be02544aabdc5d4d98bb19, type: 2}
   - {fileID: 11400000, guid: f2687b1d0339c834d8670d1601e553d6, type: 2}
+  - {fileID: 11400000, guid: 59848256dbf3ecf4ba4613d02c341858, type: 2}
+  - {fileID: 11400000, guid: 5b01d2e3cf8ef424989974f45a65ce7c, type: 2}
   m_day4TutoDialogues:
   - {fileID: 11400000, guid: d522551e421b0674c9a8a89d96030a45, type: 2}
   - {fileID: 11400000, guid: 4fde318bb9ec3e946bbc3006f61f9d48, type: 2}

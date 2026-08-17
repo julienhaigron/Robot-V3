@@ -1047,14 +1047,16 @@ public class GridManager : Singleton<GridManager>
 
 	public void OnWallDestruction ()
 	{
-		foreach (var ownerVision in m_entitiesVisions.Values)
+		foreach (PlayerVisionRangeInfo ownerVision in m_entitiesVisions.Values)
 		{
-			foreach (var entityVision in ownerVision.entitiesVisionRange)
+			List<Entity> entities = ownerVision.entitiesVisionRange.Keys.ToList();
+			//foreach (KeyValuePair<Entity, HashSet<Tile>> entityVision in ownerVision.entitiesVisionRange)
+			for (int i = 0; i < entities.Count; i++)
 			{
-				Entity entity = entityVision.Key;
+				Entity entity = entities[i];
 				int range = GameConfig.current.game.rangePerVisionType[entity.Data.NeuronalMembraneData.visionType];
 
-				HashSet<Tile> previousVision = entityVision.Value;
+				HashSet<Tile> previousVision = ownerVision.entitiesVisionRange[entity];
 				HashSet<Tile> newVision = GetTilesInVisionRange(entity.Displacement.Coordinates.GetTile(), 0, range, false, true, true).ToHashSet();
 
 				if (entity.IsAlliedTo(GameManager.Instance.PlayerID))

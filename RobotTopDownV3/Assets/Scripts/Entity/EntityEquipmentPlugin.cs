@@ -331,8 +331,10 @@ public class EntityEquipmentPlugin : EntityPlugin
 		float roll = Random.Range(0f, 1f);
 		bool isAttackSuccessful = finalScore >= 1f || finalScore >= roll;
 
-		if (isAttackSuccessful || !isThereCoverBetween || roll > GameConfig.current.game.entityCoverBonus)
+		if (isAttackSuccessful || !isThereCoverBetween || roll < (1-GameConfig.current.game.entityCoverBonus))
 			_coverTile = null;
+		else if(_coverTile != null)
+			Debug.Log("Will hit wall");
 
 		StringBuilder detailsBuilder = new();
 		detailsBuilder.AppendLine($"<b>{m_linkedEntity.ID}</b> attacks <b>{_targetEntity.ID}</b>");
