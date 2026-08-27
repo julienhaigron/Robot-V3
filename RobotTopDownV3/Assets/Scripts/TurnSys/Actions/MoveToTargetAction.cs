@@ -156,6 +156,9 @@ public class MoveToTargetAction : AEntityAction
 		Tile from = GridManager.Instance.Tiles[TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntityID)];
 		List<Tile> path = GridManager.Instance.GetPath(from, _tile, true);
 
+		if (path == null)
+			return;
+
 		path.Reverse();
 		int actionCount = 0;
 		for (int i = 0; i < path.Count - 1; i += Data.movementSpeed)

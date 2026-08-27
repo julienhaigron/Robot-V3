@@ -1086,7 +1086,6 @@ public class TurnManager : Singleton<TurnManager>
 			return; //error is here
 		}
 
-		onEndPlayPhase?.Invoke();
 		LogConsole.AddLog("Server ended tick " + currentTick, LogConsole.LogEventType.DebugSys);
 
 		bool isGameFinished = IsGameFinished(out bool _playerOneWin, out bool _playerTwoWin);
@@ -1120,6 +1119,7 @@ public class TurnManager : Singleton<TurnManager>
 
 	private void EndTurn (bool _isGameFinished, EndLevelPopup.GameResult _result)
 	{
+		onEndPlayPhase?.Invoke();
 		LogConsole.AddLog("EndRound", LogConsole.LogEventType.DebugSys);
 
 		if (!GameManager.Instance.IsOnline)

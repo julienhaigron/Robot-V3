@@ -111,7 +111,7 @@ public class Tile : MonoBehaviour
 		if (m_plannedContentsPerTick == null || m_plannedContentsPerTick.Length == 0)
 		{
 			m_plannedContentsPerTick = new TileContent[GameConfig.current.game.actionTokenPerRound + 1];
-			for (int i = 0; i < GameConfig.current.game.actionTokenPerRound + 1; i++)
+			for (int i = 0; i < m_plannedContentsPerTick.Length; i++)
 			{
 				m_plannedContentsPerTick[i] = new() { entityID = -1, itemID = -1 };
 			}
@@ -305,12 +305,13 @@ public class Tile : MonoBehaviour
 	{
 		m_canInteract = false;
 		//if (m_plannedContentsPerTick[^1].entityID != -1)
-		for (int i = 1; i < GameConfig.current.game.actionTokenPerRound + 1; i++)
+		for (int i = 1; i < m_plannedContentsPerTick.Length; i++)
 			m_plannedContentsPerTick[i].Reset();
 	}
 
 	private void OnPlayPhaseEnd ()
 	{
+		NewPhase(m_plannedContentsPerTick.Length - 1);
 		m_plannedContentsPerTick[0].Copy(m_plannedContentsPerTick[^1]);
 	}
 
