@@ -35,7 +35,7 @@ MonoBehaviour:
   trajectoryType: 0
   minDistance: 1
   maxDistance: 6
-  maxTargetAmount: 6
+  maxTargetAmount: 1
   aoeType: 2
   doesAffectTile: 1
   aoECenterType: 0

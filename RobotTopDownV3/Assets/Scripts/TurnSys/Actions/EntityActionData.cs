@@ -106,7 +106,7 @@ public class EntityActionData : AParsableScriptableObject
 	[ShowIf("@targetType != TargetType.Self"), Parsing("Max Distance")]
 	public int maxDistance;
 
-	[Parsing("Max Distance")]
+	[Parsing("Target Amount")]
 	public int maxTargetAmount = 1;
 	#endregion
 

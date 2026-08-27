@@ -57,15 +57,15 @@ public class GameToolboxWindow : EditorWindow
 		EditorGUILayout.BeginVertical(group);
 		if (GUILayout.Button("Force Win", group))
 		{
-			GameManager.Instance.EndGame(EndLevelPopup.GameResult.Win);
+			TurnManager.Instance.EndLevel(EndLevelPopup.GameResult.Win);
 		}
 		if (GUILayout.Button("Force Draw", group))
 		{
-			GameManager.Instance.EndGame(EndLevelPopup.GameResult.Draw);
+			TurnManager.Instance.EndLevel(EndLevelPopup.GameResult.Draw);
 		}
 		if (GUILayout.Button("Force Loose", group))
 		{
-			GameManager.Instance.EndGame(EndLevelPopup.GameResult.Loose);
+			TurnManager.Instance.EndLevel(EndLevelPopup.GameResult.Loose);
 		}
 		EditorGUILayout.EndVertical();
 

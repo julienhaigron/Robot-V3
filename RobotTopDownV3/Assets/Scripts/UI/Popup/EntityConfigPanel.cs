@@ -31,6 +31,7 @@ public class EntityConfigPanel : AUIPanel
 	private EntitySavedData m_entityData;
 	private bool m_doesComeFromMissionPanel;
 	public bool DoesComeFromMissionPanel => m_doesComeFromMissionPanel;
+	private bool m_isNewUnit = false;
 
 	private System.Func<GameDatas.PlayerSave.Equipment, bool> InventoryGridPredicate => item => item != null && item.TryGetData(out EntityEquipmentData _data)
 		&& m_displayedEquipmentTypes.Contains(_data.GetEquipmentType()) && !item.isDamaged;
@@ -90,6 +91,9 @@ public class EntityConfigPanel : AUIPanel
 
 	protected override void OnHideFinished ()
 	{
+		if (m_isNewUnit && m_entityData.IsUnitValid())
+			GameDatas.current.currentPlayerSave.AddNewUnit(m_entityData, false);
+
 		m_inventoryGrid.Cleanup();
 		foreach (ComponentSlot slot in m_mainComponentSlotDictionary.Values)
 			slot.Cleanup();
@@ -101,8 +105,18 @@ public class EntityConfigPanel : AUIPanel
 		base.OnHideFinished();
 	}
 
+	public void InitNewUnit ()
+	{
+		EntitySavedData newUnit = new();
+		newUnit.name = "New Unit";
+		//HubManager.Instance.AddEntity(GameDatas.current.currentPlayerSave.AddNewUnit(newUnit, false));
+		Init(newUnit, false);
+		m_isNewUnit = true;
+	}
+
 	public void Init ( EntitySavedData _entity, bool _doesComeFromMissionPanel )
 	{
+		m_isNewUnit = false;
 		m_entityData = _entity;
 		m_doesComeFromMissionPanel = _doesComeFromMissionPanel;
 		m_unitNameInputField.text = _entity.name;
