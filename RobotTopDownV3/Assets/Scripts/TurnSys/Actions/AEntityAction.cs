@@ -113,6 +113,10 @@ public abstract class AEntityAction : INetworkSerializable
 
 	public abstract ActionConflictResultInfo CheckConflict ( AEntityAction _otherAction, bool _isCheck = true );
 
+	/// <summary>
+	/// called at the beginning of each performing tick
+	/// </summary>
+	/// <param name="_state"></param>
 	public abstract void Prepare ( Entity.EntityState _state );
 
 	//returns true if action fully performed

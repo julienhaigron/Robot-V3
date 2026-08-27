@@ -68,8 +68,8 @@ public class EntityDisplacementPlugin : EntityPlugin
 
 	public Tween MoveToTile( int _tileID,  System.Action onMovementDoneAction, bool _overrideMovementSpeed = false, float _overritenMovementSpeed = 0)
 	{
-		if(m_coordinate.GetTile().GetEntity(true) == m_linkedEntity)
-			m_coordinate.GetTile().SetEntity(null, _isThisTurn: true);
+		if(m_coordinate.GetTile().GetEntity(false) == m_linkedEntity)
+			m_coordinate.GetTile().SetEntity(null, _isThisTurn: false);
 		Tile tile = GridManager.Instance.Tiles[_tileID];
 
 		if(m_linkedEntity.AI.LastTargetedEntities == null)
@@ -82,7 +82,7 @@ public class EntityDisplacementPlugin : EntityPlugin
 		float movementDuration = _overrideMovementSpeed ? _overritenMovementSpeed : GameConfig.current.game.actionDuration;
 		m_movementTween = transform.DOMove(tile.transform.position - m_bottomPosition.localPosition, movementDuration)
 			.SetEase(Ease.Linear).OnComplete(() => onMovementDoneAction?.Invoke());
-		tile.SetEntity(m_linkedEntity, _isThisTurn: true);
+		tile.SetEntity(m_linkedEntity, _isThisTurn: false);
 		m_coordinate.SetCoordinate(tile.coordinates.X, tile.coordinates.Z, tile.coordinates.ID);
 
 
@@ -97,8 +97,8 @@ public class EntityDisplacementPlugin : EntityPlugin
 
 	public Tween TeleportToTile (int _tileID, System.Action onMovementDoneAction )
 	{
-		if (m_coordinate.GetTile().GetEntity(true) == m_linkedEntity)
-			m_coordinate.GetTile().SetEntity(null, _isThisTurn: true);
+		if (m_coordinate.GetTile().GetEntity(false) == m_linkedEntity)
+			m_coordinate.GetTile().SetEntity(null, _isThisTurn: false);
 		Tile tile = GridManager.Instance.Tiles[_tileID];
 
 		if (m_linkedEntity.AI.LastTargetedEntities == null)
@@ -109,7 +109,7 @@ public class EntityDisplacementPlugin : EntityPlugin
 			m_movementTween.Kill();
 
 		transform.position = tile.transform.position - m_bottomPosition.localPosition;
-		tile.SetEntity(m_linkedEntity, _isThisTurn: true);
+		tile.SetEntity(m_linkedEntity, _isThisTurn: false);
 		m_coordinate.SetCoordinate(tile.coordinates.X, tile.coordinates.Z, tile.coordinates.ID);
 
 		tile.OnEntityEnter(m_linkedEntity, true);

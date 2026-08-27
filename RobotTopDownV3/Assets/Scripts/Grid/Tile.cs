@@ -320,12 +320,15 @@ public class Tile : MonoBehaviour
 		m_canInteract = false;
 	}
 
-	public void NewPhase ()
+	public void NewPhase (int _currentTick)
 	{
-		if (TryGetEntity(true, out Entity entity))
-			SetEntity(entity, false);
-		if (TryGetItem(true, out Item item))
-			SetItem(item, false);
+		if (_currentTick == 0)
+			return;
+
+		if (m_plannedContentsPerTick[_currentTick - 1].entityID != -1)
+			m_plannedContentsPerTick[_currentTick].entityID = m_plannedContentsPerTick[_currentTick - 1].entityID;
+		if (m_plannedContentsPerTick[_currentTick - 1].itemID != -1)
+			m_plannedContentsPerTick[_currentTick].itemID = m_plannedContentsPerTick[_currentTick - 1].itemID;
 	}
 
 	private void OnRoundStart ()

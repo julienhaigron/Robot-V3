@@ -124,6 +124,8 @@ public class EndLevelPopup : AUIPopup
 			foreach (UnitRewardDisplay display in m_rewardUnitsDisplays)
 				if (display.IsSelected)
 					totalUsedRewardPoint += 5;
+
+			canLeave = totalUsedRewardPoint == m_allocatedRewardPoint;
 		}
 
 		m_continueButton.SetInteractability(canLeave);

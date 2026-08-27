@@ -965,11 +965,11 @@ public class GridManager : Singleton<GridManager>
 
 	#region Turn sys
 
-	public void StartNewPhase ()
+	public void StartNewPhase ( int _currentTick )
 	{
 		for (int i = 0; i < m_tiles.Length; i++)
 		{
-			m_tiles[i].NewPhase();
+			m_tiles[i].NewPhase(_currentTick);
 		}
 	}
 

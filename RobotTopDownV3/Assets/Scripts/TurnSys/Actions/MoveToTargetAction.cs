@@ -12,7 +12,7 @@ public class MoveToTargetAction : AEntityAction
 	public int targetTileID;
 	public MoveActionMode mode;
 
-	public int finalTargetTileID = -1;
+	public int finalTargetTileID = -1; //-1 means its canceled
 	public enum MoveActionMode { Coordinate, Entity }
 
 	private Coroutine m_performCR;
@@ -46,11 +46,12 @@ public class MoveToTargetAction : AEntityAction
 
 	public override void Prepare ( Entity.EntityState _state )
 	{
-		//check here if can do movement and where to exactly
+		/*//check here if can do movement and where to exactly
 		if(IsDestinationOccupiedOnNextTurnAction())
-			RefreshDestinatedTile();
+			RefreshDestinatedTile();*/
 
-		GameManager.Instance.GetEntityFromID(performingEntityID).Displacement.Coordinates.GetTile().SetEntity(null, _isThisTurn: false);
+		if(finalTargetTileID != 1 && targetTileIDs != null)
+			GameManager.Instance.GetEntityFromID(performingEntityID).Displacement.Coordinates.GetTile().SetEntity(null, _isThisTurn: true);
 	}
 
 	public override void CancelAction ()
@@ -59,10 +60,13 @@ public class MoveToTargetAction : AEntityAction
 		if (targetTileIDs == null)
 			return;
 
+		int currenTileID = PerformingEntity.Displacement.Coordinates.ID;
 		foreach (int tileID in targetTileIDs)
 		{
+			if (currenTileID == tileID)
+				continue;
 			if(GridManager.Instance.Tiles[tileID].TryGetEntity(false, out Entity entity) && entity.ID == performingEntityID)
-				GridManager.Instance.Tiles[tileID].ClearEntityAnyTurn(performingEntityID);
+				GridManager.Instance.Tiles[tileID].SetEntity(null, _isThisTurn: false);
 		}
 
 		if (m_isPerforming)
@@ -189,13 +193,13 @@ public class MoveToTargetAction : AEntityAction
 	public override ActionConflictResultInfo CheckConflict ( AEntityAction _otherAction, bool _isCheck = true )
 	{
 		Entity performingEntity = GameManager.Instance.GetEntityFromID(performingEntityID);
-		if (finalTargetTileID == -1)
+		if (finalTargetTileID == -1 || targetTileIDs == null)
 		{
 			//entity move action canceled
-			if (performingEntity.Displacement.Coordinates.GetTile().GetEntity(false) != null)
+			/*if (performingEntity.Displacement.Coordinates.GetTile().GetEntity(false) != null)
 				Debug.LogError("CRITICAL ERROR : performing entity " + performingEntity.Data.name + " cant go back to where it was. Hope this never happens"); // solution? insta kill performing entity
 			else
-				performingEntity.Displacement.Coordinates.GetTile().SetEntity(performingEntity, _isThisTurn: false);
+				*/performingEntity.Displacement.Coordinates.GetTile().SetEntity(performingEntity, _isThisTurn: true);
 			return new() { isFirstActionConflicted = false, isSecondActionConflicted = false };
 		}
 
@@ -256,7 +260,7 @@ public class MoveToTargetAction : AEntityAction
 			}
 		}
 
-		if (doesSelfHaveConflict == false)
+		if (!doesSelfHaveConflict)
 		{
 			foreach (int tileID in targetTileIDs)
 				GridManager.Instance.Tiles[tileID].SetEntity(performingEntity, _isThisTurn: false);
@@ -273,9 +277,8 @@ public class MoveToTargetAction : AEntityAction
 		bool hasOtherEntityOnDestinations = false;
 		foreach (int tileID in targetTileIDs)
 		{
-			Entity entity = GridManager.Instance.Tiles[tileID].GetEntity(_isThisTurn: false);
-			if ((entity != null && entity.ID != performingEntityID)
-				|| GridManager.Instance.Tiles[tileID].IsObstacle(false))
+			Entity entity = GridManager.Instance.Tiles[tileID].GetEntity(_isThisTurn: true);
+			if ((entity != null && entity.ID != performingEntityID) || GridManager.Instance.Tiles[tileID].IsObstacle(false))
 			{
 				hasOtherEntityOnDestinations = true;
 				break;
@@ -290,7 +293,10 @@ public class MoveToTargetAction : AEntityAction
 		if (finalTargetTileID == -1)
 			return;
 
-		List<Tile> pathToTile = GridManager.Instance.GetPath(GameManager.Instance.GetEntityFromID(performingEntityID).Displacement.Coordinates.GetTile(), GridManager.Instance.Tiles[(int)finalTargetTileID], _isThisTurn: false);
+		/*foreach (int tileID in targetTileIDs)
+			GridManager.Instance.Tiles[tileID].*/
+
+		List <Tile> pathToTile = GridManager.Instance.GetPath(GameManager.Instance.GetEntityFromID(performingEntityID).Displacement.Coordinates.GetTile(), GridManager.Instance.Tiles[(int)finalTargetTileID], _isThisTurn: false);
 
 		if (pathToTile == null || pathToTile.Count < Data.movementSpeed + 1)
 		{
@@ -335,6 +341,8 @@ public class MoveToTargetAction : AEntityAction
 
 		Tile from = GridManager.Instance.Tiles[TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntityID)];
 		List<Tile> path = GridManager.Instance.GetPath(from, GridManager.Instance.Tiles[positionAtActionEndID], true, false);
+		if (path == null)
+			return;
 		path.Reverse();
 
 		for (int i = 0; i < path.Count - 1; i++)

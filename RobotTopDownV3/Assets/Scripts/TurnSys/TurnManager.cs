@@ -519,7 +519,7 @@ public class TurnManager : Singleton<TurnManager>
 
 	public int GetLastRegisteredPositionOfEntity ( int _entityID )
 	{
-		if (!m_recordedActionInput.ContainsSerializedKey(_entityID) || m_recordedActionInput[_entityID] == null || m_recordedActionInput[_entityID].Count == 0)
+		if (!m_recordedActionInput.ContainsKey(_entityID) || m_recordedActionInput[_entityID] == null || m_recordedActionInput[_entityID].Count == 0)
 			return GameManager.Instance.GetEntityFromID(_entityID).Displacement.Coordinates.ID;
 
 		return m_recordedActionInput[_entityID].ToArray()[^1].action.positionAtActionEndID;
@@ -761,7 +761,7 @@ public class TurnManager : Singleton<TurnManager>
 		m_recordedActionInput = new(recordedActions);
 
 		currentPhase = TurnPhase.Calculating;
-		GridManager.Instance.StartNewPhase();
+		GridManager.Instance.StartNewPhase(currentTick);
 
 		//call GameManager.Items => item.OnActyionTIck
 		foreach (Item item in GameManager.Instance.Items)
