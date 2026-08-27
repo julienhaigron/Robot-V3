@@ -20,12 +20,13 @@ public class HangarPanel : AUIPanel
 
 	private void OnClickCreateNewEntity ()
 	{
-		//FrameEquipmentData baseFrame = GameAssets.current.game.frames[0];
-		EntitySavedData newUnit = new();
+		/*EntitySavedData newUnit = new();
 		newUnit.name = "New Unit";
 		HubManager.Instance.AddEntity(GameDatas.current.currentPlayerSave.AddNewUnit(newUnit, false));
 
-		RefreshDisplay();
+		RefreshDisplay();*/
+
+		UIManager.Instance.OpenPanel<EntityConfigPanel>().InitNewUnit();
 	}
 
 	protected override void OnShowStarted ()

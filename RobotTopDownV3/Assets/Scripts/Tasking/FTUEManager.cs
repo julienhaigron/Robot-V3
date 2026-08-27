@@ -119,8 +119,8 @@ public class FTUEManager : SingletonPersistant<FTUEManager>
 		, m_day1TutoDialogues[2], "startMissionBtn"));
 
 		//micro
-		tutoSequence.Append(new DialogueTask("Action types explenation", ( context ) => context.Game.CurrentMission != null && context.Game.CurrentMission.enumID == MissionDataEnumID.Day1Tuto
-		, m_day1TutoDialogues[3]));
+		tutoSequence.Append(new WaitEndLoadingTask("Wait for end loading", ( context ) => context.Game.CurrentMission != null && context.Game.CurrentMission.enumID == MissionDataEnumID.Day1Tuto));
+		tutoSequence.Append(new DialogueTask("Action types explenation", ( context ) => context.UI.currentPanel is InGamePanel, m_day1TutoDialogues[3]));
 		tutoSequence.Append(new DialogueHighlightTask("Movement actions explenations", null, m_day1TutoDialogues[4], "actionBtns"));
 		tutoSequence.Append(new DialogueTask("Distance attack actions explenations", null, m_day1TutoDialogues[5]));
 		tutoSequence.Append(new DialogueTask("Melee attack actions explenations", null, m_day1TutoDialogues[6]));
@@ -147,6 +147,7 @@ public class FTUEManager : SingletonPersistant<FTUEManager>
 
 
 		//micro
+		tutoSequence.Append(new WaitEndLoadingTask("Wait for end loading", ( context ) => context.Game.CurrentMission != null && context.Game.CurrentMission.enumID == MissionDataEnumID.Day2Tuto));
 		tutoSequence.Append(new DialogueTask("Blabla vision", ( context ) => context.UI.currentPanel is InGamePanel
 		, m_day2TutoDialogues[3]));
 
@@ -166,8 +167,8 @@ public class FTUEManager : SingletonPersistant<FTUEManager>
 		, m_day3TutoDialogues[1], "recycleBtn"));
 
 		//micro
-		tutoSequence.Append(new DialogueTask("Présentation nemesis", ( context ) => context.Game.CurrentMission.enumID == MissionDataEnumID.Day3Tuto
-		, m_day3TutoDialogues[2]));
+		tutoSequence.Append(new WaitEndLoadingTask("Wait for end loading", ( context ) => context.Game.CurrentMission != null && context.Game.CurrentMission.enumID == MissionDataEnumID.Day3Tuto));
+		tutoSequence.Append(new DialogueTask("Présentation nemesis", ( context ) => context.UI.currentPanel is InGamePanel, m_day3TutoDialogues[2]));
 		tutoSequence.Append(new DialogueTask("Unit is gonna die to doom status", ( context ) => context.Log.Logs.ContainsKey(LogConsole.LogEventType.Status)
 		, m_day3TutoDialogues[3]));
 

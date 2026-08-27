@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 9053511511557045532}
   - component: {fileID: 2809014431662650166}
   - component: {fileID: 3004094288854354076}
+  - component: {fileID: 6132383561406132295}
   m_Layer: 0
   m_Name: EntityUI
   m_TagString: Untagged
@@ -82,7 +83,7 @@ MonoBehaviour:
   m_healthBar: {fileID: 3003170526368560073}
   m_flyingNumberManagerDamage: {fileID: 3004094288854354076}
   m_statusDisplayParent: {fileID: 8074784698017871353}
-  m_statusPrefabSpawnAtInitCount: 0
+  m_statusPrefabSpawnAtInitCount: 3
   m_modifyBtn: {fileID: 36759355358090859}
 --- !u!114 &2809014431662650166
 MonoBehaviour:
@@ -135,7 +136,6 @@ MonoBehaviour:
     yAddedOffsetOnOverLap: 0.2
     yOffsetOnOverLapMax: 10
     textColor: {r: 0.8679245, g: 0.020469915, b: 0.020469915, a: 1}
-    defaultColorAnimation: 0
     useAnimationCustomColor: 0
     customColorAnimation: {r: 1, g: 0, b: 0, a: 1}
   m_UIflyingNumberPrefab: {fileID: 0}
@@ -143,9 +143,23 @@ MonoBehaviour:
   m_poolBufferedSize: 5
   m_flyingNumberParent: {fileID: 7619725450302791475}
   m_flyingNumberList: []
-  m_testValue: 1
-  m_testBlink: 0
-  m_playPS: 0
+--- !u!114 &6132383561406132295
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1377923743943899518}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc42784cf147c0c48a680349fa168899, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.GraphicRaycaster
+  m_IgnoreReversedGraphics: 1
+  m_BlockingObjects: 0
+  m_BlockingMask:
+    serializedVersion: 2
+    m_Bits: 8183
 --- !u!1 &1926209105449295986
 GameObject:
   m_ObjectHideFlags: 0
@@ -181,7 +195,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: -2}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &348003166433973713
 CanvasRenderer:
@@ -207,7 +221,7 @@ MonoBehaviour:
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
+  m_Maskable: 0
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -238,8 +252,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 0.25
-  m_fontSizeBase: 0.25
+  m_fontSize: 0.24
+  m_fontSizeBase: 0.24
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 0.1
@@ -264,7 +278,7 @@ MonoBehaviour:
   m_ActiveFontFeatures: 6e72656b
   m_enableExtraPadding: 0
   checkPaddingRequired: 0
-  m_isRichText: 1
+  m_isRichText: 0
   m_EmojiFallbackSupport: 1
   m_parseCtrlCharacters: 1
   m_isOrthographic: 1
@@ -563,8 +577,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -0.622}
-  m_SizeDelta: {x: 100, y: 100}
+  m_AnchoredPosition: {x: 0, y: 2.5}
+  m_SizeDelta: {x: 8, y: 2}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &3634848223513198596
 MonoBehaviour:

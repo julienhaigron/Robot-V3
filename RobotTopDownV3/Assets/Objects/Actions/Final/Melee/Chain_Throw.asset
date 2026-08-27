@@ -35,12 +35,12 @@ MonoBehaviour:
   trajectoryType: 4
   minDistance: 1
   maxDistance: 3
-  maxTargetAmount: 3
+  maxTargetAmount: 1
   aoeType: 7
   doesAffectTile: 0
-  aoECenterType: 0
-  aoeMinEffectRange: 1
-  aoeMaxEffectRange: 3
+  aoECenterType: 1
+  aoeMinEffectRange: 0
+  aoeMaxEffectRange: 0
   maxChainedTarget: 3
   damageReductionOnChain: 0.1
   hitAmount: 1

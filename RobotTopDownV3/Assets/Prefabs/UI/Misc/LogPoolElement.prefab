@@ -191,6 +191,7 @@ MonoBehaviour:
   m_discardAfter: 20
   m_text: {fileID: 4689760984990966670}
   m_layoutElement: {fileID: 3271173395600588507}
+  m_preferedTextSizePrefreredValues: {x: 0, y: 20}
 --- !u!114 &3271173395600588507
 MonoBehaviour:
   m_ObjectHideFlags: 0

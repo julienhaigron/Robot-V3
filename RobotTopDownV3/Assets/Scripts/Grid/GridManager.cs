@@ -99,7 +99,7 @@ public class GridManager : Singleton<GridManager>
 
 				if (groundType == TileGroundType.StaticPlayerSpawn || groundType == TileGroundType.DynamicPlayerSpawn)
 					GameManager.Instance.PlayersEntityAnchor[0].AddSpawn(m_tiles[i].coordinates, true, groundType == TileGroundType.StaticPlayerSpawn);
-				else if (groundType == TileGroundType.StaticEnemySpawn || groundType == TileGroundType.DynamicPlayerSpawn)
+				else if (groundType == TileGroundType.StaticEnemySpawn || groundType == TileGroundType.DynamicEnemySpawn)
 					GameManager.Instance.PlayersEntityAnchor[1].AddSpawn(m_tiles[i].coordinates, false, groundType == TileGroundType.StaticEnemySpawn);
 				else if (groundType == TileGroundType.PlayerStructure)
 					GameManager.Instance.PlayersEntityAnchor[0].AddStructure(m_tiles[i]);
