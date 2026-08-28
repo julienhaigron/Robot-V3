@@ -222,7 +222,7 @@ public class Entity : MonoBehaviour
 					if (!actionsPerComponents.ContainsKey(actionID))
 						actionsPerComponents.Add(actionID, new());
 
-					actionsPerComponents[actionID].Add(equipment.name);
+					actionsPerComponents[actionID].Add(container.ID);
 				}
 			}
 		}

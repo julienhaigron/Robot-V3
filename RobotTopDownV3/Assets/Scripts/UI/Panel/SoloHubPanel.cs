@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Sirenix.OdinInspector;
+using TMPro;
 
 public class SoloHubPanel : AUIPanel
 {
@@ -10,17 +11,18 @@ public class SoloHubPanel : AUIPanel
 	[SerializeField] private BaseButton m_recycleShopBtn;
 	[SerializeField] private BaseButton m_repairBtn;
 	[SerializeField] private BaseButton m_missionBtn;
-	[SerializeField] private BaseButton m_tournamentBtn;
+	[SerializeField] private BaseButton m_skipDayBtn;
+	[SerializeField] private TextMeshProUGUI m_missionBtnTMP;
 
 	private void Awake ()
 	{
 		m_hangarBtn.onClick += OnClickHangarBtn;
-		foreach(KeyValuePair< EntityEquipmentData.EntityFaction, BaseButton> shopBtn in m_openShopBtns)
+		foreach (KeyValuePair<EntityEquipmentData.EntityFaction, BaseButton> shopBtn in m_openShopBtns)
 			shopBtn.Value.onClick += () => OnClickOpenShopBtn(shopBtn.Key);
 		m_recycleShopBtn.onClick += OnClickOpenRecycleBtn;
 		m_repairBtn.onClick += OnClickOpenRepairBtn;
 		m_missionBtn.onClick += OnClickMissionBtn;
-		m_tournamentBtn.onClick += OnClickTournamentBtn;
+		m_skipDayBtn.onClick += OnClickSkipDay;
 	}
 
 	protected override void OnShowStarted ()
@@ -29,11 +31,14 @@ public class SoloHubPanel : AUIPanel
 		RefreshVisual();
 	}
 
-	private void RefreshVisual ()
+	public void RefreshVisual ()
 	{
 		bool isSquadValid = /*GameManager.Instance.SquadValidityPredicate()*/true;
+
+		m_missionBtnTMP.text = GameDatas.current.currentPlayerSave.dayCount > 3 ? "TOURNOI" : "MISSION";
+
 		m_missionBtn.SetInteractability(isSquadValid);
-		m_tournamentBtn.SetInteractability(isSquadValid);
+		//m_tournamentBtn.SetInteractability(isSquadValid);
 	}
 
 	#region Callbacks
@@ -42,13 +47,13 @@ public class SoloHubPanel : AUIPanel
 	{
 		UIManager.Instance.OpenPanel<HangarPanel>();
 	}
-	
+
 	private void OnClickOpenRecycleBtn ()
 	{
 		UIManager.Instance.OpenPanel<RecyclePanel>().Init();
 	}
 
-	private void OnClickOpenShopBtn ( EntityEquipmentData.EntityFaction _faction)
+	private void OnClickOpenShopBtn ( EntityEquipmentData.EntityFaction _faction )
 	{
 		UIManager.Instance.OpenPanel<ShopPanel>().Init(_faction);
 	}
@@ -57,21 +62,20 @@ public class SoloHubPanel : AUIPanel
 	{
 		UIManager.Instance.OpenPanel<RepairStationPanel>().Init();
 	}
-	
+
 	private void OnClickMissionBtn ()
 	{
 		if (GameDatas.current.currentPlayerSave.dayCount > 3)
-			return;
-
-		UIManager.Instance.OpenPanel<MissionPanel>();
+			UIManager.Instance.OpenPanel<TournamentPanel>();
+		else
+			UIManager.Instance.OpenPanel<MissionPanel>();
 	}
 
-	private void OnClickTournamentBtn ()
+	private void OnClickSkipDay ()
 	{
-		if (GameDatas.current.currentPlayerSave.dayCount <= 3)
-			return;
+		GameDatas.current.currentPlayerSave.NewDay();
 
-		UIManager.Instance.OpenPanel<TournamentPanel>();
+		UIManager.Instance.OpenPopup<ReturnToHubPopup>().Init();
 	}
 
 	#endregion

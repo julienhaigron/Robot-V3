@@ -107,9 +107,9 @@ public class EntityEquipmentPlugin : EntityPlugin
 					continue;
 
 				if (data is WeaponEquipmentData weaponData)
-					AddWeapon(weaponData, m_linkedEntity.Displacement.Spawn.isFirstSide);
+					AddWeapon(weaponData, stringContainer.ID, m_linkedEntity.Displacement.Spawn.isFirstSide);
 				else if (data is ToolEquipmentData toolData)
-					AddTool(toolData, m_linkedEntity.Displacement.Spawn.isFirstSide);
+					AddTool(toolData, stringContainer.ID, m_linkedEntity.Displacement.Spawn.isFirstSide);
 			}
 		}
 
@@ -203,10 +203,10 @@ public class EntityEquipmentPlugin : EntityPlugin
 		public Vector3 hitNormal;
 	}
 
-	private Weapon AddWeapon ( WeaponEquipmentData _data, bool _isFirstSide )
+	private Weapon AddWeapon ( WeaponEquipmentData _data, string _id, bool _isFirstSide )
 	{
 		Weapon newWeapon = Instantiate(_data.prefab, m_linkedEntity.Skin.IK.handGrabSocket);
-		newWeapon.Init(m_linkedEntity, _data, _isFirstSide);
+		newWeapon.Init(m_linkedEntity, _data, _id, _isFirstSide);
 		m_weapons.Add(newWeapon.ID, newWeapon);
 
 		WeaponCone weaponCone = Instantiate(GameAssets.current.game.weaponCone, m_weaponConesParent);
@@ -450,10 +450,10 @@ public class EntityEquipmentPlugin : EntityPlugin
 
 	#region Tool
 
-	private Tool AddTool ( ToolEquipmentData _data, bool _isFirstSide )
+	private Tool AddTool ( ToolEquipmentData _data, string _id, bool _isFirstSide )
 	{
 		Tool newTool = Instantiate(_data.prefab, m_linkedEntity.Skin.IK.handGrabSocket);
-		newTool.Init(m_linkedEntity, _data, _isFirstSide);
+		newTool.Init(m_linkedEntity, _data, _id, _isFirstSide);
 		m_tools.Add(newTool.ID, newTool);
 
 		return newTool;

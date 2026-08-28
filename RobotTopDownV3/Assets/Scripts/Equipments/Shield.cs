@@ -14,9 +14,9 @@ public class Shield : Tool
 
 	private int m_currentHp;
 
-	public override void Init ( Entity _user, ToolEquipmentData _data, bool _isFirstSide )
+	public override void Init ( Entity _user, ToolEquipmentData _data, string _id, bool _isFirstSide )
 	{
-		base.Init(_user, _data, _isFirstSide);
+		base.Init(_user, _data, _id, _isFirstSide);
 
 		orientation = _isFirstSide ? 5 : 2;
 		m_currentHp = ShieldData.hp;

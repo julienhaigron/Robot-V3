@@ -17,6 +17,7 @@ public class ReturnToHubPopup : AUIPopup
 
 	private void OnClickClose ()
 	{
+		UIManager.Instance.GetPanel<SoloHubPanel>().RefreshVisual();
 		Close();
 	}
 

@@ -32,11 +32,11 @@ public class Weapon : MonoBehaviour
 		public Tile targetTile;
 	}
 
-	public virtual void Init ( Entity _user, WeaponEquipmentData _data, bool _isFirstSide )
+	public virtual void Init ( Entity _user, WeaponEquipmentData _data, string _id, bool _isFirstSide )
 	{
 		m_user = _user;
 		m_data = _data;
-		m_id = _data.name + _user.Equipment.Tools.Values.Count;
+		m_id = _id;
 
 		m_singleAttackDuration = new WaitForSeconds(_data.singleAttackAnimationDuration);
 	}

@@ -240,11 +240,11 @@ public class EntitySavedData : INetworkSerializable
 		if (frame != null)
 			equipments.Add(frame);
 		if (reactor != null)
-			equipments.Add(frame);
+			equipments.Add(reactor);
 		if (neuronalMembrane != null)
-			equipments.Add(frame);
+			equipments.Add(neuronalMembrane);
 		if (brain != null)
-			equipments.Add(frame);
+			equipments.Add(brain);
 
 		return equipments;
 	}
