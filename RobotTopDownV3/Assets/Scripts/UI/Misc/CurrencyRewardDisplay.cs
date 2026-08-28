@@ -11,6 +11,8 @@ public class CurrencyRewardDisplay : MonoBehaviour
 
 	private bool m_isSelected = false;
 	public bool IsSelected => m_isSelected;
+	private bool m_isVisible = false;
+	public bool IsVisible => m_isVisible;
 	private System.Action m_onSelected;
 	private CurrencyType m_currencyType;
 	public CurrencyType CurrencyType => m_currencyType;
@@ -51,11 +53,13 @@ public class CurrencyRewardDisplay : MonoBehaviour
 
 	public void Show ()
 	{
+		m_isVisible = true;
 		gameObject.SetActive(true);
 	}
 
 	public void Hide ()
 	{
+		m_isVisible = false;
 		m_isSelected = false;
 		gameObject.SetActive(false);
 	}

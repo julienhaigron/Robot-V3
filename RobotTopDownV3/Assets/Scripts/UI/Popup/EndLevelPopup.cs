@@ -99,12 +99,12 @@ public class EndLevelPopup : AUIPopup
 		{
 			int totalUsedRewardPoint = 0;
 			foreach (CurrencyRewardDisplay display in m_rewardCurrencyDisplays)
-				if (display.IsSelected)
+				if (display.IsSelected && display.IsVisible)
 					totalUsedRewardPoint += 1;
 
 			foreach (ComponentRewardDisplay display in m_rewardComponentDisplays)
 			{
-				if (display.IsSelected)
+				if (display.IsSelected && display.IsVisible)
 				{
 					switch (display.Component.GetEquipmentType())
 					{
@@ -122,7 +122,7 @@ public class EndLevelPopup : AUIPopup
 			}
 
 			foreach (UnitRewardDisplay display in m_rewardUnitsDisplays)
-				if (display.IsSelected)
+				if (display.IsSelected && display.IsVisible)
 					totalUsedRewardPoint += 5;
 
 			canLeave = totalUsedRewardPoint == m_allocatedRewardPoint;
@@ -148,17 +148,17 @@ public class EndLevelPopup : AUIPopup
 	{
 		//give rewards
 		foreach (CurrencyRewardDisplay display in m_rewardCurrencyDisplays)
-			if (display.IsSelected)
+			if (display.IsSelected && display.IsVisible)
 				GameDatas.current.currentPlayerSave.AddCurrency(display.CurrencyType, display.Value);
 
 		foreach (ComponentRewardDisplay display in m_rewardComponentDisplays)
 		{
-			if (display.IsSelected)
+			if (display.IsSelected && display.IsVisible)
 				GameDatas.current.currentPlayerSave.AddEquipmentToInventory(display.Component);
 		}
 
 		foreach (UnitRewardDisplay display in m_rewardUnitsDisplays)
-			if (display.IsSelected)
+			if (display.IsSelected && display.IsVisible)
 				display.UnitPreset.AddToUnits(false);
 
 		GameManager.Instance.GoBackToHub();

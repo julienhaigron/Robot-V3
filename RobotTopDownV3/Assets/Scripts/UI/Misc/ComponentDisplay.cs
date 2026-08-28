@@ -18,7 +18,8 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 	[SerializeField] private GameObject m_priceBackground;
 	[SerializeField] private TextMeshProUGUI m_priceTMP;
 	[SerializeField] private TextMeshProUGUI m_descriptionTMP;
-	
+	[SerializeField] private GameObject m_damagedGO;
+
 	[Title("Shop")]
 	[SerializeField] private BaseButton m_rerollBtn;
 	[SerializeField] private BaseButton m_freezeBtn;
@@ -43,15 +44,18 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 	public void Init ( EntitySavedData _unitData, GameDatas.PlayerSave.Equipment _componentSavedData, DisplayMode _displayMode )
 	{
 		m_savedData = _componentSavedData;
-		if(_componentSavedData != null && _componentSavedData.TryGetData(out EntityEquipmentData data))
+		if (_componentSavedData != null && _componentSavedData.TryGetData(out EntityEquipmentData data))
 		{
 			m_componentData = data;
 			m_componentTypeIcon.sprite = GameAssets.current.ui.componentIcons[m_componentData.GetEquipmentType()];
 			m_corpIcon.sprite = GameAssets.current.ui.corporationsIcons[m_componentData.faction];
 			m_icon.sprite = m_componentData.icon;
+			m_damagedGO.SetActive(_componentSavedData.isDamaged);
 		}
+		else
+			m_damagedGO.SetActive(false);
 
-		if(m_rerollBtn != null)
+		if (m_rerollBtn != null)
 			m_rerollBtn.onClick = OnClickReroll;
 
 		if (m_freezeBtn != null)
@@ -70,7 +74,7 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 				m_priceTMP.gameObject.SetActive(false);
 				m_descriptionTMP.gameObject.SetActive(false);
 				m_priceBackground.gameObject.SetActive(false);
-				if(m_outlineImg != null)
+				if (m_outlineImg != null)
 					m_outlineImg.enabled = false;
 				if (m_rerollBtn != null)
 					m_rerollBtn.gameObject.SetActive(false);
@@ -152,7 +156,7 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 		}
 	}
 
-	public void SetShopData( GameDatas.PlayerSave.DayData.ShopComponentData _shopData )
+	public void SetShopData ( GameDatas.PlayerSave.DayData.ShopComponentData _shopData )
 	{
 		m_shopSavedData = _shopData;
 		m_freezeImg.sprite = m_freezeOnOffSpriteArray[_shopData.isFrozen ? 0 : 1];
@@ -225,7 +229,7 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 			CurrentContainer.RemoveFromOrigin(this);
 			CurrentContainer.LinkedContainer.RegisterInteraction(this);
 		}
-		else if(CurrentContainer != null && CurrentContainer.LinkedContainer == null && UIManager.Instance.currentPanel is EntityConfigPanel entityConfigPanel)
+		else if (CurrentContainer != null && CurrentContainer.LinkedContainer == null && UIManager.Instance.currentPanel is EntityConfigPanel entityConfigPanel)
 		{
 			ComponentContainer appropriateContainer = entityConfigPanel.GetFreeContainer(m_componentData.GetEquipmentType());
 			if (appropriateContainer == null)
@@ -234,7 +238,7 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 			appropriateContainer.RemoveFromOrigin(this);
 			appropriateContainer.LinkedContainer.RegisterInteraction(this);
 		}
-		else if(CurrentContainer != null && CurrentContainer.LinkedContainer == null && UIManager.Instance.currentPanel is RecyclePanel recyclePanel)
+		else if (CurrentContainer != null && CurrentContainer.LinkedContainer == null && UIManager.Instance.currentPanel is RecyclePanel recyclePanel)
 		{
 			ComponentContainer appropriateContainer = recyclePanel.GetFreeContainer();
 			if (appropriateContainer == null)
@@ -243,7 +247,7 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 			appropriateContainer.RemoveFromOrigin(this);
 			appropriateContainer.LinkedContainer.RegisterInteraction(this);
 		}
-		else if(CurrentContainer != null && CurrentContainer.LinkedContainer == null && UIManager.Instance.currentPanel is RepairStationPanel repairPanel)
+		else if (CurrentContainer != null && CurrentContainer.LinkedContainer == null && UIManager.Instance.currentPanel is RepairStationPanel repairPanel)
 		{
 			ComponentContainer appropriateContainer = repairPanel.GetFreeContainer();
 			if (appropriateContainer == null)

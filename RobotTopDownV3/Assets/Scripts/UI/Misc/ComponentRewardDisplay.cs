@@ -13,6 +13,9 @@ public class ComponentRewardDisplay : MonoBehaviour
 
     private bool m_isSelected = false;
     public bool IsSelected => m_isSelected;
+
+    private bool m_isVisible = false;
+    public bool IsVisible => m_isVisible;
     private EntityEquipmentData m_component;
     public EntityEquipmentData Component => m_component;
     private System.Action m_onSelected;
@@ -52,11 +55,13 @@ public class ComponentRewardDisplay : MonoBehaviour
 
     public void Show ()
     {
+        m_isVisible = true;
         gameObject.SetActive(true);
     }
 
     public void Hide ()
     {
+        m_isVisible = false;
         m_isSelected = false;
         gameObject.SetActive(false);
     }

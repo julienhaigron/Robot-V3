@@ -331,15 +331,13 @@ public class GameManager : SingletonPersistant<GameManager>
 	//hub
 	public bool SquadValidityPredicate ()
 	{
-		bool isValid = true;
-
 		foreach (EntitySavedData entityData in GameDatas.current.currentPlayerSave.GetSquadEntitiesData())
 		{
 			if (!entityData.IsUnitValid())
-				isValid = false;
+				return false;
 		}
 
-		return isValid;
+		return true;
 	}
 
 }

@@ -72,12 +72,15 @@ public class EntitySavedData : INetworkSerializable
 	public bool CanAddToSquad ()
 	{
 		bool hasCapacity = GameDatas.current.currentPlayerSave.squadUnitsIndex.Count < GameAssets.current.game.HangarStructureUpgrade.GetCurrentMaxUnitAmount();
-		return hasCapacity /*&& IsUnitValid()*/;
+		return hasCapacity && IsUnitValid();
 	}
 
 	public bool IsUnitValid ()
 	{
-		if (FrameData == null || ReactorData == null || NeuronalMembraneData == null || BrainData == null)
+		if (FrameData == null || frame.isDamaged
+			|| ReactorData == null || reactor.isDamaged
+			|| NeuronalMembraneData == null || neuronalMembrane.isDamaged
+			|| BrainData == null || brain.isDamaged)
 			return false;
 
 		int remainingEnergy = ReactorData.energyProduced;
@@ -146,7 +149,7 @@ public class EntitySavedData : INetworkSerializable
 		{
 			foreach (GameDatas.PlayerSave.Equipment container in auxiliar)
 			{
-				if (GameAssets.current.equipments[container.dataID] is OccultorEquipmentData occultor)
+				if (!container.isDamaged && GameAssets.current.equipments[container.dataID] is OccultorEquipmentData occultor)
 				{
 					foreach (EntityEquipmentData.SecondaryStat statBonus in occultor.statBonuses)
 					{
@@ -154,7 +157,7 @@ public class EntitySavedData : INetworkSerializable
 							totalBonus += statBonus.value;
 					}
 				}
-				else if (GameAssets.current.equipments[container.dataID] is ArmorEquipmentData armor)
+				else if (!container.isDamaged && GameAssets.current.equipments[container.dataID] is ArmorEquipmentData armor)
 				{
 					foreach (EntityEquipmentData.SecondaryStat statBonus in armor.statBonuses)
 					{
@@ -194,21 +197,21 @@ public class EntitySavedData : INetworkSerializable
 
 		foreach (GameDatas.PlayerSave.Equipment container in arms)
 		{
-			if (GameAssets.current.equipments[container.dataID] is EntityEquipmentData equipment && equipment.knownedActions.Contains(_actionID))
+			if (!container.isDamaged && GameAssets.current.equipments[container.dataID] is EntityEquipmentData equipment && equipment.knownedActions.Contains(_actionID))
 			{
 				passiveEffects.AddRange(equipment.passiveEffects);
 			}
 		}
 		foreach (GameDatas.PlayerSave.Equipment container in auxiliar)
 		{
-			if (GameAssets.current.equipments[container.dataID] is EntityEquipmentData equipment && equipment.knownedActions.Contains(_actionID))
+			if (!container.isDamaged && GameAssets.current.equipments[container.dataID] is EntityEquipmentData equipment && equipment.knownedActions.Contains(_actionID))
 			{
 				passiveEffects.AddRange(equipment.passiveEffects);
 			}
 		}
 		foreach (GameDatas.PlayerSave.Equipment container in chipsets)
 		{
-			if (GameAssets.current.equipments[container.dataID] is EntityEquipmentData equipment)
+			if (!container.isDamaged && GameAssets.current.equipments[container.dataID] is EntityEquipmentData equipment)
 			{
 				passiveEffects.AddRange(equipment.passiveEffects);
 			}
@@ -323,7 +326,7 @@ public class EntitySavedData : INetworkSerializable
 		}*/
 		foreach (GameDatas.PlayerSave.Equipment container in auxiliar)
 		{
-			if (GameAssets.current.equipments[container.dataID] is OccultorEquipmentData occultor)
+			if (!container.isDamaged && GameAssets.current.equipments[container.dataID] is OccultorEquipmentData occultor)
 			{
 				foreach (EntityEquipmentData.SecondaryStat statBonus in occultor.statBonuses)
 				{
@@ -355,7 +358,7 @@ public class EntitySavedData : INetworkSerializable
 		float result = 0;
 		foreach (GameDatas.PlayerSave.Equipment container in auxiliar)
 		{
-			if (GameAssets.current.equipments[container.dataID] is OccultorEquipmentData occultor)
+			if (!container.isDamaged && GameAssets.current.equipments[container.dataID] is OccultorEquipmentData occultor)
 			{
 				if (_isVisual)
 					result += occultor.visualCamo;

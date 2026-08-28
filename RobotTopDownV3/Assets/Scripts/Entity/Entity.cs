@@ -182,8 +182,8 @@ public class Entity : MonoBehaviour
 			actionsPerComponents[actionID].Add(m_data.BrainData.name);
 		}
 
-		foreach (KeyValuePair<string, Weapon> pair in m_equipment.Weapons)
-		{
+		/*foreach (KeyValuePair<string, Weapon> pair in m_equipment.Weapons)
+		{   
 			foreach (EntityActionEnumID actionID in pair.Value.Data.knownedActions)
 			{
 				if (actionID == EntityActionEnumID.Unknowned)
@@ -208,11 +208,23 @@ public class Entity : MonoBehaviour
 
 				actionsPerComponents[actionID].Add(pair.Key);
 			}
-		}
+		}*/
 
+		foreach (GameDatas.PlayerSave.Equipment container in m_data.arms)
+		{
+			if (!container.isDamaged && GameAssets.current.equipments[container.dataID] is EntityEquipmentData equipment)
+			{
+				foreach (EntityActionEnumID actionID in equipment.knownedActions)
+				{
+					if (actionID == EntityActionEnumID.Unknowned || actionsPerComponents.ContainsKey(actionID))
+						continue;
+					actionsPerComponents[actionID].Add(equipment.name);
+				}
+			}
+		}
 		foreach (GameDatas.PlayerSave.Equipment container in m_data.auxiliar)
 		{
-			if (GameAssets.current.equipments[container.dataID] is EntityEquipmentData equipment)
+			if (!container.isDamaged && GameAssets.current.equipments[container.dataID] is EntityEquipmentData equipment)
 			{
 				foreach (EntityActionEnumID actionID in equipment.knownedActions)
 				{
@@ -224,7 +236,7 @@ public class Entity : MonoBehaviour
 		}
 		foreach (GameDatas.PlayerSave.Equipment container in m_data.chipsets)
 		{
-			if (GameAssets.current.equipments[container.dataID] is EntityEquipmentData equipment)
+			if (!container.isDamaged && GameAssets.current.equipments[container.dataID] is EntityEquipmentData equipment)
 			{
 				foreach (EntityActionEnumID actionID in equipment.knownedActions)
 				{
@@ -437,7 +449,7 @@ public class Entity : MonoBehaviour
 
 		foreach (GameDatas.PlayerSave.Equipment eq in m_data.chipsets)
 		{
-			if (eq.TryGetData(out ChipsetEquipmentData _chipsedData))
+			if (!eq.isDamaged && eq.TryGetData(out ChipsetEquipmentData _chipsedData))
 			{
 				foreach (ChipsetEquipmentData.ConditionalStatBonus conditionalStatBonus in _chipsedData.statBonuses)
 				{
