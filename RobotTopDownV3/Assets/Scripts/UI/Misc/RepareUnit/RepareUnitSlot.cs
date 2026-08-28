@@ -73,6 +73,7 @@ public class RepareUnitSlot : RepareUnitContainer
             m_unitSavedData = null;
             m_unitData = null;
         }
+        m_timerTMP.text = "";
     }
 
     #region DnD

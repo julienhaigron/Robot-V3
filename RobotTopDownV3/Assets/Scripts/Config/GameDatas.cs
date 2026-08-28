@@ -276,6 +276,7 @@ public partial class GameDatas : ScriptableObject
 		public EntitySavedData AddNewUnit ( EntitySavedData _newUnit, bool _addToSquad )
 		{
 			//_newUnit.name = "New Unit";
+			_newUnit.index = allBuiltUnits.Count;
 
 			if (_addToSquad && _newUnit.CanAddToSquad())
 				squadUnitsIndex.Add(allBuiltUnits.Count);

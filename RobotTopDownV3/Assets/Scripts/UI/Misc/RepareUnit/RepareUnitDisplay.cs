@@ -18,9 +18,6 @@ public class RepareUnitDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler,
 	private EntitySavedData m_savedData;
 	public EntitySavedData SavedData => m_savedData;
 
-	private GameDatas.PlayerSave.DayData.ShopComponentData m_shopSavedData;
-	public GameDatas.PlayerSave.DayData.ShopComponentData ShopSavedData => m_shopSavedData;
-
 	public RepareUnitContainer CurrentContainer;
 
 	private float m_lastClickTime;

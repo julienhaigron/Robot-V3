@@ -41,6 +41,7 @@ public class FrameEquipmentData : EntityEquipmentData
 public class EntitySavedData : INetworkSerializable
 {
 	public string name;
+	public int index;
 	public bool isRepairing = false;
 	public GameDatas.PlayerSave.Equipment frame;
 	public GameDatas.PlayerSave.Equipment reactor;
@@ -60,6 +61,7 @@ public class EntitySavedData : INetworkSerializable
 	public void NetworkSerialize<T> ( BufferSerializer<T> serializer ) where T : IReaderWriter
 	{
 		serializer.SerializeValue(ref name);
+		serializer.SerializeValue(ref index);
 		serializer.SerializeValue(ref isRepairing);
 		serializer.SerializeValue(ref frame);
 		serializer.SerializeValue(ref reactor);

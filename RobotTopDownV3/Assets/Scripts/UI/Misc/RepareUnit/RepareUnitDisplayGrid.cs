@@ -49,7 +49,7 @@ public class RepareUnitDisplayGrid : RepareUnitContainer
 
         foreach (EntitySavedData unit in GameDatas.current.currentPlayerSave.allBuiltUnits)
             if (m_predicate != null && m_predicate(unit) && !m_items.Any(item => item.SavedData == unit))
-                CreateNewDisplay(m_unitData);
+                CreateNewDisplay(unit);
     }
 
 

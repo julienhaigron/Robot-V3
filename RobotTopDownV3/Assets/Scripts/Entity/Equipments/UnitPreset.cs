@@ -56,6 +56,7 @@ public class UnitPreset : AParsableScriptableObject
 	{
         EntitySavedData newUnit = new();
         newUnit.name = displayName;
+        newUnit.isRepairing = false;
         newUnit.frame = new() { ID = frame.name + GameDatas.current.currentPlayerSave.equipmentCounter++, dataID = frame.name };
         newUnit.reactor = new() { ID = reactor.name + GameDatas.current.currentPlayerSave.equipmentCounter++, dataID = reactor.name };
         newUnit.neuronalMembrane = new() { ID = neuronalMembrane.name + GameDatas.current.currentPlayerSave.equipmentCounter++, dataID = neuronalMembrane.name };

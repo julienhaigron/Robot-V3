@@ -20,6 +20,15 @@ public class RepairStationPanel : AUIPanel
 		}
 	}
 
+	private void OnDestroy ()
+	{
+		for (int i = 0; i < m_repairingSlots.Length; i++)
+		{
+			m_repairingSlots[i].onItemAdded -= OnItemAddedOnSlot;
+			m_repairingSlots[i].onItemRemoved -= OnItemRemovedOnSlot;
+		}
+	}
+
 	public void Init ()
 	{
 		int maxSlotAmount = GameAssets.current.game.RepairStationStructureUpgrade.GetCurrentMaxRepairedComponentSlotAmountPerLevel();
@@ -41,7 +50,7 @@ public class RepairStationPanel : AUIPanel
 			{
 				m_repairingSlots[i].gameObject.SetActive(true);
 				m_repairingSlots[i].Init(m_inventoryGrid, repairingComponent != null && repairingComponent.unit != null && !string.IsNullOrEmpty(repairingComponent.unit.name) ? repairingComponent.unit : null
-					, item => item != null && (repairingComponent == null || string.IsNullOrEmpty(repairingComponent.unit.name) || repairingComponent.remainingTime <= 0)
+					, item => item != null && (repairingComponent == null || repairingComponent.unit == null || repairingComponent.remainingTime <= 0)
 					, i);
 				m_repairingSlots[i].InitRepairData(repairingComponent);
 			}
@@ -70,6 +79,7 @@ public class RepairStationPanel : AUIPanel
 
 		GameDatas.current.currentPlayerSave.dayData.repairingComponents[_container.Index] = new() { unit = _display.SavedData, remainingTime = duration };
 		_display.SavedData.isRepairing = true;
+		GameDatas.current.currentPlayerSave.squadUnitsIndex.Remove(_display.SavedData.index);
 		m_repairingSlots[_container.Index].InitRepairData(GameDatas.current.currentPlayerSave.dayData.repairingComponents[_container.Index]);
 	}
 
