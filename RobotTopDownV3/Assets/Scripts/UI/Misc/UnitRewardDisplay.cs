@@ -55,6 +55,7 @@ public class UnitRewardDisplay : MonoBehaviour
 
 	public void Hide ()
 	{
+		m_isSelected = false;
 		gameObject.SetActive(false);
 	}
 

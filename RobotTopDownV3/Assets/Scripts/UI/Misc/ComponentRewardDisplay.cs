@@ -57,6 +57,7 @@ public class ComponentRewardDisplay : MonoBehaviour
 
     public void Hide ()
     {
+        m_isSelected = false;
         gameObject.SetActive(false);
     }
 

@@ -56,6 +56,7 @@ public class CurrencyRewardDisplay : MonoBehaviour
 
 	public void Hide ()
 	{
+		m_isSelected = false;
 		gameObject.SetActive(false);
 	}
 }
