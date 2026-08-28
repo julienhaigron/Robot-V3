@@ -31,7 +31,7 @@ public class SoloHubPanel : AUIPanel
 
 	private void RefreshVisual ()
 	{
-		bool isSquadValid = GameManager.Instance.SquadValidityPredicate();
+		bool isSquadValid = /*GameManager.Instance.SquadValidityPredicate()*/true;
 		m_missionBtn.SetInteractability(isSquadValid);
 		m_tournamentBtn.SetInteractability(isSquadValid);
 	}

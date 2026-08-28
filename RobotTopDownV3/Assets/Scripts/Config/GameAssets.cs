@@ -61,6 +61,7 @@ public class GameAssets : ScriptableObject
         public Sprite baseEquipmentSprite;
         public ComponentDisplay baseComponentDisplay;
         public ComponentDisplay shopComponentDisplay;
+        public RepareUnitDisplay repareUnitDisplay;
         public LobbyDisplay baseLobbyDisplay;
         public EntityActionDisplay baseEntityActionDisplay;
         [Title("Flying Number")]

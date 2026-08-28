@@ -41,6 +41,7 @@ public class FrameEquipmentData : EntityEquipmentData
 public class EntitySavedData : INetworkSerializable
 {
 	public string name;
+	public bool isRepairing = false;
 	public GameDatas.PlayerSave.Equipment frame;
 	public GameDatas.PlayerSave.Equipment reactor;
 	public GameDatas.PlayerSave.Equipment neuronalMembrane;
@@ -59,6 +60,7 @@ public class EntitySavedData : INetworkSerializable
 	public void NetworkSerialize<T> ( BufferSerializer<T> serializer ) where T : IReaderWriter
 	{
 		serializer.SerializeValue(ref name);
+		serializer.SerializeValue(ref isRepairing);
 		serializer.SerializeValue(ref frame);
 		serializer.SerializeValue(ref reactor);
 		serializer.SerializeValue(ref neuronalMembrane);
@@ -72,7 +74,7 @@ public class EntitySavedData : INetworkSerializable
 	public bool CanAddToSquad ()
 	{
 		bool hasCapacity = GameDatas.current.currentPlayerSave.squadUnitsIndex.Count < GameAssets.current.game.HangarStructureUpgrade.GetCurrentMaxUnitAmount();
-		return hasCapacity && IsUnitValid();
+		return hasCapacity /*&& IsUnitValid()*/;
 	}
 
 	public bool IsUnitValid ()
@@ -80,7 +82,8 @@ public class EntitySavedData : INetworkSerializable
 		if (FrameData == null || frame.isDamaged
 			|| ReactorData == null || reactor.isDamaged
 			|| NeuronalMembraneData == null || neuronalMembrane.isDamaged
-			|| BrainData == null || brain.isDamaged)
+			|| BrainData == null || brain.isDamaged
+			|| isRepairing)
 			return false;
 
 		int remainingEnergy = ReactorData.energyProduced;

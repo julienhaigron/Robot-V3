@@ -112,7 +112,7 @@ public partial class GameDatas : ScriptableObject
 		{
 			public List<ShopComponentData> itemsInShop = new();
 			public List<RecyclingComponentData> currentlyRecyclingComponents = new();
-			public List<RepairingComponentData> repairingComponents = new();
+			public List<RepairingUnitData> repairingComponents = new();
 
 			[Serializable]
 			public class ShopComponentData
@@ -129,9 +129,9 @@ public partial class GameDatas : ScriptableObject
 			}
 
 			[Serializable]
-			public class RepairingComponentData
+			public class RepairingUnitData
 			{
-				public Equipment component;
+				public EntitySavedData unit;
 				public int remainingTime;
 			}
 
@@ -163,7 +163,7 @@ public partial class GameDatas : ScriptableObject
 			}
 
 			//repairing units
-			foreach (DayData.RepairingComponentData data in dayData.repairingComponents)
+			foreach (DayData.RepairingUnitData data in dayData.repairingComponents)
 			{
 				if (data == null)
 					continue;

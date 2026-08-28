@@ -72,14 +72,6 @@ public class ComponentSlot : ComponentContainer
             m_timerTMP.text = _recyclingData.remainingTime.ToString();
 	}
 
-    public void InitRepairData ( GameDatas.PlayerSave.DayData.RepairingComponentData _repairingData )
-    {
-        if (_repairingData != null && _repairingData.component != null && string.IsNullOrEmpty(_repairingData.component.ID))
-            m_timerTMP.text = "";
-        else
-            m_timerTMP.text = _repairingData.remainingTime.ToString();
-    }
-
     public override bool IsValid ( ComponentDisplay _display )
 	{
 		return m_currentDisplay != _display && base.IsValid(_display) && m_canInteract;

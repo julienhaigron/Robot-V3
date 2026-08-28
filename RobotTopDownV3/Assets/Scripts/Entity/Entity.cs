@@ -183,7 +183,7 @@ public class Entity : MonoBehaviour
 		}
 
 		/*foreach (KeyValuePair<string, Weapon> pair in m_equipment.Weapons)
-		{   
+		{
 			foreach (EntityActionEnumID actionID in pair.Value.Data.knownedActions)
 			{
 				if (actionID == EntityActionEnumID.Unknowned)
@@ -218,6 +218,10 @@ public class Entity : MonoBehaviour
 				{
 					if (actionID == EntityActionEnumID.Unknowned || actionsPerComponents.ContainsKey(actionID))
 						continue;
+
+					if (!actionsPerComponents.ContainsKey(actionID))
+						actionsPerComponents.Add(actionID, new());
+
 					actionsPerComponents[actionID].Add(equipment.name);
 				}
 			}
@@ -230,6 +234,10 @@ public class Entity : MonoBehaviour
 				{
 					if (actionID == EntityActionEnumID.Unknowned || actionsPerComponents.ContainsKey(actionID))
 						continue;
+
+					if (!actionsPerComponents.ContainsKey(actionID))
+						actionsPerComponents.Add(actionID, new());
+
 					actionsPerComponents[actionID].Add(equipment.name);
 				}
 			}
@@ -242,6 +250,10 @@ public class Entity : MonoBehaviour
 				{
 					if (actionID == EntityActionEnumID.Unknowned || actionsPerComponents.ContainsKey(actionID))
 						continue;
+
+					if (!actionsPerComponents.ContainsKey(actionID))
+						actionsPerComponents.Add(actionID, new());
+
 					actionsPerComponents[actionID].Add(equipment.name);
 				}
 			}
