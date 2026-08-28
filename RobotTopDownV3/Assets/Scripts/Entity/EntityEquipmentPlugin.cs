@@ -289,7 +289,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 
 	public bool AttackRoll ( AttackAction _attackAction, AttackAction.SingleAttackInfo _singleAttackInfo, Entity _targetEntity, out Tile _coverTile )
 	{
-		WeaponEquipmentData usedWeapon = m_weapons[_attackAction.linkedEquipmentId].Data;
+		//WeaponEquipmentData usedWeapon = m_weapons[_attackAction.linkedEquipmentId].Data;
 		bool doesWinPFC = _singleAttackInfo.pfcResult == (int)EntityActionData.PFCResultType.FirstWins;
 		bool isThereCoverBetween = GridManager.Instance.IsThereCoverBeween(_attackAction.PerformingEntity, _targetEntity, doesWinPFC, out _coverTile);
 

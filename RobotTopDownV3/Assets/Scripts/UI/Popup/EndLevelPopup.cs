@@ -42,7 +42,7 @@ public class EndLevelPopup : AUIPopup
 				Entity entity = GameManager.Instance.PlayersEntityAnchor[0].Entities[i];
 
 				float remainingHealthPercentage = (float)entity.Equipment.CurrentHealth / (float)entity.Equipment.MaxHealth;
-				int destroiedComponentAmount = remainingHealthPercentage > .5f ? 0 : remainingHealthPercentage > .25f ? 1 : remainingHealthPercentage > 0 ? 2 : 3;
+				int destroiedComponentAmount = remainingHealthPercentage > .75f ? 0 : remainingHealthPercentage > .5f ? 1 : remainingHealthPercentage > .25f ? 2 : 3;
 
 				if (destroiedComponentAmount > 0)
 					DamageRandomComponents(GameDatas.current.currentPlayerSave.allBuiltUnits[GameDatas.current.currentPlayerSave.squadUnitsIndex[i]], destroiedComponentAmount);

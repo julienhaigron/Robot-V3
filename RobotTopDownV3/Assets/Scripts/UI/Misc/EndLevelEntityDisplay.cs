@@ -39,7 +39,7 @@ public class EndLevelEntityDisplay : MonoBehaviour
                 m_subComponentSlots[EntityEquipmentData.EquipmentType.Frame].slots[i].Init(_data.auxiliar[i].GetData<EntityEquipmentData>().icon, _data.auxiliar[i].isDamaged);
         }
 
-        for (int i = 0; i < _data.chipsets.Length; i++)
+        for (int i = 0; i < m_subComponentSlots[EntityEquipmentData.EquipmentType.Brain].slots.Count; i++)
 		{
             if (i >= _data.chipsets.Length)
                 m_subComponentSlots[EntityEquipmentData.EquipmentType.Brain].slots[i].Hide();
