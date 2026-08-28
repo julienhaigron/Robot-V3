@@ -173,6 +173,8 @@ MeshRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -194,9 +196,11 @@ MeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!114 &813261581168264491
 MonoBehaviour:
@@ -220,8 +224,6 @@ MonoBehaviour:
     - {fileID: 0}
   animator: {fileID: 0}
   handGrabSocket: {fileID: 4895969297599304562}
-  rightHandTarget: {fileID: 0}
-  leftHandtarget: {fileID: 0}
 --- !u!1 &5407203427678423366
 GameObject:
   m_ObjectHideFlags: 0
@@ -317,6 +319,10 @@ PrefabInstance:
       propertyPath: m_animator
       value: 
       objectReference: {fileID: 1872586576777513097}
+    - target: {fileID: 4353477765861233231, guid: facf97aac763a09489a27b119520aaff, type: 3}
+      propertyPath: m_visualRoot
+      value: 
+      objectReference: {fileID: 4579507399691158735}
     - target: {fileID: 4353477765861233231, guid: facf97aac763a09489a27b119520aaff, type: 3}
       propertyPath: m_humanoidEntityIK
       value: 

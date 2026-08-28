@@ -85,7 +85,7 @@ public class Entity : MonoBehaviour
 
 	private bool m_isVisible = false;
 	public bool IsVisible => m_isVisible;
-	private NeuronalMembraneEquipmentData.VisionTypes m_howIsUnitVisible;
+	private NeuronalMembraneEquipmentData.VisionTypes m_howIsUnitVisible = NeuronalMembraneEquipmentData.VisionTypes.Radar;
 	public NeuronalMembraneEquipmentData.VisionTypes HowIsUnitVisible => m_howIsUnitVisible;
 
 
@@ -370,12 +370,21 @@ public class Entity : MonoBehaviour
 
 	public void SetVisibility ( bool _isVisible, NeuronalMembraneEquipmentData.VisionTypes _visionType )
 	{
+		/*if((!m_isVisible && _isVisible) || (_isVisible && (int)_visionType < (int)m_howIsUnitVisible))
+			m_howIsUnitVisible = _visionType;
 		m_isVisible = _isVisible;
-		m_howIsUnitVisible = _visionType;
 
-		m_ui.gameObject.SetActive(_isVisible);
+		m_ui.gameObject.SetActive(m_isVisible && (int)m_howIsUnitVisible < (int)NeuronalMembraneEquipmentData.VisionTypes.Radar);
+		if (m_isVisible)
+			m_skin.Show(m_howIsUnitVisible);
+		else
+			m_skin.Hide();*/
+		m_isVisible = _isVisible;
 		if (_isVisible)
-			m_skin.Show();
+			m_howIsUnitVisible = _visionType; // toujours la valeur courante, calculée en amont par la Tile
+		m_ui.gameObject.SetActive(m_isVisible && (int)m_howIsUnitVisible < (int)NeuronalMembraneEquipmentData.VisionTypes.Radar);
+		if (m_isVisible)
+			m_skin.Show(m_howIsUnitVisible);
 		else
 			m_skin.Hide();
 	}

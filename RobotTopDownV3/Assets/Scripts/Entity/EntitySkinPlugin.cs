@@ -6,6 +6,8 @@ using System.Linq;
 public class EntitySkinPlugin : EntityPlugin
 {
 	[SerializeField] private GameObject m_visualRoot;
+	[SerializeField] private GameObject m_radarRoot;
+	[SerializeField] private GameObject m_thermicRoot;
 	[SerializeField] private Transform m_center;
 	public Transform Center => m_center;
 
@@ -72,7 +74,7 @@ public class EntitySkinPlugin : EntityPlugin
 	private void OnEntityDeath (int _entityID)
 	{
 		//TODO : actual clean death with anim and PS
-		m_visualRoot.SetActive(false);
+		Hide();
 	}
 
 	public void ReleaseAim ( string _weaponID )
@@ -90,13 +92,32 @@ public class EntitySkinPlugin : EntityPlugin
 		}
 	}
 
-	public void Show ()
+	public void Show ( NeuronalMembraneEquipmentData.VisionTypes _type)
 	{
-		m_visualRoot.SetActive(true);
+		switch (_type)
+		{
+			case NeuronalMembraneEquipmentData.VisionTypes.Optic:
+				m_visualRoot.SetActive(true);
+				m_thermicRoot.SetActive(false);
+				m_radarRoot.SetActive(false);
+				break;
+			case NeuronalMembraneEquipmentData.VisionTypes.Thermic:
+				m_visualRoot.SetActive(false);
+				m_thermicRoot.SetActive(true);
+				m_radarRoot.SetActive(false);
+				break;
+			case NeuronalMembraneEquipmentData.VisionTypes.Radar:
+				m_visualRoot.SetActive(false);
+				m_thermicRoot.SetActive(false);
+				m_radarRoot.SetActive(true);
+				break;
+		}
 	}
 
 	public void Hide ()
 	{
 		m_visualRoot.SetActive(false);
+		m_thermicRoot.SetActive(false);
+		m_radarRoot.SetActive(false);
 	}
 }
