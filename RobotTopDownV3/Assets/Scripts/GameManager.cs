@@ -110,7 +110,7 @@ public class GameManager : SingletonPersistant<GameManager>
 					UIManager.Instance.OpenPanel<SelectMissionPanel>();
 				else if (m_returnFromMatch)
 				{
-					if (GameDatas.current.currentPlayerSave.didUnlockRetuurnToHubPopup)
+					if (GameDatas.current.currentPlayerSave.didUnlockReturnToHubPopup)
 						UIManager.Instance.OpenPopup<ReturnToHubPopup>().Init();
 					UIManager.Instance.OpenPanel<SoloHubPanel>();
 				}

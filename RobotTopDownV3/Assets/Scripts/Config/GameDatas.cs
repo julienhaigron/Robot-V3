@@ -103,7 +103,11 @@ public partial class GameDatas : ScriptableObject
 
 		//tutos
 		public bool didStartTuto = false;
-		public bool didUnlockRetuurnToHubPopup = false;
+		public bool didUnlockReturnToHubPopup = false;
+		public bool didUnlockSkipDay = false;
+		public bool didUnlockRepareStation = false;
+		public bool didUnlockRecycler = false;
+		//public bool didUnlockShops = false;
 		public bool DidFirstIntroLevel => sequencesProgressions.ContainsKey(FTUEManager.FTUEID) && (sequencesProgressions[FTUEManager.FTUEID] > 0 || sequencesProgressions[FTUEManager.FTUEID] == -1);
 		public SerializableDictionary<string, int> sequencesProgressions = new SerializableDictionary<string, int>();
 

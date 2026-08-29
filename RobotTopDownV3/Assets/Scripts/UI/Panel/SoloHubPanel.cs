@@ -38,6 +38,11 @@ public class SoloHubPanel : AUIPanel
 		m_missionBtnTMP.text = GameDatas.current.currentPlayerSave.dayCount > 3 ? "TOURNOI" : "MISSION";
 
 		m_missionBtn.SetInteractability(isSquadValid);
+		m_repairBtn.SetInteractability(GameDatas.current.currentPlayerSave.didUnlockRepareStation);
+		m_recycleShopBtn.SetInteractability(GameDatas.current.currentPlayerSave.didUnlockRecycler);
+		m_skipDayBtn.SetInteractability(GameDatas.current.currentPlayerSave.didUnlockSkipDay);
+		/*foreach (KeyValuePair<EntityEquipmentData.EntityFaction, BaseButton> shopBtn in m_openShopBtns)
+			shopBtn.Value.SetInteractability(GameDatas.current.currentPlayerSave.didUnlockShops);*/
 		//m_tournamentBtn.SetInteractability(isSquadValid);
 	}
 

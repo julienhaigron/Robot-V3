@@ -163,6 +163,7 @@ public class FTUEManager : SingletonPersistant<FTUEManager>
 		tutoSequence.Append(new WaitEndLoadingTask("Wait for end loading", ( context ) => GameDatas.current.currentPlayerSave.dayCount == 3));
 		tutoSequence.Append(new DialogueHighlightTask("Rdv hangar pour upgrade tes units ", ( context ) => context.UI.currentPanel is SoloHubPanel
 		, m_day3TutoDialogues[0], "hangarBtn"));
+		tutoSequence.Append(new ManualTask("Unlock recycler", null, () => GameDatas.current.currentPlayerSave.didUnlockRecycler = true));
 		tutoSequence.Append(new DialogueHighlightTask("Blabla recyclage donne gold", ( context ) => context.UI.currentPanel is HangarPanel
 		, m_day3TutoDialogues[1], "recycleBtn"));
 
@@ -185,6 +186,7 @@ public class FTUEManager : SingletonPersistant<FTUEManager>
 
 		//TODO : force finish recycling
 
+		tutoSequence.Append(new ManualTask("Unlock repare station", null, () => GameDatas.current.currentPlayerSave.didUnlockRepareStation = true));
 		tutoSequence.Append(new DialogueHighlightTask("Goto repair station", ( context ) => context.UI.currentPanel is SoloHubPanel
 		, m_day4TutoDialogues[0], "repairBtn"));
 		tutoSequence.Append(new DialogueTask("Lorem ipsum repair station", ( context ) => context.UI.currentPanel is RepairStationPanel 
@@ -201,6 +203,7 @@ public class FTUEManager : SingletonPersistant<FTUEManager>
 		tutoSequence.Append(new DialogueHighlightTask("Vas dans le hangar et créer une unit", ( context ) => context.UI.currentPanel is SoloHubPanel
 			 && GameDatas.current.currentPlayerSave.dayCount == 5, m_day5TutoDialogues[0], "hangarBtn"));
 		tutoSequence.Append(new DialogueTask("Create unit btn explenation", ( context ) => context.UI.currentPanel is HangarPanel, m_day5TutoDialogues[1]));
+		tutoSequence.Append(new ManualTask("Unlock skip day", null, () => GameDatas.current.currentPlayerSave.didUnlockSkipDay = true));
 		//tutoSequence.Append(new DialogueTask("Create unit btn explenation", ( context ) => context.UI.currentPanel is EntityConfigPanel, m_day5TutoDialogues[2]));
 
 		/*//micro

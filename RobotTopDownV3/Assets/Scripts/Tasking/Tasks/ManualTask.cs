@@ -1,7 +1,7 @@
 using UnityEngine;
 using System;
 
-public class ManualTask<T> : Task
+public class ManualTask : Task
 {
     private readonly Action m_stuffToDo;
 
