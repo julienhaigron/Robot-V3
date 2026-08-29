@@ -12,8 +12,12 @@ public class LogPoolElement : PoolElement
 	{
 		m_text.SetText(_content);
 
-        //float preferredHeight = m_preferedTextSizePrefreredValues.y;
-        //m_layoutElement.preferredHeight = preferredHeight + 8f;
-        m_layoutElement.preferredHeight = m_preferedTextSizePrefreredValues.y;
+        /*float preferredHeight = m_preferedTextSizePrefreredValues.y;
+        m_layoutElement.preferredHeight = preferredHeight + 8f;*/
+        m_text.ForceMeshUpdate();
+
+        float preferredHeight = m_text.GetPreferredValues().y;
+        m_layoutElement.preferredHeight = preferredHeight + 8f;
+        //m_layoutElement.preferredHeight = m_preferedTextSizePrefreredValues.y;
     }
 }
