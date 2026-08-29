@@ -46,11 +46,12 @@ public abstract class RepareUnitContainer : MonoBehaviour, IDropHandler
         RemoveFromOrigin(dropped);
 
         RegisterInteraction(dropped);
-
-        onItemAdded?.Invoke(this, dropped);
     }
 
-    public abstract void RegisterInteraction ( RepareUnitDisplay _display );
+    public virtual void RegisterInteraction ( RepareUnitDisplay _display )
+	{
+        onItemAdded?.Invoke(this, _display);
+    }
 
     public void RemoveFromOrigin ( RepareUnitDisplay _display )
     {

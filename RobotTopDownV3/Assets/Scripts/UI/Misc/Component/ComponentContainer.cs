@@ -48,11 +48,12 @@ public abstract class ComponentContainer : MonoBehaviour, IDropHandler
         RemoveFromOrigin(dropped);
 
         RegisterInteraction(dropped);
-
-        onItemAdded?.Invoke(this, dropped);
     }
 
-    public abstract void RegisterInteraction ( ComponentDisplay _display);
+    public virtual void RegisterInteraction ( ComponentDisplay _display )
+	{
+        onItemAdded?.Invoke(this, _display);
+    }
 
     public void RemoveFromOrigin ( ComponentDisplay _display )
     {

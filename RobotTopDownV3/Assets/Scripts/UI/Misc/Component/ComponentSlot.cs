@@ -106,6 +106,7 @@ public class ComponentSlot : ComponentContainer
         {
             SetEquipment(_display);
         }
+        base.RegisterInteraction(_display);
     }
 
     public void SetEquipment ( ComponentDisplay _display )

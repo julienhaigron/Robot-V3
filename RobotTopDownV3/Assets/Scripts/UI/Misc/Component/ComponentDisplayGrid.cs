@@ -76,6 +76,7 @@ public class ComponentDisplayGrid : ComponentContainer
 
         _component.transform.SetParent(m_displayParent);
         _component.transform.localPosition = Vector3.zero;
+        base.RegisterInteraction(_component);
     }
 
 	public override void RemoveDisplay ( ComponentDisplay _display )

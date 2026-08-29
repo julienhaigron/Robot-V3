@@ -88,6 +88,7 @@ public class RepareUnitSlot : RepareUnitContainer
         {
             SetEquipment(_display);
         }
+        base.RegisterInteraction(_display);
     }
 
     public void SetEquipment ( RepareUnitDisplay _display )

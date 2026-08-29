@@ -52,11 +52,15 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 			m_icon.sprite = m_componentData.icon;
 			m_damagedGO.SetActive(_componentSavedData.isDamaged);
 			SetOutlineColor(GameAssets.current.ui.componentColors[data.GetEquipmentType()]);
+			m_canvasGroup.blocksRaycasts = true;
+			m_canvasGroup.interactable = true;
 		}
 		else
 		{
 			SetOutlineColor(Color.white);
 			m_damagedGO.SetActive(false);
+			m_canvasGroup.blocksRaycasts = false;
+			m_canvasGroup.interactable = false;
 		}
 
 		if (m_rerollBtn != null)
