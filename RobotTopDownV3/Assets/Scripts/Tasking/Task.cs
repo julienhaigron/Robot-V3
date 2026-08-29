@@ -80,6 +80,9 @@ public abstract class Task
 	{
 		if (!string.IsNullOrEmpty(SequenceID))
 		{
+			if (!GameDatas.current.currentPlayerSave.sequencesProgressions.ContainsKey(SequenceID))
+				GameDatas.current.currentPlayerSave.sequencesProgressions.Add(SequenceID, 0);
+
 			if (IsLastTaskInSequence)
 				GameDatas.current.currentPlayerSave.sequencesProgressions[SequenceID] = -1;
 			else

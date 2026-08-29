@@ -112,6 +112,8 @@ public class GridManager : Singleton<GridManager>
 			}
 
 		}
+
+		FogOfWarRenderer.Instance.ConfigureTopDownFogCamera();
 	}
 
 	public void GenerateGrid ()

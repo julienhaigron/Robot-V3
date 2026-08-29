@@ -32,6 +32,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4611317273947753251}
+  - {fileID: 5712737946159355399}
   m_Father: {fileID: 1001864918258139889}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &3169160451619648616
@@ -63,6 +64,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   fogCamera: {fileID: 4649002426972070482}
   fogApplyMaterial: {fileID: 2100000, guid: 96d0a97902395404db97b1afd180819f, type: 2}
+  mainCamera: {fileID: 4593530489708470118}
+  m_topDownHeight: 50
+  m_gridPadding: 2
 --- !u!1 &2451109015589657171
 GameObject:
   m_ObjectHideFlags: 0
@@ -484,12 +488,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6305636635451735966}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 4611317273947753251}
+  m_Father: {fileID: 2602406168588584456}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!20 &4649002426972070482
 Camera:
@@ -501,7 +505,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 1, g: 1, b: 1, a: 1}
+  m_BackGroundColor: {r: 0, g: 0, b: 0, a: 1}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -650,8 +654,8 @@ Canvas:
   m_GameObject: {fileID: 8073247774896479338}
   m_Enabled: 1
   serializedVersion: 3
-  m_RenderMode: 0
-  m_Camera: {fileID: 0}
+  m_RenderMode: 1
+  m_Camera: {fileID: 4593530489708470118}
   m_PlaneDistance: 100
   m_PixelPerfect: 0
   m_ReceivesEvents: 1
@@ -772,6 +776,8 @@ MonoBehaviour:
   m_onlineMap: {fileID: 0}
   m_playerOneEntityDatas:
   - name: 
+    index: 0
+    isRepairing: 0
     frame:
       ID: 
       dataID: 
@@ -794,6 +800,8 @@ MonoBehaviour:
     currentHp: 0
   m_playerTwoEntityDatas:
   - name: 
+    index: 0
+    isRepairing: 0
     frame:
       ID: 
       dataID: 
@@ -952,7 +960,6 @@ MonoBehaviour:
   m_actionsToPlay:
     keys: 
   currentPhase: 0
-  currentTick: 0
   hasModActionSelected: 0
 --- !u!114 &1994310452173458588
 MonoBehaviour:
@@ -1066,7 +1073,6 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 6177624356992613484}
-  - {fileID: 5712737946159355399}
   - {fileID: 2843127606357654879}
   m_Father: {fileID: 2602406168588584456}
   m_LocalEulerAnglesHint: {x: 60, y: 0, z: 0}
