@@ -122,7 +122,7 @@ public class PlayerController : Singleton<PlayerController>
 
 		CameraManager.Instance.CameraParent.transform.position = targetPos;
 
-		if (moveZ != 0 && moveX != 0)
+		if (moveZ != 0 || moveX != 0)
 			m_fogRenderer.MarkDirty();
 	}
 
