@@ -8,6 +8,7 @@ using System.Linq;
 public class EndLevelPopup : AUIPopup
 {
 	[SerializeField] private TextMeshProUGUI m_texte;
+	[SerializeField] private TextMeshProUGUI m_rewardPointsTMP;
 	[SerializeField] private BaseButton m_continueButton;
 	[SerializeField] private CurrencyRewardDisplay[] m_rewardCurrencyDisplays;
 	[SerializeField] private ComponentRewardDisplay[] m_rewardComponentDisplays;
@@ -93,42 +94,37 @@ public class EndLevelPopup : AUIPopup
 
 	private void OnInterractWithRewardBtn ()
 	{
-		bool canLeave = m_allocatedRewardPoint == 5;
+		int totalUsedRewardPoint = 0;
+		foreach (CurrencyRewardDisplay display in m_rewardCurrencyDisplays)
+			if (display.IsSelected && display.IsVisible)
+				totalUsedRewardPoint += 1;
 
-		if (!canLeave)
+		foreach (ComponentRewardDisplay display in m_rewardComponentDisplays)
 		{
-			int totalUsedRewardPoint = 0;
-			foreach (CurrencyRewardDisplay display in m_rewardCurrencyDisplays)
-				if (display.IsSelected && display.IsVisible)
-					totalUsedRewardPoint += 1;
-
-			foreach (ComponentRewardDisplay display in m_rewardComponentDisplays)
+			if (display.IsSelected && display.IsVisible)
 			{
-				if (display.IsSelected && display.IsVisible)
+				switch (display.Component.GetEquipmentType())
 				{
-					switch (display.Component.GetEquipmentType())
-					{
-						case EntityEquipmentData.EquipmentType.Frame:
-						case EntityEquipmentData.EquipmentType.Brain:
-						case EntityEquipmentData.EquipmentType.Reactor:
-						case EntityEquipmentData.EquipmentType.NeuronalMembrane:
-							totalUsedRewardPoint += 3;
-							break;
-						default:
-							totalUsedRewardPoint += 2;
-							break;
-					}
+					case EntityEquipmentData.EquipmentType.Frame:
+					case EntityEquipmentData.EquipmentType.Brain:
+					case EntityEquipmentData.EquipmentType.Reactor:
+					case EntityEquipmentData.EquipmentType.NeuronalMembrane:
+						totalUsedRewardPoint += 3;
+						break;
+					default:
+						totalUsedRewardPoint += 2;
+						break;
 				}
 			}
-
-			foreach (UnitRewardDisplay display in m_rewardUnitsDisplays)
-				if (display.IsSelected && display.IsVisible)
-					totalUsedRewardPoint += 5;
-
-			canLeave = totalUsedRewardPoint <= m_allocatedRewardPoint;
 		}
 
-		m_continueButton.SetInteractability(canLeave);
+		foreach (UnitRewardDisplay display in m_rewardUnitsDisplays)
+			if (display.IsSelected && display.IsVisible)
+				totalUsedRewardPoint += 5;
+
+		m_rewardPointsTMP.text = "Remaining reward points to use: <color=yellow>" + (m_allocatedRewardPoint - totalUsedRewardPoint) + "</color>";
+
+		m_continueButton.SetInteractability(m_allocatedRewardPoint == 5 || totalUsedRewardPoint <= m_allocatedRewardPoint);
 	}
 
 	public void DamageRandomComponents ( EntitySavedData _entity, int _count )

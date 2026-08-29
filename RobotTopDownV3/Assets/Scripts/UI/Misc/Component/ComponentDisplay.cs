@@ -50,7 +50,8 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 			m_componentTypeIcon.sprite = GameAssets.current.ui.componentIcons[m_componentData.GetEquipmentType()];
 			m_corpIcon.sprite = GameAssets.current.ui.corporationsIcons[m_componentData.faction];
 			m_icon.sprite = m_componentData.icon;
-			m_damagedGO.SetActive(_componentSavedData.isDamaged);
+			if(m_damagedGO != null)
+				m_damagedGO.SetActive(_componentSavedData.isDamaged);
 			SetOutlineColor(GameAssets.current.ui.componentColors[data.GetEquipmentType()]);
 			m_canvasGroup.blocksRaycasts = true;
 			m_canvasGroup.interactable = true;
@@ -58,7 +59,9 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 		else
 		{
 			SetOutlineColor(Color.white);
-			m_damagedGO.SetActive(false);
+
+			if (m_damagedGO != null)
+				m_damagedGO.SetActive(false);
 			m_canvasGroup.blocksRaycasts = false;
 			m_canvasGroup.interactable = false;
 		}

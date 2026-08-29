@@ -178,12 +178,12 @@ public class EntityEquipmentData : AParsableScriptableObject
 
 	public System.Tuple<CurrencyType, ulong> GetPrice ()
 	{
-		return new System.Tuple<CurrencyType, ulong>(CurrencyType.SoftCurrency, 10ul);
+		return new System.Tuple<CurrencyType, ulong>(CurrencyType.SoftCurrency, creditCost);
 	}
 
 	public System.Tuple<CurrencyType, ulong> GetSellingPrice ()
 	{
-		return new System.Tuple<CurrencyType, ulong>(CurrencyType.SoftCurrency, 5ul);
+		return new System.Tuple<CurrencyType, ulong>(CurrencyType.SoftCurrency, creditCost / 2ul);
 	}
 
 	[System.Serializable, ShowOdinSerializedPropertiesInInspector]

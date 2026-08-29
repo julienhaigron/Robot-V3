@@ -8,10 +8,10 @@ using MPUIKIT;
 
 public class HubTopCanvas : AUITopCanvas
 {
-    [Title("Depedencies")]
-    [SerializeField] private BaseButton m_upgradeStructureBtn;
-    [SerializeField] private BaseButton m_returnBtn;
-    [SerializeField] private SerializableDictionary<CurrencyType, CurrencyDisplay> m_currencyDisplays = new();
+	[Title("Depedencies")]
+	[SerializeField] private BaseButton m_upgradeStructureBtn;
+	[SerializeField] private BaseButton m_returnBtn;
+	[SerializeField] private SerializableDictionary<CurrencyType, CurrencyDisplay> m_currencyDisplays = new();
 	[SerializeField] private GameObject[] m_dayDisplays;
 	[SerializeField] private TextMeshProUGUI m_cycleTMP;
 
@@ -32,15 +32,18 @@ public class HubTopCanvas : AUITopCanvas
 
 	#region Callbacks
 
-	private void OnFocusedWindowChanged()
+	private void OnFocusedWindowChanged ()
 	{
 		if (!m_visible)
 			return;
 
-		Init(UIManager.Instance.currentPanel is ShopPanel);
+		if (UIManager.Instance.currentPanel is ShopPanel shop)
+			Init(true, shop);
+		else
+			Init(false, null);
 	}
 
-	private void OnCurrencyChange(CurrencyType _type )
+	private void OnCurrencyChange ( CurrencyType _type )
 	{
 		if (!m_currencyDisplays.ContainsKey(_type))
 			return;
@@ -66,9 +69,9 @@ public class HubTopCanvas : AUITopCanvas
 
 	private void OnClickUpgradeStructure ()
 	{
-		if(UIManager.Instance.currentPanel is HangarPanel)
+		if (UIManager.Instance.currentPanel is HangarPanel)
 			UIManager.Instance.OpenPopup<StructureUpgradePopup>().Init(StructureUpgradePopup.StructureType.Hangar);
-		else if(UIManager.Instance.currentPanel is ShopPanel)
+		else if (UIManager.Instance.currentPanel is ShopPanel)
 			UIManager.Instance.OpenPopup<StructureUpgradePopup>().Init(StructureUpgradePopup.StructureType.Shop);
 		else if (UIManager.Instance.currentPanel is RecyclePanel)
 			UIManager.Instance.OpenPopup<StructureUpgradePopup>().Init(StructureUpgradePopup.StructureType.Recycler);
@@ -80,16 +83,16 @@ public class HubTopCanvas : AUITopCanvas
 	{
 		if (UIManager.Instance.currentPanel is SelectMissionPanel)
 		{
-			if(GameDatas.current.currentPlayerSave.cycleData.didSelectMissions)
+			if (GameDatas.current.currentPlayerSave.cycleData.didSelectMissions)
 				UIManager.Instance.OpenPanel<SoloHubPanel>();
 
 			//wait for player to selected required minimum mission amount
 		}
-		else if(UIManager.Instance.currentPanel is HangarPanel or ShopPanel or RecyclePanel or RepairStationPanel or TournamentPanel or MissionPanel)
+		else if (UIManager.Instance.currentPanel is HangarPanel or ShopPanel or RecyclePanel or RepairStationPanel or TournamentPanel or MissionPanel)
 		{
 			UIManager.Instance.OpenPanel<SoloHubPanel>();
 		}
-		else if(UIManager.Instance.currentPanel is EntityConfigPanel entityConfigPanel)
+		else if (UIManager.Instance.currentPanel is EntityConfigPanel entityConfigPanel)
 		{
 			if (entityConfigPanel.DoesComeFromMissionPanel)
 			{
@@ -110,13 +113,13 @@ public class HubTopCanvas : AUITopCanvas
 
 	#endregion
 
-	private void Init(bool _isInShop )
+	private void Init ( bool _isInShop, ShopPanel _shopPanel )
 	{
 		// show/hide unneeded currency displays
 		if (_isInShop)
 		{
 			foreach (KeyValuePair<CurrencyType, CurrencyDisplay> displayPair in m_currencyDisplays)
-				if(displayPair.Key != CurrencyType.SoftCurrency)
+				if (displayPair.Key != CurrencyType.SoftCurrency)
 					displayPair.Value.Hide();
 
 			EntityEquipmentData.EntityFaction selectedFaction = UIManager.Instance.GetPanel<ShopPanel>().CurrentFaction;
@@ -135,6 +138,8 @@ public class HubTopCanvas : AUITopCanvas
 			}
 			m_upgradeStructureBtn.gameObject.SetActive(true);
 			m_shopFactionCurrencyDisplay.Show();
+			CurrencyType associatedCurrency = _shopPanel.AssociatedCurrency;
+			m_shopFactionCurrencyDisplay.Init(associatedCurrency, GameDatas.current.currentPlayerSave.currencies[associatedCurrency].ToString(), true);
 			/*int percentage = 0;
 			m_factionProgressionTMP.text = percentage + " %";
 			m_factionProgressionFill.fillAmount = (float)percentage / 100f;*/
