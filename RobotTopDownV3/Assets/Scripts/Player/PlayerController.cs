@@ -121,9 +121,6 @@ public class PlayerController : Singleton<PlayerController>
 		targetPos.z = Mathf.Clamp(targetPos.z, zLimits.x - GameConfig.current.game.cameraMovementBoundsOffset.y, zLimits.y + GameConfig.current.game.cameraMovementBoundsOffset.y);
 
 		CameraManager.Instance.CameraParent.transform.position = targetPos;
-
-		if (moveZ != 0 || moveX != 0)
-			m_fogRenderer.MarkDirty();
 	}
 
 	private void HandleCameraRotation ()
