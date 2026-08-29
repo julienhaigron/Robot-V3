@@ -99,7 +99,6 @@ public class FogOfWarRenderer : Singleton<FogOfWarRenderer>
 		Matrix4x4 vp = proj * view;
 
 		Shader.SetGlobalMatrix("_FogMainCamInvVP", vp.inverse);
-		Shader.SetGlobalVector("_FogMainCamPos", mainCamera.transform.position);
 
 		if (!m_dirty)
 			return;

@@ -35,7 +35,6 @@ Shader "Custom/FogOfWar_Apply_Stylized"
             float2 _FogGridOrigin;
             float _FogGridSize;
             float4x4 _FogMainCamInvVP;
-            float3 _FogMainCamPos;
 
             struct appdata
             {
@@ -75,11 +74,11 @@ Shader "Custom/FogOfWar_Apply_Stylized"
                 if (Linear01Depth(rawDepth) > 0.9999)
                     return fixed4(0,0,0,0);
 
-                float3 rayDir = normalize(worldPos - _FogMainCamPos);
-                float t = -_FogMainCamPos.y / rayDir.y;
-                float3 groundPos = _FogMainCamPos + rayDir * t;
-
-                float2 fogUV = (groundPos.xz - _FogGridOrigin) / _FogGridSize;
+                // Position XZ de la surface r�ellement visible � l'�cran (mur, sol, etc.).
+                // Ne pas projeter sur le plan y=0 : �a ferait passer le rayon � travers
+                // les murs jusqu'au sol derri�re, appliquant le fog d'une case cach�e
+                // sur un mur pourtant visible.
+                float2 fogUV = (worldPos.xz - _FogGridOrigin) / _FogGridSize;
 
                 fixed mask = tex2D(_FogMask, fogUV).r;
 
