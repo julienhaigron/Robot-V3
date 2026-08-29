@@ -133,7 +133,7 @@ public class EndLevelPopup : AUIPopup
 
 	public void DamageRandomComponents ( EntitySavedData _entity, int _count )
 	{
-		List<GameDatas.PlayerSave.Equipment> available = _entity.GetAllEquipments();
+		List<GameDatas.PlayerSave.Component> available = _entity.GetAllEquipments();
 		_count = Mathf.Min(_count, available.Count);
 
 		for (int i = 0; i < _count; i++)
@@ -154,7 +154,7 @@ public class EndLevelPopup : AUIPopup
 		foreach (ComponentRewardDisplay display in m_rewardComponentDisplays)
 		{
 			if (display.IsSelected && display.IsVisible)
-				GameDatas.current.currentPlayerSave.AddEquipmentToInventory(display.Component);
+				GameDatas.current.currentPlayerSave.AddComponentToInventory(display.Component);
 		}
 
 		foreach (UnitRewardDisplay display in m_rewardUnitsDisplays)

@@ -11,14 +11,14 @@ public class EntityComponentConfigPanel : AUIPanel
 	[SerializeField] private BaseButton m_upgradeHangarBtn;
 
 	private EntitySavedData m_currentEntity;
-	private GameDatas.PlayerSave.Equipment m_currentEquipment; 
+	private GameDatas.PlayerSave.Component m_currentEquipment; 
 
 	private void Awake ()
 	{
 		m_closeBtn.onClick += OnClickClose;
 		m_upgradeHangarBtn.onClick += OnClickOpenUpgradePopup;
 
-		m_subPartGrid.onItemAdded += ( container, item ) => GameDatas.current.currentPlayerSave.AddEquipmentToInventory(item.ComponentData);
+		m_subPartGrid.onItemAdded += ( container, item ) => GameDatas.current.currentPlayerSave.AddComponentToInventory(item.ComponentData);
 		m_subPartGrid.onItemRemoved += ( container, item ) => GameDatas.current.currentPlayerSave.RemoveEquipmentFromInventory(item.SavedData);
 
 		foreach(ComponentSlot slot in m_slots)
@@ -28,7 +28,7 @@ public class EntityComponentConfigPanel : AUIPanel
 		}
 	}
 
-	public void Init(EntitySavedData _data, GameDatas.PlayerSave.Equipment _equipmentData )
+	public void Init(EntitySavedData _data, GameDatas.PlayerSave.Component _equipmentData )
 	{
 		m_currentEntity = _data;
 		m_currentEquipment = _equipmentData;
@@ -115,12 +115,12 @@ public class EntityComponentConfigPanel : AUIPanel
 		switch (m_currentEquipment.GetData<EntityEquipmentData>().GetEquipmentType())
 		{
 			case EntityEquipmentData.EquipmentType.Frame:
-				List<GameDatas.PlayerSave.Equipment> newArray = m_currentEntity.auxiliar.ToList();
+				List<GameDatas.PlayerSave.Component> newArray = m_currentEntity.auxiliar.ToList();
 				newArray.Add(_display.SavedData);
 				m_currentEntity.auxiliar = newArray.ToArray();
 				break;
 			case EntityEquipmentData.EquipmentType.Brain:
-				List<GameDatas.PlayerSave.Equipment> newArray2 = m_currentEntity.chipsets.ToList();
+				List<GameDatas.PlayerSave.Component> newArray2 = m_currentEntity.chipsets.ToList();
 				newArray2.Add(_display.SavedData);
 				m_currentEntity.chipsets = newArray2.ToArray();
 				break;
@@ -128,7 +128,7 @@ public class EntityComponentConfigPanel : AUIPanel
 				//no interaction possible
 				break;
 			case EntityEquipmentData.EquipmentType.NeuronalMembrane:
-				List<GameDatas.PlayerSave.Equipment> newArray3 = m_currentEntity.arms.ToList();
+				List<GameDatas.PlayerSave.Component> newArray3 = m_currentEntity.arms.ToList();
 				newArray3.Add(_display.SavedData);
 				m_currentEntity.arms = newArray3.ToArray();
 				break;
@@ -140,12 +140,12 @@ public class EntityComponentConfigPanel : AUIPanel
 		switch (m_currentEquipment.GetData<EntityEquipmentData>().GetEquipmentType())
 		{
 			case EntityEquipmentData.EquipmentType.Frame:
-				List<GameDatas.PlayerSave.Equipment> newArray = m_currentEntity.auxiliar.ToList();
+				List<GameDatas.PlayerSave.Component> newArray = m_currentEntity.auxiliar.ToList();
 				newArray.Remove(_display.SavedData);
 				m_currentEntity.auxiliar = newArray.ToArray();
 				break;
 			case EntityEquipmentData.EquipmentType.Brain:
-				List<GameDatas.PlayerSave.Equipment> newArray2 = m_currentEntity.chipsets.ToList();
+				List<GameDatas.PlayerSave.Component> newArray2 = m_currentEntity.chipsets.ToList();
 				newArray2.Remove(_display.SavedData);
 				m_currentEntity.chipsets = newArray2.ToArray();
 				break;
@@ -153,7 +153,7 @@ public class EntityComponentConfigPanel : AUIPanel
 				//no interaction possible
 				break;
 			case EntityEquipmentData.EquipmentType.NeuronalMembrane:
-				List<GameDatas.PlayerSave.Equipment> newArray3 = m_currentEntity.arms.ToList();
+				List<GameDatas.PlayerSave.Component> newArray3 = m_currentEntity.arms.ToList();
 				newArray3.Remove(_display.SavedData);
 				m_currentEntity.arms = newArray3.ToArray();
 				break;

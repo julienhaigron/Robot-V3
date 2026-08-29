@@ -50,7 +50,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_displayParent: {fileID: 6037240441849160473}
-  m_subSlots: []
+  m_outline: {fileID: 6022743497103795788}
+  m_timerSectionGO: {fileID: 0}
+  m_timerTMP: {fileID: 0}
+  m_displaySize: {x: 124, y: 124}
 --- !u!1 &8579074791823119230
 GameObject:
   m_ObjectHideFlags: 0

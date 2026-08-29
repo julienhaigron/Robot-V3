@@ -10,8 +10,8 @@ public abstract class ComponentContainer : MonoBehaviour, IDropHandler
     [SerializeField] protected Transform m_displayParent;
     public Transform DisplayParent => m_displayParent;
 
-    protected Func<GameDatas.PlayerSave.Equipment, bool> m_predicate;
-    public Func<GameDatas.PlayerSave.Equipment, bool> Predicate => m_predicate;
+    protected Func<GameDatas.PlayerSave.Component, bool> m_predicate;
+    public Func<GameDatas.PlayerSave.Component, bool> Predicate => m_predicate;
 
     protected EntitySavedData m_unitData;
     protected ComponentDisplay.DisplayMode m_displayMode;
@@ -22,7 +22,7 @@ public abstract class ComponentContainer : MonoBehaviour, IDropHandler
     private int m_index;
     public int Index => m_index;
 
-    public virtual void Init ( ComponentContainer _container, EntitySavedData _unitData, GameDatas.PlayerSave.Equipment _componentSavedData, Func<GameDatas.PlayerSave.Equipment, bool> _predicate
+    public virtual void Init ( ComponentContainer _container, EntitySavedData _unitData, GameDatas.PlayerSave.Component _componentSavedData, Func<GameDatas.PlayerSave.Component, bool> _predicate
         , ComponentDisplay.DisplayMode _displayMode, int _index = 0 )
     {
         m_linkedContainer = _container;

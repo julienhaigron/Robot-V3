@@ -101,7 +101,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 		//init weapon
 		if (_entityData.arms != null && _entityData.arms.Length > 0)
 		{
-			foreach (GameDatas.PlayerSave.Equipment stringContainer in _entityData.arms)
+			foreach (GameDatas.PlayerSave.Component stringContainer in _entityData.arms)
 			{
 				if (stringContainer == null || !stringContainer.TryGetData(out EntityEquipmentData data))
 					continue;

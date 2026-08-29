@@ -19,7 +19,7 @@ public class ComponentFullDisplay : MonoBehaviour
 		ComponentDisplay.onDisplayHovered += OnComponentHovered;
 	}
 
-	public void Init ( GameDatas.PlayerSave.Equipment _componentSavedData )
+	public void Init ( GameDatas.PlayerSave.Component _componentSavedData )
 	{
 		if (_componentSavedData == null)
 			return;

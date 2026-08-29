@@ -11,7 +11,7 @@ public class ComponentDisplayGrid : ComponentContainer
     private List<ComponentDisplay> m_items = new();
     public List<ComponentDisplay> Items => m_items;
 
-    public override void Init ( ComponentContainer _container, EntitySavedData _unitData, GameDatas.PlayerSave.Equipment _componentSavedData, Func<GameDatas.PlayerSave.Equipment, bool> _predicate
+    public override void Init ( ComponentContainer _container, EntitySavedData _unitData, GameDatas.PlayerSave.Component _componentSavedData, Func<GameDatas.PlayerSave.Component, bool> _predicate
         , ComponentDisplay.DisplayMode _displayMode, int _index = 0 )
     {
         base.Init(_container, _unitData, _componentSavedData, _predicate, _displayMode, _index);
@@ -22,7 +22,7 @@ public class ComponentDisplayGrid : ComponentContainer
             m_predicate = null;
     }
 
-    public ComponentDisplay CreateNewDisplay ( EntitySavedData _unitData, GameDatas.PlayerSave.Equipment _componentSavedData, ComponentDisplay.DisplayMode _displayMode )
+    public ComponentDisplay CreateNewDisplay ( EntitySavedData _unitData, GameDatas.PlayerSave.Component _componentSavedData, ComponentDisplay.DisplayMode _displayMode )
 	{
         ComponentDisplay newDisplay = Instantiate(_displayMode == ComponentDisplay.DisplayMode.ShopBuying 
             ? GameAssets.current.ui.shopComponentDisplay : GameAssets.current.ui.baseComponentDisplay, m_displayParent);
@@ -35,7 +35,7 @@ public class ComponentDisplayGrid : ComponentContainer
         return newDisplay;
     }
 
-    public void RefreshPredicate ( Func<GameDatas.PlayerSave.Equipment, bool> _newPredicate )
+    public void RefreshPredicate ( Func<GameDatas.PlayerSave.Component, bool> _newPredicate )
 	{
         m_predicate = _newPredicate;
 
@@ -48,7 +48,7 @@ public class ComponentDisplayGrid : ComponentContainer
 			}
 		}
 
-        foreach (GameDatas.PlayerSave.Equipment eq in GameDatas.current.currentPlayerSave.equipmentInventory)
+        foreach (GameDatas.PlayerSave.Component eq in GameDatas.current.currentPlayerSave.equipmentInventory)
             if (m_predicate != null && m_predicate(eq) && !m_items.Any(item => string.Equals(item.SavedData.ID, eq)))
                 CreateNewDisplay(m_unitData, eq, m_displayMode);
     }

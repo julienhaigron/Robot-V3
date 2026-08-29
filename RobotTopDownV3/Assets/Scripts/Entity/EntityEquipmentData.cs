@@ -296,7 +296,7 @@ public class EntityEquipmentData : AParsableScriptableObject
 	private void AddToInventory ()
 	{
 		if (GameDatas.current.currentPlayerSave != null)
-			GameDatas.current.currentPlayerSave.AddEquipmentToInventory(this);
+			GameDatas.current.currentPlayerSave.AddComponentToInventory(this);
 
 		EditorUtility.SetDirty(GameDatas.current);
 	}

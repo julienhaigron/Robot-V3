@@ -49,7 +49,7 @@ public class ReturnToHubPopup : AUIPopup
 				if (data.remainingTime <= 0)
 				{
 					content += data.unit.name + " finished repairing\n";
-					foreach(GameDatas.PlayerSave.Equipment eq in data.unit.GetAllEquipments())
+					foreach(GameDatas.PlayerSave.Component eq in data.unit.GetAllEquipments())
 					{
 						eq.isDamaged = false;
 					}

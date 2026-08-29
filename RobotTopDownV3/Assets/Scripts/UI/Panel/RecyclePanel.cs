@@ -9,7 +9,7 @@ public class RecyclePanel : AUIPanel
 	[SerializeField] private ComponentSlot[] m_recyclingSlots;
 	[SerializeField] private ComponentFullDisplay m_hoveredComponentFullInfoDisplay;
 
-	private System.Func<GameDatas.PlayerSave.Equipment, bool> InventoryGridPredicate => item => item != null /*&& item.isDamaged*/;
+	private System.Func<GameDatas.PlayerSave.Component, bool> InventoryGridPredicate => item => item != null /*&& item.isDamaged*/;
 
 	private void Awake ()
 	{

@@ -28,8 +28,8 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 
 	private EntityEquipmentData m_componentData;
 	public EntityEquipmentData ComponentData => m_componentData;
-	private GameDatas.PlayerSave.Equipment m_savedData;
-	public GameDatas.PlayerSave.Equipment SavedData => m_savedData;
+	private GameDatas.PlayerSave.Component m_savedData;
+	public GameDatas.PlayerSave.Component SavedData => m_savedData;
 
 	private GameDatas.PlayerSave.DayData.ShopComponentData m_shopSavedData;
 	public GameDatas.PlayerSave.DayData.ShopComponentData ShopSavedData => m_shopSavedData;
@@ -41,7 +41,7 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 	public enum DisplayMode { Hangar, RepairStation, RecyclingStation, ShopBuying, ShopSelling, Empty }
 	private DisplayMode m_currentDisplayMode;
 
-	public void Init ( EntitySavedData _unitData, GameDatas.PlayerSave.Equipment _componentSavedData, DisplayMode _displayMode )
+	public void Init ( EntitySavedData _unitData, GameDatas.PlayerSave.Component _componentSavedData, DisplayMode _displayMode )
 	{
 		m_savedData = _componentSavedData;
 		if (_componentSavedData != null && _componentSavedData.TryGetData(out EntityEquipmentData data))
@@ -51,9 +51,13 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 			m_corpIcon.sprite = GameAssets.current.ui.corporationsIcons[m_componentData.faction];
 			m_icon.sprite = m_componentData.icon;
 			m_damagedGO.SetActive(_componentSavedData.isDamaged);
+			SetOutlineColor(GameAssets.current.ui.componentColors[data.GetEquipmentType()]);
 		}
 		else
+		{
+			SetOutlineColor(Color.white);
 			m_damagedGO.SetActive(false);
+		}
 
 		if (m_rerollBtn != null)
 			m_rerollBtn.onClick = OnClickReroll;
@@ -75,7 +79,7 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 				m_descriptionTMP.gameObject.SetActive(false);
 				m_priceBackground.gameObject.SetActive(false);
 				if (m_outlineImg != null)
-					m_outlineImg.enabled = false;
+					m_outlineImg.enabled = true;
 				if (m_rerollBtn != null)
 					m_rerollBtn.gameObject.SetActive(false);
 				break;
@@ -160,6 +164,11 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 	{
 		m_shopSavedData = _shopData;
 		m_freezeImg.sprite = m_freezeOnOffSpriteArray[_shopData.isFrozen ? 0 : 1];
+	}
+
+	public void SetOutlineColor(Color _color )
+	{
+		m_outlineImg.color = _color;
 	}
 
 	private void OnClickReroll ()

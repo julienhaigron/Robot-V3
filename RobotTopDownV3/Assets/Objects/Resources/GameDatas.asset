@@ -18,5 +18,205 @@ MonoBehaviour:
     musicVolume: 1
     sfxVolume: 1
   game:
-    lastPlayerSaveSelectedID: -1
-  playerSaves: []
+    lastPlayerSaveSelectedID: 0
+  playerSaves:
+  - saveName: New save
+    allBuiltUnits:
+    - name: Start_Melee
+      index: 0
+      isRepairing: 0
+      frame:
+        ID: Frame_Start8
+        dataID: Frame_Start
+        isDamaged: 0
+      reactor:
+        ID: Reactor_Start9
+        dataID: Reactor_Start
+        isDamaged: 0
+      neuronalMembrane:
+        ID: NeurInt_Start_Optic10
+        dataID: NeurInt_Start_Optic
+        isDamaged: 0
+      brain:
+        ID: AIM_Starting_Melee11
+        dataID: AIM_Starting_Melee
+        isDamaged: 0
+      arms:
+      - ID: Weap_Start_HamMag12
+        dataID: Weap_Start_HamMag
+        isDamaged: 0
+      auxiliar: []
+      chipsets: []
+      currentHp: 100
+    - name: Start_Shot
+      index: 1
+      isRepairing: 0
+      frame:
+        ID: Frame_Start13
+        dataID: Frame_Start
+        isDamaged: 0
+      reactor:
+        ID: Reactor_Start14
+        dataID: Reactor_Start
+        isDamaged: 0
+      neuronalMembrane:
+        ID: NeurInt_Start_Optic15
+        dataID: NeurInt_Start_Optic
+        isDamaged: 0
+      brain:
+        ID: AIM_Starting_Shoot16
+        dataID: AIM_Starting_Shoot
+        isDamaged: 0
+      arms:
+      - ID: Weap_Start_FireGun17
+        dataID: Weap_Start_FireGun
+        isDamaged: 0
+      auxiliar: []
+      chipsets: []
+      currentHp: 100
+    - name: Start_Status
+      index: 2
+      isRepairing: 0
+      frame:
+        ID: 
+        dataID: 
+        isDamaged: 0
+      reactor:
+        ID: Reactor_Start58
+        dataID: Reactor_Start
+        isDamaged: 0
+      neuronalMembrane:
+        ID: NeurInt_Start_Radar59
+        dataID: NeurInt_Start_Radar
+        isDamaged: 0
+      brain:
+        ID: AIM_Starting_Status60
+        dataID: AIM_Starting_Status
+        isDamaged: 0
+      arms:
+      - ID: Weap_Start_PlasmaCannon61
+        dataID: Weap_Start_PlasmaCannon
+        isDamaged: 0
+      auxiliar: []
+      chipsets: []
+      currentHp: 100
+    squadUnitsIndex: 000000000100000002000000
+    equipmentInventory:
+    - ID: Frame_Start62
+      dataID: Frame_Start
+      isDamaged: 0
+    equipmentCounter: 63
+    currencies:
+      keys: 01000000020000000300000004000000
+      values: 0000000000000000000000000000000000000000000000000000000000000000
+    totalCurrenciesGot:
+      keys: 01000000020000000300000004000000
+      values: 0000000000000000000000000000000000000000000000000000000000000000
+    totalCurrenciesSpent:
+      keys: 01000000020000000300000004000000
+      values: 0000000000000000000000000000000000000000000000000000000000000000
+    upgradeLevels:
+      keys:
+      - hangarstructure
+      - shopstructure
+      - recyclingstructure
+      - repairstationstructure
+      values: 00000000000000000000000000000000
+    dayData:
+      itemsInShop:
+      - component:
+          ID: Frame_Dummy_Immortal0
+          dataID: Frame_Dummy_Immortal
+          isDamaged: 0
+        isFrozen: 0
+      - component:
+          ID: NeurInt_Start_Thermic1
+          dataID: NeurInt_Start_Thermic
+          isDamaged: 0
+        isFrozen: 0
+      - component:
+          ID: Weap_Com_Flame_Thrower2
+          dataID: Weap_Com_Flame_Thrower
+          isDamaged: 0
+        isFrozen: 0
+      - component:
+          ID: Reactor_Pal_Mel_En3
+          dataID: Reactor_Pal_Mel_En
+          isDamaged: 0
+        isFrozen: 0
+      - component:
+          ID: Reactor_Pal_Mvt_Ult4
+          dataID: Reactor_Pal_Mvt_Ult
+          isDamaged: 0
+        isFrozen: 0
+      - component:
+          ID: NeurInt_Pal_Thermic5
+          dataID: NeurInt_Pal_Thermic
+          isDamaged: 0
+        isFrozen: 0
+      - component:
+          ID: Weap_Start_HamMag6
+          dataID: Weap_Start_HamMag
+          isDamaged: 0
+        isFrozen: 0
+      - component:
+          ID: Occ_Com_Radar7
+          dataID: Occ_Com_Radar
+          isDamaged: 0
+        isFrozen: 0
+      - component:
+          ID: Occ_Dum_Radar44
+          dataID: Occ_Dum_Radar
+          isDamaged: 0
+        isFrozen: 0
+      - component:
+          ID: Weap_Com_Flame_Thrower45
+          dataID: Weap_Com_Flame_Thrower
+          isDamaged: 0
+        isFrozen: 0
+      - component:
+          ID: Occ_Pal_Thermic46
+          dataID: Occ_Pal_Thermic
+          isDamaged: 0
+        isFrozen: 0
+      - component:
+          ID: Arm_Broken47
+          dataID: Arm_Broken
+          isDamaged: 0
+        isFrozen: 0
+      - component:
+          ID: Arm_Dum_Heat48
+          dataID: Arm_Dum_Heat
+          isDamaged: 0
+        isFrozen: 0
+      - component:
+          ID: Frame_Pal_TankV249
+          dataID: Frame_Pal_TankV2
+          isDamaged: 0
+        isFrozen: 0
+      - component:
+          ID: Occ_Dum_Thermic50
+          dataID: Occ_Dum_Thermic
+          isDamaged: 0
+        isFrozen: 0
+      - component:
+          ID: Occ_Com_Thermic51
+          dataID: Occ_Com_Thermic
+          isDamaged: 0
+        isFrozen: 0
+      currentlyRecyclingComponents: []
+      repairingComponents: []
+    cycleData:
+      availableMissionsIds: 080000000100000000000000030000000000000002000000060000000000000001000000040000000500000007000000
+      selectedMissionsIds: 02000000030000000400000005000000
+      roundsDatas: 000000000000000000000000
+      hasInitTournament: 0
+    cycleCount: 0
+    dayCount: 1
+    didStartTuto: 1
+    didUnlockRetuurnToHubPopup: 0
+    sequencesProgressions:
+      keys:
+      - FTUESequence
+      - MicroTuto0
+      values: 0000000004000000

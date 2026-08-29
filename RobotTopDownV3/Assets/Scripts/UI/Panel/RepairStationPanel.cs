@@ -73,7 +73,7 @@ public class RepairStationPanel : AUIPanel
 	private void OnItemAddedOnSlot ( RepareUnitContainer _container, RepareUnitDisplay _display )
 	{
 		int duration = 0;
-		foreach (GameDatas.PlayerSave.Equipment eq in _display.SavedData.GetAllEquipments())
+		foreach (GameDatas.PlayerSave.Component eq in _display.SavedData.GetAllEquipments())
 			if (eq.isDamaged)
 				duration++;
 

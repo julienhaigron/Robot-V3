@@ -62,17 +62,17 @@ public class UnitPreset : AParsableScriptableObject
         newUnit.neuronalMembrane = new() { ID = neuronalMembrane.name + GameDatas.current.currentPlayerSave.equipmentCounter++, dataID = neuronalMembrane.name };
         newUnit.brain = new() { ID = brain.name + GameDatas.current.currentPlayerSave.equipmentCounter++, dataID = brain.name };
 
-        List<GameDatas.PlayerSave.Equipment> armsContainer = new();
+        List<GameDatas.PlayerSave.Component> armsContainer = new();
         foreach (EntityEquipmentData arm in arms)
             armsContainer.Add(new() { ID = arm.name + GameDatas.current.currentPlayerSave.equipmentCounter++, dataID = arm.name });
         newUnit.arms = armsContainer.ToArray();
 
-        List<GameDatas.PlayerSave.Equipment> auxiliaryContainer = new();
+        List<GameDatas.PlayerSave.Component> auxiliaryContainer = new();
         foreach (EntityEquipmentData arm in auxiliary)
             auxiliaryContainer.Add(new() { ID = arm.name + GameDatas.current.currentPlayerSave.equipmentCounter++, dataID = arm.name });
         newUnit.auxiliar = auxiliaryContainer.ToArray();
 
-        List<GameDatas.PlayerSave.Equipment> chipstetsContainer = new();
+        List<GameDatas.PlayerSave.Component> chipstetsContainer = new();
         foreach (ChipsetEquipmentData arm in chipsets)
             chipstetsContainer.Add(new() { ID = arm.name + GameDatas.current.currentPlayerSave.equipmentCounter++, dataID = arm.name });
         newUnit.chipsets = chipstetsContainer.ToArray();

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: RTD::ChipsetEquipmentData
   spreadsheetId: https://docs.google.com/spreadsheets/d/1AeQujaBf6YdyVQRD2gBNWazoosesi46DpAoY5b6hrt8/export?format=csv&gid=1887781930
   faction: 4
-  icon: {fileID: 0}
+  icon: {fileID: 194265416, guid: b61920d2917644949a125f8a6af0e45c, type: 3}
   displayName: Run Chipset
   energyCost: 15
   knownedActions: 

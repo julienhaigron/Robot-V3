@@ -128,7 +128,7 @@ public class Entity : MonoBehaviour
 			m_knownedPassiveEffectsPerAction.Add(actionID, _data.GetPassiveEffects(actionID));
 		}
 
-		foreach (GameDatas.PlayerSave.Equipment eq in _data.GetAllEquipments())
+		foreach (GameDatas.PlayerSave.Component eq in _data.GetAllEquipments())
 		{
 			m_allPassiveEffects.AddRange(eq.GetData<EntityEquipmentData>().passiveEffects);
 		}
@@ -210,7 +210,7 @@ public class Entity : MonoBehaviour
 			}
 		}*/
 
-		foreach (GameDatas.PlayerSave.Equipment container in m_data.arms)
+		foreach (GameDatas.PlayerSave.Component container in m_data.arms)
 		{
 			if (!container.isDamaged && GameAssets.current.equipments[container.dataID] is EntityEquipmentData equipment)
 			{
@@ -226,7 +226,7 @@ public class Entity : MonoBehaviour
 				}
 			}
 		}
-		foreach (GameDatas.PlayerSave.Equipment container in m_data.auxiliar)
+		foreach (GameDatas.PlayerSave.Component container in m_data.auxiliar)
 		{
 			if (!container.isDamaged && GameAssets.current.equipments[container.dataID] is EntityEquipmentData equipment)
 			{
@@ -242,7 +242,7 @@ public class Entity : MonoBehaviour
 				}
 			}
 		}
-		foreach (GameDatas.PlayerSave.Equipment container in m_data.chipsets)
+		foreach (GameDatas.PlayerSave.Component container in m_data.chipsets)
 		{
 			if (!container.isDamaged && GameAssets.current.equipments[container.dataID] is EntityEquipmentData equipment)
 			{
@@ -459,7 +459,7 @@ public class Entity : MonoBehaviour
 		if (m_activeStatBonusBuffs.ContainsKey(_type))
 			bonus += m_activeStatBonusBuffs[_type];
 
-		foreach (GameDatas.PlayerSave.Equipment eq in m_data.chipsets)
+		foreach (GameDatas.PlayerSave.Component eq in m_data.chipsets)
 		{
 			if (!eq.isDamaged && eq.TryGetData(out ChipsetEquipmentData _chipsedData))
 			{
