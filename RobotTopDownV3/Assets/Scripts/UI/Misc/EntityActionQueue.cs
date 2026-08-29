@@ -18,6 +18,7 @@ public class EntityActionQueue : MonoBehaviour
 	[SerializeField] private SerializableDictionary<Entity.EntityState, Transform> m_stateLineTfmDictionary;
 	[SerializeField] private StateLineDisplay[] m_stateDisplays;
 	[SerializeField] private SerializableDictionary<Entity.EntityState, StateLine> m_stateLines;
+	[SerializeField] private SerializableDictionary<Entity.EntityState, StateButton> m_stateSelectionBtns;
 
 	[Title("PriorityQueue")]
 	[SerializeField] private Transform m_actionPriorityQueueTfm;
@@ -49,6 +50,7 @@ public class EntityActionQueue : MonoBehaviour
 		TurnManager.onActionAdded += OnActionAdded;
 		TurnManager.onActionRemoved += OnActionRemoved;
 		TurnManager.onEndInputPhase += OnEndInputPhase;
+		TurnManager.onStateSelected += OnStateSelected;
 		m_leftActionTypeBtn.onClick += OnClickLeftActionTypeBtn;
 		m_rightActionTypeBtn.onClick += OnClickRightActionTypeBtn;
 
@@ -75,6 +77,7 @@ public class EntityActionQueue : MonoBehaviour
 		TurnManager.onActionRemoved -= OnActionRemoved;
 		TurnManager.onEndInputPhase -= OnEndInputPhase;
 		TurnManager.onActionSelected -= OnActionSelected;
+		TurnManager.onStateSelected -= OnStateSelected;
 		m_leftActionTypeBtn.onClick -= OnClickLeftActionTypeBtn;
 		m_rightActionTypeBtn.onClick -= OnClickRightActionTypeBtn;
 	}
@@ -117,8 +120,22 @@ public class EntityActionQueue : MonoBehaviour
 		RefreshPriorityQueue(m_currentEntitySelected, rightType);
 	}
 
+	private void OnStateSelected(Entity.EntityState _state )
+	{
+		foreach (KeyValuePair<Entity.EntityState, StateButton> pair in m_stateSelectionBtns)
+		{
+			pair.Value.Init(pair.Key);
+			pair.Value.SetSelected(TurnManager.Instance.CurrentStateTypeSelected == pair.Key);
+		}
+	}
+
 	public void Init ()
 	{
+		foreach(KeyValuePair<Entity.EntityState, StateButton> pair in m_stateSelectionBtns)
+		{
+			pair.Value.Init(pair.Key);
+			pair.Value.SetSelected(TurnManager.Instance.CurrentStateTypeSelected == pair.Key);
+		}
 		RefreshVisual(null);
 	}
 
