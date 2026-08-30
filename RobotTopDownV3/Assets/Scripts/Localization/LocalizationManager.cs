@@ -34,7 +34,7 @@ public class LocalizationManager : Singleton<LocalizationManager>
 
     public string Get ( LocalizationKey _key )
     {
-        return Get(_key.ToString().Replace("_", "/"));
+        return Get(_key.ToKey());
     }
 
     public string Get ( string _key )

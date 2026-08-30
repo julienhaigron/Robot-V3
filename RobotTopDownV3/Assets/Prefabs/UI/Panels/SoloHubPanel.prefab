@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 8573155755087990529}
   - component: {fileID: 7213220657002435888}
   - component: {fileID: 6547823738963718946}
+  - component: {fileID: 9123456789012345641}
   m_Layer: 0
   m_Name: text
   m_TagString: Untagged
@@ -533,6 +534,7 @@ GameObject:
   - component: {fileID: 5570319689436678185}
   - component: {fileID: 6445434752555630694}
   - component: {fileID: 3667687433867875772}
+  - component: {fileID: 9123456789012345642}
   m_Layer: 0
   m_Name: Title
   m_TagString: Untagged
@@ -587,7 +589,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: COPRO COMANDO -
+  m_text: CORPO COMANDO -
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: b5698a72fb0f50b4ca828f2b1f649314, type: 2}
   m_sharedMaterial: {fileID: 5197844472800135217, guid: b5698a72fb0f50b4ca828f2b1f649314, type: 2}
@@ -670,6 +672,7 @@ GameObject:
   - component: {fileID: 8481160259882492604}
   - component: {fileID: 6565783894428264218}
   - component: {fileID: 6317903312575568541}
+  - component: {fileID: 9123456789012345643}
   m_Layer: 0
   m_Name: Title
   m_TagString: Untagged
@@ -724,7 +727,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: corpo paladin -
+  m_text: CORPO PALADIN -
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: b5698a72fb0f50b4ca828f2b1f649314, type: 2}
   m_sharedMaterial: {fileID: 5197844472800135217, guid: b5698a72fb0f50b4ca828f2b1f649314, type: 2}
@@ -807,6 +810,7 @@ GameObject:
   - component: {fileID: 2180407455446458213}
   - component: {fileID: 5588820663711566159}
   - component: {fileID: 7620876244942300219}
+  - component: {fileID: 9123456789012345645}
   m_Layer: 0
   m_Name: Title
   m_TagString: Untagged
@@ -1019,6 +1023,7 @@ GameObject:
   - component: {fileID: 7795532429890100897}
   - component: {fileID: 6088322043556147}
   - component: {fileID: 7371715927442052330}
+  - component: {fileID: 9123456789012345646}
   m_Layer: 0
   m_Name: Title
   m_TagString: Untagged
@@ -1073,7 +1078,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: REPARATION -
+  m_text: "R\xC9PARATION -"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: b5698a72fb0f50b4ca828f2b1f649314, type: 2}
   m_sharedMaterial: {fileID: 5197844472800135217, guid: b5698a72fb0f50b4ca828f2b1f649314, type: 2}
@@ -1266,6 +1271,7 @@ GameObject:
   - component: {fileID: 1368885364806876828}
   - component: {fileID: 4591129840798826863}
   - component: {fileID: 439890285488323619}
+  - component: {fileID: 9123456789012345647}
   m_Layer: 0
   m_Name: Title
   m_TagString: Untagged
@@ -1540,6 +1546,7 @@ GameObject:
   - component: {fileID: 8933449688713237715}
   - component: {fileID: 6747360182205943897}
   - component: {fileID: 298561136328936094}
+  - component: {fileID: 9123456789012345640}
   m_Layer: 0
   m_Name: text
   m_TagString: Untagged
@@ -1752,6 +1759,7 @@ GameObject:
   - component: {fileID: 563816839080768100}
   - component: {fileID: 3551939803441551686}
   - component: {fileID: 4096940447453076748}
+  - component: {fileID: 9123456789012345644}
   m_Layer: 0
   m_Name: Title
   m_TagString: Untagged
@@ -3862,3 +3870,107 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a5d70cf56b41154297fd1bdab52fe59, type: 3}
   m_Name: 
   m_EditorClassIdentifier: RTD::TutorialHighlightZone
+--- !u!114 &9123456789012345640
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6932703724224009502}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8e84717eb35a2141b62ffd967b6c41f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  key: hub/hangar
+--- !u!114 &9123456789012345641
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 207047792832224957}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8e84717eb35a2141b62ffd967b6c41f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  key: hub/skip_day
+--- !u!114 &9123456789012345642
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3772166050388799658}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8e84717eb35a2141b62ffd967b6c41f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  key: hub/shop_comando
+--- !u!114 &9123456789012345643
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3966036061586668456}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8e84717eb35a2141b62ffd967b6c41f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  key: hub/shop_paladin
+--- !u!114 &9123456789012345644
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7713036880667519137}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8e84717eb35a2141b62ffd967b6c41f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  key: hub/shop_psy
+--- !u!114 &9123456789012345645
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4145140788496388511}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8e84717eb35a2141b62ffd967b6c41f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  key: hub/mission_panel
+--- !u!114 &9123456789012345646
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4471810520052910640}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8e84717eb35a2141b62ffd967b6c41f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  key: hub/repair
+--- !u!114 &9123456789012345647
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5655498221854626625}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8e84717eb35a2141b62ffd967b6c41f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  key: hub/recycle

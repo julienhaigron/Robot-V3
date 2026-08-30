@@ -25,6 +25,16 @@ public class SoloHubPanel : AUIPanel
 		m_skipDayBtn.onClick += OnClickSkipDay;
 	}
 
+	private void OnEnable ()
+	{
+		LocalizationManager.onLanguageChanged += RefreshMissionBtnLabel;
+	}
+
+	private void OnDisable ()
+	{
+		LocalizationManager.onLanguageChanged -= RefreshMissionBtnLabel;
+	}
+
 	protected override void OnShowStarted ()
 	{
 		base.OnShowStarted();
@@ -35,7 +45,7 @@ public class SoloHubPanel : AUIPanel
 	{
 		bool isSquadValid = /*GameManager.Instance.SquadValidityPredicate()*/true;
 
-		m_missionBtnTMP.text = GameDatas.current.currentPlayerSave.dayCount > 3 ? "TOURNOI" : "MISSION";
+		RefreshMissionBtnLabel();
 
 		m_missionBtn.SetInteractability(isSquadValid);
 		m_repairBtn.SetInteractability(GameDatas.current.currentPlayerSave.didUnlockRepareStation);
@@ -44,6 +54,13 @@ public class SoloHubPanel : AUIPanel
 		/*foreach (KeyValuePair<EntityEquipmentData.EntityFaction, BaseButton> shopBtn in m_openShopBtns)
 			shopBtn.Value.SetInteractability(GameDatas.current.currentPlayerSave.didUnlockShops);*/
 		//m_tournamentBtn.SetInteractability(isSquadValid);
+	}
+
+	private void RefreshMissionBtnLabel ()
+	{
+		bool isTournament = GameDatas.current.currentPlayerSave.dayCount > 3;
+
+		m_missionBtnTMP.text = LocalizationManager.Instance.Get(isTournament ? LocalizationKey.hub_tournament : LocalizationKey.hub_mission);
 	}
 
 	#region Callbacks

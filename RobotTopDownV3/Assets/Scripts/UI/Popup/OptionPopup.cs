@@ -11,6 +11,7 @@ public class OptionPopup : AUIPopup
 	{
 		public string actionName;
 		public int bindingIndex;
+		[LocalizedKey] public string labelKey;
 		public TextMeshProUGUI bindingLabel;
 		public BaseButton rebindButton;
 	}
@@ -37,6 +38,7 @@ public class OptionPopup : AUIPopup
 		m_closeBtn.onClick += OnClickClose;
 		m_volumeSlider.onValueChanged.AddListener(OnVolumeChanged);
 		m_languageDropdown.onValueChanged.AddListener(OnLanguageChanged);
+		LocalizationManager.onLanguageChanged += RefreshLanguages;
 
 		if (m_resetControlsBtn != null)
 			m_resetControlsBtn.onClick += OnClickResetControls;
@@ -50,6 +52,7 @@ public class OptionPopup : AUIPopup
 		m_closeBtn.onClick -= OnClickClose;
 		m_volumeSlider.onValueChanged.RemoveListener(OnVolumeChanged);
 		m_languageDropdown.onValueChanged.RemoveListener(OnLanguageChanged);
+		LocalizationManager.onLanguageChanged -= RefreshLanguages;
 
 		if (m_resetControlsBtn != null)
 			m_resetControlsBtn.onClick -= OnClickResetControls;
@@ -92,10 +95,20 @@ public class OptionPopup : AUIPopup
 		m_availableLanguages = new List<SystemLanguage>(LocalizationManager.Instance.AvailableLanguages);
 
 		m_languageDropdown.ClearOptions();
-		m_languageDropdown.AddOptions(m_availableLanguages.ConvertAll(_language => _language.ToString()));
+		m_languageDropdown.AddOptions(m_availableLanguages.ConvertAll(GetLanguageLabel));
 
 		int currentIndex = m_availableLanguages.IndexOf(LocalizationManager.Instance.CurrentLanguage);
 		m_languageDropdown.SetValueWithoutNotify(Mathf.Max(currentIndex, 0));
+		m_languageDropdown.RefreshShownValue();
+	}
+
+	private string GetLanguageLabel ( SystemLanguage _language )
+	{
+		string key = "language/" + _language.ToString().ToLowerInvariant();
+		string label = LocalizationManager.Instance.Get(key);
+
+		// Get() renvoie la key quand la traduction n'existe pas
+		return label == key ? _language.ToString() : label;
 	}
 
 	private void OnLanguageChanged ( int _index )
@@ -139,7 +152,7 @@ public class OptionPopup : AUIPopup
 		if (m_rebindPromptLabel != null)
 		{
 			m_rebindPromptLabel.gameObject.SetActive(true);
-			m_rebindPromptLabel.text = $"Press a key for {_entry.actionName}...";
+			m_rebindPromptLabel.text = string.Format(LocalizationManager.Instance.Get(LocalizationKey.option_rebind_prompt), GetActionLabel(_entry));
 		}
 
 		m_activeRebind = action.PerformInteractiveRebinding(_entry.bindingIndex)
@@ -150,6 +163,14 @@ public class OptionPopup : AUIPopup
 			.OnComplete(_operation => OnRebindComplete(_entry, action, _operation))
 			.OnCancel(_operation => OnRebindEnd(action, _operation))
 			.Start();
+	}
+
+	private string GetActionLabel ( RebindEntry _entry )
+	{
+		if (string.IsNullOrEmpty(_entry.labelKey))
+			return _entry.actionName;
+
+		return LocalizationManager.Instance.Get(_entry.labelKey);
 	}
 
 	private void OnRebindComplete ( RebindEntry _entry, InputAction _action, InputActionRebindingExtensions.RebindingOperation _operation )
