@@ -20,5 +20,139 @@ MonoBehaviour:
     language: 10
     inputBindingOverridesJson: 
   game:
-    lastPlayerSaveSelectedID: -1
-  playerSaves: []
+    lastPlayerSaveSelectedID: 0
+  playerSaves:
+  - saveName: New save
+    allBuiltUnits:
+    - name: Start_Melee
+      index: 0
+      isRepairing: 0
+      frame:
+        ID: Frame_Start8
+        dataID: Frame_Start
+        isDamaged: 0
+      reactor:
+        ID: Reactor_Start9
+        dataID: Reactor_Start
+        isDamaged: 0
+      neuronalMembrane:
+        ID: NeurInt_Start_Optic10
+        dataID: NeurInt_Start_Optic
+        isDamaged: 0
+      brain:
+        ID: AIM_Starting_Melee11
+        dataID: AIM_Starting_Melee
+        isDamaged: 0
+      arms:
+      - ID: Weap_Start_HamMag12
+        dataID: Weap_Start_HamMag
+        isDamaged: 0
+      auxiliar: []
+      chipsets: []
+      currentHp: 100
+    - name: Start_Shot
+      index: 1
+      isRepairing: 0
+      frame:
+        ID: Frame_Start13
+        dataID: Frame_Start
+        isDamaged: 0
+      reactor:
+        ID: Reactor_Start14
+        dataID: Reactor_Start
+        isDamaged: 0
+      neuronalMembrane:
+        ID: NeurInt_Start_Optic15
+        dataID: NeurInt_Start_Optic
+        isDamaged: 0
+      brain:
+        ID: AIM_Starting_Shoot16
+        dataID: AIM_Starting_Shoot
+        isDamaged: 0
+      arms:
+      - ID: Weap_Start_FireGun17
+        dataID: Weap_Start_FireGun
+        isDamaged: 0
+      auxiliar: []
+      chipsets: []
+      currentHp: 100
+    squadUnitsIndex: 0000000001000000
+    equipmentInventory: []
+    equipmentCounter: 44
+    currencies:
+      keys: 01000000020000000300000004000000
+      values: 0000000000000000000000000000000000000000000000000000000000000000
+    totalCurrenciesGot:
+      keys: 01000000020000000300000004000000
+      values: 0000000000000000000000000000000000000000000000000000000000000000
+    totalCurrenciesSpent:
+      keys: 01000000020000000300000004000000
+      values: 0000000000000000000000000000000000000000000000000000000000000000
+    upgradeLevels:
+      keys:
+      - hangarstructure
+      - shopstructure
+      - recyclingstructure
+      - repairstationstructure
+      values: 00000000000000000000000000000000
+    dayData:
+      itemsInShop:
+      - component:
+          ID: Arm_Com_Reflecting0
+          dataID: Arm_Com_Reflecting
+          isDamaged: 0
+        isFrozen: 0
+      - component:
+          ID: Occ_Dum_Thermic1
+          dataID: Occ_Dum_Thermic
+          isDamaged: 0
+        isFrozen: 0
+      - component:
+          ID: Reactor_Pal_Sho_En2
+          dataID: Reactor_Pal_Sho_En
+          isDamaged: 0
+        isFrozen: 0
+      - component:
+          ID: AIM_Pal_Mel3
+          dataID: AIM_Pal_Mel
+          isDamaged: 0
+        isFrozen: 0
+      - component:
+          ID: AIM_Com_Def4
+          dataID: AIM_Com_Def
+          isDamaged: 0
+        isFrozen: 0
+      - component:
+          ID: Reactor_Psy_Mel_En5
+          dataID: Reactor_Psy_Mel_En
+          isDamaged: 0
+        isFrozen: 0
+      - component:
+          ID: Reactor_Com_Mel_En6
+          dataID: Reactor_Com_Mel_En
+          isDamaged: 0
+        isFrozen: 0
+      - component:
+          ID: NeurInt_Pal_Radar7
+          dataID: NeurInt_Pal_Radar
+          isDamaged: 0
+        isFrozen: 0
+      currentlyRecyclingComponents: []
+      repairingComponents: []
+    cycleData:
+      availableMissionsIds: 070000000700000002000000070000000300000000000000080000000700000006000000040000000600000007000000
+      selectedMissionsIds: 02000000030000000400000005000000
+      roundsDatas: 000000000000000000000000
+      hasInitTournament: 0
+    cycleCount: 0
+    dayCount: 0
+    didStartTuto: 1
+    didUnlockReturnToHubPopup: 0
+    didUnlockSkipDay: 0
+    didUnlockRepareStation: 0
+    didUnlockRecycler: 0
+    sequencesProgressions:
+      keys:
+      - FTUESequence
+      - MicroTuto0
+      values: 0000000001000000

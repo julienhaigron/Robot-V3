@@ -18,3 +18,27 @@ MonoBehaviour:
     values:
     - yes
     - oui
+  - key: menu/multiplayer
+    values:
+    - Multiplayer
+    - Multijoueur
+  - key: menu/continue
+    values:
+    - Continue
+    - Continuer
+  - key: menu/quit
+    values:
+    - Quit
+    - Quitter
+  - key: menu/return
+    values:
+    - Return
+    - Retour
+  - key: menu/new_game
+    values:
+    - New Game
+    - Nouvelle partie
+  - key: menu/options
+    values:
+    - Options
+    - Options
