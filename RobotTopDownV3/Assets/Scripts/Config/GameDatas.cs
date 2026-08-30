@@ -65,6 +65,8 @@ public partial class GameDatas : ScriptableObject
 		public bool hapticEnabled = true;
 		public float musicVolume = 1f;
 		public float sfxVolume = 1f;
+		public SystemLanguage language = SystemLanguage.English;
+		public string inputBindingOverridesJson = "";
 	}
 
 	[System.Serializable]

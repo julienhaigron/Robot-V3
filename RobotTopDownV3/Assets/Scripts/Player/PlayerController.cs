@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using System;
 using Sirenix.OdinInspector;
 using DG.Tweening;
@@ -12,6 +13,13 @@ public class PlayerController : Singleton<PlayerController>
 
 	[SerializeField] private TurnManager m_turnManager;
 	[SerializeField] private FogOfWarRenderer m_fogRenderer;
+	[SerializeField] private InputActionAsset m_inputActions;
+
+	public InputActionAsset InputActions => m_inputActions;
+
+	private InputAction m_moveAction;
+	private InputAction m_rotateCWAction;
+	private InputAction m_rotateCCWAction;
 
 	[Header("Camera Limits")]
 	private Vector2 xLimits
@@ -66,8 +74,40 @@ public class PlayerController : Singleton<PlayerController>
 		EntityEquipmentPlugin.onAnyEntityDeath += OnAnyEntityDeath;
 		TurnManager.onEndLevel += OnEndLevel;
 
+		InitInputActions();
+
 		m_targetRotation = CameraManager.Instance.CameraParent.transform.rotation;
 		m_currentZoomDistance = CameraManager.Instance.CameraParent.transform.position.y;
+	}
+
+	private void InitInputActions ()
+	{
+		string savedOverrides = GameDatas.current.app.inputBindingOverridesJson;
+		if (!string.IsNullOrEmpty(savedOverrides))
+			m_inputActions.LoadBindingOverridesFromJson(savedOverrides);
+
+		InputActionMap playerMap = m_inputActions.FindActionMap("Player");
+
+		m_moveAction = playerMap.FindAction("Move");
+		m_rotateCWAction = playerMap.FindAction("RotateCameraCW");
+		m_rotateCCWAction = playerMap.FindAction("RotateCameraCCW");
+
+		playerMap.Enable();
+	}
+
+	public void SaveInputBindingOverrides ()
+	{
+		GameDatas.current.app.inputBindingOverridesJson = m_inputActions.SaveBindingOverridesAsJson();
+		ApplicationManager.Instance.SaveApplication();
+	}
+
+	public void ResetInputBindingOverrides ()
+	{
+		foreach (InputActionMap map in m_inputActions.actionMaps)
+			map.RemoveAllBindingOverrides();
+
+		GameDatas.current.app.inputBindingOverridesJson = "";
+		ApplicationManager.Instance.SaveApplication();
 	}
 
 	private void OnDestroy ()
@@ -78,6 +118,8 @@ public class PlayerController : Singleton<PlayerController>
 		TurnManager.onEndInputPhase -= OnEndInputPhase;
 		EntityEquipmentPlugin.onAnyEntityDeath -= OnAnyEntityDeath;
 		TurnManager.onEndLevel -= OnEndLevel;
+
+		m_inputActions.FindActionMap("Player")?.Disable();
 
 		if (m_cameraRotationTween.IsActive())
 			m_cameraRotationTween.Kill();
@@ -98,20 +140,14 @@ public class PlayerController : Singleton<PlayerController>
 
 	private void HandleCameraMovement ()
 	{
-		float moveX = 0f;
-		float moveZ = 0f;
+		Vector2 moveInput = m_moveAction.ReadValue<Vector2>();
 		Vector3 forward = CameraManager.Instance.CameraParent.transform.forward;
 		Vector3 right = CameraManager.Instance.CameraParent.transform.right;
 
 		forward.y = 0f;
 		right.y = 0f;
 
-		if (Input.GetKey(KeyCode.W)) moveZ += 1f;
-		if (Input.GetKey(KeyCode.S)) moveZ -= 1f;
-		if (Input.GetKey(KeyCode.A)) moveX -= 1f;
-		if (Input.GetKey(KeyCode.D)) moveX += 1f;
-
-		Vector3 move = (forward.normalized * moveZ + right.normalized * moveX)
+		Vector3 move = (forward.normalized * moveInput.y + right.normalized * moveInput.x)
 			* GameConfig.current.game.cameraMovementSpeed
 			* Time.fixedDeltaTime;
 
@@ -126,12 +162,12 @@ public class PlayerController : Singleton<PlayerController>
 	private void HandleCameraRotation ()
 	{
 		bool didInput = false;
-		if (Input.GetKeyDown(KeyCode.Q))
+		if (m_rotateCCWAction.WasPerformedThisFrame())
 		{
 			m_targetRotation *= Quaternion.Euler(0f, -GameConfig.current.game.cameraRotationStep, 0f);
 			didInput = true;
 		}
-		else if (Input.GetKeyDown(KeyCode.E))
+		else if (m_rotateCWAction.WasPerformedThisFrame())
 		{
 			m_targetRotation *= Quaternion.Euler(0f, GameConfig.current.game.cameraRotationStep, 0f);
 			didInput = true;
