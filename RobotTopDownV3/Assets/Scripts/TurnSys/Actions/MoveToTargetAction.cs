@@ -226,11 +226,6 @@ public class MoveToTargetAction : AEntityAction
 			doesSelfHaveConflict = true;
 			RefreshDestinatedTile();
 		}
-		else if (targetTileIDs == null)
-		{
-			doesSelfHaveConflict = true;
-			RefreshDestinatedTile();
-		}
 		/*else if (_otherAction is MoveToNeighborAction _otherNeighborMoveAction && thisActionDestinationIDArray.Contains(_otherNeighborMoveAction.finalTargetTileID))
 		{
 			int roll = UnityEngine.Random.Range((int)0, 2);
