@@ -8,6 +8,7 @@ using System.Linq;
 public class EndLevelPopup : AUIPopup
 {
 	[SerializeField] private TextMeshProUGUI m_texte;
+	[SerializeField] private TextMeshProUGUI m_rewardPointsTMP;
 	[SerializeField] private BaseButton m_continueButton;
 	[SerializeField] private CurrencyRewardDisplay[] m_rewardCurrencyDisplays;
 	[SerializeField] private ComponentRewardDisplay[] m_rewardComponentDisplays;
@@ -42,7 +43,7 @@ public class EndLevelPopup : AUIPopup
 				Entity entity = GameManager.Instance.PlayersEntityAnchor[0].Entities[i];
 
 				float remainingHealthPercentage = (float)entity.Equipment.CurrentHealth / (float)entity.Equipment.MaxHealth;
-				int destroiedComponentAmount = remainingHealthPercentage > .5f ? 0 : remainingHealthPercentage > .25f ? 1 : remainingHealthPercentage > 0 ? 2 : 3;
+				int destroiedComponentAmount = remainingHealthPercentage > .75f ? 0 : remainingHealthPercentage > .5f ? 1 : remainingHealthPercentage > .25f ? 2 : 3;
 
 				if (destroiedComponentAmount > 0)
 					DamageRandomComponents(GameDatas.current.currentPlayerSave.allBuiltUnits[GameDatas.current.currentPlayerSave.squadUnitsIndex[i]], destroiedComponentAmount);
@@ -93,47 +94,42 @@ public class EndLevelPopup : AUIPopup
 
 	private void OnInterractWithRewardBtn ()
 	{
-		bool canLeave = m_allocatedRewardPoint == 5;
+		int totalUsedRewardPoint = 0;
+		foreach (CurrencyRewardDisplay display in m_rewardCurrencyDisplays)
+			if (display.IsSelected && display.IsVisible)
+				totalUsedRewardPoint += 1;
 
-		if (!canLeave)
+		foreach (ComponentRewardDisplay display in m_rewardComponentDisplays)
 		{
-			int totalUsedRewardPoint = 0;
-			foreach (CurrencyRewardDisplay display in m_rewardCurrencyDisplays)
-				if (display.IsSelected)
-					totalUsedRewardPoint += 1;
-
-			foreach (ComponentRewardDisplay display in m_rewardComponentDisplays)
+			if (display.IsSelected && display.IsVisible)
 			{
-				if (display.IsSelected)
+				switch (display.Component.GetEquipmentType())
 				{
-					switch (display.Component.GetEquipmentType())
-					{
-						case EntityEquipmentData.EquipmentType.Frame:
-						case EntityEquipmentData.EquipmentType.Brain:
-						case EntityEquipmentData.EquipmentType.Reactor:
-						case EntityEquipmentData.EquipmentType.NeuronalMembrane:
-							totalUsedRewardPoint += 3;
-							break;
-						default:
-							totalUsedRewardPoint += 2;
-							break;
-					}
+					case EntityEquipmentData.EquipmentType.Frame:
+					case EntityEquipmentData.EquipmentType.Brain:
+					case EntityEquipmentData.EquipmentType.Reactor:
+					case EntityEquipmentData.EquipmentType.NeuronalMembrane:
+						totalUsedRewardPoint += 3;
+						break;
+					default:
+						totalUsedRewardPoint += 2;
+						break;
 				}
 			}
-
-			foreach (UnitRewardDisplay display in m_rewardUnitsDisplays)
-				if (display.IsSelected)
-					totalUsedRewardPoint += 5;
-
-			canLeave = totalUsedRewardPoint == m_allocatedRewardPoint;
 		}
 
-		m_continueButton.SetInteractability(canLeave);
+		foreach (UnitRewardDisplay display in m_rewardUnitsDisplays)
+			if (display.IsSelected && display.IsVisible)
+				totalUsedRewardPoint += 5;
+
+		m_rewardPointsTMP.text = "Remaining reward points to use: <color=yellow>" + (m_allocatedRewardPoint - totalUsedRewardPoint) + "</color>";
+
+		m_continueButton.SetInteractability(m_allocatedRewardPoint == 5 || totalUsedRewardPoint <= m_allocatedRewardPoint);
 	}
 
 	public void DamageRandomComponents ( EntitySavedData _entity, int _count )
 	{
-		List<GameDatas.PlayerSave.Equipment> available = _entity.GetAllEquipments();
+		List<GameDatas.PlayerSave.Component> available = _entity.GetAllEquipments();
 		_count = Mathf.Min(_count, available.Count);
 
 		for (int i = 0; i < _count; i++)
@@ -148,17 +144,17 @@ public class EndLevelPopup : AUIPopup
 	{
 		//give rewards
 		foreach (CurrencyRewardDisplay display in m_rewardCurrencyDisplays)
-			if (display.IsSelected)
+			if (display.IsSelected && display.IsVisible)
 				GameDatas.current.currentPlayerSave.AddCurrency(display.CurrencyType, display.Value);
 
 		foreach (ComponentRewardDisplay display in m_rewardComponentDisplays)
 		{
-			if (display.IsSelected)
-				GameDatas.current.currentPlayerSave.AddEquipmentToInventory(display.Component);
+			if (display.IsSelected && display.IsVisible)
+				GameDatas.current.currentPlayerSave.AddComponentToInventory(display.Component);
 		}
 
 		foreach (UnitRewardDisplay display in m_rewardUnitsDisplays)
-			if (display.IsSelected)
+			if (display.IsSelected && display.IsVisible)
 				display.UnitPreset.AddToUnits(false);
 
 		GameManager.Instance.GoBackToHub();

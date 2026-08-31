@@ -166,7 +166,7 @@ public class MissionPanel : AUIPanel
 			}
 		}
 
-		List<GameDatas.PlayerSave.Equipment> mainComponents = _display.Data.GetAllMainEquipments();
+		List<GameDatas.PlayerSave.Component> mainComponents = _display.Data.GetAllMainEquipments();
 		for (int i = 0; i < m_hoveredUnitComponentIcons.Length; i++)
 		{
 			if (mainComponents.Count <= i)

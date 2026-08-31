@@ -65,6 +65,8 @@ public partial class GameDatas : ScriptableObject
 		public bool hapticEnabled = true;
 		public float musicVolume = 1f;
 		public float sfxVolume = 1f;
+		public SystemLanguage language = SystemLanguage.English;
+		public string inputBindingOverridesJson = "";
 	}
 
 	[System.Serializable]
@@ -87,7 +89,7 @@ public partial class GameDatas : ScriptableObject
 		public string saveName;
 		public List<EntitySavedData> allBuiltUnits = new();
 		public List<int> squadUnitsIndex = new();
-		public List<Equipment> equipmentInventory = new();
+		public List<Component> equipmentInventory = new();
 		public int equipmentCounter = 0;
 
 		public SerializableDictionary<CurrencyType, ulong> currencies = new SerializableDictionary<CurrencyType, ulong>();
@@ -103,7 +105,11 @@ public partial class GameDatas : ScriptableObject
 
 		//tutos
 		public bool didStartTuto = false;
-		public bool didUnlockRetuurnToHubPopup = false;
+		public bool didUnlockReturnToHubPopup = false;
+		public bool didUnlockSkipDay = false;
+		public bool didUnlockRepareStation = false;
+		public bool didUnlockRecycler = false;
+		//public bool didUnlockShops = false;
 		public bool DidFirstIntroLevel => sequencesProgressions.ContainsKey(FTUEManager.FTUEID) && (sequencesProgressions[FTUEManager.FTUEID] > 0 || sequencesProgressions[FTUEManager.FTUEID] == -1);
 		public SerializableDictionary<string, int> sequencesProgressions = new SerializableDictionary<string, int>();
 
@@ -112,26 +118,26 @@ public partial class GameDatas : ScriptableObject
 		{
 			public List<ShopComponentData> itemsInShop = new();
 			public List<RecyclingComponentData> currentlyRecyclingComponents = new();
-			public List<RepairingComponentData> repairingComponents = new();
+			public List<RepairingUnitData> repairingComponents = new();
 
 			[Serializable]
 			public class ShopComponentData
 			{
-				public Equipment component;
+				public Component component;
 				public bool isFrozen = false;
 			}
 
 			[Serializable]
 			public class RecyclingComponentData
 			{
-				public Equipment component;
+				public Component component;
 				public int remainingTime;
 			}
 
 			[Serializable]
-			public class RepairingComponentData
+			public class RepairingUnitData
 			{
-				public Equipment component;
+				public EntitySavedData unit;
 				public int remainingTime;
 			}
 
@@ -163,7 +169,7 @@ public partial class GameDatas : ScriptableObject
 			}
 
 			//repairing units
-			foreach (DayData.RepairingComponentData data in dayData.repairingComponents)
+			foreach (DayData.RepairingUnitData data in dayData.repairingComponents)
 			{
 				if (data == null)
 					continue;
@@ -236,39 +242,26 @@ public partial class GameDatas : ScriptableObject
 			return squadData;
 		}
 
-		public Equipment AddEquipmentToInventory ( EntityEquipmentData _data )
+		public Component AddComponentToInventory ( EntityEquipmentData _data )
 		{
 			string newID = _data == null ? null : _data.name + equipmentCounter;
 			if (_data == null || string.IsNullOrEmpty(newID))
 				return null;
 
-			Equipment equipment = new() { ID = newID, dataID = _data.name };
-			/*int slotCount = 0;
-			if(_data is FrameEquipmentData frameData)
-			{
-				slotCount += frameData.armouringSlotAvailable;
-				slotCount += frameData.occultorSlotAvailable;
-			}
-			else if(_data is BrainEquipmentData brainData)
-			{
-				slotCount += brainData.chipsetSlotAvailable;
-			}
-			else if(_data is NeuronalMembraneEquipmentData nmData)
-			{
-				slotCount += nmData.equipmentSlotAvailable;
-			}
-			List<bool> slots = new();
-			for(int i = 0; i < slotCount; i++)
-				slots.Add(false);
-			equipment.areSlotsDamaged = slots.ToArray();*/
+			Component equipment = new() { ID = newID, dataID = _data.name };
 
-			equipmentInventory.Add(equipment);
-			equipmentCounter++;
+			AddEquipmentToInventory(equipment);
 
 			return equipment;
 		}
 
-		public void RemoveEquipmentFromInventory ( Equipment _data )
+		public void AddEquipmentToInventory(Component _equipment )
+		{
+			equipmentInventory.Add(_equipment);
+			equipmentCounter++;
+		}
+
+		public void RemoveEquipmentFromInventory ( Component _data )
 		{
 			equipmentInventory.Remove(_data);
 		}
@@ -276,6 +269,7 @@ public partial class GameDatas : ScriptableObject
 		public EntitySavedData AddNewUnit ( EntitySavedData _newUnit, bool _addToSquad )
 		{
 			//_newUnit.name = "New Unit";
+			_newUnit.index = allBuiltUnits.Count;
 
 			if (_addToSquad && _newUnit.CanAddToSquad())
 				squadUnitsIndex.Add(allBuiltUnits.Count);
@@ -285,7 +279,7 @@ public partial class GameDatas : ScriptableObject
 		}
 
 		[Serializable]
-		public class Equipment : INetworkSerializable
+		public class Component : INetworkSerializable
 		{
 			public string ID;
 			public string dataID;

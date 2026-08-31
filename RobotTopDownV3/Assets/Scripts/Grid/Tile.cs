@@ -51,6 +51,9 @@ public class Tile : MonoBehaviour
 	//private TileContent m_nextTurnActionContent = new() { itemID = -1, entityID = -1 };
 	private TileContent[] m_plannedContentsPerTick;
 
+	//private HashSet<NeuronalMembraneEquipmentData.VisionTypes> m_currentVisionTypesOnThisTile = new();
+	private Dictionary<NeuronalMembraneEquipmentData.VisionTypes, int> m_visionTypeCounts = new();
+
 	[Serializable]
 	public class TileContent
 	{
@@ -321,7 +324,7 @@ public class Tile : MonoBehaviour
 		m_canInteract = false;
 	}
 
-	public void NewPhase (int _currentTick)
+	public void NewPhase ( int _currentTick )
 	{
 		if (_currentTick == 0)
 			return;
@@ -375,7 +378,7 @@ public class Tile : MonoBehaviour
 			return m_nextTurnActionContent.Entity;*/
 	}
 
-	public int GetEntityId (bool _isThisTurn )
+	public int GetEntityId ( bool _isThisTurn )
 	{
 		return m_plannedContentsPerTick[TurnManager.currentTick + (_isThisTurn ? 0 : 1)].entityID;
 	}
@@ -474,12 +477,32 @@ public class Tile : MonoBehaviour
 		}
 	}
 
-	public void SetActiveFOW ( NeuronalMembraneEquipmentData.VisionTypes _visionType, bool _isActive = false, bool _isInstant = false )
+	public void SetActiveFOW ( NeuronalMembraneEquipmentData.VisionTypes _visionType, bool _isRemoving = false, bool _isInstant = false )
 	{
-		m_isVisible = !_isActive;
-		m_ui.SetActiveFOW(!m_isVisible, _isInstant);
+		m_visionTypeCounts.TryGetValue(_visionType, out int count);
+		count += _isRemoving ? -1 : 1;
 
-		if (m_plannedContentsPerTick[TurnManager.currentTick].Entity != null)
-			m_plannedContentsPerTick[TurnManager.currentTick].Entity.SetVisibility(m_isVisible, _visionType);
+		if (count <= 0)
+			m_visionTypeCounts.Remove(_visionType);
+		else
+			m_visionTypeCounts[_visionType] = count;
+
+		m_isVisible = m_visionTypeCounts.Count > 0;
+		m_ui.SetActiveFOW(!m_visionTypeCounts.ContainsKey(NeuronalMembraneEquipmentData.VisionTypes.Optic), _isInstant);
+
+		if (TryGetEntity(true, out Entity entity) && !entity.IsAlliedTo(GameManager.Instance.PlayerID))
+		{
+			NeuronalMembraneEquipmentData.VisionTypes bestVision = m_isVisible ? GetBestCurrentVisionType() : NeuronalMembraneEquipmentData.VisionTypes.Radar;
+			entity.SetVisibility(m_isVisible, bestVision);
+		}
+	}
+
+	public NeuronalMembraneEquipmentData.VisionTypes GetBestCurrentVisionType ()
+	{
+		NeuronalMembraneEquipmentData.VisionTypes best = NeuronalMembraneEquipmentData.VisionTypes.Radar;
+		foreach (NeuronalMembraneEquipmentData.VisionTypes type in m_visionTypeCounts.Keys)
+			if ((int)type < (int)best)
+				best = type;
+		return best;
 	}
 }

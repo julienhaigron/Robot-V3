@@ -112,6 +112,8 @@ public class GridManager : Singleton<GridManager>
 			}
 
 		}
+
+		FogOfWarRenderer.Instance.ConfigureTopDownFogCamera();
 	}
 
 	public void GenerateGrid ()
@@ -980,13 +982,14 @@ public class GridManager : Singleton<GridManager>
 	public void OnNewEntity ( Entity _entity )
 	{
 		Tile from = _entity.Displacement.Coordinates.GetTile();
-		if (!_entity.IsAlliedTo(GameManager.Instance.PlayerID) && !from.IsVisible)
-			_entity.SetVisibility(false, NeuronalMembraneEquipmentData.VisionTypes.Optic);
+		if (!_entity.IsAlliedTo(GameManager.Instance.PlayerID))
+			_entity.SetVisibility(from.IsVisible, from.IsVisible ? from.GetBestCurrentVisionType() : NeuronalMembraneEquipmentData.VisionTypes.Radar);
 
 		PlayerVisionRangeInfo visionInfo = m_entitiesVisions[_entity.OwnerID];
 		int range = GameConfig.current.game.rangePerVisionType[_entity.Data.NeuronalMembraneData.visionType];
 
-		HashSet<Tile> tilesInVision = GetTilesInVisionRange(from, 0, range, false, true, true).ToHashSet();
+		bool ignoreObstacles = _entity.Data.NeuronalMembraneData.visionType != NeuronalMembraneEquipmentData.VisionTypes.Optic;
+		HashSet<Tile> tilesInVision = GetTilesInVisionRange(from, 0, range, ignoreObstacles, true, true).ToHashSet();
 		visionInfo.entitiesVisionRange.Add(_entity, tilesInVision);
 
 		if (_entity.IsAlliedTo(GameManager.Instance.PlayerID))
@@ -1023,8 +1026,9 @@ public class GridManager : Singleton<GridManager>
 		HashSet<Tile> previousVision = visionInfo.entitiesVisionRange[_entity];
 		int range = GameConfig.current.game.rangePerVisionType[_entity.Data.NeuronalMembraneData.visionType];
 
+		bool ignoreObstacles = _entity.Data.NeuronalMembraneData.visionType != NeuronalMembraneEquipmentData.VisionTypes.Optic;
 		HashSet<Tile> newVision = GetTilesInVisionRange(_entity.Displacement.Coordinates.GetTile(), 0, range
-			, false, true, true).ToHashSet();
+			, ignoreObstacles, true, true).ToHashSet();
 		HashSet<Tile> addedTiles = new(newVision);
 		addedTiles.ExceptWith(previousVision);
 		HashSet<Tile> removedTiles = new(previousVision);
@@ -1038,7 +1042,10 @@ public class GridManager : Singleton<GridManager>
 				AddVisionTile(tile, _entity.Data.NeuronalMembraneData.visionType);
 		}
 		else
-			_entity.SetVisibility(_entity.Displacement.Coordinates.GetTile().IsVisible, NeuronalMembraneEquipmentData.VisionTypes.Optic);
+		{
+			Tile currentTile = _entity.Displacement.Coordinates.GetTile();
+			_entity.SetVisibility(currentTile.IsVisible, currentTile.GetBestCurrentVisionType());
+		}
 
 		visionInfo.entitiesVisionRange[_entity] = newVision;
 		m_entitiesVisions[_entity.OwnerID] = visionInfo;
@@ -1056,8 +1063,9 @@ public class GridManager : Singleton<GridManager>
 				Entity entity = entities[i];
 				int range = GameConfig.current.game.rangePerVisionType[entity.Data.NeuronalMembraneData.visionType];
 
+				bool ignoreObstacles = entity.Data.NeuronalMembraneData.visionType != NeuronalMembraneEquipmentData.VisionTypes.Optic;
 				HashSet<Tile> previousVision = ownerVision.entitiesVisionRange[entity];
-				HashSet<Tile> newVision = GetTilesInVisionRange(entity.Displacement.Coordinates.GetTile(), 0, range, false, true, true).ToHashSet();
+				HashSet<Tile> newVision = GetTilesInVisionRange(entity.Displacement.Coordinates.GetTile(), 0, range, ignoreObstacles, true, true).ToHashSet();
 
 				if (entity.IsAlliedTo(GameManager.Instance.PlayerID))
 				{
@@ -1075,8 +1083,8 @@ public class GridManager : Singleton<GridManager>
 				}
 				else
 				{
-					entity.SetVisibility(entity.Displacement.Coordinates.GetTile().IsVisible
-						, NeuronalMembraneEquipmentData.VisionTypes.Optic);
+					Tile currentTile = entity.Displacement.Coordinates.GetTile();
+					entity.SetVisibility(currentTile.IsVisible, currentTile.GetBestCurrentVisionType());
 				}
 
 				ownerVision.entitiesVisionRange[entity] = newVision;
@@ -1094,7 +1102,7 @@ public class GridManager : Singleton<GridManager>
 		count++;
 		m_localVisionCount[_tile] = count;
 
-		if (count == 1)
+		if (count >= 1)
 			_tile.SetActiveFOW(_visionType, false, false);
 	}
 
@@ -1106,14 +1114,11 @@ public class GridManager : Singleton<GridManager>
 		count--;
 
 		if (count <= 0)
-		{
 			m_localVisionCount.Remove(tile);
-			tile.SetActiveFOW(visionType, true, false);
-		}
 		else
-		{
 			m_localVisionCount[tile] = count;
-		}
+		
+		tile.SetActiveFOW(visionType, true, false);
 	}
 
 	#endregion

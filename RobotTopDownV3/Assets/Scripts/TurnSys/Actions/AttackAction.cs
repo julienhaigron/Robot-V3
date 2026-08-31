@@ -139,6 +139,14 @@ public class AttackAction : AEntityAction
 			Debug.LogError("No target error");
 			base.Perform(_state);
 			EndTick();
+			return;
+		}
+
+		if (PerformingEntity.Equipment.IsDead)
+		{
+			base.Perform(_state);
+			EndTick();
+			return;
 		}
 
 		/*List<Tile> tilesInWeaponRange = Data.isAoe ? PerformingEntity.Equipment.GetTilesInAoERange(this, GridManager.Instance.Tiles[targetTileIDs[attackCount]], true) : PerformingEntity.Equipment.GetTilesInWeaponRange(this, linkedEquipmentId, true);

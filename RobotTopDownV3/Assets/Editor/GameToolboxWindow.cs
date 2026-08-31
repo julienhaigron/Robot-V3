@@ -67,6 +67,13 @@ public class GameToolboxWindow : EditorWindow
 		{
 			TurnManager.Instance.EndLevel(EndLevelPopup.GameResult.Loose);
 		}
+		if (GUILayout.Button("Force kill all ally units and Loose", group))
+		{
+			foreach (Entity entity in GameManager.Instance.PlayersEntityAnchor[GameManager.Instance.PlayerID].Entities)
+				entity.Equipment.InstantDeath();
+
+			TurnManager.Instance.EndLevel(EndLevelPopup.GameResult.Loose);
+		}
 		EditorGUILayout.EndVertical();
 
 		EndBox();

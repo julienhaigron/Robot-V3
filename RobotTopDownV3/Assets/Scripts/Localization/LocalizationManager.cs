@@ -10,17 +10,31 @@ public class LocalizationManager : Singleton<LocalizationManager>
 
     public SystemLanguage CurrentLanguage;
 
+    public IReadOnlyList<SystemLanguage> AvailableLanguages => m_database.languages;
+
     private Dictionary<string, string> m_localizedDict;
 
     public override void Awake ()
     {
         base.Awake();
+        GameDatas.onAfterLoad += OnGameDatasLoaded;
+        BuildDictionary();
+    }
+
+    private void OnDestroy ()
+    {
+        GameDatas.onAfterLoad -= OnGameDatasLoaded;
+    }
+
+    private void OnGameDatasLoaded ()
+    {
+        CurrentLanguage = GameDatas.current.app.language;
         BuildDictionary();
     }
 
     public string Get ( LocalizationKey _key )
     {
-        return Get(_key.ToString().Replace("_", "/"));
+        return Get(_key.ToKey());
     }
 
     public string Get ( string _key )
@@ -31,6 +45,8 @@ public class LocalizationManager : Singleton<LocalizationManager>
     public void SetLanguage ( SystemLanguage _language )
     {
         CurrentLanguage = _language;
+        GameDatas.current.app.language = _language;
+        ApplicationManager.Instance.SaveApplication();
         BuildDictionary();
         onLanguageChanged?.Invoke();
     }

@@ -6,17 +6,23 @@ using TMPro;
 using DG.Tweening;
 
 public class StateButton : BaseButton
-{
+{/*
 	[SerializeField] private Image m_icon;
-	[SerializeField] private TextMeshProUGUI m_name;
+	[SerializeField] private TextMeshProUGUI m_name;*/
+	[SerializeField] private GameObject m_selectedGO;
 
 	private Entity.EntityState m_state;
 
 	public void Init( Entity.EntityState _state )
 	{
 		m_state = _state;
-		m_name.text = _state.ToString();
-		m_icon.color = GameAssets.current.ui.entityStateColors[_state];
+		/*m_name.text = _state.ToString();
+		m_icon.color = GameAssets.current.ui.entityStateColors[_state];*/
+	}
+
+	public void SetSelected(bool _isSelected )
+	{
+		m_selectedGO.SetActive(_isSelected);
 	}
 
 	protected override void OnClick ()

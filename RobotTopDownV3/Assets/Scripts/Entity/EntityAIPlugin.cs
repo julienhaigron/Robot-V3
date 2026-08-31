@@ -214,13 +214,13 @@ public class EntityAIPlugin : EntityPlugin
 					moveToAction.Init(GameAssets.current.game.entityActionsData[movementAction.enumID], null, m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID, _recordedAction.action.timeAtStart);
 					resultInfo.ReplaceAction(moveToAction, "Gets closer to target");
 
-					/*if (!isAtCorrectOrientation)
+					if (!isAtCorrectOrientation)
 					{
 						RotateEntityAction rotateAction = (TurnManager.Instance.GetAction(EntityActionEnumID.RotateEntity, m_linkedEntity.ID, null, _recordedAction.timeAtStart) as RotateEntityAction);
 						rotateAction.targetedOrientationID = new int[1] { GridManager.Instance.GetClosestOrientation(m_linkedEntity.Displacement.Coordinates.GetTile(), closestEntity.Displacement.Coordinates.GetTile()) };
 						rotateAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.RotateEntity], null, m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID, _recordedAction.action.timeAtStart);
 						resultInfo.ReplaceFreeAction(rotateAction, "Rotate toward target");
-					}*/
+					}
 				}
 			}
 			/*else if (_recordedAction.entityState == Entity.EntityState.NoAIChange)

@@ -5,6 +5,7 @@ using System;
 
 public class ComponentSlot : ComponentContainer
 {
+    [SerializeField] private Image m_outline;
     [SerializeField] private GameObject m_timerSectionGO;
     [SerializeField] private TextMeshProUGUI m_timerTMP;
     [SerializeField] private Vector2 m_displaySize = new Vector2(124f, 124f);
@@ -23,11 +24,11 @@ public class ComponentSlot : ComponentContainer
     }
 
     private EntityEquipmentData m_equipmentData;
-    private GameDatas.PlayerSave.Equipment m_equipmentSavedData;
-    public GameDatas.PlayerSave.Equipment Equipment => m_equipmentSavedData;
+    private GameDatas.PlayerSave.Component m_equipmentSavedData;
+    public GameDatas.PlayerSave.Component Equipment => m_equipmentSavedData;
     private bool m_canInteract = true;
 
-    public override void Init ( ComponentContainer _container, EntitySavedData _unitData, GameDatas.PlayerSave.Equipment _componentSavedData, Func<GameDatas.PlayerSave.Equipment, bool> _predicate
+    public override void Init ( ComponentContainer _container, EntitySavedData _unitData, GameDatas.PlayerSave.Component _componentSavedData, Func<GameDatas.PlayerSave.Component, bool> _predicate
         , ComponentDisplay.DisplayMode _displayMode, int _index = 0 )
     {
         base.Init(_container, _unitData, _componentSavedData, _predicate, _displayMode, _index);
@@ -64,6 +65,11 @@ public class ComponentSlot : ComponentContainer
         m_canInteract = _canInterract;
     }
 
+    public void SetOutlineColor(Color _color )
+	{
+        m_outline.color = _color;
+    }
+
     public void InitRecyclingData( GameDatas.PlayerSave.DayData.RecyclingComponentData _recyclingData )
 	{
         if (_recyclingData != null && _recyclingData.component != null && string.IsNullOrEmpty(_recyclingData.component.ID))
@@ -71,14 +77,6 @@ public class ComponentSlot : ComponentContainer
         else
             m_timerTMP.text = _recyclingData.remainingTime.ToString();
 	}
-
-    public void InitRepairData ( GameDatas.PlayerSave.DayData.RepairingComponentData _repairingData )
-    {
-        if (_repairingData != null && _repairingData.component != null && string.IsNullOrEmpty(_repairingData.component.ID))
-            m_timerTMP.text = "";
-        else
-            m_timerTMP.text = _repairingData.remainingTime.ToString();
-    }
 
     public override bool IsValid ( ComponentDisplay _display )
 	{
@@ -108,6 +106,7 @@ public class ComponentSlot : ComponentContainer
         {
             SetEquipment(_display);
         }
+        base.RegisterInteraction(_display);
     }
 
     public void SetEquipment ( ComponentDisplay _display )

@@ -17,6 +17,7 @@ public class ReturnToHubPopup : AUIPopup
 
 	private void OnClickClose ()
 	{
+		UIManager.Instance.GetPanel<SoloHubPanel>().RefreshVisual();
 		Close();
 	}
 
@@ -41,15 +42,18 @@ public class ReturnToHubPopup : AUIPopup
 
 		for (int i = 0; i < GameDatas.current.currentPlayerSave.dayData.repairingComponents.Count; i++)
 		{
-			GameDatas.PlayerSave.DayData.RepairingComponentData data = GameDatas.current.currentPlayerSave.dayData.repairingComponents[i];
-			if (data != null && data.component != null && !string.IsNullOrEmpty(data.component.ID))
+			GameDatas.PlayerSave.DayData.RepairingUnitData data = GameDatas.current.currentPlayerSave.dayData.repairingComponents[i];
+			if (data != null && data.unit != null && !string.IsNullOrEmpty(data.unit.name))
 			{
-				EntityEquipmentData componentData = data.component.GetData<EntityEquipmentData>();
+				//EntityEquipmentData componentData = data.unit.GetData<EntityEquipmentData>();
 				if (data.remainingTime <= 0)
 				{
-					content += componentData.displayName + " finished repairing\n";
-					data.component.isDamaged = false;
-					GameDatas.current.currentPlayerSave.equipmentInventory.Add(data.component);
+					content += data.unit.name + " finished repairing\n";
+					foreach(GameDatas.PlayerSave.Component eq in data.unit.GetAllEquipments())
+					{
+						eq.isDamaged = false;
+					}
+					data.unit.isRepairing = false;
 					GameDatas.current.currentPlayerSave.dayData.repairingComponents[i] = null;
 				}
 			}

@@ -9,7 +9,7 @@ public class RecyclePanel : AUIPanel
 	[SerializeField] private ComponentSlot[] m_recyclingSlots;
 	[SerializeField] private ComponentFullDisplay m_hoveredComponentFullInfoDisplay;
 
-	private System.Func<GameDatas.PlayerSave.Equipment, bool> InventoryGridPredicate => item => item != null /*&& item.isDamaged*/;
+	private System.Func<GameDatas.PlayerSave.Component, bool> InventoryGridPredicate => item => item != null /*&& item.isDamaged*/;
 
 	private void Awake ()
 	{
@@ -41,7 +41,7 @@ public class RecyclePanel : AUIPanel
 			{
 				m_recyclingSlots[i].gameObject.SetActive(true);
 				m_recyclingSlots[i].Init(m_inventoryGrid, null, recyclingComponent != null && recyclingComponent.component != null && !string.IsNullOrEmpty(recyclingComponent.component.ID) ? recyclingComponent.component : null
-					, item => (item != null && (recyclingComponent == null || string.IsNullOrEmpty(recyclingComponent.component.ID) || recyclingComponent.remainingTime <= 0))
+					, item => (item != null && (recyclingComponent == null || recyclingComponent.component == null || recyclingComponent.remainingTime <= 0))
 					, ComponentDisplay.DisplayMode.RecyclingStation, i);
 				m_recyclingSlots[i].InitRecyclingData(recyclingComponent);
 			}

@@ -110,7 +110,7 @@ public class GameManager : SingletonPersistant<GameManager>
 					UIManager.Instance.OpenPanel<SelectMissionPanel>();
 				else if (m_returnFromMatch)
 				{
-					if (GameDatas.current.currentPlayerSave.didUnlockRetuurnToHubPopup)
+					if (GameDatas.current.currentPlayerSave.didUnlockReturnToHubPopup)
 						UIManager.Instance.OpenPopup<ReturnToHubPopup>().Init();
 					UIManager.Instance.OpenPanel<SoloHubPanel>();
 				}
@@ -331,15 +331,13 @@ public class GameManager : SingletonPersistant<GameManager>
 	//hub
 	public bool SquadValidityPredicate ()
 	{
-		bool isValid = true;
-
 		foreach (EntitySavedData entityData in GameDatas.current.currentPlayerSave.GetSquadEntitiesData())
 		{
 			if (!entityData.IsUnitValid())
-				isValid = false;
+				return false;
 		}
 
-		return isValid;
+		return true;
 	}
 
 }

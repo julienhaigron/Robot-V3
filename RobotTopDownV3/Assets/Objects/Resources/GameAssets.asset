@@ -154,6 +154,7 @@ MonoBehaviour:
     baseEquipmentSprite: {fileID: -1360359492, guid: b61920d2917644949a125f8a6af0e45c, type: 3}
     baseComponentDisplay: {fileID: 6816767632338375938, guid: 6e102cf7754096846b421344887ef18e, type: 3}
     shopComponentDisplay: {fileID: 238999215012183287, guid: 6f453533517bae141a49dd4045d68209, type: 3}
+    repareUnitDisplay: {fileID: 2730158438967537338, guid: b3dc026fa6d69c64a8ec51febb7d4343, type: 3}
     baseLobbyDisplay: {fileID: 2566041125526859700, guid: cc5b4c04e157c914381ced09bd279f76, type: 3}
     baseEntityActionDisplay: {fileID: 1776869416438720975, guid: 43cde6fde6a65d04c81939ddc6df829d, type: 3}
     flyingDamageFontAsset: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -226,16 +227,6 @@ MonoBehaviour:
       - {fileID: 1717960602, guid: 31cee7fbc7dacf5449ac2bd80b7b4b88, type: 3}
       - {fileID: -1742903103, guid: 31cee7fbc7dacf5449ac2bd80b7b4b88, type: 3}
       - {fileID: -1742903103, guid: 31cee7fbc7dacf5449ac2bd80b7b4b88, type: 3}
-    corporationsColors:
-      keys: 01000000020000000300000004000000000000000600000005000000
-      values:
-      - {r: 0, g: 0.6733866, b: 1, a: 1}
-      - {r: 0.39703226, g: 0, b: 1, a: 1}
-      - {r: 1, g: 0.5013487, b: 0, a: 1}
-      - {r: 1, g: 0, b: 0, a: 1}
-      - {r: 1, g: 1, b: 1, a: 0}
-      - {r: 0.48235294, g: 0.48235294, b: 0.48235294, a: 1}
-      - {r: 0.4811321, g: 0.4811321, b: 0.4811321, a: 1}
     mainActionTypeIcons:
       keys: 000000000100000002000000
       values:
@@ -301,6 +292,28 @@ MonoBehaviour:
       - {fileID: 21300000, guid: 03da9b037a0d27b4db02f45130a6cb28, type: 3}
       - {fileID: 21300000, guid: 03da9b037a0d27b4db02f45130a6cb28, type: 3}
       - {fileID: 21300000, guid: 03da9b037a0d27b4db02f45130a6cb28, type: 3}
+    corporationsColors:
+      keys: 01000000020000000300000004000000000000000600000005000000
+      values:
+      - {r: 0, g: 0.6733866, b: 1, a: 1}
+      - {r: 0.39703226, g: 0, b: 1, a: 1}
+      - {r: 1, g: 0.5013487, b: 0, a: 1}
+      - {r: 1, g: 0, b: 0, a: 1}
+      - {r: 1, g: 1, b: 1, a: 0}
+      - {r: 0.48235294, g: 0.48235294, b: 0.48235294, a: 1}
+      - {r: 0.4811321, g: 0.4811321, b: 0.4811321, a: 1}
+    componentColors:
+      keys: 000000000100000002000000030000000400000005000000070000000800000006000000
+      values:
+      - {r: 0.990566, g: 0.2405924, b: 0.023362402, a: 1}
+      - {r: 0.03137255, g: 0.1254902, b: 0.7647059, a: 1}
+      - {r: 0.23755567, g: 0.6603774, b: 0, a: 1}
+      - {r: 1, g: 0.51830584, b: 0.042452812, a: 1}
+      - {r: 0.85882354, g: 0.85882354, b: 0.85882354, a: 1}
+      - {r: 1, g: 1, b: 1, a: 1}
+      - {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+      - {r: 0, g: 0.8781091, b: 0.8867924, a: 1}
+      - {r: 1, g: 1, b: 1, a: 1}
   currencies:
     keys: 01000000020000000300000004000000
     values:

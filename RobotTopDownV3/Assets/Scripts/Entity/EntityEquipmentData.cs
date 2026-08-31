@@ -178,12 +178,12 @@ public class EntityEquipmentData : AParsableScriptableObject
 
 	public System.Tuple<CurrencyType, ulong> GetPrice ()
 	{
-		return new System.Tuple<CurrencyType, ulong>(CurrencyType.SoftCurrency, 10ul);
+		return new System.Tuple<CurrencyType, ulong>(CurrencyType.SoftCurrency, creditCost);
 	}
 
 	public System.Tuple<CurrencyType, ulong> GetSellingPrice ()
 	{
-		return new System.Tuple<CurrencyType, ulong>(CurrencyType.SoftCurrency, 5ul);
+		return new System.Tuple<CurrencyType, ulong>(CurrencyType.SoftCurrency, creditCost / 2ul);
 	}
 
 	[System.Serializable, ShowOdinSerializedPropertiesInInspector]
@@ -296,7 +296,7 @@ public class EntityEquipmentData : AParsableScriptableObject
 	private void AddToInventory ()
 	{
 		if (GameDatas.current.currentPlayerSave != null)
-			GameDatas.current.currentPlayerSave.AddEquipmentToInventory(this);
+			GameDatas.current.currentPlayerSave.AddComponentToInventory(this);
 
 		EditorUtility.SetDirty(GameDatas.current);
 	}

@@ -85,7 +85,7 @@ public class Entity : MonoBehaviour
 
 	private bool m_isVisible = false;
 	public bool IsVisible => m_isVisible;
-	private NeuronalMembraneEquipmentData.VisionTypes m_howIsUnitVisible;
+	private NeuronalMembraneEquipmentData.VisionTypes m_howIsUnitVisible = NeuronalMembraneEquipmentData.VisionTypes.Radar;
 	public NeuronalMembraneEquipmentData.VisionTypes HowIsUnitVisible => m_howIsUnitVisible;
 
 
@@ -128,7 +128,7 @@ public class Entity : MonoBehaviour
 			m_knownedPassiveEffectsPerAction.Add(actionID, _data.GetPassiveEffects(actionID));
 		}
 
-		foreach (GameDatas.PlayerSave.Equipment eq in _data.GetAllEquipments())
+		foreach (GameDatas.PlayerSave.Component eq in _data.GetAllEquipments())
 		{
 			m_allPassiveEffects.AddRange(eq.GetData<EntityEquipmentData>().passiveEffects);
 		}
@@ -182,7 +182,7 @@ public class Entity : MonoBehaviour
 			actionsPerComponents[actionID].Add(m_data.BrainData.name);
 		}
 
-		foreach (KeyValuePair<string, Weapon> pair in m_equipment.Weapons)
+		/*foreach (KeyValuePair<string, Weapon> pair in m_equipment.Weapons)
 		{
 			foreach (EntityActionEnumID actionID in pair.Value.Data.knownedActions)
 			{
@@ -208,28 +208,52 @@ public class Entity : MonoBehaviour
 
 				actionsPerComponents[actionID].Add(pair.Key);
 			}
-		}
+		}*/
 
-		foreach (GameDatas.PlayerSave.Equipment container in m_data.auxiliar)
+		foreach (GameDatas.PlayerSave.Component container in m_data.arms)
 		{
-			if (GameAssets.current.equipments[container.dataID] is EntityEquipmentData equipment)
+			if (!container.isDamaged && GameAssets.current.equipments[container.dataID] is EntityEquipmentData equipment)
 			{
 				foreach (EntityActionEnumID actionID in equipment.knownedActions)
 				{
 					if (actionID == EntityActionEnumID.Unknowned || actionsPerComponents.ContainsKey(actionID))
 						continue;
+
+					if (!actionsPerComponents.ContainsKey(actionID))
+						actionsPerComponents.Add(actionID, new());
+
+					actionsPerComponents[actionID].Add(container.ID);
+				}
+			}
+		}
+		foreach (GameDatas.PlayerSave.Component container in m_data.auxiliar)
+		{
+			if (!container.isDamaged && GameAssets.current.equipments[container.dataID] is EntityEquipmentData equipment)
+			{
+				foreach (EntityActionEnumID actionID in equipment.knownedActions)
+				{
+					if (actionID == EntityActionEnumID.Unknowned || actionsPerComponents.ContainsKey(actionID))
+						continue;
+
+					if (!actionsPerComponents.ContainsKey(actionID))
+						actionsPerComponents.Add(actionID, new());
+
 					actionsPerComponents[actionID].Add(equipment.name);
 				}
 			}
 		}
-		foreach (GameDatas.PlayerSave.Equipment container in m_data.chipsets)
+		foreach (GameDatas.PlayerSave.Component container in m_data.chipsets)
 		{
-			if (GameAssets.current.equipments[container.dataID] is EntityEquipmentData equipment)
+			if (!container.isDamaged && GameAssets.current.equipments[container.dataID] is EntityEquipmentData equipment)
 			{
 				foreach (EntityActionEnumID actionID in equipment.knownedActions)
 				{
 					if (actionID == EntityActionEnumID.Unknowned || actionsPerComponents.ContainsKey(actionID))
 						continue;
+
+					if (!actionsPerComponents.ContainsKey(actionID))
+						actionsPerComponents.Add(actionID, new());
+
 					actionsPerComponents[actionID].Add(equipment.name);
 				}
 			}
@@ -370,12 +394,21 @@ public class Entity : MonoBehaviour
 
 	public void SetVisibility ( bool _isVisible, NeuronalMembraneEquipmentData.VisionTypes _visionType )
 	{
+		/*if((!m_isVisible && _isVisible) || (_isVisible && (int)_visionType < (int)m_howIsUnitVisible))
+			m_howIsUnitVisible = _visionType;
 		m_isVisible = _isVisible;
-		m_howIsUnitVisible = _visionType;
 
-		m_ui.gameObject.SetActive(_isVisible);
+		m_ui.gameObject.SetActive(m_isVisible && (int)m_howIsUnitVisible < (int)NeuronalMembraneEquipmentData.VisionTypes.Radar);
+		if (m_isVisible)
+			m_skin.Show(m_howIsUnitVisible);
+		else
+			m_skin.Hide();*/
+		m_isVisible = _isVisible;
 		if (_isVisible)
-			m_skin.Show();
+			m_howIsUnitVisible = _visionType; // toujours la valeur courante, calculée en amont par la Tile
+		m_ui.gameObject.SetActive(m_isVisible && (int)m_howIsUnitVisible < (int)NeuronalMembraneEquipmentData.VisionTypes.Radar);
+		if (m_isVisible)
+			m_skin.Show(m_howIsUnitVisible);
 		else
 			m_skin.Hide();
 	}
@@ -426,9 +459,9 @@ public class Entity : MonoBehaviour
 		if (m_activeStatBonusBuffs.ContainsKey(_type))
 			bonus += m_activeStatBonusBuffs[_type];
 
-		foreach (GameDatas.PlayerSave.Equipment eq in m_data.chipsets)
+		foreach (GameDatas.PlayerSave.Component eq in m_data.chipsets)
 		{
-			if (eq.TryGetData(out ChipsetEquipmentData _chipsedData))
+			if (!eq.isDamaged && eq.TryGetData(out ChipsetEquipmentData _chipsedData))
 			{
 				foreach (ChipsetEquipmentData.ConditionalStatBonus conditionalStatBonus in _chipsedData.statBonuses)
 				{

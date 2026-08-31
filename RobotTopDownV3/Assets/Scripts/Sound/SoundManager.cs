@@ -12,11 +12,19 @@ public class SoundManager : SingletonPersistant<SoundManager>
 	private readonly List<AudioSource> pool = new();
 	private readonly Dictionary<SfxId, SfxData> lookup = new();
 
+	public float MasterVolume => GameDatas.current.app.sfxVolume;
+
 	public override void Awake ()
 	{
 		base.Awake();
 		BuildLookup();
 		CreatePool();
+	}
+
+	public void SetMasterVolume ( float _volume )
+	{
+		GameDatas.current.app.sfxVolume = Mathf.Clamp01(_volume);
+		ApplicationManager.Instance.SaveApplication();
 	}
 
 	private void BuildLookup ()
@@ -77,6 +85,6 @@ public class SoundManager : SingletonPersistant<SoundManager>
 		AudioSource source = GetFreeSource();
 
 		source.pitch = sound.Pitch;
-		source.PlayOneShot(sound.Clip, sound.Volume);
+		source.PlayOneShot(sound.Clip, sound.Volume * MasterVolume);
 	}
 }

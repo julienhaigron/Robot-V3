@@ -13,6 +13,27 @@ public class ShopPanel : AUIPanel
 
 	private EntityEquipmentData.EntityFaction m_currentFaction;
 	public EntityEquipmentData.EntityFaction CurrentFaction => m_currentFaction;
+	public CurrencyType AssociatedCurrency
+	{
+		get
+		{
+			switch (m_currentFaction)
+			{
+				case EntityEquipmentData.EntityFaction.Psy:
+					return CurrencyType.PsyCredit;
+				case EntityEquipmentData.EntityFaction.Paladin:
+					return CurrencyType.PaladinCredit;
+				case EntityEquipmentData.EntityFaction.Commando:
+					return CurrencyType.CommandoCredit;
+				case EntityEquipmentData.EntityFaction.Dummy:
+				case EntityEquipmentData.EntityFaction.Noone:
+				case EntityEquipmentData.EntityFaction.Starting:
+				case EntityEquipmentData.EntityFaction.Scout:
+				default:
+					return CurrencyType.SoftCurrency;
+			}
+		}
+	}
 
 	private void Awake ()
 	{
@@ -28,7 +49,9 @@ public class ShopPanel : AUIPanel
 		m_corpIcon.color = GameAssets.current.ui.corporationsColors[_faction];
 		RefreshShopBuyableItems();
 
-		m_inventoryGrid.Init(m_shopGrid, null, null, null, ComponentDisplay.DisplayMode.ShopSelling);
+		CurrencyType associatedCurrency = AssociatedCurrency;
+		m_inventoryGrid.Init(m_shopGrid, null, null, item => item.GetData<EntityEquipmentData>().GetPrice().Item2 <= GameDatas.current.currentPlayerSave.currencies[associatedCurrency]
+			, ComponentDisplay.DisplayMode.ShopSelling);
 		m_inventoryGrid.Cleanup();
 
 		for(int i = 0; i < GameConfig.current.game.maxInventoryCapacity; i++)
@@ -40,6 +63,14 @@ public class ShopPanel : AUIPanel
 				m_inventoryGrid.CreateNewDisplay(null, null, ComponentDisplay.DisplayMode.Empty);
 			}
 		}
+
+		/*foreach (ComponentDisplay display in m_shopGrid.Items)
+		{
+			if (display.SavedData.GetData<EntityEquipmentData>().GetPrice().Item2 >= GameDatas.current.currentPlayerSave.currencies[associatedCurrency])
+				display.SetInteractability(false);
+			else
+				display.SetInteractability(true);
+		}*/
 	}
 
 	private void SellItem( ComponentContainer _container, ComponentDisplay _display )

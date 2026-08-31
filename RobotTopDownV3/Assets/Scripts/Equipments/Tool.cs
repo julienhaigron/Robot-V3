@@ -15,11 +15,11 @@ public class Tool : MonoBehaviour
 	public string ID => m_id;
 
 
-	public virtual void Init ( Entity _user, ToolEquipmentData _data, bool _isFirstSide )
+	public virtual void Init ( Entity _user, ToolEquipmentData _data, string _id, bool _isFirstSide )
 	{
 		m_user = _user;
 		m_data = _data;
-		m_id = _data.name + _user.Equipment.Tools.Values.Count;
+		m_id = _id;
 	}
 
 	public virtual void PerformAction ( SpecialAction _specialAction, Action _onPerformEnd )

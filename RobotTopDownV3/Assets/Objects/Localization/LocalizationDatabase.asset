@@ -18,3 +18,147 @@ MonoBehaviour:
     values:
     - yes
     - oui
+  - key: menu/multiplayer
+    values:
+    - Multiplayer
+    - Multijoueur
+  - key: menu/continue
+    values:
+    - Continue
+    - Continuer
+  - key: menu/quit
+    values:
+    - Quit
+    - Quitter
+  - key: menu/return
+    values:
+    - Return
+    - Retour
+  - key: menu/new_game
+    values:
+    - New Game
+    - Nouvelle partie
+  - key: menu/options
+    values:
+    - Options
+    - Options
+  - key: option/language
+    values:
+    - "Language"
+    - "Langue"
+  - key: option/volume
+    values:
+    - "Volume"
+    - "Volume"
+  - key: option/master_volume
+    values:
+    - "Master volume"
+    - "Volume g\xE9n\xE9ral"
+  - key: option/controls
+    values:
+    - "Controls"
+    - "Contr\xF4les"
+  - key: option/move_up
+    values:
+    - "Move forward"
+    - "Avancer"
+  - key: option/move_down
+    values:
+    - "Move backward"
+    - "Reculer"
+  - key: option/move_left
+    values:
+    - "Move left"
+    - "Aller \xE0 gauche"
+  - key: option/move_right
+    values:
+    - "Move right"
+    - "Aller \xE0 droite"
+  - key: option/rotate_left
+    values:
+    - "Rotate left"
+    - "Rotation gauche"
+  - key: option/rotate_right
+    values:
+    - "Rotate right"
+    - "Rotation droite"
+  - key: option/interact
+    values:
+    - "Interact"
+    - "Interagir"
+  - key: option/rebind
+    values:
+    - "Change"
+    - "Modifier"
+  - key: option/reset_controls
+    values:
+    - "Reset controls"
+    - "R\xE9initialiser les contr\xF4les"
+  - key: option/rebind_prompt
+    values:
+    - "Press a key for {0}..."
+    - "Appuyez sur une touche pour {0}..."
+  - key: language/english
+    values:
+    - "English"
+    - "Anglais"
+  - key: language/french
+    values:
+    - "French"
+    - "Fran\xE7ais"
+  - key: hub/hangar
+    values:
+    - "HANGAR"
+    - "HANGAR"
+  - key: hub/skip_day
+    values:
+    - "SKIP TODAY"
+    - "PASSER LA JOURN\xC9E"
+  - key: hub/mission
+    values:
+    - "MISSION"
+    - "MISSION"
+  - key: hub/tournament
+    values:
+    - "TOURNAMENT"
+    - "TOURNOI"
+  - key: hub/shop_comando
+    values:
+    - "CORPO COMANDO -"
+    - "CORPO COMANDO -"
+  - key: hub/shop_paladin
+    values:
+    - "CORPO PALADIN -"
+    - "CORPO PALADIN -"
+  - key: hub/shop_psy
+    values:
+    - "CORPO PSY -"
+    - "CORPO PSY -"
+  - key: hub/mission_panel
+    values:
+    - "MISSION BOARD -"
+    - "PANNEAU DE MISSION -"
+  - key: hub/repair
+    values:
+    - "REPAIR -"
+    - "R\xC9PARATION -"
+  - key: hub/recycle
+    values:
+    - "RECYCLING -"
+    - "RECYCLAGE -"
+  - key: hangar/create_unit
+    values:
+    - "Create Unit"
+    - "Cr\xE9er une unit\xE9"
+  - key: hangar/active_squad
+    values:
+    - "Active squad: {0}/{1}"
+    - "Escouade active : {0}/{1}"
+  - key: hangar/inactive_unit
+    values:
+    - "Inactive unit: {0}/{1}"
+    - "Unit\xE9s inactives : {0}/{1}"
+  - key: hangar/energy
+    values:
+    - "Energy: {0}/{1}"
+    - "\xC9nergie : {0}/{1}"

@@ -11,6 +11,7 @@ public class TurnManager : Singleton<TurnManager>
 	public static Action<RecordedAction> onActionAdded;
 	public static Action<RecordedAction> onActionRemoved;
 	public static Action<AEntityAction> onActionSelected;
+	public static Action<Entity.EntityState> onStateSelected;
 	public static Action onStartInputPhase;
 	public static Action onEndInputPhase;
 	public static Action onEndPlayPhase;
@@ -235,6 +236,7 @@ public class TurnManager : Singleton<TurnManager>
 	public void SetCurrentStateSelected ( Entity.EntityState _state )
 	{
 		m_currentStateTypeSelected = _state;
+		onStateSelected?.Invoke(_state);
 	}
 
 	public void SetCurrentActionSelected ( EntityActionEnumID _action, string _linkedEquipmentID, bool _isResetingAction )

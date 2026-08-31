@@ -35,11 +35,15 @@ Material:
         m_Texture: {fileID: 2800000, guid: b5223f8f218dbbb46b3625033179948b, type: 3}
         m_Scale: {x: 1, y: 28.99}
         m_Offset: {x: 0, y: 9.13}
+    - _VisibleMask:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
     - _EdgeSoftness: 0.32
     - _NoiseScale: 77.67
     m_Colors:
-    - _FogColor: {r: 0, g: 0, b: 0, a: 0.77254903}
+    - _FogColor: {r: 0.028301895, g: 0.028301895, b: 0.028301895, a: 0.7019608}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

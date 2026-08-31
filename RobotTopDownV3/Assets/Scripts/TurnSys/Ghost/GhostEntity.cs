@@ -29,7 +29,7 @@ public class GhostEntity : MonoBehaviour
 
 	public void Hide ()
 	{
-		m_linkedEntity.Skin.Show();
+		m_linkedEntity.Skin.Show(NeuronalMembraneEquipmentData.VisionTypes.Optic);
 
 		transform.position = new Vector3(0f, -10f, 0f);
 		gameObject.SetActive(false);

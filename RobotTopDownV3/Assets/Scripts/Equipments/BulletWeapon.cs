@@ -22,9 +22,9 @@ public class BulletWeapon : Weapon
 	private WaitForSeconds m_aimDurationWFS;
 	private WaitForSeconds m_shootCooldownDurationWFS;
 
-	public override void Init ( Entity _user, WeaponEquipmentData _data, bool _isFirstSide )
+	public override void Init ( Entity _user, WeaponEquipmentData _data, string _id, bool _isFirstSide )
 	{
-		base.Init(_user, _data, _isFirstSide);
+		base.Init(_user, _data, _id, _isFirstSide);
 
 		m_timeBetweenBulletsWFS = new WaitForSeconds(m_timeBetweenEachBullet);
 		m_aimDurationWFS = new WaitForSeconds(m_aimDuration);

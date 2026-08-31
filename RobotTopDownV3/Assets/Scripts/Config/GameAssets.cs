@@ -61,6 +61,7 @@ public class GameAssets : ScriptableObject
         public Sprite baseEquipmentSprite;
         public ComponentDisplay baseComponentDisplay;
         public ComponentDisplay shopComponentDisplay;
+        public RepareUnitDisplay repareUnitDisplay;
         public LobbyDisplay baseLobbyDisplay;
         public EntityActionDisplay baseEntityActionDisplay;
         [Title("Flying Number")]
@@ -80,10 +81,13 @@ public class GameAssets : ScriptableObject
         [Title("Icons")]
         public SerializableDictionary<EntityEquipmentData.EquipmentType, Sprite> componentIcons = new();
         public SerializableDictionary<EntityEquipmentData.EntityFaction, Sprite> corporationsIcons = new();
-        public SerializableDictionary<EntityEquipmentData.EntityFaction, Color> corporationsColors = new();
         public SerializableDictionary<EntityActionData.MainActionType, Sprite> mainActionTypeIcons = new();
         public Sprite defaultStatSprite;
         public SerializableDictionary<EntityEquipmentData.SecondaryStat.StatType, Sprite> statsIcons = new();
+        
+        [Title("Colors")]
+        public SerializableDictionary<EntityEquipmentData.EntityFaction, Color> corporationsColors = new();
+        public SerializableDictionary<EntityEquipmentData.EquipmentType, Color> componentColors = new();
     }
 
 #if UNITY_EDITOR

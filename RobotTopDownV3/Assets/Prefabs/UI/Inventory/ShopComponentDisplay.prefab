@@ -578,7 +578,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: RTD::ComponentDisplay
   m_canvasGroup: {fileID: 4247666706934973399}
-  m_outlineImg: {fileID: 0}
+  m_outlineImg: {fileID: 1785746737483043691}
   m_icon: {fileID: 1859022535642274209}
   m_titleTMP: {fileID: 7976625015440776609}
   m_corpIcon: {fileID: 5842747591915714696}
@@ -586,6 +586,7 @@ MonoBehaviour:
   m_priceBackground: {fileID: 2284315951445266622}
   m_priceTMP: {fileID: 8406335976896276568}
   m_descriptionTMP: {fileID: 3917091200702969981}
+  m_damagedGO: {fileID: 0}
   m_rerollBtn: {fileID: 3004836599452884329}
   m_freezeBtn: {fileID: 5064523709166205787}
   m_freezeImg: {fileID: 331675968610749050}

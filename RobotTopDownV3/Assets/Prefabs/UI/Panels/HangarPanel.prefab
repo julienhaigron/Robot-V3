@@ -982,6 +982,7 @@ GameObject:
   - component: {fileID: 2717593725584639458}
   - component: {fileID: 695420468845472812}
   - component: {fileID: 5484518770393420343}
+  - component: {fileID: 9123456789012345660}
   m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -5370,3 +5371,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6730badcaacf6b543abeaf70a88e6ab2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: RTD::UnitMissionDisplay
+--- !u!114 &9123456789012345660
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4295437807923088670}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8e84717eb35a2141b62ffd967b6c41f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  key: hangar/create_unit
