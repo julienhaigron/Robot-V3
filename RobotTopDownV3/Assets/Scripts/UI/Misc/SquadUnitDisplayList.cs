@@ -14,33 +14,19 @@ public class SquadUnitDisplayList : MonoBehaviour
 
 	public void Init ()
 	{
-
-		if (GameManager.Instance.PlayersEntityAnchor[GameManager.Instance.PlayerID].Entities.Count == 1)
+		for (int i = 0; i < m_displays.Length; i++)
 		{
-			m_soloDisplay.Init(GameManager.Instance.PlayersEntityAnchor[GameManager.Instance.PlayerID].Entities[0]);
-			m_soloDisplay.Show();
-
-			for (int i = 0; i < m_displays.Length; i++)
+			if (GameManager.Instance.PlayersEntityAnchor[GameManager.Instance.PlayerID].Entities.Count > i)
+			{
+				m_displays[i].Init(GameManager.Instance.PlayersEntityAnchor[GameManager.Instance.PlayerID].Entities[i]);
+				m_displays[i].Show();
+			}
+			else
 				m_displays[i].Hide();
 		}
-		else
-		{
-			m_soloDisplay.Hide();
-			for (int i = 0; i < m_displays.Length; i++)
-			{
-				if (GameManager.Instance.PlayersEntityAnchor[GameManager.Instance.PlayerID].Entities.Count > i)
-				{
-					m_displays[i].Init(GameManager.Instance.PlayersEntityAnchor[GameManager.Instance.PlayerID].Entities[i]);
-					m_displays[i].Show();
-				}
-				else
-					m_displays[i].Hide();
-			}
-		}
-
 	}
 
-	public void Show (float _duration)
+	public void Show ( float _duration )
 	{
 		if (_duration == 0)
 			m_rtfm.anchoredPosition = m_visiblePosition;
