@@ -17,8 +17,6 @@ MonoBehaviour:
     hapticEnabled: 1
     musicVolume: 1
     sfxVolume: 1
-    language: 10
-    inputBindingOverridesJson: 
   game:
     lastPlayerSaveSelectedID: -1
   playerSaves: []
