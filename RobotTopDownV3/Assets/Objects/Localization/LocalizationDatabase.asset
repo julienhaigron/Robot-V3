@@ -162,3 +162,243 @@ MonoBehaviour:
     values:
     - "Energy: {0}/{1}"
     - "\xC9nergie : {0}/{1}"
+  - key: stat/visual_camo
+    values:
+    - "Visual stealth"
+    - "Furtivit\xE9 visuelle"
+  - key: stat/radar_camo
+    values:
+    - "Radar stealth"
+    - "Furtivit\xE9 radar"
+  - key: stat/thermic_camo
+    values:
+    - "Thermic stealth"
+    - "Furtivit\xE9 thermique"
+  - key: stat/base_hp
+    values:
+    - "HP"
+    - "PV"
+  - key: stat/visual_perception
+    values:
+    - "Visual perception"
+    - "Perception visuelle"
+  - key: stat/radar_perception
+    values:
+    - "Radar perception"
+    - "Perception radar"
+  - key: stat/thermic_perception
+    values:
+    - "Thermic perception"
+    - "Perception thermique"
+  - key: stat/fire_resitance
+    values:
+    - "Fire resistance"
+    - "R\xE9sistance au feu"
+  - key: stat/electric_resitance
+    values:
+    - "Electric resistance"
+    - "R\xE9sistance \xE0 l'\xE9lectricit\xE9"
+  - key: stat/laser_resitance
+    values:
+    - "Laser resistance"
+    - "R\xE9sistance au laser"
+  - key: stat/magnetic_resitance
+    values:
+    - "Magnetic resistance"
+    - "R\xE9sistance magn\xE9tique"
+  - key: stat/plasma_resitance
+    values:
+    - "Plasma resistance"
+    - "R\xE9sistance au plasma"
+  - key: stat/radiation_resitance
+    values:
+    - "Radiation resistance"
+    - "R\xE9sistance aux radiations"
+  - key: stat/flank_resistance
+    values:
+    - "Flank resistance"
+    - "R\xE9sistance au flanc"
+  - key: stat/status_resistance
+    values:
+    - "Status resistance"
+    - "R\xE9sistance aux statuts"
+  - key: stat/slash_resitance
+    values:
+    - "Slash resistance"
+    - "R\xE9sistance au tranchant"
+  - key: stat/piercing_resitance
+    values:
+    - "Piercing resistance"
+    - "R\xE9sistance au perforant"
+  - key: stat/bludgeoning_resitance
+    values:
+    - "Bludgeoning resistance"
+    - "R\xE9sistance au contondant"
+  - key: stat/status_duration_reduction
+    values:
+    - "Status duration reduction"
+    - "R\xE9duction de dur\xE9e des statuts"
+  - key: stat/status_chance
+    values:
+    - "Status chance"
+    - "Chance de statut"
+  - key: stat/status_applied_duration_raise
+    values:
+    - "Applied status duration"
+    - "Dur\xE9e des statuts appliqu\xE9s"
+  - key: stat/flank_bonus
+    values:
+    - "Flank bonus"
+    - "Bonus de flanc"
+  - key: stat/general_damage_bonus
+    values:
+    - "General damage bonus"
+    - "Bonus de d\xE9g\xE2ts g\xE9n\xE9raux"
+  - key: stat/general_damage_resistance
+    values:
+    - "General damage resistance"
+    - "R\xE9sistance g\xE9n\xE9rale aux d\xE9g\xE2ts"
+  - key: stat/fire_damage_bonus
+    values:
+    - "Fire damage bonus"
+    - "Bonus de d\xE9g\xE2ts de feu"
+  - key: stat/electric_damage_bonus
+    values:
+    - "Electric damage bonus"
+    - "Bonus de d\xE9g\xE2ts \xE9lectriques"
+  - key: stat/laser_damage_bonus
+    values:
+    - "Laser damage bonus"
+    - "Bonus de d\xE9g\xE2ts laser"
+  - key: stat/magnetic_damage_bonus
+    values:
+    - "Magnetic damage bonus"
+    - "Bonus de d\xE9g\xE2ts magn\xE9tiques"
+  - key: stat/plasma_damage_bonus
+    values:
+    - "Plasma damage bonus"
+    - "Bonus de d\xE9g\xE2ts plasma"
+  - key: stat/radiation_damage_bonus
+    values:
+    - "Radiation damage bonus"
+    - "Bonus de d\xE9g\xE2ts de radiation"
+  - key: stat/flank_damage_bonus
+    values:
+    - "Flank damage bonus"
+    - "Bonus de d\xE9g\xE2ts de flanc"
+  - key: stat/status_damage_bonus
+    values:
+    - "Status damage bonus"
+    - "Bonus de d\xE9g\xE2ts de statut"
+  - key: stat/slash_damage_bonus
+    values:
+    - "Slash damage bonus"
+    - "Bonus de d\xE9g\xE2ts tranchants"
+  - key: stat/piercing_damage_bonus
+    values:
+    - "Piercing damage bonus"
+    - "Bonus de d\xE9g\xE2ts perforants"
+  - key: stat/bludgeoning_damage_bonus
+    values:
+    - "Bludgeoning damage bonus"
+    - "Bonus de d\xE9g\xE2ts contondants"
+  - key: stat/physical_damage_bonus
+    values:
+    - "Physical damage bonus"
+    - "Bonus de d\xE9g\xE2ts physiques"
+  - key: stat/elemental_damage_bonus
+    values:
+    - "Elemental damage bonus"
+    - "Bonus de d\xE9g\xE2ts \xE9l\xE9mentaires"
+  - key: stat/physical_damage_resistance
+    values:
+    - "Physical damage resistance"
+    - "R\xE9sistance aux d\xE9g\xE2ts physiques"
+  - key: stat/elemental_damage_resistance
+    values:
+    - "Elemental damage resistance"
+    - "R\xE9sistance aux d\xE9g\xE2ts \xE9l\xE9mentaires"
+  - key: stat/final_damage_bonus
+    values:
+    - "Final damage bonus"
+    - "Bonus de d\xE9g\xE2ts final"
+  - key: stat/distance_evasion
+    values:
+    - "Distance Evasion"
+    - "Esquive \xE0 distance"
+  - key: stat/melee_evasion
+    values:
+    - "Melee Evasion"
+    - "Esquive au corps \xE0 corps"
+  - key: stat/distance_accuracy
+    values:
+    - "Distance Accuracy"
+    - "Pr\xE9cision \xE0 distance"
+  - key: stat/melee_accuracy
+    values:
+    - "Agility"
+    - "Agilit\xE9"
+  - key: stat/energy_cost
+    values:
+    - "Energy Cost"
+    - "Co\xFBt en \xE9nergie"
+  - key: stat/energy_produced
+    values:
+    - "Energy Produced"
+    - "\xC9nergie produite"
+  - key: stat/base_damage
+    values:
+    - "Base damage"
+    - "D\xE9g\xE2ts de base"
+  - key: stat/vision_range
+    values:
+    - "Vision range"
+    - "Port\xE9e de vision"
+  - key: stat/vision_type
+    values:
+    - "Vision Type"
+    - "Type de vision"
+  - key: stat/action
+    values:
+    - "Actions"
+    - "Actions"
+  - key: stat/passive_effect
+    values:
+    - "Passive Effects"
+    - "Effets passifs"
+  - key: stat/states
+    values:
+    - "States"
+    - "\xC9tats"
+  - key: stat/chipset_slot
+    values:
+    - "Chipset Slots"
+    - "Emplacements de chipset"
+  - key: stat/equipment_slot
+    values:
+    - "Equipment Slots"
+    - "Emplacements d'\xE9quipement"
+  - key: stat/armoury_slot
+    values:
+    - "Armoury Slots"
+    - "Emplacements de blindage"
+  - key: stat/occultor_slot
+    values:
+    - "Occultor Slots"
+    - "Emplacements d'occulteur"
+  - key: vision/optic
+    values:
+    - "Optic"
+    - "Optique"
+  - key: vision/thermic
+    values:
+    - "Thermic"
+    - "Thermique"
+  - key: vision/radar
+    values:
+    - "Radar"
+    - "Radar"
+  - key: entity_config/inventory
+    values:
+    - "INVENTORY -"
+    - "INVENTAIRE -"

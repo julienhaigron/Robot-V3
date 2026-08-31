@@ -59,6 +59,18 @@ public class MissionData : ScriptableEnum<MissionDataEnumID>
 
     }
 
+    public void GiveAllRewards ()
+	{
+        foreach(CurrencyReward reward in currencyRewards)
+            GameDatas.current.currentPlayerSave.AddCurrency(reward.type, reward.amount);
+
+        foreach (EntityEquipmentData reward in equipmentRewards)
+            GameDatas.current.currentPlayerSave.AddComponentToInventory(reward);
+
+        foreach (UnitPreset reward in unitReward)
+            reward.AddToUnits(false);
+    }
+
     public string GetDescription ()
 	{
         return "Description";

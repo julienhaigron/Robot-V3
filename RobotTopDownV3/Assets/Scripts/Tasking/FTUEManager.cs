@@ -5,6 +5,8 @@ using Sirenix.OdinInspector;
 
 public class FTUEManager : SingletonPersistant<FTUEManager>
 {
+	[SerializeField] private MissionData m_day0MissionData;
+	public MissionData Day0MissionData => m_day0MissionData;
 	[SerializeField] private MissionData[] m_cycle1Missions;
 	public MissionData[] Cycle1MatchMissions => m_cycle1Missions;
 	[SerializeField] private MissionData[] m_cycle1TournamentMissions;
@@ -81,7 +83,7 @@ public class FTUEManager : SingletonPersistant<FTUEManager>
 		TaskSequence tutoSequence = new("MicroTuto0");
 
 		//input phase
-		tutoSequence.Append(new DialogueHighlightTask("Select Unit", ( context ) => context.Game.CurrentMission != null && context.Game.CurrentMission.enumID == m_cycle1Missions[0].enumID
+		tutoSequence.Append(new DialogueHighlightTask("Select Unit", ( context ) => context.Game.CurrentMission != null && context.Game.CurrentMission.enumID == m_day0MissionData.enumID
 			&& context.UI.currentPanel is InGamePanel
 		, m_firstTutoDialogues[0], "squadUnitsBtns"));
 		tutoSequence.Append(new SelectEntityTask("Select Entity", null, -1));
@@ -99,7 +101,7 @@ public class FTUEManager : SingletonPersistant<FTUEManager>
 		tutoSequence.Append(new DialogueHighlightTask("Attack rolls explenation", ( context ) => context.Log.Logs.ContainsKey(LogConsole.LogEventType.Damage)
 		, m_firstTutoDialogues[5], "logs"));
 
-		tutoSequence.SetSkipPredicate(( context ) => GameDatas.current.currentPlayerSave.dayCount > 0);
+		tutoSequence.SetSkipPredicate(( context ) => GameDatas.current.currentPlayerSave.didStartTuto && GameDatas.current.currentPlayerSave.dayCount >= 0);
 		return tutoSequence;
 	}
 
@@ -108,7 +110,7 @@ public class FTUEManager : SingletonPersistant<FTUEManager>
 		TaskSequence tutoSequence = new("Day1Tuto");
 
 		//macro
-		tutoSequence.Append(new WaitEndLoadingTask("Wait for end loading", ( context ) => GameDatas.current.currentPlayerSave.dayCount == 1));
+		tutoSequence.Append(new WaitEndLoadingTask("Wait for end loading", ( context ) => GameDatas.current.currentPlayerSave.dayCount == 0));
 		tutoSequence.Append(new OpenPanelTask<HangarPanel>("Send player directly to hangar", ( context ) => context.UI.currentPanel is SoloHubPanel 
 			&& GameDatas.current.currentPlayerSave.dayCount == 1));
 		tutoSequence.Append(new DialogueHighlightTask("Squad Explenation", ( context ) => context.UI.currentPanel is HangarPanel
@@ -128,7 +130,7 @@ public class FTUEManager : SingletonPersistant<FTUEManager>
 		tutoSequence.Append(new DialogueHighlightTask("Special actions explenations", (context) => context.Log.Logs.ContainsKey(LogConsole.LogEventType.Status)
 		, m_day1TutoDialogues[8], "logs"));
 
-		tutoSequence.SetSkipPredicate(( context ) => GameDatas.current.currentPlayerSave.dayCount > 1);
+		tutoSequence.SetSkipPredicate(( context ) => GameDatas.current.currentPlayerSave.dayCount > 0);
 		return tutoSequence;
 	}
 
@@ -137,7 +139,7 @@ public class FTUEManager : SingletonPersistant<FTUEManager>
 		TaskSequence tutoSequence = new("Day2Tuto");
 
 		//macro
-		tutoSequence.Append(new WaitEndLoadingTask("Wait for end loading", ( context ) => GameDatas.current.currentPlayerSave.dayCount == 2));
+		tutoSequence.Append(new WaitEndLoadingTask("Wait for end loading", ( context ) => GameDatas.current.currentPlayerSave.dayCount == 1));
 		tutoSequence.Append(new DialogueHighlightTask("Vas dans le hangar ", ( context ) => context.UI.currentPanel is SoloHubPanel
 		, m_day2TutoDialogues[0], "hangarBtn"));
 		tutoSequence.Append(new DialogueHighlightTask("tweak une unit", ( context ) => context.UI.currentPanel is HangarPanel
@@ -151,7 +153,7 @@ public class FTUEManager : SingletonPersistant<FTUEManager>
 		tutoSequence.Append(new DialogueTask("Blabla vision", ( context ) => context.UI.currentPanel is InGamePanel
 		, m_day2TutoDialogues[3]));
 
-		tutoSequence.SetSkipPredicate(( context ) => GameDatas.current.currentPlayerSave.dayCount > 2);
+		tutoSequence.SetSkipPredicate(( context ) => GameDatas.current.currentPlayerSave.dayCount > 1);
 		return tutoSequence;
 	}
 
@@ -160,7 +162,7 @@ public class FTUEManager : SingletonPersistant<FTUEManager>
 		TaskSequence tutoSequence = new("Day3Tuto");
 
 		//macro
-		tutoSequence.Append(new WaitEndLoadingTask("Wait for end loading", ( context ) => GameDatas.current.currentPlayerSave.dayCount == 3));
+		tutoSequence.Append(new WaitEndLoadingTask("Wait for end loading", ( context ) => GameDatas.current.currentPlayerSave.dayCount == 2));
 		tutoSequence.Append(new DialogueHighlightTask("Rdv hangar pour upgrade tes units ", ( context ) => context.UI.currentPanel is SoloHubPanel
 		, m_day3TutoDialogues[0], "hangarBtn"));
 		tutoSequence.Append(new ManualTask("Unlock recycler", null, () => GameDatas.current.currentPlayerSave.didUnlockRecycler = true));
@@ -173,7 +175,7 @@ public class FTUEManager : SingletonPersistant<FTUEManager>
 		tutoSequence.Append(new DialogueTask("Unit is gonna die to doom status", ( context ) => context.Log.Logs.ContainsKey(LogConsole.LogEventType.Status)
 		, m_day3TutoDialogues[3]));
 
-		tutoSequence.SetSkipPredicate(( context ) => GameDatas.current.currentPlayerSave.dayCount > 3);
+		tutoSequence.SetSkipPredicate(( context ) => GameDatas.current.currentPlayerSave.dayCount > 2);
 		return tutoSequence;
 	}
 
@@ -182,7 +184,7 @@ public class FTUEManager : SingletonPersistant<FTUEManager>
 		TaskSequence tutoSequence = new("Day4Tuto");
 
 		//macro
-		tutoSequence.Append(new WaitEndLoadingTask("Wait for end loading", ( context ) => GameDatas.current.currentPlayerSave.dayCount == 4));
+		tutoSequence.Append(new WaitEndLoadingTask("Wait for end loading", ( context ) => GameDatas.current.currentPlayerSave.dayCount == 3));
 
 		//TODO : force finish recycling
 
@@ -191,7 +193,7 @@ public class FTUEManager : SingletonPersistant<FTUEManager>
 		, m_day4TutoDialogues[0], "repairBtn"));
 		tutoSequence.Append(new DialogueTask("Lorem ipsum repair station", ( context ) => context.UI.currentPanel is RepairStationPanel 
 			&& GameDatas.current.currentPlayerSave.dayCount == 4, m_day4TutoDialogues[1]));
-		tutoSequence.SetSkipPredicate(( context ) => GameDatas.current.currentPlayerSave.dayCount > 4);
+		tutoSequence.SetSkipPredicate(( context ) => GameDatas.current.currentPlayerSave.dayCount > 3);
 		return tutoSequence;
 	}
 
@@ -203,14 +205,13 @@ public class FTUEManager : SingletonPersistant<FTUEManager>
 		tutoSequence.Append(new DialogueHighlightTask("Vas dans le hangar et créer une unit", ( context ) => context.UI.currentPanel is SoloHubPanel
 			 && GameDatas.current.currentPlayerSave.dayCount == 5, m_day5TutoDialogues[0], "hangarBtn"));
 		tutoSequence.Append(new DialogueTask("Create unit btn explenation", ( context ) => context.UI.currentPanel is HangarPanel, m_day5TutoDialogues[1]));
-		tutoSequence.Append(new ManualTask("Unlock skip day", null, () => GameDatas.current.currentPlayerSave.didUnlockSkipDay = true));
 		//tutoSequence.Append(new DialogueTask("Create unit btn explenation", ( context ) => context.UI.currentPanel is EntityConfigPanel, m_day5TutoDialogues[2]));
 
 		/*//micro
 		tutoSequence.Append(new DialogueTask("Blabla mort mais pas grave car réparation", ( context ) => context.Log.Logs.ContainsKey(LogConsole.LogEventType.Damage)
 		, m_day4TutoDialogues[1]));*/
 
-		tutoSequence.SetSkipPredicate(( context ) => GameDatas.current.currentPlayerSave.dayCount > 5);
+		tutoSequence.SetSkipPredicate(( context ) => GameDatas.current.currentPlayerSave.dayCount > 4);
 		return tutoSequence;
 	}
 

@@ -1282,6 +1282,7 @@ GameObject:
   - component: {fileID: 2240261994937661385}
   - component: {fileID: 4213572938616999632}
   - component: {fileID: 5067768694160919738}
+  - component: {fileID: 9123456789012345680}
   m_Layer: 5
   m_Name: InventoryTMP
   m_TagString: Untagged
@@ -13478,3 +13479,16 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 1261786944420087736, guid: f6b06df8b4e21744694d68399b02ecc3, type: 3}
   m_PrefabInstance: {fileID: 9104236324514658407}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &9123456789012345680
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4785216202488492574}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8e84717eb35a2141b62ffd967b6c41f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  key: entity_config/inventory

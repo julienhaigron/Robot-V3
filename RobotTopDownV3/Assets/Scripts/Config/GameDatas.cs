@@ -29,6 +29,7 @@ public partial class GameDatas : ScriptableObject
 	public static Action<CurrencyType, ulong, PlayerSave.CurrencyRemoveMode> onCurrencyRemoved;
 
 	public static Action onNewDay;
+	public static Action onNewCycle;
 
 #if UNITY_EDITOR
 	[TitleGroup("Quick Settings")]
@@ -106,7 +107,6 @@ public partial class GameDatas : ScriptableObject
 		//tutos
 		public bool didStartTuto = false;
 		public bool didUnlockReturnToHubPopup = false;
-		public bool didUnlockSkipDay = false;
 		public bool didUnlockRepareStation = false;
 		public bool didUnlockRecycler = false;
 		//public bool didUnlockShops = false;
@@ -222,6 +222,7 @@ public partial class GameDatas : ScriptableObject
 		{
 			cycleData.hasInitTournament = false;
 			cycleData.roundsDatas = new MissionDataEnumID[3];
+
 			cycleData.selectedMissionsIds.Clear();
 			//missions
 			cycleData.availableMissionsIds.Clear();
@@ -231,6 +232,8 @@ public partial class GameDatas : ScriptableObject
 			}
 
 			cycleCount++;
+			dayCount = 0;
+			onNewCycle?.Invoke();
 		}
 
 		public List<EntitySavedData> GetSquadEntitiesData ()

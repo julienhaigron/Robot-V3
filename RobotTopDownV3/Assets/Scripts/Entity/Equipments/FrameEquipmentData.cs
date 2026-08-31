@@ -25,9 +25,9 @@ public class FrameEquipmentData : EntityEquipmentData
 	public override StatDescription[] GetDesciption ()
 	{
 		List<StatDescription> description = base.GetDesciption().ToList();
-		description.Add(new() { ID = SecondaryStat.StatType.BaseHp, title = "HP", floatValue = maxHealth, stringValue = maxHealth.ToString() });
-		description.Add(new() { ID = SecondaryStat.StatType.ArmourySlot, title = "ArmourySlot", floatValue = armouringSlotAvailable, stringValue = null });
-		description.Add(new() { ID = SecondaryStat.StatType.OccultorSlot, title = "OccultorSlot", floatValue = occultorSlotAvailable, stringValue = null });
+		description.Add(new() { ID = SecondaryStat.StatType.BaseHp, floatValue = maxHealth, stringValue = maxHealth.ToString() });
+		description.Add(new() { ID = SecondaryStat.StatType.ArmourySlot, floatValue = armouringSlotAvailable, stringValue = null });
+		description.Add(new() { ID = SecondaryStat.StatType.OccultorSlot, floatValue = occultorSlotAvailable, stringValue = null });
 		foreach (SecondaryStat bonus in statBonuses)
 		{
 			description.Add(bonus.GetDescription());

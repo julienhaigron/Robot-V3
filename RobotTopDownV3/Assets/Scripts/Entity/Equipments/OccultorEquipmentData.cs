@@ -19,9 +19,9 @@ public class OccultorEquipmentData : EntityEquipmentData
 	public override StatDescription[] GetDesciption ()
     {
         List<StatDescription> description = base.GetDesciption().ToList();
-        description.Add(new() { ID = SecondaryStat.StatType.RadarCamo, title = "Sound stealth", floatValue = soundCamo, stringValue = (soundCamo *100f) + " %" });
-        description.Add(new() { ID = SecondaryStat.StatType.VisualCamo, title = "Visual stealth", floatValue = visualCamo, stringValue = (visualCamo * 100f) + " %" });
-        description.Add(new() { ID = SecondaryStat.StatType.ThermicCamo, title = "Thermic stealth", floatValue = thermicCamo, stringValue = (thermicCamo * 100f) + " %" });
+        description.Add(new() { ID = SecondaryStat.StatType.RadarCamo, floatValue = soundCamo, stringValue = (soundCamo *100f) + " %" });
+        description.Add(new() { ID = SecondaryStat.StatType.VisualCamo, floatValue = visualCamo, stringValue = (visualCamo * 100f) + " %" });
+        description.Add(new() { ID = SecondaryStat.StatType.ThermicCamo, floatValue = thermicCamo, stringValue = (thermicCamo * 100f) + " %" });
         foreach (SecondaryStat bonus in statBonuses)
             description.Add(bonus.GetDescription());
 

@@ -50,7 +50,6 @@ public class SoloHubPanel : AUIPanel
 		m_missionBtn.SetInteractability(isSquadValid);
 		m_repairBtn.SetInteractability(GameDatas.current.currentPlayerSave.didUnlockRepareStation);
 		m_recycleShopBtn.SetInteractability(GameDatas.current.currentPlayerSave.didUnlockRecycler);
-		m_skipDayBtn.SetInteractability(GameDatas.current.currentPlayerSave.didUnlockSkipDay);
 		/*foreach (KeyValuePair<EntityEquipmentData.EntityFaction, BaseButton> shopBtn in m_openShopBtns)
 			shopBtn.Value.SetInteractability(GameDatas.current.currentPlayerSave.didUnlockShops);*/
 		//m_tournamentBtn.SetInteractability(isSquadValid);
@@ -95,9 +94,7 @@ public class SoloHubPanel : AUIPanel
 
 	private void OnClickSkipDay ()
 	{
-		GameDatas.current.currentPlayerSave.NewDay();
-
-		UIManager.Instance.OpenPopup<ReturnToHubPopup>().Init();
+		UIManager.Instance.OpenPopup<SkipConfirmationPopup>().Init();
 	}
 
 	#endregion

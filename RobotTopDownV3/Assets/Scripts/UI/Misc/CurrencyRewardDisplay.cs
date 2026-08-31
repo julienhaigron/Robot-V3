@@ -21,6 +21,9 @@ public class CurrencyRewardDisplay : MonoBehaviour
 
 	public void Init(CurrencyType _type, ulong _value, bool _displaySuffix, System.Action _onSelected, bool _isLockedOnSelected = false )
 	{
+		if (!GameAssets.current.currencies.ContainsKey(_type))
+			return;
+
 		m_currencyType = _type;
 		m_value = _value;
         m_valueTMP.text = _value.ToString() + (_displaySuffix ? GameAssets.current.currencies[_type].suffix : "");

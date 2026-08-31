@@ -52,7 +52,7 @@ public class EntityEquipmentData : AParsableScriptableObject
 	public class StatDescription
 	{
 		public SecondaryStat.StatType ID;
-		public string title;
+		public string title => ID.GetLocalizedTitle();
 		public string stringValue;
 		public float floatValue;
 
@@ -109,7 +109,7 @@ public class EntityEquipmentData : AParsableScriptableObject
 
 		public StatDescription Compare (StatDescription _statDescription )
 		{
-			StatDescription result = new() { ID = ID, title = title, floatValue = floatValue, stringValue = stringValue };
+			StatDescription result = new() { ID = ID, floatValue = floatValue, stringValue = stringValue };
 
 
 			return result;
@@ -119,7 +119,7 @@ public class EntityEquipmentData : AParsableScriptableObject
 	public virtual StatDescription[] GetDesciption ()
 	{
 		List<StatDescription> description = new();
-		description.Add(new() { ID = SecondaryStat.StatType.EnergyCost, title = "Energy Cost", floatValue = energyCost, stringValue = energyCost.ToString() });
+		description.Add(new() { ID = SecondaryStat.StatType.EnergyCost, floatValue = energyCost, stringValue = energyCost.ToString() });
 
 		if (passiveEffects != null && passiveEffects.Length > 0)
 		{
@@ -130,7 +130,7 @@ public class EntityEquipmentData : AParsableScriptableObject
 					continue;
 				allStatesInString += GameAssets.current.game.entityEffects[passiveEffects[i].enumID].displayName + (i + 1 < passiveEffects.Length ? ", " : "");
 			}
-			description.Add(new() { ID = SecondaryStat.StatType.PassiveEffect, title = "Passive Effects", floatValue = 0, stringValue = allStatesInString });
+			description.Add(new() { ID = SecondaryStat.StatType.PassiveEffect, floatValue = 0, stringValue = allStatesInString });
 		}
 		if (knownedActions != null && knownedActions.Length > 0)
 		{
@@ -140,7 +140,7 @@ public class EntityEquipmentData : AParsableScriptableObject
 				if(knownedActions[i] != EntityActionEnumID.Unknowned && GameAssets.current.game.entityActionsData.ContainsKey(knownedActions[i]))
 					allActionsInString += GameAssets.current.game.entityActionsData[knownedActions[i]].displayName + (i + 1 < knownedActions.Length ? ", " : "");
 			}
-			description.Add(new() { ID = SecondaryStat.StatType.Action, title = "Actions", floatValue = 0, stringValue = allActionsInString });
+			description.Add(new() { ID = SecondaryStat.StatType.Action, floatValue = 0, stringValue = allActionsInString });
 		}
 
 		return description.ToArray();
@@ -279,7 +279,7 @@ public class EntityEquipmentData : AParsableScriptableObject
 					break;
 			}
 
-			return new() {ID = type, title = type.ToString(), floatValue = value, stringValue = stringFormatedValue };
+			return new() {ID = type, floatValue = value, stringValue = stringFormatedValue };
 		}
 
 	}

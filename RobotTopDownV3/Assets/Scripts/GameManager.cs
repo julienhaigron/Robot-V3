@@ -81,16 +81,14 @@ public class GameManager : SingletonPersistant<GameManager>
 			//TODO : play introduction video/animation before throwing player into gameplay
 
 			foreach (UnitPreset unitPreset in FTUEManager.Instance.playerStartingSquadUnits)
-			{
 				unitPreset.AddToUnits(true);
 
-			}
+			GameDatas.current.currentPlayerSave.dayCount = -1;
 			GameDatas.current.currentPlayerSave.didStartTuto = true;
 			for (int i = 0; i < FTUEManager.Instance.Cycle1MatchMissions.Length; i++)
 				GameDatas.current.currentPlayerSave.cycleData.selectedMissionsIds.Add(FTUEManager.Instance.Cycle1MatchMissions[i].enumID);
-
-
-			SetupLevel(FTUEManager.Instance.Cycle1MatchMissions[0]);
+			
+			SetupLevel(FTUEManager.Instance.Day0MissionData);
 		}
 	}
 

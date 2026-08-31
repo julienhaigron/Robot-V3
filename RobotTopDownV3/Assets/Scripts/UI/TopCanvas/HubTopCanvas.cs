@@ -25,6 +25,7 @@ public class HubTopCanvas : AUITopCanvas
 		base.Awake();
 		GameDatas.onCurrencyChanged += OnCurrencyChange;
 		GameDatas.onNewDay += OnNewDay;
+		GameDatas.onNewCycle += OnNewCycle;
 		m_upgradeStructureBtn.onClick += OnClickUpgradeStructure;
 		m_returnBtn.onClick += OnClickReturn;
 		UIManager.onFocusedWindowChanged += OnFocusedWindowChanged;
@@ -63,6 +64,11 @@ public class HubTopCanvas : AUITopCanvas
 	}
 
 	private void OnNewDay ()
+	{
+		RefreshDayDisplay();
+	}
+
+	private void OnNewCycle ()
 	{
 		RefreshDayDisplay();
 	}

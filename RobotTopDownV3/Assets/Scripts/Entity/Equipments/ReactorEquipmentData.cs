@@ -13,7 +13,7 @@ public class ReactorEquipmentData : EntityEquipmentData
 	public override StatDescription[] GetDesciption ()
 	{
 		List<StatDescription> description = base.GetDesciption().ToList();
-		description.Add(new() { ID = SecondaryStat.StatType.EnergyProduced, title = "Energy Produced", floatValue = energyProduced, stringValue = energyProduced.ToString() });
+		description.Add(new() { ID = SecondaryStat.StatType.EnergyProduced, floatValue = energyProduced, stringValue = energyProduced.ToString() });
 
         return description.ToArray();
 	}
