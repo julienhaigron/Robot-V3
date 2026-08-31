@@ -193,7 +193,7 @@ public class EntityAIPlugin : EntityPlugin
 				}
 				else
 				{
-					List<Tile> pathToEnemy = GridManager.Instance.GetPath(closestEntity.Displacement.Coordinates.GetTile(), m_linkedEntity.Displacement.Coordinates.GetTile(), true);
+					List<Tile> pathToEnemy = GridManager.Instance.GetPath(closestEntity.Displacement.Coordinates.GetTile(), m_linkedEntity.Displacement.Coordinates.GetTile(), true, _movingEntity: m_linkedEntity, _canTraverseAllies: true);
 					if (pathToEnemy == null || pathToEnemy.Count < 2
 						|| (currentActionMainType == EntityActionData.MainActionType.Movement && _recordedAction.action.targetTileIDs != null && _recordedAction.action.targetTileIDs.Length > 0
 							&& pathToEnemy[^1].Distance >= GridManager.Instance.Tiles[_recordedAction.action.targetTileIDs[0]].Distance))

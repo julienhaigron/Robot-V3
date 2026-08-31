@@ -521,6 +521,30 @@ public class TurnManager : Singleton<TurnManager>
 		RefreshActionDisplay(_actionToStartRemoveFrom.performingEntityID, true);
 	}
 
+	//An entity only vacates its tile when it is performing an action that ends somewhere else this tick.
+	//Tile.NewPhase copies [currentTick - 1] into [currentTick] only, so the next tick slot holds nothing at all
+	//for a motionless entity: GridManager.GetEntityStayingOn needs this to see the ones that are not moving.
+	public bool IsEntityLeavingTileThisTick ( int _entityID, int _tileID )
+	{
+		if (m_actionsToPlay.ContainsKey(_entityID) && m_actionsToPlay[_entityID] != null)
+		{
+			foreach (RecordedAction recordedAction in m_actionsToPlay[_entityID])
+			{
+				if (recordedAction.action.IsPerformingAtTick(currentTick) && recordedAction.action.positionAtActionEndID != _tileID)
+					return true;
+			}
+		}
+
+		if (m_actionsBeingDone.ContainsKey(_entityID) && m_actionsBeingDone[_entityID] != null)
+		{
+			AEntityAction actionBeingDone = m_actionsBeingDone[_entityID].Item1.action;
+			if (actionBeingDone.IsPerformingAtTick(currentTick) && actionBeingDone.positionAtActionEndID != _tileID)
+				return true;
+		}
+
+		return false;
+	}
+
 	public int GetLastRegisteredPositionOfEntity ( int _entityID )
 	{
 		if (!m_recordedActionInput.ContainsKey(_entityID) || m_recordedActionInput[_entityID] == null || m_recordedActionInput[_entityID].Count == 0)

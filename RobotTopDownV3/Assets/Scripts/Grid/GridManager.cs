@@ -31,7 +31,6 @@ public class GridManager : Singleton<GridManager>
 	}
 	private Dictionary<int, PlayerVisionRangeInfo> m_entitiesVisions = new();
 	public Dictionary<int, PlayerVisionRangeInfo> EntitiesVisions => m_entitiesVisions;
-	private readonly Dictionary<Tile, int> m_localVisionCount = new();
 
 	private static readonly Vector2Int[] HexDirectionOffsets =
 	{
@@ -263,9 +262,9 @@ public class GridManager : Singleton<GridManager>
 
 	#region Utils
 
-	public List<Tile> GetPath ( Tile _from, Tile _to, bool _isThisTurn, bool _ignoreObstacles = false )
+	public List<Tile> GetPath ( Tile _from, Tile _to, bool _isThisTurn, bool _ignoreObstacles = false, Entity _movingEntity = null, bool _canTraverseAllies = false )
 	{
-		BFS(_from, _to: _to, _isThisTurn: _isThisTurn, _ignoreObstacles: _ignoreObstacles);
+		BFS(_from, _to: _to, _isThisTurn: _isThisTurn, _ignoreObstacles: _ignoreObstacles, _movingEntity: _movingEntity, _canTraverseAllies: _canTraverseAllies);
 
 		if (_to.Distance == int.MaxValue)
 			return null;
@@ -866,7 +865,48 @@ public class GridManager : Singleton<GridManager>
 		}
 	}*/
 
-	public void BFS ( Tile _from, int _maxDistance = -1, Tile _to = null, bool _isThisTurn = false, bool _ignoreObstacles = false )
+	//_movingEntity always exempts the entity from itself: during conflict resolution an action books its own
+	//target tiles on the next tick slot, and re-planning must not treat those bookings as obstacles.
+	//_canTraverseAllies additionally lets a unit plan a path behind an ally (one tile wide corridor). Only route
+	//planning may ask for it, never the arbitration of an actual step: the plan is re-checked every tick.
+	private bool IsBlockedByEntity ( Tile _tile, Tile _to, bool _isThisTurn, Entity _movingEntity, bool _canTraverseAllies )
+	{
+		if (_to == null || _tile.coordinates.ID == _to.coordinates.ID)
+			return false;
+
+		Entity blocker = _tile.GetEntity(_isThisTurn);
+
+		//The next tick slot only holds entities that booked a move this tick, so a tile looks free there even
+		//when a motionless entity stands on it. Fall back to the current tick to catch those.
+		if (blocker == null && !_isThisTurn)
+			blocker = GetEntityStayingOn(_tile);
+
+		if (blocker == null)
+			return false;
+
+		if (_movingEntity == null)
+			return true;
+
+		if (blocker.ID == _movingEntity.ID)
+			return false;
+
+		return !_canTraverseAllies || !blocker.IsAlliedTo(_movingEntity.OwnerID);
+	}
+
+	private Entity GetEntityStayingOn ( Tile _tile )
+	{
+		Entity entity = _tile.GetEntity(_isThisTurn: true);
+		if (entity == null)
+			return null;
+
+		//outside of a running turn nobody is going anywhere
+		if (TurnManager.Instance == null)
+			return entity;
+
+		return TurnManager.Instance.IsEntityLeavingTileThisTick(entity.ID, _tile.coordinates.ID) ? null : entity;
+	}
+
+	public void BFS ( Tile _from, int _maxDistance = -1, Tile _to = null, bool _isThisTurn = false, bool _ignoreObstacles = false, Entity _movingEntity = null, bool _canTraverseAllies = false )
 	{
 		/*m_lastBFSOriginTile = _from;
 		m_lastBFSMaxDistance = _maxDistance;*/
@@ -904,7 +944,7 @@ public class GridManager : Singleton<GridManager>
 				}
 
 				//obstacle
-				if (!_ignoreObstacles && (neighbor.IsObstacle(_isThisTurn) || (isDestinationNotNull && neighbor.GetEntity(_isThisTurn) != null && neighbor.coordinates.ID != _to.coordinates.ID)))
+				if (!_ignoreObstacles && (neighbor.IsObstacle(_isThisTurn) || IsBlockedByEntity(neighbor, _to, _isThisTurn, _movingEntity, _canTraverseAllies)))
 				{
 					continue;
 				}
@@ -1094,31 +1134,16 @@ public class GridManager : Singleton<GridManager>
 		FogOfWarRenderer.Instance.MarkDirty();
 	}
 
+	//Tile.m_visionTypeCounts is the single source of truth: it already counts per vision type,
+	//so an extra aggregated counter here could only desync and silently skip a decrement.
 	private void AddVisionTile ( Tile _tile, NeuronalMembraneEquipmentData.VisionTypes _visionType )
 	{
-		if (!m_localVisionCount.TryGetValue(_tile, out int count))
-			count = 0;
-
-		count++;
-		m_localVisionCount[_tile] = count;
-
-		if (count >= 1)
-			_tile.SetActiveFOW(_visionType, false, false);
+		_tile.SetActiveFOW(_visionType, false, false);
 	}
 
-	private void RemoveVisionTile ( Tile tile, NeuronalMembraneEquipmentData.VisionTypes visionType )
+	private void RemoveVisionTile ( Tile _tile, NeuronalMembraneEquipmentData.VisionTypes _visionType )
 	{
-		if (!m_localVisionCount.TryGetValue(tile, out int count))
-			return;
-
-		count--;
-
-		if (count <= 0)
-			m_localVisionCount.Remove(tile);
-		else
-			m_localVisionCount[tile] = count;
-		
-		tile.SetActiveFOW(visionType, true, false);
+		_tile.SetActiveFOW(_visionType, true, false);
 	}
 
 	#endregion

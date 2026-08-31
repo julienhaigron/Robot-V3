@@ -154,7 +154,7 @@ public class MoveToTargetAction : AEntityAction
 	{
 		//register all action for destination (calcuate dist, and add X actions in TurnSys (X = distance))
 		Tile from = GridManager.Instance.Tiles[TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntityID)];
-		List<Tile> path = GridManager.Instance.GetPath(from, _tile, true);
+		List<Tile> path = GridManager.Instance.GetPath(from, _tile, true, _movingEntity: PerformingEntity, _canTraverseAllies: true);
 
 		if (path == null)
 			return;
@@ -299,7 +299,11 @@ public class MoveToTargetAction : AEntityAction
 		/*foreach (int tileID in targetTileIDs)
 			GridManager.Instance.Tiles[tileID].*/
 
-		List <Tile> pathToTile = GridManager.Instance.GetPath(GameManager.Instance.GetEntityFromID(performingEntityID).Displacement.Coordinates.GetTile(), GridManager.Instance.Tiles[(int)finalTargetTileID], _isThisTurn: false);
+		//No _canTraverseAllies here on purpose: this is the authoritative re-plan against the real next tick
+		//occupancy, so an ally that did not free its tile must stay a hard obstacle. _movingEntity is still
+		//passed so the tiles this action already booked for itself are not seen as obstacles: ResolveConflicts
+		//can call this several times per tick, once per other acting entity.
+		List <Tile> pathToTile = GridManager.Instance.GetPath(GameManager.Instance.GetEntityFromID(performingEntityID).Displacement.Coordinates.GetTile(), GridManager.Instance.Tiles[(int)finalTargetTileID], _isThisTurn: false, _movingEntity: PerformingEntity);
 
 		if (pathToTile == null || pathToTile.Count < Data.movementSpeed + 1)
 		{
@@ -343,7 +347,7 @@ public class MoveToTargetAction : AEntityAction
 			return;
 
 		Tile from = GridManager.Instance.Tiles[TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntityID)];
-		List<Tile> path = GridManager.Instance.GetPath(from, GridManager.Instance.Tiles[positionAtActionEndID], true, false);
+		List<Tile> path = GridManager.Instance.GetPath(from, GridManager.Instance.Tiles[positionAtActionEndID], true, false, PerformingEntity, _canTraverseAllies: true);
 		if (path == null)
 			return;
 		path.Reverse();

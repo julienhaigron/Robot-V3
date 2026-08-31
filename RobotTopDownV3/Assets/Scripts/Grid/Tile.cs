@@ -53,6 +53,7 @@ public class Tile : MonoBehaviour
 
 	//private HashSet<NeuronalMembraneEquipmentData.VisionTypes> m_currentVisionTypesOnThisTile = new();
 	private Dictionary<NeuronalMembraneEquipmentData.VisionTypes, int> m_visionTypeCounts = new();
+	private int m_opticVisionBlockerCount = 0;
 
 	[Serializable]
 	public class TileContent
@@ -487,21 +488,71 @@ public class Tile : MonoBehaviour
 		else
 			m_visionTypeCounts[_visionType] = count;
 
-		m_isVisible = m_visionTypeCounts.Count > 0;
-		m_ui.SetActiveFOW(!m_visionTypeCounts.ContainsKey(NeuronalMembraneEquipmentData.VisionTypes.Optic), _isInstant);
+		RefreshFOW(_isInstant);
+	}
 
-		if (TryGetEntity(true, out Entity entity) && !entity.IsAlliedTo(GameManager.Instance.PlayerID))
+	//Smoke and alike block optic vision on this tile without touching the vision counters,
+	//so lifting the block cannot resurrect a vision that nobody provides anymore.
+	public void SetOpticVisionBlocked ( bool _isBlocked, bool _isInstant = false )
+	{
+		m_opticVisionBlockerCount = Mathf.Max(0, m_opticVisionBlockerCount + (_isBlocked ? 1 : -1));
+
+		RefreshFOW(_isInstant);
+	}
+
+	private void RefreshFOW ( bool _isInstant )
+	{
+		m_isVisible = false;
+		foreach (NeuronalMembraneEquipmentData.VisionTypes type in m_visionTypeCounts.Keys)
+		{
+			if (HasVision(type))
+			{
+				m_isVisible = true;
+				break;
+			}
+		}
+
+		m_ui.SetActiveFOW(!HasVision(NeuronalMembraneEquipmentData.VisionTypes.Optic), _isInstant);
+
+		if (TryGetCurrentEntity(out Entity entity) && !entity.IsAlliedTo(GameManager.Instance.PlayerID))
 		{
 			NeuronalMembraneEquipmentData.VisionTypes bestVision = m_isVisible ? GetBestCurrentVisionType() : NeuronalMembraneEquipmentData.VisionTypes.Radar;
 			entity.SetVisibility(m_isVisible, bestVision);
 		}
 	}
 
+	private bool HasVision ( NeuronalMembraneEquipmentData.VisionTypes _visionType )
+	{
+		if (_visionType == NeuronalMembraneEquipmentData.VisionTypes.Optic && m_opticVisionBlockerCount > 0)
+			return false;
+
+		return m_visionTypeCounts.ContainsKey(_visionType);
+	}
+
+	//During the play phase a moving entity is registered on its destination tile at currentTick + 1,
+	//while the tile it just left still references it at currentTick. Both slots are checked, and each
+	//candidate is validated against its real coordinates so a stale slot never drives the FOW visual.
+	public bool TryGetCurrentEntity ( out Entity _entity )
+	{
+		if (TryGetEntity(false, out _entity) && IsEntityStandingHere(_entity))
+			return true;
+		if (TryGetEntity(true, out _entity) && IsEntityStandingHere(_entity))
+			return true;
+
+		_entity = null;
+		return false;
+	}
+
+	private bool IsEntityStandingHere ( Entity _entity )
+	{
+		return _entity != null && _entity.Displacement.Coordinates.ID == coordinates.ID;
+	}
+
 	public NeuronalMembraneEquipmentData.VisionTypes GetBestCurrentVisionType ()
 	{
 		NeuronalMembraneEquipmentData.VisionTypes best = NeuronalMembraneEquipmentData.VisionTypes.Radar;
 		foreach (NeuronalMembraneEquipmentData.VisionTypes type in m_visionTypeCounts.Keys)
-			if ((int)type < (int)best)
+			if ((int)type < (int)best && HasVision(type))
 				best = type;
 		return best;
 	}

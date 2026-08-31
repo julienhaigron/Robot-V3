@@ -39,7 +39,7 @@ public class BotEnnemiPlayer : MonoBehaviour
 			Tile from = _entity.Displacement.Coordinates.GetTile();
 			Tile lastDestination = from;
 			NodePath closestPath = NodePathManager.Instance.GetClosestPath(from, out Tile closestTile);
-			List<Tile> pathToClosestTileInPath = GridManager.Instance.GetPath(from, closestTile, true);
+			List<Tile> pathToClosestTileInPath = GridManager.Instance.GetPath(from, closestTile, true, _movingEntity: _entity, _canTraverseAllies: true);
 			for (int i = 0; i < GameConfig.current.game.actionTokenPerRound;)
 			{
 				EntityActionData movementActionData = _entity.AI.GetMovementAction();
@@ -48,7 +48,7 @@ public class BotEnnemiPlayer : MonoBehaviour
 				List<int> thisActionPath = new();
 				for (int j = 0; j < movementAction.TotalDuration; j++)
 				{
-					lastDestination = i + j < pathToClosestTileInPath.Count ? pathToClosestTileInPath[i + j] : closestPath.GetNextTile(lastDestination);
+					lastDestination = pathToClosestTileInPath != null && i + j < pathToClosestTileInPath.Count ? pathToClosestTileInPath[i + j] : closestPath.GetNextTile(lastDestination);
 					thisActionPath.Add(lastDestination.coordinates.ID);
 				}
 				movementAction.targetTileIDs = thisActionPath.ToArray();
