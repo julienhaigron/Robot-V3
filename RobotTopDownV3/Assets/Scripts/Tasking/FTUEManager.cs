@@ -91,6 +91,14 @@ public class FTUEManager : SingletonPersistant<FTUEManager>
 			TaskManager.Instance.StopAndMarkAsCompletedSequence("Day4Tuto");
 		if (!GameDatas.current.currentPlayerSave.sequencesProgressions.ContainsKey("Day5Tuto") || GameDatas.current.currentPlayerSave.sequencesProgressions["Day5Tuto"] != -1)
 			TaskManager.Instance.StopAndMarkAsCompletedSequence("Day5Tuto");
+
+		if (GameDatas.current.currentPlayerSave.sequencesProgressions[FTUEID] != -1)
+			TaskManager.Instance.StopAndMarkAsCompletedSequence(FTUEID);
+
+		GameDatas.current.currentPlayerSave.didUnlockRecycler = true;
+		GameDatas.current.currentPlayerSave.didUnlockRepareStation = true;
+		GameDatas.current.currentPlayerSave.didUnlockReturnToHubPopup = true;
+		GameDatas.current.currentPlayerSave.didUnlockRecycler = true;
 	}
 
 	#region Tuto Sequences

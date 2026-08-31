@@ -54,7 +54,8 @@ public class FTUESequence
 
 	private void OnEndFTUESingleSequence ( TaskSequence _sequence )
 	{
-		GameDatas.current.currentPlayerSave.sequencesProgressions[m_id]++;
+		if(GameDatas.current.currentPlayerSave.sequencesProgressions[m_id] != -1)
+			GameDatas.current.currentPlayerSave.sequencesProgressions[m_id]++;
 
 		if(!IsCompleted)
 			TaskManager.Instance.StartSequence(Sequences[CurrentSequenceIndex]);

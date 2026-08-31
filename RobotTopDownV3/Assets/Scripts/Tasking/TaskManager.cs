@@ -65,6 +65,8 @@ public class TaskManager : SingletonPersistant<TaskManager>
 
         if (!GameDatas.current.currentPlayerSave.sequencesProgressions.ContainsKey(_sequenceID))
             GameDatas.current.currentPlayerSave.sequencesProgressions.Add(_sequenceID, -1);
+        else
+            GameDatas.current.currentPlayerSave.sequencesProgressions[_sequenceID] = -1;
     }
 
 	public void StartSequence(TaskSequence _sequence )
