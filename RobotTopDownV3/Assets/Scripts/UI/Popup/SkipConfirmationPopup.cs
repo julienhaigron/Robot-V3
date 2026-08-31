@@ -59,6 +59,7 @@ public class SkipConfirmationPopup : AUIPopup
 			//skip FTUE and give all FTUE missions rewards
 			daysAmountSkip = 7 - (GameDatas.current.currentPlayerSave.dayCount);
 			doGiveReward = true;
+			FTUEManager.Instance.ForceFinishFTUE();
 		}
 		else if(GameDatas.current.currentPlayerSave.dayCount < 4)
 		{

@@ -74,6 +74,25 @@ public class FTUEManager : SingletonPersistant<FTUEManager>
 		ftueSequence.Start();
 	}
 
+	public void ForceFinishFTUE ()
+	{
+		if (GameDatas.current.currentPlayerSave.sequencesProgressions[FTUEID] != -1)
+			TaskManager.Instance.StopAndMarkAsCompletedSequence(FTUEID);
+
+		if (!GameDatas.current.currentPlayerSave.sequencesProgressions.ContainsKey("MicroTuto0") || GameDatas.current.currentPlayerSave.sequencesProgressions["MicroTuto0"] != -1)
+			TaskManager.Instance.StopAndMarkAsCompletedSequence("MicroTuto0");
+		if (!GameDatas.current.currentPlayerSave.sequencesProgressions.ContainsKey("Day1Tuto") || GameDatas.current.currentPlayerSave.sequencesProgressions["Day1Tuto"] != -1)
+			TaskManager.Instance.StopAndMarkAsCompletedSequence("Day1Tuto");
+		if (!GameDatas.current.currentPlayerSave.sequencesProgressions.ContainsKey("Day2Tuto") || GameDatas.current.currentPlayerSave.sequencesProgressions["Day2Tuto"] != -1)
+			TaskManager.Instance.StopAndMarkAsCompletedSequence("Day2Tuto");
+		if (!GameDatas.current.currentPlayerSave.sequencesProgressions.ContainsKey("Day3Tuto") || GameDatas.current.currentPlayerSave.sequencesProgressions["Day3Tuto"] != -1)
+			TaskManager.Instance.StopAndMarkAsCompletedSequence("Day3Tuto");
+		if (!GameDatas.current.currentPlayerSave.sequencesProgressions.ContainsKey("Day4Tuto") || GameDatas.current.currentPlayerSave.sequencesProgressions["Day4Tuto"] != -1)
+			TaskManager.Instance.StopAndMarkAsCompletedSequence("Day4Tuto");
+		if (!GameDatas.current.currentPlayerSave.sequencesProgressions.ContainsKey("Day5Tuto") || GameDatas.current.currentPlayerSave.sequencesProgressions["Day5Tuto"] != -1)
+			TaskManager.Instance.StopAndMarkAsCompletedSequence("Day5Tuto");
+	}
+
 	#region Tuto Sequences
 
 	private TaskSequence MicroTuto0 ()

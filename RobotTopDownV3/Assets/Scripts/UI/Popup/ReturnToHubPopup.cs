@@ -19,6 +19,9 @@ public class ReturnToHubPopup : AUIPopup
 	{
 		UIManager.Instance.GetPanel<SoloHubPanel>().RefreshVisual();
 		Close();
+
+		if (!GameDatas.current.currentPlayerSave.cycleData.didSelectMissions)
+			UIManager.Instance.OpenPanel<SelectMissionPanel>();
 	}
 
 	public void Init ()

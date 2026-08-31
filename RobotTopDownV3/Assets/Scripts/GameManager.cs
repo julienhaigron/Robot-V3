@@ -104,16 +104,19 @@ public class GameManager : SingletonPersistant<GameManager>
 			{
 				UIManager.Instance.ShowTopCanvas<HubTopCanvas>();
 
-				if (!GameDatas.current.currentPlayerSave.cycleData.didSelectMissions)
-					UIManager.Instance.OpenPanel<SelectMissionPanel>();
-				else if (m_returnFromMatch)
+				if (m_returnFromMatch)
 				{
 					if (GameDatas.current.currentPlayerSave.didUnlockReturnToHubPopup)
 						UIManager.Instance.OpenPopup<ReturnToHubPopup>().Init();
 					UIManager.Instance.OpenPanel<SoloHubPanel>();
 				}
 				else
-					UIManager.Instance.OpenPanel<SoloHubPanel>();
+				{
+					if (!GameDatas.current.currentPlayerSave.cycleData.didSelectMissions)
+						UIManager.Instance.OpenPanel<SelectMissionPanel>();
+					else
+						UIManager.Instance.OpenPanel<SoloHubPanel>();
+				}
 			});
 	}
 

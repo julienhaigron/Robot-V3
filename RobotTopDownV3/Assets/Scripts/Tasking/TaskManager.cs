@@ -49,6 +49,24 @@ public class TaskManager : SingletonPersistant<TaskManager>
         }
 	}
 
+    public void StopAndMarkAsCompletedSequence(string _sequenceID )
+	{
+        foreach (TaskSequence seq in m_activeSequences.ToArray())
+        {
+            if (string.Equals(seq.ID, _sequenceID))
+            {
+                if (!GameDatas.current.currentPlayerSave.sequencesProgressions.ContainsKey(seq.ID))
+                    GameDatas.current.currentPlayerSave.sequencesProgressions.Add(seq.ID, -1);
+                GameDatas.current.currentPlayerSave.sequencesProgressions[seq.ID] = -1;
+                m_activeSequences.Remove(seq);
+                return;
+			}
+        }
+
+        if (!GameDatas.current.currentPlayerSave.sequencesProgressions.ContainsKey(_sequenceID))
+            GameDatas.current.currentPlayerSave.sequencesProgressions.Add(_sequenceID, -1);
+    }
+
 	public void StartSequence(TaskSequence _sequence )
 	{
         _sequence.Init();
