@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 2293407551789006082}
   - component: {fileID: 1191414931371624256}
   - component: {fileID: 1445476731092685998}
-  - component: {fileID: 4531808909029652513}
+  - component: {fileID: 1995332689862850692}
   m_Layer: 5
   m_Name: Displays
   m_TagString: Untagged
@@ -84,7 +84,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &4531808909029652513
+--- !u!114 &1995332689862850692
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -93,16 +93,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 4603772045375096296}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 30649d3a9faa99c48a7b1166b86bf2a0, type: 3}
+  m_Script: {fileID: 11500000, guid: dde481d670c3684429d6708c0b2b226d, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.HorizontalLayoutGroup
+  m_EditorClassIdentifier: RTD::UniformHorizontalLayoutGroup
   m_Padding:
     m_Left: 0
     m_Right: 0
     m_Top: 0
     m_Bottom: 0
   m_ChildAlignment: 4
-  m_Spacing: 0
+  m_Spacing: 20
   m_ChildForceExpandWidth: 1
   m_ChildForceExpandHeight: 1
   m_ChildControlWidth: 0
@@ -110,6 +110,10 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+  m_slotWidthMode: 0
+  m_slotWidth: 100
+  m_slotCount: 8
+  m_shrinkSlotsToFit: 1
 --- !u!1 &7814725365364420914
 GameObject:
   m_ObjectHideFlags: 0

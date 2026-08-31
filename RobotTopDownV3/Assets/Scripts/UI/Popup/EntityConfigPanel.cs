@@ -479,6 +479,9 @@ public class EntityConfigPanel : AUIPanel
 							GameDatas.current.currentPlayerSave.AddEquipmentToInventory(eq);
 					}
 					m_entityData.auxiliar = new GameDatas.PlayerSave.Component[0];
+
+					foreach (ComponentSlot slot in m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Frame].slots)
+						slot.Cleanup();
 				}
 
 				RefreshVisuals();
@@ -493,6 +496,8 @@ public class EntityConfigPanel : AUIPanel
 							GameDatas.current.currentPlayerSave.AddEquipmentToInventory(eq);
 					}
 					m_entityData.chipsets = new GameDatas.PlayerSave.Component[0];
+					foreach (ComponentSlot slot in m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Brain].slots)
+						slot.Cleanup();
 				}
 
 				RefreshVisuals();
@@ -507,6 +512,8 @@ public class EntityConfigPanel : AUIPanel
 							GameDatas.current.currentPlayerSave.AddEquipmentToInventory(eq);
 					}
 					m_entityData.arms = new GameDatas.PlayerSave.Component[0];
+					foreach (ComponentSlot slot in m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.NeuronalMembrane].slots)
+						slot.Cleanup();
 				}
 
 				RefreshVisuals();

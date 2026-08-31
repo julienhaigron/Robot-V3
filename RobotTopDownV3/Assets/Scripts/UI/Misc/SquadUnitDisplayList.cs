@@ -7,7 +7,6 @@ public class SquadUnitDisplayList : MonoBehaviour
 {
 	[SerializeField] private RectTransform m_rtfm;
 	[SerializeField] private UnitMacroDisplay[] m_displays;
-	[SerializeField] private UnitMacroDisplay m_soloDisplay;
 	[SerializeField] private Vector3 m_hiddenPosition;
 	[SerializeField] private Vector3 m_visiblePosition;
 	// Start is called once before the first execution of Update after the MonoBehaviour is created
