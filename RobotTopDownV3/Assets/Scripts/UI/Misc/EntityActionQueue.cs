@@ -124,7 +124,6 @@ public class EntityActionQueue : MonoBehaviour
 	{
 		foreach (KeyValuePair<Entity.EntityState, StateButton> pair in m_stateSelectionBtns)
 		{
-			pair.Value.Init(pair.Key);
 			pair.Value.SetSelected(TurnManager.Instance.CurrentStateTypeSelected == pair.Key);
 		}
 	}

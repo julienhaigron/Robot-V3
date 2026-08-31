@@ -237,6 +237,8 @@ public class TurnManager : Singleton<TurnManager>
 	{
 		m_currentStateTypeSelected = _state;
 		onStateSelected?.Invoke(_state);
+
+		RefreshActionDisplay(PlayerController.Instance.SelectedEntity != null ? PlayerController.Instance.SelectedEntity.ID : null, false);
 	}
 
 	public void SetCurrentActionSelected ( EntityActionEnumID _action, string _linkedEquipmentID, bool _isResetingAction )
