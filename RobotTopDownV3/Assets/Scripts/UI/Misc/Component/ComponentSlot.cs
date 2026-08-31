@@ -119,6 +119,7 @@ public class ComponentSlot : ComponentContainer
 
         _display.transform.SetParent(m_displayParent);
         _display.transform.localPosition = Vector3.zero;
+        (m_currentDisplay.transform as RectTransform).sizeDelta = m_displaySize;
     }
 
     private void Swap ( ComponentDisplay _display )
