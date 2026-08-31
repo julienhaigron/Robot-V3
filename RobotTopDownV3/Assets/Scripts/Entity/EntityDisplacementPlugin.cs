@@ -79,7 +79,8 @@ public class EntityDisplacementPlugin : EntityPlugin
 		if (m_movementTween.IsActive())
 			m_movementTween.Kill();
 
-		float movementDuration = _overrideMovementSpeed ? _overritenMovementSpeed : GameConfig.current.game.actionDuration;
+		float movementDuration
+ = _overrideMovementSpeed ? _overritenMovementSpeed : GameConfig.current.game.actionDuration;
 		m_movementTween = transform.DOMove(tile.transform.position - m_bottomPosition.localPosition, movementDuration)
 			.SetEase(Ease.Linear).OnComplete(() => onMovementDoneAction?.Invoke());
 		tile.SetEntity(m_linkedEntity, _isThisTurn: false);

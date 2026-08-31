@@ -912,6 +912,7 @@ public class TurnManager : Singleton<TurnManager>
 				if (!action.action.IsPerformingAtTick(currentTick))
 					continue;
 
+				bool wasPairedWithAnotherAction = false;
 				foreach (int otherEntity in m_actionsToPlay.Keys)
 				{
 					if (entity == otherEntity) continue;
@@ -922,6 +923,7 @@ public class TurnManager : Singleton<TurnManager>
 						if (!otherAction.action.IsPerformingAtTick(currentTick))
 							continue;
 
+						wasPairedWithAnotherAction = true;
 						AEntityAction.ActionConflictResultInfo resultInfo = action.action.CheckConflict(otherAction.action);
 						if (resultInfo.isFirstActionConflicted)
 						{
@@ -935,6 +937,13 @@ public class TurnManager : Singleton<TurnManager>
 						}
 					}
 				}
+
+				//nobody to be paired with this tick: the action still has to validate and book its target tiles
+				if (!wasPairedWithAnotherAction && action.action.ConflictCheckAlone())
+				{
+					LogConsole.AddLog("Conflict detected: [" + action.action.ToString() + "]", LogConsole.LogEventType.ActionConflict);
+					conflicts.Add(action);
+				}
 			}
 		}
 
@@ -947,6 +956,7 @@ public class TurnManager : Singleton<TurnManager>
 
 		foreach (RecordedAction conflictedAction in m_recordedConflict)
 		{
+			bool wasPairedWithAnotherAction = false;
 			foreach (int otherEntity in m_actionsToPlay.Keys)
 			{
 				if (conflictedAction.performingEntityID == otherEntity) continue;
@@ -954,6 +964,7 @@ public class TurnManager : Singleton<TurnManager>
 				Queue<RecordedAction> otherEntityActionsPlayedThisRound = m_actionsToPlay[otherEntity];
 				foreach (RecordedAction otherAction in otherEntityActionsPlayedThisRound.ToArray())
 				{
+					wasPairedWithAnotherAction = true;
 					AEntityAction.ActionConflictResultInfo resultInfo = conflictedAction.action.CheckConflict(otherAction.action, false);
 					if (resultInfo.isFirstActionConflicted)
 					{
@@ -967,6 +978,9 @@ public class TurnManager : Singleton<TurnManager>
 					}
 				}
 			}
+
+			if (!wasPairedWithAnotherAction && conflictedAction.action.ConflictCheckAlone(false))
+				remainingConflict.Add(conflictedAction);
 		}
 
 		return remainingConflict;

@@ -114,6 +114,16 @@ public abstract class AEntityAction : INetworkSerializable
 	public abstract ActionConflictResultInfo CheckConflict ( AEntityAction _otherAction, bool _isCheck = true );
 
 	/// <summary>
+	/// CheckForConflicts only ever pairs actions coming from two different entities, so an action with nobody
+	/// to be paired with this tick is never checked and never books its target tiles. Such an action must still
+	/// validate itself, otherwise it moves onto tiles no one ever looked at. Returns true if it is in conflict.
+	/// </summary>
+	public virtual bool ConflictCheckAlone ( bool _isCheck = true )
+	{
+		return false;
+	}
+
+	/// <summary>
 	/// called at the beginning of each performing tick
 	/// </summary>
 	/// <param name="_state"></param>

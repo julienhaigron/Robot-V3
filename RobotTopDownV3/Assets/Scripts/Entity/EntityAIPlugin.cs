@@ -193,33 +193,69 @@ public class EntityAIPlugin : EntityPlugin
 				}
 				else
 				{
-					List<Tile> pathToEnemy = GridManager.Instance.GetPath(closestEntity.Displacement.Coordinates.GetTile(), m_linkedEntity.Displacement.Coordinates.GetTile(), true, _movingEntity: m_linkedEntity, _canTraverseAllies: true);
-					if (pathToEnemy == null || pathToEnemy.Count < 2
-						|| (currentActionMainType == EntityActionData.MainActionType.Movement && _recordedAction.action.targetTileIDs != null && _recordedAction.action.targetTileIDs.Length > 0
-							&& pathToEnemy[^1].Distance >= GridManager.Instance.Tiles[_recordedAction.action.targetTileIDs[0]].Distance))
+					//Head for the closest tile the unit could actually fire from rather than for the target
+					//itself, so it stops as soon as it is in position instead of walking into the enemy.
+					Tile from = m_linkedEntity.Displacement.Coordinates.GetTile();
+					Tile targetTile = closestEntity.Displacement.Coordinates.GetTile();
+					Tile firingTile = GetClosestFiringTile(closestEntity, true);
+					if (firingTile == null)
+					{
+						//No reachable firing position: close in on the target, but never take its own tile as a
+						//destination. The pathfinding exempts the destination from its occupancy check, so an
+						//occupied destination is walked straight into.
+						firingTile = GetClosestFreeNeighborOf(targetTile, true);
+						if (firingTile == null)
+							return resultInfo;
+					}
+
+					//already heading there: leave the running action alone rather than replacing it with itself
+					if (currentActionMainType == EntityActionData.MainActionType.Movement
+						&& _recordedAction.action is MoveToTargetAction currentMove && currentMove.finalTargetTileID == firingTile.coordinates.ID)
 						return resultInfo;
 
-					//do not change movement target if current target is as close as new one
-
-					pathToEnemy.Reverse();
-
 					List<int> tileIDs = new();
-					for (int i = 0; i < movementAction.movementSpeed && i + 1 < pathToEnemy.Count; i++)
-						tileIDs.Add(pathToEnemy[i + 1].coordinates.ID);
+					if (firingTile != from)
+					{
+						//GetPath walks back from its destination, so the origin comes first once reversed
+						List<Tile> pathToFiringTile = GridManager.Instance.GetPath(from, firingTile, true, _movingEntity: m_linkedEntity, _canTraverseAllies: true);
+						if (pathToFiringTile == null || pathToFiringTile.Count < 2)
+							return resultInfo;
 
-					MoveToTargetAction moveToAction = (TurnManager.Instance.GetAction(movementAction.enumID, m_linkedEntity.ID, null, _recordedAction.timeAtStart) as MoveToTargetAction);
-					moveToAction.mode = MoveToTargetAction.MoveActionMode.Entity;
-					moveToAction.targetEntiyID = closestEntity.ID;
-					moveToAction.targetTileIDs = tileIDs.ToArray();
-					moveToAction.Init(GameAssets.current.game.entityActionsData[movementAction.enumID], null, m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID, _recordedAction.action.timeAtStart);
-					resultInfo.ReplaceAction(moveToAction, "Gets closer to target");
+						pathToFiringTile.Reverse();
+						for (int i = 0; i < movementAction.movementSpeed && i + 1 < pathToFiringTile.Count; i++)
+							tileIDs.Add(pathToFiringTile[i + 1].coordinates.ID);
+					}
 
-					if (!isAtCorrectOrientation)
+					//A lone ReplaceFreeAction would make TurnManager cancel the running action and re-enqueue
+					//that very same object, so the main action is always replaced too.
+					if (tileIDs.Count > 0)
+					{
+						MoveToTargetAction moveToAction = (TurnManager.Instance.GetAction(movementAction.enumID, m_linkedEntity.ID, null, _recordedAction.timeAtStart) as MoveToTargetAction);
+						moveToAction.mode = MoveToTargetAction.MoveActionMode.Coordinate;
+						moveToAction.targetTileID = firingTile.coordinates.ID;
+						moveToAction.targetTileIDs = tileIDs.ToArray();
+						moveToAction.Init(GameAssets.current.game.entityActionsData[movementAction.enumID], null, m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID, _recordedAction.action.timeAtStart);
+						resultInfo.ReplaceAction(moveToAction, "Gets in position to shoot target");
+					}
+					else
+					{
+						WaitAction waitAction = (TurnManager.Instance.GetAction(EntityActionEnumID.Wait, m_linkedEntity.ID, null, _recordedAction.timeAtStart) as WaitAction);
+						waitAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.Wait], null, m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID, _recordedAction.action.timeAtStart);
+						resultInfo.ReplaceAction(waitAction, "Already in position to shoot target");
+					}
+
+					//Face the target from where the unit will stand at the end of THIS action, not from a firing
+					//tile several ticks away: that would aim it somewhere that means nothing yet. It converges on
+					//the firing orientation as the unit arrives.
+					Tile orientationFrom = tileIDs.Count > 0 ? GridManager.Instance.Tiles[tileIDs[^1]] : from;
+					int firingOrientation = GridManager.Instance.GetClosestOrientation(orientationFrom, targetTile);
+
+					if (firingOrientation != m_linkedEntity.Displacement.CurrentOrientation)
 					{
 						RotateEntityAction rotateAction = (TurnManager.Instance.GetAction(EntityActionEnumID.RotateEntity, m_linkedEntity.ID, null, _recordedAction.timeAtStart) as RotateEntityAction);
-						rotateAction.targetedOrientationID = new int[1] { GridManager.Instance.GetClosestOrientation(m_linkedEntity.Displacement.Coordinates.GetTile(), closestEntity.Displacement.Coordinates.GetTile()) };
+						rotateAction.targetedOrientationID = new int[1] { firingOrientation };
 						rotateAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.RotateEntity], null, m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID, _recordedAction.action.timeAtStart);
-						resultInfo.ReplaceFreeAction(rotateAction, "Rotate toward target");
+						resultInfo.ReplaceFreeAction(rotateAction, "Rotate to shoot target");
 					}
 				}
 			}
@@ -258,13 +294,17 @@ public class EntityAIPlugin : EntityPlugin
 		WeaponCheck(_action);
 	}
 
-	private List<System.Tuple<EntityActionData, string>> GetAvailableAttackAction ()
+	//_ignoreRemainingTokens is for geometry questions only ("could I shoot from there"): whether an attack still
+	//fits in this round is a scheduling matter, and mixing the two makes a unit believe it is weaponless on the
+	//last tick, leave its firing position and walk off looking for one.
+	private List<System.Tuple<EntityActionData, string>> GetAvailableAttackAction ( bool _ignoreRemainingTokens = false )
 	{
 		List<System.Tuple<EntityActionData, string>> actionEquipmentPairs = new();
 		foreach (EntityActionEnumID actionEnumID in m_linkedEntity.ComponentLinkedToAction.Keys)
 		{
 			EntityActionData data = GameAssets.current.game.entityActionsData[actionEnumID];
-			if (data.GetTokenTotalCost(null, m_linkedEntity, null) > (GameConfig.current.game.actionTokenPerRound - TurnManager.currentTick - 1))
+			//remaining ticks include the current one, same count as TurnManager.remainingActionTickThisTurn
+			if (!_ignoreRemainingTokens && data.GetTokenTotalCost(null, m_linkedEntity, null) > (GameConfig.current.game.actionTokenPerRound - TurnManager.currentTick))
 				continue;
 
 			if (data.type == EntityActionData.ActionType.DistanceAttack || data.type == EntityActionData.ActionType.MeleeAttack)
@@ -411,6 +451,106 @@ public class EntityAIPlugin : EntityPlugin
 		}
 
 		return false;
+	}
+
+	//Closest tile next to _tile that the unit could actually stop on. Relies on the distance map left by
+	//GetClosestFiringTile, which always runs its BFS before it can return null.
+	private Tile GetClosestFreeNeighborOf ( Tile _tile, bool _isThisTurn = true )
+	{
+		Tile from = m_linkedEntity.Displacement.Coordinates.GetTile();
+		Tile closest = null;
+
+		for (int i = 0; i < 6; i++)
+		{
+			Tile neighbor = _tile.GetNeighbor((HexDirection)i);
+			if (neighbor == null || neighbor.Distance == int.MaxValue || neighbor.IsObstacle(_isThisTurn))
+				continue;
+
+			if (neighbor != from && neighbor.GetEntity(_isThisTurn) != null)
+				continue;
+
+			if (closest == null || neighbor.Distance < closest.Distance)
+				closest = neighbor;
+		}
+
+		return closest;
+	}
+
+	//Can the unit hit _target standing on _from? Rotating is a free action, so the facing is taken as the one
+	//that aims at the target, and the real weapon cone answers for every attack the unit currently has.
+	public bool CanFireFrom ( Tile _from, Entity _target, bool _isThisTurn = true )
+	{
+		if (_from == null || _target == null)
+			return false;
+
+		Tile targetTile = _target.Displacement.Coordinates.GetTile();
+		int orientation = GridManager.Instance.GetClosestOrientation(_from, targetTile);
+
+		foreach (System.Tuple<EntityActionData, string> pair in GetAvailableAttackAction(_ignoreRemainingTokens: true))
+		{
+			AEntityAction attackAction = TurnManager.Instance.GetAction(pair.Item1, m_linkedEntity.ID, pair.Item2, TurnManager.currentTick);
+			if (m_linkedEntity.Equipment.GetTilesInWeaponRange(attackAction, _isThisTurn, _from, orientation).Contains(targetTile))
+				return true;
+		}
+
+		return false;
+	}
+
+	//Closest tile the unit could actually fire on _target from, so the AI gets in position instead of walking
+	//into the enemy. Rotating is a free action, so orientation never rules a tile out: only range and line of
+	//sight do, and the real weapon cone from that tile confirms the candidate. Returns null if there is none.
+	public Tile GetClosestFiringTile ( Entity _target, bool _isThisTurn = true )
+	{
+		if (_target == null)
+			return null;
+
+		Tile from = m_linkedEntity.Displacement.Coordinates.GetTile();
+		Tile targetTile = _target.Displacement.Coordinates.GetTile();
+
+		//The candidate pre filter below walks line of sight outwards from the target, which is not exactly the
+		//check the weapon cone does from the shooter side. Never let that approximation reject the tile the unit
+		//already stands on, or it steps aside only to come back into position next tick.
+		if (CanFireFrom(from, _target, _isThisTurn))
+			return from;
+
+		//full distance map from the unit, GetClosestEnemyInVisionRange stops its own BFS at the target
+		GridManager.Instance.BFS(from, -1, null, _isThisTurn);
+
+		Tile closestTile = null;
+		int closestDistance = int.MaxValue;
+		int closestRange = -1;
+
+		foreach (System.Tuple<EntityActionData, string> pair in GetAvailableAttackAction(_ignoreRemainingTokens: true))
+		{
+			AEntityAction rangeAction = TurnManager.Instance.GetAction(pair.Item1, m_linkedEntity.ID, pair.Item2, TurnManager.currentTick);
+			int maxRange = pair.Item1.GetMaxRange(rangeAction, m_linkedEntity, _target);
+
+			foreach (Tile candidate in GridManager.Instance.GetTilesInVisionRange(targetTile, pair.Item1.minDistance, maxRange, false, _isThisTurn, true))
+			{
+				if (candidate.Distance == int.MaxValue || candidate.Distance > closestDistance || candidate.IsObstacle(_isThisTurn))
+					continue;
+
+				if (candidate != from && candidate.GetEntity(_isThisTurn) != null)
+					continue;
+
+				//Ties are broken on the range kept to the target: a deterministic second key, otherwise the
+				//pick flips between equally close firing tiles as the unit walks and it weaves sideways.
+				int candidateRange = Mathf.Max(Mathf.Abs(candidate.coordinates.X - targetTile.coordinates.X)
+					, Mathf.Abs(candidate.coordinates.Y - targetTile.coordinates.Y)
+					, Mathf.Abs(candidate.coordinates.Z - targetTile.coordinates.Z));
+				if (candidate.Distance == closestDistance && candidateRange <= closestRange)
+					continue;
+
+				if (!CanFireFrom(candidate, _target, _isThisTurn))
+					continue;
+
+				closestTile = candidate;
+				closestDistance = candidate.Distance;
+				closestRange = candidateRange;
+			}
+		}
+
+		return closestTile;
 	}
 
 	public Entity GetClosestEnemyInVisionRange ( bool _isThisTurn = true )

@@ -50,7 +50,7 @@ public class MoveToTargetAction : AEntityAction
 		if(IsDestinationOccupiedOnNextTurnAction())
 			RefreshDestinatedTile();*/
 
-		if(finalTargetTileID != 1 && targetTileIDs != null)
+		if(finalTargetTileID != -1 && targetTileIDs != null)
 			GameManager.Instance.GetEntityFromID(performingEntityID).Displacement.Coordinates.GetTile().SetEntity(null, _isThisTurn: true);
 	}
 
@@ -265,6 +265,12 @@ public class MoveToTargetAction : AEntityAction
 		}
 
 		return new() { isFirstActionConflicted = doesSelfHaveConflict, isSecondActionConflicted = doesOtherHaveConflict };
+	}
+
+	//CheckConflict is null safe: the only branch using _otherAction is a pattern match, which fails on null.
+	public override bool ConflictCheckAlone ( bool _isCheck = true )
+	{
+		return CheckConflict(null, _isCheck).isFirstActionConflicted;
 	}
 
 	private bool IsDestinationOccupiedOnNextTurnAction ()

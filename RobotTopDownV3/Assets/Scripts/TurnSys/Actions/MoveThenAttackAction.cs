@@ -29,6 +29,12 @@ public class MoveThenAttackAction : AttackAction
 		base.Prepare(_state);
 	}
 
+	//CheckConflict is null safe here too: every _otherAction use is a pattern match, which fails on null.
+	public override bool ConflictCheckAlone ( bool _isCheck = true )
+	{
+		return CheckConflict(null, _isCheck).isFirstActionConflicted;
+	}
+
 	public override ActionConflictResultInfo CheckConflict ( AEntityAction _otherAction, bool _isCheck = true )
 	{
 		if (isActionCanceled || positionAfterMovementID == -1)
