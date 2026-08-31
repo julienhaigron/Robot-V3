@@ -205,7 +205,7 @@ public class EntityConfigPanel : AUIPanel
 				display.SetOutlineColor(GameAssets.current.ui.componentColors[data.GetEquipmentType()]);
 		}*/
 
-
+		m_hoveredComponentFullInfoDisplay.Init(null);
 		RefreshVisuals();
 	}
 

@@ -21,30 +21,37 @@ public class ComponentFullDisplay : MonoBehaviour
 
 	public void Init ( GameDatas.PlayerSave.Component _componentSavedData )
 	{
-		if (_componentSavedData == null)
-			return;
-
-		EntityEquipmentData componentData = _componentSavedData.GetData<EntityEquipmentData>();
+		EntityEquipmentData componentData = _componentSavedData != null ? _componentSavedData.GetData<EntityEquipmentData>() : null;
 		m_componentTypeIcon.sprite = componentData == null ? null : GameAssets.current.ui.componentIcons[componentData.GetEquipmentType()];
+		m_componentTypeIcon.gameObject.SetActive(componentData != null);
 		m_corpIcon.sprite = componentData == null ? null : GameAssets.current.ui.corporationsIcons[componentData.faction];
+		m_corpIcon.gameObject.SetActive(componentData != null);
 		//m_icon.sprite = componentData.icon;
 		m_titleTMP.text = componentData == null ? null : componentData.displayName;
 		m_priceTMP.text = componentData == null ? null : componentData.GetSellingPrice().Item2.ToString();
 
-		EntityEquipmentData.StatDescription[] statsDescriptions = componentData.GetDesciption();
-		for (int i = 0; i < m_statDisplays.Length; i++)
+		if (componentData != null)
 		{
-			if (statsDescriptions.Length <= i)
-				m_statDisplays[i].gameObject.SetActive(false);
-			else
+			EntityEquipmentData.StatDescription[] statsDescriptions = componentData.GetDesciption();
+			for (int i = 0; i < m_statDisplays.Length; i++)
 			{
-				m_statDisplays[i].gameObject.SetActive(true);
-				m_statDisplays[i].Init(statsDescriptions[i]);
+				if (statsDescriptions.Length <= i)
+					m_statDisplays[i].gameObject.SetActive(false);
+				else
+				{
+					m_statDisplays[i].gameObject.SetActive(true);
+					m_statDisplays[i].Init(statsDescriptions[i]);
+				}
 			}
+		}
+		else
+		{
+			foreach(StatDisplay statDisplay in m_statDisplays)
+				statDisplay.gameObject.SetActive(false);
 		}
 	}
 
-	private void OnComponentHovered (ComponentDisplay _display)
+	private void OnComponentHovered ( ComponentDisplay _display )
 	{
 		if (!gameObject.activeInHierarchy || _display == m_currentDisplayedComponent)
 			return;
