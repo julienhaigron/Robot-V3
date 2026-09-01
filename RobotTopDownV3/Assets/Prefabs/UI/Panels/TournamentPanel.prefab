@@ -382,7 +382,8 @@ MonoBehaviour:
   m_canvas: {fileID: 5515089855900459242}
   m_raycaster: {fileID: 6534208298994374191}
   m_blockClickGO: {fileID: 1862865783987743521}
-  m_RectTfmVisibilityList: []
+  m_canvasGroupVisibilityArray: []
+  m_highlighZones: []
   m_overrideDurations: 0
   m_showDuration: 0.3
   m_hideDuration: 0.3
@@ -2603,7 +2604,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -5163,7 +5164,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7997734511502859439, guid: 655af6c72e0b0ee41b068f74f9f65db4, type: 3}
       propertyPath: m_fontSize
-      value: 22.8
+      value: 21.1
       objectReference: {fileID: 0}
     - target: {fileID: 7997734511502859439, guid: 655af6c72e0b0ee41b068f74f9f65db4, type: 3}
       propertyPath: m_fontStyle
@@ -5863,7 +5864,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7997734511502859439, guid: 655af6c72e0b0ee41b068f74f9f65db4, type: 3}
       propertyPath: m_fontSize
-      value: 22.8
+      value: 21.1
       objectReference: {fileID: 0}
     - target: {fileID: 7997734511502859439, guid: 655af6c72e0b0ee41b068f74f9f65db4, type: 3}
       propertyPath: m_fontStyle
@@ -6032,7 +6033,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7997734511502859439, guid: 655af6c72e0b0ee41b068f74f9f65db4, type: 3}
       propertyPath: m_fontSize
-      value: 22.8
+      value: 21.1
       objectReference: {fileID: 0}
     - target: {fileID: 7997734511502859439, guid: 655af6c72e0b0ee41b068f74f9f65db4, type: 3}
       propertyPath: m_fontStyle
@@ -6201,7 +6202,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7997734511502859439, guid: 655af6c72e0b0ee41b068f74f9f65db4, type: 3}
       propertyPath: m_fontSize
-      value: 22.8
+      value: 21.1
       objectReference: {fileID: 0}
     - target: {fileID: 7997734511502859439, guid: 655af6c72e0b0ee41b068f74f9f65db4, type: 3}
       propertyPath: m_fontStyle
@@ -6479,7 +6480,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7997734511502859439, guid: 655af6c72e0b0ee41b068f74f9f65db4, type: 3}
       propertyPath: m_fontSize
-      value: 22.8
+      value: 21.1
       objectReference: {fileID: 0}
     - target: {fileID: 7997734511502859439, guid: 655af6c72e0b0ee41b068f74f9f65db4, type: 3}
       propertyPath: m_fontStyle
@@ -6648,7 +6649,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7997734511502859439, guid: 655af6c72e0b0ee41b068f74f9f65db4, type: 3}
       propertyPath: m_fontSize
-      value: 22.8
+      value: 21.1
       objectReference: {fileID: 0}
     - target: {fileID: 7997734511502859439, guid: 655af6c72e0b0ee41b068f74f9f65db4, type: 3}
       propertyPath: m_fontStyle
@@ -6965,7 +6966,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7997734511502859439, guid: 655af6c72e0b0ee41b068f74f9f65db4, type: 3}
       propertyPath: m_fontSize
-      value: 22.8
+      value: 21.1
       objectReference: {fileID: 0}
     - target: {fileID: 7997734511502859439, guid: 655af6c72e0b0ee41b068f74f9f65db4, type: 3}
       propertyPath: m_fontStyle
@@ -7134,7 +7135,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7997734511502859439, guid: 655af6c72e0b0ee41b068f74f9f65db4, type: 3}
       propertyPath: m_fontSize
-      value: 22.8
+      value: 21.1
       objectReference: {fileID: 0}
     - target: {fileID: 7997734511502859439, guid: 655af6c72e0b0ee41b068f74f9f65db4, type: 3}
       propertyPath: m_fontStyle
@@ -7464,7 +7465,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7997734511502859439, guid: 655af6c72e0b0ee41b068f74f9f65db4, type: 3}
       propertyPath: m_fontSize
-      value: 22.8
+      value: 21.1
       objectReference: {fileID: 0}
     - target: {fileID: 7997734511502859439, guid: 655af6c72e0b0ee41b068f74f9f65db4, type: 3}
       propertyPath: m_fontStyle
@@ -7633,7 +7634,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7997734511502859439, guid: 655af6c72e0b0ee41b068f74f9f65db4, type: 3}
       propertyPath: m_fontSize
-      value: 22.8
+      value: 21.1
       objectReference: {fileID: 0}
     - target: {fileID: 7997734511502859439, guid: 655af6c72e0b0ee41b068f74f9f65db4, type: 3}
       propertyPath: m_fontStyle
@@ -7802,7 +7803,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7997734511502859439, guid: 655af6c72e0b0ee41b068f74f9f65db4, type: 3}
       propertyPath: m_fontSize
-      value: 22.8
+      value: 21.1
       objectReference: {fileID: 0}
     - target: {fileID: 7997734511502859439, guid: 655af6c72e0b0ee41b068f74f9f65db4, type: 3}
       propertyPath: m_fontStyle
@@ -7971,7 +7972,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7997734511502859439, guid: 655af6c72e0b0ee41b068f74f9f65db4, type: 3}
       propertyPath: m_fontSize
-      value: 22.8
+      value: 21.1
       objectReference: {fileID: 0}
     - target: {fileID: 7997734511502859439, guid: 655af6c72e0b0ee41b068f74f9f65db4, type: 3}
       propertyPath: m_fontStyle
@@ -8301,7 +8302,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7997734511502859439, guid: 655af6c72e0b0ee41b068f74f9f65db4, type: 3}
       propertyPath: m_fontSize
-      value: 22.8
+      value: 21.1
       objectReference: {fileID: 0}
     - target: {fileID: 7997734511502859439, guid: 655af6c72e0b0ee41b068f74f9f65db4, type: 3}
       propertyPath: m_fontStyle
@@ -8470,7 +8471,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7997734511502859439, guid: 655af6c72e0b0ee41b068f74f9f65db4, type: 3}
       propertyPath: m_fontSize
-      value: 22.8
+      value: 21.1
       objectReference: {fileID: 0}
     - target: {fileID: 7997734511502859439, guid: 655af6c72e0b0ee41b068f74f9f65db4, type: 3}
       propertyPath: m_fontStyle
@@ -8639,7 +8640,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7997734511502859439, guid: 655af6c72e0b0ee41b068f74f9f65db4, type: 3}
       propertyPath: m_fontSize
-      value: 22.8
+      value: 21.1
       objectReference: {fileID: 0}
     - target: {fileID: 7997734511502859439, guid: 655af6c72e0b0ee41b068f74f9f65db4, type: 3}
       propertyPath: m_fontStyle
@@ -9927,7 +9928,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7997734511502859439, guid: 655af6c72e0b0ee41b068f74f9f65db4, type: 3}
       propertyPath: m_fontSize
-      value: 22.8
+      value: 21.1
       objectReference: {fileID: 0}
     - target: {fileID: 7997734511502859439, guid: 655af6c72e0b0ee41b068f74f9f65db4, type: 3}
       propertyPath: m_fontStyle
@@ -10096,7 +10097,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7997734511502859439, guid: 655af6c72e0b0ee41b068f74f9f65db4, type: 3}
       propertyPath: m_fontSize
-      value: 22.8
+      value: 21.1
       objectReference: {fileID: 0}
     - target: {fileID: 7997734511502859439, guid: 655af6c72e0b0ee41b068f74f9f65db4, type: 3}
       propertyPath: m_fontStyle
@@ -10265,7 +10266,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7997734511502859439, guid: 655af6c72e0b0ee41b068f74f9f65db4, type: 3}
       propertyPath: m_fontSize
-      value: 22.8
+      value: 21.1
       objectReference: {fileID: 0}
     - target: {fileID: 7997734511502859439, guid: 655af6c72e0b0ee41b068f74f9f65db4, type: 3}
       propertyPath: m_fontStyle
@@ -10434,7 +10435,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7997734511502859439, guid: 655af6c72e0b0ee41b068f74f9f65db4, type: 3}
       propertyPath: m_fontSize
-      value: 22.8
+      value: 21.1
       objectReference: {fileID: 0}
     - target: {fileID: 7997734511502859439, guid: 655af6c72e0b0ee41b068f74f9f65db4, type: 3}
       propertyPath: m_fontStyle
@@ -11151,7 +11152,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7997734511502859439, guid: 655af6c72e0b0ee41b068f74f9f65db4, type: 3}
       propertyPath: m_fontSize
-      value: 22.8
+      value: 21.1
       objectReference: {fileID: 0}
     - target: {fileID: 7997734511502859439, guid: 655af6c72e0b0ee41b068f74f9f65db4, type: 3}
       propertyPath: m_fontStyle
@@ -11320,7 +11321,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7997734511502859439, guid: 655af6c72e0b0ee41b068f74f9f65db4, type: 3}
       propertyPath: m_fontSize
-      value: 22.8
+      value: 21.1
       objectReference: {fileID: 0}
     - target: {fileID: 7997734511502859439, guid: 655af6c72e0b0ee41b068f74f9f65db4, type: 3}
       propertyPath: m_fontStyle
@@ -11715,7 +11716,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7997734511502859439, guid: 655af6c72e0b0ee41b068f74f9f65db4, type: 3}
       propertyPath: m_fontSize
-      value: 22.8
+      value: 21.1
       objectReference: {fileID: 0}
     - target: {fileID: 7997734511502859439, guid: 655af6c72e0b0ee41b068f74f9f65db4, type: 3}
       propertyPath: m_fontStyle
@@ -11884,7 +11885,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7997734511502859439, guid: 655af6c72e0b0ee41b068f74f9f65db4, type: 3}
       propertyPath: m_fontSize
-      value: 22.8
+      value: 21.1
       objectReference: {fileID: 0}
     - target: {fileID: 7997734511502859439, guid: 655af6c72e0b0ee41b068f74f9f65db4, type: 3}
       propertyPath: m_fontStyle
@@ -12053,7 +12054,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7997734511502859439, guid: 655af6c72e0b0ee41b068f74f9f65db4, type: 3}
       propertyPath: m_fontSize
-      value: 22.8
+      value: 21.1
       objectReference: {fileID: 0}
     - target: {fileID: 7997734511502859439, guid: 655af6c72e0b0ee41b068f74f9f65db4, type: 3}
       propertyPath: m_fontStyle

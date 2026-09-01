@@ -35,7 +35,7 @@ public class UnitMissionDisplay : MonoBehaviour, IPointerEnterHandler
 		m_nameTMP.text = _data.name;
 		m_isSelected = _isSelected;
 		m_selectGO.SetActive(_isSelected);
-		m_isDamagedGO.SetActive(_data.IsDamaged());
+		m_isDamagedGO.SetActive(_data != null && _data.IsDamaged());
 	}
 
 	public void Show ()

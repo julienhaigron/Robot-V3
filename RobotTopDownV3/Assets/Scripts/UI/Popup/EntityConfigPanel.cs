@@ -91,8 +91,8 @@ public class EntityConfigPanel : AUIPanel
 
 	protected override void OnHideFinished ()
 	{
-		if (m_isNewUnit && m_entityData.IsUnitValid())
-			GameDatas.current.currentPlayerSave.AddNewUnit(m_entityData, false);
+		/*if (m_isNewUnit && m_entityData.IsUnitValid())
+			GameDatas.current.currentPlayerSave.AddNewUnit(m_entityData, false);*/
 
 		m_inventoryGrid.Cleanup();
 		foreach (ComponentSlot slot in m_mainComponentSlotDictionary.Values)
@@ -109,6 +109,7 @@ public class EntityConfigPanel : AUIPanel
 	{
 		EntitySavedData newUnit = new();
 		newUnit.name = "New Unit";
+		GameDatas.current.currentPlayerSave.AddNewUnit(newUnit, false);
 		//HubManager.Instance.AddEntity(GameDatas.current.currentPlayerSave.AddNewUnit(newUnit, false));
 		Init(newUnit, false);
 		m_isNewUnit = true;
@@ -124,79 +125,20 @@ public class EntityConfigPanel : AUIPanel
 		m_mainComponentSlotDictionary[EntityEquipmentData.EquipmentType.Frame].Init(m_inventoryGrid, _entity, _entity.frame
 			, item => item != null && item.TryGetData(out EntityEquipmentData _data) && _data.GetEquipmentType() == EntityEquipmentData.EquipmentType.Frame, ComponentDisplay.DisplayMode.Hangar);
 		m_mainComponentSlotDictionary[EntityEquipmentData.EquipmentType.Frame].SetOutlineColor(GameAssets.current.ui.componentColors[EntityEquipmentData.EquipmentType.Frame]);
-		
+
 		m_mainComponentSlotDictionary[EntityEquipmentData.EquipmentType.Brain].Init(m_inventoryGrid, _entity, _entity.brain
 			, item => item != null && item.TryGetData(out EntityEquipmentData _data) && _data.GetEquipmentType() == EntityEquipmentData.EquipmentType.Brain, ComponentDisplay.DisplayMode.Hangar);
 		m_mainComponentSlotDictionary[EntityEquipmentData.EquipmentType.Brain].SetOutlineColor(GameAssets.current.ui.componentColors[EntityEquipmentData.EquipmentType.Brain]);
-		
+
 		m_mainComponentSlotDictionary[EntityEquipmentData.EquipmentType.NeuronalMembrane].Init(m_inventoryGrid, _entity, _entity.neuronalMembrane
 			, item => item != null && item.TryGetData(out EntityEquipmentData _data) && _data.GetEquipmentType() == EntityEquipmentData.EquipmentType.NeuronalMembrane, ComponentDisplay.DisplayMode.Hangar);
 		m_mainComponentSlotDictionary[EntityEquipmentData.EquipmentType.NeuronalMembrane].SetOutlineColor(GameAssets.current.ui.componentColors[EntityEquipmentData.EquipmentType.NeuronalMembrane]);
-		
+
 		m_mainComponentSlotDictionary[EntityEquipmentData.EquipmentType.Reactor].Init(m_inventoryGrid, _entity, _entity.reactor
 			, item => item != null && item.TryGetData(out EntityEquipmentData _data) && _data.GetEquipmentType() == EntityEquipmentData.EquipmentType.Reactor, ComponentDisplay.DisplayMode.Hangar);
 		m_mainComponentSlotDictionary[EntityEquipmentData.EquipmentType.Reactor].SetOutlineColor(GameAssets.current.ui.componentColors[EntityEquipmentData.EquipmentType.Reactor]);
 
-		for (int i = 0; i < m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Frame].slots.Count; i++)
-		{
-			if (_entity.FrameData != null && _entity.FrameData.armouringSlotAvailable > i)
-			{
-				m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Frame].slots[i].Init(m_inventoryGrid, _entity, _entity.auxiliar != null && _entity.auxiliar.Length > i
-				? _entity.auxiliar[i] : null,
-				item => item != null && item.TryGetData(out EntityEquipmentData _data) && _data.TryGetEquipmentType(out EntityEquipmentData.EquipmentType type)
-				&& (type == EntityEquipmentData.EquipmentType.Armor), ComponentDisplay.DisplayMode.Hangar);
-
-				//m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Frame].slots[i].SetInteractability(m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Frame].slots[i].Equipment != null && !m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Frame].slots[i].Equipment.isDamaged);
-				m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Frame].slots[i].SetOutlineColor(GameAssets.current.ui.componentColors[EntityEquipmentData.EquipmentType.Armor]);
-				m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Frame].slots[i].gameObject.SetActive(true);
-			}
-			else if(_entity.FrameData != null && _entity.FrameData.armouringSlotAvailable + _entity.FrameData.occultorSlotAvailable > i)
-			{
-				m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Frame].slots[i].Init(m_inventoryGrid, _entity, _entity.auxiliar != null && _entity.auxiliar.Length > i
-				? _entity.auxiliar[i] : null,
-				item => item != null && item.TryGetData(out EntityEquipmentData _data) && _data.TryGetEquipmentType(out EntityEquipmentData.EquipmentType type)
-				&& (type == EntityEquipmentData.EquipmentType.Occultor), ComponentDisplay.DisplayMode.Hangar);
-				//m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Frame].slots[i].SetInteractability(m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Frame].slots[i].Equipment != null && !m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Frame].slots[i].Equipment.isDamaged);
-				m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Frame].slots[i].SetOutlineColor(GameAssets.current.ui.componentColors[EntityEquipmentData.EquipmentType.Occultor]);
-				m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Frame].slots[i].gameObject.SetActive(true);
-			}
-			else
-			{
-				m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Frame].slots[i].Init(m_inventoryGrid, _entity, _entity.auxiliar != null && _entity.auxiliar.Length > i
-				? _entity.auxiliar[i] : null,
-				item => item != null && item.TryGetData(out EntityEquipmentData _data) && _data.TryGetEquipmentType(out EntityEquipmentData.EquipmentType type)
-				&& (type == EntityEquipmentData.EquipmentType.Armor || type == EntityEquipmentData.EquipmentType.Occultor), ComponentDisplay.DisplayMode.Hangar);
-				//m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Frame].slots[i].SetInteractability(m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Frame].slots[i].Equipment != null && !m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Frame].slots[i].Equipment.isDamaged);
-				m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Frame].slots[i].gameObject.SetActive(false);
-			}
-		}
-		for (int i = 0; i < m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Brain].slots.Count; i++)
-		{
-			m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Brain].slots[i].Init(m_inventoryGrid, _entity, _entity.chipsets != null && _entity.chipsets.Length > i
-				? _entity.chipsets[i] : null,
-				item => item != null && item.TryGetData(out EntityEquipmentData _data) && _data.GetEquipmentType() == EntityEquipmentData.EquipmentType.Chipset, ComponentDisplay.DisplayMode.Hangar);
-
-			m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Brain].slots[i].SetOutlineColor(GameAssets.current.ui.componentColors[EntityEquipmentData.EquipmentType.Chipset]);
-			//m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Brain].slots[i].SetInteractability(m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Brain].slots[i].Equipment != null && !m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Brain].slots[i].Equipment.isDamaged);
-			if (_entity.BrainData != null && _entity.BrainData.chipsetSlotAvailable > i)
-				m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Brain].slots[i].gameObject.SetActive(true);
-			else
-				m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Brain].slots[i].gameObject.SetActive(false);
-		}
-		for (int i = 0; i < m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.NeuronalMembrane].slots.Count; i++)
-		{
-			m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.NeuronalMembrane].slots[i].Init(m_inventoryGrid, _entity, _entity.arms != null && _entity.arms.Length > i
-				? _entity.arms[i] : null,
-				item => item != null && item.TryGetData(out EntityEquipmentData _data) && _data.TryGetEquipmentType(out EntityEquipmentData.EquipmentType type)
-				&& (type == EntityEquipmentData.EquipmentType.Weapon || type == EntityEquipmentData.EquipmentType.Tool), ComponentDisplay.DisplayMode.Hangar);
-
-			m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.NeuronalMembrane].slots[i].SetOutlineColor(GameAssets.current.ui.componentColors[EntityEquipmentData.EquipmentType.Weapon]);
-			//m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.NeuronalMembrane].slots[i].SetInteractability(m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.NeuronalMembrane].slots[i].Equipment != null && !m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.NeuronalMembrane].slots[i].Equipment.isDamaged);
-			if (_entity.NeuronalMembraneData != null && _entity.NeuronalMembraneData.equipmentSlotAvailable > i)
-				m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.NeuronalMembrane].slots[i].gameObject.SetActive(true);
-			else
-				m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.NeuronalMembrane].slots[i].gameObject.SetActive(false);
-		}
+		InitSubSlots(null);
 
 		m_inventoryGrid.Init(null, _entity, null, InventoryGridPredicate, ComponentDisplay.DisplayMode.Hangar);
 		/*foreach(ComponentDisplay display in m_inventoryGrid.Items)
@@ -207,6 +149,83 @@ public class EntityConfigPanel : AUIPanel
 
 		m_hoveredComponentFullInfoDisplay.Init(null);
 		RefreshVisuals();
+	}
+
+	private void InitSubSlots ( EntityEquipmentData.EquipmentType? _type )
+	{
+		foreach (SubSlotContainer slotContainer in m_subComponentSlotDictionary.Values)
+			foreach (ComponentSlot slot in slotContainer.slots)
+				slot.Cleanup();
+
+		if (_type == null || _type.Value == EntityEquipmentData.EquipmentType.Frame)
+		{
+			for (int i = 0; i < m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Frame].slots.Count; i++)
+			{
+				if (m_entityData.FrameData != null && m_entityData.FrameData.armouringSlotAvailable > i)
+				{
+					m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Frame].slots[i].Init(m_inventoryGrid, m_entityData, m_entityData.auxiliar != null && m_entityData.auxiliar.Length > i
+					? m_entityData.auxiliar[i] : null,
+					item => item != null && item.TryGetData(out EntityEquipmentData _data) && _data.TryGetEquipmentType(out EntityEquipmentData.EquipmentType type)
+					&& (type == EntityEquipmentData.EquipmentType.Armor), ComponentDisplay.DisplayMode.Hangar);
+
+					//m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Frame].slots[i].SetInteractability(m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Frame].slots[i].Equipment != null && !m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Frame].slots[i].Equipment.isDamaged);
+					m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Frame].slots[i].SetOutlineColor(GameAssets.current.ui.componentColors[EntityEquipmentData.EquipmentType.Armor]);
+					m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Frame].slots[i].gameObject.SetActive(true);
+				}
+				else if (m_entityData.FrameData != null && m_entityData.FrameData.armouringSlotAvailable + m_entityData.FrameData.occultorSlotAvailable > i)
+				{
+					m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Frame].slots[i].Init(m_inventoryGrid, m_entityData, m_entityData.auxiliar != null && m_entityData.auxiliar.Length > i
+					? m_entityData.auxiliar[i] : null,
+					item => item != null && item.TryGetData(out EntityEquipmentData _data) && _data.TryGetEquipmentType(out EntityEquipmentData.EquipmentType type)
+					&& (type == EntityEquipmentData.EquipmentType.Occultor), ComponentDisplay.DisplayMode.Hangar);
+					//m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Frame].slots[i].SetInteractability(m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Frame].slots[i].Equipment != null && !m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Frame].slots[i].Equipment.isDamaged);
+					m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Frame].slots[i].SetOutlineColor(GameAssets.current.ui.componentColors[EntityEquipmentData.EquipmentType.Occultor]);
+					m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Frame].slots[i].gameObject.SetActive(true);
+				}
+				else
+				{
+					m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Frame].slots[i].Init(m_inventoryGrid, m_entityData, m_entityData.auxiliar != null && m_entityData.auxiliar.Length > i
+					? m_entityData.auxiliar[i] : null,
+					item => item != null && item.TryGetData(out EntityEquipmentData _data) && _data.TryGetEquipmentType(out EntityEquipmentData.EquipmentType type)
+					&& (type == EntityEquipmentData.EquipmentType.Armor || type == EntityEquipmentData.EquipmentType.Occultor), ComponentDisplay.DisplayMode.Hangar);
+					//m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Frame].slots[i].SetInteractability(m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Frame].slots[i].Equipment != null && !m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Frame].slots[i].Equipment.isDamaged);
+					m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Frame].slots[i].gameObject.SetActive(false);
+				}
+			}
+		}
+		if (_type == null || _type.Value == EntityEquipmentData.EquipmentType.Brain)
+		{
+			for (int i = 0; i < m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Brain].slots.Count; i++)
+			{
+				m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Brain].slots[i].Init(m_inventoryGrid, m_entityData, m_entityData.chipsets != null && m_entityData.chipsets.Length > i
+					? m_entityData.chipsets[i] : null,
+					item => item != null && item.TryGetData(out EntityEquipmentData _data) && _data.GetEquipmentType() == EntityEquipmentData.EquipmentType.Chipset, ComponentDisplay.DisplayMode.Hangar);
+
+				m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Brain].slots[i].SetOutlineColor(GameAssets.current.ui.componentColors[EntityEquipmentData.EquipmentType.Chipset]);
+				//m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Brain].slots[i].SetInteractability(m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Brain].slots[i].Equipment != null && !m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Brain].slots[i].Equipment.isDamaged);
+				if (m_entityData.BrainData != null && m_entityData.BrainData.chipsetSlotAvailable > i)
+					m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Brain].slots[i].gameObject.SetActive(true);
+				else
+					m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Brain].slots[i].gameObject.SetActive(false);
+			}
+		}
+		if (_type == null || _type.Value == EntityEquipmentData.EquipmentType.NeuronalMembrane)
+		{
+			for (int i = 0; i < m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.NeuronalMembrane].slots.Count; i++)
+			{
+				m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.NeuronalMembrane].slots[i].Init(m_inventoryGrid, m_entityData, m_entityData.arms != null && m_entityData.arms.Length > i
+					? m_entityData.arms[i] : null,
+					item => item != null && item.TryGetData(out EntityEquipmentData _data) && _data.TryGetEquipmentType(out EntityEquipmentData.EquipmentType type)
+					&& (type == EntityEquipmentData.EquipmentType.Weapon || type == EntityEquipmentData.EquipmentType.Tool), ComponentDisplay.DisplayMode.Hangar);
+
+				m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.NeuronalMembrane].slots[i].SetOutlineColor(GameAssets.current.ui.componentColors[EntityEquipmentData.EquipmentType.Weapon]);
+				//m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.NeuronalMembrane].slots[i].SetInteractability(m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.NeuronalMembrane].slots[i].Equipment != null && !m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.NeuronalMembrane].slots[i].Equipment.isDamaged);
+				if (m_entityData.NeuronalMembraneData != null && m_entityData.NeuronalMembraneData.equipmentSlotAvailable > i)
+					m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.NeuronalMembrane].slots[i].gameObject.SetActive(true);
+				else
+					m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.NeuronalMembrane].slots[i].gameObject.SetActive(false);
+			}
+		}
 	}
 
 	public ComponentContainer GetFreeContainer ( EntityEquipmentData.EquipmentType _type )
@@ -306,7 +325,7 @@ public class EntityConfigPanel : AUIPanel
 						&& (type == EntityEquipmentData.EquipmentType.Armor), ComponentDisplay.DisplayMode.Hangar);
 						m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Frame].slots[i].gameObject.SetActive(true);
 					}
-					else if(m_entityData.FrameData != null && m_entityData.FrameData.armouringSlotAvailable + m_entityData.FrameData.occultorSlotAvailable > i)
+					else if (m_entityData.FrameData != null && m_entityData.FrameData.armouringSlotAvailable + m_entityData.FrameData.occultorSlotAvailable > i)
 					{
 						m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Frame].slots[i].Init(m_inventoryGrid, m_entityData, m_entityData.auxiliar != null && m_entityData.auxiliar.Length > i
 						? m_entityData.auxiliar[i] : null,
@@ -442,7 +461,7 @@ public class EntityConfigPanel : AUIPanel
 		RefreshVisuals();
 	}
 
-	private void OnItemAddedOnMainSlot(ComponentDisplay _display, EntityEquipmentData.EquipmentType _type )
+	private void OnItemAddedOnMainSlot ( ComponentDisplay _display, EntityEquipmentData.EquipmentType _type )
 	{
 		switch (_type)
 		{
@@ -463,6 +482,8 @@ public class EntityConfigPanel : AUIPanel
 				RefreshVisuals();
 				break;
 		}
+
+		InitSubSlots(_type);
 	}
 
 	private void OnItemRemovedOnMainSlot ( ComponentDisplay _display, EntityEquipmentData.EquipmentType _type )
@@ -471,20 +492,15 @@ public class EntityConfigPanel : AUIPanel
 		{
 			case EntityEquipmentData.EquipmentType.Frame:
 				m_entityData.frame = null;
-				if(m_entityData.auxiliar != null)
+				if (m_entityData.auxiliar != null)
 				{
-					foreach(GameDatas.PlayerSave.Component eq in m_entityData.auxiliar)
+					foreach (GameDatas.PlayerSave.Component eq in m_entityData.auxiliar)
 					{
-						if(eq != null)
+						if (eq != null)
 							GameDatas.current.currentPlayerSave.AddEquipmentToInventory(eq);
 					}
-					m_entityData.auxiliar = new GameDatas.PlayerSave.Component[0];
-
-					foreach (ComponentSlot slot in m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Frame].slots)
-						slot.Cleanup();
+					m_entityData.auxiliar = new GameDatas.PlayerSave.Component[m_entityData.FrameData != null ? m_entityData.FrameData.armouringSlotAvailable + m_entityData.FrameData.occultorSlotAvailable : 0];
 				}
-
-				RefreshVisuals();
 				break;
 			case EntityEquipmentData.EquipmentType.Brain:
 				m_entityData.brain = null;
@@ -496,11 +512,7 @@ public class EntityConfigPanel : AUIPanel
 							GameDatas.current.currentPlayerSave.AddEquipmentToInventory(eq);
 					}
 					m_entityData.chipsets = new GameDatas.PlayerSave.Component[0];
-					foreach (ComponentSlot slot in m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Brain].slots)
-						slot.Cleanup();
 				}
-
-				RefreshVisuals();
 				break;
 			case EntityEquipmentData.EquipmentType.NeuronalMembrane:
 				m_entityData.neuronalMembrane = null;
@@ -512,17 +524,15 @@ public class EntityConfigPanel : AUIPanel
 							GameDatas.current.currentPlayerSave.AddEquipmentToInventory(eq);
 					}
 					m_entityData.arms = new GameDatas.PlayerSave.Component[0];
-					foreach (ComponentSlot slot in m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.NeuronalMembrane].slots)
-						slot.Cleanup();
 				}
-
-				RefreshVisuals();
 				break;
 			case EntityEquipmentData.EquipmentType.Reactor:
-				m_entityData.reactor = null; 
-				RefreshVisuals();
+				m_entityData.reactor = null;
 				break;
 		}
+
+		InitSubSlots(_type);
+		RefreshVisuals();
 	}
 
 	private void OnToggleComponentType ( EntityEquipmentData.EquipmentType _type )

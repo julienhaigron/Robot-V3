@@ -57,24 +57,24 @@ public class UnitPreset : AParsableScriptableObject
         EntitySavedData newUnit = new();
         newUnit.name = displayName;
         newUnit.isRepairing = false;
-        newUnit.frame = new() { ID = frame.name + GameDatas.current.currentPlayerSave.equipmentCounter++, dataID = frame.name };
-        newUnit.reactor = new() { ID = reactor.name + GameDatas.current.currentPlayerSave.equipmentCounter++, dataID = reactor.name };
-        newUnit.neuronalMembrane = new() { ID = neuronalMembrane.name + GameDatas.current.currentPlayerSave.equipmentCounter++, dataID = neuronalMembrane.name };
-        newUnit.brain = new() { ID = brain.name + GameDatas.current.currentPlayerSave.equipmentCounter++, dataID = brain.name };
+        newUnit.frame = new() { ID = frame.name + GameDatas.current.currentPlayerSave.equipmentCounter++, dataID = frame.name, isDamaged = false };
+        newUnit.reactor = new() { ID = reactor.name + GameDatas.current.currentPlayerSave.equipmentCounter++, dataID = reactor.name, isDamaged = false };
+        newUnit.neuronalMembrane = new() { ID = neuronalMembrane.name + GameDatas.current.currentPlayerSave.equipmentCounter++, dataID = neuronalMembrane.name, isDamaged = false };
+        newUnit.brain = new() { ID = brain.name + GameDatas.current.currentPlayerSave.equipmentCounter++, dataID = brain.name, isDamaged = false };
 
         List<GameDatas.PlayerSave.Component> armsContainer = new();
         foreach (EntityEquipmentData arm in arms)
-            armsContainer.Add(new() { ID = arm.name + GameDatas.current.currentPlayerSave.equipmentCounter++, dataID = arm.name });
+            armsContainer.Add(new() { ID = arm.name + GameDatas.current.currentPlayerSave.equipmentCounter++, dataID = arm.name, isDamaged = false });
         newUnit.arms = armsContainer.ToArray();
 
         List<GameDatas.PlayerSave.Component> auxiliaryContainer = new();
         foreach (EntityEquipmentData arm in auxiliary)
-            auxiliaryContainer.Add(new() { ID = arm.name + GameDatas.current.currentPlayerSave.equipmentCounter++, dataID = arm.name });
+            auxiliaryContainer.Add(new() { ID = arm.name + GameDatas.current.currentPlayerSave.equipmentCounter++, dataID = arm.name, isDamaged = false });
         newUnit.auxiliar = auxiliaryContainer.ToArray();
 
         List<GameDatas.PlayerSave.Component> chipstetsContainer = new();
         foreach (ChipsetEquipmentData arm in chipsets)
-            chipstetsContainer.Add(new() { ID = arm.name + GameDatas.current.currentPlayerSave.equipmentCounter++, dataID = arm.name });
+            chipstetsContainer.Add(new() { ID = arm.name + GameDatas.current.currentPlayerSave.equipmentCounter++, dataID = arm.name, isDamaged = false });
         newUnit.chipsets = chipstetsContainer.ToArray();
 
         newUnit.currentHp = newUnit.GetMaxHealth();
