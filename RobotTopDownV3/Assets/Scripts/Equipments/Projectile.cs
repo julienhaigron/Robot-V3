@@ -15,7 +15,6 @@ public class Projectile : PoolElement
 	private bool m_isInit;
 	private Action<Tile> m_onImpact;
 	private float m_lastPlanarDistanceToDestination = float.MaxValue;
-	private bool m_doesStopAtDestination;
 	private Action m_onDespawnNoEntityHit;
 	private bool m_didHitSomething = false;
 
@@ -89,24 +88,15 @@ public class Projectile : PoolElement
 			return;
 		}
 
-		//The cover deliberately routed into by AttackRoll takes the round itself. A wall merely standing on the
-		//tile an area attack was recentred onto does not: there the blast is what resolves.
-		if (m_projectileData.targetType == ProjectileData.TargetType.Wall)
-		{
-			Dictionary<WeaponEquipmentData.DamageType, int> damages = new();
-			damages.Add(WeaponEquipmentData.DamageType.Bludgeoning, 1);
-
-			selector.LinkedWall.TakeDamage(damages);
-		}
-
 		Impact(selector.LinkedWall.LinkedTile);
 	}
 
-	//A shot aimed at a place resolves on that place, occupied or not. Nothing else stops it beforehand, so the
-	//impact is taken at the closest approach to the destination.
+	//Universal fallback for every target type: a shot aimed at a place resolves on that place occupied or not,
+	//and an entity hidden by the fog of war has its colliders disabled, so no collision can ever happen against
+	//it. Whichever comes first, collision or closest approach, discards the projectile and the other never runs.
 	private void FixedUpdate ()
 	{
-		if (!m_isInit || m_rb.isKinematic || !m_doesStopAtDestination)
+		if (!m_isInit || m_rb.isKinematic)
 			return;
 
 		Vector3 destination = m_projectileData.Destination;
@@ -115,18 +105,43 @@ public class Projectile : PoolElement
 
 		if (planarDistance > m_lastPlanarDistanceToDestination)
 		{
-			Impact(m_projectileData.targetType == ProjectileData.TargetType.Wall
-				? (m_projectileData.targetWall != null ? m_projectileData.targetWall.LinkedTile : null)
-				: m_projectileData.targetTile);
+			Impact(GetTargetTile());
 			return;
 		}
 
 		m_lastPlanarDistanceToDestination = planarDistance;
 	}
 
+	private Tile GetTargetTile ()
+	{
+		switch (m_projectileData.targetType)
+		{
+			case ProjectileData.TargetType.Entity:
+				return m_projectileData.targetEntity == null ? null : m_projectileData.targetEntity.Displacement.Coordinates.GetTile();
+
+			case ProjectileData.TargetType.Wall:
+				return m_projectileData.targetWall == null ? null : m_projectileData.targetWall.LinkedTile;
+
+			default:
+				return m_projectileData.targetTile;
+		}
+	}
+
 	//Where the round actually landed. The attack resolves from there, so an area blast goes off around it.
 	private void Impact ( Tile _impactTile )
 	{
+		//The cover AttackRoll deliberately routed the round into takes it, whether the impact came from the
+		//collision or from the arrival check. A wall merely standing on a tile an area attack was recentred onto
+		//does not: there the blast is what resolves.
+		if (m_projectileData.targetType == ProjectileData.TargetType.Wall && m_projectileData.targetWall != null
+			&& IsSameTile(_impactTile, m_projectileData.targetWall.LinkedTile))
+		{
+			Dictionary<WeaponEquipmentData.DamageType, int> damages = new();
+			damages.Add(WeaponEquipmentData.DamageType.Bludgeoning, 1);
+
+			m_projectileData.targetWall.TakeDamage(damages);
+		}
+
 		if (_impactTile != null && m_projectileData.isAttackSuccessful)
 		{
 			m_didHitSomething = true;
@@ -201,7 +216,6 @@ public class Projectile : PoolElement
 	{
 		m_projectileData = _projectileData;
 		m_lastPlanarDistanceToDestination = float.MaxValue;
-		m_doesStopAtDestination = _projectileData.targetType != ProjectileData.TargetType.Entity;
 
 		//A shot fired by an enemy the player cannot see must not give its position away. Owner visibility is the
 		//cheap proxy here: following the bullet tile by tile through the fog would cost far more per frame.
@@ -335,11 +349,9 @@ public class Projectile : PoolElement
 		float duration = Vector3.Distance(transform.position, destination) / m_projectileData.speed.x;
 
 		transform.LookAt(destination);
-		transform.DOMove(destination, duration).SetEase(Ease.Linear).OnComplete(() =>
-		{
-			m_onDespawnNoEntityHit?.Invoke();
-			Discard();
-		});
+		//Impact rather than a plain discard: an underground round resolves where it surfaces, like any other.
+		//Deactivate still fires m_onDespawnNoEntityHit when nothing was actually hit.
+		transform.DOMove(destination, duration).SetEase(Ease.Linear).OnComplete(() => Impact(GetTargetTile()));
 	}
 
 	#endregion
