@@ -125,17 +125,28 @@ public class PlayerController : Singleton<PlayerController>
 			m_cameraRotationTween.Kill();
 	}
 
-	private void FixedUpdate ()
+	private void Update ()
 	{
-		if (m_turnManager.currentPhase == TurnManager.TurnPhase.Off
-			|| UIManager.Instance.currentPanel is not InGamePanel)
+		if (!CanControlCamera())
 			return;
-
-		HandleCameraMovement();
 
 		HandleCameraRotation();
 
 		HandleCameraZoom();
+	}
+
+	private void FixedUpdate ()
+	{
+		if (!CanControlCamera())
+			return;
+
+		HandleCameraMovement();
+	}
+
+	private bool CanControlCamera ()
+	{
+		return m_turnManager.currentPhase != TurnManager.TurnPhase.Off
+			&& UIManager.Instance.currentPanel is InGamePanel;
 	}
 
 	private void HandleCameraMovement ()
