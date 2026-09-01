@@ -136,7 +136,8 @@ public class BulletWeapon : Weapon
 			speed = Vector2.right * m_speed,
 			attackData = _attackAction.Data,
 			weapon = m_data,
-			onHitSFXID = _attackAction.Data.onSingleAttackHitSFXID
+			onHitSFXID = _attackAction.Data.onSingleAttackHitSFXID,
+			isAttackSuccessful = _attackInfo.isAttackSuccessfull
 		};
 		ProjectileData.TargetType targetType = !_attackInfo.isAttackSuccessfull && _attackInfo.hittedTileID != -1
 			? ProjectileData.TargetType.Wall :  _attackAction.Data.targetType == EntityActionData.TargetType.Tile

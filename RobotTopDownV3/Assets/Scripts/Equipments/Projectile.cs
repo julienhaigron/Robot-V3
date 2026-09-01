@@ -9,6 +9,8 @@ public class Projectile : PoolElement
 	[SerializeField] protected TrailRenderer m_trail;
 	[SerializeField] private ParticleSystem m_onHitPS;
 
+	private Renderer[] m_renderers;
+
 	protected ProjectileData m_projectileData;
 	private bool m_isInit;
 	private Action<Entity> m_onHitEntity;
@@ -23,6 +25,9 @@ public class Projectile : PoolElement
 	public override void Init ( PoolData _pool )
 	{
 		base.Init(_pool);
+
+		//cached once per pooled element, the visibility toggle then costs nothing per shot
+		m_renderers = GetComponentsInChildren<Renderer>(true);
 
 		if (m_trail != null)
 			m_trail.emitting = false;
@@ -47,9 +52,9 @@ public class Projectile : PoolElement
 			return;
 		}
 
-		_other.transform.parent.parent.TryGetComponent(out Entity entity);
+		Transform entityRoot = _other.transform.parent != null ? _other.transform.parent.parent : null;
 
-		if (entity != null)
+		if (entityRoot != null && entityRoot.TryGetComponent(out Entity entity))
 			OnCollideWithEntity(entity);
 	}
 
@@ -58,11 +63,65 @@ public class Projectile : PoolElement
 		if (_entity == m_projectileData.owner)
 			return;
 
+		//Whatever is not the target the attack was rolled against stops the projectile without any effect: a
+		//missed shot must never hurt whoever happens to stand on its trajectory.
+		if (!IsIntendedTarget(_entity))
+		{
+			StopWithoutHit();
+			return;
+		}
+
 		m_didHitSomething = true;
-		
+
 		m_onHitEntity?.Invoke(_entity);
 
+		PlayHitFeedbackAndDiscard();
+	}
+
+	public virtual void OnCollideWithOther ( int _collidedLayer, Collider _other )
+	{
+		if (_collidedLayer != 12 || !_other.transform.TryGetComponent(out WallSelector selector) || selector.LinkedWall == null)
+			return;
+
+		//Only a wall the attack deliberately aimed at takes the shot, see EntityEquipmentPlugin.AttackRoll.
+		if (!IsIntendedTarget(selector.LinkedWall))
+		{
+			StopWithoutHit();
+			return;
+		}
+
+		Dictionary<WeaponEquipmentData.DamageType, int> damages = new();
+		damages.Add(WeaponEquipmentData.DamageType.Bludgeoning, 1);
+
+		selector.LinkedWall.TakeDamage(damages);
+
+		PlayHitFeedbackAndDiscard();
+	}
+
+	private bool IsIntendedTarget ( Entity _entity )
+	{
+		return m_projectileData.isAttackSuccessful
+			&& m_projectileData.targetType == ProjectileData.TargetType.Entity
+			&& _entity == m_projectileData.targetEntity;
+	}
+
+	private bool IsIntendedTarget ( Wall _wall )
+	{
+		return m_projectileData.targetType == ProjectileData.TargetType.Wall
+			&& _wall == m_projectileData.targetWall;
+	}
+
+	//Consumed on something it was not aiming at: no damage. m_didHitSomething stays false on purpose so that
+	//Deactivate still fires m_onDespawnNoEntityHit and the attack ends normally.
+	private void StopWithoutHit ()
+	{
+		PlayHitFeedbackAndDiscard();
+	}
+
+	private void PlayHitFeedbackAndDiscard ()
+	{
 		SoundManager.Instance.Play(m_projectileData.onHitSFXID);
+
 		if (m_onHitPS != null)
 		{
 			m_onHitPS.Play();
@@ -72,34 +131,32 @@ public class Projectile : PoolElement
 			Discard();
 	}
 
-	public virtual void OnCollideWithOther ( int _collidedLayer, Collider _other )
-	{
-		if(_collidedLayer == 12 
-			&& _other.transform.TryGetComponent(out WallSelector selector) && selector.LinkedWall != null)
-		{
-			Dictionary<WeaponEquipmentData.DamageType, int> damages = new();
-			damages.Add(WeaponEquipmentData.DamageType.Bludgeoning, 1);
-
-			selector.LinkedWall.TakeDamage(damages);
-
-			//m_didHitSomething = true;
-
-			SoundManager.Instance.Play(m_projectileData.onHitSFXID);
-			if (m_onHitPS != null)
-			{
-				m_onHitPS.Play();
-				DiscardIn(m_onHitPS.main.duration);
-			}
-			else
-				Discard();
-		}
-	}
-
 	protected virtual void SetProjectileData ( ProjectileData _projectileData )
 	{
 		m_projectileData = _projectileData;
 
+		//A shot fired by an enemy the player cannot see must not give its position away. Owner visibility is the
+		//cheap proxy here: following the bullet tile by tile through the fog would cost far more per frame.
+		//Entity.IsVisible only ever gets updated for non allied entities, hence the ownership check.
+		bool isOwnerHidden = m_projectileData.owner != null
+			&& !m_projectileData.owner.IsAlliedTo(GameManager.Instance.PlayerID)
+			&& !m_projectileData.owner.IsVisible;
+
+		SetVisualsVisible(!isOwnerHidden);
+
 		m_isInit = true;
+	}
+
+	private void SetVisualsVisible ( bool _isVisible )
+	{
+		if (m_renderers == null)
+			return;
+
+		foreach (Renderer renderer in m_renderers)
+		{
+			if (renderer != null)
+				renderer.enabled = _isVisible;
+		}
 	}
 
 	public void SetProjectileDataAndLaunch ( ProjectileData _projectileData, Action<Entity> _onHitEntity, Action _onProjectileDespawn, bool _hasTrajectoryControl )
@@ -258,6 +315,9 @@ public struct ProjectileData
 {
 	public Entity owner;
 	public Vector2 speed;
+
+	//A missed shot must not damage the target it was rolled against, even if the stray trajectory clips it.
+	public bool isAttackSuccessful;
 
 	public EntityActionData attackData;
 	public WeaponEquipmentData weapon;
