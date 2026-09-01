@@ -57,6 +57,10 @@ public class MoveToTargetAction : AEntityAction
 	public override void CancelAction ()
 	{
 		base.CancelAction();
+
+		//Prepare may already have taken the entity off its tile for a move that is now cancelled.
+		PerformingEntity.Displacement.RegisterOnCurrentTile();
+
 		if (targetTileIDs == null)
 			return;
 
@@ -242,7 +246,8 @@ public class MoveToTargetAction : AEntityAction
 			}
 		}*/
 
-		else if (_otherAction is MoveToTargetAction _otherMoveToTargetAction && _otherMoveToTargetAction.targetTileIDs != null && _otherMoveToTargetAction.targetTileIDs.Any(tileID => targetTileIDs.Contains(tileID)))
+		else if (_otherAction is MoveToTargetAction _otherMoveToTargetAction && _otherMoveToTargetAction.targetTileIDs != null
+			&& (_otherMoveToTargetAction.targetTileIDs.Any(tileID => targetTileIDs.Contains(tileID)) || IsSwappingTilesWith(_otherMoveToTargetAction)))
 		{
 			int roll = UnityEngine.Random.Range((int)0, 2);
 			if (roll == 0)
@@ -271,6 +276,19 @@ public class MoveToTargetAction : AEntityAction
 	public override bool ConflictCheckAlone ( bool _isCheck = true )
 	{
 		return CheckConflict(null, _isCheck).isFirstActionConflicted;
+	}
+
+	//Two units exchanging tiles never overlap in their target tiles, so the check above cannot see it and both
+	//moves go through, walking each other over. A swap is a conflict of its own.
+	private bool IsSwappingTilesWith ( MoveToTargetAction _otherAction )
+	{
+		if (targetTileIDs == null || _otherAction.targetTileIDs == null)
+			return false;
+
+		int myTileID = PerformingEntity.Displacement.Coordinates.ID;
+		int otherTileID = _otherAction.PerformingEntity.Displacement.Coordinates.ID;
+
+		return targetTileIDs.Contains(otherTileID) && _otherAction.targetTileIDs.Contains(myTileID);
 	}
 
 	private bool IsDestinationOccupiedOnNextTurnAction ()

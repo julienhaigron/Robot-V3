@@ -47,6 +47,19 @@ public class EntityDisplacementPlugin : EntityPlugin
 			m_rotationTween.Kill();
 	}
 
+	//The turn system takes an entity off its tile before moving it (MoveToTargetAction.Prepare). Whenever the
+	//move ends up not happening, it has to be put back on both tick slots: otherwise its Coordinates still say
+	//that tile while the tile itself knows nobody, and the next unit walks straight through it.
+	public void RegisterOnCurrentTile ()
+	{
+		Tile tile = m_coordinate.GetTile();
+		if (tile == null)
+			return;
+
+		tile.SetEntity(m_linkedEntity, _isThisTurn: true);
+		tile.SetEntity(m_linkedEntity, _isThisTurn: false);
+	}
+
 	public void SetSpawn ( EntityAnchor.Spawn _spawn )
 	{
 		//MoveToTile(_spawn.coordinates.GetTile(), null);
@@ -68,9 +81,24 @@ public class EntityDisplacementPlugin : EntityPlugin
 
 	public Tween MoveToTile( int _tileID,  System.Action onMovementDoneAction, bool _overrideMovementSpeed = false, float _overritenMovementSpeed = 0)
 	{
+		Tile tile = GridManager.Instance.Tiles[_tileID];
+
+		//Last line of defence, whatever the action type: never step onto a tile an entity still holds once this
+		//tick is played. An ally being followed does not count, its own move frees the tile in the same tick.
+		//The callback still fires so the action completes instead of hanging on a refused move.
+		Entity occupant = tile.GetEntityAtEndOfTick();
+		if (occupant != null && occupant != m_linkedEntity)
+		{
+			Debug.LogError("Movement refused: " + m_linkedEntity.Data.name + " cannot enter tile " + tile.coordinates.ID
+				+ ", still held by " + occupant.Data.name, gameObject);
+
+			RegisterOnCurrentTile();
+			onMovementDoneAction?.Invoke();
+			return null;
+		}
+
 		if(m_coordinate.GetTile().GetEntity(false) == m_linkedEntity)
 			m_coordinate.GetTile().SetEntity(null, _isThisTurn: false);
-		Tile tile = GridManager.Instance.Tiles[_tileID];
 
 		if(m_linkedEntity.AI.LastTargetedEntities == null)
 			Rotate(tile, GameConfig.current.game.actionDuration);

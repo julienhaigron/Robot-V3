@@ -529,6 +529,22 @@ public class Tile : MonoBehaviour
 		return m_visionTypeCounts.ContainsKey(_visionType);
 	}
 
+	//Who will still be standing here once this tick is played. The next tick slot only holds entities that
+	//booked a move, so a motionless one has to be read on the current tick and checked against its own action.
+	//Prepare clears a mover's current tick slot, which is what lets a unit follow an ally out of a tile.
+	public Entity GetEntityAtEndOfTick ()
+	{
+		Entity booked = GetEntity(_isThisTurn: false);
+		if (booked != null)
+			return booked;
+
+		Entity current = GetEntity(_isThisTurn: true);
+		if (current == null || TurnManager.Instance == null)
+			return current;
+
+		return TurnManager.Instance.IsEntityLeavingTileThisTick(current.ID, coordinates.ID) ? null : current;
+	}
+
 	//During the play phase a moving entity is registered on its destination tile at currentTick + 1,
 	//while the tile it just left still references it at currentTick. Both slots are checked, and each
 	//candidate is validated against its real coordinates so a stale slot never drives the FOW visual.

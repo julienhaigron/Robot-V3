@@ -20,6 +20,11 @@ public class MoveThenAttackAction : AttackAction
 	{
 		positionAfterMovementID = _tile.Neighbors[GridManager.Instance.GetClosestOrientation(_tile, GridManager.Instance.Tiles[supposedPositionAtActionStartID])].coordinates.ID;
 
+		//Without this the action reports the unit as never moving, and everything asking "where will it
+		//be" (GetLastRegisteredPositionOfEntity, IsEntityLeavingTileThisTick, the planning ghosts) reads its
+		//start tile instead.
+		positionAtActionEndID = positionAfterMovementID;
+
 		base.RegisterInteraction(_tile);
 	}
 
@@ -63,10 +68,12 @@ public class MoveThenAttackAction : AttackAction
 			else
 			{
 				positionAfterMovementID = -1;
+				positionAtActionEndID = supposedPositionAtActionStartID;
 				isActionCanceled = true;
 			}
 		}
-		else */if (_otherAction is MoveToTargetAction otherMoveToTarget && otherMoveToTarget.targetTileIDs != null && otherMoveToTarget.targetTileIDs.Contains(positionAfterMovementID))
+		else */if (_otherAction is MoveToTargetAction otherMoveToTarget && otherMoveToTarget.targetTileIDs != null
+			&& (otherMoveToTarget.targetTileIDs.Contains(positionAfterMovementID) || IsSwappingTilesWith(otherMoveToTarget)))
 		{
 			int roll = UnityEngine.Random.Range((int)0, 2);
 			if (roll == 0)
@@ -77,6 +84,7 @@ public class MoveThenAttackAction : AttackAction
 			else
 			{
 				positionAfterMovementID = -1;
+				positionAtActionEndID = supposedPositionAtActionStartID;
 				isActionCanceled = false;
 			}
 		}
@@ -190,8 +198,23 @@ public class MoveThenAttackAction : AttackAction
 		if (positionAfterMovementID == -1)
 			return false;
 
-		Entity entityOnDestination = GridManager.Instance.Tiles[(int)positionAfterMovementID].GetEntity(_isThisTurn: false);
+		//GetEntityAtEndOfTick, not GetEntity(false): the next tick slot only holds entities that booked a move,
+		//so reading it alone walks straight over anyone standing still.
+		Entity entityOnDestination = GridManager.Instance.Tiles[(int)positionAfterMovementID].GetEntityAtEndOfTick();
 
 		return (entityOnDestination != null && entityOnDestination.ID != performingEntityID) || GridManager.Instance.Tiles[(int)positionAfterMovementID].IsObstacle(false);
+	}
+
+	//Two units exchanging tiles never overlap in their destinations, so the check above cannot see it and both
+	//moves go through, walking each other over. A swap is a conflict of its own.
+	private bool IsSwappingTilesWith ( MoveToTargetAction _otherAction )
+	{
+		if (positionAfterMovementID == -1 || _otherAction.targetTileIDs == null)
+			return false;
+
+		int myTileID = PerformingEntity.Displacement.Coordinates.ID;
+
+		return positionAfterMovementID == _otherAction.PerformingEntity.Displacement.Coordinates.ID
+			&& _otherAction.targetTileIDs.Contains(myTileID);
 	}
 }
