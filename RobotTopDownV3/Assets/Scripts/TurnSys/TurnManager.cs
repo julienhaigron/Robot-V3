@@ -524,6 +524,30 @@ public class TurnManager : Singleton<TurnManager>
 	//An entity only vacates its tile when it is performing an action that ends somewhere else this tick.
 	//Tile.NewPhase copies [currentTick - 1] into [currentTick] only, so the next tick slot holds nothing at all
 	//for a motionless entity: GridManager.GetEntityStayingOn needs this to see the ones that are not moving.
+	//Where the entity will stand once this tick is played, its current tile when it is not going anywhere.
+	//Comparing a chasing unit's arrival tile with its target's start tile mixes two time frames: the unit aims one
+	//step behind, and on a zig zagging trail that flips its facing every tick.
+	public int GetEntityPositionAtEndOfTick ( int _entityID, int _defaultTileID )
+	{
+		if (m_actionsToPlay.ContainsKey(_entityID) && m_actionsToPlay[_entityID] != null)
+		{
+			foreach (RecordedAction recordedAction in m_actionsToPlay[_entityID])
+			{
+				if (recordedAction.action.IsPerformingAtTick(currentTick))
+					return recordedAction.action.positionAtActionEndID;
+			}
+		}
+
+		if (m_actionsBeingDone.ContainsKey(_entityID) && m_actionsBeingDone[_entityID] != null)
+		{
+			AEntityAction actionBeingDone = m_actionsBeingDone[_entityID].Item1.action;
+			if (actionBeingDone.IsPerformingAtTick(currentTick))
+				return actionBeingDone.positionAtActionEndID;
+		}
+
+		return _defaultTileID;
+	}
+
 	public bool IsEntityLeavingTileThisTick ( int _entityID, int _tileID )
 	{
 		if (m_actionsToPlay.ContainsKey(_entityID) && m_actionsToPlay[_entityID] != null)

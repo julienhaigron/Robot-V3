@@ -197,7 +197,14 @@ public class EntityAIPlugin : EntityPlugin
 					//itself, so it stops as soon as it is in position instead of walking into the enemy.
 					Tile from = m_linkedEntity.Displacement.Coordinates.GetTile();
 					Tile targetTile = closestEntity.Displacement.Coordinates.GetTile();
-					Tile firingTile = GetClosestFiringTile(closestEntity, true);
+					//Several tiles around a target are equally good firing positions, all the more so in melee
+					//where every neighbour qualifies. Re-picking one every tick makes the destination hop, the
+					//path with it, and the facing flip, so the committed one is kept while it stays valid.
+					Tile firingTile = GetCommittedFiringTile(_recordedAction.action, closestEntity, true);
+
+					if (firingTile == null)
+						firingTile = GetClosestFiringTile(closestEntity, true);
+
 					if (firingTile == null)
 					{
 						//No reachable firing position: close in on the target, but never take its own tile as a
@@ -207,11 +214,6 @@ public class EntityAIPlugin : EntityPlugin
 						if (firingTile == null)
 							return resultInfo;
 					}
-
-					//already heading there: leave the running action alone rather than replacing it with itself
-					if (currentActionMainType == EntityActionData.MainActionType.Movement
-						&& _recordedAction.action is MoveToTargetAction currentMove && currentMove.finalTargetTileID == firingTile.coordinates.ID)
-						return resultInfo;
 
 					List<int> tileIDs = new();
 					if (firingTile != from)
@@ -248,7 +250,13 @@ public class EntityAIPlugin : EntityPlugin
 					//tile several ticks away: that would aim it somewhere that means nothing yet. It converges on
 					//the firing orientation as the unit arrives.
 					Tile orientationFrom = tileIDs.Count > 0 ? GridManager.Instance.Tiles[tileIDs[^1]] : from;
-					int firingOrientation = GridManager.Instance.GetClosestOrientation(orientationFrom, targetTile);
+					//Aim where the target will stand once this tick is played, from where this unit will stand.
+					//orientationFrom is an end of tick position, so taking the target's start of tick one aims a
+					//step behind, and a target zig zagging to travel straight then flips the facing every tick.
+					Tile orientationTo = GridManager.Instance.Tiles[TurnManager.Instance.GetEntityPositionAtEndOfTick(closestEntity.ID, targetTile.coordinates.ID)];
+					int firingOrientation = orientationTo == orientationFrom
+						? m_linkedEntity.Displacement.CurrentOrientation
+						: GridManager.Instance.GetClosestOrientation(orientationFrom, orientationTo);
 
 					if (firingOrientation != m_linkedEntity.Displacement.CurrentOrientation)
 					{
@@ -474,6 +482,24 @@ public class EntityAIPlugin : EntityPlugin
 		}
 
 		return closest;
+	}
+
+	//Destination this action is already committed to, when it still holds up as a firing position. Returns null
+	//when there is nothing to keep, so a fresh one has to be picked.
+	private Tile GetCommittedFiringTile ( AEntityAction _currentAction, Entity _target, bool _isThisTurn = true )
+	{
+		if (_currentAction is not MoveToTargetAction currentMove || currentMove.finalTargetTileID == -1)
+			return null;
+
+		Tile committed = GridManager.Instance.Tiles[currentMove.finalTargetTileID];
+		if (committed == null || committed.IsObstacle(_isThisTurn))
+			return null;
+
+		Entity occupant = committed.GetEntity(_isThisTurn);
+		if (occupant != null && occupant != m_linkedEntity)
+			return null;
+
+		return CanFireFrom(committed, _target, _isThisTurn) ? committed : null;
 	}
 
 	//Can the unit hit _target standing on _from? Rotating is a free action, so the facing is taken as the one

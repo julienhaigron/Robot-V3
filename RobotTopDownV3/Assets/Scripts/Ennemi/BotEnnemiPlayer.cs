@@ -54,6 +54,15 @@ public class BotEnnemiPlayer : MonoBehaviour
 					thisActionPath.Add(lastDestination.coordinates.ID);
 				}
 				movementAction.targetTileIDs = thisActionPath.ToArray();
+				movementAction.mode = MoveToTargetAction.MoveActionMode.Coordinate;
+				movementAction.targetTileID = thisActionPath[^1];
+
+				//GetAction already ran Init while targetTileIDs was still null, which left positionAtActionEndID
+				//on the start tile and froze it there for the whole round. Re-run it now that the path is known,
+				//the way every other caller does.
+				movementAction.Init(movementActionData, movementAction.linkedEquipmentId, _entity.ID
+					, movementAction.supposedPositionAtActionStartID, i);
+
 				TurnManager.Instance.AddAction(_entity.ID, movementAction, Entity.EntityState.NoAIChange);
 
 				i += movementAction.TotalDuration;
