@@ -30,8 +30,24 @@ public class MoveThenAttackAction : AttackAction
 
 	public override void Prepare ( Entity.EntityState _state )
 	{
-		GameManager.Instance.GetEntityFromID(performingEntityID).Displacement.Coordinates.GetTile().SetEntity(null, _isThisTurn: false);
+		//Only free the tile when the charge is actually going to happen: clearing it for a cancelled move leaves
+		//the entity registered nowhere while its Coordinates still point here, and the next unit walks through.
+		if (!isActionCanceled && positionAfterMovementID != -1)
+			GameManager.Instance.GetEntityFromID(performingEntityID).Displacement.Coordinates.GetTile().SetEntity(null, _isThisTurn: false);
+
 		base.Prepare(_state);
+	}
+
+	public override void CancelAction ()
+	{
+		base.CancelAction();
+
+		//Release the destination this charge had booked for itself, then put the entity back on its own tile.
+		if (positionAfterMovementID != -1 && positionAfterMovementID != PerformingEntity.Displacement.Coordinates.ID
+			&& GridManager.Instance.Tiles[positionAfterMovementID].TryGetEntity(false, out Entity bookedEntity) && bookedEntity.ID == performingEntityID)
+			GridManager.Instance.Tiles[positionAfterMovementID].SetEntity(null, _isThisTurn: false);
+
+		PerformingEntity.Displacement.RegisterOnCurrentTile();
 	}
 
 	//CheckConflict is null safe here too: every _otherAction use is a pattern match, which fails on null.

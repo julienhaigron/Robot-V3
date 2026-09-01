@@ -126,9 +126,23 @@ public class EntityDisplacementPlugin : EntityPlugin
 
 	public Tween TeleportToTile (int _tileID, System.Action onMovementDoneAction )
 	{
+		Tile tile = GridManager.Instance.Tiles[_tileID];
+
+		//Same guard as MoveToTile: a teleport must not land on a tile an entity still holds at the end of this
+		//tick either. The entity is put back on its own tile and the callback still fires.
+		Entity teleportOccupant = tile.GetEntityAtEndOfTick();
+		if (teleportOccupant != null && teleportOccupant != m_linkedEntity)
+		{
+			Debug.LogError("Teleport refused: " + m_linkedEntity.Data.name + " cannot enter tile " + tile.coordinates.ID
+				+ ", still held by " + teleportOccupant.Data.name, gameObject);
+
+			RegisterOnCurrentTile();
+			onMovementDoneAction?.Invoke();
+			return null;
+		}
+
 		if (m_coordinate.GetTile().GetEntity(false) == m_linkedEntity)
 			m_coordinate.GetTile().SetEntity(null, _isThisTurn: false);
-		Tile tile = GridManager.Instance.Tiles[_tileID];
 
 		if (m_linkedEntity.AI.LastTargetedEntities == null)
 			Rotate(tile, GameConfig.current.game.actionDuration);

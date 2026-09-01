@@ -20,7 +20,30 @@ public class JumpToTarget : AEntityAction
 			targetTileIDs = null;
 			//RefreshDestinatedTile();
 
-		GameManager.Instance.GetEntityFromID(performingEntityID).Displacement.Coordinates.GetTile().SetEntity(null, _isThisTurn: false);
+		//Only free the tile when the jump is actually going to happen: clearing it for a cancelled move leaves
+		//the entity registered nowhere while its Coordinates still point here, and the next unit walks through.
+		if (targetTileIDs != null)
+			GameManager.Instance.GetEntityFromID(performingEntityID).Displacement.Coordinates.GetTile().SetEntity(null, _isThisTurn: false);
+	}
+
+	public override void CancelAction ()
+	{
+		base.CancelAction();
+
+		//Release the tiles this jump had booked for itself, then put the entity back on its own tile.
+		if (targetTileIDs != null)
+		{
+			int currentTileID = PerformingEntity.Displacement.Coordinates.ID;
+			foreach (int tileID in targetTileIDs)
+			{
+				if (currentTileID == tileID)
+					continue;
+				if (GridManager.Instance.Tiles[tileID].TryGetEntity(false, out Entity bookedEntity) && bookedEntity.ID == performingEntityID)
+					GridManager.Instance.Tiles[tileID].SetEntity(null, _isThisTurn: false);
+			}
+		}
+
+		PerformingEntity.Displacement.RegisterOnCurrentTile();
 	}
 
 	protected override void Perform ( Entity.EntityState _state )
