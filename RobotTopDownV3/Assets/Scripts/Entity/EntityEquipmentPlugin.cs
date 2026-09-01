@@ -291,6 +291,16 @@ public class EntityEquipmentPlugin : EntityPlugin
 	{
 		//WeaponEquipmentData usedWeapon = m_weapons[_attackAction.linkedEquipmentId].Data;
 		bool doesWinPFC = _singleAttackInfo.pfcResult == (int)EntityActionData.PFCResultType.FirstWins;
+
+		//A full wall between the two ends the shot then and there. Typically when the target is only known
+		//through radar, since optical vision cannot see past such a wall in the first place.
+		if (GridManager.Instance.IsThereBlockingWallBetween(_attackAction.PerformingEntity, _targetEntity, doesWinPFC, out _coverTile))
+		{
+			LogConsole.AddLog(m_linkedEntity.ID + " cannot reach " + _targetEntity.ID + ", the shot hits the wall on tile "
+				+ _coverTile.coordinates.ID, LogConsole.LogEventType.AttackRoll);
+			return false;
+		}
+
 		bool isThereCoverBetween = GridManager.Instance.IsThereCoverBeween(_attackAction.PerformingEntity, _targetEntity, doesWinPFC, out _coverTile);
 
 		float targetCamo = _targetEntity.Data.GetStaticStealthBonus(true)

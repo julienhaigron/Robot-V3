@@ -772,6 +772,36 @@ public class GridManager : Singleton<GridManager>
 		return true;
 	}
 
+	//A full wall on the line does not merely give cover, it physically stops the round: the shot can never reach
+	//the target and lands in the wall instead. Smoke is deliberately ignored here, it blocks sight, not bullets.
+	public bool IsThereBlockingWallBetween ( Entity _attacker, Entity _target, bool _didAttackerWinPFC, out Tile _wallTile )
+	{
+		int attackerPosition = TurnManager.Instance.GetPositionOfEntityAtEndOfRound(_attacker.ID);
+		int defenderPosition = TurnManager.Instance.GetPositionOfEntityAtEndOfRound(_target.ID);
+
+		return IsThereBlockingWallBetween(Tiles[attackerPosition], Tiles[defenderPosition], _didAttackerWinPFC, out _wallTile);
+	}
+
+	public bool IsThereBlockingWallBetween ( Tile _from, Tile _to, bool _isThisTurn, out Tile _wallTile )
+	{
+		_wallTile = null;
+		if (_from == null || _to == null)
+			return false;
+
+		foreach (Tile tile in GetTilesInRay(_from, _to, _isThisTurn, true))
+		{
+			//Health, not RegisteredHealth: this runs at resolution, and a wall still standing blocks the round
+			//even when damage has already been registered against it earlier in the same tick.
+			if (tile.GroundType != TileGroundType.Wall || tile.Wall == null || tile.Wall.Health <= 0)
+				continue;
+
+			_wallTile = tile;
+			return true;
+		}
+
+		return false;
+	}
+
 	public bool IsThereCoverBeween ( Entity _attacker, Entity _target, bool _didAttackerWinPFC, out Tile _cover )
 	{
 		_cover = null;

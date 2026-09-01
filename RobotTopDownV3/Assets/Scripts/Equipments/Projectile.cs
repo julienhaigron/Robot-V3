@@ -13,7 +13,9 @@ public class Projectile : PoolElement
 
 	protected ProjectileData m_projectileData;
 	private bool m_isInit;
-	private Action<Entity> m_onHitEntity;
+	private Action<Tile> m_onImpact;
+	private float m_lastPlanarDistanceToDestination = float.MaxValue;
+	private bool m_doesStopAtDestination;
 	private Action m_onDespawnNoEntityHit;
 	private bool m_didHitSomething = false;
 
@@ -71,11 +73,7 @@ public class Projectile : PoolElement
 			return;
 		}
 
-		m_didHitSomething = true;
-
-		m_onHitEntity?.Invoke(_entity);
-
-		PlayHitFeedbackAndDiscard();
+		Impact(_entity.Displacement.Coordinates.GetTile());
 	}
 
 	public virtual void OnCollideWithOther ( int _collidedLayer, Collider _other )
@@ -83,32 +81,100 @@ public class Projectile : PoolElement
 		if (_collidedLayer != 12 || !_other.transform.TryGetComponent(out WallSelector selector) || selector.LinkedWall == null)
 			return;
 
-		//Only a wall the attack deliberately aimed at takes the shot, see EntityEquipmentPlugin.AttackRoll.
+		//A wall only ever takes a projectile when EntityEquipmentPlugin.AttackRoll deliberately routed the shot
+		//into the cover standing between shooter and target. Any other wall simply stops the bullet.
 		if (!IsIntendedTarget(selector.LinkedWall))
 		{
 			StopWithoutHit();
 			return;
 		}
 
-		Dictionary<WeaponEquipmentData.DamageType, int> damages = new();
-		damages.Add(WeaponEquipmentData.DamageType.Bludgeoning, 1);
+		//The cover deliberately routed into by AttackRoll takes the round itself. A wall merely standing on the
+		//tile an area attack was recentred onto does not: there the blast is what resolves.
+		if (m_projectileData.targetType == ProjectileData.TargetType.Wall)
+		{
+			Dictionary<WeaponEquipmentData.DamageType, int> damages = new();
+			damages.Add(WeaponEquipmentData.DamageType.Bludgeoning, 1);
 
-		selector.LinkedWall.TakeDamage(damages);
+			selector.LinkedWall.TakeDamage(damages);
+		}
+
+		Impact(selector.LinkedWall.LinkedTile);
+	}
+
+	//A shot aimed at a place resolves on that place, occupied or not. Nothing else stops it beforehand, so the
+	//impact is taken at the closest approach to the destination.
+	private void FixedUpdate ()
+	{
+		if (!m_isInit || m_rb.isKinematic || !m_doesStopAtDestination)
+			return;
+
+		Vector3 destination = m_projectileData.Destination;
+		float planarDistance = Vector2.Distance(new Vector2(transform.position.x, transform.position.z)
+			, new Vector2(destination.x, destination.z));
+
+		if (planarDistance > m_lastPlanarDistanceToDestination)
+		{
+			Impact(m_projectileData.targetType == ProjectileData.TargetType.Wall
+				? (m_projectileData.targetWall != null ? m_projectileData.targetWall.LinkedTile : null)
+				: m_projectileData.targetTile);
+			return;
+		}
+
+		m_lastPlanarDistanceToDestination = planarDistance;
+	}
+
+	//Where the round actually landed. The attack resolves from there, so an area blast goes off around it.
+	private void Impact ( Tile _impactTile )
+	{
+		if (_impactTile != null && m_projectileData.isAttackSuccessful)
+		{
+			m_didHitSomething = true;
+			m_onImpact?.Invoke(_impactTile);
+		}
 
 		PlayHitFeedbackAndDiscard();
 	}
 
-	private bool IsIntendedTarget ( Entity _entity )
-	{
-		return m_projectileData.isAttackSuccessful
-			&& m_projectileData.targetType == ProjectileData.TargetType.Entity
-			&& _entity == m_projectileData.targetEntity;
-	}
-
 	private bool IsIntendedTarget ( Wall _wall )
 	{
-		return m_projectileData.targetType == ProjectileData.TargetType.Wall
-			&& _wall == m_projectileData.targetWall;
+		if (_wall == null)
+			return false;
+
+		//an area attack recentred onto a wall tile goes off against that wall
+		if (m_projectileData.targetType == ProjectileData.TargetType.Tile)
+			return IsSameTile(_wall.LinkedTile, m_projectileData.targetTile);
+
+		if (m_projectileData.targetType != ProjectileData.TargetType.Wall || m_projectileData.targetWall == null)
+			return false;
+
+		if (_wall == m_projectileData.targetWall)
+			return true;
+
+		//Also compared through the tile: the wall linked to the collider and the Tile.Wall the attack recorded
+		//are not guaranteed to be the same instance, but a cover always sits on one known tile.
+		return IsSameTile(_wall.LinkedTile, m_projectileData.targetWall.LinkedTile);
+	}
+
+	private static bool IsSameTile ( Tile _a, Tile _b )
+	{
+		return _a != null && _b != null && _a.coordinates.ID == _b.coordinates.ID;
+	}
+
+	private bool IsIntendedTarget ( Entity _entity )
+	{
+		if (!m_projectileData.isAttackSuccessful)
+			return false;
+
+		if (m_projectileData.targetType == ProjectileData.TargetType.Entity)
+			return _entity == m_projectileData.targetEntity;
+
+		//A shot aimed at a tile, which is how area attacks are fired, resolves on whoever stands on that tile.
+		//Without this the whole Tile targeted path silently stopped dealing any damage at all.
+		if (m_projectileData.targetType == ProjectileData.TargetType.Tile && m_projectileData.targetTile != null)
+			return _entity.Displacement.Coordinates.ID == m_projectileData.targetTile.coordinates.ID;
+
+		return false;
 	}
 
 	//Consumed on something it was not aiming at: no damage. m_didHitSomething stays false on purpose so that
@@ -134,6 +200,8 @@ public class Projectile : PoolElement
 	protected virtual void SetProjectileData ( ProjectileData _projectileData )
 	{
 		m_projectileData = _projectileData;
+		m_lastPlanarDistanceToDestination = float.MaxValue;
+		m_doesStopAtDestination = _projectileData.targetType != ProjectileData.TargetType.Entity;
 
 		//A shot fired by an enemy the player cannot see must not give its position away. Owner visibility is the
 		//cheap proxy here: following the bullet tile by tile through the fog would cost far more per frame.
@@ -159,36 +227,36 @@ public class Projectile : PoolElement
 		}
 	}
 
-	public void SetProjectileDataAndLaunch ( ProjectileData _projectileData, Action<Entity> _onHitEntity, Action _onProjectileDespawn, bool _hasTrajectoryControl )
+	public void SetProjectileDataAndLaunch ( ProjectileData _projectileData, Action<Tile> _onImpact, Action _onProjectileDespawn, bool _hasTrajectoryControl )
 	{
 		SetProjectileData(_projectileData);
 
 		if (_hasTrajectoryControl)
 		{
-			LaunchMortar(_onHitEntity, _onProjectileDespawn);
+			LaunchMortar(_onImpact, _onProjectileDespawn);
 			return;
 		}
 
 		switch (_projectileData.attackData.trajectoryType)
 		{
 			case EntityActionData.TrajectoryType.Direct:
-				Launch(_onHitEntity, _onProjectileDespawn);
+				Launch(_onImpact, _onProjectileDespawn);
 				break;
 
 			case EntityActionData.TrajectoryType.Mortar:
-				LaunchMortar(_onHitEntity, _onProjectileDespawn);
+				LaunchMortar(_onImpact, _onProjectileDespawn);
 				break;
 
 			case EntityActionData.TrajectoryType.Grenade:
-				LaunchGrenade(_onHitEntity, _onProjectileDespawn);
+				LaunchGrenade(_onImpact, _onProjectileDespawn);
 				break;
 
 			case EntityActionData.TrajectoryType.Throw:
-				LaunchThrow(_onHitEntity, _onProjectileDespawn);
+				LaunchThrow(_onImpact, _onProjectileDespawn);
 				break;
 
 			case EntityActionData.TrajectoryType.Underground:
-				LaunchUnderground(_onHitEntity, _onProjectileDespawn);
+				LaunchUnderground(_onImpact, _onProjectileDespawn);
 				break;
 		}
 
@@ -196,16 +264,16 @@ public class Projectile : PoolElement
 
 	#region Launch
 
-	public virtual void Launch ( Action<Entity> _onHitEntity, Action _onProjectileDespawn )
+	public virtual void Launch ( Action<Tile> _onImpact, Action _onProjectileDespawn )
 	{
 		m_didHitSomething = false;
 		m_rb.isKinematic = false;
 		m_rb.AddForce((transform.forward * m_projectileData.speed.x) + (transform.up * m_projectileData.speed.y), ForceMode.VelocityChange);
-		m_onHitEntity = _onHitEntity;
+		m_onImpact = _onImpact;
 		m_onDespawnNoEntityHit = _onProjectileDespawn;
 	}
 
-	private void LaunchMortar ( Action<Entity> _onHitEntity, Action _onProjectileDespawn )
+	private void LaunchMortar ( Action<Tile> _onImpact, Action _onProjectileDespawn )
 	{
 		m_didHitSomething = false;
 		m_rb.isKinematic = false;
@@ -220,11 +288,11 @@ public class Projectile : PoolElement
 		Vector3 planarVelocity = planarDisplacement / time;
 
 		m_rb.linearVelocity = planarVelocity + Vector3.up * verticalVelocity;
-		m_onHitEntity = _onHitEntity;
+		m_onImpact = _onImpact;
 		m_onDespawnNoEntityHit = _onProjectileDespawn;
 	}
 
-	private void LaunchGrenade ( Action<Entity> _onHitEntity, Action _onProjectileDespawn )
+	private void LaunchGrenade ( Action<Tile> _onImpact, Action _onProjectileDespawn )
 	{
 		m_didHitSomething = false;
 		m_rb.isKinematic = false;
@@ -240,11 +308,11 @@ public class Projectile : PoolElement
 		float velocityY = (displacement.y + 0.5f * gravity * time * time) / time;
 
 		m_rb.linearVelocity = velocityXZ + Vector3.up * velocityY;
-		m_onHitEntity = _onHitEntity;
+		m_onImpact = _onImpact;
 		m_onDespawnNoEntityHit = _onProjectileDespawn;
 	}
 
-	private void LaunchThrow ( Action<Entity> _onHitEntity, Action _onProjectileDespawn )
+	private void LaunchThrow ( Action<Tile> _onImpact, Action _onProjectileDespawn )
 	{
 		m_didHitSomething = false;
 		m_rb.isKinematic = false;
@@ -252,15 +320,15 @@ public class Projectile : PoolElement
 		Vector3 dir = (m_projectileData.Destination - transform.position).normalized;
 		m_rb.linearVelocity = dir * m_projectileData.speed.x + Vector3.up * m_projectileData.speed.y;
 
-		m_onHitEntity = _onHitEntity;
+		m_onImpact = _onImpact;
 		m_onDespawnNoEntityHit = _onProjectileDespawn;
 	}
 
-	private void LaunchUnderground ( Action<Entity> _onHitEntity, Action _onProjectileDespawn )
+	private void LaunchUnderground ( Action<Tile> _onImpact, Action _onProjectileDespawn )
 	{
 		m_didHitSomething = false;
 		m_rb.isKinematic = true;
-		m_onHitEntity = _onHitEntity;
+		m_onImpact = _onImpact;
 		m_onDespawnNoEntityHit = _onProjectileDespawn;
 
 		Vector3 destination = m_projectileData.Destination;
@@ -295,7 +363,7 @@ public class Projectile : PoolElement
 		if (!m_didHitSomething)
 			m_onDespawnNoEntityHit?.Invoke();
 		m_onDespawnNoEntityHit = null;
-		m_onHitEntity = null;
+		m_onImpact = null;
 
 		if (!m_rb.isKinematic)
 		{

@@ -88,7 +88,24 @@ public class AttackAction : AEntityAction
 				SingleAttackInfo attackInfo = attacksInfos[attackCount];
 				Entity targetEntity = GameManager.Instance.GetEntityFromID(targetedEntityIDs[attackCount * ActiveLifetime]);
 				Tile coverHitted = null;
-				attackInfo.isAttackSuccessfull = Data.aoeType != EntityActionData.AOEType.Noone ? true : PerformingEntity.Equipment.AttackRoll(this, attackInfo, targetEntity, out coverHitted);
+				if (Data.aoeType != EntityActionData.AOEType.Noone)
+				{
+					attackInfo.isAttackSuccessfull = true;
+
+					//An area attack stopped by a full wall has to go off against that wall rather than on the far
+					//side of it. Recentring targetTileIDs is enough: GetTargets, the outlines and the projectile
+					//all read the blast centre from there. AttackRoll is not called for area attacks, hence the
+					//dedicated check here.
+					Tile shooterTile = PerformingEntity.Displacement.Coordinates.GetTile();
+					Tile aoeCenter = GridManager.Instance.Tiles[targetTileIDs[attackCount * ActiveLifetime]];
+					bool isBlockedByWall = GridManager.Instance.IsThereBlockingWallBetween(shooterTile, aoeCenter, true, out coverHitted);
+
+					if (isBlockedByWall)
+						targetTileIDs[attackCount * ActiveLifetime] = coverHitted.coordinates.ID;
+				}
+				else
+					attackInfo.isAttackSuccessfull = PerformingEntity.Equipment.AttackRoll(this, attackInfo, targetEntity, out coverHitted);
+
 				attackInfo.hittedTileID = coverHitted == null ? -1 : coverHitted.coordinates.ID;
 				if (attackInfo.isAttackSuccessfull)
 				{

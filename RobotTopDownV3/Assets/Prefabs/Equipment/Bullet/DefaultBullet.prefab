@@ -50,7 +50,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_isDiscardedAfterTime: 1
-  m_discardAfter: 4
+  m_discardAfter: 2
   m_rb: {fileID: 5478765675733972146}
   m_trail: {fileID: 3295257863744513318}
   m_onHitPS: {fileID: 0}

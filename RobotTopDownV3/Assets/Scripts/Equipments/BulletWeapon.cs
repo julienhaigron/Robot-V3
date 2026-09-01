@@ -154,7 +154,7 @@ public class BulletWeapon : Weapon
 
 			bool isLastBullet = i == hitAmount - 1 && _attackIndex == _lastSuccessfullAttackIndex;
 			m_bulletPool.Get<Projectile>(m_bulletPoint.position, m_bulletPoint.rotation).SetProjectileDataAndLaunch(bulletData
-				, ( entity ) => ApplyBulletHit(entity, _attackInfo, isLastBullet), () => OnProjectileDespawn(isLastBullet), hasTrajectoryProjectileBuff);
+				, ( impactTile ) => ApplyBulletImpact(impactTile, _attackAction, _attackInfo, isLastBullet), () => OnProjectileDespawn(isLastBullet), hasTrajectoryProjectileBuff);
 
 			yield return m_timeBetweenBulletsWFS;
 		}
@@ -162,18 +162,48 @@ public class BulletWeapon : Weapon
 
 	#endregion
 
-	private void ApplyBulletHit ( Entity _entity, AttackAction.SingleAttackInfo _attackInfo, bool _isLastBullet )
+	//The round resolves on the tile it actually landed on, which is not necessarily the one that was aimed at:
+	//a blast stopped by a wall goes off against that wall. An area attack then covers its whole blast from there
+	//instead of the single entity the projectile happened to touch.
+	private void ApplyBulletImpact ( Tile _impactTile, AttackAction _attackAction, AttackAction.SingleAttackInfo _attackInfo, bool _isLastBullet )
 	{
-		Dictionary<WeaponEquipmentData.DamageType, int> damages = BuildDamageDictionary(_attackInfo);
-		_entity.Equipment.TakeDamage(new EntityEquipmentPlugin.TakeDamageCallback()
+		if (_impactTile == null)
 		{
-			damages = damages
-		});
+			if (_isLastBullet)
+				EndAttack(m_lastPerformedAction);
+			return;
+		}
 
-		ApplyStatuses(_entity, _attackInfo);
+		Dictionary<WeaponEquipmentData.DamageType, int> damages = BuildDamageDictionary(_attackInfo);
 
-		foreach (AEntityPassiveEffect.PassiveEffectContainer pe in m_lastPerformedAction.effects)
-			ApplyEffects(_entity, pe);
+		List<Tile> impactedTiles = _attackAction.Data.aoeType != EntityActionData.AOEType.Noone
+			? m_user.Equipment.GetTilesInAoERange(_attackAction, _impactTile, true)
+			: new List<Tile>() { _impactTile };
+
+		foreach (Tile tile in impactedTiles)
+		{
+			//An area attack tears into the scenery it covers, not only the units standing in it. Health, not
+			//RegisteredHealth: the latter is the planning forecast and AttackAction already pre-registered this
+			//blast on its centre wall, which would leave that one, and only that one, untouched.
+			if (tile.Wall != null && tile.Wall.Health > 0)
+				tile.Wall.TakeDamage(damages);
+
+			Entity entity = tile.GetEntity(true);
+			if (entity == null)
+				continue;
+
+			entity.Equipment.TakeDamage(new EntityEquipmentPlugin.TakeDamageCallback()
+			{
+				entityAttacker = m_user,
+				entityTargeted = entity,
+				damages = damages
+			});
+
+			ApplyStatuses(entity, _attackInfo);
+
+			foreach (AEntityPassiveEffect.PassiveEffectContainer pe in m_lastPerformedAction.effects)
+				ApplyEffects(entity, pe);
+		}
 
 		if (_isLastBullet)
 			EndAttack(m_lastPerformedAction);
