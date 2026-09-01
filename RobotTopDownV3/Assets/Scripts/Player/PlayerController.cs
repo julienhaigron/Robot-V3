@@ -20,6 +20,9 @@ public class PlayerController : Singleton<PlayerController>
 	private InputAction m_moveAction;
 	private InputAction m_rotateCWAction;
 	private InputAction m_rotateCCWAction;
+	private InputAction m_zoomAction;
+
+	private const float ScrollTicksToLegacyAxis = 0.1f / 120f;
 
 	[Header("Camera Limits")]
 	private Vector2 xLimits
@@ -91,6 +94,7 @@ public class PlayerController : Singleton<PlayerController>
 		m_moveAction = playerMap.FindAction("Move");
 		m_rotateCWAction = playerMap.FindAction("RotateCameraCW");
 		m_rotateCCWAction = playerMap.FindAction("RotateCameraCCW");
+		m_zoomAction = playerMap.FindAction("ZoomCamera");
 
 		playerMap.Enable();
 	}
@@ -197,7 +201,7 @@ public class PlayerController : Singleton<PlayerController>
 
 	private void HandleCameraZoom ()
 	{
-		float scroll = Input.GetAxis("Mouse ScrollWheel");
+		float scroll = m_zoomAction.ReadValue<Vector2>().y * ScrollTicksToLegacyAxis;
 		if (Mathf.Abs(scroll) < 0.001f)
 			return;
 
