@@ -682,11 +682,16 @@ public class TurnManager : Singleton<TurnManager>
 
 			if (_selectedEntityID.HasValue)
 			{
+				//lastRecordedPosition is where the entity stands at the tick being planned, which is the whole
+				//point of the ghosts. Only the selected entity follows the action picked in the timeline instead.
+				Tile ghostPosition = lastRecordedPosition;
 				if (EntityActionDisplay.SelectedDisplay != null && entityID == _selectedEntityID.Value)
+				{
 					lastRecordedAction = EntityActionDisplay.SelectedDisplay.RecordedAction;
+					ghostPosition = GridManager.Instance.Tiles[lastRecordedAction.action.positionAtActionEndID];
+				}
 
-				PlayerController.Instance.AddGhostEntityAt(entity, _specificTokenCount == -1 ?
-					lastRecordedPosition : GridManager.Instance.Tiles[lastRecordedAction.action.positionAtActionEndID], lastRecordedOrientation);
+				PlayerController.Instance.AddGhostEntityAt(entity, ghostPosition, lastRecordedOrientation);
 			}
 		}
 
