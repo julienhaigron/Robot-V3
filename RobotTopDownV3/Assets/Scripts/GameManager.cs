@@ -75,8 +75,11 @@ public class GameManager : SingletonPersistant<GameManager>
 		if (!doesTuto)
 		{
 			LoadHubScene();
+			return;
 		}
-		else if (!GameDatas.current.currentPlayerSave.didStartTuto)
+
+		//Only the very first time: the squad and the mission list must not be handed out again.
+		if (!GameDatas.current.currentPlayerSave.didStartTuto)
 		{
 			//TODO : play introduction video/animation before throwing player into gameplay
 
@@ -87,9 +90,11 @@ public class GameManager : SingletonPersistant<GameManager>
 			GameDatas.current.currentPlayerSave.didStartTuto = true;
 			for (int i = 0; i < FTUEManager.Instance.Cycle1MatchMissions.Length; i++)
 				GameDatas.current.currentPlayerSave.cycleData.selectedMissionsIds.Add(FTUEManager.Instance.Cycle1MatchMissions[i].enumID);
-			
-			SetupLevel(FTUEManager.Instance.Day0MissionData);
 		}
+
+		//Reached whether the intro level is being started or resumed. It used to sit inside the branch above, so
+		//a save that had started the tuto without finishing it matched no branch at all and loading did nothing.
+		SetupLevel(FTUEManager.Instance.Day0MissionData);
 	}
 
 	private void LoadHubScene ()
