@@ -339,7 +339,7 @@ public class EntityActionData : AParsableScriptableObject
 
 	public int GetTokenPreparationCost ( AEntityAction _action, Entity _performingEntity, Entity _targetEntity )
 	{
-		int totalTokenCooldown = m_tokenCooldown;
+		int totalTokenCooldown = m_tokenPreparationDuration;
 		if (_action != null && _performingEntity != null && ContainsEffect(_performingEntity, EntityPassiveEffectEnumID.PreparationCostReduction, out AEntityPassiveEffect.PassiveEffectContainer effectContainer)
 			&& Condition.UseConditionPredicate(_action, _performingEntity, _targetEntity, effectContainer.conditionType))
 		{

@@ -182,7 +182,11 @@ public class Weapon : MonoBehaviour
 
 		if (attackData.aoeType != EntityActionData.AOEType.Noone)
 		{
-			foreach (Tile tile in m_user.Equipment.GetTilesInAoERange(_attackAction, GridManager.Instance.Tiles[_attackAction.targetTileIDs[_attackIndex * _attackAction.ActiveLifetime]]))
+			Tile aoeCenter = _attackAction.GetTargetTileAt(_attackIndex);
+			if (aoeCenter == null)
+				return targets;
+
+			foreach (Tile tile in m_user.Equipment.GetTilesInAoERange(_attackAction, aoeCenter))
 			{
 				m_targetedTiles.Add(tile);
 				tile.UI.SetOutlineColor(Color.red);
@@ -194,8 +198,13 @@ public class Weapon : MonoBehaviour
 		}
 		else
 		{
-			Entity target = GameManager.Instance.GetEntityFromID(_attackAction.targetedEntityIDs[_attackIndex * _attackAction.ActiveLifetime]);
-			Tile targetTile = target.Displacement.Coordinates.GetTile();
+			Entity target = _attackAction.GetTargetEntityAt(_attackIndex);
+
+			//No entity on the targeted tile: the attack still resolves on the tile the action recorded.
+			Tile targetTile = target != null ? target.Displacement.Coordinates.GetTile() : _attackAction.GetTargetTileAt(_attackIndex);
+			if (targetTile == null)
+				return targets;
+
 			targetTile.UI.SetOutlineColor(Color.red);
 			m_targetedTiles.Add(targetTile);
 			targets.Add(new() { targetTile = targetTile, targetEntity = target });
@@ -209,10 +218,17 @@ public class Weapon : MonoBehaviour
 		List<Entity> targets = new();
 
 		if (_passiveEffect.aoeType == EntityActionData.AOEType.Noone)
-			targets.Add(GameManager.Instance.GetEntityFromID(_attackAction.targetedEntityIDs[_attackIndex * _attackAction.ActiveLifetime]));
+		{
+			Entity singleTarget = _attackAction.GetTargetEntityAt(_attackIndex);
+			if (singleTarget != null)
+				targets.Add(singleTarget);
+		}
 		else
 		{
-			Tile target = GridManager.Instance.Tiles[_attackAction.targetTileIDs[_attackIndex * _attackAction.ActiveLifetime]];
+			Tile target = _attackAction.GetTargetTileAt(_attackIndex);
+			if (target == null)
+				return targets;
+
 			Tile from = _passiveEffect.centerType == EntityActionData.AOECenterType.Self
 				? m_user.Displacement.Coordinates.GetTile() : target;
 			int minDistance = _passiveEffect.effectRange.x != -1 ? _passiveEffect.effectRange.x : _attackAction.Data.aoeMinEffectRange;

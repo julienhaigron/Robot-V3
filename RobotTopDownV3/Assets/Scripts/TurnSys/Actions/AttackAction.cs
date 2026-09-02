@@ -41,6 +41,27 @@ public class AttackAction : AEntityAction
 		serializer.SerializeValue(ref attacksInfos);
 	}
 
+	//targetedEntityIDs only gets an entry for the target tiles that actually held someone, so it is shorter than
+	//targetTileIDs as soon as one of them is empty, and a Tile targeted attack can have none at all. Nothing may
+	//index these arrays directly: both accessors return null rather than throwing.
+	public Entity GetTargetEntityAt ( int _attackIndex )
+	{
+		int index = _attackIndex * ActiveLifetime;
+
+		return targetedEntityIDs != null && index >= 0 && index < targetedEntityIDs.Length
+			? GameManager.Instance.GetEntityFromID(targetedEntityIDs[index])
+			: null;
+	}
+
+	public Tile GetTargetTileAt ( int _attackIndex )
+	{
+		int index = _attackIndex * ActiveLifetime;
+
+		return targetTileIDs != null && index >= 0 && index < targetTileIDs.Length
+			? GridManager.Instance.Tiles[targetTileIDs[index]]
+			: null;
+	}
+
 	public override void ConflictCheckPrewarm ()
 	{
 		base.ConflictCheckPrewarm();
@@ -65,7 +86,11 @@ public class AttackAction : AEntityAction
 		}
 		else
 		{
-			for (int i = 0 ; i < attacksInfos.Length; i++)
+			//attacksInfos is sized from targetTileIDs and targetedEntityIDs can be shorter, so the loop has to
+			//stop at whichever runs out first. Overrunning here threw inside CheckConflict, which left the
+			//action unvalidated on top of the exception.
+			int checkedTargetCount = targetedEntityIDs == null ? 0 : Mathf.Min(attacksInfos.Length, targetedEntityIDs.Length);
+			for (int i = 0 ; i < checkedTargetCount; i++)
 			{
 				if (targetedEntityIDs[i] == _otherAction.performingEntityID)
 					attacksInfos[i].pfcResult = (int)EntityActionData.PFC(Data, _otherAction.Data);
@@ -86,7 +111,8 @@ public class AttackAction : AEntityAction
 			for (int attackCount = 0; attackCount < attacksInfos.Length; attackCount++)
 			{
 				SingleAttackInfo attackInfo = attacksInfos[attackCount];
-				Entity targetEntity = GameManager.Instance.GetEntityFromID(targetedEntityIDs[attackCount * ActiveLifetime]);
+
+				Entity targetEntity = GetTargetEntityAt(attackCount);
 				Tile coverHitted = null;
 				if (Data.aoeType != EntityActionData.AOEType.Noone)
 				{
@@ -99,11 +125,14 @@ public class AttackAction : AEntityAction
 					if (isBlockedByWall)
 						targetTileIDs[attackCount * ActiveLifetime] = coverHitted.coordinates.ID;
 				}
+				else if (targetEntity == null)
+					//nobody on the targeted tile: nothing to roll against, the shot simply lands there
+					attackInfo.isAttackSuccessfull = true;
 				else
 					attackInfo.isAttackSuccessfull = PerformingEntity.Equipment.AttackRoll(this, attackInfo, targetEntity, out coverHitted);
 
 				attackInfo.hittedTileID = coverHitted == null ? -1 : coverHitted.coordinates.ID;
-				if (attackInfo.isAttackSuccessfull)
+				if (attackInfo.isAttackSuccessfull && targetEntity != null)
 				{
 					List<AEntityStatus> appliedStatuses = Data.GetAppliedStatuses(this, PerformingEntity, targetEntity);
 					attackInfo.statusIds = new short[appliedStatuses.Count];

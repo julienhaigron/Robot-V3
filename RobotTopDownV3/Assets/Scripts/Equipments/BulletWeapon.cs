@@ -35,9 +35,14 @@ public class BulletWeapon : Weapon
 	{
 		if (_attackAction.Data.aoeType == EntityActionData.AOEType.Noone || (_attackAction.Data.aoeType == EntityActionData.AOEType.Circle && _attackAction.Data.targetType != EntityActionData.TargetType.Self))
 		{
-			Entity targetEntity = GameManager.Instance.GetEntityFromID(_attackAction.targetedEntityIDs[_attackIndex * _attackAction.ActiveLifetime]);
+			Entity targetEntity = _attackAction.GetTargetEntityAt(_attackIndex);
 			Tile targetTile = GridManager.Instance.Tiles[_attackAction.targetTileIDs[_attackIndex]];
-			Vector3 targetPosition = _attackAction.Data.targetType == EntityActionData.TargetType.Tile ? targetTile.transform.position : targetEntity.Skin.Center.position;
+
+			//Aim at the tile when the attack targets a place, and also when it targets an entity that is simply
+			//not there any more: there is still a spot to point the weapon at.
+			Vector3 targetPosition = _attackAction.Data.targetType == EntityActionData.TargetType.Tile || targetEntity == null
+				? targetTile.transform.position
+				: targetEntity.Skin.Center.position;
 			yield return AimSingleTargetAnim(_attackAction, _attackInfo, targetPosition);
 		}
 		else
