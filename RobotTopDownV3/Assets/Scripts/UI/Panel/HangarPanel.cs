@@ -75,8 +75,8 @@ public class HangarPanel : AUIPanel
 	{
 		m_addNewEntityBtn.SetInteractability(GameDatas.current.currentPlayerSave.squadUnitsIndex.Count < GameAssets.current.game.HangarStructureUpgrade.GetCurrentMaxHangarUnit());
 		int squadCount = GameDatas.current.currentPlayerSave.squadUnitsIndex.Count;
-		m_maxUnitInSquadTMP.text = string.Format(LocalizationManager.Instance.Get(LocalizationKey.hangar_active_squad), squadCount, GameAssets.current.game.HangarStructureUpgrade.GetCurrentMaxHangarUnit());
-		m_maxUnitInHangarTMP.text = string.Format(LocalizationManager.Instance.Get(LocalizationKey.hangar_inactive_unit), GameDatas.current.currentPlayerSave.allBuiltUnits.Count - GameDatas.current.currentPlayerSave.squadUnitsIndex.Count, GameAssets.current.game.HangarStructureUpgrade.GetCurrentMaxUnitAmount());
+		m_maxUnitInSquadTMP.text = string.Format(LocalizationManager.Instance.Get(LocalizationKey.hangar_active_squad), squadCount, GameAssets.current.game.HangarStructureUpgrade.GetCurrentMaxUnitAmount());
+		m_maxUnitInHangarTMP.text = string.Format(LocalizationManager.Instance.Get(LocalizationKey.hangar_inactive_unit), GameDatas.current.currentPlayerSave.allBuiltUnits.Count - GameDatas.current.currentPlayerSave.squadUnitsIndex.Count, GameAssets.current.game.HangarStructureUpgrade.GetCurrentMaxHangarUnit());
 
 		int totalEnergyUsed = 0;
 		foreach (EntitySavedData savedEntity in GameDatas.current.currentPlayerSave.GetSquadEntitiesData())

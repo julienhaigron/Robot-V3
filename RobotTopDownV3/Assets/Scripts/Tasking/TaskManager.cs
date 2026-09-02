@@ -41,12 +41,26 @@ public class TaskManager : SingletonPersistant<TaskManager>
 
 		foreach (TaskSequence seq in m_activeSequences.ToArray())
 		{
-            if (!seq.IsCompleted && !seq.IsPerforming)
-                seq.CurrentTask.TryStart(m_context);
-            else if (!seq.IsCompleted && seq.IsPerforming
-                && seq.SkipPredicate != null && seq.SkipPredicate(m_context))
-                seq.Complete();
-        }
+			//TaskSequence.Complete only flags the progression, it has no way to reach this list. Dropping
+			//finished sequences here is what keeps m_activeSequences honest: without it they pile up forever
+			//with CurrentTaskIndex at -1, which is exactly what a skipped sequence leaves behind.
+			if (seq.IsCompleted)
+			{
+				m_activeSequences.Remove(seq);
+				continue;
+			}
+
+			if (!seq.IsPerforming)
+			{
+				if (!seq.TryStart(m_context))
+                {
+                    if (seq.SkipPredicate != null && seq.SkipPredicate(m_context))
+                        seq.Complete();
+                }
+			}
+			else if (seq.SkipPredicate != null && seq.SkipPredicate(m_context))
+				seq.Complete();
+		}
 	}
 
     public void StopAndMarkAsCompletedSequence(string _sequenceID )
@@ -72,7 +86,11 @@ public class TaskManager : SingletonPersistant<TaskManager>
 	public void StartSequence(TaskSequence _sequence )
 	{
         _sequence.Init();
-        m_activeSequences.Add(_sequence);
+
+        //FTUESequence.Start can reach the same sequence twice when it skips entries, and a sequence present
+        //twice is driven twice per frame by Update.
+        if (!m_activeSequences.Contains(_sequence))
+            m_activeSequences.Add(_sequence);
     }
 
 }

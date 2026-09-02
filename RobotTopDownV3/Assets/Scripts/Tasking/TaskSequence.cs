@@ -18,7 +18,7 @@ public class TaskSequence
 		? GameDatas.current.currentPlayerSave.sequencesProgressions[m_id] : 0;
 
 	public bool IsPerforming => CurrentTask.IsPerforming;
-	public bool IsCompleted => m_tasks[^1].IsCompleted || CurrentTaskIndex == -1;
+	public bool IsCompleted => /*m_tasks[^1].IsCompleted || */CurrentTaskIndex == -1;
 
 	private System.Func<TaskManager.TaskContext, bool> m_skipPredicate;
 	public System.Func<TaskManager.TaskContext, bool> SkipPredicate => m_skipPredicate;
@@ -41,16 +41,26 @@ public class TaskSequence
 			GameDatas.current.currentPlayerSave.sequencesProgressions.Add(m_id, 0);
 		}
 
-		for (int i = CurrentTaskIndex; i < m_tasks.Count; i++)
+		//CurrentTaskIndex is -1 on an already completed sequence, and starting the loop there indexes m_tasks[-1].
+		for (int i = Mathf.Max(0, CurrentTaskIndex); i < m_tasks.Count; i++)
 		{
 			m_tasks[i].SequenceID = ID;
 			m_tasks[i].IsLastTaskInSequence = i + 1 == m_tasks.Count;
 
 			if (i + 1 == m_tasks.Count)
+			{
+				//Init can run more than once on the same sequence, and a doubled subscription completes it twice.
+				m_tasks[i].onCompleted -= OnComplete;
 				m_tasks[i].onCompleted += OnComplete;
+			}
 		}
 		//TaskManager.Instance.StartSequence(this);
 	}
+
+	public bool TryStart (TaskManager.TaskContext _context)
+	{
+		return CurrentTask.TryStart(_context)
+;	}
 
 	public void Complete ()
 	{
