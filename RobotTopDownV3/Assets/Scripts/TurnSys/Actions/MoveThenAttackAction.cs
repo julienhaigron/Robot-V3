@@ -50,6 +50,11 @@ public class MoveThenAttackAction : AttackAction
 		PerformingEntity.Displacement.RegisterOnCurrentTile();
 	}
 
+	public override bool DoesLeaveTileThisTick ( int _tileID )
+	{
+		return !isActionCanceled && positionAfterMovementID != -1 && positionAfterMovementID != _tileID;
+	}
+
 	//CheckConflict is null safe here too: every _otherAction use is a pattern match, which fails on null.
 	public override bool ConflictCheckAlone ( bool _isCheck = true )
 	{

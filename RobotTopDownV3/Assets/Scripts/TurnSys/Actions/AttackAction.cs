@@ -123,6 +123,13 @@ public class AttackAction : AEntityAction
 							, this, GameAssets.current.equipments[linkedEquipmentId]);
 					}
 
+				}
+
+				//Computed whether or not the shot lands: a round stopped by a wall has to carry the weapon's real
+				//damage to it, and the cover registration below only ever concerns a failed shot anyway. Every
+				//consumer that applies this to an entity checks isAttackSuccessfull first.
+				if (targetEntity != null)
+				{
 					Dictionary<WeaponEquipmentData.DamageType, int> damagesDealt =
 						PerformingEntity.Equipment.Weapons[linkedEquipmentId].GetDamages(PerformingEntity, targetEntity, this, (EntityActionData.PFCResultType)attackInfo.pfcResult);
 

@@ -130,17 +130,13 @@ public class Projectile : PoolElement
 	//Where the round actually landed. The attack resolves from there, so an area blast goes off around it.
 	private void Impact ( Tile _impactTile )
 	{
-		//The cover AttackRoll deliberately routed the round into takes it, whether the impact came from the
-		//collision or from the arrival check. A wall merely standing on a tile an area attack was recentred onto
-		//does not: there the blast is what resolves.
+		//The wall AttackRoll designated takes the round, whichever collider actually stopped the projectile and
+		//wherever the impact was detected: the hex ray the roll walks and the bullet trajectory do not always
+		//meet the same wall first, and Wall.LinkedTile is not guaranteed to be wired on every prefab. A wall
+		//merely standing on a tile an area attack was recentred onto is not concerned: there the blast resolves.
 		if (m_projectileData.targetType == ProjectileData.TargetType.Wall && m_projectileData.targetWall != null
-			&& IsSameTile(_impactTile, m_projectileData.targetWall.LinkedTile))
-		{
-			Dictionary<WeaponEquipmentData.DamageType, int> damages = new();
-			damages.Add(WeaponEquipmentData.DamageType.Bludgeoning, 1);
-
-			m_projectileData.targetWall.TakeDamage(damages);
-		}
+			&& m_projectileData.damages != null && m_projectileData.damages.Count > 0)
+			m_projectileData.targetWall.TakeDamage(m_projectileData.damages);
 
 		if (_impactTile != null && m_projectileData.isAttackSuccessful)
 		{
@@ -192,11 +188,12 @@ public class Projectile : PoolElement
 		return false;
 	}
 
-	//Consumed on something it was not aiming at: no damage. m_didHitSomething stays false on purpose so that
-	//Deactivate still fires m_onDespawnNoEntityHit and the attack ends normally.
+	//Consumed on something it was not aiming at: the attack resolves on nobody, hence the null tile, and
+	//m_didHitSomething stays false so Deactivate still fires m_onDespawnNoEntityHit and the attack ends. A cover
+	//designated by AttackRoll still takes its round: whatever stopped the projectile, that shot was for it.
 	private void StopWithoutHit ()
 	{
-		PlayHitFeedbackAndDiscard();
+		Impact(null);
 	}
 
 	private void PlayHitFeedbackAndDiscard ()
@@ -398,6 +395,9 @@ public struct ProjectileData
 
 	//A missed shot must not damage the target it was rolled against, even if the stray trajectory clips it.
 	public bool isAttackSuccessful;
+
+	//The weapon damage this round carries, used when it lands in a cover instead of its target.
+	public Dictionary<WeaponEquipmentData.DamageType, int> damages;
 
 	public EntityActionData attackData;
 	public WeaponEquipmentData weapon;

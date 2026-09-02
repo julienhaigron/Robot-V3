@@ -26,6 +26,11 @@ public class JumpToTarget : AEntityAction
 			GameManager.Instance.GetEntityFromID(performingEntityID).Displacement.Coordinates.GetTile().SetEntity(null, _isThisTurn: false);
 	}
 
+	public override bool DoesLeaveTileThisTick ( int _tileID )
+	{
+		return targetTileIDs != null && targetTileIDs.Length > 0 && targetTileIDs[^1] != _tileID;
+	}
+
 	public override void CancelAction ()
 	{
 		base.CancelAction();

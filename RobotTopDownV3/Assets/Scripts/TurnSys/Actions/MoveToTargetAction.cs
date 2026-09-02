@@ -50,7 +50,9 @@ public class MoveToTargetAction : AEntityAction
 		if(IsDestinationOccupiedOnNextTurnAction())
 			RefreshDestinatedTile();*/
 
-		if(finalTargetTileID != -1 && targetTileIDs != null)
+		//Same condition as Perform: with an empty path Perform skips the move entirely, so clearing the tile here
+		//would leave the entity registered nowhere while its Coordinates still point at it.
+		if (finalTargetTileID != -1 && targetTileIDs != null && targetTileIDs.Length > 0)
 			GameManager.Instance.GetEntityFromID(performingEntityID).Displacement.Coordinates.GetTile().SetEntity(null, _isThisTurn: true);
 	}
 
@@ -270,6 +272,14 @@ public class MoveToTargetAction : AEntityAction
 		}
 
 		return new() { isFirstActionConflicted = doesSelfHaveConflict, isSecondActionConflicted = doesOtherHaveConflict };
+	}
+
+	//Mirrors exactly the condition Perform uses to actually move: anything less and the tile is freed for a move
+	//that never happens.
+	public override bool DoesLeaveTileThisTick ( int _tileID )
+	{
+		return targetTileIDs != null && targetTileIDs.Length > 0 && finalTargetTileID != -1
+			&& targetTileIDs[^1] != _tileID;
 	}
 
 	//CheckConflict is null safe: the only branch using _otherAction is a pattern match, which fails on null.

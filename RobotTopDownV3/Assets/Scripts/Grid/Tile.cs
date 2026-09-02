@@ -548,6 +548,11 @@ public class Tile : MonoBehaviour
 	//During the play phase a moving entity is registered on its destination tile at currentTick + 1,
 	//while the tile it just left still references it at currentTick. Both slots are checked, and each
 	//candidate is validated against its real coordinates so a stale slot never drives the FOW visual.
+	public Entity GetCurrentEntity ()
+	{
+		return TryGetCurrentEntity(out Entity entity) ? entity : null;
+	}
+
 	public bool TryGetCurrentEntity ( out Entity _entity )
 	{
 		if (TryGetEntity(false, out _entity) && IsEntityStandingHere(_entity))

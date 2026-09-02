@@ -124,6 +124,17 @@ public abstract class AEntityAction : INetworkSerializable
 	}
 
 	/// <summary>
+	/// Does this action take the performing entity off _tileID during this tick? Only real movement does, so the
+	/// default is no. Each movement action answers for itself because each has its own cancellation rules, and
+	/// because positionAtActionEndID is not maintained by every action type: inferring the answer from it made an
+	/// attacking, motionless unit look like it was leaving, and the next unit walked straight through it.
+	/// </summary>
+	public virtual bool DoesLeaveTileThisTick ( int _tileID )
+	{
+		return false;
+	}
+
+	/// <summary>
 	/// called at the beginning of each performing tick
 	/// </summary>
 	/// <param name="_state"></param>

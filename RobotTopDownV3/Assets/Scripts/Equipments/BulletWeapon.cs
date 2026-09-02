@@ -98,7 +98,7 @@ public class BulletWeapon : Weapon
 
 			foreach (WeaponTarget target in targets)
 			{
-				Entity targetEntity = target.targetEntity != null ? target.targetEntity : target.targetTile.GetEntity(true);
+				Entity targetEntity = target.targetEntity != null ? target.targetEntity : target.targetTile.GetCurrentEntity();
 				if (targetEntity == null)
 					continue;
 				int hitAmount = _attackAction.Data.GetHitAmount(_attackAction, m_user, targetEntity);
@@ -129,7 +129,7 @@ public class BulletWeapon : Weapon
 	private IEnumerator ShootAtEntityAnim ( AttackAction _attackAction, int _attackIndex, AttackAction.SingleAttackInfo _attackInfo, int _lastSuccessfullAttackIndex, WeaponTarget _target )
 	{
 		bool hasTrajectoryProjectileBuff = m_lastPerformedAction.effects.Any(e => e.enumID == EntityPassiveEffectEnumID.TrajectoryControl);
-		int hitAmount = _attackAction.Data.GetHitAmount(_attackAction, m_user, _target.targetEntity != null ? _target.targetEntity : _target.targetTile.GetEntity(true));
+		int hitAmount = _attackAction.Data.GetHitAmount(_attackAction, m_user, _target.targetEntity != null ? _target.targetEntity : _target.targetTile.GetCurrentEntity());
 		ProjectileData bulletData = new()
 		{
 			owner = m_user,
@@ -137,7 +137,8 @@ public class BulletWeapon : Weapon
 			attackData = _attackAction.Data,
 			weapon = m_data,
 			onHitSFXID = _attackAction.Data.onSingleAttackHitSFXID,
-			isAttackSuccessful = _attackInfo.isAttackSuccessfull
+			isAttackSuccessful = _attackInfo.isAttackSuccessfull,
+			damages = BuildDamageDictionary(_attackInfo)
 		};
 		ProjectileData.TargetType targetType = !_attackInfo.isAttackSuccessfull && _attackInfo.hittedTileID != -1
 			? ProjectileData.TargetType.Wall :  _attackAction.Data.targetType == EntityActionData.TargetType.Tile
@@ -188,8 +189,10 @@ public class BulletWeapon : Weapon
 			if (tile.Wall != null && tile.Wall.Health > 0)
 				tile.Wall.TakeDamage(damages);
 
-			Entity entity = tile.GetEntity(true);
-			if (entity == null)
+			//TryGetCurrentEntity, not GetEntity(true): a unit that moved this tick was cleared from its old
+			//current tick slot by Prepare and only booked its destination on the next one, so it shows up in no
+			//current tick slot at all and a successful shot on a moving target dealt nothing.
+			if (!tile.TryGetCurrentEntity(out Entity entity))
 				continue;
 
 			entity.Equipment.TakeDamage(new EntityEquipmentPlugin.TakeDamageCallback()

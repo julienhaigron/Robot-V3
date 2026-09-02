@@ -150,7 +150,7 @@ public class Weapon : MonoBehaviour
 
 		foreach (WeaponTarget target in targets)
 		{
-			Entity targetEntity = target.targetEntity != null ? target.targetEntity : target.targetTile.GetEntity(true);
+			Entity targetEntity = target.targetEntity != null ? target.targetEntity : target.targetTile.GetCurrentEntity();
 			if (targetEntity == null)
 				continue;
 			int hitAmount = _attackAction.Data.GetHitAmount(_attackAction, m_user, targetEntity);
@@ -189,7 +189,7 @@ public class Weapon : MonoBehaviour
 			{
 				m_targetedTiles.Add(tile);
 				tile.UI.SetOutlineColor(Color.red);
-				if (tile.TryGetEntity(true, out Entity entity))
+				if (tile.TryGetCurrentEntity(out Entity entity))
 					targets.Add(new() { targetTile = tile, targetEntity = entity });
 				else
 					targets.Add(new() { targetTile = tile, targetEntity = null});
@@ -222,7 +222,7 @@ public class Weapon : MonoBehaviour
 			int maxDistance = _passiveEffect.effectRange.y != -1 ? _passiveEffect.effectRange.y : _attackAction.Data.aoeMaxEffectRange;
 			foreach (Tile tile in GridManager.Instance.GetTilesInAoERange(_passiveEffect.aoeType, m_user, from, target, minDistance, maxDistance, _attackAction.Data.maxChainedTarget, true))
 			{
-				if (tile.TryGetEntity(true, out Entity entity))
+				if (tile.TryGetCurrentEntity(out Entity entity))
 					targets.Add(entity);
 			}
 		}
