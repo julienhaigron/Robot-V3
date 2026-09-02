@@ -22,7 +22,7 @@ public class PlayerController : Singleton<PlayerController>
 	private InputAction m_rotateCCWAction;
 	private InputAction m_zoomAction;
 
-	private const float ScrollTicksToLegacyAxis = 0.1f / 120f;
+	private const float LegacyAxisPerNotch = 0.1f;
 
 	[Header("Camera Limits")]
 	private Vector2 xLimits
@@ -201,9 +201,11 @@ public class PlayerController : Singleton<PlayerController>
 
 	private void HandleCameraZoom ()
 	{
-		float scroll = m_zoomAction.ReadValue<Vector2>().y * ScrollTicksToLegacyAxis;
-		if (Mathf.Abs(scroll) < 0.001f)
+		float rawScroll = m_zoomAction.ReadValue<Vector2>().y;
+		if (Mathf.Abs(rawScroll) < 0.01f)
 			return;
+
+		float scroll = Mathf.Sign(rawScroll) * LegacyAxisPerNotch;
 
 		float zoomMovement = -(scroll * GameConfig.current.game.cameraZoomSpeed);
 
