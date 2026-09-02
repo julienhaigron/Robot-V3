@@ -41,7 +41,6 @@ public class TaskSequence
 			GameDatas.current.currentPlayerSave.sequencesProgressions.Add(m_id, 0);
 		}
 
-		//CurrentTaskIndex is -1 on an already completed sequence, and starting the loop there indexes m_tasks[-1].
 		for (int i = Mathf.Max(0, CurrentTaskIndex); i < m_tasks.Count; i++)
 		{
 			m_tasks[i].SequenceID = ID;
@@ -49,7 +48,6 @@ public class TaskSequence
 
 			if (i + 1 == m_tasks.Count)
 			{
-				//Init can run more than once on the same sequence, and a doubled subscription completes it twice.
 				m_tasks[i].onCompleted -= OnComplete;
 				m_tasks[i].onCompleted += OnComplete;
 			}

@@ -46,12 +46,6 @@ public class MoveToTargetAction : AEntityAction
 
 	public override void Prepare ( Entity.EntityState _state )
 	{
-		/*//check here if can do movement and where to exactly
-		if(IsDestinationOccupiedOnNextTurnAction())
-			RefreshDestinatedTile();*/
-
-		//Same condition as Perform: with an empty path Perform skips the move entirely, so clearing the tile here
-		//would leave the entity registered nowhere while its Coordinates still point at it.
 		if (finalTargetTileID != -1 && targetTileIDs != null && targetTileIDs.Length > 0)
 			GameManager.Instance.GetEntityFromID(performingEntityID).Displacement.Coordinates.GetTile().SetEntity(null, _isThisTurn: true);
 	}
@@ -60,7 +54,6 @@ public class MoveToTargetAction : AEntityAction
 	{
 		base.CancelAction();
 
-		//Prepare may already have taken the entity off its tile for a move that is now cancelled.
 		PerformingEntity.Displacement.RegisterOnCurrentTile();
 
 		if (targetTileIDs == null)
@@ -106,29 +99,14 @@ public class MoveToTargetAction : AEntityAction
 
 	private IEnumerator PerformCR ()
 	{
-		/*Tile from = GameManager.Instance.GetEntityFromID(performingEntityID).Displacement.Coordinates.GetTile();
-		Tile to = GridManager.Instance.Tiles[thisActionDestinationIDArray[];
-		List<Tile> path = GridManager.Instance.GetPath(from, to, false);*/
 		int movementAmount = Mathf.Min(targetTileIDs.Length, Data.movementSpeed);
 		float movementSpeed = GameConfig.current.game.actionDuration / movementAmount;
 
 		for (int i = 0; i < movementAmount; i++)
 		{
-			/*List<Tile> tilesInRange = new();
-			foreach (string weaponId in PerformingEntity.Equipment.Weapons.Keys)
-				tilesInRange.AddRange(PerformingEntity.Equipment.GetTilesInWeaponRange(this, weaponId, true));
-
-			foreach (Tile tile in tilesInRange)
-			{
-				tile.UI.SetOutlineColor(Color.blue);
-			}*/
 			m_movementTween = GameManager.Instance.GetEntityFromID(performingEntityID).Displacement.MoveToTile(targetTileIDs[i], null, true, movementSpeed);
 
 			yield return new WaitForSeconds(movementSpeed);
-			/*foreach (Tile tile in tilesInRange)
-			{
-				tile.UI.ResetOutline();
-			}*/
 		}
 
 		EndTick();
@@ -274,22 +252,17 @@ public class MoveToTargetAction : AEntityAction
 		return new() { isFirstActionConflicted = doesSelfHaveConflict, isSecondActionConflicted = doesOtherHaveConflict };
 	}
 
-	//Mirrors exactly the condition Perform uses to actually move: anything less and the tile is freed for a move
-	//that never happens.
 	public override bool DoesLeaveTileThisTick ( int _tileID )
 	{
 		return targetTileIDs != null && targetTileIDs.Length > 0 && finalTargetTileID != -1
 			&& targetTileIDs[^1] != _tileID;
 	}
 
-	//CheckConflict is null safe: the only branch using _otherAction is a pattern match, which fails on null.
 	public override bool ConflictCheckAlone ( bool _isCheck = true )
 	{
 		return CheckConflict(null, _isCheck).isFirstActionConflicted;
 	}
 
-	//Two units exchanging tiles never overlap in their target tiles, so the check above cannot see it and both
-	//moves go through, walking each other over. A swap is a conflict of its own.
 	private bool IsSwappingTilesWith ( MoveToTargetAction _otherAction )
 	{
 		if (targetTileIDs == null || _otherAction.targetTileIDs == null)
@@ -328,10 +301,6 @@ public class MoveToTargetAction : AEntityAction
 		/*foreach (int tileID in targetTileIDs)
 			GridManager.Instance.Tiles[tileID].*/
 
-		//No _canTraverseAllies here on purpose: this is the authoritative re-plan against the real next tick
-		//occupancy, so an ally that did not free its tile must stay a hard obstacle. _movingEntity is still
-		//passed so the tiles this action already booked for itself are not seen as obstacles: ResolveConflicts
-		//can call this several times per tick, once per other acting entity.
 		List <Tile> pathToTile = GridManager.Instance.GetPath(GameManager.Instance.GetEntityFromID(performingEntityID).Displacement.Coordinates.GetTile(), GridManager.Instance.Tiles[(int)finalTargetTileID], _isThisTurn: false, _movingEntity: PerformingEntity);
 
 		if (pathToTile == null || pathToTile.Count < Data.movementSpeed + 1)

@@ -772,8 +772,6 @@ public class GridManager : Singleton<GridManager>
 		return true;
 	}
 
-	//A full wall on the line does not merely give cover, it physically stops the round: the shot can never reach
-	//the target and lands in the wall instead. Smoke is deliberately ignored here, it blocks sight, not bullets.
 	public bool IsThereBlockingWallBetween ( Entity _attacker, Entity _target, bool _didAttackerWinPFC, out Tile _wallTile )
 	{
 		int attackerPosition = TurnManager.Instance.GetPositionOfEntityAtEndOfRound(_attacker.ID);
@@ -790,8 +788,6 @@ public class GridManager : Singleton<GridManager>
 
 		foreach (Tile tile in GetTilesInRay(_from, _to, _isThisTurn, true))
 		{
-			//Health, not RegisteredHealth: this runs at resolution, and a wall still standing blocks the round
-			//even when damage has already been registered against it earlier in the same tick.
 			if (tile.GroundType != TileGroundType.Wall || tile.Wall == null || tile.Wall.Health <= 0)
 				continue;
 
@@ -895,10 +891,6 @@ public class GridManager : Singleton<GridManager>
 		}
 	}*/
 
-	//_movingEntity always exempts the entity from itself: during conflict resolution an action books its own
-	//target tiles on the next tick slot, and re-planning must not treat those bookings as obstacles.
-	//_canTraverseAllies additionally lets a unit plan a path behind an ally (one tile wide corridor). Only route
-	//planning may ask for it, never the arbitration of an actual step: the plan is re-checked every tick.
 	private bool IsBlockedByEntity ( Tile _tile, Tile _to, bool _isThisTurn, Entity _movingEntity, bool _canTraverseAllies )
 	{
 		if (_to == null || _tile.coordinates.ID == _to.coordinates.ID)
@@ -906,8 +898,6 @@ public class GridManager : Singleton<GridManager>
 
 		Entity blocker = _tile.GetEntity(_isThisTurn);
 
-		//The next tick slot only holds entities that booked a move this tick, so a tile looks free there even
-		//when a motionless entity stands on it. Fall back to the current tick to catch those.
 		if (blocker == null && !_isThisTurn)
 			blocker = GetEntityStayingOn(_tile);
 
@@ -929,7 +919,6 @@ public class GridManager : Singleton<GridManager>
 		if (entity == null)
 			return null;
 
-		//outside of a running turn nobody is going anywhere
 		if (TurnManager.Instance == null)
 			return entity;
 
@@ -1164,8 +1153,6 @@ public class GridManager : Singleton<GridManager>
 		FogOfWarRenderer.Instance.MarkDirty();
 	}
 
-	//Tile.m_visionTypeCounts is the single source of truth: it already counts per vision type,
-	//so an extra aggregated counter here could only desync and silently skip a decrement.
 	private void AddVisionTile ( Tile _tile, NeuronalMembraneEquipmentData.VisionTypes _visionType )
 	{
 		_tile.SetActiveFOW(_visionType, false, false);

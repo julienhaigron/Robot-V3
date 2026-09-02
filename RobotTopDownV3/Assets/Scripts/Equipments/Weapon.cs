@@ -55,9 +55,6 @@ public class Weapon : MonoBehaviour
 		if (m_attackCR != null)
 			GameManager.Instance.StopCoroutine(m_attackCR);
 
-		//Hosted by the GameManager, not by this weapon: EntitySkinPlugin.Hide deactivates the skin roots the
-		//weapon lives under whenever its owner leaves the fog of war, and StartCoroutine throws on an inactive
-		//object. The attack would then never run and never fire m_onPerformAttackEnd, hanging the tick.
 		m_attackCR = GameManager.Instance.StartCoroutine(PerformAttackCR(_attackAction));
 	}
 

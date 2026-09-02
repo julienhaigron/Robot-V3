@@ -521,12 +521,6 @@ public class TurnManager : Singleton<TurnManager>
 		RefreshActionDisplay(_actionToStartRemoveFrom.performingEntityID, true);
 	}
 
-	//An entity only vacates its tile when a movement action actually carries it off this tick, which is what
-	//DoesLeaveTileThisTick answers. Tile.NewPhase copies [currentTick - 1] into [currentTick] only, so the next
-	//tick slot holds nothing at all for a motionless entity: this is how the occupancy checks still see them.
-	//Where the entity will stand once this tick is played, its current tile when it is not going anywhere.
-	//Comparing a chasing unit's arrival tile with its target's start tile mixes two time frames: the unit aims one
-	//step behind, and on a zig zagging trail that flips its facing every tick.
 	public int GetEntityPositionAtEndOfTick ( int _entityID, int _defaultTileID )
 	{
 		if (m_actionsToPlay.ContainsKey(_entityID) && m_actionsToPlay[_entityID] != null)

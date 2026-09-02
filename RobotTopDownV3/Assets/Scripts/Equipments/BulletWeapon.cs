@@ -162,10 +162,7 @@ public class BulletWeapon : Weapon
 	}
 
 	#endregion
-
-	//The round resolves on the tile it actually landed on, which is not necessarily the one that was aimed at:
-	//a blast stopped by a wall goes off against that wall. An area attack then covers its whole blast from there
-	//instead of the single entity the projectile happened to touch.
+	
 	private void ApplyBulletImpact ( Tile _impactTile, AttackAction _attackAction, AttackAction.SingleAttackInfo _attackInfo, bool _isLastBullet )
 	{
 		if (_impactTile == null)
@@ -183,15 +180,9 @@ public class BulletWeapon : Weapon
 
 		foreach (Tile tile in impactedTiles)
 		{
-			//An area attack tears into the scenery it covers, not only the units standing in it. Health, not
-			//RegisteredHealth: the latter is the planning forecast and AttackAction already pre-registered this
-			//blast on its centre wall, which would leave that one, and only that one, untouched.
 			if (tile.Wall != null && tile.Wall.Health > 0)
 				tile.Wall.TakeDamage(damages);
 
-			//TryGetCurrentEntity, not GetEntity(true): a unit that moved this tick was cleared from its old
-			//current tick slot by Prepare and only booked its destination on the next one, so it shows up in no
-			//current tick slot at all and a successful shot on a moving target dealt nothing.
 			if (!tile.TryGetCurrentEntity(out Entity entity))
 				continue;
 

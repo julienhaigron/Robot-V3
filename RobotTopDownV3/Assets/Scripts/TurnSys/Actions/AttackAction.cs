@@ -92,10 +92,6 @@ public class AttackAction : AEntityAction
 				{
 					attackInfo.isAttackSuccessfull = true;
 
-					//An area attack stopped by a full wall has to go off against that wall rather than on the far
-					//side of it. Recentring targetTileIDs is enough: GetTargets, the outlines and the projectile
-					//all read the blast centre from there. AttackRoll is not called for area attacks, hence the
-					//dedicated check here.
 					Tile shooterTile = PerformingEntity.Displacement.Coordinates.GetTile();
 					Tile aoeCenter = GridManager.Instance.Tiles[targetTileIDs[attackCount * ActiveLifetime]];
 					bool isBlockedByWall = GridManager.Instance.IsThereBlockingWallBetween(shooterTile, aoeCenter, true, out coverHitted);
@@ -125,9 +121,6 @@ public class AttackAction : AEntityAction
 
 				}
 
-				//Computed whether or not the shot lands: a round stopped by a wall has to carry the weapon's real
-				//damage to it, and the cover registration below only ever concerns a failed shot anyway. Every
-				//consumer that applies this to an entity checks isAttackSuccessfull first.
 				if (targetEntity != null)
 				{
 					Dictionary<WeaponEquipmentData.DamageType, int> damagesDealt =
