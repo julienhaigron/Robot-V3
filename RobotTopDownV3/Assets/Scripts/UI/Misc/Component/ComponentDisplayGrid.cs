@@ -48,8 +48,11 @@ public class ComponentDisplayGrid : ComponentContainer
 			}
 		}
 
+        //eq.ID, not eq: comparing a string against a Component resolves to object.Equals(object, object), which
+        //is always false, so the "already displayed" guard never matched and every refresh re-created the whole
+        //inventory on top of the displays already there.
         foreach (GameDatas.PlayerSave.Component eq in GameDatas.current.currentPlayerSave.equipmentInventory)
-            if (m_predicate != null && m_predicate(eq) && !m_items.Any(item => string.Equals(item.SavedData.ID, eq)))
+            if (m_predicate != null && m_predicate(eq) && !m_items.Any(item => string.Equals(item.SavedData.ID, eq.ID)))
                 CreateNewDisplay(m_unitData, eq, m_displayMode);
     }
 

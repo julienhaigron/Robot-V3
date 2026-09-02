@@ -72,7 +72,9 @@ public class ComponentSlot : ComponentContainer
 
     public void InitRecyclingData( GameDatas.PlayerSave.DayData.RecyclingComponentData _recyclingData )
 	{
-        if (_recyclingData != null && _recyclingData.component != null && string.IsNullOrEmpty(_recyclingData.component.ID))
+        //The else branch dereferenced _recyclingData while the if only guarded against a null component, so an
+        //emptied slot (RecyclePanel clears the entry on removal) threw on the next panel opening.
+        if (_recyclingData == null || _recyclingData.component == null || string.IsNullOrEmpty(_recyclingData.component.ID))
             m_timerTMP.text = "";
         else
             m_timerTMP.text = _recyclingData.remainingTime.ToString();
