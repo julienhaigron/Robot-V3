@@ -23,4 +23,4 @@ MonoBehaviour:
   creditCost: 60
   recyclingDurationAmount: 1
   reparingDurationAmount: 1
-  energyProduced: 0
+  energyProduced: 100
