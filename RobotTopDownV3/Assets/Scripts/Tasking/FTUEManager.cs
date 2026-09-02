@@ -139,7 +139,7 @@ public class FTUEManager : SingletonPersistant<FTUEManager>
 		//macro
 		tutoSequence.Append(new WaitEndLoadingTask("Wait for end loading", ( context ) => GameDatas.current.currentPlayerSave.dayCount == 0));
 		tutoSequence.Append(new OpenPanelTask<HangarPanel>("Send player directly to hangar", ( context ) => context.UI.currentPanel is SoloHubPanel 
-			&& GameDatas.current.currentPlayerSave.dayCount == 1));
+			&& GameDatas.current.currentPlayerSave.dayCount == 0));
 		tutoSequence.Append(new DialogueHighlightTask("Squad Explenation", ( context ) => context.UI.currentPanel is HangarPanel
 		, m_day1TutoDialogues[0], "squadUnits"));
 		tutoSequence.Append(new DialogueHighlightTask("Hub presentation", ( context ) => context.UI.currentPanel is SoloHubPanel
@@ -219,7 +219,7 @@ public class FTUEManager : SingletonPersistant<FTUEManager>
 		tutoSequence.Append(new DialogueHighlightTask("Goto repair station", ( context ) => context.UI.currentPanel is SoloHubPanel
 		, m_day4TutoDialogues[0], "repairBtn"));
 		tutoSequence.Append(new DialogueTask("Lorem ipsum repair station", ( context ) => context.UI.currentPanel is RepairStationPanel 
-			&& GameDatas.current.currentPlayerSave.dayCount == 4, m_day4TutoDialogues[1]));
+			&& GameDatas.current.currentPlayerSave.dayCount == 3, m_day4TutoDialogues[1]));
 		tutoSequence.SetSkipPredicate(( context ) => GameDatas.current.currentPlayerSave.dayCount > 3);
 		return tutoSequence;
 	}
@@ -230,7 +230,7 @@ public class FTUEManager : SingletonPersistant<FTUEManager>
 
 		//macro
 		tutoSequence.Append(new DialogueHighlightTask("Vas dans le hangar et créer une unit", ( context ) => context.UI.currentPanel is SoloHubPanel
-			 && GameDatas.current.currentPlayerSave.dayCount == 5, m_day5TutoDialogues[0], "hangarBtn"));
+			 && GameDatas.current.currentPlayerSave.dayCount == 4, m_day5TutoDialogues[0], "hangarBtn"));
 		tutoSequence.Append(new DialogueTask("Create unit btn explenation", ( context ) => context.UI.currentPanel is HangarPanel, m_day5TutoDialogues[1]));
 		//tutoSequence.Append(new DialogueTask("Create unit btn explenation", ( context ) => context.UI.currentPanel is EntityConfigPanel, m_day5TutoDialogues[2]));
 
