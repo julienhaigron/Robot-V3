@@ -28,6 +28,24 @@ public class MoveThenAttackAction : AttackAction
 		base.RegisterInteraction(_tile);
 	}
 
+	public override void SetResolvedTargets ( int[] _targetTileIDs, int[] _targetedEntityIDs )
+	{
+		base.SetResolvedTargets(_targetTileIDs, _targetedEntityIDs);
+
+		if (_targetTileIDs == null || _targetTileIDs.Length == 0)
+			return;
+
+		//Same destination rule as RegisterInteraction, and positionAtActionEndID with it for the same reason:
+		//without it the charge reports the unit as never moving.
+		Tile targetTile = GridManager.Instance.Tiles[_targetTileIDs[0]];
+		Tile stopTile = targetTile.Neighbors[GridManager.Instance.GetClosestOrientation(targetTile, GridManager.Instance.Tiles[supposedPositionAtActionStartID])];
+		if (stopTile == null)
+			return;
+
+		positionAfterMovementID = stopTile.coordinates.ID;
+		positionAtActionEndID = positionAfterMovementID;
+	}
+
 	public override void Prepare ( Entity.EntityState _state )
 	{
 		//Only free the tile when the charge is actually going to happen: clearing it for a cancelled move leaves

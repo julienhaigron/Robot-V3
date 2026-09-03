@@ -43,6 +43,9 @@ public class EntitySavedData : INetworkSerializable
 	public string name;
 	public int index;
 	public bool isRepairing = false;
+	//Copied from the UnitPreset at GetSavedData time: this is the only thing an Entity is built from, so an
+	//AI role that stays on the preset never reaches BotEnnemiPlayer.
+	public EnnemiAIRole aiRole = EnnemiAIRole.PatrolPath;
 	public GameDatas.PlayerSave.Component frame;
 	public GameDatas.PlayerSave.Component reactor;
 	public GameDatas.PlayerSave.Component neuronalMembrane;
@@ -63,6 +66,7 @@ public class EntitySavedData : INetworkSerializable
 		serializer.SerializeValue(ref name);
 		serializer.SerializeValue(ref index);
 		serializer.SerializeValue(ref isRepairing);
+		serializer.SerializeValue(ref aiRole);
 		serializer.SerializeValue(ref frame);
 		serializer.SerializeValue(ref reactor);
 		serializer.SerializeValue(ref neuronalMembrane);

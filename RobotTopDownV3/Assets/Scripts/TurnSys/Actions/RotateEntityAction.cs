@@ -24,6 +24,26 @@ public class RotateEntityAction : AEntityAction
 		base.RegisterInteraction(_tile);
 	}
 
+	/// <summary>
+	/// RotateToEntity path: the tile variant reads its orientation off the tile the player clicked, this one
+	/// only ever knows an entity, so it faces the target it was handed.
+	/// Only a fallback: whoever resolved the target may have picked an orientation the target's own direction
+	/// does not give back - a wide weapon cone catches entities the unit is not exactly facing.
+	/// </summary>
+	public override void SetResolvedTargets ( int[] _targetTileIDs, int[] _targetedEntityIDs )
+	{
+		base.SetResolvedTargets(_targetTileIDs, _targetedEntityIDs);
+
+		if (targetedOrientationID != null && targetedOrientationID.Length > 0)
+			return;
+
+		if (_targetTileIDs == null || _targetTileIDs.Length == 0)
+			return;
+
+		Tile from = PerformingEntity.Displacement.Coordinates.GetTile();
+		targetedOrientationID = new int[1] { GridManager.Instance.GetClosestOrientation(from, GridManager.Instance.Tiles[_targetTileIDs[0]]) };
+	}
+
 	public override void Prepare ( Entity.EntityState _state )
 	{
 
@@ -59,6 +79,11 @@ public class RotateEntityAction : AEntityAction
 
 	public override void GhostDisplay ( Entity.EntityState _state )
 	{
+		//A RotateToEntity sits in the queue with no target until its tick comes up: there is no direction to
+		//draw yet.
+		if (targetTileIDs == null || targetTileIDs.Length == 0)
+			return;
+
 		Vector3 previousPosition = GridManager.Instance.Tiles[supposedPositionAtActionStartID].transform.position;
 		RotationActionDisplay display = ObjectsPooling.GetElement(GameAssets.current.game.rotationHandlePoolData) as RotationActionDisplay;
 		Vector3 startPos = previousPosition;

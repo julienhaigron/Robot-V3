@@ -108,6 +108,8 @@ public class ActionButton : BaseButton, IPointerEnterHandler, IPointerExitHandle
 
 		Select();
 		TurnManager.Instance.SetCurrentActionSelected(m_actionType, m_linkedEquipmentData, true);
+		//An action aimed at an entity needs no tile from the player: picking it is placing it.
+		TurnManager.Instance.TryRegisterActionWithoutTarget();
 		base.OnClick();
 	}
 

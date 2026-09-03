@@ -105,12 +105,29 @@ public class EntityAIPlugin : EntityPlugin
 		}
 		else if (m_linkedEntity.Status.Contains(EntityStatusEnumID.Stun))
 		{
-			WaitAction waitAction = (TurnManager.Instance.GetAction(EntityActionEnumID.Wait, m_linkedEntity.ID, null, _recordedAction.timeAtStart) as WaitAction);
-			waitAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.Wait], null, m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID, _recordedAction.action.timeAtStart);
-			resultInfo.ReplaceAction(waitAction, "Unit is stun");
+			resultInfo.ReplaceAction(GetWaitActionFor(_recordedAction), "Unit is stun");
 			return resultInfo;
 		}
-		else if (_recordedAction.entityState == Entity.EntityState.NoAIChange)
+
+		//An action aimed at an entity is queued the moment it is picked, with no target at all, so it resolves
+		//what it shoots at here. This sits before the NoAIChange early out on purpose: NoAIChange is a state
+		//the player picks himself in the UI, and such an action would otherwise never get a target.
+		bool needsTarget = _recordedAction.action.Data.DoesResolveItsOwnTarget();
+		if (needsTarget)
+		{
+			if (TryResolveEntityTarget(_recordedAction, ref resultInfo))
+				return resultInfo;
+
+			//Nothing reachable. NoAIChange means the player asked for no substitution, so waiting is all there
+			//is left to do; otherwise the logic below gets to reposition the unit.
+			if (_recordedAction.entityState == Entity.EntityState.NoAIChange)
+			{
+				resultInfo.ReplaceAction(GetWaitActionFor(_recordedAction), "No target in reach for " + _recordedAction.type);
+				return resultInfo;
+			}
+		}
+
+		if (_recordedAction.entityState == Entity.EntityState.NoAIChange)
 		{
 			//no action change if in guard
 			return resultInfo;
@@ -288,12 +305,25 @@ public class EntityAIPlugin : EntityPlugin
 		else if (!canMove && _recordedAction.type != EntityActionEnumID.Wait && (_recordedAction.action.Data.type == EntityActionData.ActionType.Movement || _recordedAction.action.Data.type == EntityActionData.ActionType.Rotation
 			 || _recordedAction.action.Data.codeType == EntityActionData.ActionCodeType.MoveThenAttack))
 		{
-			WaitAction waitAction = (TurnManager.Instance.GetAction(EntityActionEnumID.Wait, m_linkedEntity.ID, null, _recordedAction.timeAtStart) as WaitAction);
-			waitAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.Wait], null, m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID, _recordedAction.action.timeAtStart);
-			resultInfo.ReplaceAction(waitAction, "Unit cannot move");
+			resultInfo.ReplaceAction(GetWaitActionFor(_recordedAction), "Unit cannot move");
 		}
 
+		//The branches above may well have left the untargeted action in place - with nothing in vision at all
+		//only the free action gets replaced. It would reach Perform with no target and log "No target error",
+		//so waiting is the last resort.
+		if (needsTarget && resultInfo.replacedAction == _recordedAction.action)
+			resultInfo.ReplaceAction(GetWaitActionFor(_recordedAction), "No target in reach for " + _recordedAction.type);
+
 		return resultInfo;
+	}
+
+	//Wait taking over from _recordedAction, on its tick and from the position it started from.
+	private WaitAction GetWaitActionFor ( TurnManager.RecordedAction _recordedAction )
+	{
+		WaitAction waitAction = TurnManager.Instance.GetAction(EntityActionEnumID.Wait, m_linkedEntity.ID, null, _recordedAction.timeAtStart) as WaitAction;
+		waitAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.Wait], null, m_linkedEntity.ID
+			, _recordedAction.action.supposedPositionAtActionStartID, _recordedAction.action.timeAtStart);
+		return waitAction;
 	}
 
 	public void DOAllPrewarmCheck ( AEntityAction _action )
@@ -354,8 +384,20 @@ public class EntityAIPlugin : EntityPlugin
 
 	private List<Entity> VisionCheck ( AEntityAction _action, bool _isThisTurn = true )
 	{
+		//The scan never depended on the action, and the planner has none to give: it runs on onEndInputPhase,
+		//before any action exists.
+		return RefreshEnemiesInVisionRange(_isThisTurn);
+	}
+
+	//Rescans what this unit can see and returns it. Must be called before GetClosestEnemyInVisionRange from
+	//anywhere outside the tick loop, where DOAllPrewarmCheck has not run.
+	public List<Entity> RefreshEnemiesInVisionRange ( bool _isThisTurn = true )
+	{
 		m_entitiesInVisionRange.Clear();
-		HashSet<Tile> tilesInRange = GridManager.Instance.EntitiesVisions[m_linkedEntity.OwnerID].entitiesVisionRange[m_linkedEntity];
+		//A dead unit is unregistered from the vision map, so this is a miss and not an error
+		if (!GridManager.Instance.EntitiesVisions[m_linkedEntity.OwnerID].entitiesVisionRange.TryGetValue(m_linkedEntity, out HashSet<Tile> tilesInRange))
+			return m_entitiesInVisionRange;
+
 		foreach (Tile tile in tilesInRange)
 		{
 			int entityID = tile.GetEntityId(_isThisTurn);
@@ -601,6 +643,161 @@ public class EntityAIPlugin : EntityPlugin
 	public void TargetEntity ( Entity _targetedEntity )
 	{
 		m_lastEntitiesTargeted = new() { _targetedEntity };
+	}
+
+	//Resolves what an entity targeted action shoots at and rebuilds it around that, rotating toward it when
+	//needed. False when nothing valid is in reach, and nothing is changed then.
+	private bool TryResolveEntityTarget ( TurnManager.RecordedAction _recordedAction, ref CheckActionResultInfo _resultInfo )
+	{
+		AEntityAction action = _recordedAction.action;
+		Tile from = m_linkedEntity.Displacement.Coordinates.GetTile();
+
+		if (!TryGetTargetsInReach(action, from, out List<Entity> targets, out int orientation))
+			return false;
+
+		m_lastEntitiesTargeted = targets;
+
+		//Rebuilt rather than retargeted in place: TurnManager cancels whatever action it replaces, and
+		//CancelAction on a charge releases the tile that very object had booked.
+		AEntityAction targetedAction = TurnManager.Instance.GetAction(action.enumID, m_linkedEntity.ID, action.linkedEquipmentId, _recordedAction.timeAtStart);
+		if (targetedAction == null)
+			return false;
+
+		//Init before SetResolvedTargets, never after: Init resets positionAtActionEndID to the start tile, and
+		//a charge sets it from the target it just resolved.
+		targetedAction.Init(action.Data, action.linkedEquipmentId, m_linkedEntity.ID, action.supposedPositionAtActionStartID, action.timeAtStart);
+		FillActionTargets(targetedAction, targets, from, out int[] targetTileIDs, out int[] targetedEntityIDs);
+		targetedAction.SetResolvedTargets(targetTileIDs, targetedEntityIDs);
+		_resultInfo.ReplaceAction(targetedAction, action.enumID + " targets " + targets[0].Data.name);
+
+		//Rotating is a free action, so an out of cone target is reached by turning rather than given up on.
+		//This is what RegisterInteraction used to add on the input side once the player had picked a tile.
+		if (orientation != m_linkedEntity.Displacement.CurrentOrientation)
+		{
+			//RotateToEntity, not RotateEntity: this one carries the entity it faces, where the other reads the
+			//tile the player clicked.
+			EntityActionEnumID rotateEnumID = EntityActionEnumID.RotateToEntity;
+			if (!GameAssets.current.game.entityActionsData.ContainsKey(rotateEnumID))
+			{
+				Debug.LogError("No action data registered for " + rotateEnumID + ", press ReloadActions on GameAssets. Falling back to " + EntityActionEnumID.RotateEntity, gameObject);
+				rotateEnumID = EntityActionEnumID.RotateEntity;
+			}
+
+			RotateEntityAction rotateAction = TurnManager.Instance.GetAction(rotateEnumID, m_linkedEntity.ID, null, _recordedAction.timeAtStart) as RotateEntityAction;
+			rotateAction.Init(GameAssets.current.game.entityActionsData[rotateEnumID], null, m_linkedEntity.ID
+				, action.supposedPositionAtActionStartID, action.timeAtStart);
+			//Orientation before targets on purpose: SetResolvedTargets only works one out when nobody did, and
+			//the cone that caught the target is not always the target's own direction.
+			rotateAction.targetedOrientationID = new int[1] { orientation };
+			rotateAction.SetResolvedTargets(targetTileIDs, targetedEntityIDs);
+			_resultInfo.ReplaceFreeAction(rotateAction, "Rotates toward target");
+		}
+
+		return true;
+	}
+
+	//Enemies _action can reach from _from, best first, and the orientation that gets them. An attack is cone
+	//based so all six orientations are tried; a special only depends on range, exactly like what
+	//SpecialAction.TileInteractPredicate accepts on the input side, so it never asks for a rotation.
+	private bool TryGetTargetsInReach ( AEntityAction _action, Tile _from, out List<Entity> _targets, out int _orientation )
+	{
+		_targets = new();
+		_orientation = m_linkedEntity.Displacement.CurrentOrientation;
+
+		Entity stickyTarget = m_lastEntitiesTargeted.Count > 0 ? m_lastEntitiesTargeted[0] : null;
+
+		if (_action.Data.GetMainActionType() != EntityActionData.MainActionType.Attack)
+		{
+			_targets = GetEnemiesOn(GridManager.Instance.GetTilesInVisionRange(_from, _action.Data.minDistance
+				, _action.Data.GetMaxRange(_action, m_linkedEntity, null), false, true, false), _from, stickyTarget);
+			return _targets.Count > 0;
+		}
+
+		int bestRange = int.MaxValue;
+		bool bestHoldsSticky = false;
+
+		for (int i = 0; i < 6; i++)
+		{
+			//Starts on the orientation the unit already faces, so an equally good cone never costs a rotation.
+			int orientation = (m_linkedEntity.Displacement.CurrentOrientation + i) % 6;
+			List<Entity> targetsInCone = GetEnemiesOn(m_linkedEntity.Equipment.GetTilesInWeaponRange(_action, true, _from, orientation), _from, stickyTarget);
+			if (targetsInCone.Count == 0)
+				continue;
+
+			//GetEnemiesOn already put the sticky target first, then the closest ones
+			bool holdsSticky = stickyTarget != null && targetsInCone[0] == stickyTarget;
+			int range = GetRangeBetween(_from, targetsInCone[0].Displacement.Coordinates.GetTile());
+
+			//Keeping the target of the previous tick beats everything else: an action with a long preparation
+			//would otherwise re-aim every tick and the unit would spin instead of shooting.
+			if (_targets.Count > 0 && (bestHoldsSticky || (!holdsSticky && range >= bestRange)))
+				continue;
+
+			_targets = targetsInCone;
+			_orientation = orientation;
+			bestRange = range;
+			bestHoldsSticky = holdsSticky;
+		}
+
+		return _targets.Count > 0;
+	}
+
+	//Enemies really standing on _tiles right now, the one targeted last tick first and the rest by distance.
+	//Live occupancy through GetCurrentEntity, like every other targeting path, not the planning mirror.
+	private List<Entity> GetEnemiesOn ( IEnumerable<Tile> _tiles, Tile _from, Entity _stickyTarget )
+	{
+		List<Entity> enemies = new();
+		foreach (Tile tile in _tiles)
+		{
+			Entity entity = tile.GetCurrentEntity();
+			if (entity == null || entity == m_linkedEntity || entity.Equipment.IsDead
+				|| entity.IsAlliedTo(m_linkedEntity.OwnerID) || enemies.Contains(entity))
+				continue;
+
+			enemies.Add(entity);
+		}
+
+		enemies.Sort(( _a, _b ) =>
+		{
+			bool isAsticky = _a == _stickyTarget;
+			bool isBsticky = _b == _stickyTarget;
+			if (isAsticky != isBsticky)
+				return isAsticky ? -1 : 1;
+
+			return GetRangeBetween(_from, _a.Displacement.Coordinates.GetTile())
+				.CompareTo(GetRangeBetween(_from, _b.Displacement.Coordinates.GetTile()));
+		});
+
+		return enemies;
+	}
+
+	//One entry per target and per active tick, the shape an attack expects, cycling through the targets when
+	//the action can hit more of them than there are. A self centered AoE is aimed at the neighbour tile in the
+	//target's direction rather than at the target itself.
+	private void FillActionTargets ( AEntityAction _action, List<Entity> _targets, Tile _from, out int[] _targetTileIDs, out int[] _targetedEntityIDs )
+	{
+		bool shouldAddTileInDirectionToTarget = _action.Data.aoeType != EntityActionData.AOEType.Noone
+			&& _action.Data.aoECenterType == EntityActionData.AOECenterType.Self;
+		int maxAmount = _action.Data.GetMaxTargetAmount(_action, m_linkedEntity, null) * _action.actualDuration;
+
+		_targetTileIDs = new int[maxAmount];
+		_targetedEntityIDs = new int[maxAmount];
+		for (int i = 0; i < maxAmount; i++)
+		{
+			Entity target = _targets[i % _targets.Count];
+			_targetTileIDs[i] = shouldAddTileInDirectionToTarget
+				? _from.GetNeighbor((HexDirection)GridManager.Instance.GetClosestOrientation(_from, target.Displacement.Coordinates.GetTile())).coordinates.ID
+				: target.Displacement.Coordinates.ID;
+			_targetedEntityIDs[i] = target.ID;
+		}
+	}
+
+	//Hex distance, straight from the coordinates: no BFS to run and no leftover distance map to depend on.
+	private static int GetRangeBetween ( Tile _from, Tile _to )
+	{
+		return Mathf.Max(Mathf.Abs(_from.coordinates.X - _to.coordinates.X)
+			, Mathf.Abs(_from.coordinates.Y - _to.coordinates.Y)
+			, Mathf.Abs(_from.coordinates.Z - _to.coordinates.Z));
 	}
 
 	#endregion

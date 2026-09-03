@@ -56,5 +56,6 @@ public enum EntityActionEnumID
 	Boom_Plasma,
 	Push_Plasma,
 	Dooming,
+	RotateToEntity,
 	//#END#ENTITYACTIONENUMID#//
 }

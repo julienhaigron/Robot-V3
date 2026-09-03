@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2a743e40aeafc0445b10e59cec8dfa98, type: 3}
-  m_Name: RotateEntity
+  m_Name: RotateToEntity
   m_EditorClassIdentifier: RTD::EntityActionData
   spreadsheetId: 
-  displayName: Turn
-  enumID: 2
+  displayName: Turn to target
+  enumID: 48
   icon: {fileID: 0}
   tileOutlineColor: {r: 0, g: 1, b: 0, a: 1}
   m_tokenPreparationDuration: 0
@@ -28,7 +28,7 @@ MonoBehaviour:
   onSingleAttackHitSFXID: 0
   conditionType: 0
   previousActionAttackModificator: 0
-  type: 2
+  type: 3
   subType: 0
   codeType: 8
   targetType: 1

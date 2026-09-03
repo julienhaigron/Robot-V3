@@ -29,6 +29,9 @@ public class UnitPreset : AParsableScriptableObject
     [ShowIf("@isInvocation")]
     public bool isTangible = true;
 
+    [Parsing("Role")]
+    public EnnemiAIRole aiRole = EnnemiAIRole.PatrolPath;
+
     [ReadOnly, SerializeField]
     private int m_totalEnergyCostRemaining;
     public int TotalEnergyCostRemaining => m_totalEnergyCostRemaining;
@@ -57,6 +60,9 @@ public class UnitPreset : AParsableScriptableObject
         EntitySavedData newUnit = new();
         newUnit.name = displayName;
         newUnit.isRepairing = false;
+        //Entities are always built from an EntitySavedData, never from the preset, so the role has to be
+        //copied here or BotEnnemiPlayer never sees it. Invocations go through this same path.
+        newUnit.aiRole = aiRole;
         newUnit.frame = new() { ID = frame.name + GameDatas.current.currentPlayerSave.equipmentCounter++, dataID = frame.name, isDamaged = false };
         newUnit.reactor = new() { ID = reactor.name + GameDatas.current.currentPlayerSave.equipmentCounter++, dataID = reactor.name, isDamaged = false };
         newUnit.neuronalMembrane = new() { ID = neuronalMembrane.name + GameDatas.current.currentPlayerSave.equipmentCounter++, dataID = neuronalMembrane.name, isDamaged = false };
@@ -109,4 +115,21 @@ public class UnitPreset : AParsableScriptableObject
             newAux.AddRange(occultors);
         auxiliary = newAux.ToArray();
     }
+}
+
+/// <summary>
+/// Which plan BotEnnemiPlayer builds for the unit at the start of a round, and how reactive that plan is
+/// (the Entity.EntityState it tags its actions with: NoAIChange = inert for the whole round, Patroling =
+/// EntityAIPlugin.CheckAction may replace the action on any tick).
+/// PatrolPath must stay the first value: enums serialize by index, so every UnitPreset asset authored before
+/// this field existed reads back 0, and PatrolPath is exactly what those units used to do.
+/// </summary>
+[System.Serializable]
+public enum EnnemiAIRole
+{
+    PatrolPath,
+    Immobile,
+    Aggressive,
+    Recon,
+    Support,
 }

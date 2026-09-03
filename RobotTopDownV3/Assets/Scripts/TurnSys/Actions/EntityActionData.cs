@@ -15,9 +15,9 @@ public class EntityActionData : AParsableScriptableObject
 
 	public Sprite icon;
 	public Color tileOutlineColor = Color.green;
-	[SerializeField, Parsing("Préparation")] private int m_tokenPreparationDuration;
+	[SerializeField, Parsing("Prï¿½paration")] private int m_tokenPreparationDuration;
 	[SerializeField, Parsing("Refroidissement")] private int m_tokenCooldown;
-	[Parsing("Durée")]
+	[Parsing("Durï¿½e")]
 	public int tokenDuration = 1;
 	[Parsing("Is Mod Action")]
 	public bool isModAction = false;
@@ -160,6 +160,19 @@ public class EntityActionData : AParsableScriptableObject
 		Attack,
 		Movement,
 		Special
+	}
+
+	/// <summary>
+	/// True for the actions the player queues without picking anything: they aim at an entity, and which one
+	/// they hit is resolved by EntityAIPlugin.CheckAction when their tick comes up rather than by a click.
+	/// Attacks and specials only - a movement or a rotation reads its own target tiles, and the RotateEntity
+	/// data currently registered in GameAssets happens to be flagged OtherEntity.
+	/// </summary>
+	public bool DoesResolveItsOwnTarget ()
+	{
+		MainActionType mainType = GetMainActionType();
+		return targetType == TargetType.OtherEntity
+			&& (mainType == MainActionType.Attack || mainType == MainActionType.Special);
 	}
 
 	public MainActionType GetMainActionType ()

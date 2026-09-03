@@ -207,8 +207,13 @@ public class TurnManager : Singleton<TurnManager>
 			m_currentStateTypeSelected = _selectedDisplay.RecordedAction.entityState;
 			m_currentActionTargetTiles.Clear();
 			AEntityAction action = _isModAction ? _selectedDisplay.RecordedAction.freeAction : _selectedDisplay.RecordedAction.action;
-			foreach (int tileID in action.targetTileIDs)
-				m_currentActionTargetTiles.Add(GridManager.Instance.Tiles[tileID]);
+			//An action aimed at an entity is queued with no target at all and only resolves one when its tick
+			//comes up, so there is nothing to read back here.
+			if (action.targetTileIDs != null)
+			{
+				foreach (int tileID in action.targetTileIDs)
+					m_currentActionTargetTiles.Add(GridManager.Instance.Tiles[tileID]);
+			}
 
 			RefreshActionDisplay(action.performingEntityID, false, action.TimeAtEnd);
 		}
@@ -283,6 +288,23 @@ public class TurnManager : Singleton<TurnManager>
 	public void AddTargetTileInCurrentAction ( Tile _tile )
 	{
 		m_currentActionTargetTiles.Add(_tile);
+	}
+
+	/// <summary>
+	/// Queues the selected action right away, with no target, when it is one that aims at an entity: the
+	/// player picks the action and EntityAIPlugin.CheckAction resolves what it shoots at when its tick comes
+	/// up. Returns false for anything that still needs the player to click a tile.
+	/// Called from the action button and not from SetCurrentActionSelected, which RefreshActionDisplay
+	/// re-enters on every refresh - the action would be queued again on each one.
+	/// </summary>
+	public bool TryRegisterActionWithoutTarget ()
+	{
+		if (hasModActionSelected || m_currentEntityAction == null || !m_currentEntityAction.Data.DoesResolveItsOwnTarget())
+			return false;
+
+		RegisterAction(m_currentEntityAction.performingEntityID, m_currentEntityAction, m_currentStateTypeSelected);
+		RefreshActionDisplay(m_currentEntityAction.performingEntityID, true);
+		return true;
 	}
 
 	public AEntityAction GetAction ( EntityActionEnumID _actionType, int _performingEntityID, string _linkedEquipmentID, int _timeAtStart )
@@ -600,7 +622,9 @@ public class TurnManager : Singleton<TurnManager>
 
 		foreach(RecordedAction recordedAction in m_recordedActionInput[_entityID])
 		{
-			if (recordedAction.freeActionType == EntityActionEnumID.RotateEntity && recordedAction.freeAction is RotateEntityAction rotateEntityAction
+			//Type match rather than enumID: there are two rotations now, RotateEntity aimed at a tile and
+			//RotateToEntity aimed at an entity, and both end up in this slot.
+			if (recordedAction.freeAction is RotateEntityAction rotateEntityAction
 				&& rotateEntityAction.targetedOrientationID != null && rotateEntityAction.targetedOrientationID.Length > 0)
 				orientation = rotateEntityAction.targetedOrientationID[^1];
 		}
@@ -689,7 +713,8 @@ public class TurnManager : Singleton<TurnManager>
 				if (_specificTokenCount != -1 && totalCost <= _specificTokenCount)
 				{
 					lastRecordedPosition = GridManager.Instance.Tiles[recordedAction.action.positionAtActionEndID];
-					if (recordedAction.freeActionType == EntityActionEnumID.RotateEntity && recordedAction.freeAction is RotateEntityAction rotateEntityAction
+					//Both rotations land in this slot, so the type is what identifies one, not its enumID
+					if (recordedAction.freeAction is RotateEntityAction rotateEntityAction
 						&& rotateEntityAction.targetedOrientationID != null && rotateEntityAction.targetedOrientationID.Length > 0)
 						lastRecordedOrientation = rotateEntityAction.targetedOrientationID[^1];
 				}
