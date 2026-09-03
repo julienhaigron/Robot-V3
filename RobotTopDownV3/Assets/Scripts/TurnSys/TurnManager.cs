@@ -768,6 +768,10 @@ public class TurnManager : Singleton<TurnManager>
 	public void EndInputPhase ()
 	{
 		currentPhase = TurnPhase.Calculating;
+
+		//A half picked action leaves its tiles here, and the next AddAction takes them for its own - which
+		//would hand the bot's first action the tiles the player was still choosing.
+		m_currentActionTargetTiles.Clear();
 		/*SerializableDictionary<int, Queue<RecordedAction>> recordedActionInput = new(m_recordedActionInput);
 		m_recordedActionInput.Clear();
 		foreach (int entityID in recordedActionInput.Keys)

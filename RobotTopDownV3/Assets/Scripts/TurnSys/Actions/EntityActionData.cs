@@ -162,12 +162,6 @@ public class EntityActionData : AParsableScriptableObject
 		Special
 	}
 
-	/// <summary>
-	/// True for the actions the player queues without picking anything: they aim at an entity, and which one
-	/// they hit is resolved by EntityAIPlugin.CheckAction when their tick comes up rather than by a click.
-	/// Attacks and specials only - a movement or a rotation reads its own target tiles, and the RotateEntity
-	/// data currently registered in GameAssets happens to be flagged OtherEntity.
-	/// </summary>
 	public bool DoesResolveItsOwnTarget ()
 	{
 		MainActionType mainType = GetMainActionType();

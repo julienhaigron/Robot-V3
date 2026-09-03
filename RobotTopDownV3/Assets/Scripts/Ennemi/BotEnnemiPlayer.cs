@@ -5,8 +5,6 @@ using System.Linq;
 
 public class BotEnnemiPlayer : MonoBehaviour
 {
-	//How far behind the unit it escorts a Support role stops. Only tunable the planner has so far, so it sits
-	//here rather than in GameConfig.
 	[SerializeField, Min(1)] private int m_supportFollowDistance = 2;
 
 	private void Awake ()
@@ -33,15 +31,11 @@ public class BotEnnemiPlayer : MonoBehaviour
 		}
 	}
 
-	//The round plan only. Everything that happens once the round resolves is EntityAIPlugin.CheckAction's job,
-	//and it only ever runs on actions tagged Patroling: a NoAIChange action is handed back untouched. So the
-	//state a role tags its actions with is as much part of the role as the path it picks.
 	private void DetermineEntityActions ( Entity _entity )
 	{
 		switch (_entity.Data.aiRole)
 		{
 			case EnnemiAIRole.Immobile:
-				//Target dummy: never moves, never reacts, whatever happens around it.
 				AddWaitActionsFrom(_entity, 0, Entity.EntityState.NoAIChange);
 				break;
 
@@ -59,8 +53,6 @@ public class BotEnnemiPlayer : MonoBehaviour
 
 			case EnnemiAIRole.PatrolPath:
 			default:
-				//Walks its route blindly, but defends itself once it has nothing left to walk: this asymmetry
-				//is the behaviour every enemy had before roles existed, keep it as is.
 				DeterminePatrolPathActions(_entity, Entity.EntityState.NoAIChange, Entity.EntityState.Patroling);
 				break;
 		}
@@ -68,35 +60,33 @@ public class BotEnnemiPlayer : MonoBehaviour
 
 	#region Roles
 
-	//Closes in on the nearest enemy it can see and lets CheckAction run the fight from there: the round plan
-	//only has to put the unit somewhere it has something to shoot at.
 	private void DetermineAggressiveActions ( Entity _entity )
 	{
 		Entity target = GetClosestVisibleEnemy(_entity);
 		if (target == null)
 		{
-			//Nothing in sight: walk the patrol path, but stay reactive so contact triggers the fight.
 			DeterminePatrolPathActions(_entity, Entity.EntityState.Patroling, Entity.EntityState.Patroling);
 			return;
 		}
 
-		//A tile the unit could actually fire from, never the target's own tile: GetPath exempts its
-		//destination from the occupancy check, so an occupied destination is walked straight into.
 		Tile firingTile = _entity.AI.GetClosestFiringTile(target, true);
 		if (firingTile == null)
 		{
-			//No firing position in reach. Holding is the safe plan: CheckAction re-picks one every tick and
-			//has the closing in fallback the planner does not.
 			AddWaitActionsFrom(_entity, 0, Entity.EntityState.Patroling);
 			return;
 		}
 
-		PlanPathTo(_entity, firingTile, Entity.EntityState.Patroling);
+		int spentTokens = PlanPathTo(_entity, firingTile, Entity.EntityState.Patroling, out bool isInFiringPosition);
+
+		if (!isInFiringPosition)
+		{
+			AddWaitActionsFrom(_entity, spentTokens, Entity.EntityState.Patroling);
+			return;
+		}
+
+		AddAttackActionsFrom(_entity, spentTokens, target);
 	}
 
-	//Scout: walks its path until it spots someone, then holds and keeps it in sight instead of engaging.
-	//Everything stays NoAIChange so the unit never opens fire on its own. Falling back once spotted would
-	//need EntityState.Fleeing, which nothing implements yet.
 	private void DetermineReconActions ( Entity _entity )
 	{
 		if (GetClosestVisibleEnemy(_entity) != null)
@@ -108,8 +98,6 @@ public class BotEnnemiPlayer : MonoBehaviour
 		DeterminePatrolPathActions(_entity, Entity.EntityState.NoAIChange, Entity.EntityState.NoAIChange);
 	}
 
-	//Escorts the closest ally, stopping m_supportFollowDistance tiles short of it so it stays behind the line.
-	//Tagged Patroling so it still defends itself if something reaches it.
 	private void DetermineSupportActions ( Entity _entity )
 	{
 		List<Tile> pathToEscorted = GetPathToClosestEscortedAlly(_entity);
@@ -120,16 +108,15 @@ public class BotEnnemiPlayer : MonoBehaviour
 			return;
 		}
 
-		//The path holds the unit's own tile first and the ally's last, so it takes m_supportFollowDistance + 2
-		//tiles for the trimmed path to still contain a step to walk.
 		if (pathToEscorted.Count < m_supportFollowDistance + 2)
 		{
-			//Already in position: hold rather than walk into the unit being escorted.
 			AddWaitActionsFrom(_entity, 0, Entity.EntityState.Patroling);
 			return;
 		}
 
-		PlanPathAlong(_entity, pathToEscorted.GetRange(0, pathToEscorted.Count - m_supportFollowDistance), Entity.EntityState.Patroling);
+		int spentTokens = PlanPathAlong(_entity, pathToEscorted.GetRange(0, pathToEscorted.Count - m_supportFollowDistance)
+			, Entity.EntityState.Patroling, out bool _);
+		AddWaitActionsFrom(_entity, spentTokens, Entity.EntityState.Patroling);
 	}
 
 	private void DeterminePatrolPathActions ( Entity _entity, Entity.EntityState _moveState, Entity.EntityState _idleState )
@@ -151,14 +138,11 @@ public class BotEnnemiPlayer : MonoBehaviour
 		}
 
 		List<Tile> pathToClosestTileInPath = GridManager.Instance.GetPath(from, closestTile, true, _movingEntity: _entity, _canTraverseAllies: true);
-		//GetPath walks back from the destination, every other caller reverses it before use
 		pathToClosestTileInPath?.Reverse();
 
 		for (int i = 0; i < GameConfig.current.game.actionTokenPerRound;)
 		{
 			EntityActionData movementActionData = _entity.AI.GetMovementAction();
-			//No movement action passes its condition (rooted, damaged legs...): waiting is all that is left,
-			//and GetAction would dereference a null data.
 			if (movementActionData == null)
 			{
 				AddWaitActionsFrom(_entity, i, _idleState);
@@ -174,9 +158,6 @@ public class BotEnnemiPlayer : MonoBehaviour
 					? pathToClosestTileInPath[i + j + 1]
 					: closestPath.GetNextTile(lastDestination);
 
-				//GetNextTile returns null as soon as lastDestination is not one of the path tiles, which happens
-				//whenever the unit drifted off it. Dereferencing that null aborted the whole planning pass, and
-				//the entity simply stopped moving from that round on.
 				if (nextDestination == null)
 					break;
 
@@ -184,8 +165,6 @@ public class BotEnnemiPlayer : MonoBehaviour
 				thisActionPath.Add(lastDestination.coordinates.ID);
 			}
 
-			//Nowhere left to walk: spend the remaining tokens waiting rather than registering a movement with an
-			//empty path, which throws on thisActionPath[^1].
 			if (thisActionPath.Count == 0)
 			{
 				AddWaitActionsFrom(_entity, i, _idleState);
@@ -196,9 +175,6 @@ public class BotEnnemiPlayer : MonoBehaviour
 			movementAction.mode = MoveToTargetAction.MoveActionMode.Coordinate;
 			movementAction.targetTileID = thisActionPath[^1];
 
-			//GetAction already ran Init while targetTileIDs was still null, which left positionAtActionEndID
-			//on the start tile and froze it there for the whole round. Re-run it now that the path is known,
-			//the way every other caller does.
 			movementAction.Init(movementActionData, movementAction.linkedEquipmentId, _entity.ID
 				, movementAction.supposedPositionAtActionStartID, i);
 
@@ -212,72 +188,62 @@ public class BotEnnemiPlayer : MonoBehaviour
 
 	#region Planning
 
-	private void PlanPathTo ( Entity _entity, Tile _destination, Entity.EntityState _state )
+	private int PlanPathTo ( Entity _entity, Tile _destination, Entity.EntityState _state, out bool _didReachDestination )
 	{
+		_didReachDestination = false;
 		Tile from = _entity.Displacement.Coordinates.GetTile();
-		if (_destination == null || _destination == from)
+		if (_destination == null)
+			return 0;
+
+		if (_destination == from)
 		{
-			AddWaitActionsFrom(_entity, 0, _state);
-			return;
+			_didReachDestination = true;
+			return 0;
 		}
 
 		List<Tile> path = GridManager.Instance.GetPath(from, _destination, true, _movingEntity: _entity, _canTraverseAllies: true);
-		//GetPath walks back from the destination, every other caller reverses it before use
 		path?.Reverse();
 
-		PlanPathAlong(_entity, path, _state);
+		return PlanPathAlong(_entity, path, _state, out _didReachDestination);
 	}
 
-	//Spends the round's tokens walking _path, which starts on the tile the unit stands on. Shared by every
-	//role that heads for a destination; the patrol role keeps its own loop because it walks its NodePath past
-	//the destination instead of stopping on it.
-	private void PlanPathAlong ( Entity _entity, List<Tile> _path, Entity.EntityState _state )
+	private int PlanPathAlong ( Entity _entity, List<Tile> _path, Entity.EntityState _state, out bool _didReachEnd )
 	{
+		_didReachEnd = false;
 		if (_path == null || _path.Count < 2)
-		{
-			AddWaitActionsFrom(_entity, 0, _state);
-			return;
-		}
+			return 0;
 
-		for (int i = 0; i < GameConfig.current.game.actionTokenPerRound;)
+		int spentTokens = 0;
+		while (spentTokens < GameConfig.current.game.actionTokenPerRound)
 		{
 			EntityActionData movementActionData = _entity.AI.GetMovementAction();
-			//No movement action passes its condition (rooted, damaged legs...): waiting is all that is left,
-			//and GetAction would dereference a null data.
 			if (movementActionData == null)
-			{
-				AddWaitActionsFrom(_entity, i, _state);
-				return;
-			}
+				return spentTokens;
 
-			MoveToTargetAction movementAction = TurnManager.Instance.GetAction(movementActionData, _entity.ID, _entity.ComponentLinkedToAction[movementActionData.enumID][0], i) as MoveToTargetAction;
+			MoveToTargetAction movementAction = TurnManager.Instance.GetAction(movementActionData, _entity.ID, _entity.ComponentLinkedToAction[movementActionData.enumID][0], spentTokens) as MoveToTargetAction;
 
 			List<int> thisActionPath = new();
-			for (int j = 0; j < movementAction.TotalDuration && i + j + 1 < _path.Count; j++)
-				thisActionPath.Add(_path[i + j + 1].coordinates.ID);
+			for (int j = 0; j < movementAction.TotalDuration && spentTokens + j + 1 < _path.Count; j++)
+				thisActionPath.Add(_path[spentTokens + j + 1].coordinates.ID);
 
-			//Destination reached: spend the remaining tokens waiting rather than registering a movement with an
-			//empty path, which throws on thisActionPath[^1].
 			if (thisActionPath.Count == 0)
-			{
-				AddWaitActionsFrom(_entity, i, _state);
-				return;
-			}
+				return spentTokens;
+
+			_didReachEnd = thisActionPath[^1] == _path[^1].coordinates.ID;
 
 			movementAction.targetTileIDs = thisActionPath.ToArray();
 			movementAction.mode = MoveToTargetAction.MoveActionMode.Coordinate;
 			movementAction.targetTileID = thisActionPath[^1];
 
-			//GetAction already ran Init while targetTileIDs was still null, which left positionAtActionEndID
-			//on the start tile and froze it there for the whole round. Re-run it now that the path is known,
-			//the way every other caller does.
 			movementAction.Init(movementActionData, movementAction.linkedEquipmentId, _entity.ID
-				, movementAction.supposedPositionAtActionStartID, i);
+				, movementAction.supposedPositionAtActionStartID, spentTokens);
 
 			TurnManager.Instance.AddAction(_entity.ID, movementAction, _state);
 
-			i += movementAction.TotalDuration;
+			spentTokens += movementAction.TotalDuration;
 		}
+
+		return spentTokens;
 	}
 
 	private void AddWaitActionsFrom ( Entity _entity, int _fromToken, Entity.EntityState _state )
@@ -286,22 +252,33 @@ public class BotEnnemiPlayer : MonoBehaviour
 			TurnManager.Instance.AddAction(_entity.ID, EntityActionEnumID.Wait, _state, null);
 	}
 
+	private void AddAttackActionsFrom ( Entity _entity, int _fromToken, Entity _target )
+	{
+		int tokenPerRound = GameConfig.current.game.actionTokenPerRound;
+		for (int i = _fromToken; i < tokenPerRound;)
+		{
+			EntityActionData attackData = _entity.AI.GetAttackOrSpecialAction(tokenPerRound - i, _target);
+			if (attackData == null || !TurnManager.Instance.AddAction(_entity.ID, attackData.enumID, Entity.EntityState.Patroling
+					, _entity.ComponentLinkedToAction[attackData.enumID][0]))
+			{
+				AddWaitActionsFrom(_entity, i, Entity.EntityState.Patroling);
+				return;
+			}
+
+			i += Mathf.Max(1, attackData.GetTokenTotalCost(null, _entity, _target));
+		}
+	}
+
 	#endregion
 
 	#region Perception
 
-	//Vision is only refreshed by DOAllPrewarmCheck during the tick loop, and planning runs on onEndInputPhase,
-	//before any of that: without this rescan the planner reads whatever the last tick of the previous round
-	//left behind.
 	private Entity GetClosestVisibleEnemy ( Entity _entity )
 	{
 		_entity.AI.RefreshEnemiesInVisionRange(true);
 		return _entity.AI.GetClosestEnemyInVisionRange(true);
 	}
 
-	//Path to the closest living ally that is not another Support - two supports would otherwise escort each
-	//other and both stand still. One GetPath per ally rather than a single BFS, because that ranks them on the
-	//real walkable distance and hands back the path to the winner, with no second pass needed.
 	private List<Tile> GetPathToClosestEscortedAlly ( Entity _entity )
 	{
 		Tile from = _entity.Displacement.Coordinates.GetTile();
@@ -319,7 +296,6 @@ public class BotEnnemiPlayer : MonoBehaviour
 			closestPath = path;
 		}
 
-		//GetPath walks back from the destination, every other caller reverses it before use
 		closestPath?.Reverse();
 		return closestPath;
 	}
