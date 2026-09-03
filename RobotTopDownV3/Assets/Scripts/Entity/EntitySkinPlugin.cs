@@ -18,7 +18,6 @@ public class EntitySkinPlugin : EntityPlugin
 	[SerializeField] private SerializableDictionary<EntityActionData.ActionType, string> m_animationKeyPerActionDictionary;
 	[SerializeField] private string m_idleAnimationKey;
 
-	//Weapon currently holding the aim, so it can be dropped without the caller having to remember which one
 	private string m_aimingWeaponID;
 
 
@@ -54,15 +53,9 @@ public class EntitySkinPlugin : EntityPlugin
 		//freeze body anim
 		//m_animator.SetTrigger("OnEndAction");
 
-		//Last word on the aim: the weapon releases it itself at the end of its attack coroutine, but that
-		//coroutine can be cut short - stopped by the next attack, or killed by an exception - and the arm then
-		//stayed pointed at the last target for good. An action ending always passes here.
 		ReleaseCurrentAim();
 	}
 
-	/// <summary>
-	/// Releases whatever weapon is still aiming, if any. Does nothing when nothing is aiming.
-	/// </summary>
 	public void ReleaseCurrentAim ()
 	{
 		if (string.IsNullOrEmpty(m_aimingWeaponID))

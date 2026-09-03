@@ -132,12 +132,6 @@ public class HumanoidEntityIK : MonoBehaviour
 		m_aimCoroutine = StartCoroutine(AimEntityCR(_target));
 	}
 
-	/// <summary>
-	/// Drops the running aim and answers whether a new one can be started at all. A unit the player cannot see
-	/// has its visual root disabled, and StartCoroutine throws on an inactive object - that exception used to
-	/// take the whole attack coroutine down with it, aim release included. There is nothing to aim visually on
-	/// a hidden unit anyway.
-	/// </summary>
 	private bool TryStopAimCoroutine ()
 	{
 		if (m_aimCoroutine != null)
@@ -169,9 +163,6 @@ public class HumanoidEntityIK : MonoBehaviour
 	{
 		TryStopAimCoroutine();
 
-		//Aiming sets the hand IK target as well as the socket rotation, and OnAnimatorIK keeps pulling the hand
-		//to that world position every frame for as long as it holds a value: releasing only the rotation left
-		//the arm pointing at whatever was last shot at.
 		rightHandTarget = null;
 		handGrabSocket.localRotation = m_defaultHandPivotRotation;
 	}

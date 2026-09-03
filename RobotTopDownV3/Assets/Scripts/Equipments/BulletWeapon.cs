@@ -83,9 +83,6 @@ public class BulletWeapon : Weapon
 		{
 			List<WeaponTarget> targets = GetTargets(_attackAction, _attackIndex);
 
-			//GetTargets comes back empty when the action has no target tile left. The modulo below would divide
-			//by zero, which kills this coroutine: the attack would never end and the aim never be released.
-			//Same handling as Weapon.PerformSingleAttackCR, which closes the attack on the awaited shot only.
 			if (targets.Count == 0)
 			{
 				if (_attackIndex == _lastSuccessfullAttackIndex)
