@@ -160,7 +160,8 @@ public class AttackAction : AEntityAction
 				if (targetEntity != null)
 				{
 					Dictionary<WeaponEquipmentData.DamageType, int> damagesDealt =
-						PerformingEntity.Equipment.Weapons[linkedEquipmentId].GetDamages(PerformingEntity, targetEntity, this, GetExchangeResultAgainst(targetEntity));
+						PerformingEntity.Equipment.Weapons[linkedEquipmentId].GetDamages(PerformingEntity, targetEntity, this
+							, GetExchangeResultAgainst(targetEntity), attackInfo.isAttackSuccessfull);
 
 					if (coverHitted != null)
 						coverHitted.Wall.RegisterDamage(damagesDealt);

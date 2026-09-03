@@ -314,7 +314,12 @@ public class Weapon : MonoBehaviour
 		m_targetedTiles.Clear();
 	}
 
-	public virtual Dictionary<WeaponEquipmentData.DamageType, int> GetDamages ( Entity _user, Entity _target, AEntityAction _action, EntityActionData.PFCResultType _pfcResultType )
+	/// <summary>
+	/// Computes what an attack would deal. AttackAction.Prepare calls this for every target, hit or miss - the
+	/// numbers are needed for attackInfo.damages and for the wall a blocked shot lands on - so _isAttackSuccessful
+	/// says whether the target is really about to take them, and only changes what gets logged.
+	/// </summary>
+	public virtual Dictionary<WeaponEquipmentData.DamageType, int> GetDamages ( Entity _user, Entity _target, AEntityAction _action, EntityActionData.PFCResultType _pfcResultType, bool _isAttackSuccessful = true )
 	{
 		Dictionary<WeaponEquipmentData.DamageType, int> damages = new();
 		bool didWinPFC = _pfcResultType == EntityActionData.PFCResultType.FirstWins;
@@ -411,7 +416,11 @@ public class Weapon : MonoBehaviour
 
 		string detailsDescription = detailsBuilder.ToString();
 		LogConsole.LogDetails details = new("damage_" + LogConsole.Instance.LogsDetails.Keys.Count, "Damage Details", detailsDescription);
-		LogConsole.AddLog(_target.ID + " takes damages from " + _user.ID, LogConsole.LogEventType.Damage, details);
+		//Nothing is applied here, this only works the numbers out: a miss must not read as a hit in the log.
+		LogConsole.AddLog(_isAttackSuccessful
+			? _target.ID + " takes damages from " + _user.ID
+			: _user.ID + " deals no damage to " + _target.ID + ", attack failed"
+			, LogConsole.LogEventType.Damage, details);
 
 		return damages;
 	}
