@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 public class EntityStatusDisplay : MonoBehaviour
 {
-    [SerializeField] private SpriteRenderer m_icon;
+    [SerializeField] private Image m_icon;
 
     private bool m_isActive = false;
     public bool IsActive => m_isActive;

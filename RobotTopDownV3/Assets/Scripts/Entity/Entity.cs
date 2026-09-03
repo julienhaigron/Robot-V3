@@ -421,6 +421,8 @@ public class Entity : MonoBehaviour
 		else
 			m_remainingDurationToActiveStatuses.Add(GameAssets.current.game.entityStatus[_statusID], GameAssets.current.game.entityStatus[_statusID].duration);
 
+		LogConsole.AddLog(m_data.name + " now has status " + GameAssets.current.game.entityStatus[_statusID].name, LogConsole.LogEventType.Status);
+
 		onStatusAdded?.Invoke(_statusID);
 	}
 

@@ -9,13 +9,13 @@ public class EntityUIPlugin : EntityPlugin
 	[Title("InGame")]
     [SerializeField] private HealthBar m_healthBar;
 	[SerializeField] private FlyingNumberManager m_flyingNumberManagerDamage;
-	[SerializeField] private Transform m_statusDisplayParent;
+	[SerializeField] private RectTransform m_statusDisplayParent;
 	[SerializeField] private int m_statusPrefabSpawnAtInitCount;
+	[SerializeField] private List<EntityStatusDisplay> m_statusDisplays;
 
 	[Title("Hangar")]
 	[SerializeField] private BaseButton m_modifyBtn;
 
-	private List<EntityStatusDisplay> m_statusDisplays = new();
 
 	private void Awake ()
 	{
@@ -40,6 +40,9 @@ public class EntityUIPlugin : EntityPlugin
 		m_modifyBtn.gameObject.SetActive(false);
 		m_healthBar.gameObject.SetActive(true);
 		m_healthBar.SetHealth(m_linkedEntity.Equipment.CurrentHealth, m_linkedEntity.Equipment.MaxHealth);
+
+		foreach (EntityStatusDisplay display in m_statusDisplays)
+			display.Hide();
 
 		for(int i = 0; i < m_statusPrefabSpawnAtInitCount; i++)
 			AddStatusDisplay();
