@@ -893,13 +893,13 @@ public class GridManager : Singleton<GridManager>
 		return angle;
 	}
 
-	/*public void ClearTileOutile ()
+	public void ClearTileOutile ()
 	{
 		for (int i = 0; i < m_tiles.Length; i++)
 		{
 			m_tiles[i].UI.ResetOutline();
 		}
-	}*/
+	}
 
 	private bool IsBlockedByEntity ( Tile _tile, Tile _to, bool _isThisTurn, Entity _movingEntity, bool _canTraverseAllies )
 	{

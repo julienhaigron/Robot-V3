@@ -300,8 +300,15 @@ public class TurnManager : Singleton<TurnManager>
 		if (hasModActionSelected || m_currentEntityAction == null || !m_currentEntityAction.Data.DoesResolveItsOwnTarget())
 			return false;
 
-		RegisterAction(m_currentEntityAction.performingEntityID, m_currentEntityAction, m_currentStateTypeSelected);
-		RefreshActionDisplay(m_currentEntityAction.performingEntityID, true);
+		int performingEntityID = m_currentEntityAction.performingEntityID;
+		RegisterAction(performingEntityID, m_currentEntityAction, m_currentStateTypeSelected);
+
+		Entity performingEntity = GameManager.Instance.GetEntityFromID(performingEntityID);
+		EntityActionData movementAction = performingEntity == null ? null : performingEntity.AI.GetMovementAction();
+		if (movementAction != null)
+			SetCurrentActionSelected(movementAction.enumID, null, true);
+
+		RefreshActionDisplay(performingEntityID, true);
 		return true;
 	}
 
@@ -676,6 +683,7 @@ public class TurnManager : Singleton<TurnManager>
 		PlayerController.Instance.ClearActionOnTileDisplay();
 		PlayerController.Instance.ClearGhostActionOnTileDisplay();
 		PlayerController.Instance.ClearGhostEntitiesAndItems();
+		PlayerController.Instance.ClearAoEPreviewOutlines();
 
 		if (_selectedEntityID.HasValue && _isResetingAction
 			&& m_remainingActionToken[_selectedEntityID.Value] >= GameAssets.current.game.entityActionsData[m_currentActionTypeSelected].GetTokenTotalCost(m_currentEntityAction, GameManager.Instance.GetEntityFromID(_selectedEntityID.Value), null))
@@ -732,7 +740,10 @@ public class TurnManager : Singleton<TurnManager>
 		}
 
 		if (_selectedEntityID.HasValue && _specificTokenCount != -1 && currentSelectedAction != null)
+		{
+			currentSelectedAction.DisplayAoEPreviewOnHoveredTile();
 			currentSelectedAction.GhostDisplay(m_currentStateTypeSelected);
+		}
 	}
 
 	[Button]

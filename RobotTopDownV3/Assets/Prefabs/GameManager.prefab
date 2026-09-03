@@ -825,6 +825,7 @@ MonoBehaviour:
   - name: 
     index: 0
     isRepairing: 0
+    aiRole: 0
     frame:
       ID: 
       dataID: 
@@ -849,6 +850,7 @@ MonoBehaviour:
   - name: 
     index: 0
     isRepairing: 0
+    aiRole: 0
     frame:
       ID: 
       dataID: 
@@ -998,6 +1000,8 @@ MonoBehaviour:
   m_turnManager: {fileID: 2601377726672517245}
   m_fogRenderer: {fileID: 5089135159799770867}
   m_inputActions: {fileID: -944628639613478452, guid: 2da90cdffd3702b458769b7a7a8aaf67, type: 3}
+  m_aoePreviewColor: {r: 1, g: 0.5, b: 0, a: 1}
+  m_rangePreviewColor: {r: 0, g: 0.37551665, b: 1, a: 1}
 --- !u!114 &2601377726672517245
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1029,6 +1033,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 93d53594ce8dbd245b14fc37a3c8885e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_supportFollowDistance: 2
 --- !u!114 &2803097033680005190
 MonoBehaviour:
   m_ObjectHideFlags: 0

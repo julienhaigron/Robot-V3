@@ -220,16 +220,6 @@ public class MoveThenAttackAction : AttackAction
 			PlayerController.Instance.AddActionDisplay(arrow, performingEntityID, true);
 		}
 
-		if (TurnManager.Instance.CurrentActionTargetTiles == null)
-			return;
-
-		foreach (Tile tile in TurnManager.Instance.CurrentActionTargetTiles)
-		{
-			if (tile == null)
-				continue;
-
-			tile.UI.SetOutlineColor(Color.blue);
-		}
 	}
 
 	private bool IsDestinationOccupiedOnNextTurnAction ()

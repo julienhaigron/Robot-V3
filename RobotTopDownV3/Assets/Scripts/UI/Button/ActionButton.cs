@@ -108,8 +108,9 @@ public class ActionButton : BaseButton, IPointerEnterHandler, IPointerExitHandle
 
 		Select();
 		TurnManager.Instance.SetCurrentActionSelected(m_actionType, m_linkedEquipmentData, true);
-		//An action aimed at an entity needs no tile from the player: picking it is placing it.
-		TurnManager.Instance.TryRegisterActionWithoutTarget();
+		if (TurnManager.Instance.TryRegisterActionWithoutTarget())
+			DisplayRangePreview(GameAssets.current.game.entityActionsData[m_actionType]);
+
 		base.OnClick();
 	}
 
@@ -135,12 +136,38 @@ public class ActionButton : BaseButton, IPointerEnterHandler, IPointerExitHandle
 
 	public void OnPointerEnter ( PointerEventData eventData )
 	{
+		//GridManager.Instance.ClearTileOutile();
 		EntityActionData data = GameAssets.current.game.entityActionsData[m_actionType];
 		ToolTipManager.Instance.Show(data.displayName, data.GetDescription());
+
+		DisplayRangePreview(data);
 	}
 
 	public void OnPointerExit ( PointerEventData eventData )
 	{
+		if (RectTransformUtility.RectangleContainsScreenPoint(transform as RectTransform, eventData.position, eventData.enterEventCamera))
+			return;
+
 		ToolTipManager.Instance.Hide();
+
+		if (PlayerController.Instance != null)
+			PlayerController.Instance.ClearRangePreviewOutlines();
+	}
+
+	private void DisplayRangePreview ( EntityActionData _data )
+	{
+		if (m_isOnlyVisual || !_data.DoesResolveItsOwnTarget() || PlayerController.Instance == null || PlayerController.Instance.SelectedEntity == null)
+			return;
+
+		Entity entity = PlayerController.Instance.SelectedEntity;
+		int timeAtStart = TurnManager.Instance.RecordedActions.ContainsKey(entity.ID) && TurnManager.Instance.RecordedActions[entity.ID].Count > 0
+			? TurnManager.Instance.RecordedActions[entity.ID].ToArray()[^1].action.TimeAtEnd : TurnManager.currentTick;
+
+		AEntityAction action = TurnManager.Instance.GetAction(m_actionType, entity.ID, m_linkedEquipmentData, timeAtStart);
+		if (action == null)
+			return;
+
+		Tile from = GridManager.Instance.Tiles[TurnManager.Instance.GetLastRegisteredPositionOfEntity(entity.ID)];
+		PlayerController.Instance.SetRangePreviewOutlines(entity.Equipment.GetTilesInReach(action, from, true));
 	}
 }

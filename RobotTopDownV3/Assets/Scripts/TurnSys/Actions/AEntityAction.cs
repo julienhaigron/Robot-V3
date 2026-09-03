@@ -106,6 +106,16 @@ public abstract class AEntityAction : INetworkSerializable
 		targetedEntityIDs = _targetedEntityIDs;
 	}
 
+	public void DisplayAoEPreviewOnHoveredTile ()
+	{
+		Tile hoveredTile = PlayerController.Instance == null ? null : PlayerController.Instance.HoveredTile;
+		if (hoveredTile == null || Data.aoeType == EntityActionData.AOEType.Noone || PerformingEntity == null)
+			return;
+
+		foreach (Tile tile in PerformingEntity.Equipment.GetTilesInAoERange(this, hoveredTile, true))
+			PlayerController.Instance.AddAoEPreviewOutline(tile);
+	}
+
 	public virtual void ConflictCheckPrewarm ()
 	{
 

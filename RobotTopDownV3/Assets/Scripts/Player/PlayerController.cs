@@ -55,9 +55,17 @@ public class PlayerController : Singleton<PlayerController>
 	private float m_currentZoomDistance;
 
 	private Tile m_hoveredTile;
+	public Tile HoveredTile => m_hoveredTile;
 
 	private Entity m_selectedEntity;
 	public Entity SelectedEntity => m_selectedEntity;
+
+	[Header("Action Preview")]
+	[SerializeField] private Color m_aoePreviewColor = new(1f, .5f, 0f);
+	[SerializeField] private Color m_rangePreviewColor = Color.blue;
+
+	private readonly List<Tile> m_aoePreviewTiles = new();
+	private readonly List<Tile> m_rangePreviewTiles = new();
 
 
 	private SerializableDictionary<int, List<ActionDisplayOnTile>> m_actionDisplays = new();
@@ -525,6 +533,66 @@ public class PlayerController : Singleton<PlayerController>
 			}
 			m_rotationActionDisplays[entityID].Clear();
 		}
+	}
+
+	public void AddAoEPreviewOutline ( Tile _tile )
+	{
+		if (_tile == null || m_aoePreviewTiles.Contains(_tile))
+			return;
+
+		m_aoePreviewTiles.Add(_tile);
+		_tile.UI.SetOutlineColor(m_aoePreviewColor);
+	}
+
+	public void SetRangePreviewOutlines ( IEnumerable<Tile> _tiles )
+	{
+		ClearRangePreviewOutlines();
+
+		foreach (Tile tile in _tiles)
+		{
+			if (tile == null || m_rangePreviewTiles.Contains(tile))
+				continue;
+
+			m_rangePreviewTiles.Add(tile);
+			tile.UI.SetOutlineColor(m_rangePreviewColor);
+		}
+	}
+
+	public void ClearRangePreviewOutlines ()
+	{
+		if (m_rangePreviewTiles.Count == 0)
+			return;
+
+		RestoreInteractableOutlines(m_rangePreviewTiles);
+		m_rangePreviewTiles.Clear();
+		RedrawOutlines(m_aoePreviewTiles, m_aoePreviewColor);
+	}
+
+	public void ClearAoEPreviewOutlines ()
+	{
+		if (m_aoePreviewTiles.Count > 0)
+		{
+			RestoreInteractableOutlines(m_aoePreviewTiles);
+			m_aoePreviewTiles.Clear();
+		}
+
+		RedrawOutlines(m_rangePreviewTiles, m_rangePreviewColor);
+	}
+
+	private void RestoreInteractableOutlines ( List<Tile> _tiles )
+	{
+		Color interactableColor = m_turnManager.CurrentActionSelected != null
+			? m_turnManager.CurrentActionSelected.Data.tileOutlineColor
+			: Color.green;
+
+		foreach (Tile tile in _tiles)
+			tile.UI.SetAsInteractable(tile.CanInteract, interactableColor);
+	}
+
+	private void RedrawOutlines ( List<Tile> _tiles, Color _color )
+	{
+		foreach (Tile tile in _tiles)
+			tile.UI.SetOutlineColor(_color);
 	}
 
 	private void OnAnyEntityDeath ( Entity _entity )

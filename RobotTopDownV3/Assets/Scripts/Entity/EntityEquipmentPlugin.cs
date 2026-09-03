@@ -278,7 +278,31 @@ public class EntityEquipmentPlugin : EntityPlugin
 		return tilesInRange;
 	}
 
-	public List<Tile> GetTilesInAoERange ( AttackAction _action, Tile _targetTile, bool _isThisTurn = false )
+	public HashSet<Tile> GetTilesInReach ( AEntityAction _action, Tile _from, bool _isThisTurn = true )
+	{
+		HashSet<Tile> tilesInReach = new();
+		if (_action == null || _from == null)
+			return tilesInReach;
+
+		if (_action.Data.GetMainActionType() != EntityActionData.MainActionType.Attack)
+		{
+			foreach (Tile tile in GridManager.Instance.GetTilesInVisionRange(_from, _action.Data.minDistance
+				, _action.Data.GetMaxRange(_action, m_linkedEntity, null), false, _isThisTurn, false))
+				tilesInReach.Add(tile);
+
+			return tilesInReach;
+		}
+
+		for (int orientation = 0; orientation < 6; orientation++)
+		{
+			foreach (Tile tile in GetTilesInWeaponRange(_action, _isThisTurn, _from, orientation))
+				tilesInReach.Add(tile);
+		}
+
+		return tilesInReach;
+	}
+
+	public List<Tile> GetTilesInAoERange ( AEntityAction _action, Tile _targetTile, bool _isThisTurn = false )
 	{
 		int maxDistance = _action.Data.aoECenterType == EntityActionData.AOECenterType.Self ? _action.Data.GetMaxRange(_action, m_linkedEntity, null) : _action.Data.GetAoEMaxRange(_action, m_linkedEntity, null);
 		int minDistance = _action.Data.aoECenterType == EntityActionData.AOECenterType.Self ? _action.Data.minDistance : _action.Data.aoeMinEffectRange;

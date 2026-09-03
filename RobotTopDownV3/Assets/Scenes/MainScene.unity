@@ -193,6 +193,18 @@ PrefabInstance:
       propertyPath: m_networkedTurnSystem
       value: 
       objectReference: {fileID: 223974230}
+    - target: {fileID: 7046302440515799230, guid: 72a8cdbae79f9a74f90a70843427bc89, type: 3}
+      propertyPath: m_rangePreviewColor.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7046302440515799230, guid: 72a8cdbae79f9a74f90a70843427bc89, type: 3}
+      propertyPath: m_rangePreviewColor.g
+      value: 0.37551665
+      objectReference: {fileID: 0}
+    - target: {fileID: 7046302440515799230, guid: 72a8cdbae79f9a74f90a70843427bc89, type: 3}
+      propertyPath: m_rangePreviewColor.r
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8375078075185135005, guid: 72a8cdbae79f9a74f90a70843427bc89, type: 3}
       propertyPath: m_Name
       value: GameManager

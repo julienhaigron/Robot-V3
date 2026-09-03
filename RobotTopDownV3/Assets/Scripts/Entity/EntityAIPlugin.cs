@@ -10,8 +10,6 @@ public class EntityAIPlugin : EntityPlugin
 	private Dictionary<EntityActionData.MainActionType, ActionReplacements> m_actionPriorityQueues = new();
 	public Dictionary<EntityActionData.MainActionType, ActionReplacements> ActionPriorityQueues => m_actionPriorityQueues;
 
-	private List<Tile> m_activeAttackRangeTiles = new();
-
 	[System.Serializable]
 	public class ActionReplacements
 	{
@@ -51,16 +49,6 @@ public class EntityAIPlugin : EntityPlugin
 		}
 	}
 
-	private void Awake ()
-	{
-		m_linkedEntity.onEndTick += OnEndTick;
-	}
-
-	private void OnDestroy ()
-	{
-		m_linkedEntity.onEndTick -= OnEndTick;
-	}
-
 	public override void Init ( EntitySavedData _entityData )
 	{
 		base.Init(_entityData);
@@ -74,15 +62,6 @@ public class EntityAIPlugin : EntityPlugin
 
 			m_actionPriorityQueues[mainType].priorityQueue.Add(actionID);
 		}
-	}
-
-	private void OnEndTick ()
-	{
-		foreach (Tile tile in m_activeAttackRangeTiles)
-		{
-			tile.UI.ResetOutline();
-		}
-		m_activeAttackRangeTiles.Clear();
 	}
 
 	public void SetActionPriorityQueue ( EntityActionData.MainActionType _mainType, List<EntityActionEnumID> _actionsInOrder )
@@ -414,13 +393,11 @@ public class EntityAIPlugin : EntityPlugin
 	{
 		m_entitiesInActionRangeInfos.Clear();
 
-		List<Tile> tilesInRange = new();
 		foreach (System.Tuple<EntityActionData, string> pair in GetAvailableAttackAction())
 		{
 			AEntityAction relatedAction = _action.enumID == pair.Item1.enumID ? _action : TurnManager.Instance.GetAction(GameAssets.current.game.entityActionsData[pair.Item1.enumID], m_linkedEntity.ID, pair.Item2, _action.timeAtStart);
 
 			List<Tile> tilesInWeaponCone = m_linkedEntity.Equipment.GetTilesInWeaponRange(relatedAction, _isThisTurn);
-			tilesInRange.AddRange(tilesInWeaponCone);
 			foreach (Tile tile in tilesInWeaponCone)
 			{
 				Entity entityOnTile = tile.GetEntity(_isThisTurn);
@@ -428,7 +405,7 @@ public class EntityAIPlugin : EntityPlugin
 					m_entitiesInActionRangeInfos.Add(new() { tile = tile, actionID = pair.Item1.enumID, entity = entityOnTile, linkedEquipmentID = pair.Item2 });
 			}
 		}
-		DisplayActiveAttackRange(tilesInRange);
+
 		return m_entitiesInActionRangeInfos;
 	}
 
@@ -456,15 +433,6 @@ public class EntityAIPlugin : EntityPlugin
 
 			_enemies.OrderBy(e => e.Displacement.Coordinates.GetTile().Distance);
 			return _enemies.Count > 0;
-		}
-	}
-
-	private void DisplayActiveAttackRange ( List<Tile> _tilesInRange )
-	{
-		m_activeAttackRangeTiles = _tilesInRange;
-		foreach (Tile tile in _tilesInRange)
-		{
-			tile.UI.SetOutlineColor(Color.blue);
 		}
 	}
 
