@@ -38,8 +38,6 @@ public class BulletWeapon : Weapon
 			Entity targetEntity = _attackAction.GetTargetEntityAt(_attackIndex);
 			Tile targetTile = GridManager.Instance.Tiles[_attackAction.targetTileIDs[_attackIndex]];
 
-			//Aim at the tile when the attack targets a place, and also when it targets an entity that is simply
-			//not there any more: there is still a spot to point the weapon at.
 			Vector3 targetPosition = _attackAction.Data.targetType == EntityActionData.TargetType.Tile || targetEntity == null
 				? targetTile.transform.position
 				: targetEntity.Skin.Center.position;
@@ -145,8 +143,10 @@ public class BulletWeapon : Weapon
 			isAttackSuccessful = _attackInfo.isAttackSuccessfull,
 			damages = BuildDamageDictionary(_attackInfo)
 		};
+
 		ProjectileData.TargetType targetType = !_attackInfo.isAttackSuccessfull && _attackInfo.hittedTileID != -1
-			? ProjectileData.TargetType.Wall :  _attackAction.Data.targetType == EntityActionData.TargetType.Tile
+			? ProjectileData.TargetType.Wall
+			: _attackAction.Data.targetType == EntityActionData.TargetType.Tile || _target.targetEntity == null
 			? ProjectileData.TargetType.Tile : ProjectileData.TargetType.Entity;
 		bulletData.SetTarget(targetType, targetType == ProjectileData.TargetType.Tile ? _target.targetTile : null
 			, targetType == ProjectileData.TargetType.Entity ? _target.targetEntity : null

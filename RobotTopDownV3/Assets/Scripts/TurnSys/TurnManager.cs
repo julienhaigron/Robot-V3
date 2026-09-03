@@ -521,6 +521,27 @@ public class TurnManager : Singleton<TurnManager>
 		RefreshActionDisplay(_actionToStartRemoveFrom.performingEntityID, true);
 	}
 
+	public AEntityAction GetActionPerformedAtTick ( int _entityID )
+	{
+		if (m_actionsToPlay.ContainsKey(_entityID) && m_actionsToPlay[_entityID] != null)
+		{
+			foreach (RecordedAction recordedAction in m_actionsToPlay[_entityID])
+			{
+				if (recordedAction.action.IsPerformingAtTick(currentTick))
+					return recordedAction.action;
+			}
+		}
+
+		if (m_actionsBeingDone.ContainsKey(_entityID) && m_actionsBeingDone[_entityID] != null)
+		{
+			AEntityAction actionBeingDone = m_actionsBeingDone[_entityID].Item1.action;
+			if (actionBeingDone.IsPerformingAtTick(currentTick))
+				return actionBeingDone;
+		}
+
+		return null;
+	}
+
 	public int GetEntityPositionAtEndOfTick ( int _entityID, int _defaultTileID )
 	{
 		if (m_actionsToPlay.ContainsKey(_entityID) && m_actionsToPlay[_entityID] != null)
@@ -676,8 +697,6 @@ public class TurnManager : Singleton<TurnManager>
 
 			if (_selectedEntityID.HasValue)
 			{
-				//lastRecordedPosition is where the entity stands at the tick being planned, which is the whole
-				//point of the ghosts. Only the selected entity follows the action picked in the timeline instead.
 				Tile ghostPosition = lastRecordedPosition;
 				if (EntityActionDisplay.SelectedDisplay != null && entityID == _selectedEntityID.Value)
 				{

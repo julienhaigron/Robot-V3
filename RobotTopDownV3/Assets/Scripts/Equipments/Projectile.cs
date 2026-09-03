@@ -27,7 +27,6 @@ public class Projectile : PoolElement
 	{
 		base.Init(_pool);
 
-		//cached once per pooled element, the visibility toggle then costs nothing per shot
 		m_renderers = GetComponentsInChildren<Renderer>(true);
 
 		if (m_trail != null)
@@ -64,8 +63,6 @@ public class Projectile : PoolElement
 		if (_entity == m_projectileData.owner)
 			return;
 
-		//Whatever is not the target the attack was rolled against stops the projectile without any effect: a
-		//missed shot must never hurt whoever happens to stand on its trajectory.
 		if (!IsIntendedTarget(_entity))
 		{
 			StopWithoutHit();
@@ -80,8 +77,6 @@ public class Projectile : PoolElement
 		if (_collidedLayer != 12 || !_other.transform.TryGetComponent(out WallSelector selector) || selector.LinkedWall == null)
 			return;
 
-		//A wall only ever takes a projectile when EntityEquipmentPlugin.AttackRoll deliberately routed the shot
-		//into the cover standing between shooter and target. Any other wall simply stops the bullet.
 		if (!IsIntendedTarget(selector.LinkedWall))
 		{
 			StopWithoutHit();
@@ -90,13 +85,9 @@ public class Projectile : PoolElement
 
 		Impact(selector.LinkedWall.LinkedTile);
 	}
-
-	//Universal fallback for every target type: a shot aimed at a place resolves on that place occupied or not,
-	//and an entity hidden by the fog of war has its colliders disabled, so no collision can ever happen against
-	//it. Whichever comes first, collision or closest approach, discards the projectile and the other never runs.
 	private void FixedUpdate ()
 	{
-		if (!m_isInit || m_rb.isKinematic)
+		if (!m_isInit || m_rb.isKinematic || !m_projectileData.HasValidTarget)
 			return;
 
 		Vector3 destination = m_projectileData.Destination;
@@ -127,13 +118,8 @@ public class Projectile : PoolElement
 		}
 	}
 
-	//Where the round actually landed. The attack resolves from there, so an area blast goes off around it.
 	private void Impact ( Tile _impactTile )
 	{
-		//The wall AttackRoll designated takes the round, whichever collider actually stopped the projectile and
-		//wherever the impact was detected: the hex ray the roll walks and the bullet trajectory do not always
-		//meet the same wall first, and Wall.LinkedTile is not guaranteed to be wired on every prefab. A wall
-		//merely standing on a tile an area attack was recentred onto is not concerned: there the blast resolves.
 		if (m_projectileData.targetType == ProjectileData.TargetType.Wall && m_projectileData.targetWall != null
 			&& m_projectileData.damages != null && m_projectileData.damages.Count > 0)
 			m_projectileData.targetWall.TakeDamage(m_projectileData.damages);
@@ -152,7 +138,6 @@ public class Projectile : PoolElement
 		if (_wall == null)
 			return false;
 
-		//an area attack recentred onto a wall tile goes off against that wall
 		if (m_projectileData.targetType == ProjectileData.TargetType.Tile)
 			return IsSameTile(_wall.LinkedTile, m_projectileData.targetTile);
 
@@ -162,8 +147,6 @@ public class Projectile : PoolElement
 		if (_wall == m_projectileData.targetWall)
 			return true;
 
-		//Also compared through the tile: the wall linked to the collider and the Tile.Wall the attack recorded
-		//are not guaranteed to be the same instance, but a cover always sits on one known tile.
 		return IsSameTile(_wall.LinkedTile, m_projectileData.targetWall.LinkedTile);
 	}
 
@@ -180,17 +163,12 @@ public class Projectile : PoolElement
 		if (m_projectileData.targetType == ProjectileData.TargetType.Entity)
 			return _entity == m_projectileData.targetEntity;
 
-		//A shot aimed at a tile, which is how area attacks are fired, resolves on whoever stands on that tile.
-		//Without this the whole Tile targeted path silently stopped dealing any damage at all.
 		if (m_projectileData.targetType == ProjectileData.TargetType.Tile && m_projectileData.targetTile != null)
 			return _entity.Displacement.Coordinates.ID == m_projectileData.targetTile.coordinates.ID;
 
 		return false;
 	}
 
-	//Consumed on something it was not aiming at: the attack resolves on nobody, hence the null tile, and
-	//m_didHitSomething stays false so Deactivate still fires m_onDespawnNoEntityHit and the attack ends. A cover
-	//designated by AttackRoll still takes its round: whatever stopped the projectile, that shot was for it.
 	private void StopWithoutHit ()
 	{
 		Impact(null);
@@ -214,9 +192,6 @@ public class Projectile : PoolElement
 		m_projectileData = _projectileData;
 		m_lastPlanarDistanceToDestination = float.MaxValue;
 
-		//A shot fired by an enemy the player cannot see must not give its position away. Owner visibility is the
-		//cheap proxy here: following the bullet tile by tile through the fog would cost far more per frame.
-		//Entity.IsVisible only ever gets updated for non allied entities, hence the ownership check.
 		bool isOwnerHidden = m_projectileData.owner != null
 			&& !m_projectileData.owner.IsAlliedTo(GameManager.Instance.PlayerID)
 			&& !m_projectileData.owner.IsVisible;
@@ -393,10 +368,7 @@ public struct ProjectileData
 	public Entity owner;
 	public Vector2 speed;
 
-	//A missed shot must not damage the target it was rolled against, even if the stray trajectory clips it.
 	public bool isAttackSuccessful;
-
-	//The weapon damage this round carries, used when it lands in a cover instead of its target.
 	public Dictionary<WeaponEquipmentData.DamageType, int> damages;
 
 	public EntityActionData attackData;
@@ -410,6 +382,24 @@ public struct ProjectileData
 	public Wall targetWall;
 	//public Vector3 destination;
 
+	public bool HasValidTarget
+	{
+		get
+		{
+			switch (targetType)
+			{
+				case TargetType.Tile:
+					return targetTile != null;
+				case TargetType.Entity:
+					return targetEntity != null && targetEntity.Skin != null;
+				case TargetType.Wall:
+					return targetWall != null;
+			}
+
+			return false;
+		}
+	}
+
 	public Vector3 Destination
 	{
 		get
@@ -417,11 +407,17 @@ public struct ProjectileData
 			switch (targetType)
 			{
 				case TargetType.Tile:
-					return targetTile.coordinates.GetTile().transform.position;
+					if (targetTile != null)
+						return targetTile.coordinates.GetTile().transform.position;
+					break;
 				case TargetType.Entity:
-					return targetEntity.Skin.Center.position;
+					if (targetEntity != null && targetEntity.Skin != null)
+						return targetEntity.Skin.Center.position;
+					break;
 				case TargetType.Wall:
-					return targetWall.Center;
+					if (targetWall != null)
+						return targetWall.Center;
+					break;
 			}
 
 			Debug.LogError("Projectile target error, projectile wasnt initialized");

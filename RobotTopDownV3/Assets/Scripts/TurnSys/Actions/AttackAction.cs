@@ -41,9 +41,6 @@ public class AttackAction : AEntityAction
 		serializer.SerializeValue(ref attacksInfos);
 	}
 
-	//targetedEntityIDs only gets an entry for the target tiles that actually held someone, so it is shorter than
-	//targetTileIDs as soon as one of them is empty, and a Tile targeted attack can have none at all. Nothing may
-	//index these arrays directly: both accessors return null rather than throwing.
 	public Entity GetTargetEntityAt ( int _attackIndex )
 	{
 		int index = _attackIndex * ActiveLifetime;
@@ -62,11 +59,34 @@ public class AttackAction : AEntityAction
 			: null;
 	}
 
+	public bool DoesWinExchangeAgainst ( Entity _entity )
+	{
+		if (_entity == null || TurnManager.Instance == null)
+			return false;
+
+		AEntityAction otherAction = TurnManager.Instance.GetActionPerformedAtTick(_entity.ID);
+
+		return otherAction != null && EntityActionData.PFC(Data, otherAction.Data) == EntityActionData.PFCResultType.FirstWins;
+	}
+
+	public Tile GetExchangeTileOf ( Entity _entity )
+	{
+		if (_entity == null)
+			return null;
+
+		EntityDisplacementPlugin displacement = _entity.Displacement;
+
+		if (DoesWinExchangeAgainst(_entity))
+			return displacement.DidMoveThisTick ? displacement.PreviousCoordinates.GetTile() : displacement.Coordinates.GetTile();
+
+		return GridManager.Instance.Tiles[TurnManager.Instance.GetEntityPositionAtEndOfTick(_entity.ID, displacement.Coordinates.ID)];
+	}
+
 	public override void ConflictCheckPrewarm ()
 	{
 		base.ConflictCheckPrewarm();
 
-		int maxTarget = targetTileIDs.Length / actualDuration;
+		int maxTarget = targetTileIDs == null || actualDuration <= 0 ? 0 : targetTileIDs.Length / actualDuration;
 		attacksInfos = new SingleAttackInfo[maxTarget];
 		for (int i = 0; i < attacksInfos.Length; i++)
 			attacksInfos[i] = new();
@@ -86,9 +106,6 @@ public class AttackAction : AEntityAction
 		}
 		else
 		{
-			//attacksInfos is sized from targetTileIDs and targetedEntityIDs can be shorter, so the loop has to
-			//stop at whichever runs out first. Overrunning here threw inside CheckConflict, which left the
-			//action unvalidated on top of the exception.
 			int checkedTargetCount = targetedEntityIDs == null ? 0 : Mathf.Min(attacksInfos.Length, targetedEntityIDs.Length);
 			for (int i = 0 ; i < checkedTargetCount; i++)
 			{
@@ -126,7 +143,6 @@ public class AttackAction : AEntityAction
 						targetTileIDs[attackCount * ActiveLifetime] = coverHitted.coordinates.ID;
 				}
 				else if (targetEntity == null)
-					//nobody on the targeted tile: nothing to roll against, the shot simply lands there
 					attackInfo.isAttackSuccessfull = true;
 				else
 					attackInfo.isAttackSuccessfull = PerformingEntity.Equipment.AttackRoll(this, attackInfo, targetEntity, out coverHitted);

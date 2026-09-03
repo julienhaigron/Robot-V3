@@ -531,7 +531,9 @@ public class EntityEquipmentPlugin : EntityPlugin
 		if (m_linkedEntity.LastPerformedAction != null && m_linkedEntity.LastPerformedAction.IsPerforming)
 			m_linkedEntity.LastPerformedAction.CancelAction();
 		
-		m_linkedEntity.Displacement.Coordinates.GetTile().ClearEntityAnyTurn(m_linkedEntity);
+		//Every tile, not just the one under it: CancelAction above may also have re-registered it, and a booked
+		//destination lives on a tile the entity never reached.
+		GridManager.Instance.ClearEntityFromAllTiles(m_linkedEntity);
 
 		string detailsDescription = m_linkedEntity.ID + " died";
 		//LogConsole.LogDetails details = new("death_" + LogConsole.Instance.LogsDetails.Keys.Count, "Damage Details", detailsDescription);

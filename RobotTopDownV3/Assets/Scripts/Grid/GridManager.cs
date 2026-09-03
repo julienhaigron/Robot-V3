@@ -772,10 +772,19 @@ public class GridManager : Singleton<GridManager>
 		return true;
 	}
 
+	private int GetExchangePositionID ( Entity _entity, bool _takeDepartureTile )
+	{
+		int departureID = _entity.Displacement.Coordinates.ID;
+
+		return _takeDepartureTile || TurnManager.Instance == null
+			? departureID
+			: TurnManager.Instance.GetEntityPositionAtEndOfTick(_entity.ID, departureID);
+	}
+
 	public bool IsThereBlockingWallBetween ( Entity _attacker, Entity _target, bool _didAttackerWinPFC, out Tile _wallTile )
 	{
-		int attackerPosition = TurnManager.Instance.GetPositionOfEntityAtEndOfRound(_attacker.ID);
-		int defenderPosition = TurnManager.Instance.GetPositionOfEntityAtEndOfRound(_target.ID);
+		int attackerPosition = GetExchangePositionID(_attacker, true);
+		int defenderPosition = GetExchangePositionID(_target, _didAttackerWinPFC);
 
 		return IsThereBlockingWallBetween(Tiles[attackerPosition], Tiles[defenderPosition], _didAttackerWinPFC, out _wallTile);
 	}
@@ -801,8 +810,8 @@ public class GridManager : Singleton<GridManager>
 	public bool IsThereCoverBeween ( Entity _attacker, Entity _target, bool _didAttackerWinPFC, out Tile _cover )
 	{
 		_cover = null;
-		int attackerPosition = _didAttackerWinPFC ? TurnManager.Instance.GetPositionOfEntityAtEndOfRound(_attacker.ID) : TurnManager.Instance.GetPositionOfEntityAtEndOfRound(_attacker.ID);
-		int defenderPosition = !_didAttackerWinPFC ? TurnManager.Instance.GetPositionOfEntityAtEndOfRound(_target.ID) : TurnManager.Instance.GetPositionOfEntityAtEndOfRound(_target.ID);
+		int attackerPosition = GetExchangePositionID(_attacker, true);
+		int defenderPosition = GetExchangePositionID(_target, _didAttackerWinPFC);
 		//int attackOrientation = GetClosestOrientation(m_tiles[attackerPosition], m_tiles[defenderPosition]);
 
 		float highestCoverValue = -1;
@@ -825,8 +834,9 @@ public class GridManager : Singleton<GridManager>
 
 	public Tile.TileDirectionType GetHitTileSide ( Entity _from, Entity _to, bool _didAttackerWinPFC )
 	{
-		int attackerPosition = _didAttackerWinPFC ? TurnManager.Instance.GetPositionOfEntityAtEndOfRound(_from.ID) : TurnManager.Instance.GetPositionOfEntityAtEndOfRound(_from.ID);
-		int defenderPosition = !_didAttackerWinPFC ? TurnManager.Instance.GetPositionOfEntityAtEndOfRound(_to.ID) : TurnManager.Instance.GetPositionOfEntityAtEndOfRound(_to.ID);
+		//Same fix as the cover check: the flank bonus is read from the tile the exchange actually resolves on.
+		int attackerPosition = GetExchangePositionID(_from, true);
+		int defenderPosition = GetExchangePositionID(_to, _didAttackerWinPFC);
 		int hitOrientation = GetClosestOrientation(m_tiles[attackerPosition], m_tiles[defenderPosition]);
 		int targetOrientation = _to.Displacement.CurrentOrientation;
 		int delta = (hitOrientation - targetOrientation + 6) % 6;
@@ -1058,6 +1068,12 @@ public class GridManager : Singleton<GridManager>
 		}
 
 		FogOfWarRenderer.Instance.MarkDirty();
+	}
+
+	public void ClearEntityFromAllTiles ( Entity _entity )
+	{
+		for (int i = 0; i < m_tiles.Length; i++)
+			m_tiles[i].ClearEntityAnyTurn(_entity);
 	}
 
 	public void OnEntityDeath ( Entity _entity )

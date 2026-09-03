@@ -60,6 +60,16 @@ public class Weapon : MonoBehaviour
 
 	protected IEnumerator PerformAttackCR ( AttackAction _attackAction )
 	{
+		if (_attackAction.attacksInfos == null)
+			_attackAction.ConflictCheckPrewarm();
+
+		if (_attackAction.attacksInfos == null || _attackAction.attacksInfos.Length == 0)
+		{
+			EndAttack(_attackAction);
+			m_attackCR = null;
+			yield break;
+		}
+
 		int lastSuccessfullAttackIndex = -1;
 		for (int i = 0; i < _attackAction.attacksInfos.Length; i++)
 		{
@@ -175,6 +185,23 @@ public class Weapon : MonoBehaviour
 		yield return m_singleAttackDuration;
 	}
 
+	private Entity GetEntityCaughtOn ( Tile _tile, AttackAction _attackAction )
+	{
+		foreach (EntityAnchor anchor in GameManager.Instance.PlayersEntityAnchor)
+		{
+			foreach (Entity entity in anchor.Entities)
+			{
+				if (entity.Equipment.IsDead)
+					continue;
+
+				if (_attackAction.GetExchangeTileOf(entity) == _tile)
+					return entity;
+			}
+		}
+
+		return null;
+	}
+
 	protected List<WeaponTarget> GetTargets ( AttackAction _attackAction, int _attackIndex )
 	{
 		List<WeaponTarget> targets = new();
@@ -190,24 +217,23 @@ public class Weapon : MonoBehaviour
 			{
 				m_targetedTiles.Add(tile);
 				tile.UI.SetOutlineColor(Color.red);
-				if (tile.TryGetCurrentEntity(out Entity entity))
-					targets.Add(new() { targetTile = tile, targetEntity = entity });
-				else
-					targets.Add(new() { targetTile = tile, targetEntity = null});
+				targets.Add(new() { targetTile = tile, targetEntity = GetEntityCaughtOn(tile, _attackAction) });
 			}
 		}
 		else
 		{
-			Entity target = _attackAction.GetTargetEntityAt(_attackIndex);
+			Entity recordedTarget = _attackAction.GetTargetEntityAt(_attackIndex);
+			Tile targetTile = recordedTarget != null
+				? _attackAction.GetExchangeTileOf(recordedTarget)
+				: _attackAction.GetTargetTileAt(_attackIndex);
 
-			//No entity on the targeted tile: the attack still resolves on the tile the action recorded.
-			Tile targetTile = target != null ? target.Displacement.Coordinates.GetTile() : _attackAction.GetTargetTileAt(_attackIndex);
 			if (targetTile == null)
 				return targets;
 
 			targetTile.UI.SetOutlineColor(Color.red);
 			m_targetedTiles.Add(targetTile);
-			targets.Add(new() { targetTile = targetTile, targetEntity = target });
+
+			targets.Add(new() { targetTile = targetTile, targetEntity = recordedTarget ?? targetTile.GetCurrentEntity() });
 		}
 
 		return targets;

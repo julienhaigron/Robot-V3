@@ -13,6 +13,11 @@ public class EntityDisplacementPlugin : EntityPlugin
 	private TileCoordinates m_coordinate;
 	public TileCoordinates Coordinates => m_coordinate;
 
+	private TileCoordinates m_previousCoordinate;
+	public TileCoordinates PreviousCoordinates => m_previousCoordinate;
+	private int m_lastMovementTick = -1;
+	public bool DidMoveThisTick => m_lastMovementTick == TurnManager.currentTick;
+
 	private int m_currentOrientation;
 	public int CurrentOrientation => m_currentOrientation;
 
@@ -47,9 +52,6 @@ public class EntityDisplacementPlugin : EntityPlugin
 			m_rotationTween.Kill();
 	}
 
-	//The turn system takes an entity off its tile before moving it (MoveToTargetAction.Prepare). Whenever the
-	//move ends up not happening, it has to be put back on both tick slots: otherwise its Coordinates still say
-	//that tile while the tile itself knows nobody, and the next unit walks straight through it.
 	public void RegisterOnCurrentTile ()
 	{
 		Tile tile = m_coordinate.GetTile();
@@ -83,9 +85,6 @@ public class EntityDisplacementPlugin : EntityPlugin
 	{
 		Tile tile = GridManager.Instance.Tiles[_tileID];
 
-		//Last line of defence, whatever the action type: never step onto a tile an entity still holds once this
-		//tick is played. An ally being followed does not count, its own move frees the tile in the same tick.
-		//The callback still fires so the action completes instead of hanging on a refused move.
 		Entity occupant = tile.GetEntityAtEndOfTick();
 		if (occupant != null && occupant != m_linkedEntity)
 		{
@@ -112,11 +111,10 @@ public class EntityDisplacementPlugin : EntityPlugin
 		m_movementTween = transform.DOMove(tile.transform.position - m_bottomPosition.localPosition, movementDuration)
 			.SetEase(Ease.Linear).OnComplete(() => onMovementDoneAction?.Invoke());
 		tile.SetEntity(m_linkedEntity, _isThisTurn: false);
+		m_previousCoordinate = m_coordinate;
+		m_lastMovementTick = TurnManager.currentTick;
 		m_coordinate.SetCoordinate(tile.coordinates.X, tile.coordinates.Z, tile.coordinates.ID);
 
-
-		//here
-		//this must be called right before onEndAction (OnMove tween)
 		tile.OnEntityEnter(m_linkedEntity, false);
 
 		//refresh fow
@@ -128,8 +126,6 @@ public class EntityDisplacementPlugin : EntityPlugin
 	{
 		Tile tile = GridManager.Instance.Tiles[_tileID];
 
-		//Same guard as MoveToTile: a teleport must not land on a tile an entity still holds at the end of this
-		//tick either. The entity is put back on its own tile and the callback still fires.
 		Entity teleportOccupant = tile.GetEntityAtEndOfTick();
 		if (teleportOccupant != null && teleportOccupant != m_linkedEntity)
 		{
@@ -153,6 +149,8 @@ public class EntityDisplacementPlugin : EntityPlugin
 
 		transform.position = tile.transform.position - m_bottomPosition.localPosition;
 		tile.SetEntity(m_linkedEntity, _isThisTurn: false);
+		m_previousCoordinate = m_coordinate;
+		m_lastMovementTick = TurnManager.currentTick;
 		m_coordinate.SetCoordinate(tile.coordinates.X, tile.coordinates.Z, tile.coordinates.ID);
 
 		tile.OnEntityEnter(m_linkedEntity, true);
@@ -207,5 +205,6 @@ public class EntityDisplacementPlugin : EntityPlugin
 	{
 		m_didMoveThisTurn = false;
 		m_traveledTileCountThisTurn = 0;
+		m_lastMovementTick = -1;
 	}
 }
