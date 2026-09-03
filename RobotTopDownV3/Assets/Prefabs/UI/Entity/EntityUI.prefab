@@ -118,7 +118,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   config:
     addPlusPrefixIfPositive: 0
-    prefix: '-'
+    prefix: 
     suffix: 
     useEngineeringNotation: 0
     stringFormat: 
@@ -140,7 +140,7 @@ MonoBehaviour:
     hideLastWhenSpawningNew: 0
     yAddedOffsetOnOverLap: 0.2
     yOffsetOnOverLapMax: 10
-    textColor: {r: 0.8679245, g: 0.020469915, b: 0.020469915, a: 1}
+    textColor: {r: 0.9150943, g: 0.2209476, b: 0, a: 1}
     useAnimationCustomColor: 0
     customColorAnimation: {r: 1, g: 0, b: 0, a: 1}
   m_UIflyingNumberPrefab: {fileID: 0}
