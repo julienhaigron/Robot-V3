@@ -321,8 +321,6 @@ public class Projectile : PoolElement
 		float duration = Vector3.Distance(transform.position, destination) / m_projectileData.speed.x;
 
 		transform.LookAt(destination);
-		//Impact rather than a plain discard: an underground round resolves where it surfaces, like any other.
-		//Deactivate still fires m_onDespawnNoEntityHit when nothing was actually hit.
 		transform.DOMove(destination, duration).SetEase(Ease.Linear).OnComplete(() => Impact(GetTargetTile()));
 	}
 

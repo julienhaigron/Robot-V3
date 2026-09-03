@@ -43,8 +43,6 @@ public class EntitySavedData : INetworkSerializable
 	public string name;
 	public int index;
 	public bool isRepairing = false;
-	//Copied from the UnitPreset at GetSavedData time: this is the only thing an Entity is built from, so an
-	//AI role that stays on the preset never reaches BotEnnemiPlayer.
 	public EnnemiAIRole aiRole = EnnemiAIRole.PatrolPath;
 	public GameDatas.PlayerSave.Component frame;
 	public GameDatas.PlayerSave.Component reactor;
@@ -80,7 +78,7 @@ public class EntitySavedData : INetworkSerializable
 	public bool CanAddToSquad ()
 	{
 		bool hasCapacity = GameDatas.current.currentPlayerSave.squadUnitsIndex.Count < GameAssets.current.game.HangarStructureUpgrade.GetCurrentMaxUnitAmount();
-		return hasCapacity /*&& IsUnitValid()*/;
+		return hasCapacity && IsUnitValid();
 	}
 
 	public bool IsUnitValid ()

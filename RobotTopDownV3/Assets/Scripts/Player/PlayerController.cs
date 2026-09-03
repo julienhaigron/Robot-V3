@@ -238,9 +238,6 @@ public class PlayerController : Singleton<PlayerController>
 		{
 			if (_tile.CanInteract)
 			{
-				//An action aimed at an entity was already queued when it was picked and resolves its own
-				//target at resolution time, so a click must not register a second one. The tiles stay
-				//outlined on purpose: that highlight is the range preview.
 				if (m_turnManager.CurrentActionSelected.Data.DoesResolveItsOwnTarget())
 					return;
 

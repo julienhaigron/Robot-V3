@@ -100,12 +100,6 @@ public abstract class AEntityAction : INetworkSerializable
 		}
 	}
 
-	/// <summary>
-	/// Resolution time counterpart of RegisterInteraction, for actions queued without a target: an action
-	/// aimed at an entity goes into the queue the moment the player picks it, and only finds out what it
-	/// shoots at when its tick comes up. Subclasses override this to redo whatever RegisterInteraction does
-	/// beyond storing the targets.
-	/// </summary>
 	public virtual void SetResolvedTargets ( int[] _targetTileIDs, int[] _targetedEntityIDs )
 	{
 		targetTileIDs = _targetTileIDs;

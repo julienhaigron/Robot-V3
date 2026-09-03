@@ -207,8 +207,6 @@ public class TurnManager : Singleton<TurnManager>
 			m_currentStateTypeSelected = _selectedDisplay.RecordedAction.entityState;
 			m_currentActionTargetTiles.Clear();
 			AEntityAction action = _isModAction ? _selectedDisplay.RecordedAction.freeAction : _selectedDisplay.RecordedAction.action;
-			//An action aimed at an entity is queued with no target at all and only resolves one when its tick
-			//comes up, so there is nothing to read back here.
 			if (action.targetTileIDs != null)
 			{
 				foreach (int tileID in action.targetTileIDs)
