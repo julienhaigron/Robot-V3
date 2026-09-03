@@ -24,4 +24,5 @@ MonoBehaviour:
   icon: {fileID: 0}
   isInvocation: 0
   isTangible: 1
+  aiRole: 0
   m_totalEnergyCostRemaining: 0

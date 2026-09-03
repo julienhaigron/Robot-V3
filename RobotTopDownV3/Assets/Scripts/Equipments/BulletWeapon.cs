@@ -82,6 +82,17 @@ public class BulletWeapon : Weapon
 		if (_attackAction.Data.aoeType == EntityActionData.AOEType.Noone || (_attackAction.Data.aoeType == EntityActionData.AOEType.Circle && _attackAction.Data.targetType != EntityActionData.TargetType.Self))
 		{
 			List<WeaponTarget> targets = GetTargets(_attackAction, _attackIndex);
+
+			//GetTargets comes back empty when the action has no target tile left. The modulo below would divide
+			//by zero, which kills this coroutine: the attack would never end and the aim never be released.
+			//Same handling as Weapon.PerformSingleAttackCR, which closes the attack on the awaited shot only.
+			if (targets.Count == 0)
+			{
+				if (_attackIndex == _lastSuccessfullAttackIndex)
+					EndAttack(m_lastPerformedAction);
+				yield break;
+			}
+
 			WeaponTarget target = targets[_attackIndex % targets.Count];
 			//Entity targetEntity = GameManager.Instance.GetEntityFromID((int)_attackAction.targetedEntityIDs[_attackIndex]);
 			yield return ShootAtEntityAnim(_attackAction, _attackIndex, _attackInfo, _lastSuccessfullAttackIndex, target);

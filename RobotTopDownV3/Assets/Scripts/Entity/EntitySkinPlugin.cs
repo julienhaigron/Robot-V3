@@ -18,6 +18,9 @@ public class EntitySkinPlugin : EntityPlugin
 	[SerializeField] private SerializableDictionary<EntityActionData.ActionType, string> m_animationKeyPerActionDictionary;
 	[SerializeField] private string m_idleAnimationKey;
 
+	//Weapon currently holding the aim, so it can be dropped without the caller having to remember which one
+	private string m_aimingWeaponID;
+
 
 	public override void Init ( EntitySavedData _entityData )
 	{
@@ -50,10 +53,27 @@ public class EntitySkinPlugin : EntityPlugin
 		//m_animator.speed = 0;
 		//freeze body anim
 		//m_animator.SetTrigger("OnEndAction");
+
+		//Last word on the aim: the weapon releases it itself at the end of its attack coroutine, but that
+		//coroutine can be cut short - stopped by the next attack, or killed by an exception - and the arm then
+		//stayed pointed at the last target for good. An action ending always passes here.
+		ReleaseCurrentAim();
+	}
+
+	/// <summary>
+	/// Releases whatever weapon is still aiming, if any. Does nothing when nothing is aiming.
+	/// </summary>
+	public void ReleaseCurrentAim ()
+	{
+		if (string.IsNullOrEmpty(m_aimingWeaponID))
+			return;
+
+		ReleaseAim(m_aimingWeaponID);
 	}
 
 	public void VisualyAimAt(string _weaponID, Vector3 _aimedPosition )
 	{
+		m_aimingWeaponID = _weaponID;
 		Weapon weapon = m_linkedEntity.Equipment.Weapons[_weaponID];
 		if (weapon.Data.isTwoHanded)
 		{
@@ -79,6 +99,14 @@ public class EntitySkinPlugin : EntityPlugin
 
 	public void ReleaseAim ( string _weaponID )
 	{
+		m_aimingWeaponID = null;
+		//The weapon can be gone by the time the aim is dropped, a destroyed arm typically
+		if (!m_linkedEntity.Equipment.Weapons.ContainsKey(_weaponID))
+		{
+			m_humanoidEntityIK.ReleaseAim();
+			return;
+		}
+
 		Weapon weapon = m_linkedEntity.Equipment.Weapons[_weaponID];
 		if (weapon.Data.isTwoHanded)
 		{
