@@ -290,7 +290,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 	public bool AttackRoll ( AttackAction _attackAction, AttackAction.SingleAttackInfo _singleAttackInfo, Entity _targetEntity, out Tile _coverTile )
 	{
 		//WeaponEquipmentData usedWeapon = m_weapons[_attackAction.linkedEquipmentId].Data;
-		bool doesWinPFC = _singleAttackInfo.pfcResult == (int)EntityActionData.PFCResultType.FirstWins;
+		bool doesWinPFC = _attackAction.DoesWinExchangeAgainst(_targetEntity);
 
 		//A full wall between the two ends the shot then and there. Typically when the target is only known
 		//through radar, since optical vision cannot see past such a wall in the first place.

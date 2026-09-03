@@ -146,8 +146,7 @@ public abstract class AEntityAction : INetworkSerializable
 		if (lifetime == 0)
 			OnStartPerform(_state);
 
-		//if (lifetime == preparationDuration + 1)
-		if (IsPerformingAtTick(timeAtStart + lifetime) || Data.isModAction)
+		if (IsPerformingAtTick(TurnManager.currentTick) || Data.isModAction)
 		{
 			if(enumID != EntityActionEnumID.Unknowned && enumID != EntityActionEnumID.Wait)
 				LogConsole.AddLog(performingEntityID + " performes " + ToString(), LogConsole.LogEventType.ActionResolution);

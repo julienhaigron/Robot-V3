@@ -21,7 +21,6 @@ public class AttackAction : AEntityAction
 		public short[] statusIds;
 		public int[] damages;
 		public short[] damageTypes;
-		public int pfcResult;
 		public int hittedTileID;
 		public void NetworkSerialize<T> ( BufferSerializer<T> serializer ) where T : IReaderWriter
 		{
@@ -30,7 +29,6 @@ public class AttackAction : AEntityAction
 			serializer.SerializeValue(ref statusIds);
 			serializer.SerializeValue(ref damages);
 			serializer.SerializeValue(ref damageTypes);
-			serializer.SerializeValue(ref pfcResult);
 			serializer.SerializeValue(ref hittedTileID);
 		}
 	}
@@ -59,14 +57,21 @@ public class AttackAction : AEntityAction
 			: null;
 	}
 
-	public bool DoesWinExchangeAgainst ( Entity _entity )
+	public EntityActionData.PFCResultType GetExchangeResultAgainst ( Entity _entity )
 	{
 		if (_entity == null || TurnManager.Instance == null)
-			return false;
+			return EntityActionData.PFCResultType.Failure;
 
 		AEntityAction otherAction = TurnManager.Instance.GetActionPerformedAtTick(_entity.ID);
 
-		return otherAction != null && EntityActionData.PFC(Data, otherAction.Data) == EntityActionData.PFCResultType.FirstWins;
+		return otherAction == null
+			? EntityActionData.PFCResultType.Failure
+			: EntityActionData.PFC(Data, otherAction.Data);
+	}
+
+	public bool DoesWinExchangeAgainst ( Entity _entity )
+	{
+		return GetExchangeResultAgainst(_entity) == EntityActionData.PFCResultType.FirstWins;
 	}
 
 	public Tile GetExchangeTileOf ( Entity _entity )
@@ -98,21 +103,7 @@ public class AttackAction : AEntityAction
 			return new() { isFirstActionConflicted = false, isSecondActionConflicted = false };
 
 		if (Data.targetType == EntityActionData.TargetType.Tile)
-		{
-			for (int i = 0; i < attacksInfos.Length; i++)
-				attacksInfos[i].pfcResult = (int)EntityActionData.PFCResultType.Equal;
-
 			m_didCheckConflict = true;
-		}
-		else
-		{
-			int checkedTargetCount = targetedEntityIDs == null ? 0 : Mathf.Min(attacksInfos.Length, targetedEntityIDs.Length);
-			for (int i = 0 ; i < checkedTargetCount; i++)
-			{
-				if (targetedEntityIDs[i] == _otherAction.performingEntityID)
-					attacksInfos[i].pfcResult = (int)EntityActionData.PFC(Data, _otherAction.Data);
-			}
-		}
 
 		return new() { isFirstActionConflicted = false, isSecondActionConflicted = false };
 	}
@@ -169,7 +160,7 @@ public class AttackAction : AEntityAction
 				if (targetEntity != null)
 				{
 					Dictionary<WeaponEquipmentData.DamageType, int> damagesDealt =
-						PerformingEntity.Equipment.Weapons[linkedEquipmentId].GetDamages(PerformingEntity, targetEntity, this, (EntityActionData.PFCResultType)attackInfo.pfcResult);
+						PerformingEntity.Equipment.Weapons[linkedEquipmentId].GetDamages(PerformingEntity, targetEntity, this, GetExchangeResultAgainst(targetEntity));
 
 					if (coverHitted != null)
 						coverHitted.Wall.RegisterDamage(damagesDealt);
