@@ -17,7 +17,7 @@ MonoBehaviour:
   frame: {fileID: 11400000, guid: e421ab8c104f64a40849677562aa7d27, type: 2}
   reactor: {fileID: 11400000, guid: 8d685cbde0310b841b0827252aac0531, type: 2}
   brain: {fileID: 11400000, guid: 816d6b4f3efca864286716e3ea955e49, type: 2}
-  neuronalMembrane: {fileID: 11400000, guid: 40c739c1c2c779f4cb396248e19ab972, type: 2}
+  neuronalMembrane: {fileID: 11400000, guid: 1b31e866f069a78408f227f4a7e6b236, type: 2}
   arms:
   - {fileID: 11400000, guid: 40fc6dbe0f1d160489f3248959c7a117, type: 2}
   auxiliary: []
