@@ -15,7 +15,9 @@ public class ApplyEffectAction : SpecialAction
 
 	protected override void Perform ( Entity.EntityState _state )
 	{
-		for (int targetCount = 0; targetCount < targetedEntityIDs.Length; targetCount++)
+		//Guarded: a Tile targeted effect can legitimately have no entity recorded at all.
+		int targetAmount = targetedEntityIDs == null ? 0 : targetedEntityIDs.Length;
+		for (int targetCount = 0; targetCount < targetAmount; targetCount++)
 		{
 			if (Data.aoeType != EntityActionData.AOEType.Noone)
 			{
@@ -33,19 +35,19 @@ public class ApplyEffectAction : SpecialAction
 					else
 					{
 						foreach (AEntityPassiveEffect.PassiveEffectContainer effect in Data.passiveEffects)
-							GameAssets.current.game.entityEffects[effect.enumID].ApplyEffect(tile.GetEntity(true), GameManager.Instance.GetEntityFromID(targetCount), effect);
+							GameAssets.current.game.entityEffects[effect.enumID].ApplyEffect(tile.GetCurrentEntity(), GameManager.Instance.GetEntityFromID(targetedEntityIDs[targetCount]), effect);
 					}
 				}
 			}
 			else
 			{
 				foreach (AEntityPassiveEffect.PassiveEffectContainer effect in Data.passiveEffects)
-					GameAssets.current.game.entityEffects[effect.enumID].ApplyEffect(GameManager.Instance.GetEntityFromID(performingEntityID), GameManager.Instance.GetEntityFromID(targetCount), effect);
+					GameAssets.current.game.entityEffects[effect.enumID].ApplyEffect(GameManager.Instance.GetEntityFromID(performingEntityID), GameManager.Instance.GetEntityFromID(targetedEntityIDs[targetCount]), effect);
 			}
 		}
 
+		//base.Perform now schedules EndTick itself, scheduling it here too would end the action twice.
 		base.Perform(_state);
-		DG.Tweening.DOVirtual.DelayedCall(GameConfig.current.game.actionDuration, EndTick);
 	}
 
 	public override void Display ( TurnManager.RecordedAction _recordedAction )

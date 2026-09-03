@@ -27,7 +27,8 @@ public class SpecialAction : AEntityAction
 	protected override void Perform ( Entity.EntityState _state )
 	{
 		base.Perform(_state);
-		//todo : apply effect
+
+		DG.Tweening.DOVirtual.DelayedCall(GameConfig.current.game.actionDuration, EndTick);
 	}
 
 	public override void Display ( TurnManager.RecordedAction _recordedAction )
@@ -59,7 +60,7 @@ public class SpecialAction : AEntityAction
 		if (Data.targetType == EntityActionData.TargetType.Tile && isInRange)
 			return true;
 
-		Entity entity = _tile.GetEntity(true);
+		Entity entity = _tile.GetCurrentEntity();
 		return entity != null && isInRange && !entity.IsAlliedTo(GameManager.Instance.GetEntityFromID(performingEntityID).OwnerID);
 	}
 }

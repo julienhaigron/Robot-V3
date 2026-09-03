@@ -121,6 +121,12 @@ public class JumpToTarget : AEntityAction
 		return true;
 	}
 
+	//CheckConflict is null safe: every _otherAction use is a pattern match, which fails on null.
+	public override bool ConflictCheckAlone ( bool _isCheck = true )
+	{
+		return CheckConflict(null, _isCheck).isFirstActionConflicted;
+	}
+
 	public override ActionConflictResultInfo CheckConflict ( AEntityAction _otherAction, bool _isCheck = true )
 	{
 		Entity performingEntity = GameManager.Instance.GetEntityFromID(performingEntityID);
