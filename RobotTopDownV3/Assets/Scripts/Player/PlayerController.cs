@@ -21,6 +21,10 @@ public class PlayerController : Singleton<PlayerController>
 	private InputAction m_rotateCWAction;
 	private InputAction m_rotateCCWAction;
 	private InputAction m_zoomAction;
+	private InputAction m_panAction;
+
+	private bool m_isPanning;
+	private Vector2 m_lastPanScreenPosition;
 
 	private const float LegacyAxisPerNotch = 0.1f;
 
@@ -106,6 +110,7 @@ public class PlayerController : Singleton<PlayerController>
 		m_rotateCWAction = playerMap.FindAction("RotateCameraCW");
 		m_rotateCCWAction = playerMap.FindAction("RotateCameraCCW");
 		m_zoomAction = playerMap.FindAction("ZoomCamera");
+		m_panAction = playerMap.FindAction("PanCamera");
 
 		playerMap.Enable();
 	}
@@ -148,6 +153,8 @@ public class PlayerController : Singleton<PlayerController>
 		HandleCameraRotation();
 
 		HandleCameraZoom();
+
+		HandleCameraPan();
 	}
 
 	private void FixedUpdate ()
@@ -227,6 +234,50 @@ public class PlayerController : Singleton<PlayerController>
 			m_cameraRotationTween.Kill();
 
 		m_targetRotation = CameraManager.Instance.CameraParent.transform.rotation;
+	}
+
+	private void HandleCameraPan ()
+	{
+		if (m_panAction == null)
+			return;
+
+		if (m_panAction.WasPressedThisFrame())
+		{
+			m_isPanning = true;
+			m_lastPanScreenPosition = Input.mousePosition;
+			return;
+		}
+
+		if (!m_panAction.IsPressed())
+		{
+			m_isPanning = false;
+			return;
+		}
+
+		if (!m_isPanning)
+			return;
+
+		Vector2 screenPosition = Input.mousePosition;
+		Vector2 screenDelta = screenPosition - m_lastPanScreenPosition;
+		m_lastPanScreenPosition = screenPosition;
+
+		if (screenDelta.sqrMagnitude < .01f)
+			return;
+
+		Vector3 forward = CameraManager.Instance.CameraParent.transform.forward;
+		Vector3 right = CameraManager.Instance.CameraParent.transform.right;
+
+		forward.y = 0f;
+		right.y = 0f;
+
+		Vector3 move = -(right.normalized * screenDelta.x + forward.normalized * screenDelta.y) * GameConfig.current.game.cameraPanSpeed;
+		Vector3 targetPos = CameraManager.Instance.CameraParent.transform.position + move;
+
+		targetPos.x = Mathf.Clamp(targetPos.x, xLimits.x - GameConfig.current.game.cameraMovementBoundsOffset.x, xLimits.y + GameConfig.current.game.cameraMovementBoundsOffset.x);
+		targetPos.z = Mathf.Clamp(targetPos.z, zLimits.x - GameConfig.current.game.cameraMovementBoundsOffset.y, zLimits.y + GameConfig.current.game.cameraMovementBoundsOffset.y);
+
+		CameraManager.Instance.CameraParent.transform.position = targetPos;
+		m_fogRenderer.MarkDirty();
 	}
 
 	private void HandleCameraZoom ()

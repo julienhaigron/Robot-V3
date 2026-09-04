@@ -29,6 +29,7 @@ MonoBehaviour:
     cameraMovementBoundsOffset: {x: 7, y: 5}
     cameraZoomSpeed: 5
     cameraZoomBounds: {x: -5, y: 10.5}
+    cameraPanSpeed: 0.05
     entityFlankRatio:
       keys: 00000000010000000200000003000000
       values:

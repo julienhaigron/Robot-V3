@@ -529,6 +529,9 @@ public class TurnManager : Singleton<TurnManager>
 			freeActionType = m_currentModActionTypeSelected
 		};
 
+		m_currentEntityModAction = null;
+		m_currentModActionTypeSelected = EntityActionEnumID.Wait;
+
 		m_recordedActionInput[_entityID].Enqueue(recordedAction);
 		m_remainingActionToken[_entityID] -= _action.TotalDuration;
 
@@ -1146,7 +1149,8 @@ public class TurnManager : Singleton<TurnManager>
 
 	private void PlayActionTick ( RecordedAction _recordedAction )
 	{
-		if (_recordedAction.freeActionType != EntityActionEnumID.Wait
+		if (_recordedAction.freeAction != null
+			&& _recordedAction.freeActionType != EntityActionEnumID.Wait
 			&& _recordedAction.freeActionType != EntityActionEnumID.Unknowned
 			&& _recordedAction.action.IsPerformingAtTick(currentTick))
 		{

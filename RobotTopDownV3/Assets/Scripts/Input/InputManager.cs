@@ -19,6 +19,10 @@ public class InputManager : MonoBehaviour
 
 	private Vector3 m_mousePosition;
 
+	[SerializeField] private float m_rightClickDragThreshold = 8f;
+	private Vector2 m_rightClickStartScreenPosition;
+	private bool m_didRightClickStart;
+
 	private bool m_isLogConsoleOpen = false;
 	private Tile m_lastHoveredTile;
 
@@ -49,7 +53,24 @@ public class InputManager : MonoBehaviour
 
 	public void OnInteract ( InputAction.CallbackContext context )
 	{
-		if (context.started == false)
+		if (string.Equals(context.control.name, "rightButton"))
+		{
+			if (context.started)
+			{
+				m_rightClickStartScreenPosition = Input.mousePosition;
+				m_didRightClickStart = true;
+				return;
+			}
+
+			if (!context.canceled || !m_didRightClickStart)
+				return;
+
+			m_didRightClickStart = false;
+
+			if ((((Vector2)Input.mousePosition) - m_rightClickStartScreenPosition).sqrMagnitude > m_rightClickDragThreshold * m_rightClickDragThreshold)
+				return;
+		}
+		else if (context.started == false)
 			return;
 
 		if (HubManager.Instance != null)

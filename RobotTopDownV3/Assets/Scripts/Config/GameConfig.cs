@@ -46,6 +46,7 @@ public partial class GameConfig : ScriptableObject
 		public Vector2 cameraMovementBoundsOffset = new Vector2(7f, 1.75f);
 		public float cameraZoomSpeed;
 		public Vector2 cameraZoomBounds;
+		public float cameraPanSpeed = .05f;
 
 		[Title("Entity")]
 		public SerializableDictionary<Tile.TileDirectionType, float> entityFlankRatio = new();
