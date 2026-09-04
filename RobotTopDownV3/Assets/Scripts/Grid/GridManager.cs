@@ -402,7 +402,7 @@ public class GridManager : Singleton<GridManager>
 		{
 			case EntityActionData.AOEType.Circle:
 
-				tilesInRange.AddRange(GetTilesInVisionRange(_from, _minDistance, _maxDistance, false, _isThisTurn, false));
+				tilesInRange.AddRange(GetTilesInVisionRange(_from, _minDistance, _maxDistance, true, _isThisTurn, false));
 				break;
 			case EntityActionData.AOEType.Ray:
 
