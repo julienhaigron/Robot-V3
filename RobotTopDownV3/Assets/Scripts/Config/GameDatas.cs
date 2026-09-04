@@ -182,6 +182,42 @@ public partial class GameDatas : ScriptableObject
 			onNewDay?.Invoke();
 		}
 
+		public string CollectFinishedDayJobs ()
+		{
+			string report = "";
+
+			for (int i = 0; i < dayData.currentlyRecyclingComponents.Count; i++)
+			{
+				DayData.RecyclingComponentData data = dayData.currentlyRecyclingComponents[i];
+				if (data == null || data.component == null || string.IsNullOrEmpty(data.component.ID) || data.remainingTime > 0)
+					continue;
+
+				EntityEquipmentData componentData = data.component.GetData<EntityEquipmentData>();
+				report += componentData.displayName + " finished recycling \n";
+
+				System.Tuple<CurrencyType, ulong> sellingPrice = componentData.GetSellingPrice();
+				AddCurrency(sellingPrice.Item1, sellingPrice.Item2);
+				dayData.currentlyRecyclingComponents[i] = null;
+			}
+
+			for (int i = 0; i < dayData.repairingComponents.Count; i++)
+			{
+				DayData.RepairingUnitData data = dayData.repairingComponents[i];
+				if (data == null || data.unit == null || string.IsNullOrEmpty(data.unit.name) || data.remainingTime > 0)
+					continue;
+
+				report += data.unit.name + " finished repairing\n";
+
+				foreach (Component eq in data.unit.GetAllEquipments())
+					eq.isDamaged = false;
+
+				data.unit.isRepairing = false;
+				dayData.repairingComponents[i] = null;
+			}
+
+			return report;
+		}
+
 		[Serializable]
 		public class CycleData
 		{

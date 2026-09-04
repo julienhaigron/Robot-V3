@@ -88,7 +88,7 @@ public class SkipConfirmationPopup : AUIPopup
 		Close(_instant: true);
 		
 		//TODO : display all days past changes, not only previous day
-		UIManager.Instance.OpenPopup<ReturnToHubPopup>().Init();
+		UIManager.Instance.OpenPopup<ReturnToHubPopup>().Init(GameDatas.current.currentPlayerSave.CollectFinishedDayJobs());
 	}
 
 	private void OnClickClose ()

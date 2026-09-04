@@ -24,45 +24,9 @@ public class ReturnToHubPopup : AUIPopup
 			UIManager.Instance.OpenPanel<SelectMissionPanel>();
 	}
 
-	public void Init ()
+	public void Init ( string _dayReport )
 	{
-		string content = "content:\n";
-		for (int i = 0; i < GameDatas.current.currentPlayerSave.dayData.currentlyRecyclingComponents.Count; i++)
-		{
-			GameDatas.PlayerSave.DayData.RecyclingComponentData data = GameDatas.current.currentPlayerSave.dayData.currentlyRecyclingComponents[i];
-			if (data != null && data.component != null && !string.IsNullOrEmpty(data.component.ID))
-			{
-				EntityEquipmentData componentData = data.component.GetData<EntityEquipmentData>();
-				if (data.remainingTime <= 0)
-				{
-					content += componentData.displayName + " finished recycling \n";
-					System.Tuple<CurrencyType, ulong> sellingPrice = componentData.GetSellingPrice();
-					GameDatas.current.currentPlayerSave.AddCurrency(sellingPrice.Item1, sellingPrice.Item2);
-					GameDatas.current.currentPlayerSave.dayData.currentlyRecyclingComponents[i] = null;
-				}
-			}
-		}
-
-		for (int i = 0; i < GameDatas.current.currentPlayerSave.dayData.repairingComponents.Count; i++)
-		{
-			GameDatas.PlayerSave.DayData.RepairingUnitData data = GameDatas.current.currentPlayerSave.dayData.repairingComponents[i];
-			if (data != null && data.unit != null && !string.IsNullOrEmpty(data.unit.name))
-			{
-				//EntityEquipmentData componentData = data.unit.GetData<EntityEquipmentData>();
-				if (data.remainingTime <= 0)
-				{
-					content += data.unit.name + " finished repairing\n";
-					foreach(GameDatas.PlayerSave.Component eq in data.unit.GetAllEquipments())
-					{
-						eq.isDamaged = false;
-					}
-					data.unit.isRepairing = false;
-					GameDatas.current.currentPlayerSave.dayData.repairingComponents[i] = null;
-				}
-			}
-		}
-
-		m_contentTMP.text = content;
+		m_contentTMP.text = "content:\n" + _dayReport;
 	}
 
 }

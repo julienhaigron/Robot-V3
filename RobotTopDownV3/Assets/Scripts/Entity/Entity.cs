@@ -77,9 +77,6 @@ public class Entity : MonoBehaviour
 	public AEntityAction LastPerformedAction => m_lastPerformedAction;
 	//[SerializeField, ReadOnly] private bool m_isPerforming = false;
 
-	private HashSet<EntityActionEnumID> m_usedActionsThisGame = new();
-	public HashSet<EntityActionEnumID> UsedActionsThisGame => m_usedActionsThisGame;
-
 	public int ID;
 	//public int PlayerOwnerID;
 
@@ -134,7 +131,6 @@ public class Entity : MonoBehaviour
 		}
 
 		m_knownedStates.AddRange(GameAssets.current.game.states);
-		m_usedActionsThisGame.Clear();
 	}
 
 	private Dictionary<EntityActionEnumID, List<string>> GetAllActions ()
@@ -352,8 +348,7 @@ public class Entity : MonoBehaviour
 
 	public void StartPerformAction ( AEntityAction _action, EntityState _state )
 	{
-		if (!m_usedActionsThisGame.Contains(_action.enumID))
-			m_usedActionsThisGame.Add(_action.enumID);
+		TurnManager.Instance.TrackEntireGameAction(ID, _action.enumID);
 
 		if (!_action.Data.isModAction)
 		{

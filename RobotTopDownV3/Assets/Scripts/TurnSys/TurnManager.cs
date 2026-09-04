@@ -76,6 +76,14 @@ public class TurnManager : Singleton<TurnManager>
 		}
 	}
 
+	private Dictionary<int, EntireGameTrackedEvents> m_entireGameTrackedEventsPerEntity = new();
+	public Dictionary<int, EntireGameTrackedEvents> EntireGameTrackedEventsPerEntity => m_entireGameTrackedEventsPerEntity;
+	[Serializable]
+	public class EntireGameTrackedEvents
+	{
+		public HashSet<EntityActionEnumID> usedActions = new();
+	}
+
 	private List<RecordedEvent> m_inPlayEventBeingDone = new();
 	public class RecordedEvent
 	{
@@ -197,6 +205,8 @@ public class TurnManager : Singleton<TurnManager>
 			firstTimeEntityAttacked = -1,
 			traveledTileCountThisTurn = 0
 		});
+
+		m_entireGameTrackedEventsPerEntity.Add(_entity.ID, new EntireGameTrackedEvents());
 	}
 
 	private void OnActionDisplaySelected ( EntityActionDisplay _selectedDisplay, bool _isModAction )
@@ -232,6 +242,21 @@ public class TurnManager : Singleton<TurnManager>
 	{
 		currentTick = 0;
 		m_trackedEventsPerEntity.Clear();
+		m_entireGameTrackedEventsPerEntity.Clear();
+	}
+
+	public void TrackEntireGameAction ( int _entityID, EntityActionEnumID _actionType )
+	{
+		if (!m_entireGameTrackedEventsPerEntity.ContainsKey(_entityID))
+			m_entireGameTrackedEventsPerEntity.Add(_entityID, new EntireGameTrackedEvents());
+
+		m_entireGameTrackedEventsPerEntity[_entityID].usedActions.Add(_actionType);
+	}
+
+	public bool DidUseActionThisGame ( int _entityID, EntityActionEnumID _actionType )
+	{
+		return m_entireGameTrackedEventsPerEntity.ContainsKey(_entityID)
+			&& m_entireGameTrackedEventsPerEntity[_entityID].usedActions.Contains(_actionType);
 	}
 
 	#region Input phase

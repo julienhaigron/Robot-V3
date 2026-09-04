@@ -55,9 +55,9 @@ public class Condition
 				bool liveCheck4 = _entity.Displacement.TraveledTileTotalCount >= 12;
 				return isLive ? liveCheck4 : recordCheck4;
 			case ConditionType.DidNotUseThisGame:
-				bool recordCheck5 = !TurnManager.Instance.TrackedEventsPerEntity[_entity.ID].usedActionThisTurn.Contains(_action.enumID);
-				bool liveCheck5 = !_entity.UsedActionsThisGame.Contains(_action.enumID);
-				return isLive ? liveCheck5 : recordCheck5; 
+				bool liveCheck5 = !TurnManager.Instance.DidUseActionThisGame(_entity.ID, _action.enumID);
+				bool recordCheck5 = liveCheck5 && !TurnManager.Instance.TrackedEventsPerEntity[_entity.ID].usedActionThisTurn.Contains(_action.enumID);
+				return isLive ? liveCheck5 : recordCheck5;
 		}
 	}
 }
