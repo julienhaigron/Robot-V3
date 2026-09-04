@@ -25,7 +25,7 @@ MonoBehaviour:
   preparationAnimationKey: 
   afterPerformAnimationKey: 
   onPerformSingleAttackSFXID: 0
-  onSingleAttackHitSFXID: 0
+  onSingleAttackHitSFXID: 3
   conditionType: 0
   previousActionAttackModificator: 0
   type: 0

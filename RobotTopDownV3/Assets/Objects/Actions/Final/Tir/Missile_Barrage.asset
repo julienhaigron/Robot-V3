@@ -24,7 +24,7 @@ MonoBehaviour:
   isPlayedFirst: 1
   preparationAnimationKey: 
   afterPerformAnimationKey: 
-  onPerformSingleAttackSFXID: 0
+  onPerformSingleAttackSFXID: 5
   onSingleAttackHitSFXID: 0
   conditionType: 0
   previousActionAttackModificator: 0
