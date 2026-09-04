@@ -1,51 +1,47 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class BillboardManager : MonoBehaviour
 {
-	private HashSet<Billboard> m_currentBillboards = new();
+	private Quaternion m_lastTargetRot;
 
-	private static Quaternion m_targetRot;
 	public static Quaternion TargetRot
 	{
 		get
 		{
-			if (m_targetRot.eulerAngles == Vector3.zero)
-				m_targetRot = Camera.main.transform.rotation;
+			Camera camera = CameraManager.Instance != null ? CameraManager.Instance.Camera : Camera.main;
 
-			return m_targetRot;
+			return camera != null ? camera.transform.rotation : Quaternion.identity;
 		}
 	}
 
 	private void OnEnable ()
 	{
-		Billboard.onBillboardEnable += OnBillboardEnable;
-		Billboard.onBillboardDisable += OnBillboardDisable;
+		m_lastTargetRot = TargetRot;
+		UpdateAllBillboards();
 	}
 
-	private void OnDestroy ()
+	private void LateUpdate ()
 	{
-		Billboard.onBillboardEnable -= OnBillboardEnable;
-		Billboard.onBillboardDisable -= OnBillboardDisable;
-	}
+		Quaternion targetRot = TargetRot;
+		bool rotChanged = targetRot != m_lastTargetRot;
+		m_lastTargetRot = targetRot;
 
-	private void OnBillboardDisable ( Billboard _billboard )
-	{
-		m_currentBillboards.Remove(_billboard);
-	}
-
-	private void OnBillboardEnable ( Billboard _billboard )
-	{
-		m_currentBillboards.Add(_billboard);
-	}
-
-	private void Update ()
-	{
-		foreach (Billboard billboard in m_currentBillboards)
+		if (rotChanged)
 		{
-			billboard.SetRot();
+			UpdateAllBillboards();
+			return;
 		}
+
+		foreach (Billboard billboard in Billboard.ActiveBillboards)
+		{
+			if (billboard.UpdateAtRuntime)
+				billboard.SetRot();
+		}
+	}
+
+	public static void UpdateAllBillboards ()
+	{
+		foreach (Billboard billboard in Billboard.ActiveBillboards)
+			billboard.SetRot();
 	}
 }

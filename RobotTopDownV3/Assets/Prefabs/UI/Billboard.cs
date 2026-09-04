@@ -1,30 +1,28 @@
 using Sirenix.OdinInspector;
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class Billboard : MonoBehaviour
 {
-	public static Action<Billboard> onBillboardEnable;
-	public static Action<Billboard> onBillboardDisable;
+	private static readonly HashSet<Billboard> m_activeBillboards = new();
+	public static IReadOnlyCollection<Billboard> ActiveBillboards => m_activeBillboards;
 
 	[SerializeField] private bool m_updateAtRuntime;
 	[SerializeField] private bool m_updateOnEnable = true;
 
+	public bool UpdateAtRuntime => m_updateAtRuntime;
+
 	private void OnEnable ()
 	{
-		if (m_updateOnEnable)
+		m_activeBillboards.Add(this);
+
+		if (m_updateOnEnable || m_updateAtRuntime)
 			SetRot();
-		else if (m_updateAtRuntime)
-			onBillboardEnable?.Invoke(this);
 	}
 
 	private void OnDisable ()
 	{
-		if (m_updateAtRuntime)
-			onBillboardDisable?.Invoke(this);
+		m_activeBillboards.Remove(this);
 	}
 
 	[Button]
