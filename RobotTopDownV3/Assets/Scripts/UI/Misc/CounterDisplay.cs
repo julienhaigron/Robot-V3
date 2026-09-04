@@ -107,6 +107,22 @@ public class CounterDisplay : MonoBehaviour
 		m_currentAndFinalValuesInitialized = true;
 	}
 
+	public void SetOutline ( Color _color, float _width )
+	{
+		for (int i = 0; i < m_counterTextArray.Length; i++)
+		{
+			//Reading fontMaterial makes TMP instance the material, so the outline stays on this text only
+			m_counterTextArray[i].outlineColor = _color;
+			m_counterTextArray[i].outlineWidth = _width;
+		}
+	}
+
+	public void SetRawText ( string _text )
+	{
+		m_textTween?.Kill();
+		CounterText = _text;
+	}
+
 	void StopAllAnimation ()
 	{
 		m_textTween?.Kill(true);

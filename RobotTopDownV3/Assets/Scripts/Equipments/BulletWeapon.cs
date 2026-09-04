@@ -167,8 +167,11 @@ public class BulletWeapon : Weapon
 			SoundManager.Instance.Play(_attackAction.Data.onPerformSingleAttackSFXID);
 
 			bool isLastBullet = i == hitAmount - 1 && _attackIndex == _lastSuccessfullAttackIndex;
+			//A missed volley has no last bullet - _lastSuccessfullAttackIndex is -1 - so the miss feedback
+			//rides on the last bullet of this burst instead, to be shown once and not once per bullet.
+			Entity missedTarget = i == hitAmount - 1 ? _target.targetEntity : null;
 			m_bulletPool.Get<Projectile>(m_bulletPoint.position, m_bulletPoint.rotation).SetProjectileDataAndLaunch(bulletData
-				, ( impactTile ) => ApplyBulletImpact(impactTile, _attackAction, _attackInfo, isLastBullet), () => OnProjectileDespawn(isLastBullet), hasTrajectoryProjectileBuff);
+				, ( impactTile ) => ApplyBulletImpact(impactTile, _attackAction, _attackInfo, isLastBullet), () => OnProjectileDespawn(isLastBullet, missedTarget), hasTrajectoryProjectileBuff);
 
 			yield return m_timeBetweenBulletsWFS;
 		}
@@ -216,8 +219,11 @@ public class BulletWeapon : Weapon
 			EndAttack(m_lastPerformedAction);
 	}
 
-	private void OnProjectileDespawn ( bool _isLastBullet )
+	private void OnProjectileDespawn ( bool _isLastBullet, Entity _missedTarget )
 	{
+		//Projectile only calls this back when the bullet hit nothing at all, which is exactly a miss
+		ShowMissOn(_missedTarget);
+
 		if (_isLastBullet)
 			EndAttack(m_lastPerformedAction);
 	}

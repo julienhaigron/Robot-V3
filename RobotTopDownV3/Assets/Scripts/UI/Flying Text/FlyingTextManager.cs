@@ -3,11 +3,12 @@ using Sirenix.OdinInspector;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
-public class FlyingNumberManager : MonoBehaviour
+public class FlyingTextManager : MonoBehaviour
 {
 	[System.Serializable]
-	public class FlyingNumberConfig
+	public class FlyingTextConfig
 	{
 		public bool addPlusPrefixIfPositive = true;
 		public string prefix = "";
@@ -44,9 +45,15 @@ public class FlyingNumberManager : MonoBehaviour
 		//public GraphicColorAnimation.AnimationType defaultColorAnimation = GraphicColorAnimation.AnimationType.RedLimitedCountBlink;
 		public bool useAnimationCustomColor = false;
 		public Color customColorAnimation = Color.red;
+		[Space()]
+		public bool useOutline = true;
+		[ShowIf("@useOutline")]
+		public Color outlineColor = Color.black;
+		[ShowIf("@useOutline"), Range(0f, 1f)]
+		public float outlineWidth = .2f;
 
-		public FlyingNumberConfig () { }
-		public FlyingNumberConfig ( FlyingNumberConfig _ref )
+		public FlyingTextConfig () { }
+		public FlyingTextConfig ( FlyingTextConfig _ref )
 		{
 			addPlusPrefixIfPositive = _ref.addPlusPrefixIfPositive;
 			prefix = _ref.prefix;
@@ -75,27 +82,30 @@ public class FlyingNumberManager : MonoBehaviour
 			//defaultColorAnimation = _ref.defaultColorAnimation;
 			useAnimationCustomColor = _ref.useAnimationCustomColor;
 			customColorAnimation = _ref.customColorAnimation;
+			useOutline = _ref.useOutline;
+			outlineColor = _ref.outlineColor;
+			outlineWidth = _ref.outlineWidth;
 		}
 	}
 
-	public FlyingNumberConfig config;
+	public FlyingTextConfig config;
 
 	[Space()]
-	[InfoBox("both UI and world prefab ref set, plz choose one et remove the other", InfoMessageType.Warning, VisibleIf = "@m_flyingNumberPrefab != null && m_UIflyingNumberPrefab != null")]
-	[SerializeField] private UIFlyingNumber m_UIflyingNumberPrefab;
-	[SerializeField] private FlyingNumber m_flyingNumberPrefab;
+	[InfoBox("both UI and world prefab ref set, plz choose one et remove the other", InfoMessageType.Warning, VisibleIf = "@m_flyingTextPrefab != null && m_UIflyingTextPrefab != null")]
+	[SerializeField, FormerlySerializedAs("m_UIflyingNumberPrefab")] private UIFlyingText m_UIflyingTextPrefab;
+	[SerializeField, FormerlySerializedAs("m_flyingNumberPrefab")] private FlyingText m_flyingTextPrefab;
 	[SerializeField] private int m_poolBufferedSize = 1;
 	[Space()]
-	[SerializeField] private Transform m_flyingNumberParent;
-	[SerializeField, ReadOnly] private List<FlyingNumber> m_flyingNumberList;
+	[SerializeField, FormerlySerializedAs("m_flyingNumberParent")] private Transform m_flyingTextParent;
+	[SerializeField, ReadOnly, FormerlySerializedAs("m_flyingNumberList")] private List<FlyingText> m_flyingTextList;
 
-	[Button(), ShowIf("@m_flyingNumberList.Count > 0")]
-	void ClearFlyingList () { m_flyingNumberList.Clear(); }
+	[Button(), ShowIf("@m_flyingTextList.Count > 0")]
+	void ClearFlyingList () { m_flyingTextList.Clear(); }
 
 	private void Awake ()
 	{
 #if UNITY_EDITOR
-		if (m_flyingNumberPrefab != null && m_UIflyingNumberPrefab != null)
+		if (m_flyingTextPrefab != null && m_UIflyingTextPrefab != null)
 		{
 			Debug.LogWarning(gameObject.name + " flyingNumber has both UI and world prefab, plz choose one et remove the other");
 		}
@@ -103,24 +113,24 @@ public class FlyingNumberManager : MonoBehaviour
 
 		if (m_poolBufferedSize > 0)
 		{
-			if (m_flyingNumberPrefab != null)
+			if (m_flyingTextPrefab != null)
 			{
 				for (int i = 0; i < m_poolBufferedSize; i++)
 				{
-					FlyingNumber instance = Instantiate(m_flyingNumberPrefab, m_flyingNumberParent);
+					FlyingText instance = Instantiate(m_flyingTextPrefab, m_flyingTextParent);
 					instance.onFinished += OnInstanceFinished;
 					instance.OnHideFinished();
-					m_flyingNumberList.Add(instance);
+					m_flyingTextList.Add(instance);
 				}
 			}
-			else if (m_UIflyingNumberPrefab != null)
+			else if (m_UIflyingTextPrefab != null)
 			{
 				for (int i = 0; i < m_poolBufferedSize; i++)
 				{
-					FlyingNumber instance = Instantiate(m_UIflyingNumberPrefab, m_flyingNumberParent);
+					FlyingText instance = Instantiate(m_UIflyingTextPrefab, m_flyingTextParent);
 					instance.onFinished += OnInstanceFinished;
 					instance.OnHideFinished();
-					m_flyingNumberList.Add(instance);
+					m_flyingTextList.Add(instance);
 				}
 			}
 			else
@@ -136,9 +146,9 @@ public class FlyingNumberManager : MonoBehaviour
 		get
 		{
 			int count = 0;
-			for (int i = 0; i < m_flyingNumberList.Count; i++)
+			for (int i = 0; i < m_flyingTextList.Count; i++)
 			{
-				if (m_flyingNumberList[i].isPlaying)
+				if (m_flyingTextList[i].isPlaying)
 					count++;
 			}
 			return count;
@@ -150,9 +160,9 @@ public class FlyingNumberManager : MonoBehaviour
 		get
 		{
 			int count = 0;
-			for (int i = 0; i < m_flyingNumberList.Count; i++)
+			for (int i = 0; i < m_flyingTextList.Count; i++)
 			{
-				if (m_flyingNumberList[i].CurrentState == UIFlyingNumber.NumberState.Showing || m_flyingNumberList[i].CurrentState == UIFlyingNumber.NumberState.Idle)
+				if (m_flyingTextList[i].CurrentState == UIFlyingText.TextState.Showing || m_flyingTextList[i].CurrentState == UIFlyingText.TextState.Idle)
 					count++;
 			}
 			return count;
@@ -160,14 +170,31 @@ public class FlyingNumberManager : MonoBehaviour
 	}
 	private float m_currentOverlapOffset = 0f;
 
-	public void ShowNumber ( float _value, Sprite _iconSprite, bool _blink = false, bool _playPS = false, float _iconScale = 1f )
+	public void ShowText ( string _text, Color? _colorOverride = null, bool _blink = false, bool _playPS = false )
+	{
+		if (!gameObject.activeInHierarchy || string.IsNullOrEmpty(_text))
+			return;
+
+		TryHidingVisible();
+		FlyingText instance = GetTextInstance(_text.GetHashCode());
+		instance.config = new FlyingTextConfig(config);
+		instance.DisableIconAndSetMergeIndex(_text.GetHashCode());
+		instance.SetRawText(_text);
+		instance.SetColorOverride(_colorOverride);
+
+		InstanceDoAnimation(instance, 0f, _blink, _playPS);
+	}
+
+	public void ShowNumber ( float _value, Sprite _iconSprite, bool _blink = false, bool _playPS = false, float _iconScale = 1f, Color? _colorOverride = null )
 	{
 		if (!gameObject.activeInHierarchy)
 			return;
 
 		TryHidingVisible();
-		FlyingNumber instance = GetNumberInstance(_iconSprite.GetHashCode());
-		instance.config = new FlyingNumberConfig(config);
+		FlyingText instance = GetTextInstance(_iconSprite.GetHashCode());
+		instance.config = new FlyingTextConfig(config);
+		instance.SetRawText(null);
+		instance.SetColorOverride(_colorOverride);
 		instance.SetIconAndMergeIndex(_iconSprite, _iconScale);
 
 		InstanceDoAnimation(instance, _value, _blink, _playPS);
@@ -179,8 +206,10 @@ public class FlyingNumberManager : MonoBehaviour
 			return;
 
 		TryHidingVisible();
-		FlyingNumber instance = GetNumberInstance(_mergeIndex);
-		instance.config = new FlyingNumberConfig(config);
+		FlyingText instance = GetTextInstance(_mergeIndex);
+		instance.config = new FlyingTextConfig(config);
+		instance.SetRawText(null);
+		instance.SetColorOverride(null);
 		instance.DisableIconAndSetMergeIndex(_mergeIndex);
 
 		InstanceDoAnimation(instance, _value, _blink, _playPS);
@@ -191,7 +220,7 @@ public class FlyingNumberManager : MonoBehaviour
 		ShowNumber(_value, 0, _blink, _playPS);
 	}
 
-	void InstanceDoAnimation ( FlyingNumber _instance, float _value, bool _blink, bool _playPS )
+	void InstanceDoAnimation ( FlyingText _instance, float _value, bool _blink, bool _playPS )
 	{
 		if (config.yAddedOffsetOnOverLap > 0f && ShowOrIdleCount > 0)
 		{
@@ -207,34 +236,34 @@ public class FlyingNumberManager : MonoBehaviour
 	{
 		if (config.hideLastWhenSpawningNew)
 		{
-			for (int i = 0; i < m_flyingNumberList.Count; i++)
+			for (int i = 0; i < m_flyingTextList.Count; i++)
 			{
-				if (m_flyingNumberList[i].CurrentState == UIFlyingNumber.NumberState.Showing || m_flyingNumberList[i].CurrentState == UIFlyingNumber.NumberState.Idle)
-					m_flyingNumberList[i].SkipAndHide();
+				if (m_flyingTextList[i].CurrentState == UIFlyingText.TextState.Showing || m_flyingTextList[i].CurrentState == UIFlyingText.TextState.Idle)
+					m_flyingTextList[i].SkipAndHide();
 			}
 		}
 	}
 
-	FlyingNumber GetNumberInstance ( int _mergeIndex )
+	FlyingText GetTextInstance ( int _mergeIndex )
 	{
 		if (config.mergeVisibleNumbers)
 		{
-			for (int i = m_flyingNumberList.Count - 1; i >= 0; i--)
+			for (int i = m_flyingTextList.Count - 1; i >= 0; i--)
 			{
-				if (m_flyingNumberList[i].isMergable && m_flyingNumberList[i].MergeIndex == _mergeIndex) //mergable ?
-					return m_flyingNumberList[i];
+				if (m_flyingTextList[i].isMergable && m_flyingTextList[i].MergeIndex == _mergeIndex) //mergable ?
+					return m_flyingTextList[i];
 			}
 		}
 
-		for (int i = 0; i < m_flyingNumberList.Count; i++)
+		for (int i = 0; i < m_flyingTextList.Count; i++)
 		{
-			if (!m_flyingNumberList[i].isPlaying) //first is usable ?
-				return m_flyingNumberList[i];
+			if (!m_flyingTextList[i].isPlaying) //first is usable ?
+				return m_flyingTextList[i];
 		}
 
-		FlyingNumber instance = Instantiate((m_UIflyingNumberPrefab ?? m_flyingNumberPrefab), m_flyingNumberParent);
+		FlyingText instance = Instantiate((m_UIflyingTextPrefab ?? m_flyingTextPrefab), m_flyingTextParent);
 		instance.onFinished += OnInstanceFinished;
-		m_flyingNumberList.Add(instance);
+		m_flyingTextList.Add(instance);
 		return instance;
 	}
 

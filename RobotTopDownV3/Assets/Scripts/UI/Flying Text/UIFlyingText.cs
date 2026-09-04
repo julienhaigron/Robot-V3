@@ -7,7 +7,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
-public class UIFlyingNumber : FlyingNumber
+public class UIFlyingText : FlyingText
 {
 	[SerializeField] private CanvasGroup m_canvasGroup;
 	[SerializeField] private Canvas m_canvas;

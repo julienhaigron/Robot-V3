@@ -8,7 +8,7 @@ using UnityEngine;
 using Random = UnityEngine.Random;
 
 
-public class FlyingNumber : MonoBehaviour
+public class FlyingText : MonoBehaviour
 {
 	public Action onFinished;
 
@@ -27,8 +27,8 @@ public class FlyingNumber : MonoBehaviour
 	public bool isMergable;
 
 	[HideInInspector]
-	public FlyingNumberManager.FlyingNumberConfig config;
-	public enum NumberState
+	public FlyingTextManager.FlyingTextConfig config;
+	public enum TextState
 	{
 		Hidden,
 		Showing,
@@ -36,9 +36,25 @@ public class FlyingNumber : MonoBehaviour
 		Hiding,
 	}
 
-	protected NumberState m_currentState = NumberState.Hidden;
-	public NumberState CurrentState => m_currentState;
+	protected TextState m_currentState = TextState.Hidden;
+	public TextState CurrentState => m_currentState;
 	protected Transform MovedTfm => m_rectTfm == null ? m_movedTfm : m_rectTfm.transform;
+
+	protected string m_rawText;
+	public bool HasRawText => !string.IsNullOrEmpty(m_rawText);
+
+	public void SetRawText ( string _text )
+	{
+		m_rawText = _text;
+	}
+
+	//Null falls back on the colour of the manager config
+	protected Color? m_colorOverride;
+
+	public void SetColorOverride ( Color? _color )
+	{
+		m_colorOverride = _color;
+	}
 
 	protected int m_mergeIndex = -1; // 0 = default no icon //-1 = not used  only merge when match
 	public int MergeIndex => m_mergeIndex;
@@ -84,7 +100,7 @@ public class FlyingNumber : MonoBehaviour
 
 	public void ResetAtHiddenState ( float _yOverlapOffset, bool _playPS )
 	{
-		m_currentState = NumberState.Hidden;
+		m_currentState = TextState.Hidden;
 		m_currentTime = 0f;
 		isMergable = false;
 		isPlaying = false;
@@ -112,13 +128,16 @@ public class FlyingNumber : MonoBehaviour
 			m_counterTMP.fontMaterial = config.fontAsset;
 
 		//SetColor
-		m_counterDisplay.TextColor = config.textColor;
+		SetColors();
 
 		//set alpha
 		FadeAllAlphas(0f, 0f, config.ignoreTimeScale);
 
 		//set value
-		m_counterDisplay.SetValueInstant(0f, true, config.prefix, config.suffix, config.useEngineeringNotation, config.stringFormat);
+		if (HasRawText)
+			m_counterDisplay.SetRawText(m_rawText);
+		else
+			m_counterDisplay.SetValueInstant(0f, true, config.prefix, config.suffix, config.useEngineeringNotation, config.stringFormat);
 	}
 
 	protected virtual void MoveToNewPos ( Vector3 _newPos )
@@ -156,7 +175,10 @@ public class FlyingNumber : MonoBehaviour
 
 	protected void SetColors ()
 	{
-		m_counterDisplay.TextColor = config.textColor;
+		m_counterDisplay.TextColor = m_colorOverride ?? config.textColor;
+
+		if (config.useOutline)
+			m_counterDisplay.SetOutline(config.outlineColor, config.outlineWidth);
 	}
 
 	public void DoAnimation ( float _newValue, float _yOffset, bool _blink, bool _playPS )
@@ -183,7 +205,7 @@ public class FlyingNumber : MonoBehaviour
 
 	protected void DoMergeAnimation ( float _newValue, bool _blink, bool _playPS )
 	{
-		if (m_currentState == NumberState.Hiding)
+		if (m_currentState == TextState.Hiding)
 		{
 			m_fadeTween?.Kill();
 			FadeAllAlphas(1f, 0f, config.ignoreTimeScale);
@@ -193,6 +215,12 @@ public class FlyingNumber : MonoBehaviour
 		}
 
 		SetAngle();
+
+		if (HasRawText)
+		{
+			m_counterDisplay.SetRawText(m_rawText);
+			return;
+		}
 
 		bool diffIsEnoughToLaunchLoopUpdate = (_newValue > 0 && _newValue > 3) || (_newValue < 0 && _newValue < -3);
 		if (m_currentValue > 0)
@@ -222,7 +250,7 @@ public class FlyingNumber : MonoBehaviour
 		ResetAtHiddenState(_yOffset, _playPS);
 
 		//SHOW
-		m_currentState = NumberState.Showing;
+		m_currentState = TextState.Showing;
 		isMergable = true;
 		isPlaying = true;
 		FadeAllAlphas(1f, config.showDuration * (config.hideLastWhenSpawningNew ? 0.5f : 1f), config.ignoreTimeScale);
@@ -230,7 +258,14 @@ public class FlyingNumber : MonoBehaviour
 
 		//animate value
 		m_currentValue = _newValue;
-		if (!config.forceTextBurstUpdateOnShow)
+		if (HasRawText)
+		{
+			m_counterDisplay.SetRawText(m_rawText);
+
+			if (_playPS)
+				PlayBurstParticle();
+		}
+		else if (!config.forceTextBurstUpdateOnShow)
 			m_counterDisplay.UpdateValue(m_currentValue, null, _playPS, Prefix, config.suffix, config.useEngineeringNotation, config.stringFormat);
 		else
 		{
@@ -291,7 +326,7 @@ public class FlyingNumber : MonoBehaviour
 	protected IEnumerator IdleCR ( float _additionalTime = 0f )
 	{
 		//IDLE
-		m_currentState = NumberState.Idle;
+		m_currentState = TextState.Idle;
 
 		//in case of merge let show finish
 		while (m_moveTween.IsActive() && m_moveTween.IsPlaying())
@@ -318,7 +353,7 @@ public class FlyingNumber : MonoBehaviour
 
 	protected IEnumerator HideCR ()
 	{
-		m_currentState = NumberState.Hiding;
+		m_currentState = TextState.Hiding;
 
 		FadeAllAlphas(0f, config.hideDuration, config.ignoreTimeScale);
 
@@ -349,7 +384,7 @@ public class FlyingNumber : MonoBehaviour
 	public void OnHideFinished ()
 	{
 		m_currentValue = 0f;
-		m_currentState = NumberState.Hidden;
+		m_currentState = TextState.Hidden;
 		SetObjectEnable(false);
 		isPlaying = false;
 		m_playingCR = null;

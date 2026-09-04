@@ -146,7 +146,10 @@ public class Weapon : MonoBehaviour
 			m_user.Skin.OverrideAnimation(m_data.attackAnimationFailureId);
 
 		if (!_attackInfo.isAttackSuccessfull)
+		{
+			ShowMissOn(_attackAction.GetTargetEntityAt(_attackIndex));
 			yield break;
+		}
 
 		List<WeaponTarget> targets = GetTargets(_attackAction, _attackIndex);
 		Dictionary<WeaponEquipmentData.DamageType, int> damages = BuildDamageDictionary(_attackInfo);
@@ -305,6 +308,12 @@ public class Weapon : MonoBehaviour
 	}
 
 	#endregion
+
+	protected void ShowMissOn ( Entity _target )
+	{
+		if (_target != null && !_target.Equipment.IsDead)
+			_target.UI.ShowMissText();
+	}
 
 	protected virtual void EndAttack ( AttackAction _attackAction )
 	{
