@@ -972,7 +972,7 @@ public class TurnManager : Singleton<TurnManager>
 
 					returnActionToPlayThisRound.Enqueue(new RecordedAction()
 					{
-						timeAtStart = recordedAction.action.timeAtStart,
+						timeAtStart = resultInfo.replacedAction.timeAtStart,
 						type = resultInfo.replacedAction.enumID,
 						performingEntityID = resultInfo.replacedAction.performingEntityID,
 						action = resultInfo.replacedAction,

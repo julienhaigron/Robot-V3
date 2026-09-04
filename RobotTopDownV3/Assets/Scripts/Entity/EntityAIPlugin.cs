@@ -124,7 +124,7 @@ public class EntityAIPlugin : EntityPlugin
 			//  => shoot directly
 			m_lastEntitiesTargeted = enemies;
 
-			AttackAction attackAction = (TurnManager.Instance.GetAction(attackEnumID, m_linkedEntity.ID, equipmentID, _recordedAction.timeAtStart) as AttackAction);
+			AttackAction attackAction = (TurnManager.Instance.GetAction(attackEnumID, m_linkedEntity.ID, equipmentID, TurnManager.currentTick) as AttackAction);
 
 			if (attackAction == null)
 			{
@@ -149,7 +149,7 @@ public class EntityAIPlugin : EntityPlugin
 			attackAction.linkedEquipmentId = equipmentID;
 			attackAction.targetedEntityIDs = targetEntitiesID;
 			attackAction.targetTileIDs = targetTilesID;
-			attackAction.Init(GameAssets.current.game.entityActionsData[attackAction.enumID], equipmentID, m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID, _recordedAction.action.timeAtStart);
+			attackAction.Init(GameAssets.current.game.entityActionsData[attackAction.enumID], equipmentID, m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID, TurnManager.currentTick);
 			resultInfo.ReplaceAction(attackAction, "Has enemy in range, action replaced with " + attackAction);
 		}
 		else if (canMove && !hasEnemyInVisionRange && TryGetNextMovementTile(_recordedAction.action, out Tile nextMovementTile))
@@ -158,9 +158,9 @@ public class EntityAIPlugin : EntityPlugin
 			bool isAtCorrectOrientation = orientationTowardTarget == m_linkedEntity.Displacement.CurrentOrientation;
 			if (!isAtCorrectOrientation)
 			{
-				RotateEntityAction rotateAction = (TurnManager.Instance.GetAction(EntityActionEnumID.RotateEntity, m_linkedEntity.ID, null, _recordedAction.timeAtStart) as RotateEntityAction);
+				RotateEntityAction rotateAction = (TurnManager.Instance.GetAction(EntityActionEnumID.RotateEntity, m_linkedEntity.ID, null, TurnManager.currentTick) as RotateEntityAction);
 				rotateAction.targetedOrientationID = new int[1] { orientationTowardTarget };
-				rotateAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.RotateEntity], null, m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID, _recordedAction.action.timeAtStart);
+				rotateAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.RotateEntity], null, m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID, TurnManager.currentTick);
 				resultInfo.ReplaceFreeAction(rotateAction, null);
 			}
 		}
@@ -179,9 +179,9 @@ public class EntityAIPlugin : EntityPlugin
 				{
 					if (!isAtCorrectOrientation)
 					{
-						RotateEntityAction rotateAction = (TurnManager.Instance.GetAction(EntityActionEnumID.RotateEntity, m_linkedEntity.ID, null, _recordedAction.timeAtStart) as RotateEntityAction);
+						RotateEntityAction rotateAction = (TurnManager.Instance.GetAction(EntityActionEnumID.RotateEntity, m_linkedEntity.ID, null, TurnManager.currentTick) as RotateEntityAction);
 						rotateAction.targetedOrientationID = new int[1] { orientationTowardTarget };
-						rotateAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.RotateEntity], null, m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID, _recordedAction.action.timeAtStart);
+						rotateAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.RotateEntity], null, m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID, TurnManager.currentTick);
 						resultInfo.ReplaceFreeAction(rotateAction, "Rotates toward target");
 					}
 				}
@@ -215,17 +215,17 @@ public class EntityAIPlugin : EntityPlugin
 
 					if (tileIDs.Count > 0)
 					{
-						MoveToTargetAction moveToAction = (TurnManager.Instance.GetAction(movementAction.enumID, m_linkedEntity.ID, null, _recordedAction.timeAtStart) as MoveToTargetAction);
+						MoveToTargetAction moveToAction = (TurnManager.Instance.GetAction(movementAction.enumID, m_linkedEntity.ID, null, TurnManager.currentTick) as MoveToTargetAction);
 						moveToAction.mode = MoveToTargetAction.MoveActionMode.Coordinate;
 						moveToAction.targetTileID = firingTile.coordinates.ID;
 						moveToAction.targetTileIDs = tileIDs.ToArray();
-						moveToAction.Init(GameAssets.current.game.entityActionsData[movementAction.enumID], null, m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID, _recordedAction.action.timeAtStart);
+						moveToAction.Init(GameAssets.current.game.entityActionsData[movementAction.enumID], null, m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID, TurnManager.currentTick);
 						resultInfo.ReplaceAction(moveToAction, "Gets in position to shoot target");
 					}
 					else
 					{
-						WaitAction waitAction = (TurnManager.Instance.GetAction(EntityActionEnumID.Wait, m_linkedEntity.ID, null, _recordedAction.timeAtStart) as WaitAction);
-						waitAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.Wait], null, m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID, _recordedAction.action.timeAtStart);
+						WaitAction waitAction = (TurnManager.Instance.GetAction(EntityActionEnumID.Wait, m_linkedEntity.ID, null, TurnManager.currentTick) as WaitAction);
+						waitAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.Wait], null, m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID, TurnManager.currentTick);
 						resultInfo.ReplaceAction(waitAction, "Already in position to shoot target");
 					}
 
@@ -248,9 +248,9 @@ public class EntityAIPlugin : EntityPlugin
 
 					if (firingOrientation != m_linkedEntity.Displacement.CurrentOrientation)
 					{
-						RotateEntityAction rotateAction = (TurnManager.Instance.GetAction(EntityActionEnumID.RotateEntity, m_linkedEntity.ID, null, _recordedAction.timeAtStart) as RotateEntityAction);
+						RotateEntityAction rotateAction = (TurnManager.Instance.GetAction(EntityActionEnumID.RotateEntity, m_linkedEntity.ID, null, TurnManager.currentTick) as RotateEntityAction);
 						rotateAction.targetedOrientationID = new int[1] { firingOrientation };
-						rotateAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.RotateEntity], null, m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID, _recordedAction.action.timeAtStart);
+						rotateAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.RotateEntity], null, m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID, TurnManager.currentTick);
 						resultInfo.ReplaceFreeAction(rotateAction, "Rotate to shoot target");
 					}
 				}
@@ -261,9 +261,9 @@ public class EntityAIPlugin : EntityPlugin
 				if (!isAtCorrectOrientation)
 				{
 					TargetEntity(closestEntity);
-					RotateEntityAction rotateAction = (TurnManager.Instance.GetAction(EntityActionEnumID.RotateEntity, m_linkedEntity.ID, null, _recordedAction.timeAtStart) as RotateEntityAction);
+					RotateEntityAction rotateAction = (TurnManager.Instance.GetAction(EntityActionEnumID.RotateEntity, m_linkedEntity.ID, null, TurnManager.currentTick) as RotateEntityAction);
 					rotateAction.targetedOrientationID = orientationTowardTarget;
-					rotateAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.RotateEntity], null, m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID, _recordedAction.action.timeAtStart);
+					rotateAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.RotateEntity], null, m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID, TurnManager.currentTick);
 					resultInfo.ReplaceFreeAction(rotateAction, "Unit in vision but not in correct orientation");
 				}
 
@@ -302,9 +302,9 @@ public class EntityAIPlugin : EntityPlugin
 
 	private WaitAction GetWaitActionFor ( TurnManager.RecordedAction _recordedAction )
 	{
-		WaitAction waitAction = TurnManager.Instance.GetAction(EntityActionEnumID.Wait, m_linkedEntity.ID, null, _recordedAction.timeAtStart) as WaitAction;
+		WaitAction waitAction = TurnManager.Instance.GetAction(EntityActionEnumID.Wait, m_linkedEntity.ID, null, TurnManager.currentTick) as WaitAction;
 		waitAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.Wait], null, m_linkedEntity.ID
-			, _recordedAction.action.supposedPositionAtActionStartID, _recordedAction.action.timeAtStart);
+			, _recordedAction.action.supposedPositionAtActionStartID, TurnManager.currentTick);
 		return waitAction;
 	}
 
@@ -629,11 +629,11 @@ public class EntityAIPlugin : EntityPlugin
 
 		m_lastEntitiesTargeted = targets;
 
-		AEntityAction targetedAction = TurnManager.Instance.GetAction(action.enumID, m_linkedEntity.ID, action.linkedEquipmentId, _recordedAction.timeAtStart);
+		AEntityAction targetedAction = TurnManager.Instance.GetAction(action.enumID, m_linkedEntity.ID, action.linkedEquipmentId, TurnManager.currentTick);
 		if (targetedAction == null)
 			return false;
 
-		targetedAction.Init(action.Data, action.linkedEquipmentId, m_linkedEntity.ID, action.supposedPositionAtActionStartID, action.timeAtStart);
+		targetedAction.Init(action.Data, action.linkedEquipmentId, m_linkedEntity.ID, action.supposedPositionAtActionStartID, TurnManager.currentTick);
 		FillActionTargets(targetedAction, targets, from, out int[] targetTileIDs, out int[] targetedEntityIDs);
 		targetedAction.SetResolvedTargets(targetTileIDs, targetedEntityIDs);
 		_resultInfo.ReplaceAction(targetedAction, action.enumID + " targets " + targets[0].Data.name);
@@ -647,9 +647,9 @@ public class EntityAIPlugin : EntityPlugin
 				rotateEnumID = EntityActionEnumID.RotateEntity;
 			}
 
-			RotateEntityAction rotateAction = TurnManager.Instance.GetAction(rotateEnumID, m_linkedEntity.ID, null, _recordedAction.timeAtStart) as RotateEntityAction;
+			RotateEntityAction rotateAction = TurnManager.Instance.GetAction(rotateEnumID, m_linkedEntity.ID, null, TurnManager.currentTick) as RotateEntityAction;
 			rotateAction.Init(GameAssets.current.game.entityActionsData[rotateEnumID], null, m_linkedEntity.ID
-				, action.supposedPositionAtActionStartID, action.timeAtStart);
+				, action.supposedPositionAtActionStartID, TurnManager.currentTick);
 
 			rotateAction.targetedOrientationID = new int[1] { orientation };
 			rotateAction.SetResolvedTargets(targetTileIDs, targetedEntityIDs);
