@@ -622,6 +622,9 @@ public class PlayerController : Singleton<PlayerController>
 	private void OnAnyEntityDeath ( Entity _entity )
 	{
 		m_ghostEntities.Remove(_entity.ID);
+
+		if (m_selectedEntity == _entity)
+			SelectEntity(null);
 	}
 
 	#endregion

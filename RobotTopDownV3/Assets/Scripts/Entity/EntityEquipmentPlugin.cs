@@ -154,6 +154,9 @@ public class EntityEquipmentPlugin : EntityPlugin
 
 	private void OnEntitySelected ()
 	{
+		if (m_isDead)
+			return;
+
 		foreach (WeaponCone weaponCone in m_weaponConeDictionary.Values)
 		{
 			weaponCone.ActivateActiveCone();
@@ -162,9 +165,23 @@ public class EntityEquipmentPlugin : EntityPlugin
 
 	private void OnEntityDeselected ()
 	{
+		if (m_isDead)
+		{
+			DisableWeaponCones();
+			return;
+		}
+
 		foreach (WeaponCone weaponCone in m_weaponConeDictionary.Values)
 		{
 			weaponCone.ActivateUnactiveCone();
+		}
+	}
+
+	private void DisableWeaponCones ()
+	{
+		foreach (WeaponCone weaponCone in m_weaponConeDictionary.Values)
+		{
+			weaponCone.DisableAllCones();
 		}
 	}
 
@@ -566,6 +583,8 @@ public class EntityEquipmentPlugin : EntityPlugin
 		m_isDead = true;
 		onDeath?.Invoke(m_linkedEntity.ID);
 		onAnyEntityDeath?.Invoke(m_linkedEntity);
+
+		DisableWeaponCones();
 	}
 
 	#endregion

@@ -18,12 +18,14 @@ public class UnitMacroDisplay : MonoBehaviour
 	{
 		m_btn.onClick += OnClickSelect;
 		PlayerController.onEntitySelected += OnEntitySelected;
+		EntityEquipmentPlugin.onAnyEntityDeath += OnAnyEntityDeath;
 	}
 
 	private void OnDestroy ()
 	{
 		m_btn.onClick -= OnClickSelect;
 		PlayerController.onEntitySelected -= OnEntitySelected;
+		EntityEquipmentPlugin.onAnyEntityDeath -= OnAnyEntityDeath;
 	}
 
 	public void Init ( Entity _entity)
@@ -31,6 +33,7 @@ public class UnitMacroDisplay : MonoBehaviour
 		m_selectedHighlightGO.SetActive(false);
 		m_iconImg.sprite = _entity.Data.FrameData.icon;
 		m_linkedEntity = _entity;
+		m_btn.SetInteractability(!_entity.Equipment.IsDead);
 	}
 
 	public void Show ()
@@ -46,6 +49,15 @@ public class UnitMacroDisplay : MonoBehaviour
 	private void OnClickSelect ()
 	{
 		PlayerController.Instance.SelectEntity(m_linkedEntity);
+	}
+
+	private void OnAnyEntityDeath ( Entity _entity )
+	{
+		if (m_linkedEntity == null || _entity != m_linkedEntity)
+			return;
+
+		m_selectedHighlightGO.SetActive(false);
+		m_btn.SetInteractability(false);
 	}
 
 	private void OnEntitySelected (int? _entityID)
