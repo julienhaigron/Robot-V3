@@ -611,6 +611,35 @@ public class TurnManager : Singleton<TurnManager>
 		return false;
 	}
 
+	public bool HasRotationFreeActionThisTick ( int _entityID )
+	{
+		if (m_actionsToPlay.ContainsKey(_entityID) && m_actionsToPlay[_entityID] != null)
+		{
+			foreach (RecordedAction recordedAction in m_actionsToPlay[_entityID])
+			{
+				if (recordedAction.action.IsPerformingAtTick(currentTick))
+					return IsRotationFreeAction(recordedAction);
+			}
+		}
+
+		if (m_actionsBeingDone.ContainsKey(_entityID) && m_actionsBeingDone[_entityID] != null)
+		{
+			RecordedAction actionBeingDone = m_actionsBeingDone[_entityID].Item1;
+			if (actionBeingDone.action.IsPerformingAtTick(currentTick))
+				return IsRotationFreeAction(actionBeingDone);
+		}
+
+		return false;
+	}
+
+	private bool IsRotationFreeAction ( RecordedAction _recordedAction )
+	{
+		return _recordedAction.freeAction != null
+			&& _recordedAction.freeActionType != EntityActionEnumID.Wait
+			&& _recordedAction.freeActionType != EntityActionEnumID.Unknowned
+			&& _recordedAction.freeAction.Data.type == EntityActionData.ActionType.Rotation;
+	}
+
 	public int GetLastRegisteredPositionOfEntity ( int _entityID )
 	{
 		if (!m_recordedActionInput.ContainsKey(_entityID) || m_recordedActionInput[_entityID] == null || m_recordedActionInput[_entityID].Count == 0)

@@ -99,7 +99,7 @@ public class EntityDisplacementPlugin : EntityPlugin
 		if(m_coordinate.GetTile().GetEntity(false) == m_linkedEntity)
 			m_coordinate.GetTile().SetEntity(null, _isThisTurn: false);
 
-		if(m_linkedEntity.AI.LastTargetedEntities == null)
+		if (ShouldFaceMovementDirection())
 			Rotate(tile, GameConfig.current.game.actionDuration);
 			//Rotate(tile, Mathf.Max(GameConfig.current.game.entityRotationDuration, GameConfig.current.game.actionDuration));
 
@@ -140,7 +140,7 @@ public class EntityDisplacementPlugin : EntityPlugin
 		if (m_coordinate.GetTile().GetEntity(false) == m_linkedEntity)
 			m_coordinate.GetTile().SetEntity(null, _isThisTurn: false);
 
-		if (m_linkedEntity.AI.LastTargetedEntities == null)
+		if (ShouldFaceMovementDirection())
 			Rotate(tile, GameConfig.current.game.actionDuration);
 		//Rotate(tile, Mathf.Max(GameConfig.current.game.entityRotationDuration, GameConfig.current.game.actionDuration));
 
@@ -159,6 +159,11 @@ public class EntityDisplacementPlugin : EntityPlugin
 		onMovementDoneAction?.Invoke();
 		onAnyEntityMovement?.Invoke(m_linkedEntity);
 		return m_movementTween;
+	}
+
+	private bool ShouldFaceMovementDirection ()
+	{
+		return TurnManager.Instance == null || !TurnManager.Instance.HasRotationFreeActionThisTick(m_linkedEntity.ID);
 	}
 
 	public void Rotate ( int _orientation, float _duration = 0f, System.Action _onEndPerform = null )

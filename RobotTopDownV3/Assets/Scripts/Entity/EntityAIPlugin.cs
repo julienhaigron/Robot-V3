@@ -149,9 +149,9 @@ public class EntityAIPlugin : EntityPlugin
 			attackAction.Init(GameAssets.current.game.entityActionsData[attackAction.enumID], equipmentID, m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID, _recordedAction.action.timeAtStart);
 			resultInfo.ReplaceAction(attackAction, "Has enemy in range, action replaced with " + attackAction);
 		}
-		else if (canMove && !hasEnemyInVisionRange)
+		else if (canMove && !hasEnemyInVisionRange && TryGetNextMovementTile(_recordedAction.action, out Tile nextMovementTile))
 		{
-			int orientationTowardTarget = GridManager.Instance.GetClosestOrientation(m_linkedEntity.Displacement.Coordinates.GetTile(), GridManager.Instance.Tiles[_recordedAction.action.positionAtActionEndID]);
+			int orientationTowardTarget = GridManager.Instance.GetClosestOrientation(m_linkedEntity.Displacement.Coordinates.GetTile(), nextMovementTile);
 			bool isAtCorrectOrientation = orientationTowardTarget == m_linkedEntity.Displacement.CurrentOrientation;
 			if (!isAtCorrectOrientation)
 			{
@@ -280,6 +280,21 @@ public class EntityAIPlugin : EntityPlugin
 			resultInfo.ReplaceAction(GetWaitActionFor(_recordedAction), "No target in reach for " + _recordedAction.type);
 
 		return resultInfo;
+	}
+
+	private bool TryGetNextMovementTile ( AEntityAction _action, out Tile _tile )
+	{
+		_tile = null;
+
+		int destinationID = _action is MoveToTargetAction moveAction && moveAction.targetTileIDs != null && moveAction.targetTileIDs.Length > 0
+			? moveAction.targetTileIDs[0]
+			: _action.positionAtActionEndID;
+
+		if (destinationID < 0 || destinationID == m_linkedEntity.Displacement.Coordinates.ID)
+			return false;
+
+		_tile = GridManager.Instance.Tiles[destinationID];
+		return true;
 	}
 
 	private WaitAction GetWaitActionFor ( TurnManager.RecordedAction _recordedAction )
@@ -598,7 +613,7 @@ public class EntityAIPlugin : EntityPlugin
 
 	public void TargetEntity ( Entity _targetedEntity )
 	{
-		m_lastEntitiesTargeted = new() { _targetedEntity };
+		m_lastEntitiesTargeted = _targetedEntity == null ? new() : new() { _targetedEntity };
 	}
 
 	private bool TryResolveEntityTarget ( TurnManager.RecordedAction _recordedAction, ref CheckActionResultInfo _resultInfo )
