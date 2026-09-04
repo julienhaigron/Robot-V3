@@ -417,6 +417,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: dd2a378f66213fb4182ff44e937dd00a, type: 2}
   - {fileID: 11400000, guid: 6ec7c3bd1e4016444801a97fe18cc21a, type: 2}
   - {fileID: 11400000, guid: a06db61f4d4efb443a74263e65e896ce, type: 2}
+  - {fileID: 11400000, guid: c4051b3e629be3e4cb705d71986f995f, type: 2}
+  - {fileID: 11400000, guid: bae268804309e4a4383e6d6ca07a9aff, type: 2}
 --- !u!1 &4980921478567790642
 GameObject:
   m_ObjectHideFlags: 0
@@ -830,18 +832,22 @@ MonoBehaviour:
       ID: 
       dataID: 
       isDamaged: 0
+      acquisitionDateTicks: 0
     reactor:
       ID: 
       dataID: 
       isDamaged: 0
+      acquisitionDateTicks: 0
     neuronalMembrane:
       ID: 
       dataID: 
       isDamaged: 0
+      acquisitionDateTicks: 0
     brain:
       ID: 
       dataID: 
       isDamaged: 0
+      acquisitionDateTicks: 0
     arms: []
     auxiliar: []
     chipsets: []
@@ -855,18 +861,22 @@ MonoBehaviour:
       ID: 
       dataID: 
       isDamaged: 0
+      acquisitionDateTicks: 0
     reactor:
       ID: 
       dataID: 
       isDamaged: 0
+      acquisitionDateTicks: 0
     neuronalMembrane:
       ID: 
       dataID: 
       isDamaged: 0
+      acquisitionDateTicks: 0
     brain:
       ID: 
       dataID: 
       isDamaged: 0
+      acquisitionDateTicks: 0
     arms: []
     auxiliar: []
     chipsets: []
@@ -883,6 +893,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 28ebd5aff9cbc684ea31eea78d941dc3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_rightClickDragThreshold: 8
 --- !u!114 &4616643392036083610
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1002,6 +1013,7 @@ MonoBehaviour:
   m_inputActions: {fileID: -944628639613478452, guid: 2da90cdffd3702b458769b7a7a8aaf67, type: 3}
   m_aoePreviewColor: {r: 1, g: 0.5, b: 0, a: 1}
   m_rangePreviewColor: {r: 0, g: 0.37551665, b: 1, a: 1}
+  m_movementRangePreviewColor: {r: 0, g: 1, b: 0, a: 1}
 --- !u!114 &2601377726672517245
 MonoBehaviour:
   m_ObjectHideFlags: 0
