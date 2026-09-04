@@ -227,10 +227,21 @@ public class EntityAIPlugin : EntityPlugin
 					}
 
 					Tile orientationFrom = tileIDs.Count > 0 ? GridManager.Instance.Tiles[tileIDs[^1]] : from;
-					Tile orientationTo = GridManager.Instance.Tiles[TurnManager.Instance.GetEntityPositionAtEndOfTick(closestEntity.ID, targetTile.coordinates.ID)];
-					int firingOrientation = orientationTo == orientationFrom
-						? m_linkedEntity.Displacement.CurrentOrientation
-						: GridManager.Instance.GetClosestOrientation(orientationFrom, orientationTo);
+					int firingOrientation;
+
+					if (CanFireFrom(orientationFrom, closestEntity, true))
+					{
+						Tile orientationTo = GridManager.Instance.Tiles[TurnManager.Instance.GetEntityPositionAtEndOfTick(closestEntity.ID, targetTile.coordinates.ID)];
+						firingOrientation = orientationTo == orientationFrom
+							? m_linkedEntity.Displacement.CurrentOrientation
+							: GridManager.Instance.GetClosestOrientation(orientationFrom, orientationTo);
+					}
+					else
+					{
+						firingOrientation = orientationFrom == from
+							? m_linkedEntity.Displacement.CurrentOrientation
+							: GridManager.Instance.GetClosestOrientation(from, orientationFrom);
+					}
 
 					if (firingOrientation != m_linkedEntity.Displacement.CurrentOrientation)
 					{
