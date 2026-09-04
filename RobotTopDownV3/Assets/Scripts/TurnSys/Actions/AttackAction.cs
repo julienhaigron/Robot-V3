@@ -157,25 +157,22 @@ public class AttackAction : AEntityAction
 
 				}
 
-				if (targetEntity != null)
+				Dictionary<WeaponEquipmentData.DamageType, int> damagesDealt =
+					PerformingEntity.Equipment.Weapons[linkedEquipmentId].GetDamages(PerformingEntity, targetEntity, this
+						, GetExchangeResultAgainst(targetEntity), attackInfo.isAttackSuccessfull);
+
+				if (coverHitted != null)
+					coverHitted.Wall.RegisterDamage(damagesDealt);
+
+				List<int> tmpDamages = new();
+				List<short> tmpDamageTypes = new();
+				foreach (KeyValuePair<WeaponEquipmentData.DamageType, int> pair in damagesDealt)
 				{
-					Dictionary<WeaponEquipmentData.DamageType, int> damagesDealt =
-						PerformingEntity.Equipment.Weapons[linkedEquipmentId].GetDamages(PerformingEntity, targetEntity, this
-							, GetExchangeResultAgainst(targetEntity), attackInfo.isAttackSuccessfull);
-
-					if (coverHitted != null)
-						coverHitted.Wall.RegisterDamage(damagesDealt);
-
-					List<int> tmpDamages = new();
-					List<short> tmpDamageTypes = new();
-					foreach (KeyValuePair<WeaponEquipmentData.DamageType, int> pair in damagesDealt)
-					{
-						tmpDamages.Add(pair.Value);
-						tmpDamageTypes.Add((short)pair.Key);
-					}
-					attackInfo.damages = tmpDamages.ToArray();
-					attackInfo.damageTypes = tmpDamageTypes.ToArray();
+					tmpDamages.Add(pair.Value);
+					tmpDamageTypes.Add((short)pair.Key);
 				}
+				attackInfo.damages = tmpDamages.ToArray();
+				attackInfo.damageTypes = tmpDamageTypes.ToArray();
 			}
 		}
 		else if (targetedEntityIDs != null)

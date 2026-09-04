@@ -332,10 +332,14 @@ public class Weapon : MonoBehaviour
 	{
 		Dictionary<WeaponEquipmentData.DamageType, int> damages = new();
 		bool didWinPFC = _pfcResultType == EntityActionData.PFCResultType.FirstWins;
-		float flankMod = GameConfig.current.game.entityFlankRatio[GridManager.Instance.GetHitTileSide(_user, _target, didWinPFC)];
+		bool hasTarget = _target != null;
+		string targetName = hasTarget ? _target.ID.ToString() : "tile";
+		float flankMod = GameConfig.current.game.entityFlankRatio[hasTarget
+			? GridManager.Instance.GetHitTileSide(_user, _target, didWinPFC)
+			: Tile.TileDirectionType.Front];
 		StringBuilder detailsBuilder = new();
 
-		detailsBuilder.AppendLine($"<b>{_user.ID}</b> => <b>{_target.ID}</b>");
+		detailsBuilder.AppendLine($"<b>{_user.ID}</b> => <b>{targetName}</b>");
 		detailsBuilder.AppendLine();
 
 		foreach (KeyValuePair<WeaponEquipmentData.DamageType, int> pair in _action.Data.baseDamages)
@@ -356,8 +360,8 @@ public class Weapon : MonoBehaviour
 				 + (_user.Equipment.ApplyedDamageTypeBuffs.ContainsKey(pair.Key)
 					? _user.Equipment.ApplyedDamageTypeBuffs[pair.Key]
 					: 0f)
-				- _target.GetAdditionaryStatBonus(resistanceTypeStatType, null)
-				- (_target.Equipment.ApplyedDamageTypeResistance.ContainsKey(pair.Key)
+				- (hasTarget ? _target.GetAdditionaryStatBonus(resistanceTypeStatType, null) : 0f)
+				- (hasTarget && _target.Equipment.ApplyedDamageTypeResistance.ContainsKey(pair.Key)
 					? _target.Equipment.ApplyedDamageTypeResistance[pair.Key]
 					: 0f);
 			typeBuff = Mathf.Max(typeBuff, -1f);
@@ -370,8 +374,8 @@ public class Weapon : MonoBehaviour
 				+ (_user.Equipment.ApplyedDamageCategoryBuffs.ContainsKey(category)
 					? _user.Equipment.ApplyedDamageCategoryBuffs[category]
 					: 0f)
-				- _target.GetAdditionaryStatBonus(resistanceCategoryStatType, null)
-				- (_target.Equipment.ApplyedDamageTypeCategoryResitance.ContainsKey(category)
+				- (hasTarget ? _target.GetAdditionaryStatBonus(resistanceCategoryStatType, null) : 0f)
+				- (hasTarget && _target.Equipment.ApplyedDamageTypeCategoryResitance.ContainsKey(category)
 					? _target.Equipment.ApplyedDamageTypeCategoryResitance[category]
 					: 0f);
 
@@ -380,7 +384,7 @@ public class Weapon : MonoBehaviour
 			float generalDamage =
 				Mathf.Max(
 					_user.Equipment.GeneralDamageBuff + _user.GetAdditionaryStatBonus(EntityEquipmentData.SecondaryStat.StatType.GeneralDamageBonus, _action)
-					- _target.Equipment.GeneralDamageResistance - _target.GetAdditionaryStatBonus(EntityEquipmentData.SecondaryStat.StatType.GeneralDamageResistance, null),
+					- (hasTarget ? _target.Equipment.GeneralDamageResistance + _target.GetAdditionaryStatBonus(EntityEquipmentData.SecondaryStat.StatType.GeneralDamageResistance, null) : 0f),
 					-1f
 				);
 
@@ -388,7 +392,7 @@ public class Weapon : MonoBehaviour
 				Mathf.Max(
 					flankMod
 					+ _user.Data.GetStatBonusFromAll(EntityEquipmentData.SecondaryStat.StatType.FlankDamageBonus) + _user.GetAdditionaryStatBonus(EntityEquipmentData.SecondaryStat.StatType.FlankDamageBonus, _action)
-					- _target.Data.GetStatBonusFromAll(EntityEquipmentData.SecondaryStat.StatType.FlankResistance) - _target.GetAdditionaryStatBonus(EntityEquipmentData.SecondaryStat.StatType.FlankResistance, null),
+					- (hasTarget ? _target.Data.GetStatBonusFromAll(EntityEquipmentData.SecondaryStat.StatType.FlankResistance) + _target.GetAdditionaryStatBonus(EntityEquipmentData.SecondaryStat.StatType.FlankResistance, null) : 0f),
 					-1f
 				);
 
@@ -427,8 +431,8 @@ public class Weapon : MonoBehaviour
 		LogConsole.LogDetails details = new("damage_" + LogConsole.Instance.LogsDetails.Keys.Count, "Damage Details", detailsDescription);
 		//Nothing is applied here, this only works the numbers out: a miss must not read as a hit in the log.
 		LogConsole.AddLog(_isAttackSuccessful
-			? _target.ID + " takes damages from " + _user.ID
-			: _user.ID + " deals no damage to " + _target.ID + ", attack failed"
+			? targetName + " takes damages from " + _user.ID
+			: _user.ID + " deals no damage to " + targetName + ", attack failed"
 			, LogConsole.LogEventType.Damage, details);
 
 		return damages;

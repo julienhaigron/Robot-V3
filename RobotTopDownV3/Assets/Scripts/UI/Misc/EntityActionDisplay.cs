@@ -124,13 +124,22 @@ public class EntityActionDisplay :
 
 	public void OnPointerEnter ( PointerEventData eventData )
 	{
-		if (m_selectedDisplay == this || m_recordedAction == null || TurnManager.Instance.currentPhase != TurnManager.TurnPhase.Recording || !gameObject.activeInHierarchy)
+		if (m_recordedAction == null || !gameObject.activeInHierarchy)
 			return;
+
+		EntityActionData data = m_recordedAction.action.Data;
+		ToolTipManager.Instance.Show(data.displayName, data.GetDescription());
+
+		if (m_selectedDisplay == this || TurnManager.Instance.currentPhase != TurnManager.TurnPhase.Recording)
+			return;
+
 		TurnManager.Instance.RefreshActionDisplay(m_recordedAction.action.performingEntityID, false, m_recordedAction.action.TimeAtEnd);
 	}
 
 	public void OnPointerExit ( PointerEventData eventData )
 	{
+		ToolTipManager.Instance.Hide();
+
 		if (m_selectedDisplay == this || m_recordedAction == null || TurnManager.Instance.currentPhase != TurnManager.TurnPhase.Recording || !gameObject.activeInHierarchy)
 			return;
 		else if (m_selectedDisplay == null)
