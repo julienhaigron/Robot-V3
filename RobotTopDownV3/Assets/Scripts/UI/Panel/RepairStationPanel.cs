@@ -139,6 +139,7 @@ public class RepairStationPanel : AUIPanel
 		unit.isRepairing = false;
 		SetSlotData(_slot.Index, null, _doLockSlot: true);
 		_slot.Cleanup();
+		_slot.SetInteractability(false, _isInstant: false);
 
 		Init();
 	}

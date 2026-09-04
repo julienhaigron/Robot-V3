@@ -9,6 +9,7 @@ public class RepareUnitSlot : RepareUnitContainer
     [SerializeField, FormerlySerializedAs("m_timerSectionGO")] private GameObject m_priceSectionGO;
     [SerializeField, FormerlySerializedAs("m_timerTMP")] private TextMeshProUGUI m_priceTMP;
     [SerializeField] private BaseButton m_repairBtn;
+    [SerializeField] private SlidingDoors m_lockDoors;
     [SerializeField] private Vector2 m_displaySize = new Vector2(124f, 124f);
 
     public Action<RepareUnitSlot> onRepairClicked;
@@ -36,7 +37,7 @@ public class RepareUnitSlot : RepareUnitContainer
         base.Init(_container, _unitData, _predicate, _index);
         m_unitData = _unitData;
 
-        if (m_predicate != null && m_predicate(_unitData))
+        if (_unitData != null && !string.IsNullOrEmpty(_unitData.name))
         {
             m_unitSavedData = _unitData;
 
@@ -49,13 +50,19 @@ public class RepareUnitSlot : RepareUnitContainer
             m_currentDisplay.transform.localPosition = Vector3.zero;
             (m_currentDisplay.transform as RectTransform).sizeDelta = m_displaySize;
         }
+        else
+            Cleanup();
 
         RefreshRepairData();
     }
 
-    public void SetInteractability (bool _canInterract)
+    public void SetInteractability (bool _canInterract, bool _isInstant = true)
 	{
         m_canInteract = _canInterract;
+
+        if (m_lockDoors != null)
+            m_lockDoors.SetClosed(!_canInterract, _isInstant);
+
         RefreshRepairData();
     }
 

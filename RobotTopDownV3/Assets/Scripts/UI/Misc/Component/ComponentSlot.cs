@@ -34,7 +34,7 @@ public class ComponentSlot : ComponentContainer
         base.Init(_container, _unitData, _componentSavedData, _predicate, _displayMode, _index);
         m_unitData = _unitData;
 
-        if (m_predicate != null && m_predicate(_componentSavedData))
+        if (_componentSavedData != null && !string.IsNullOrEmpty(_componentSavedData.ID))
         {
             m_equipmentSavedData = _componentSavedData;
             m_equipmentData = _componentSavedData.GetData<EntityEquipmentData>();
@@ -48,6 +48,8 @@ public class ComponentSlot : ComponentContainer
             m_currentDisplay.transform.localPosition = Vector3.zero;
             (m_currentDisplay.transform as RectTransform).sizeDelta = m_displaySize;
         }
+        else
+            Cleanup();
 
         /*if(_displayMode == ComponentDisplay.DisplayMode.RecyclingStation
             || _displayMode == ComponentDisplay.DisplayMode.RepairStation)
@@ -90,6 +92,7 @@ public class ComponentSlot : ComponentContainer
         if(m_currentDisplay != null)
 		{
             Destroy(m_currentDisplay.gameObject);
+            m_currentDisplay = null;
             m_equipmentData = null;
             m_equipmentSavedData = null;
             m_unitData = null;
