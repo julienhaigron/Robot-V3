@@ -6460,7 +6460,7 @@ MonoBehaviour:
     rebindButton: {fileID: 8648995888196516564}
   - actionName: PanCamera
     bindingIndex: 0
-    labelKey: menu/audio
+    labelKey: option/pan_camera
     bindingLabel: {fileID: 3944648712752565414}
     rebindButton: {fileID: 2215880655846105514}
   m_resetControlsBtn: {fileID: 9086445466872095417}

@@ -82,6 +82,10 @@ MonoBehaviour:
     values:
     - "Rotate right"
     - "Rotation droite"
+  - key: option/pan_camera
+    values:
+    - "Pan camera"
+    - "D\xE9placer la cam\xE9ra"
   - key: option/interact
     values:
     - "Interact"

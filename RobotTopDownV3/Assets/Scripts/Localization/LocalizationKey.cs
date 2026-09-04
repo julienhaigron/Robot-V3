@@ -18,6 +18,7 @@ public enum LocalizationKey
     option_move_right,
     option_rotate_left,
     option_rotate_right,
+    option_pan_camera,
     option_interact,
     option_rebind,
     option_reset_controls,
@@ -123,6 +124,7 @@ public static class LocalizationKeyExtensions
             case LocalizationKey.option_move_right: return "option/move_right";
             case LocalizationKey.option_rotate_left: return "option/rotate_left";
             case LocalizationKey.option_rotate_right: return "option/rotate_right";
+            case LocalizationKey.option_pan_camera: return "option/pan_camera";
             case LocalizationKey.option_interact: return "option/interact";
             case LocalizationKey.option_rebind: return "option/rebind";
             case LocalizationKey.option_reset_controls: return "option/reset_controls";
