@@ -569,6 +569,9 @@ public class EntityEquipmentPlugin : EntityPlugin
 
 	private void Death ()
 	{
+		if (m_isDead)
+			return;
+
 		if (m_linkedEntity.LastPerformedAction != null && m_linkedEntity.LastPerformedAction.IsPerforming)
 			m_linkedEntity.LastPerformedAction.CancelAction();
 		

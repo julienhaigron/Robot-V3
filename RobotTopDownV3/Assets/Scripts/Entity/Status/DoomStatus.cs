@@ -12,9 +12,11 @@ public class DoomStatus : AEntityStatus
 		//_entity.Equipment.TakeDamage(new EntityEquipmentPlugin.TakeDamageCallback() { damage = damageAmount, entityTargeted = _entity });
 	}*/
 
-	public override void OnRemoveStatusEffect ( Entity _entity )
+	public override void ApplyStatusEffect ( int _remainingDuration, Entity _entity )
 	{
-		base.OnRemoveStatusEffect(_entity);
-		_entity.Equipment.InstantDeath();
+		base.ApplyStatusEffect(_remainingDuration, _entity);
+
+		if (_remainingDuration <= 1)
+			_entity.Equipment.InstantDeath();
 	}
 }
