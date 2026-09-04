@@ -32,7 +32,26 @@ public class ComponentDisplayGrid : ComponentContainer
         newDisplay.CurrentContainer = this;
         newDisplay.transform.localPosition = Vector3.zero;
 
+        SortByAcquisitionDate();
+
         return newDisplay;
+    }
+
+    public void SortByAcquisitionDate ()
+    {
+        m_items.Sort(( _a, _b ) =>
+        {
+            int dateComparison = GetAcquisitionDate(_a).CompareTo(GetAcquisitionDate(_b));
+            return dateComparison != 0 ? dateComparison : _a.transform.GetSiblingIndex().CompareTo(_b.transform.GetSiblingIndex());
+        });
+
+        for (int i = 0; i < m_items.Count; i++)
+            m_items[i].transform.SetSiblingIndex(i);
+    }
+
+    private long GetAcquisitionDate ( ComponentDisplay _display )
+    {
+        return _display == null || _display.SavedData == null ? long.MaxValue : _display.SavedData.acquisitionDateTicks;
     }
 
     public void RefreshPredicate ( Func<GameDatas.PlayerSave.Component, bool> _newPredicate )

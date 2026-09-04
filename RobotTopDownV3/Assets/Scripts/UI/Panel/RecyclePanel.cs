@@ -95,7 +95,7 @@ public class RecyclePanel : AUIPanel
 		GameDatas.current.currentPlayerSave.dayData.currentlyRecyclingComponents[_container.Index] = new();
 
 		if (!GameDatas.current.currentPlayerSave.equipmentInventory.Contains(_display.SavedData))
-			GameDatas.current.currentPlayerSave.equipmentInventory.Add(_display.SavedData);
+			GameDatas.current.currentPlayerSave.AddEquipmentToInventory(_display.SavedData);
 		m_recyclingSlots[_container.Index].Cleanup();
 	}
 

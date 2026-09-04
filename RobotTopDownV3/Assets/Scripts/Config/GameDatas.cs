@@ -260,6 +260,10 @@ public partial class GameDatas : ScriptableObject
 
 		public void AddEquipmentToInventory(Component _equipment )
 		{
+			if (_equipment == null)
+				return;
+
+			_equipment.acquisitionDateTicks = DateTime.UtcNow.Ticks;
 			equipmentInventory.Add(_equipment);
 			equipmentCounter++;
 		}
@@ -287,6 +291,7 @@ public partial class GameDatas : ScriptableObject
 			public string ID;
 			public string dataID;
 			public bool isDamaged = false;
+			public long acquisitionDateTicks;
 			//public bool[] areSlotsDamaged;
 
 			public void NetworkSerialize<T> ( BufferSerializer<T> serializer ) where T : IReaderWriter
@@ -294,6 +299,7 @@ public partial class GameDatas : ScriptableObject
 				serializer.SerializeValue(ref ID);
 				serializer.SerializeValue(ref dataID);
 				serializer.SerializeValue(ref isDamaged);
+				serializer.SerializeValue(ref acquisitionDateTicks);
 				//serializer.SerializeValue(ref areSlotsDamaged);
 			}
 

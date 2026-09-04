@@ -10,6 +10,7 @@ public class CameraManager : Singleton<CameraManager>
     public Camera Camera => m_camera;
 
     [SerializeField] private Transform m_defaultCameraPosition;
+    public float DefaultZoomDistance => m_defaultCameraPosition == null ? m_cameraParent.transform.position.y : m_defaultCameraPosition.position.y;
 
 
     public void ResetPosition ()

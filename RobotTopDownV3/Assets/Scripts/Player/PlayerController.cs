@@ -210,6 +210,25 @@ public class PlayerController : Singleton<PlayerController>
 
 	}
 
+	public void ResetZoom ()
+	{
+		m_currentZoomDistance = Mathf.Clamp(CameraManager.Instance.DefaultZoomDistance
+			, GameConfig.current.game.cameraZoomBounds.x, GameConfig.current.game.cameraZoomBounds.y);
+
+		Vector3 cameraPosition = CameraManager.Instance.CameraParent.transform.position;
+		CameraManager.Instance.CameraParent.transform.position = new Vector3(cameraPosition.x, m_currentZoomDistance, cameraPosition.z);
+
+		m_fogRenderer.MarkDirty();
+	}
+
+	public void ResetRotation ()
+	{
+		if (m_cameraRotationTween.IsActive())
+			m_cameraRotationTween.Kill();
+
+		m_targetRotation = CameraManager.Instance.CameraParent.transform.rotation;
+	}
+
 	private void HandleCameraZoom ()
 	{
 		float rawScroll = m_zoomAction.ReadValue<Vector2>().y;

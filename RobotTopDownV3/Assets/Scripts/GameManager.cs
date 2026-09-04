@@ -233,6 +233,8 @@ public class GameManager : SingletonPersistant<GameManager>
 		}
 		m_fogCanvas.gameObject.SetActive(true);
 		CameraManager.Instance.TeleportCameraTo(m_playersEntityAnchor[PlayerID].Entities[0].transform.position, Quaternion.identity);
+		PlayerController.Instance.ResetZoom();
+		PlayerController.Instance.ResetRotation();
 
 		/*UIManager.Instance.OpenPanel<InGamePanel>().Init();
 		TurnManager.Instance.StartInputPhase();*/
