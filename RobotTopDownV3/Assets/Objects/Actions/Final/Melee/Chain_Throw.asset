@@ -39,8 +39,8 @@ MonoBehaviour:
   aoeType: 7
   doesAffectTile: 0
   aoECenterType: 1
-  aoeMinEffectRange: 0
-  aoeMaxEffectRange: 0
+  aoeMinEffectRange: 1
+  aoeMaxEffectRange: 3
   maxChainedTarget: 3
   damageReductionOnChain: 0.1
   hitAmount: 1

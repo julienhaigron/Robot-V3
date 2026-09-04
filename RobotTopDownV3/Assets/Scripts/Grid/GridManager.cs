@@ -419,11 +419,12 @@ public class GridManager : Singleton<GridManager>
 				tilesInRange.AddRange(GetTilesInArc(_from, _minDistance, _maxDistance, orientation, true, _type == EntityActionData.AOEType.LargeArc, _isThisTurn));
 				break;
 			case EntityActionData.AOEType.Chain:
-				List<Tile> tilesInVisionRange = GetTilesInVisionRange(_from, _minDistance, _maxDistance, false, _isThisTurn, false);
-				foreach (Tile tile in tilesInVisionRange)
+				foreach (Tile tile in GetTilesInVisionRange(_from, _minDistance, _maxDistance, false, _isThisTurn, true))
 				{
-					if (!tile.GetEntity(_isThisTurn).IsAlliedTo(_caster.OwnerID))
-						tilesInRange.Add(tile);
+					if (!tile.TryGetEntity(_isThisTurn, out Entity chainedEntity) || chainedEntity.IsAlliedTo(_caster.OwnerID))
+						continue;
+
+					tilesInRange.Add(tile);
 
 					if (tilesInRange.Count >= _extraValue + 1)
 						break;
