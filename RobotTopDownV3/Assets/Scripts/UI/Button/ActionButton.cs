@@ -156,7 +156,7 @@ public class ActionButton : BaseButton, IPointerEnterHandler, IPointerExitHandle
 
 	private void DisplayRangePreview ( EntityActionData _data )
 	{
-		if (m_isOnlyVisual || !_data.DoesResolveItsOwnTarget() || PlayerController.Instance == null || PlayerController.Instance.SelectedEntity == null)
+		if (m_isOnlyVisual || PlayerController.Instance == null || PlayerController.Instance.SelectedEntity == null)
 			return;
 
 		Entity entity = PlayerController.Instance.SelectedEntity;
@@ -168,6 +168,21 @@ public class ActionButton : BaseButton, IPointerEnterHandler, IPointerExitHandle
 			return;
 
 		Tile from = GridManager.Instance.Tiles[TurnManager.Instance.GetLastRegisteredPositionOfEntity(entity.ID)];
-		PlayerController.Instance.SetRangePreviewOutlines(entity.Equipment.GetTilesInReach(action, from, true));
+		PlayerController.Instance.SetRangePreviewOutlines(GetTilesInRangeOf(action, entity, from), _data.GetMainActionType());
+	}
+
+	private IEnumerable<Tile> GetTilesInRangeOf ( AEntityAction _action, Entity _entity, Tile _from )
+	{
+		if (_action.Data.GetMainActionType() != EntityActionData.MainActionType.Movement)
+			return _entity.Equipment.GetTilesInReach(_action, _from, true);
+
+		List<Tile> tilesInRange = new();
+		_action.OnSelectActionTileInteractPredicatePrewarm();
+
+		foreach (Tile tile in GridManager.Instance.Tiles)
+			if (_action.TileInteractPredicate(tile))
+				tilesInRange.Add(tile);
+
+		return tilesInRange;
 	}
 }

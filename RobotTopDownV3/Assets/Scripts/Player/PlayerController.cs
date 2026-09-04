@@ -63,6 +63,9 @@ public class PlayerController : Singleton<PlayerController>
 	[Header("Action Preview")]
 	[SerializeField] private Color m_aoePreviewColor = new(1f, .5f, 0f);
 	[SerializeField] private Color m_rangePreviewColor = Color.blue;
+	[SerializeField] private Color m_movementRangePreviewColor = Color.green;
+
+	private Color m_currentRangePreviewColor = Color.blue;
 
 	private readonly List<Tile> m_aoePreviewTiles = new();
 	private readonly List<Tile> m_rangePreviewTiles = new();
@@ -544,9 +547,11 @@ public class PlayerController : Singleton<PlayerController>
 		_tile.UI.SetOutlineColor(m_aoePreviewColor);
 	}
 
-	public void SetRangePreviewOutlines ( IEnumerable<Tile> _tiles )
+	public void SetRangePreviewOutlines ( IEnumerable<Tile> _tiles, EntityActionData.MainActionType _mainActionType )
 	{
 		ClearRangePreviewOutlines();
+
+		m_currentRangePreviewColor = _mainActionType == EntityActionData.MainActionType.Movement ? m_movementRangePreviewColor : m_rangePreviewColor;
 
 		foreach (Tile tile in _tiles)
 		{
@@ -554,7 +559,7 @@ public class PlayerController : Singleton<PlayerController>
 				continue;
 
 			m_rangePreviewTiles.Add(tile);
-			tile.UI.SetOutlineColor(m_rangePreviewColor);
+			tile.UI.SetOutlineColor(m_currentRangePreviewColor);
 		}
 	}
 
@@ -576,7 +581,7 @@ public class PlayerController : Singleton<PlayerController>
 			m_aoePreviewTiles.Clear();
 		}
 
-		RedrawOutlines(m_rangePreviewTiles, m_rangePreviewColor);
+		RedrawOutlines(m_rangePreviewTiles, m_currentRangePreviewColor);
 	}
 
 	private void RestoreInteractableOutlines ( List<Tile> _tiles )
