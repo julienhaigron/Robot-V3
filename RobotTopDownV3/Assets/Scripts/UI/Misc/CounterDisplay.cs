@@ -111,9 +111,27 @@ public class CounterDisplay : MonoBehaviour
 	{
 		for (int i = 0; i < m_counterTextArray.Length; i++)
 		{
-			//Reading fontMaterial makes TMP instance the material, so the outline stays on this text only
-			m_counterTextArray[i].outlineColor = _color;
-			m_counterTextArray[i].outlineWidth = _width;
+			TMP_Text text = m_counterTextArray[i];
+			if (text == null)
+				continue;
+
+			//fontMaterial instantiates the material, so the outline stays on this text instead of repainting
+			//every other text sharing the same font asset
+			Material material = text.fontMaterial;
+
+			//TMP_SDF-Mobile guards its outline behind "#pragma shader_feature __ OUTLINE_ON": with the keyword
+			//off the branch is compiled out and _OutlineWidth does nothing at all, whatever it is set to. Only
+			//the material inspector toggles it, so setting the width from script is never enough on its own.
+			if (_width > 0f)
+				material.EnableKeyword("OUTLINE_ON");
+			else
+				material.DisableKeyword("OUTLINE_ON");
+
+			material.SetColor(ShaderUtilities.ID_OutlineColor, _color);
+			material.SetFloat(ShaderUtilities.ID_OutlineWidth, _width);
+
+			//Without this the glyph quad keeps the size it had for a zero width outline, and clips the outline
+			text.UpdateMeshPadding();
 		}
 	}
 

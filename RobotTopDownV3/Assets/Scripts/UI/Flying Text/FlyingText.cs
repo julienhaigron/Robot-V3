@@ -56,6 +56,16 @@ public class FlyingText : MonoBehaviour
 		m_colorOverride = _color;
 	}
 
+	//Null means no outline at all
+	protected Color? m_outlineColor;
+	protected float m_outlineWidth;
+
+	public void SetOutline ( Color? _color, float _width )
+	{
+		m_outlineColor = _color;
+		m_outlineWidth = _width;
+	}
+
 	protected int m_mergeIndex = -1; // 0 = default no icon //-1 = not used  only merge when match
 	public int MergeIndex => m_mergeIndex;
 	protected float m_currentTime = 0f;
@@ -177,8 +187,8 @@ public class FlyingText : MonoBehaviour
 	{
 		m_counterDisplay.TextColor = m_colorOverride ?? config.textColor;
 
-		if (config.useOutline)
-			m_counterDisplay.SetOutline(config.outlineColor, config.outlineWidth);
+		if (m_outlineColor.HasValue)
+			m_counterDisplay.SetOutline(m_outlineColor.Value, m_outlineWidth);
 	}
 
 	public void DoAnimation ( float _newValue, float _yOffset, bool _blink, bool _playPS )

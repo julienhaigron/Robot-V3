@@ -45,12 +45,6 @@ public class FlyingTextManager : MonoBehaviour
 		//public GraphicColorAnimation.AnimationType defaultColorAnimation = GraphicColorAnimation.AnimationType.RedLimitedCountBlink;
 		public bool useAnimationCustomColor = false;
 		public Color customColorAnimation = Color.red;
-		[Space()]
-		public bool useOutline = true;
-		[ShowIf("@useOutline")]
-		public Color outlineColor = Color.black;
-		[ShowIf("@useOutline"), Range(0f, 1f)]
-		public float outlineWidth = .2f;
 
 		public FlyingTextConfig () { }
 		public FlyingTextConfig ( FlyingTextConfig _ref )
@@ -82,13 +76,17 @@ public class FlyingTextManager : MonoBehaviour
 			//defaultColorAnimation = _ref.defaultColorAnimation;
 			useAnimationCustomColor = _ref.useAnimationCustomColor;
 			customColorAnimation = _ref.customColorAnimation;
-			useOutline = _ref.useOutline;
-			outlineColor = _ref.outlineColor;
-			outlineWidth = _ref.outlineWidth;
 		}
 	}
 
 	public FlyingTextConfig config;
+
+	//Kept out of the config on purpose: that class is already serialized in the prefabs, and a field added to
+	//it now comes back at its default rather than at the value written here. On the component it holds.
+	[Title("Outline")]
+	[SerializeField] private bool m_useOutline = true;
+	[SerializeField, ShowIf("@m_useOutline")] private Color m_outlineColor = Color.black;
+	[SerializeField, ShowIf("@m_useOutline"), Range(0f, 1f)] private float m_outlineWidth = .2f;
 
 	[Space()]
 	[InfoBox("both UI and world prefab ref set, plz choose one et remove the other", InfoMessageType.Warning, VisibleIf = "@m_flyingTextPrefab != null && m_UIflyingTextPrefab != null")]
@@ -178,6 +176,7 @@ public class FlyingTextManager : MonoBehaviour
 		TryHidingVisible();
 		FlyingText instance = GetTextInstance(_text.GetHashCode());
 		instance.config = new FlyingTextConfig(config);
+		ApplyOutlineTo(instance);
 		instance.DisableIconAndSetMergeIndex(_text.GetHashCode());
 		instance.SetRawText(_text);
 		instance.SetColorOverride(_colorOverride);
@@ -193,6 +192,7 @@ public class FlyingTextManager : MonoBehaviour
 		TryHidingVisible();
 		FlyingText instance = GetTextInstance(_iconSprite.GetHashCode());
 		instance.config = new FlyingTextConfig(config);
+		ApplyOutlineTo(instance);
 		instance.SetRawText(null);
 		instance.SetColorOverride(_colorOverride);
 		instance.SetIconAndMergeIndex(_iconSprite, _iconScale);
@@ -208,6 +208,7 @@ public class FlyingTextManager : MonoBehaviour
 		TryHidingVisible();
 		FlyingText instance = GetTextInstance(_mergeIndex);
 		instance.config = new FlyingTextConfig(config);
+		ApplyOutlineTo(instance);
 		instance.SetRawText(null);
 		instance.SetColorOverride(null);
 		instance.DisableIconAndSetMergeIndex(_mergeIndex);
@@ -218,6 +219,11 @@ public class FlyingTextManager : MonoBehaviour
 	public void ShowNumber ( float _value, bool _blink = false, bool _playPS = false )
 	{
 		ShowNumber(_value, 0, _blink, _playPS);
+	}
+
+	void ApplyOutlineTo ( FlyingText _instance )
+	{
+		_instance.SetOutline(m_useOutline ? m_outlineColor : (Color?)null, m_outlineWidth);
 	}
 
 	void InstanceDoAnimation ( FlyingText _instance, float _value, bool _blink, bool _playPS )
