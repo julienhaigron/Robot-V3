@@ -11,6 +11,20 @@ public class NodePath : MonoBehaviour
 	[SerializeField, HideInInspector] private TileCoordinates[] m_coordonatePath;
 	//public TileCoordinates[] CoordonatePath => m_coordonatePath;
 
+	[SerializeField] private Tile[] m_stopTiles;
+
+	public bool DoesStopAt ( Tile _tile )
+	{
+		if (m_stopTiles == null || _tile == null)
+			return false;
+
+		for (int i = 0; i < m_stopTiles.Length; i++)
+			if (m_stopTiles[i] == _tile)
+				return true;
+
+		return false;
+	}
+
 	public Tile GetNextTile ( Tile _currentTile )
 	{
 		for (int i = 0; i < m_path.Length; i++)

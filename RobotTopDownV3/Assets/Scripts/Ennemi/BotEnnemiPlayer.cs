@@ -128,7 +128,6 @@ public class BotEnnemiPlayer : MonoBehaviour
 		}
 
 		Tile from = _entity.Displacement.Coordinates.GetTile();
-		Tile lastDestination = from;
 		NodePath closestPath = NodePathManager.Instance.GetClosestPath(from, out Tile closestTile);
 
 		if (closestPath == null || closestTile == null)
@@ -137,8 +136,17 @@ public class BotEnnemiPlayer : MonoBehaviour
 			return;
 		}
 
+		Tile lastDestination = from;
+		Tile targetNode = closestTile;
+		Queue<Tile> pendingSteps = new();
+
 		List<Tile> pathToClosestTileInPath = GridManager.Instance.GetPath(from, closestTile, true, _movingEntity: _entity, _canTraverseAllies: true);
-		pathToClosestTileInPath?.Reverse();
+		if (pathToClosestTileInPath != null)
+		{
+			pathToClosestTileInPath.Reverse();
+			for (int i = 1; i < pathToClosestTileInPath.Count; i++)
+				pendingSteps.Enqueue(pathToClosestTileInPath[i]);
+		}
 
 		for (int i = 0; i < GameConfig.current.game.actionTokenPerRound;)
 		{
@@ -152,17 +160,22 @@ public class BotEnnemiPlayer : MonoBehaviour
 			MoveToTargetAction movementAction = TurnManager.Instance.GetAction(movementActionData, _entity.ID, _entity.ComponentLinkedToAction[movementActionData.enumID][0], i) as MoveToTargetAction;
 
 			List<int> thisActionPath = new();
-			for (int j = 0; j < movementAction.TotalDuration; j++)
+			bool doesStopOnDestination = false;
+			for (int j = 0; j < movementActionData.movementSpeed; j++)
 			{
-				Tile nextDestination = pathToClosestTileInPath != null && i + j + 1 < pathToClosestTileInPath.Count
-					? pathToClosestTileInPath[i + j + 1]
-					: closestPath.GetNextTile(lastDestination);
+				Tile nextDestination = GetNextPatrolStep(_entity, closestPath, pendingSteps, lastDestination, ref targetNode);
 
 				if (nextDestination == null)
 					break;
 
 				lastDestination = nextDestination;
 				thisActionPath.Add(lastDestination.coordinates.ID);
+
+				if (closestPath.DoesStopAt(lastDestination))
+				{
+					doesStopOnDestination = true;
+					break;
+				}
 			}
 
 			if (thisActionPath.Count == 0)
@@ -181,7 +194,45 @@ public class BotEnnemiPlayer : MonoBehaviour
 			TurnManager.Instance.AddAction(_entity.ID, movementAction, _moveState);
 
 			i += movementAction.TotalDuration;
+
+			if (!doesStopOnDestination || i >= GameConfig.current.game.actionTokenPerRound)
+				continue;
+
+			TurnManager.Instance.AddAction(_entity.ID, EntityActionEnumID.Wait, _idleState, null);
+			i++;
 		}
+	}
+
+	private Tile GetNextPatrolStep ( Entity _entity, NodePath _path, Queue<Tile> _pendingSteps, Tile _from, ref Tile _targetNode )
+	{
+		if (_pendingSteps.Count > 0)
+			return _pendingSteps.Dequeue();
+
+		for (int i = 0; i < _path.Path.Length; i++)
+		{
+			_targetNode = _path.GetNextTile(_targetNode);
+
+			if (_targetNode == null)
+				return null;
+
+			if (_targetNode == _from)
+				continue;
+
+			if (_targetNode.TryGetCurrentEntity(out Entity occupant) && occupant != _entity)
+				continue;
+
+			List<Tile> pathToNode = GridManager.Instance.GetPath(_from, _targetNode, true, _movingEntity: _entity, _canTraverseAllies: true);
+			if (pathToNode == null || pathToNode.Count < 2)
+				continue;
+
+			pathToNode.Reverse();
+			for (int j = 1; j < pathToNode.Count; j++)
+				_pendingSteps.Enqueue(pathToNode[j]);
+
+			return _pendingSteps.Dequeue();
+		}
+
+		return null;
 	}
 
 	#endregion
@@ -214,6 +265,7 @@ public class BotEnnemiPlayer : MonoBehaviour
 			return 0;
 
 		int spentTokens = 0;
+		int walkedTiles = 0;
 		while (spentTokens < GameConfig.current.game.actionTokenPerRound)
 		{
 			EntityActionData movementActionData = _entity.AI.GetMovementAction();
@@ -223,8 +275,8 @@ public class BotEnnemiPlayer : MonoBehaviour
 			MoveToTargetAction movementAction = TurnManager.Instance.GetAction(movementActionData, _entity.ID, _entity.ComponentLinkedToAction[movementActionData.enumID][0], spentTokens) as MoveToTargetAction;
 
 			List<int> thisActionPath = new();
-			for (int j = 0; j < movementAction.TotalDuration && spentTokens + j + 1 < _path.Count; j++)
-				thisActionPath.Add(_path[spentTokens + j + 1].coordinates.ID);
+			for (int j = 0; j < movementActionData.movementSpeed && walkedTiles + j + 1 < _path.Count; j++)
+				thisActionPath.Add(_path[walkedTiles + j + 1].coordinates.ID);
 
 			if (thisActionPath.Count == 0)
 				return spentTokens;
@@ -241,6 +293,7 @@ public class BotEnnemiPlayer : MonoBehaviour
 			TurnManager.Instance.AddAction(_entity.ID, movementAction, _state);
 
 			spentTokens += movementAction.TotalDuration;
+			walkedTiles += thisActionPath.Count;
 		}
 
 		return spentTokens;

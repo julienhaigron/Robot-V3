@@ -140,9 +140,22 @@ public class MissionPanel : AUIPanel
 		}
 	}
 
-	private void OnAnyMissionSelected (MissionButton _missionButton)
+	private void OnAnyMissionSelected ( MissionButton _missionButton )
 	{
+		if (!gameObject.activeInHierarchy)
+			return;
+
+		if (_missionButton == m_currentMissionSelected)
+		{
+			_missionButton.SetHasSelected();
+			return;
+		}
+
+		if (m_currentMissionSelected != null)
+			m_currentMissionSelected.SetHasUnselected();
+
 		m_currentMissionSelected = _missionButton;
+		m_currentMissionSelected.SetHasSelected();
 	}
 
 	private void OnAnyUnitHovered ( UnitMissionDisplay _display )
