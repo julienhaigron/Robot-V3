@@ -255,6 +255,9 @@ public class Entity : MonoBehaviour
 			}
 		}
 
+		if (!actionsPerComponents.ContainsKey(EntityActionEnumID.Wait))
+			actionsPerComponents.Add(EntityActionEnumID.Wait, new() { null });
+
 		return actionsPerComponents;
 	}
 

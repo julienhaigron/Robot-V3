@@ -55,6 +55,9 @@ public class EntityAIPlugin : EntityPlugin
 
 		foreach (EntityActionEnumID actionID in m_linkedEntity.KnownedActions)
 		{
+			if (actionID == EntityActionEnumID.Wait)
+				continue;
+
 			EntityActionData.MainActionType mainType = GameAssets.current.game.entityActionsData[actionID].GetMainActionType();
 
 			if (!m_actionPriorityQueues.ContainsKey(mainType))

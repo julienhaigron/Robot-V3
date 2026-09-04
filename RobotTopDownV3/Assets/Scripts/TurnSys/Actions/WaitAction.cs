@@ -13,7 +13,8 @@ public class WaitAction : AEntityAction
 
 	public override void RegisterInteraction ( Tile _tile )
 	{
-		//nothing to do
+		TurnManager.Instance.RegisterAction(performingEntityID, TurnManager.Instance.CurrentActionSelected, TurnManager.Instance.CurrentStateTypeSelected);
+		TurnManager.Instance.RefreshActionDisplay(performingEntityID, true);
 	}
 	
 	public override void Prepare ( Entity.EntityState _state )

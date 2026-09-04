@@ -71,6 +71,7 @@ public class SkipConfirmationPopup : AUIPopup
 			//skip tournament
 			daysAmountSkip = 7 - (GameDatas.current.currentPlayerSave.dayCount);
 		}
+		string dayReport = "";
 		for(int i = 0; i < daysAmountSkip; i++)
 		{
 			if (doGiveReward)
@@ -83,12 +84,15 @@ public class SkipConfirmationPopup : AUIPopup
 					FTUEManager.Instance.Cycle1TournamentMissions[i - FTUEManager.Instance.Cycle1MatchMissions.Length].GiveAllRewards();
 			}
 			GameDatas.current.currentPlayerSave.NewDay();
+
+			string finishedThisDay = GameDatas.current.currentPlayerSave.CollectFinishedDayJobs();
+			if (!string.IsNullOrEmpty(finishedThisDay))
+				dayReport += "Day " + GameDatas.current.currentPlayerSave.dayCount + ":\n" + finishedThisDay;
 		}
 		
 		Close(_instant: true);
 		
-		//TODO : display all days past changes, not only previous day
-		UIManager.Instance.OpenPopup<ReturnToHubPopup>().Init(GameDatas.current.currentPlayerSave.CollectFinishedDayJobs());
+		UIManager.Instance.OpenPopup<ReturnToHubPopup>().Init(dayReport);
 	}
 
 	private void OnClickClose ()
