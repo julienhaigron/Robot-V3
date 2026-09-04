@@ -17,6 +17,7 @@ public class RepairStationPanel : AUIPanel
 		{
 			m_repairingSlots[i].onItemAdded += OnItemAddedOnSlot;
 			m_repairingSlots[i].onItemRemoved += OnItemRemovedOnSlot;
+			m_repairingSlots[i].onRepairClicked += OnClickRepair;
 		}
 	}
 
@@ -26,6 +27,7 @@ public class RepairStationPanel : AUIPanel
 		{
 			m_repairingSlots[i].onItemAdded -= OnItemAddedOnSlot;
 			m_repairingSlots[i].onItemRemoved -= OnItemRemovedOnSlot;
+			m_repairingSlots[i].onRepairClicked -= OnClickRepair;
 		}
 	}
 
@@ -50,9 +52,8 @@ public class RepairStationPanel : AUIPanel
 			{
 				m_repairingSlots[i].gameObject.SetActive(true);
 				m_repairingSlots[i].Init(m_inventoryGrid, repairingComponent != null && repairingComponent.unit != null && !string.IsNullOrEmpty(repairingComponent.unit.name) ? repairingComponent.unit : null
-					, item => item != null && (repairingComponent == null || repairingComponent.unit == null || repairingComponent.remainingTime <= 0)
+					, item => item != null && (repairingComponent == null || repairingComponent.unit == null)
 					, i);
-				m_repairingSlots[i].InitRepairData(repairingComponent);
 			}
 		}
 
@@ -63,7 +64,7 @@ public class RepairStationPanel : AUIPanel
 	{
 		foreach (RepareUnitSlot slot in m_repairingSlots)
 		{
-			if (slot.Predicate(null))
+			if (slot.gameObject.activeSelf && slot.CurrentDisplay == null)
 				return slot;
 		}
 
@@ -72,15 +73,34 @@ public class RepairStationPanel : AUIPanel
 
 	private void OnItemAddedOnSlot ( RepareUnitContainer _container, RepareUnitDisplay _display )
 	{
-		int duration = 0;
-		foreach (GameDatas.PlayerSave.Component eq in _display.SavedData.GetAllEquipments())
-			if (eq.isDamaged)
-				duration++;
-
-		GameDatas.current.currentPlayerSave.dayData.repairingComponents[_container.Index] = new() { unit = _display.SavedData, remainingTime = duration };
+		GameDatas.current.currentPlayerSave.dayData.repairingComponents[_container.Index] = new() { unit = _display.SavedData };
 		_display.SavedData.isRepairing = true;
 		GameDatas.current.currentPlayerSave.squadUnitsIndex.Remove(_display.SavedData.index);
-		m_repairingSlots[_container.Index].InitRepairData(GameDatas.current.currentPlayerSave.dayData.repairingComponents[_container.Index]);
+		m_repairingSlots[_container.Index].RefreshRepairData();
+	}
+
+	private void OnClickRepair ( RepareUnitSlot _slot )
+	{
+		EntitySavedData unit = _slot.CurrentDisplay == null ? null : _slot.CurrentDisplay.SavedData;
+
+		if (unit == null || !unit.IsDamaged())
+			return;
+
+		System.Tuple<CurrencyType, ulong> price = unit.GetRepairPrice();
+
+		if (GameDatas.current.currentPlayerSave.currencies[price.Item1] < price.Item2)
+			return;
+
+		GameDatas.current.currentPlayerSave.RemoveCurrency(price.Item1, price.Item2, GameDatas.PlayerSave.CurrencyRemoveMode.Spent);
+
+		foreach (GameDatas.PlayerSave.Component eq in unit.GetAllEquipments())
+			eq.isDamaged = false;
+
+		unit.isRepairing = false;
+		GameDatas.current.currentPlayerSave.dayData.repairingComponents[_slot.Index] = new();
+		_slot.Cleanup();
+
+		Init();
 	}
 
 	private void OnItemRemovedOnSlot ( RepareUnitContainer _container, RepareUnitDisplay _display)

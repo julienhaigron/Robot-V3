@@ -108,6 +108,22 @@ public class EntitySavedData : INetworkSerializable
 		return false;
 	}
 
+	public System.Tuple<CurrencyType, ulong> GetRepairPrice ()
+	{
+		ulong price = 0ul;
+		foreach (GameDatas.PlayerSave.Component ep in GetAllEquipments())
+		{
+			if (!ep.isDamaged || !ep.TryGetData(out EntityEquipmentData data))
+				continue;
+
+			price += data.GetSellingPrice().Item2;
+		}
+
+		float discount = GameAssets.current.game.RepairStationStructureUpgrade.GetCurrentRepairPriceBonusPerLevel();
+
+		return new System.Tuple<CurrencyType, ulong>(CurrencyType.SoftCurrency, (ulong)Mathf.Max(0f, price * (1f - discount)));
+	}
+
 	public int GetTotalEnergyUsed ()
 	{
 		int totalEnergyUsed = 0;

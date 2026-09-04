@@ -1,13 +1,17 @@
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Serialization;
 using TMPro;
 using System;
 
 public class RepareUnitSlot : RepareUnitContainer
 {
-    [SerializeField] private GameObject m_timerSectionGO;
-    [SerializeField] private TextMeshProUGUI m_timerTMP;
+    [SerializeField, FormerlySerializedAs("m_timerSectionGO")] private GameObject m_priceSectionGO;
+    [SerializeField, FormerlySerializedAs("m_timerTMP")] private TextMeshProUGUI m_priceTMP;
+    [SerializeField] private BaseButton m_repairBtn;
     [SerializeField] private Vector2 m_displaySize = new Vector2(124f, 124f);
+
+    public Action<RepareUnitSlot> onRepairClicked;
 
     protected RepareUnitDisplay m_currentDisplay;
     public RepareUnitDisplay CurrentDisplay
@@ -45,6 +49,8 @@ public class RepareUnitSlot : RepareUnitContainer
             m_currentDisplay.transform.localPosition = Vector3.zero;
             (m_currentDisplay.transform as RectTransform).sizeDelta = m_displaySize;
         }
+
+        RefreshRepairData();
     }
 
     public void SetInteractability (bool _canInterract)
@@ -52,12 +58,46 @@ public class RepareUnitSlot : RepareUnitContainer
         m_canInteract = _canInterract;
     }
 
-    public void InitRepairData ( GameDatas.PlayerSave.DayData.RepairingUnitData _repairingData )
+    private void Awake ()
     {
-        if (_repairingData != null && _repairingData.unit != null && string.IsNullOrEmpty(_repairingData.unit.name))
-            m_timerTMP.text = "";
-        else
-            m_timerTMP.text = _repairingData.remainingTime.ToString();
+        if (m_repairBtn != null)
+            m_repairBtn.onClick += OnClickRepair;
+    }
+
+    private void OnDestroy ()
+    {
+        if (m_repairBtn != null)
+            m_repairBtn.onClick -= OnClickRepair;
+    }
+
+    private void OnClickRepair ()
+    {
+        onRepairClicked?.Invoke(this);
+    }
+
+    public void RefreshRepairData ()
+    {
+        EntitySavedData unit = m_currentDisplay == null ? null : m_currentDisplay.SavedData;
+        bool canRepair = unit != null && !string.IsNullOrEmpty(unit.name) && unit.IsDamaged();
+
+        if (m_priceSectionGO != null)
+            m_priceSectionGO.SetActive(canRepair);
+
+        if (!canRepair)
+        {
+            m_priceTMP.text = "";
+
+            if (m_repairBtn != null)
+                m_repairBtn.SetInteractability(false);
+
+            return;
+        }
+
+        Tuple<CurrencyType, ulong> price = unit.GetRepairPrice();
+        m_priceTMP.text = price.Item2.ToString();
+
+        if (m_repairBtn != null)
+            m_repairBtn.SetInteractability(GameDatas.current.currentPlayerSave.currencies[price.Item1] >= price.Item2);
     }
 
     public override bool IsValid ( RepareUnitDisplay _display )
@@ -70,10 +110,11 @@ public class RepareUnitSlot : RepareUnitContainer
         if(m_currentDisplay != null)
 		{
             Destroy(m_currentDisplay.gameObject);
+            m_currentDisplay = null;
             m_unitSavedData = null;
             m_unitData = null;
         }
-        m_timerTMP.text = "";
+        RefreshRepairData();
     }
 
     #region DnD

@@ -138,7 +138,7 @@ public partial class GameDatas : ScriptableObject
 			public class RepairingUnitData
 			{
 				public EntitySavedData unit;
-				public int remainingTime;
+				public bool wasUsedToday;
 			}
 
 		}
@@ -168,16 +168,9 @@ public partial class GameDatas : ScriptableObject
 					data.remainingTime = 0;
 			}
 
-			//repairing units
 			foreach (DayData.RepairingUnitData data in dayData.repairingComponents)
-			{
-				if (data == null)
-					continue;
-
-				data.remainingTime--;
-				if (data.remainingTime < 0)
-					data.remainingTime = 0;
-			}
+				if (data != null)
+					data.wasUsedToday = false;
 
 			onNewDay?.Invoke();
 		}
@@ -198,21 +191,6 @@ public partial class GameDatas : ScriptableObject
 				System.Tuple<CurrencyType, ulong> sellingPrice = componentData.GetSellingPrice();
 				AddCurrency(sellingPrice.Item1, sellingPrice.Item2);
 				dayData.currentlyRecyclingComponents[i] = null;
-			}
-
-			for (int i = 0; i < dayData.repairingComponents.Count; i++)
-			{
-				DayData.RepairingUnitData data = dayData.repairingComponents[i];
-				if (data == null || data.unit == null || string.IsNullOrEmpty(data.unit.name) || data.remainingTime > 0)
-					continue;
-
-				report += data.unit.name + " finished repairing\n";
-
-				foreach (Component eq in data.unit.GetAllEquipments())
-					eq.isDamaged = false;
-
-				data.unit.isRepairing = false;
-				dayData.repairingComponents[i] = null;
 			}
 
 			return report;
