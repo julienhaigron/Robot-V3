@@ -492,7 +492,7 @@ public class EntityAIPlugin : EntityPlugin
 		return false;
 	}
 
-	private Tile GetClosestFreeNeighborOf ( Tile _tile, bool _isThisTurn = true )
+	public Tile GetClosestFreeNeighborOf ( Tile _tile, bool _isThisTurn = true )
 	{
 		Tile from = m_linkedEntity.Displacement.Coordinates.GetTile();
 		Tile closest = null;

@@ -63,6 +63,10 @@ public class BotEnnemiPlayer : MonoBehaviour
 	private void DetermineAggressiveActions ( Entity _entity )
 	{
 		Entity target = GetClosestVisibleEnemy(_entity);
+
+		if (target == null)
+			target = GetClosestReachableEnemy(_entity);
+
 		if (target == null)
 		{
 			DeterminePatrolPathActions(_entity, Entity.EntityState.Patroling, Entity.EntityState.Patroling);
@@ -70,15 +74,17 @@ public class BotEnnemiPlayer : MonoBehaviour
 		}
 
 		Tile firingTile = _entity.AI.GetClosestFiringTile(target, true);
-		if (firingTile == null)
+		Tile destination = firingTile != null ? firingTile : _entity.AI.GetClosestFreeNeighborOf(target.Displacement.Coordinates.GetTile(), true);
+
+		if (destination == null)
 		{
 			AddWaitActionsFrom(_entity, 0, Entity.EntityState.Patroling);
 			return;
 		}
 
-		int spentTokens = PlanPathTo(_entity, firingTile, Entity.EntityState.Patroling, out bool isInFiringPosition);
+		int spentTokens = PlanPathTo(_entity, destination, Entity.EntityState.Patroling, out bool didReachDestination);
 
-		if (!isInFiringPosition)
+		if (firingTile == null || !didReachDestination)
 		{
 			AddWaitActionsFrom(_entity, spentTokens, Entity.EntityState.Patroling);
 			return;
@@ -330,6 +336,32 @@ public class BotEnnemiPlayer : MonoBehaviour
 	{
 		_entity.AI.RefreshEnemiesInVisionRange(true);
 		return _entity.AI.GetClosestEnemyInVisionRange(true);
+	}
+
+	private Entity GetClosestReachableEnemy ( Entity _entity )
+	{
+		Tile from = _entity.Displacement.Coordinates.GetTile();
+		Entity closestEnemy = null;
+		int closestDistance = int.MaxValue;
+
+		foreach (EntityAnchor anchor in GameManager.Instance.PlayersEntityAnchor)
+		{
+			foreach (Entity entity in anchor.Entities)
+			{
+				if (entity == _entity || entity.Equipment.IsDead || entity.IsAlliedTo(_entity.OwnerID))
+					continue;
+
+				List<Tile> path = GridManager.Instance.GetPath(from, entity.Displacement.Coordinates.GetTile(), true, _movingEntity: _entity, _canTraverseAllies: true);
+
+				if (path == null || path.Count >= closestDistance)
+					continue;
+
+				closestDistance = path.Count;
+				closestEnemy = entity;
+			}
+		}
+
+		return closestEnemy;
 	}
 
 	private List<Tile> GetPathToClosestEscortedAlly ( Entity _entity )

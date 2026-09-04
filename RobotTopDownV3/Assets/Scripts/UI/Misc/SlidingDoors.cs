@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 using DG.Tweening;
 
 public class SlidingDoors : MonoBehaviour
@@ -8,6 +9,9 @@ public class SlidingDoors : MonoBehaviour
 	[SerializeField] private Vector2 m_openedOffset = new Vector2(63f, 0f);
 	[SerializeField] private float m_duration = .35f;
 	[SerializeField] private Ease m_ease = Ease.InOutQuad;
+	[SerializeField] private bool m_doBlockRaycastsWhenClosed = true;
+
+	private Graphic[] m_graphics;
 
 	private Vector2 m_firstClosedPosition;
 	private Vector2 m_secondClosedPosition;
@@ -19,6 +23,8 @@ public class SlidingDoors : MonoBehaviour
 
 	private void Awake ()
 	{
+		m_graphics = GetComponentsInChildren<Graphic>(true);
+
 		if (m_firstDoor != null)
 			m_firstClosedPosition = m_firstDoor.anchoredPosition;
 
@@ -48,7 +54,20 @@ public class SlidingDoors : MonoBehaviour
 		m_hasState = true;
 
 		KillTweens();
+		RefreshRaycasts();
 		ApplyPositions(_isInstant || !gameObject.activeInHierarchy);
+	}
+
+	private void RefreshRaycasts ()
+	{
+		if (m_graphics == null)
+			return;
+
+		foreach (Graphic graphic in m_graphics)
+		{
+			if (graphic != null)
+				graphic.raycastTarget = m_doBlockRaycastsWhenClosed && m_isClosed;
+		}
 	}
 
 	private void ApplyPositions ( bool _isInstant )
