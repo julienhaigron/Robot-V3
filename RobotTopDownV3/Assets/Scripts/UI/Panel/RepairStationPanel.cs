@@ -51,6 +51,7 @@ public class RepairStationPanel : AUIPanel
 			else
 			{
 				m_repairingSlots[i].gameObject.SetActive(true);
+				m_repairingSlots[i].SetInteractability(!IsSlotUsedToday(i));
 				m_repairingSlots[i].Init(m_inventoryGrid, repairingComponent != null && repairingComponent.unit != null && !string.IsNullOrEmpty(repairingComponent.unit.name) ? repairingComponent.unit : null
 					, item => item != null && (repairingComponent == null || repairingComponent.unit == null)
 					, i);
@@ -60,12 +61,51 @@ public class RepairStationPanel : AUIPanel
 		m_inventoryGrid.Init(null, null, InventoryGridPredicate);
 	}
 
+	protected override void OnHideStarted ()
+	{
+		base.OnHideStarted();
+
+		ReturnUnrepairedUnits();
+	}
+
+	private void ReturnUnrepairedUnits ()
+	{
+		for (int i = 0; i < m_repairingSlots.Length; i++)
+		{
+			if (m_repairingSlots[i].CurrentDisplay == null)
+				continue;
+
+			if (m_repairingSlots[i].CurrentDisplay.SavedData != null)
+				m_repairingSlots[i].CurrentDisplay.SavedData.isRepairing = false;
+
+			SetSlotData(i, null);
+			m_repairingSlots[i].Cleanup();
+		}
+	}
+
+	private bool IsSlotUsedToday ( int _index )
+	{
+		List<GameDatas.PlayerSave.DayData.RepairingUnitData> slots = GameDatas.current.currentPlayerSave.dayData.repairingComponents;
+
+		return slots.Count > _index && slots[_index] != null && slots[_index].wasUsedToday;
+	}
+
+	private void SetSlotData ( int _index, EntitySavedData _unit, bool _doLockSlot = false )
+	{
+		List<GameDatas.PlayerSave.DayData.RepairingUnitData> slots = GameDatas.current.currentPlayerSave.dayData.repairingComponents;
+
+		if (slots.Count <= _index)
+			return;
+
+		slots[_index] = new() { unit = _unit, wasUsedToday = _doLockSlot || IsSlotUsedToday(_index) };
+	}
+
 	public RepareUnitSlot GetFreeContainer ()
 	{
-		foreach (RepareUnitSlot slot in m_repairingSlots)
+		for (int i = 0; i < m_repairingSlots.Length; i++)
 		{
-			if (slot.gameObject.activeSelf && slot.CurrentDisplay == null)
-				return slot;
+			if (m_repairingSlots[i].gameObject.activeSelf && m_repairingSlots[i].CurrentDisplay == null && !IsSlotUsedToday(i))
+				return m_repairingSlots[i];
 		}
 
 		return null;
@@ -73,7 +113,7 @@ public class RepairStationPanel : AUIPanel
 
 	private void OnItemAddedOnSlot ( RepareUnitContainer _container, RepareUnitDisplay _display )
 	{
-		GameDatas.current.currentPlayerSave.dayData.repairingComponents[_container.Index] = new() { unit = _display.SavedData };
+		SetSlotData(_container.Index, _display.SavedData);
 		_display.SavedData.isRepairing = true;
 		GameDatas.current.currentPlayerSave.squadUnitsIndex.Remove(_display.SavedData.index);
 		m_repairingSlots[_container.Index].RefreshRepairData();
@@ -97,7 +137,7 @@ public class RepairStationPanel : AUIPanel
 			eq.isDamaged = false;
 
 		unit.isRepairing = false;
-		GameDatas.current.currentPlayerSave.dayData.repairingComponents[_slot.Index] = new();
+		SetSlotData(_slot.Index, null, _doLockSlot: true);
 		_slot.Cleanup();
 
 		Init();
@@ -105,7 +145,7 @@ public class RepairStationPanel : AUIPanel
 
 	private void OnItemRemovedOnSlot ( RepareUnitContainer _container, RepareUnitDisplay _display)
 	{
-		GameDatas.current.currentPlayerSave.dayData.repairingComponents[_container.Index] = null;
+		SetSlotData(_container.Index, null);
 		_display.SavedData.isRepairing = false;
 		m_repairingSlots[_container.Index].Cleanup();
 	}

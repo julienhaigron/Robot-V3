@@ -252,7 +252,7 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 				return;
 
 			appropriateContainer.RemoveFromOrigin(this);
-			appropriateContainer.LinkedContainer.RegisterInteraction(this);
+			appropriateContainer.RegisterInteraction(this);
 		}
 		else if (CurrentContainer != null && CurrentContainer.LinkedContainer == null && UIManager.Instance.currentPanel is RecyclePanel recyclePanel)
 		{
@@ -261,7 +261,7 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 				return;
 
 			appropriateContainer.RemoveFromOrigin(this);
-			appropriateContainer.LinkedContainer.RegisterInteraction(this);
+			appropriateContainer.RegisterInteraction(this);
 		}
 		/*else if (CurrentContainer != null && CurrentContainer.LinkedContainer == null && UIManager.Instance.currentPanel is RepairStationPanel repairPanel)
 		{

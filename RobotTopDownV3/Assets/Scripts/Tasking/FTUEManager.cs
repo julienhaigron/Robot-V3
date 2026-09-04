@@ -98,7 +98,7 @@ public class FTUEManager : SingletonPersistant<FTUEManager>
 		GameDatas.current.currentPlayerSave.didUnlockRecycler = true;
 		GameDatas.current.currentPlayerSave.didUnlockRepareStation = true;
 		GameDatas.current.currentPlayerSave.didUnlockReturnToHubPopup = true;
-		GameDatas.current.currentPlayerSave.didUnlockRecycler = true;
+		GameDatas.current.currentPlayerSave.didStartTuto = true;
 	}
 
 	#region Tuto Sequences
@@ -192,7 +192,11 @@ public class FTUEManager : SingletonPersistant<FTUEManager>
 		tutoSequence.Append(new WaitEndLoadingTask("Wait for end loading", ( context ) => GameDatas.current.currentPlayerSave.dayCount == 2));
 		tutoSequence.Append(new DialogueHighlightTask("Rdv hangar pour upgrade tes units ", ( context ) => context.UI.currentPanel is SoloHubPanel
 		, m_day3TutoDialogues[0], "hangarBtn"));
-		tutoSequence.Append(new ManualTask("Unlock recycler", null, () => GameDatas.current.currentPlayerSave.didUnlockRecycler = true));
+		tutoSequence.Append(new ManualTask("Unlock recycler", null, () =>
+		{
+			GameDatas.current.currentPlayerSave.didUnlockRecycler = true;
+			GameDatas.current.currentPlayerSave.didUnlockReturnToHubPopup = true;
+		}));
 		tutoSequence.Append(new DialogueHighlightTask("Blabla recyclage donne gold", ( context ) => context.UI.currentPanel is HangarPanel
 		, m_day3TutoDialogues[1], "recycleBtn"));
 

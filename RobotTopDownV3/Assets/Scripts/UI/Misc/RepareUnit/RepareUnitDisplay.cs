@@ -106,7 +106,7 @@ public class RepareUnitDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler,
 				return;
 
 			appropriateContainer.RemoveFromOrigin(this);
-			appropriateContainer.LinkedContainer.RegisterInteraction(this);
+			appropriateContainer.RegisterInteraction(this);
 		}
 	}
 

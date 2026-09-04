@@ -56,6 +56,7 @@ public class RepareUnitSlot : RepareUnitContainer
     public void SetInteractability (bool _canInterract)
 	{
         m_canInteract = _canInterract;
+        RefreshRepairData();
     }
 
     private void Awake ()
@@ -78,10 +79,10 @@ public class RepareUnitSlot : RepareUnitContainer
     public void RefreshRepairData ()
     {
         EntitySavedData unit = m_currentDisplay == null ? null : m_currentDisplay.SavedData;
-        bool canRepair = unit != null && !string.IsNullOrEmpty(unit.name) && unit.IsDamaged();
+        bool canRepair = m_canInteract && unit != null && !string.IsNullOrEmpty(unit.name) && unit.IsDamaged();
 
         if (m_priceSectionGO != null)
-            m_priceSectionGO.SetActive(canRepair);
+            m_priceSectionGO.SetActive(true);
 
         if (!canRepair)
         {
