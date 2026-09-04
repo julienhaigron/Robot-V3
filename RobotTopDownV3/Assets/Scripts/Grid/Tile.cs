@@ -307,6 +307,7 @@ public class Tile : MonoBehaviour
 
 	private void OnStartInputPhase ()
 	{
+		UI.ClearPositionText();
 		m_canInteract = false;
 		//if (m_plannedContentsPerTick[^1].entityID != -1)
 		for (int i = 1; i < m_plannedContentsPerTick.Length; i++)
