@@ -16,7 +16,7 @@ MonoBehaviour:
   - Id: BulletHit
     Category: 1
     Clip: {fileID: 8300000, guid: 321feb9f51af885488e5ed433aecd467, type: 3}
-    Volume: 0.59
+    Volume: 0.2
     Pitch: 1
   - Id: etfx_explosion_fireball2
     Category: 1

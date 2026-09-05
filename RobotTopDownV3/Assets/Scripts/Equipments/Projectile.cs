@@ -60,14 +60,8 @@ public class Projectile : PoolElement
 
 	public virtual void OnCollideWithEntity ( Entity _entity )
 	{
-		if (_entity == m_projectileData.owner)
+		if (_entity == m_projectileData.owner || !IsIntendedTarget(_entity))
 			return;
-
-		if (!IsIntendedTarget(_entity))
-		{
-			StopWithoutHit();
-			return;
-		}
 
 		Impact(_entity.Displacement.Coordinates.GetTile());
 	}
@@ -78,10 +72,7 @@ public class Projectile : PoolElement
 			return;
 
 		if (!IsIntendedTarget(selector.LinkedWall))
-		{
-			StopWithoutHit();
 			return;
-		}
 
 		Impact(selector.LinkedWall.LinkedTile);
 	}
@@ -120,8 +111,9 @@ public class Projectile : PoolElement
 
 	private void Impact ( Tile _impactTile )
 	{
-		if (m_projectileData.targetType == ProjectileData.TargetType.Wall && m_projectileData.targetWall != null
-			&& m_projectileData.damages != null && m_projectileData.damages.Count > 0)
+		bool didHitWall = m_projectileData.targetType == ProjectileData.TargetType.Wall && m_projectileData.targetWall != null;
+
+		if (didHitWall && m_projectileData.damages != null && m_projectileData.damages.Count > 0)
 			m_projectileData.targetWall.TakeDamage(m_projectileData.damages);
 
 		if (_impactTile != null && m_projectileData.isAttackSuccessful)
@@ -130,7 +122,7 @@ public class Projectile : PoolElement
 			m_onImpact?.Invoke(_impactTile);
 		}
 
-		PlayHitFeedbackAndDiscard();
+		PlayHitFeedbackAndDiscard(m_didHitSomething || didHitWall);
 	}
 
 	private bool IsIntendedTarget ( Wall _wall )
@@ -169,14 +161,10 @@ public class Projectile : PoolElement
 		return false;
 	}
 
-	private void StopWithoutHit ()
+	private void PlayHitFeedbackAndDiscard ( bool _didImpact )
 	{
-		Impact(null);
-	}
-
-	private void PlayHitFeedbackAndDiscard ()
-	{
-		SoundManager.Instance.Play(m_projectileData.onHitSFXID);
+		if (_didImpact)
+			SoundManager.Instance.Play(m_projectileData.onHitSFXID);
 
 		if (m_onHitPS != null)
 		{
