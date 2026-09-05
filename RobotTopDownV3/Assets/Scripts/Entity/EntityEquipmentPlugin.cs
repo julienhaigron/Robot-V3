@@ -384,8 +384,6 @@ public class EntityEquipmentPlugin : EntityPlugin
 
 		if (isAttackSuccessful || !isThereCoverBetween || roll < (1-GameConfig.current.game.entityCoverBonus))
 			_coverTile = null;
-		else if(_coverTile != null)
-			Debug.Log("Will hit wall");
 
 		StringBuilder detailsBuilder = new();
 		detailsBuilder.AppendLine($"<b>{m_linkedEntity.ID}</b> attacks <b>{_targetEntity.ID}</b>");
