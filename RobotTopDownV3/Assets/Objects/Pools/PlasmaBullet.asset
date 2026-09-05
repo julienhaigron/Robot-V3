@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d02b80ed8cd5c24fba1eb98ab380ef5, type: 3}
   m_Name: PlasmaBullet
   m_EditorClassIdentifier: 
-  baseElement: {fileID: 9190299420879906313, guid: 62a96d06a51340547b84781fbfdba07b, type: 3}
-  size: 15
+  baseElement: {fileID: 9190299420879906313, guid: 834d40d219885a34cb49ba676b8ecf55, type: 3}
+  size: 10
