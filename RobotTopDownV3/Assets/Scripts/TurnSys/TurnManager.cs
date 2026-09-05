@@ -351,7 +351,7 @@ public class TurnManager : Singleton<TurnManager>
 	{
 		AEntityAction action = GetSelectedDisplayAction();
 
-		if (action == null || _tile == null || m_currentActionTargetTiles.Contains(_tile))
+		if (action == null || _tile == null || action.Data.DoesResolveItsOwnTarget() || m_currentActionTargetTiles.Contains(_tile))
 			return false;
 
 		int maxTargetAmount = action.Data.GetMaxTargetAmount(action, action.PerformingEntity, _tile.GetEntity(true)) * action.Data.tokenDuration;
@@ -428,12 +428,20 @@ public class TurnManager : Singleton<TurnManager>
 	{
 		List<Tile> zoneTiles = new();
 
-		if (_action.Data.aoeType != EntityActionData.AOEType.Noone && _action.PerformingEntity != null)
+		if (_action.PerformingEntity != null)
 		{
-			foreach (Tile targetTile in m_currentActionTargetTiles)
+			if (_action.Data.DoesResolveItsOwnTarget())
 			{
-				if (targetTile != null)
-					zoneTiles.AddRange(_action.PerformingEntity.Equipment.GetTilesInAoERange(_action, targetTile, true));
+				Tile from = GridManager.Instance.Tiles[_action.supposedPositionAtActionStartID];
+				zoneTiles.AddRange(_action.PerformingEntity.Equipment.GetTilesInReach(_action, from, false, true));
+			}
+			else if (_action.Data.aoeType != EntityActionData.AOEType.Noone)
+			{
+				foreach (Tile targetTile in m_currentActionTargetTiles)
+				{
+					if (targetTile != null)
+						zoneTiles.AddRange(_action.PerformingEntity.Equipment.GetTilesInAoERange(_action, targetTile, true));
+				}
 			}
 		}
 
