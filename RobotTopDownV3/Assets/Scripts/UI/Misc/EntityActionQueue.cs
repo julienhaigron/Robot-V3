@@ -252,6 +252,16 @@ public class EntityActionQueue : MonoBehaviour
 		m_actionPriorityQueueTfm.gameObject.SetActive(true);
 		m_selectedActionIcon.sprite = GameAssets.current.ui.mainActionTypeIcons[_mainType];
 
+		if (!PlayerController.Instance.SelectedEntity.AI.ActionPriorityQueues.ContainsKey(_mainType))
+		{
+			Vector2 newSize2 = (m_actionPriorityQueueTfm.transform as RectTransform).sizeDelta;
+			newSize2.y = m_baseActionPriorityQueueHeight;
+			(m_actionPriorityQueueTfm.transform as RectTransform).sizeDelta = newSize2;
+			foreach (PriorityQueueActionSlot display in m_priorityQueueActionSlots)
+				display.Hide(true);
+			return;
+		}
+
 		List<EntityActionEnumID> actionPriorityQueue = new(PlayerController.Instance.SelectedEntity.AI.ActionPriorityQueues[_mainType].priorityQueue);
 		//actionPriorityQueue.Remove(TurnManager.Instance.CurrentActionTypeSelected);
 

@@ -31,7 +31,8 @@ public class PriorityQueueActionDisplay :
     public void Init (EntityActionEnumID _actionID, PriorityQueueActionSlot _slot, EntityActionQueue _queue )
 	{
         m_actionEnumID = _actionID;
-        m_canvas = _slot.Canvas;
+		m_icon.sprite = GameAssets.current.game.entityActionsData[_actionID].icon;
+		m_canvas = _slot.Canvas;
         m_originalSlot = _slot;
 		m_queue = _queue;
 
