@@ -69,6 +69,7 @@ MonoBehaviour:
     statTypePerDamageResistanceType:
       keys: 000000000100000002000000030000000400000005000000060000000700000008000000
       values: 0e0000000f00000010000000080000000a000000060000000b0000000700000009000000
+    pushCollisionDamage: 2
     hubSceneName: HubScene
     startScreenSceneName: MainScene
     missionAmountInMissionSelectionPanel: 12

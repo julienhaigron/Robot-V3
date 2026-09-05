@@ -61,6 +61,7 @@ public partial class GameConfig : ScriptableObject
 		public SerializableDictionary<WeaponEquipmentData.DamageCategory, EntityEquipmentData.SecondaryStat.StatType> statTypePerResistanceCategory;
 		public SerializableDictionary<WeaponEquipmentData.DamageType, EntityEquipmentData.SecondaryStat.StatType> statTypePerDamageType;
 		public SerializableDictionary<WeaponEquipmentData.DamageType, EntityEquipmentData.SecondaryStat.StatType> statTypePerDamageResistanceType;
+		public int pushCollisionDamage = 2;
 
 		[Title("Hub")]
 		public string hubSceneName;

@@ -33,6 +33,7 @@ public class EntityDisplacementPlugin : EntityPlugin
 
 	private Tween m_movementTween;
 	private Tween m_rotationTween;
+	private System.Action m_pendingMovementDoneAction;
 
 
 	private void Awake ()
@@ -50,6 +51,24 @@ public class EntityDisplacementPlugin : EntityPlugin
 			m_movementTween.Kill();
 		if (m_rotationTween.IsActive())
 			m_rotationTween.Kill();
+	}
+
+	//A killed tween never fires its OnComplete, and movement actions hang their continuation on it, so the
+	//pending action is released by hand rather than with Kill(true), which would snap the entity onto the
+	//destination it is being pulled away from.
+	private void KillMovementTweenAndReleasePendingAction ()
+	{
+		if (m_movementTween.IsActive())
+			m_movementTween.Kill();
+
+		ConsumePendingMovementDoneAction();
+	}
+
+	private void ConsumePendingMovementDoneAction ()
+	{
+		System.Action pendingAction = m_pendingMovementDoneAction;
+		m_pendingMovementDoneAction = null;
+		pendingAction?.Invoke();
 	}
 
 	public void RegisterOnCurrentTile ()
@@ -103,13 +122,13 @@ public class EntityDisplacementPlugin : EntityPlugin
 			Rotate(tile, GameConfig.current.game.actionDuration);
 			//Rotate(tile, Mathf.Max(GameConfig.current.game.entityRotationDuration, GameConfig.current.game.actionDuration));
 
-		if (m_movementTween.IsActive())
-			m_movementTween.Kill();
+		KillMovementTweenAndReleasePendingAction();
 
 		float movementDuration
  = _overrideMovementSpeed ? _overritenMovementSpeed : GameConfig.current.game.actionDuration;
+		m_pendingMovementDoneAction = onMovementDoneAction;
 		m_movementTween = transform.DOMove(tile.transform.position - m_bottomPosition.localPosition, movementDuration)
-			.SetEase(Ease.Linear).OnComplete(() => onMovementDoneAction?.Invoke());
+			.SetEase(Ease.Linear).OnComplete(ConsumePendingMovementDoneAction);
 		tile.SetEntity(m_linkedEntity, _isThisTurn: false);
 		m_previousCoordinate = m_coordinate;
 		m_lastMovementTick = TurnManager.currentTick;
@@ -144,8 +163,7 @@ public class EntityDisplacementPlugin : EntityPlugin
 			Rotate(tile, GameConfig.current.game.actionDuration);
 		//Rotate(tile, Mathf.Max(GameConfig.current.game.entityRotationDuration, GameConfig.current.game.actionDuration));
 
-		if (m_movementTween.IsActive())
-			m_movementTween.Kill();
+		KillMovementTweenAndReleasePendingAction();
 
 		transform.position = tile.transform.position - m_bottomPosition.localPosition;
 		tile.SetEntity(m_linkedEntity, _isThisTurn: false);
