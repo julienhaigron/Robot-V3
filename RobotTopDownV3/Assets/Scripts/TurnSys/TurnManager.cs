@@ -186,6 +186,11 @@ public class TurnManager : Singleton<TurnManager>
 
 	private void OnEntitySelected ( int? _selectedEntity )
 	{
+		PlayerController.Instance.ClearHoverPreviews();
+
+		if (EntityActionDisplay.SelectedDisplay != null)
+			EntityActionDisplay.SelectedDisplay.Deselect();
+
 		if (_selectedEntity.HasValue)
 		{
 			Entity selectedEntity = GameManager.Instance.GetEntityFromID(_selectedEntity.Value);
@@ -211,6 +216,8 @@ public class TurnManager : Singleton<TurnManager>
 
 	private void OnActionDisplaySelected ( EntityActionDisplay _selectedDisplay, bool _isModAction )
 	{
+		PlayerController.Instance.ClearHoverPreviews();
+
 		if (_selectedDisplay != null)
 		{
 			hasModActionSelected = _isModAction;
@@ -220,14 +227,30 @@ public class TurnManager : Singleton<TurnManager>
 			if (action.targetTileIDs != null)
 			{
 				foreach (int tileID in action.targetTileIDs)
+				{
+					if (tileID < 0)
+						continue;
+
 					m_currentActionTargetTiles.Add(GridManager.Instance.Tiles[tileID]);
+				}
+			}
+
+			if (action.Data.GetMainActionType() != EntityActionData.MainActionType.Movement)
+			{
+				m_currentEntityAction = action;
+				m_currentActionTypeSelected = action.enumID;
+				action.OnSelectActionTileInteractPredicatePrewarm();
+				onActionSelected?.Invoke(action);
 			}
 
 			RefreshActionDisplay(action.performingEntityID, false, action.TimeAtEnd);
+
+			ApplyTargetOutlines(action);
 		}
 		else
 		{
 			hasModActionSelected = false;
+			PlayerController.Instance.ClearTargetOutlines();
 			if (PlayerController.Instance.SelectedEntity != null)
 			{
 				SetCurrentActionSelected(PlayerController.Instance.SelectedEntity.AI.GetMovementAction().enumID, null, true);
@@ -311,6 +334,80 @@ public class TurnManager : Singleton<TurnManager>
 	public void AddTargetTileInCurrentAction ( Tile _tile )
 	{
 		m_currentActionTargetTiles.Add(_tile);
+	}
+
+	public AEntityAction GetSelectedDisplayAction ()
+	{
+		if (EntityActionDisplay.SelectedDisplay == null)
+			return null;
+
+		return hasModActionSelected
+			? EntityActionDisplay.SelectedDisplay.RecordedAction.freeAction
+			: EntityActionDisplay.SelectedDisplay.RecordedAction.action;
+	}
+
+	public bool TryAddTargetTileOnSelectedDisplay ( Tile _tile )
+	{
+		AEntityAction action = GetSelectedDisplayAction();
+
+		if (action == null || _tile == null || m_currentActionTargetTiles.Contains(_tile))
+			return false;
+
+		int maxTargetAmount = action.Data.GetMaxTargetAmount(action, action.PerformingEntity, _tile.GetEntity(true)) * action.Data.tokenDuration;
+
+		if (m_currentActionTargetTiles.Count >= maxTargetAmount)
+			return false;
+
+		m_currentActionTargetTiles.Add(_tile);
+		RefreshSelectedDisplayTargets(action);
+		return true;
+	}
+
+	public bool TryRemoveTargetTileOnSelectedDisplay ( Tile _tile )
+	{
+		AEntityAction action = GetSelectedDisplayAction();
+
+		if (action == null || _tile == null || !m_currentActionTargetTiles.Remove(_tile))
+			return false;
+
+		RefreshSelectedDisplayTargets(action);
+		return true;
+	}
+
+	private void RefreshSelectedDisplayTargets ( AEntityAction _action )
+	{
+		WriteCurrentTargetTilesInto(_action);
+		ApplyTargetOutlines(_action);
+	}
+
+	private void ApplyTargetOutlines ( AEntityAction _action )
+	{
+		List<Tile> zoneTiles = new();
+
+		if (_action.Data.aoeType != EntityActionData.AOEType.Noone && _action.PerformingEntity != null)
+		{
+			foreach (Tile targetTile in m_currentActionTargetTiles)
+			{
+				if (targetTile != null)
+					zoneTiles.AddRange(_action.PerformingEntity.Equipment.GetTilesInAoERange(_action, targetTile, true));
+			}
+		}
+
+		PlayerController.Instance.SetTargetOutlines(m_currentActionTargetTiles, zoneTiles, _action.Data.GetMainActionType());
+	}
+
+	private void WriteCurrentTargetTilesInto ( AEntityAction _action )
+	{
+		List<int> entitiesIds = new();
+		List<int> tilesIds = new();
+		foreach (Tile tile in m_currentActionTargetTiles)
+		{
+			if (tile.TryGetEntity(true, out Entity entity))
+				entitiesIds.Add(entity.ID);
+			tilesIds.Add(tile.coordinates.ID);
+		}
+		_action.targetedEntityIDs = entitiesIds.ToArray();
+		_action.targetTileIDs = tilesIds.ToArray();
 	}
 
 	/// <summary>
@@ -801,6 +898,8 @@ public class TurnManager : Singleton<TurnManager>
 			currentSelectedAction.DisplayAoEPreviewOnHoveredTile();
 			currentSelectedAction.GhostDisplay(m_currentStateTypeSelected);
 		}
+
+		PlayerController.Instance.RedrawTargetOutlines();
 	}
 
 	[Button]

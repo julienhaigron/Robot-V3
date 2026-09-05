@@ -25,6 +25,11 @@ public class TileUIPlugin : MonoBehaviour
 		m_positionDisplay.text = ".";
 	}
 
+	public void SetTargetIndexText ( string _text )
+	{
+		m_positionDisplay.text = _text;
+	}
+
 	public void UpdateGroundMaterial ()
 	{
 		m_groundMeshRendered.material = GameAssets.current.ui.tileGroundMaterials[m_linkedTile.GroundType];

@@ -150,6 +150,9 @@ public class ActionButton : BaseButton, IPointerEnterHandler, IPointerExitHandle
 		EntityActionData data = GameAssets.current.game.entityActionsData[m_actionType];
 		ToolTipManager.Instance.Show(data.displayName, data.GetDescription());
 
+		if (PlayerController.Instance != null)
+			PlayerController.Instance.ClearHoverPreviews();
+
 		DisplayRangePreview(data);
 	}
 
