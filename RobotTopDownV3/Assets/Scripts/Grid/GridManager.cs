@@ -371,7 +371,7 @@ public class GridManager : Singleton<GridManager>
 						visible = tile.IsVisible;
 					else
 					{
-						// Tuile parente sur la ligne origine -> tile, à distance dist-1
+						// Tuile parente sur la ligne origine -> tile, ï¿½ distance dist-1
 						float t = (dist - 1f) / dist;
 						TileCoordinates parentCoord = CubeRound(CubeLerp(origin, coord, t));
 						Tile parentTile = parentCoord.GetTile();
@@ -717,11 +717,11 @@ public class GridManager : Singleton<GridManager>
 		return tilesInRange;
 	}
 
-	public HashSet<Tile> GetTilesInVisionCone ( Tile _from, int _minDistance, int _maxDistance, int _orientation, bool _ignoreObstacles, bool _isThisTurn )
+	public HashSet<Tile> GetTilesInVisionCone ( Tile _from, int _minDistance, int _maxDistance, int _orientation, bool _ignoreObstacles, bool _isThisTurn, bool _ignoreVisibility = false )
 	{
 		HashSet<Tile> result = new();
 
-		List<Tile> candidates = GetTilesInVisionRange(_from, _minDistance, _maxDistance, _ignoreObstacles, _isThisTurn, false);
+		List<Tile> candidates = GetTilesInVisionRange(_from, _minDistance, _maxDistance, _ignoreObstacles, _isThisTurn, _ignoreVisibility);
 
 		foreach (Tile tile in candidates)
 		{

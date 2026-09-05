@@ -110,14 +110,33 @@ public class EntityActionQueue : MonoBehaviour
 
 	private void OnClickLeftActionTypeBtn ()
 	{
-		EntityActionData.MainActionType leftType = (EntityActionData.MainActionType)(((int)m_currentMainType + 2) % 3);
-		RefreshPriorityQueue(m_currentEntitySelected, leftType);
+		RefreshPriorityQueue(m_currentEntitySelected, GetNextFilledActionType(-1));
 	}
 
 	private void OnClickRightActionTypeBtn ()
 	{
-		EntityActionData.MainActionType rightType = (EntityActionData.MainActionType)(((int)m_currentMainType + 1) % 3);
-		RefreshPriorityQueue(m_currentEntitySelected, rightType);
+		RefreshPriorityQueue(m_currentEntitySelected, GetNextFilledActionType(1));
+	}
+
+	private EntityActionData.MainActionType GetNextFilledActionType ( int _step )
+	{
+		Entity selectedEntity = PlayerController.Instance.SelectedEntity;
+
+		if (selectedEntity == null)
+			return m_currentMainType;
+
+		int typeCount = Enum.GetValues(typeof(EntityActionData.MainActionType)).Length;
+
+		for (int i = 1; i < typeCount; i++)
+		{
+			int index = (((int)m_currentMainType + _step * i) % typeCount + typeCount) % typeCount;
+			EntityActionData.MainActionType type = (EntityActionData.MainActionType)index;
+
+			if (selectedEntity.AI.ActionPriorityQueues.TryGetValue(type, out EntityAIPlugin.ActionReplacements queue) && queue.priorityQueue.Count > 0)
+				return type;
+		}
+
+		return m_currentMainType;
 	}
 
 	private void OnStateSelected(Entity.EntityState _state )
@@ -283,24 +302,24 @@ public class EntityActionQueue : MonoBehaviour
 
 	public void RegisterActionPriorityOrder ()
 	{
-		EntityActionData.MainActionType mainType = TurnManager.Instance.CurrentActionSelected.Data.GetMainActionType();
 		List<EntityActionEnumID> actionsInOrder = new();
-		//actionsInOrder.Add(TurnManager.Instance.CurrentActionTypeSelected);
 		foreach (PriorityQueueActionSlot slot in m_priorityQueueActionSlots)
-			actionsInOrder.Add(slot.Display.ActionEnumId);
+		{
+			if (!slot.gameObject.activeSelf || slot.Display == null)
+				continue;
 
-		PlayerController.Instance.SelectedEntity.AI.SetActionPriorityQueue(mainType, actionsInOrder);
+			actionsInOrder.Add(slot.Display.ActionEnumId);
+		}
+
+		PlayerController.Instance.SelectedEntity.AI.SetActionPriorityQueue(m_currentMainType, actionsInOrder);
 	}
 
 	public void Move ( PriorityQueueActionDisplay display, PriorityQueueActionSlot target )
 	{
-		if (display.OriginalSlot == target)
-			return;
+		int from = Array.IndexOf(m_priorityQueueActionSlots, display.OriginalSlot);
+		int to = Array.IndexOf(m_priorityQueueActionSlots, target);
 
-		int from = m_priorityQueueActionSlots.ToList().IndexOf(display.OriginalSlot);
-		int to = m_priorityQueueActionSlots.ToList().IndexOf(target);
-
-		if (from == to)
+		if (from < 0 || to < 0 || from == to)
 			return;
 
 		if (from < to)

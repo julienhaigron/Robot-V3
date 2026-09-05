@@ -11,18 +11,21 @@ public class PriorityQueueActionDisplay :
     MonoBehaviour,
     IBeginDragHandler,
     IDragHandler,
-    IEndDragHandler
+    IEndDragHandler,
+    IPointerEnterHandler,
+    IPointerExitHandler
 {
     [Title("Dependencies")]
     [SerializeField] private Image m_icon;
 	[SerializeField] private CanvasGroup m_canvasGroup;
 
 	private Canvas m_canvas;
-    private Transform m_originalParent;
     private PriorityQueueActionSlot m_originalSlot;
 	public PriorityQueueActionSlot OriginalSlot => m_originalSlot;
 
-	//private bool m_dropSucceeded;
+	private bool m_isDragging;
+	public bool IsDragging => m_isDragging;
+
 	private EntityActionQueue m_queue;
 
 	private EntityActionEnumID m_actionEnumID;
@@ -32,8 +35,7 @@ public class PriorityQueueActionDisplay :
 	{
         m_actionEnumID = _actionID;
 		m_icon.sprite = GameAssets.current.game.entityActionsData[_actionID].icon;
-		m_canvas = _slot.Canvas;
-        m_originalSlot = _slot;
+		m_canvas = _slot.Canvas.rootCanvas;
 		m_queue = _queue;
 
 		_slot.SetDisplay(this);
@@ -44,22 +46,28 @@ public class PriorityQueueActionDisplay :
 		return m_originalSlot != _slot;
 	}
 
-	private void OnDnDropEnded ( PriorityQueueActionSlot _droppedOnSlot )
+	public void OnPointerEnter ( PointerEventData eventData )
 	{
-		m_originalSlot = _droppedOnSlot;
-		UIManager.Instance.GetPanel<InGamePanel>().ActionQueue.RegisterActionPriorityOrder();
+		if (eventData.pointerDrag != null)
+			return;
+
+		EntityActionData data = GameAssets.current.game.entityActionsData[m_actionEnumID];
+		ToolTipManager.Instance.Show(data.displayName, data.GetDescription());
+	}
+
+	public void OnPointerExit ( PointerEventData eventData )
+	{
+		ToolTipManager.Instance.Hide();
 	}
 
 	public void OnBeginDrag ( PointerEventData eventData )
 	{
-		//m_dropSucceeded = false;
+		m_isDragging = true;
 
-		m_originalParent = transform.parent;
-
-		if (m_originalSlot != null)
-			m_originalSlot.RemoveDisplay();
+		ToolTipManager.Instance.Hide();
 
 		transform.SetParent(m_canvas.transform, true);
+		transform.SetAsLastSibling();
 
 		m_canvasGroup.blocksRaycasts = false;
 	}
@@ -71,12 +79,13 @@ public class PriorityQueueActionDisplay :
 
 	public void OnEndDrag ( PointerEventData eventData )
 	{
+		m_isDragging = false;
 		m_canvasGroup.blocksRaycasts = true;
 
-		transform.SetParent(m_originalSlot.DisplayParent, false);
-		(transform as RectTransform).anchoredPosition = Vector2.zero;
+		if (m_originalSlot != null)
+			m_originalSlot.SetDisplay(this);
 
-		OnDnDropEnded(m_originalSlot);
+		m_queue.RegisterActionPriorityOrder();
 	}
 
 	public void HoverSlot ( PriorityQueueActionSlot slot )
@@ -90,18 +99,5 @@ public class PriorityQueueActionDisplay :
 	public void SetCurrentSlot ( PriorityQueueActionSlot slot )
 	{
 		m_originalSlot = slot;
-	}
-
-	public void TryDropOn ( PriorityQueueActionSlot slot )
-	{
-		if (!DnDPredicate(slot))
-			return;
-
-		m_queue.Move(this, slot);
-		//slot.SetDisplay(this);
-
-		//m_dropSucceeded = true;
-
-		OnDnDropEnded(slot);
 	}
 }

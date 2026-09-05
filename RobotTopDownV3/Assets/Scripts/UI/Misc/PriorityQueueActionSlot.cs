@@ -27,11 +27,16 @@ public class PriorityQueueActionSlot : MonoBehaviour, IPointerEnterHandler
 	{
 		m_display = display;
 
-		if (display != null)
-		{
-			display.transform.SetParent(m_displayParent, false);
-			(display.transform as RectTransform).anchoredPosition = Vector2.zero;
-		}
+		if (display == null)
+			return;
+
+		display.SetCurrentSlot(this);
+
+		if (display.IsDragging)
+			return;
+
+		display.transform.SetParent(m_displayParent, false);
+		(display.transform as RectTransform).anchoredPosition = Vector2.zero;
 	}
 
 	public PriorityQueueActionDisplay GetDisplay ()

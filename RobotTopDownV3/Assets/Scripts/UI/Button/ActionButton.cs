@@ -24,6 +24,7 @@ public class ActionButton : BaseButton, IPointerEnterHandler, IPointerExitHandle
 	protected void Awake ()
 	{
 		TurnManager.onActionAdded += OnActionAdded;
+		TurnManager.onActionRemoved += OnActionRemoved;
 		TurnManager.onActionSelected += OnSelectAction;
 		EntityActionDisplay.onSelect += OnEntityActionDisplaySelected;
 	}
@@ -31,6 +32,7 @@ public class ActionButton : BaseButton, IPointerEnterHandler, IPointerExitHandle
 	protected void OnDestroy ()
 	{
 		TurnManager.onActionAdded -= OnActionAdded;
+		TurnManager.onActionRemoved -= OnActionRemoved;
 		TurnManager.onActionSelected -= OnSelectAction;
 		EntityActionDisplay.onSelect -= OnEntityActionDisplaySelected;
 	}
@@ -66,8 +68,11 @@ public class ActionButton : BaseButton, IPointerEnterHandler, IPointerExitHandle
 			? TurnManager.Instance.RecordedActions[entityID].ToArray()[^1].action.TimeAtEnd : TurnManager.currentTick;
 
 		AEntityAction action = TurnManager.Instance.GetAction(m_actionType, PlayerController.Instance.SelectedEntity.ID, m_linkedEquipmentData, timeAtStart);
-		SetInteractability(Condition.UseConditionPredicate(action, PlayerController.Instance.SelectedEntity, null, action.Data.conditionType));
 
+		bool hasEnoughToken = TurnManager.Instance.RemainingActionToken.TryGetValue(entityID, out int remainingToken)
+			&& remainingToken >= action.Data.GetTokenTotalCost(action, PlayerController.Instance.SelectedEntity, null);
+
+		SetInteractability(hasEnoughToken && Condition.UseConditionPredicate(action, PlayerController.Instance.SelectedEntity, null, action.Data.conditionType));
 	}
 
 	protected void RefreshVisual ()
@@ -86,6 +91,11 @@ public class ActionButton : BaseButton, IPointerEnterHandler, IPointerExitHandle
 	private void OnActionAdded (TurnManager.RecordedAction _addedAction)
 	{
 		//refresh if is available
+		RefreshVisual();
+	}
+
+	private void OnActionRemoved ( TurnManager.RecordedAction _removedAction )
+	{
 		RefreshVisual();
 	}
 
@@ -174,7 +184,7 @@ public class ActionButton : BaseButton, IPointerEnterHandler, IPointerExitHandle
 	private IEnumerable<Tile> GetTilesInRangeOf ( AEntityAction _action, Entity _entity, Tile _from )
 	{
 		if (_action.Data.GetMainActionType() != EntityActionData.MainActionType.Movement)
-			return _entity.Equipment.GetTilesInReach(_action, _from, true);
+			return _entity.Equipment.GetTilesInReach(_action, _from, true, true);
 
 		List<Tile> tilesInRange = new();
 		_action.OnSelectActionTileInteractPredicatePrewarm();

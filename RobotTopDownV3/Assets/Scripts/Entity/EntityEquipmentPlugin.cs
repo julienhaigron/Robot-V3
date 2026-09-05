@@ -254,7 +254,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 		return GetTilesInWeaponRange(_action, _isThisTurn, from, orientation);
 	}
 
-	public List<Tile> GetTilesInWeaponRange( AEntityAction _action, bool _isThisTurn, Tile _from, int _orientation )
+	public List<Tile> GetTilesInWeaponRange( AEntityAction _action, bool _isThisTurn, Tile _from, int _orientation, bool _ignoreVisibility = false )
 	{
 		List<Tile> tilesInRange = new();
 		int maxDistance = _action.Data.GetMaxRange(_action, m_linkedEntity, null);
@@ -274,20 +274,20 @@ public class EntityEquipmentPlugin : EntityPlugin
 			case EntityActionData.AOEType.ThinArc:
 			case EntityActionData.AOEType.Chain:
 			case EntityActionData.AOEType.Ray:
-				tilesInRange.AddRange(GridManager.Instance.GetTilesInVisionCone(_from, minDistance, maxDistance, _orientation, ignoreObstacles, _isThisTurn));
+				tilesInRange.AddRange(GridManager.Instance.GetTilesInVisionCone(_from, minDistance, maxDistance, _orientation, ignoreObstacles, _isThisTurn, _ignoreVisibility));
 				break;
 			case EntityActionData.AOEType.LargeCone:
 			case EntityActionData.AOEType.ThinCone:
 				if (_action.Data.aoECenterType == EntityActionData.AOECenterType.Self)
 					tilesInRange.AddRange(GridManager.Instance.GetTilesInCone(_from, minDistance, maxDistance, _orientation, _action.Data.aoeType, _isThisTurn));
 				else
-					tilesInRange.AddRange(GridManager.Instance.GetTilesInVisionCone(_from, minDistance, maxDistance, _orientation, ignoreObstacles, _isThisTurn));
+					tilesInRange.AddRange(GridManager.Instance.GetTilesInVisionCone(_from, minDistance, maxDistance, _orientation, ignoreObstacles, _isThisTurn, _ignoreVisibility));
 				break;
 			case EntityActionData.AOEType.Circle:
 				if (_action.Data.aoECenterType == EntityActionData.AOECenterType.Self)
-					tilesInRange.AddRange(GridManager.Instance.GetTilesInVisionRange(_from, minDistance, maxDistance, ignoreObstacles, _isThisTurn, false));
+					tilesInRange.AddRange(GridManager.Instance.GetTilesInVisionRange(_from, minDistance, maxDistance, ignoreObstacles, _isThisTurn, _ignoreVisibility));
 				else
-					tilesInRange.AddRange(GridManager.Instance.GetTilesInVisionCone(_from, minDistance, maxDistance, _orientation, ignoreObstacles, _isThisTurn));
+					tilesInRange.AddRange(GridManager.Instance.GetTilesInVisionCone(_from, minDistance, maxDistance, _orientation, ignoreObstacles, _isThisTurn, _ignoreVisibility));
 				break;
 		}
 
@@ -295,7 +295,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 		return tilesInRange;
 	}
 
-	public HashSet<Tile> GetTilesInReach ( AEntityAction _action, Tile _from, bool _isThisTurn = true )
+	public HashSet<Tile> GetTilesInReach ( AEntityAction _action, Tile _from, bool _isThisTurn = true, bool _ignoreVisibility = false )
 	{
 		HashSet<Tile> tilesInReach = new();
 		if (_action == null || _from == null)
@@ -304,7 +304,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 		if (_action.Data.GetMainActionType() != EntityActionData.MainActionType.Attack)
 		{
 			foreach (Tile tile in GridManager.Instance.GetTilesInVisionRange(_from, _action.Data.minDistance
-				, _action.Data.GetMaxRange(_action, m_linkedEntity, null), false, _isThisTurn, false))
+				, _action.Data.GetMaxRange(_action, m_linkedEntity, null), false, _isThisTurn, _ignoreVisibility))
 				tilesInReach.Add(tile);
 
 			return tilesInReach;
@@ -312,7 +312,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 
 		for (int orientation = 0; orientation < 6; orientation++)
 		{
-			foreach (Tile tile in GetTilesInWeaponRange(_action, _isThisTurn, _from, orientation))
+			foreach (Tile tile in GetTilesInWeaponRange(_action, _isThisTurn, _from, orientation, _ignoreVisibility))
 				tilesInReach.Add(tile);
 		}
 

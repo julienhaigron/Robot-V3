@@ -234,13 +234,13 @@ public class AttackAction : AEntityAction
 		m_tilesInRange = null;
 
 		if (TurnManager.Instance.CurrentActionTargetTiles.Count % maxTargetAmount != 0)
-			m_tilesInRange = user.Equipment.GetTilesInWeaponRange(this, false, from, m_orientations.Count == 0 ? currentOrientation : m_orientations[^1]).ToHashSet();
+			m_tilesInRange = user.Equipment.GetTilesInWeaponRange(this, false, from, m_orientations.Count == 0 ? currentOrientation : m_orientations[^1], true).ToHashSet();
 		else
 		{
 			m_tilesInRange = new();
 			for (int i = 0; i < 6; i++)
 			{
-				foreach (Tile tile in user.Equipment.GetTilesInWeaponRange(this, false, from, i))
+				foreach (Tile tile in user.Equipment.GetTilesInWeaponRange(this, false, from, i, true))
 					m_tilesInRange.Add(tile);
 			}
 		}
