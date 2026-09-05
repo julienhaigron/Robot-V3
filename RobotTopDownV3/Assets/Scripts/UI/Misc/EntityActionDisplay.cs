@@ -21,6 +21,7 @@ public class EntityActionDisplay :
 	[SerializeField] private Transform m_actionIconPivot;
 	[SerializeField] private Image m_actionIconImg;
 	[SerializeField] private GameObject m_actionIconSelectionOutlineGO;
+	[SerializeField] private GameObject m_missingTargetIconGO;
 	[SerializeField] private Image m_modActionIconImg;
 	[SerializeField] private GameObject m_modActionIconSelectionOutlineGO;
 	[SerializeField] private Image m_mainHachureLeft;
@@ -221,7 +222,7 @@ public class EntityActionDisplay :
 			- (_timeAtStart != 0 && (_timeAtStart + _totalDuration != 10) ? m_iconFirstORLastElemOffset : 0f);
 		(m_actionIconPivot as RectTransform).anchoredPosition = newIconPos2;
 
-		//hachuré
+		//hachurï¿½
 		float greenHatchedWidth = (activeDuration > 1 ? (m_greenHatchedOneTickWidth * ((float)activeDuration / 2f)) : m_baseGreenHatchedWidth);
 
 		Vector2 leftGreenHatchedWidth = (m_mainHachureLeft.transform as RectTransform).sizeDelta;
@@ -265,6 +266,22 @@ public class EntityActionDisplay :
 
 
 		RefreshSelectionOutlines();
+		RefreshMissingTargetWarning();
+	}
+
+	public void RefreshMissingTargetWarning ()
+	{
+		if (m_recordedAction == null || m_recordedAction.action == null)
+			return;
+
+		bool isMissingTarget = m_recordedAction.action.IsMissingTarget();
+		Sprite warningIcon = GameAssets.current.ui.missingTargetIcon;
+
+		if (m_missingTargetIconGO != null)
+			m_missingTargetIconGO.SetActive(isMissingTarget);
+
+		m_actionIconImg.sprite = isMissingTarget && warningIcon != null ? warningIcon : m_recordedAction.action.Data.icon;
+		m_actionIconImg.color = isMissingTarget ? GameAssets.current.ui.missingTargetColor : Color.white;
 	}
 
 	private void RefreshSelectionOutlines ()

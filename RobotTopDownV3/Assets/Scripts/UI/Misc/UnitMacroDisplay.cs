@@ -19,6 +19,9 @@ public class UnitMacroDisplay : MonoBehaviour
 		m_btn.onClick += OnClickSelect;
 		PlayerController.onEntitySelected += OnEntitySelected;
 		EntityEquipmentPlugin.onAnyEntityDeath += OnAnyEntityDeath;
+		TurnManager.onActionAdded += OnActionAdded;
+		TurnManager.onActionRemoved += OnActionRemoved;
+		TurnManager.onActionTargetsChanged += RefreshMissingTargetWarning;
 	}
 
 	private void OnDestroy ()
@@ -26,6 +29,29 @@ public class UnitMacroDisplay : MonoBehaviour
 		m_btn.onClick -= OnClickSelect;
 		PlayerController.onEntitySelected -= OnEntitySelected;
 		EntityEquipmentPlugin.onAnyEntityDeath -= OnAnyEntityDeath;
+		TurnManager.onActionAdded -= OnActionAdded;
+		TurnManager.onActionRemoved -= OnActionRemoved;
+		TurnManager.onActionTargetsChanged -= RefreshMissingTargetWarning;
+	}
+
+	private void OnActionAdded ( TurnManager.RecordedAction _addedAction )
+	{
+		RefreshMissingTargetWarning();
+	}
+
+	private void OnActionRemoved ( TurnManager.RecordedAction _removedAction )
+	{
+		RefreshMissingTargetWarning();
+	}
+
+	public void RefreshMissingTargetWarning ()
+	{
+		if (m_linkedEntity == null || TurnManager.Instance == null)
+			return;
+
+		m_iconImg.color = TurnManager.Instance.HasActionMissingTarget(m_linkedEntity.ID)
+			? GameAssets.current.ui.missingTargetColor
+			: Color.white;
 	}
 
 	public void Init ( Entity _entity)
@@ -34,6 +60,7 @@ public class UnitMacroDisplay : MonoBehaviour
 		m_iconImg.sprite = _entity.Data.FrameData.icon;
 		m_linkedEntity = _entity;
 		m_btn.SetInteractability(!_entity.Equipment.IsDead);
+		RefreshMissingTargetWarning();
 	}
 
 	public void Show ()

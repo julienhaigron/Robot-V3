@@ -448,10 +448,27 @@ public class PlayerController : Singleton<PlayerController>
 
 	private void OnTileHovered ( Tile _tile )
 	{
-		if (m_selectedEntity == null || _tile == m_hoveredTile || EntityActionDisplay.SelectedDisplay != null || !_tile.CanInteract)
+		AEntityAction editedAction = m_turnManager.GetSelectedDisplayAction();
+		bool isEditingTargets = editedAction != null && editedAction == m_turnManager.CurrentActionSelected;
+
+		if (m_selectedEntity == null || _tile == m_hoveredTile || !_tile.CanInteract
+			|| (EntityActionDisplay.SelectedDisplay != null && !isEditingTargets))
 			return;
 
 		m_hoveredTile = _tile;
+
+		if (isEditingTargets)
+		{
+			if (TurnManager.Instance.currentPhase != TurnManager.TurnPhase.Recording)
+				return;
+
+			if (m_turnManager.CanAddTargetOnSelectedDisplay(_tile))
+				m_turnManager.RefreshActionDisplay(m_selectedEntity.ID, false, editedAction.TimeAtEnd);
+			else
+				ClearAoEPreviewOutlines();
+
+			return;
+		}
 
 		if (TurnManager.Instance.currentPhase == TurnManager.TurnPhase.Recording)
 		{

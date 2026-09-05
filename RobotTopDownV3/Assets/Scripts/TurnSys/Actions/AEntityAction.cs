@@ -106,6 +106,13 @@ public abstract class AEntityAction : INetworkSerializable
 		targetedEntityIDs = _targetedEntityIDs;
 	}
 
+	public bool IsMissingTarget ()
+	{
+		return Data.targetType != EntityActionData.TargetType.Self
+			&& !Data.DoesResolveItsOwnTarget()
+			&& (targetTileIDs == null || targetTileIDs.Length == 0);
+	}
+
 	public void DisplayAoEPreviewOnHoveredTile ()
 	{
 		Tile hoveredTile = PlayerController.Instance == null ? null : PlayerController.Instance.HoveredTile;

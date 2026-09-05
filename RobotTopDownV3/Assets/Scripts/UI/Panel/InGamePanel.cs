@@ -122,6 +122,14 @@ public sealed class InGamePanel : AUIPanel
 		if (TurnManager.Instance.currentPhase != TurnManager.TurnPhase.Recording)
 			return;
 
+		if (TurnManager.Instance.TryGetFirstEntityWithMissingTarget(out Entity entityMissingTarget))
+		{
+			if (PlayerController.Instance.SelectedEntity != entityMissingTarget)
+				PlayerController.Instance.SelectEntity(entityMissingTarget);
+
+			return;
+		}
+
 		foreach (Entity entity in GameManager.Instance.PlayersEntityAnchor[0].Entities)
 		{
 			if (entity.Equipment.IsDead)

@@ -89,6 +89,10 @@ public class GameAssets : ScriptableObject
         public SerializableDictionary<EntityEquipmentData.EntityFaction, Color> corporationsColors = new();
         public SerializableDictionary<EntityEquipmentData.EquipmentType, Color> componentColors = new();
 
+        [Title("Missing Target Warning")]
+        public Sprite missingTargetIcon;
+        public Color missingTargetColor = new(1f, .15f, .15f);
+
         [Title("Action Range Colors")]
         public Color movementRangeColor = Color.green;
         public Color movementRangePreviewColor = new(.6f, 1f, .6f);

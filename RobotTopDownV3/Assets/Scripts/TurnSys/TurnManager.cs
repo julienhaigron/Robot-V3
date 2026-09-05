@@ -17,6 +17,7 @@ public class TurnManager : Singleton<TurnManager>
 	public static Action onEndPlayPhase;
 	public static Action onNewRoundStart;
 	public static Action onEndLevel;
+	public static Action onActionTargetsChanged;
 	
 	public static int currentTick = 0;
 
@@ -346,7 +347,7 @@ public class TurnManager : Singleton<TurnManager>
 			: EntityActionDisplay.SelectedDisplay.RecordedAction.action;
 	}
 
-	public bool TryAddTargetTileOnSelectedDisplay ( Tile _tile )
+	public bool CanAddTargetOnSelectedDisplay ( Tile _tile )
 	{
 		AEntityAction action = GetSelectedDisplayAction();
 
@@ -355,11 +356,16 @@ public class TurnManager : Singleton<TurnManager>
 
 		int maxTargetAmount = action.Data.GetMaxTargetAmount(action, action.PerformingEntity, _tile.GetEntity(true)) * action.Data.tokenDuration;
 
-		if (m_currentActionTargetTiles.Count >= maxTargetAmount)
+		return m_currentActionTargetTiles.Count < maxTargetAmount;
+	}
+
+	public bool TryAddTargetTileOnSelectedDisplay ( Tile _tile )
+	{
+		if (!CanAddTargetOnSelectedDisplay(_tile))
 			return false;
 
 		m_currentActionTargetTiles.Add(_tile);
-		RefreshSelectedDisplayTargets(action);
+		RefreshSelectedDisplayTargets(GetSelectedDisplayAction());
 		return true;
 	}
 
@@ -377,7 +383,45 @@ public class TurnManager : Singleton<TurnManager>
 	private void RefreshSelectedDisplayTargets ( AEntityAction _action )
 	{
 		WriteCurrentTargetTilesInto(_action);
+
+		PlayerController.Instance.ClearHoverPreviews();
+		RefreshActionDisplay(_action.performingEntityID, false, _action.TimeAtEnd);
 		ApplyTargetOutlines(_action);
+
+		if (EntityActionDisplay.SelectedDisplay != null)
+			EntityActionDisplay.SelectedDisplay.RefreshMissingTargetWarning();
+
+		onActionTargetsChanged?.Invoke();
+	}
+
+	public bool HasActionMissingTarget ( int _entityID )
+	{
+		if (!m_recordedActionInput.ContainsKey(_entityID))
+			return false;
+
+		foreach (RecordedAction recordedAction in m_recordedActionInput[_entityID])
+		{
+			if (recordedAction.action != null && recordedAction.action.IsMissingTarget())
+				return true;
+		}
+
+		return false;
+	}
+
+	public bool TryGetFirstEntityWithMissingTarget ( out Entity _entity )
+	{
+		_entity = null;
+
+		foreach (Entity entity in GameManager.Instance.PlayersEntityAnchor[GameManager.Instance.PlayerID].Entities)
+		{
+			if (entity.Equipment.IsDead || !HasActionMissingTarget(entity.ID))
+				continue;
+
+			_entity = entity;
+			return true;
+		}
+
+		return false;
 	}
 
 	private void ApplyTargetOutlines ( AEntityAction _action )
