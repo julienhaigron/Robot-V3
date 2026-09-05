@@ -403,6 +403,10 @@ public class TurnManager : Singleton<TurnManager>
 		{
 			if (recordedAction.action != null && recordedAction.action.IsMissingTarget())
 				return true;
+
+			bool hasFreeAction = recordedAction.freeActionType != EntityActionEnumID.Unknowned && recordedAction.freeActionType != EntityActionEnumID.Wait;
+			if (hasFreeAction && recordedAction.freeAction != null && recordedAction.freeAction.IsMissingTarget())
+				return true;
 		}
 
 		return false;

@@ -22,6 +22,7 @@ public class EntityActionDisplay :
 	[SerializeField] private Image m_actionIconImg;
 	[SerializeField] private GameObject m_actionIconSelectionOutlineGO;
 	[SerializeField] private GameObject m_missingTargetIconGO;
+	[SerializeField] private GameObject m_missingTargetModIconGO;
 	[SerializeField] private Image m_modActionIconImg;
 	[SerializeField] private GameObject m_modActionIconSelectionOutlineGO;
 	[SerializeField] private Image m_mainHachureLeft;
@@ -57,6 +58,10 @@ public class EntityActionDisplay :
 	private bool m_hasModActionSelected = false;
 	private bool m_isLeftAngleRectangle;
 
+	private Color m_actionIconBaseColor;
+	private Color m_modActionIconBaseColor;
+	private bool m_didCacheIconColors;
+
 	public void Init ( TurnManager.RecordedAction _recordedAction, bool _isLeftAngleRectangle )
 	{
 		m_hasModActionSelected = false;
@@ -89,6 +94,7 @@ public class EntityActionDisplay :
 				m_recordedAction.freeActionType = EntityActionEnumID.Wait;
 
 				RefreshVisual(m_recordedAction.action.timeAtStart, m_recordedAction.action.TotalDuration, m_recordedAction.action.preparationDuration, m_recordedAction.action.cooldownDuration, m_isLeftAngleRectangle);
+				TurnManager.onActionTargetsChanged?.Invoke();
 				//TurnManager.Instance.RefreshActionDisplay(m_recordedAction.action.performingEntityID, true);
 			}
 			else
@@ -271,17 +277,45 @@ public class EntityActionDisplay :
 
 	public void RefreshMissingTargetWarning ()
 	{
-		if (m_recordedAction == null || m_recordedAction.action == null)
+		if (m_recordedAction == null)
 			return;
 
-		bool isMissingTarget = m_recordedAction.action.IsMissingTarget();
+		CacheIconBaseColors();
+
+		RefreshMissingTargetOn(m_actionIconImg, m_recordedAction.action, m_missingTargetIconGO, m_actionIconBaseColor);
+		RefreshMissingTargetOn(m_modActionIconImg, GetDisplayedFreeAction(), m_missingTargetModIconGO, m_modActionIconBaseColor);
+	}
+
+	private AEntityAction GetDisplayedFreeAction ()
+	{
+		return m_recordedAction.freeActionType != EntityActionEnumID.Unknowned && m_recordedAction.freeActionType != EntityActionEnumID.Wait
+			? m_recordedAction.freeAction : null;
+	}
+
+	private void RefreshMissingTargetOn ( Image _icon, AEntityAction _action, GameObject _warningGO, Color _baseColor )
+	{
+		bool isMissingTarget = _action != null && _action.IsMissingTarget();
+
+		if (_warningGO != null)
+			_warningGO.SetActive(isMissingTarget);
+
+		_icon.color = isMissingTarget ? GameAssets.current.ui.missingTargetColor : _baseColor;
+
+		if (_action == null)
+			return;
+
 		Sprite warningIcon = GameAssets.current.ui.missingTargetIcon;
+		_icon.sprite = isMissingTarget && warningIcon != null ? warningIcon : _action.Data.icon;
+	}
 
-		if (m_missingTargetIconGO != null)
-			m_missingTargetIconGO.SetActive(isMissingTarget);
+	private void CacheIconBaseColors ()
+	{
+		if (m_didCacheIconColors)
+			return;
 
-		m_actionIconImg.sprite = isMissingTarget && warningIcon != null ? warningIcon : m_recordedAction.action.Data.icon;
-		m_actionIconImg.color = isMissingTarget ? GameAssets.current.ui.missingTargetColor : Color.white;
+		m_actionIconBaseColor = m_actionIconImg.color;
+		m_modActionIconBaseColor = m_modActionIconImg.color;
+		m_didCacheIconColors = true;
 	}
 
 	private void RefreshSelectionOutlines ()
