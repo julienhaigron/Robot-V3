@@ -15,7 +15,7 @@ MonoBehaviour:
   spreadsheetId: https://docs.google.com/spreadsheets/d/1quAn64T5zuE6npFmDzjOhNFFvw4UJaXSoWxX-uvy3gI/export?format=csv&gid=1875123267
   displayName: Munition Repoussante
   enumID: 36
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 9333dca529321ab428f1f58f33b0e0bd, type: 3}
   tileOutlineColor: {r: 0, g: 1, b: 0, a: 1}
   m_tokenPreparationDuration: 1
   m_tokenCooldown: 1

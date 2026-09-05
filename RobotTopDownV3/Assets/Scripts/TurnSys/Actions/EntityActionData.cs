@@ -359,7 +359,7 @@ public class EntityActionData : AParsableScriptableObject
 			totalTokenCooldown -= (GameAssets.current.game.entityEffects[EntityPassiveEffectEnumID.QuickDraw] as QuickDrawPassiveEffect).reductionAmount;
 		}
 
-		return totalTokenCooldown;
+		return Mathf.Max(0, totalTokenCooldown);
 	}
 
 	public int GetTokenCooldownCost ( AEntityAction _action, Entity _performingEntity, Entity _targetEntity )
@@ -377,7 +377,7 @@ public class EntityActionData : AParsableScriptableObject
 			totalTokenCooldown -= (GameAssets.current.game.entityEffects[EntityPassiveEffectEnumID.QuickDraw] as QuickDrawPassiveEffect).reductionAmount;
 		}
 
-		return totalTokenCooldown;
+		return Mathf.Max(0, totalTokenCooldown);
 	}
 
 	public int GetMaxRange ( AEntityAction _action, Entity _performingEntity, Entity _targetEntity )

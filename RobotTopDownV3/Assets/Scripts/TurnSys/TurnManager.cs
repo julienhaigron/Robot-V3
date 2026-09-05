@@ -914,7 +914,7 @@ public class TurnManager : Singleton<TurnManager>
 				RecordedAction recordedAction = recordedActions[entityID].Dequeue();
 				LogConsole.AddLog(entityID + " will play new action this tick " + recordedAction.action.ToString(), LogConsole.LogEventType.ActionResolution);
 				m_actionsToPlay[entityID].Enqueue(recordedAction);
-				totalCost += recordedAction.action.TotalDuration;
+				totalCost += Mathf.Max(1, recordedAction.action.TotalDuration);
 			}
 
 			if (m_recordedActionInput[entityID].Count == 0)
@@ -1131,7 +1131,8 @@ public class TurnManager : Singleton<TurnManager>
 
 		foreach (int entityID in entityIDs)
 		{
-			if (m_actionsToPlay.ContainsKey(entityID) && m_actionsToPlay[entityID] != null && m_actionsToPlay[entityID].Count > 0)
+			if (m_actionsToPlay.ContainsKey(entityID) && m_actionsToPlay[entityID] != null && m_actionsToPlay[entityID].Count > 0
+				&& m_actionsToPlay[entityID].Peek().action.timeAtStart <= currentTick)
 			{
 				RecordedAction action = m_actionsToPlay[entityID].Dequeue();
 				if (!m_actionsBeingDone.ContainsKey(entityID))
@@ -1139,6 +1140,12 @@ public class TurnManager : Singleton<TurnManager>
 				else
 					m_actionsBeingDone[entityID] = new Tuple<RecordedAction, bool>(action, false);
 			}
+		}
+
+		if (m_actionsBeingDone.Count == 0)
+		{
+			TryEndRoundTick();
+			return;
 		}
 
 		foreach (Tuple<RecordedAction, bool> tuple in m_actionsBeingDone.Values.ToArray())
@@ -1182,13 +1189,24 @@ public class TurnManager : Singleton<TurnManager>
 
 	private void OnActionEndTick ( int _performingEntityID, bool _didEndAction )
 	{
-		if (_didEndAction && m_actionsToPlay.ContainsKey(_performingEntityID) && m_actionsToPlay[_performingEntityID].Count > 0)
+		bool hasQueuedAction = _didEndAction && m_actionsToPlay.ContainsKey(_performingEntityID)
+			&& m_actionsToPlay[_performingEntityID] != null && m_actionsToPlay[_performingEntityID].Count > 0;
+
+		if (hasQueuedAction && m_actionsToPlay[_performingEntityID].Peek().action.timeAtStart <= currentTick)
 		{
 			//performing entity still has actions this phase to do
 			RecordedAction action = m_actionsToPlay[_performingEntityID].Dequeue();
-			Debug.Log("has other actions to do " + action.action.ToString());
 			m_actionsBeingDone[_performingEntityID] = new(action, false);
 			PlayActionTick(action);
+		}
+		else if (hasQueuedAction)
+		{
+			//next action starts on a later tick, it is kept queued instead of being burnt on this one
+			Debug.LogWarning("entity " + _performingEntityID + " has " + m_actionsToPlay[_performingEntityID].Count
+				+ " action(s) queued starting at tick " + m_actionsToPlay[_performingEntityID].Peek().action.timeAtStart
+				+ " while current tick is " + currentTick);
+			m_actionsBeingDone.Remove(_performingEntityID);
+			TryEndRoundTick();
 		}
 		else
 		{

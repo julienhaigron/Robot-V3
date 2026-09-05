@@ -15,7 +15,7 @@ MonoBehaviour:
   spreadsheetId: https://docs.google.com/spreadsheets/d/1quAn64T5zuE6npFmDzjOhNFFvw4UJaXSoWxX-uvy3gI/export?format=csv&gid=709140422
   displayName: Perforate
   enumID: 7
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: c756b03adf260e044b64fe75bb9664f0, type: 3}
   tileOutlineColor: {r: 0, g: 1, b: 0, a: 1}
   m_tokenPreparationDuration: 0
   m_tokenCooldown: 0

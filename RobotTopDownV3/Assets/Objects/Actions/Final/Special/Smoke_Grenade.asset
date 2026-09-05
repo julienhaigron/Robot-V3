@@ -15,7 +15,7 @@ MonoBehaviour:
   spreadsheetId: https://docs.google.com/spreadsheets/d/1quAn64T5zuE6npFmDzjOhNFFvw4UJaXSoWxX-uvy3gI/export?format=csv&gid=1776854952
   displayName: Smoke_Grenade
   enumID: 31
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 9ed2027edb747c542ad10b2944885814, type: 3}
   tileOutlineColor: {r: 0, g: 1, b: 0, a: 1}
   m_tokenPreparationDuration: 1
   m_tokenCooldown: 0

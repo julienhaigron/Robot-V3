@@ -15,7 +15,7 @@ MonoBehaviour:
   spreadsheetId: https://docs.google.com/spreadsheets/d/1quAn64T5zuE6npFmDzjOhNFFvw4UJaXSoWxX-uvy3gI/export?format=csv&gid=709140422
   displayName: Spear_Strike_Flurry
   enumID: 12
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 481e25beb81803f41ab1043274d40d5e, type: 3}
   tileOutlineColor: {r: 0, g: 1, b: 0, a: 1}
   m_tokenPreparationDuration: 1
   m_tokenCooldown: 0

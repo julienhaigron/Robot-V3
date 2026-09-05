@@ -15,7 +15,7 @@ MonoBehaviour:
   spreadsheetId: https://docs.google.com/spreadsheets/d/1quAn64T5zuE6npFmDzjOhNFFvw4UJaXSoWxX-uvy3gI/export?format=csv&gid=1776854952
   displayName: Atterissage
   enumID: 23
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: faec93ca1bdf8f14c8a95c7cffcc6bbc, type: 3}
   tileOutlineColor: {r: 0, g: 1, b: 0, a: 1}
   m_tokenPreparationDuration: 0
   m_tokenCooldown: 0
