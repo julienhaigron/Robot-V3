@@ -88,6 +88,21 @@ public class GameAssets : ScriptableObject
         [Title("Colors")]
         public SerializableDictionary<EntityEquipmentData.EntityFaction, Color> corporationsColors = new();
         public SerializableDictionary<EntityEquipmentData.EquipmentType, Color> componentColors = new();
+
+        [Title("Action Range Colors")]
+        public Color movementRangeColor = Color.green;
+        public Color movementRangePreviewColor = new(.6f, 1f, .6f);
+        public Color actionRangeColor = new(0f, .375f, 1f);
+        public Color actionRangePreviewColor = new(.55f, .78f, 1f);
+        public Color aoePreviewColor = new(1f, .5f, 0f);
+
+        public Color GetActionRangeColor ( EntityActionData.MainActionType _mainType, bool _isPreview )
+		{
+            if (_mainType == EntityActionData.MainActionType.Movement)
+                return _isPreview ? movementRangePreviewColor : movementRangeColor;
+
+            return _isPreview ? actionRangePreviewColor : actionRangeColor;
+		}
     }
 
 #if UNITY_EDITOR

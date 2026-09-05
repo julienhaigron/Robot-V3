@@ -315,6 +315,11 @@ MonoBehaviour:
       - {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
       - {r: 0, g: 0.8781091, b: 0.8867924, a: 1}
       - {r: 1, g: 1, b: 1, a: 1}
+    movementRangeColor: {r: 0, g: 1, b: 0, a: 1}
+    movementRangePreviewColor: {r: 0.6, g: 1, b: 0.6, a: 1}
+    actionRangeColor: {r: 0, g: 0.37551665, b: 1, a: 1}
+    actionRangePreviewColor: {r: 0.55, g: 0.78, b: 1, a: 1}
+    aoePreviewColor: {r: 1, g: 0.5, b: 0, a: 1}
   currencies:
     keys: 01000000020000000300000004000000
     values:

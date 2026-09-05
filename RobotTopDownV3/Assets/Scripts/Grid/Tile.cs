@@ -290,7 +290,7 @@ public class Tile : MonoBehaviour
 	{
 		bool canInteract = _action.TileInteractPredicate(this);
 		m_canInteract = canInteract;
-		UI.SetAsInteractable(m_canInteract, GameAssets.current.game.entityActionsData[_action.enumID].tileOutlineColor);
+		UI.SetAsInteractable(m_canInteract, GameAssets.current.ui.GetActionRangeColor(_action.Data.GetMainActionType(), false));
 	}
 
 	private void OnActionAdded ( TurnManager.RecordedAction _recordedAction )

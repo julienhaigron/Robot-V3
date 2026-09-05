@@ -1011,9 +1011,6 @@ MonoBehaviour:
   m_turnManager: {fileID: 2601377726672517245}
   m_fogRenderer: {fileID: 5089135159799770867}
   m_inputActions: {fileID: -944628639613478452, guid: 2da90cdffd3702b458769b7a7a8aaf67, type: 3}
-  m_aoePreviewColor: {r: 1, g: 0.5, b: 0, a: 1}
-  m_rangePreviewColor: {r: 0, g: 0.37551665, b: 1, a: 1}
-  m_movementRangePreviewColor: {r: 0, g: 1, b: 0, a: 1}
 --- !u!114 &2601377726672517245
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -64,11 +64,6 @@ public class PlayerController : Singleton<PlayerController>
 	private Entity m_selectedEntity;
 	public Entity SelectedEntity => m_selectedEntity;
 
-	[Header("Action Preview")]
-	[SerializeField] private Color m_aoePreviewColor = new(1f, .5f, 0f);
-	[SerializeField] private Color m_rangePreviewColor = Color.blue;
-	[SerializeField] private Color m_movementRangePreviewColor = Color.green;
-
 	private Color m_currentRangePreviewColor = Color.blue;
 
 	private readonly List<Tile> m_aoePreviewTiles = new();
@@ -614,14 +609,14 @@ public class PlayerController : Singleton<PlayerController>
 			return;
 
 		m_aoePreviewTiles.Add(_tile);
-		_tile.UI.SetOutlineColor(m_aoePreviewColor);
+		_tile.UI.SetOutlineColor(GameAssets.current.ui.aoePreviewColor);
 	}
 
 	public void SetRangePreviewOutlines ( IEnumerable<Tile> _tiles, EntityActionData.MainActionType _mainActionType )
 	{
 		ClearRangePreviewOutlines();
 
-		m_currentRangePreviewColor = _mainActionType == EntityActionData.MainActionType.Movement ? m_movementRangePreviewColor : m_rangePreviewColor;
+		m_currentRangePreviewColor = GameAssets.current.ui.GetActionRangeColor(_mainActionType, true);
 
 		foreach (Tile tile in _tiles)
 		{
@@ -640,7 +635,7 @@ public class PlayerController : Singleton<PlayerController>
 
 		RestoreInteractableOutlines(m_rangePreviewTiles);
 		m_rangePreviewTiles.Clear();
-		RedrawOutlines(m_aoePreviewTiles, m_aoePreviewColor);
+		RedrawOutlines(m_aoePreviewTiles, GameAssets.current.ui.aoePreviewColor);
 	}
 
 	public void ClearAoEPreviewOutlines ()
@@ -657,8 +652,8 @@ public class PlayerController : Singleton<PlayerController>
 	private void RestoreInteractableOutlines ( List<Tile> _tiles )
 	{
 		Color interactableColor = m_turnManager.CurrentActionSelected != null
-			? m_turnManager.CurrentActionSelected.Data.tileOutlineColor
-			: Color.green;
+			? GameAssets.current.ui.GetActionRangeColor(m_turnManager.CurrentActionSelected.Data.GetMainActionType(), false)
+			: GameAssets.current.ui.movementRangeColor;
 
 		foreach (Tile tile in _tiles)
 			tile.UI.SetAsInteractable(tile.CanInteract, interactableColor);
