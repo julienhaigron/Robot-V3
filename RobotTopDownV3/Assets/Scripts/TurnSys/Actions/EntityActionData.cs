@@ -29,6 +29,7 @@ public class EntityActionData : AParsableScriptableObject
 	public string afterPerformAnimationKey;
 	public SfxId onPerformSingleAttackSFXID;
 	public SfxId onSingleAttackHitSFXID;
+	public PoolData onSingleAttackHitVFXPool;
 
 	[Title("Condition")]
 	[Parsing("Condition")]

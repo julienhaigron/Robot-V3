@@ -148,6 +148,7 @@ public class BulletWeapon : Weapon
 			attackData = _attackAction.Data,
 			weapon = m_data,
 			onHitSFXID = _attackAction.Data.onSingleAttackHitSFXID,
+			onHitVFXPool = _attackAction.Data.onSingleAttackHitVFXPool,
 			isAttackSuccessful = _attackInfo.isAttackSuccessfull,
 			damages = BuildDamageDictionary(_attackInfo)
 		};

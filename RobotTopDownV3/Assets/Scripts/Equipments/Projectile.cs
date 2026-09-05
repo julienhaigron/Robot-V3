@@ -166,6 +166,15 @@ public class Projectile : PoolElement
 		if (_didImpact)
 			SoundManager.Instance.Play(m_projectileData.onHitSFXID);
 
+		if (m_projectileData.onHitVFXPool != null)
+		{
+			if (_didImpact)
+				m_projectileData.onHitVFXPool.Get(transform.position, Quaternion.identity);
+
+			Discard();
+			return;
+		}
+
 		if (m_onHitPS != null)
 		{
 			m_onHitPS.Play();
@@ -360,7 +369,8 @@ public struct ProjectileData
 	public EntityActionData attackData;
 	public WeaponEquipmentData weapon;
 	public SfxId onHitSFXID;
-	
+	public PoolData onHitVFXPool;
+
 	public enum TargetType { Tile, Entity, Wall}
 	public TargetType targetType;
 	public Tile targetTile;
