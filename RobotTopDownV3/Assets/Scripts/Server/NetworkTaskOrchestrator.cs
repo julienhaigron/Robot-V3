@@ -95,6 +95,19 @@ public class NetworkTaskOrchestrator : NetworkBehaviour
         }
     }
 
+    /// <summary>
+    /// A client that reconnects comes back with a new id, so every barrier still waiting on its old one
+    /// must be remapped or the phase never completes.
+    /// </summary>
+    public void ReplacePendingClient ( ulong _oldClientId, ulong _newClientId )
+    {
+        foreach (TaskRequest task in activeTasks.Values)
+        {
+            if (task.PendingClients.Remove(_oldClientId))
+                task.PendingClients.Add(_newClientId);
+        }
+    }
+
     public void NotifyClientEndedTaskFromServer ( string _requestId, ulong _clientID)
     {
         if (!activeTasks.TryGetValue(_requestId, out var task))

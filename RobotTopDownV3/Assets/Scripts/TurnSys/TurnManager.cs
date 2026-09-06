@@ -132,21 +132,33 @@ public class TurnManager : Singleton<TurnManager>
 			}
 
 			serializer.SerializeValue(ref freeActionType);
-			if (serializer.IsWriter)
+
+			//Most recorded actions carry no mod action, so the payload says whether a body follows rather
+			//than assuming one - reader and writer must agree byte for byte.
+			bool hasFreeAction = freeAction != null;
+			serializer.SerializeValue(ref hasFreeAction);
+
+			if (!hasFreeAction)
 			{
-				freeAction.NetworkSerialize(serializer);
+				if (serializer.IsReader)
+					freeAction = null;
+
+				return;
 			}
-			else
+
+			if (serializer.IsReader)
 			{
 				freeAction = Instance.GetAction(GameAssets.current.game.entityActionsData[freeActionType]
 					, performingEntityID, linkedEquipmentID, timeAtStart);
 
 				if (freeAction == null)
 				{
-					Debug.LogError("ERROR : freeAction is null when " + (serializer.IsWriter ? "writing" : "reading") + " with type " + type);
+					Debug.LogError("ERROR : freeAction is null when reading with type " + freeActionType);
+					return;
 				}
-				freeAction.NetworkSerialize(serializer);
 			}
+
+			freeAction.NetworkSerialize(serializer);
 		}
 
 		public void AddActionMod ( AEntityAction _actionMod, bool _isPlayedFirst )
@@ -240,6 +252,7 @@ public class TurnManager : Singleton<TurnManager>
 			{
 				m_currentEntityAction = action;
 				m_currentActionTypeSelected = action.enumID;
+				m_currentEquipmentLinkedToActionTypeSelected = action.linkedEquipmentId;
 				action.OnSelectActionTileInteractPredicatePrewarm();
 				onActionSelected?.Invoke(action);
 			}
@@ -1419,6 +1432,16 @@ public class TurnManager : Singleton<TurnManager>
 		}
 	}
 
+	/// <summary>
+	/// A client whose tick finished while it was disconnected never got its barrier answer through, so the
+	/// resume re-sends it. Harmless when the tick is still running, or when the answer already landed.
+	/// </summary>
+	public void NotifyTickCompletionIfDone ()
+	{
+		if (currentPhase == TurnPhase.Playing)
+			TryEndRoundTick();
+	}
+
 	public void AddGameEvent ( RecordedEvent _newGameEvent )
 	{
 		_newGameEvent.onEventFinished += OnGameEventEnded;
@@ -1442,12 +1465,11 @@ public class TurnManager : Singleton<TurnManager>
 		LogConsole.AddLog("Server ended tick " + currentTick, LogConsole.LogEventType.DebugSys);
 
 		bool isGameFinished = IsGameFinished(out bool _playerOneWin, out bool _playerTwoWin);
-		EndLevelPopup.GameResult result = _playerOneWin && _playerTwoWin ? EndLevelPopup.GameResult.Draw : (GameManager.Instance.PlayerID == 0 ? _playerTwoWin : _playerOneWin) ? EndLevelPopup.GameResult.Loose : EndLevelPopup.GameResult.Win;
 
 		if (isGameFinished)
-			EndTurn(true, result);
+			EndTurn(true, _playerOneWin, _playerTwoWin);
 		else if (m_recordedActionInput.Keys.Count == 0 || currentTick >= GameConfig.current.game.actionTokenPerRound - 1)
-			EndTurn(false, result); //end turn
+			EndTurn(false, _playerOneWin, _playerTwoWin); //end turn
 		else
 		{
 			currentTick++;
@@ -1470,7 +1492,22 @@ public class TurnManager : Singleton<TurnManager>
 		m_actionsBeingDone.Remove(_entityID);
 	}
 
-	private void EndTurn (bool _isGameFinished, EndLevelPopup.GameResult _result)
+	/// <summary>
+	/// IsGameFinished reports in absolute player one / player two terms, so the outcome must travel that way
+	/// and be turned into a local verdict on each peer - the server broadcasting its own result would tell
+	/// the loser it won.
+	/// </summary>
+	public EndLevelPopup.GameResult GetLocalGameResult ( bool _playerOneWin, bool _playerTwoWin )
+	{
+		if (_playerOneWin && _playerTwoWin)
+			return EndLevelPopup.GameResult.Draw;
+
+		bool didLocalPlayerLoose = GameManager.Instance.PlayerID == 0 ? _playerTwoWin : _playerOneWin;
+
+		return didLocalPlayerLoose ? EndLevelPopup.GameResult.Loose : EndLevelPopup.GameResult.Win;
+	}
+
+	private void EndTurn (bool _isGameFinished, bool _playerOneWin, bool _playerTwoWin)
 	{
 		onEndPlayPhase?.Invoke();
 		LogConsole.AddLog("EndRound", LogConsole.LogEventType.DebugSys);
@@ -1478,7 +1515,7 @@ public class TurnManager : Singleton<TurnManager>
 		if (!GameManager.Instance.IsOnline)
 		{
 			if (_isGameFinished)
-				EndLevel(_result);
+				EndLevel(GetLocalGameResult(_playerOneWin, _playerTwoWin));
 			else
 				StartInputPhase();
 		}
@@ -1487,11 +1524,11 @@ public class TurnManager : Singleton<TurnManager>
 			if (m_networkedTurnSystem.IsServer && !m_networkedTurnSystem.IsHost)
 			{
 				if (_isGameFinished)
-					EndLevel(_result);
+					EndLevel(GetLocalGameResult(_playerOneWin, _playerTwoWin));
 				else
 					StartInputPhase();
 			}
-			m_networkedTurnSystem.EndRoundClientRPC(_isGameFinished, _result);
+			m_networkedTurnSystem.EndRoundClientRPC(_isGameFinished, _playerOneWin, _playerTwoWin);
 		}
 
 	}

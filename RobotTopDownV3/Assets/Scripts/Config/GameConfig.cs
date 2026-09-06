@@ -15,6 +15,14 @@ public partial class GameConfig : ScriptableObject
 	public UI ui = new UI();
 	public DatasConfigs datas = new DatasConfigs();
 	public Parsing parsing = new Parsing();
+	public Online online = new Online();
+
+	[System.Serializable]
+	public class Online
+	{
+		public float disconnectionWaitDuration = 60f;
+		public float reconnectionAttemptInterval = 2f;
+	}
 
 	[System.Serializable]
 	public class DebugSettings

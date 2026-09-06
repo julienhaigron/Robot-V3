@@ -28,7 +28,10 @@ public class OnlinePlayerInstance : NetworkBehaviour
 	{
 		connectionIndex = (IsOwner == IsHost) ? 0 : 1;
 
-		GameManager.Instance.PlayerID = connectionIndex;
+		//OnNetworkSpawn runs for every player object on every peer, so only the owned one says who we are.
+		if (IsOwner)
+			GameManager.Instance.PlayerID = connectionIndex;
+
 		GameManager.Instance.Lobby.AddPlayerInstance(this, IsOwner);
 	}
 
@@ -43,20 +46,25 @@ public class OnlinePlayerInstance : NetworkBehaviour
 
 	//[ServerRpc(RequireOwnership = false)]
 	[Rpc(SendTo.Server)]
-	public void EndInputPhaseServerRPC ( ulong _senderPlayerID, TurnManager.RecordedEntityActionsContainer[] _entitiesRecordedActions )
+	public void EndInputPhaseServerRPC ( TurnManager.RecordedEntityActionsContainer[] _entitiesRecordedActions, RpcParams _rpcParams = default )
     {
-        if (Self.OwnerClientId != _senderPlayerID)
+        ulong senderClientId = _rpcParams.Receive.SenderClientId;
+
+        if (Self.OwnerClientId != senderClientId)
         {
             for (int i = 0; i < _entitiesRecordedActions.Length; i++)
             {
                 Queue<TurnManager.RecordedAction> actionQueue = new Queue<TurnManager.RecordedAction>();
                 foreach (TurnManager.RecordedAction action in _entitiesRecordedActions[i].actions)
                     actionQueue.Enqueue(action);
-                TurnManager.Instance.RecordedActions.Add(_entitiesRecordedActions[i].entityId, actionQueue);
+
+                //Assign rather than Add: a second send from the same client would throw on the duplicate key
+                //and abort the RPC before the task is ever notified, hanging the phase.
+                TurnManager.Instance.RecordedActions[_entitiesRecordedActions[i].entityId] = actionQueue;
             }
         }
 
-        NetworkTaskOrchestrator.Instance.NotifyClientEndedTaskFromServer("InputPhase", _senderPlayerID);
+        NetworkTaskOrchestrator.Instance.NotifyClientEndedTaskFromServer("InputPhase", senderClientId);
     }
 
 	#endregion

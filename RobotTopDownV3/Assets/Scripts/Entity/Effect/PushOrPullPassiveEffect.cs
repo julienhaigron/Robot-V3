@@ -46,7 +46,7 @@ public class PushOrPullPassiveEffect : AEntityPassiveEffect
 		if (didCollide)
 			ApplyCollisionDamage(_targetEntity, blockingEntity, blockingTile);
 
-		if (destination != origin)
+		if (destination != origin && !_targetEntity.Equipment.IsDead)
 		{
 			TurnManager.RecordedEvent movementEvent = new();
 			TurnManager.Instance.AddGameEvent(movementEvent);

@@ -130,7 +130,7 @@ public sealed class InGamePanel : AUIPanel
 			return;
 		}
 
-		foreach (Entity entity in GameManager.Instance.PlayersEntityAnchor[0].Entities)
+		foreach (Entity entity in GameManager.Instance.PlayersEntityAnchor[GameManager.Instance.PlayerID].Entities)
 		{
 			if (entity.Equipment.IsDead)
 				continue;
@@ -159,7 +159,7 @@ public sealed class InGamePanel : AUIPanel
 				});
 			}
 
-			OnlinePlayerInstance.Self.EndInputPhaseServerRPC(OnlinePlayerInstance.Self.OwnerClientId, actionsToSend.ToArray());
+			OnlinePlayerInstance.Self.EndInputPhaseServerRPC(actionsToSend.ToArray());
 		}
 	}
 

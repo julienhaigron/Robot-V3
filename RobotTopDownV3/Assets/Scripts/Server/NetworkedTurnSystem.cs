@@ -30,11 +30,11 @@ public class NetworkedTurnSystem : NetworkBehaviour
 
     //[ClientRpc(RequireOwnership = false)]
     [Rpc(SendTo.ClientsAndHost)]
-    public void EndRoundClientRPC (bool _isFinished, EndLevelPopup.GameResult _result )
+    public void EndRoundClientRPC (bool _isFinished, bool _playerOneWin, bool _playerTwoWin )
 	{
 		if (_isFinished)
 		{
-            TurnManager.Instance.EndLevel(_result);
+            TurnManager.Instance.EndLevel(TurnManager.Instance.GetLocalGameResult(_playerOneWin, _playerTwoWin));
 		}
 		else
 		{
@@ -50,7 +50,7 @@ public class NetworkedTurnSystem : NetworkBehaviour
     {
         if (IsServer)
         {
-            // Si nous sommes déjà sur le serveur, nous traitons la liste directement
+            // Si nous sommes dï¿½jï¿½ sur le serveur, nous traitons la liste directement
             HandleActionsOnServer(recordedActions);
         }
         else
@@ -67,7 +67,7 @@ public class NetworkedTurnSystem : NetworkBehaviour
         HandleActionsOnServer(recordedActions);
     }
 
-    // Traitement de la liste d'actions côté serveur
+    // Traitement de la liste d'actions cï¿½tï¿½ serveur
     private void HandleActionsOnServer ( TurnManager.RecordedAction[] recordedActions )
     {
         foreach (var recordedAction in recordedActions)
@@ -75,7 +75,7 @@ public class NetworkedTurnSystem : NetworkBehaviour
             // Traitement de chaque action
             Debug.Log("Traitement de l'action : " + recordedAction.action);
 
-            // Exemple de traitement spécifique à une action
+            // Exemple de traitement spï¿½cifique ï¿½ une action
             if (recordedAction.action is MoveToNeighborAction moveAction)
             {
                 ProcessMoveAction(moveAction, recordedAction.entityState);
@@ -87,12 +87,12 @@ public class NetworkedTurnSystem : NetworkBehaviour
         }
     }
 
-    // Traitement spécifique d'un déplacement
+    // Traitement spï¿½cifique d'un dï¿½placement
     private void ProcessMoveAction ( MoveToNeighborAction action, Entity.EntityState entityState )
     {
-        // Implémenter ici la logique spécifique pour traiter l'action de type MoveToNeighborAction
-        Debug.Log("Traitement du déplacement pour l'entité : " + GameManager.Instance.GetEntityFromID(action.performingEntityID).Data.name);
-        // Vous pouvez utiliser `entityState` pour ajuster l'état de l'entité
+        // Implï¿½menter ici la logique spï¿½cifique pour traiter l'action de type MoveToNeighborAction
+        Debug.Log("Traitement du dï¿½placement pour l'entitï¿½ : " + GameManager.Instance.GetEntityFromID(action.performingEntityID).Data.name);
+        // Vous pouvez utiliser `entityState` pour ajuster l'ï¿½tat de l'entitï¿½
     }*/
 	#endregion
 

@@ -36,11 +36,11 @@ public class EndLevelPopup : AUIPopup
 		//damaged units
 		for (int i = 0; i < m_unitDisplay.Length; i++)
 		{
-			if (i >= GameManager.Instance.PlayersEntityAnchor[0].Entities.Count)
+			if (i >= GameManager.Instance.PlayersEntityAnchor[GameManager.Instance.PlayerID].Entities.Count)
 				m_unitDisplay[i].Hide();
 			else
 			{
-				Entity entity = GameManager.Instance.PlayersEntityAnchor[0].Entities[i];
+				Entity entity = GameManager.Instance.PlayersEntityAnchor[GameManager.Instance.PlayerID].Entities[i];
 
 				float remainingHealthPercentage = (float)entity.Equipment.CurrentHealth / (float)entity.Equipment.MaxHealth;
 				int destroiedComponentAmount = remainingHealthPercentage > .75f ? 0 : remainingHealthPercentage > .5f ? 1 : remainingHealthPercentage > .25f ? 2 : 3;
