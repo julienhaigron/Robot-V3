@@ -23,10 +23,12 @@ public class GridManager : Singleton<GridManager>
 	public class PlayerVisionRangeInfo
 	{
 		public Dictionary<Entity, HashSet<Tile>> entitiesVisionRange;
+		public Dictionary<Entity, Tile> lastKnownEnemyPositions;
 
 		public PlayerVisionRangeInfo ( Dictionary<Entity, HashSet<Tile>> _entitiesVisionRange = null )
 		{
 			this.entitiesVisionRange = _entitiesVisionRange ?? new();
+			this.lastKnownEnemyPositions = new();
 		}
 	}
 	private Dictionary<int, PlayerVisionRangeInfo> m_entitiesVisions = new();
@@ -1068,6 +1070,7 @@ public class GridManager : Singleton<GridManager>
 				AddVisionTile(tile, _entity.Data.NeuronalMembraneData.visionType);
 		}
 
+		RefreshLastKnownEnemyPositions();
 		FogOfWarRenderer.Instance.MarkDirty();
 	}
 
@@ -1080,6 +1083,7 @@ public class GridManager : Singleton<GridManager>
 	public void OnEntityDeath ( Entity _entity )
 	{
 		PlayerVisionRangeInfo visionInfo = m_entitiesVisions[_entity.OwnerID];
+		ForgetLastKnownPositionOf(_entity);
 
 		if (!visionInfo.entitiesVisionRange.TryGetValue(_entity, out HashSet<Tile> tilesInVision))
 			return;
@@ -1125,6 +1129,7 @@ public class GridManager : Singleton<GridManager>
 
 		visionInfo.entitiesVisionRange[_entity] = newVision;
 		m_entitiesVisions[_entity.OwnerID] = visionInfo;
+		RefreshLastKnownEnemyPositions();
 		FogOfWarRenderer.Instance.MarkDirty();
 	}
 
@@ -1167,7 +1172,71 @@ public class GridManager : Singleton<GridManager>
 			}
 		}
 
+		RefreshLastKnownEnemyPositions();
 		FogOfWarRenderer.Instance.MarkDirty();
+	}
+
+	public void RefreshLastKnownEnemyPositions ()
+	{
+		if (GameManager.Instance == null)
+			return;
+
+		foreach (KeyValuePair<int, PlayerVisionRangeInfo> ownerVision in m_entitiesVisions)
+		{
+			foreach (EntityAnchor anchor in GameManager.Instance.PlayersEntityAnchor)
+			{
+				foreach (Entity entity in anchor.Entities)
+				{
+					if (entity == null || entity.IsAlliedTo(ownerVision.Key))
+						continue;
+
+					if (entity.Equipment.IsDead)
+					{
+						ownerVision.Value.lastKnownEnemyPositions.Remove(entity);
+						continue;
+					}
+
+					Tile currentTile = entity.Displacement.Coordinates.GetTile();
+
+					if (IsTileSeenBy(ownerVision.Value, currentTile))
+						ownerVision.Value.lastKnownEnemyPositions[entity] = currentTile;
+					else if (ownerVision.Value.lastKnownEnemyPositions.TryGetValue(entity, out Tile lastKnownTile)
+						&& IsTileSeenBy(ownerVision.Value, lastKnownTile))
+						ownerVision.Value.lastKnownEnemyPositions.Remove(entity);
+				}
+			}
+		}
+	}
+
+	public void SetLastKnownPositionOf ( int _ownerID, Entity _entity, Tile _tile )
+	{
+		if (_entity == null || _tile == null || !m_entitiesVisions.TryGetValue(_ownerID, out PlayerVisionRangeInfo visionInfo))
+			return;
+
+		visionInfo.lastKnownEnemyPositions[_entity] = _tile;
+	}
+
+	public void ForgetLastKnownPositionOf ( Entity _entity )
+	{
+		foreach (PlayerVisionRangeInfo ownerVision in m_entitiesVisions.Values)
+			ownerVision.lastKnownEnemyPositions.Remove(_entity);
+	}
+
+	private bool IsTileSeenBy ( PlayerVisionRangeInfo _visionInfo, Tile _tile )
+	{
+		if (_tile == null)
+			return false;
+
+		foreach (KeyValuePair<Entity, HashSet<Tile>> allyVision in _visionInfo.entitiesVisionRange)
+		{
+			if (allyVision.Key == null || allyVision.Key.Equipment.IsDead)
+				continue;
+
+			if (allyVision.Value.Contains(_tile))
+				return true;
+		}
+
+		return false;
 	}
 
 	private void AddVisionTile ( Tile _tile, NeuronalMembraneEquipmentData.VisionTypes _visionType )

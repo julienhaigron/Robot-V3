@@ -62,9 +62,26 @@ public class BotEnnemiPlayer : MonoBehaviour
 
 	private void DetermineAggressiveActions ( Entity _entity )
 	{
-		Entity target = GetClosestVisibleEnemy(_entity);
+		_entity.AI.RefreshEnemiesInVisionRange(true);
 
+		Entity target = _entity.AI.GetCommittedTarget();
 		if (target == null)
+			target = _entity.AI.CommitTo(_entity.AI.GetClosestEnemyInVisionRange(true));
+
+		if (target != null && !_entity.AI.IsInVisionRange(target))
+		{
+			if (_entity.AI.TryGetLastKnownTileOf(target, out Tile lastKnownTile))
+			{
+				AddWaitActionsFrom(_entity, PlanPathTo(_entity, _entity.AI.GetReachableDestinationFor(lastKnownTile, true)
+					, Entity.EntityState.Patroling, out bool _), Entity.EntityState.Patroling);
+				return;
+			}
+
+			_entity.AI.CommitTo(null);
+			target = null;
+		}
+
+		if (target == null && !_entity.AI.HasEngagedTarget)
 			target = GetClosestReachableEnemy(_entity);
 
 		if (target == null)

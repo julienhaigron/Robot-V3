@@ -27,6 +27,11 @@ public class EntityAIPlugin : EntityPlugin
 	private List<Entity> m_lastEntitiesTargeted = new();
 	public List<Entity> LastTargetedEntities => m_lastEntitiesTargeted;
 
+	private Entity m_committedTarget;
+	private bool m_hasEngagedTarget;
+	public bool HasEngagedTarget => m_hasEngagedTarget;
+	private int m_lastKnownHealth;
+
 	public struct CheckActionResultInfo
 	{
 		public bool isActionChanging;
@@ -49,9 +54,23 @@ public class EntityAIPlugin : EntityPlugin
 		}
 	}
 
+	private void Awake ()
+	{
+		m_linkedEntity.Equipment.onHealthChangeDamage += OnTakeDamage;
+	}
+
+	private void OnDestroy ()
+	{
+		m_linkedEntity.Equipment.onHealthChangeDamage -= OnTakeDamage;
+	}
+
 	public override void Init ( EntitySavedData _entityData )
 	{
 		base.Init(_entityData);
+
+		m_committedTarget = null;
+		m_hasEngagedTarget = false;
+		m_lastKnownHealth = m_linkedEntity.Equipment.CurrentHealth;
 
 		foreach (EntityActionEnumID actionID in m_linkedEntity.KnownedActions)
 		{
@@ -118,6 +137,15 @@ public class EntityAIPlugin : EntityPlugin
 		bool hasEnemyInVisionRange = HasEnemyInVisionRange();
 		EntityActionData.MainActionType currentActionMainType = _recordedAction.action.Data.GetMainActionType();
 
+		Entity committedTarget = GetCommittedTarget();
+		if (committedTarget != null && !IsInVisionRange(committedTarget) && !TryGetLastKnownTileOf(committedTarget, out Tile _))
+			committedTarget = CommitTo(null);
+
+		if (committedTarget == null && hasEnemyInVisionRange)
+			committedTarget = CommitTo(GetClosestEnemyInVisionRange(true));
+
+		bool isTargetVisible = IsInVisionRange(committedTarget);
+
 		if (hasEnemyInWeaponRange && currentActionMainType == EntityActionData.MainActionType.Movement)
 		{
 			// if eneemy in weapon range
@@ -152,7 +180,7 @@ public class EntityAIPlugin : EntityPlugin
 			attackAction.Init(GameAssets.current.game.entityActionsData[attackAction.enumID], equipmentID, m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID, TurnManager.currentTick);
 			resultInfo.ReplaceAction(attackAction, "Has enemy in range, action replaced with " + attackAction);
 		}
-		else if (canMove && !hasEnemyInVisionRange && TryGetNextMovementTile(_recordedAction.action, out Tile nextMovementTile))
+		else if (canMove && !isTargetVisible && TryGetNextMovementTile(_recordedAction.action, out Tile nextMovementTile))
 		{
 			int orientationTowardTarget = GridManager.Instance.GetClosestOrientation(m_linkedEntity.Displacement.Coordinates.GetTile(), nextMovementTile);
 			bool isAtCorrectOrientation = orientationTowardTarget == m_linkedEntity.Displacement.CurrentOrientation;
@@ -164,17 +192,20 @@ public class EntityAIPlugin : EntityPlugin
 				resultInfo.ReplaceFreeAction(rotateAction, null);
 			}
 		}
-		else if (canMove && hasEnemyInVisionRange && !hasEnemyInWeaponRange)
+		else if (canMove && !isTargetVisible && committedTarget != null && TryGetLastKnownTileOf(committedTarget, out Tile lastKnownTargetTile))
 		{
-			Entity closestEntity = GetClosestEnemyInVisionRange(true);
-			bool isEntityInRangeWeaponsPossibleRange = IsEntityInWeaponPossibleRange(closestEntity, out string _weapon, true);
-			int orientationTowardTarget = GridManager.Instance.GetClosestOrientation(m_linkedEntity.Displacement.Coordinates.GetTile(), closestEntity.Displacement.Coordinates.GetTile());
+			TryMoveTowardTile(_recordedAction, movementAction, lastKnownTargetTile, "Keeps hunting " + committedTarget.Data.name + " at its last known position", ref resultInfo);
+		}
+		else if (canMove && isTargetVisible && !hasEnemyInWeaponRange)
+		{
+			bool isEntityInRangeWeaponsPossibleRange = IsEntityInWeaponPossibleRange(committedTarget, out string _weapon, true);
+			int orientationTowardTarget = GridManager.Instance.GetClosestOrientation(m_linkedEntity.Displacement.Coordinates.GetTile(), committedTarget.Displacement.Coordinates.GetTile());
 			bool isAtCorrectOrientation = orientationTowardTarget == m_linkedEntity.Displacement.CurrentOrientation;
 
 			if (_recordedAction.entityState == Entity.EntityState.Patroling)
 			{
 				//only rotate weapon, no movement if entity is too far
-				TargetEntity(closestEntity);
+				TargetEntity(committedTarget);
 				if (!isAtCorrectOrientation && isEntityInRangeWeaponsPossibleRange)
 				{
 					if (!isAtCorrectOrientation)
@@ -188,11 +219,11 @@ public class EntityAIPlugin : EntityPlugin
 				else
 				{
 					Tile from = m_linkedEntity.Displacement.Coordinates.GetTile();
-					Tile targetTile = closestEntity.Displacement.Coordinates.GetTile();
-					Tile firingTile = GetCommittedFiringTile(_recordedAction.action, closestEntity, true);
+					Tile targetTile = committedTarget.Displacement.Coordinates.GetTile();
+					Tile firingTile = GetCommittedFiringTile(_recordedAction.action, committedTarget, true);
 
 					if (firingTile == null)
-						firingTile = GetClosestFiringTile(closestEntity, true);
+						firingTile = GetClosestFiringTile(committedTarget, true);
 
 					if (firingTile == null)
 					{
@@ -232,9 +263,9 @@ public class EntityAIPlugin : EntityPlugin
 					Tile orientationFrom = tileIDs.Count > 0 ? GridManager.Instance.Tiles[tileIDs[^1]] : from;
 					int firingOrientation;
 
-					if (CanFireFrom(orientationFrom, closestEntity, true))
+					if (CanFireFrom(orientationFrom, committedTarget, true))
 					{
-						Tile orientationTo = GridManager.Instance.Tiles[TurnManager.Instance.GetEntityPositionAtEndOfTick(closestEntity.ID, targetTile.coordinates.ID)];
+						Tile orientationTo = GridManager.Instance.Tiles[TurnManager.Instance.GetEntityPositionAtEndOfTick(committedTarget.ID, targetTile.coordinates.ID)];
 						firingOrientation = orientationTo == orientationFrom
 							? m_linkedEntity.Displacement.CurrentOrientation
 							: GridManager.Instance.GetClosestOrientation(orientationFrom, orientationTo);
@@ -260,7 +291,7 @@ public class EntityAIPlugin : EntityPlugin
 				//rotate weapon or move toward enemy if too far
 				if (!isAtCorrectOrientation)
 				{
-					TargetEntity(closestEntity);
+					TargetEntity(committedTarget);
 					RotateEntityAction rotateAction = (TurnManager.Instance.GetAction(EntityActionEnumID.RotateEntity, m_linkedEntity.ID, null, TurnManager.currentTick) as RotateEntityAction);
 					rotateAction.targetedOrientationID = orientationTowardTarget;
 					rotateAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.RotateEntity], null, m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID, TurnManager.currentTick);
@@ -288,6 +319,10 @@ public class EntityAIPlugin : EntityPlugin
 	private bool TryGetNextMovementTile ( AEntityAction _action, out Tile _tile )
 	{
 		_tile = null;
+
+		if (_action.Data.type != EntityActionData.ActionType.Movement
+			&& _action.Data.codeType != EntityActionData.ActionCodeType.MoveThenAttack)
+			return false;
 
 		int destinationID = _action is MoveToTargetAction moveAction && moveAction.targetTileIDs != null && moveAction.targetTileIDs.Length > 0
 			? moveAction.targetTileIDs[0]
@@ -638,9 +673,139 @@ public class EntityAIPlugin : EntityPlugin
 		return closestEntity;
 	}
 
+	public Tile GetReachableDestinationFor ( Tile _tile, bool _isThisTurn = true )
+	{
+		Tile from = m_linkedEntity.Displacement.Coordinates.GetTile();
+		if (_tile == null || _tile == from)
+			return null;
+
+		Entity occupant = _tile.GetEntity(_isThisTurn);
+		if (!_tile.IsObstacle(_isThisTurn) && (occupant == null || occupant == m_linkedEntity))
+			return _tile;
+
+		GridManager.Instance.BFS(from, -1, null, _isThisTurn);
+		Tile neighbor = GetClosestFreeNeighborOf(_tile, _isThisTurn);
+		return neighbor == from ? null : neighbor;
+	}
+
+	public bool TryGetLastKnownTileOf ( Entity _entity, out Tile _tile )
+	{
+		_tile = null;
+
+		if (_entity == null || !GridManager.Instance.EntitiesVisions.TryGetValue(m_linkedEntity.OwnerID, out GridManager.PlayerVisionRangeInfo visionInfo))
+			return false;
+
+		return visionInfo.lastKnownEnemyPositions.TryGetValue(_entity, out _tile) && _tile != null;
+	}
+
+	private bool TryMoveTowardTile ( TurnManager.RecordedAction _recordedAction, EntityActionData _movementActionData, Tile _destination
+		, string _reasonTxt, ref CheckActionResultInfo _resultInfo, bool _isThisTurn = true )
+	{
+		if (_movementActionData == null || _destination == null)
+			return false;
+
+		Tile from = m_linkedEntity.Displacement.Coordinates.GetTile();
+		_destination = GetReachableDestinationFor(_destination, _isThisTurn);
+		if (_destination == null)
+			return false;
+
+		List<Tile> path = GridManager.Instance.GetPath(from, _destination, _isThisTurn, _movingEntity: m_linkedEntity, _canTraverseAllies: true);
+		if (path == null || path.Count < 2)
+			return false;
+
+		path.Reverse();
+		List<int> tileIDs = new();
+		for (int i = 0; i < _movementActionData.movementSpeed && i + 1 < path.Count; i++)
+			tileIDs.Add(path[i + 1].coordinates.ID);
+
+		if (tileIDs.Count == 0)
+			return false;
+
+		MoveToTargetAction moveToAction = TurnManager.Instance.GetAction(_movementActionData.enumID, m_linkedEntity.ID, null, TurnManager.currentTick) as MoveToTargetAction;
+		if (moveToAction == null)
+			return false;
+
+		moveToAction.mode = MoveToTargetAction.MoveActionMode.Coordinate;
+		moveToAction.targetTileID = _destination.coordinates.ID;
+		moveToAction.targetTileIDs = tileIDs.ToArray();
+		moveToAction.Init(GameAssets.current.game.entityActionsData[_movementActionData.enumID], null, m_linkedEntity.ID
+			, _recordedAction.action.supposedPositionAtActionStartID, TurnManager.currentTick);
+		_resultInfo.ReplaceAction(moveToAction, _reasonTxt);
+
+		int orientationTowardTarget = GridManager.Instance.GetClosestOrientation(from, GridManager.Instance.Tiles[tileIDs[^1]]);
+		if (orientationTowardTarget != m_linkedEntity.Displacement.CurrentOrientation)
+		{
+			RotateEntityAction rotateAction = TurnManager.Instance.GetAction(EntityActionEnumID.RotateEntity, m_linkedEntity.ID, null, TurnManager.currentTick) as RotateEntityAction;
+			rotateAction.targetedOrientationID = new int[1] { orientationTowardTarget };
+			rotateAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.RotateEntity], null, m_linkedEntity.ID
+				, _recordedAction.action.supposedPositionAtActionStartID, TurnManager.currentTick);
+			_resultInfo.ReplaceFreeAction(rotateAction, null);
+		}
+
+		return true;
+	}
+
 	public void TargetEntity ( Entity _targetedEntity )
 	{
 		m_lastEntitiesTargeted = _targetedEntity == null ? new() : new() { _targetedEntity };
+	}
+
+	public Entity GetCommittedTarget ()
+	{
+		if (m_committedTarget != null && m_committedTarget.Equipment.IsDead)
+			m_committedTarget = null;
+
+		return m_committedTarget;
+	}
+
+	public Entity CommitTo ( Entity _target )
+	{
+		m_committedTarget = _target;
+		if (_target != null)
+		{
+			m_hasEngagedTarget = true;
+			TargetEntity(_target);
+		}
+
+		return m_committedTarget;
+	}
+
+	public bool IsInVisionRange ( Entity _entity )
+	{
+		return _entity != null && m_entitiesInVisionRange.Contains(_entity);
+	}
+
+	private void OnTakeDamage ( EntityEquipmentPlugin.TakeDamageCallback _damageInfo )
+	{
+		int previousHealth = m_lastKnownHealth;
+		m_lastKnownHealth = m_linkedEntity.Equipment.CurrentHealth;
+
+		Entity attacker = _damageInfo.entityAttacker;
+		if (attacker == null || attacker == m_linkedEntity || attacker.Equipment.IsDead
+			|| attacker.IsAlliedTo(m_linkedEntity.OwnerID) || m_linkedEntity.Equipment.IsDead)
+			return;
+
+		if (m_lastKnownHealth >= previousHealth)
+			return;
+
+		Entity currentTarget = GetCommittedTarget();
+		int currentTargetRange = currentTarget != null && TryGetLastKnownTileOf(currentTarget, out Tile currentTargetTile)
+			? GetRangeTo(currentTargetTile)
+			: int.MaxValue;
+
+		if (GetRangeTo(attacker.Displacement.Coordinates.GetTile()) >= currentTargetRange)
+			return;
+
+		if (m_linkedEntity.IsAlliedTo(GameManager.Instance.PlayerID))
+			LogConsole.AddLog(m_linkedEntity.Data.name + " switches to " + attacker.Data.name + ", hit by a closer enemy", LogConsole.LogEventType.AICheck);
+
+		GridManager.Instance.SetLastKnownPositionOf(m_linkedEntity.OwnerID, attacker, attacker.Displacement.Coordinates.GetTile());
+		CommitTo(attacker);
+	}
+
+	private int GetRangeTo ( Tile _tile )
+	{
+		return _tile == null ? int.MaxValue : GetRangeBetween(m_linkedEntity.Displacement.Coordinates.GetTile(), _tile);
 	}
 
 	private bool TryResolveEntityTarget ( TurnManager.RecordedAction _recordedAction, ref CheckActionResultInfo _resultInfo )

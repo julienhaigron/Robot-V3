@@ -182,12 +182,12 @@ public class MissionPanel : AUIPanel
 		List<GameDatas.PlayerSave.Component> mainComponents = _display.Data.GetAllMainEquipments();
 		for (int i = 0; i < m_hoveredUnitComponentIcons.Length; i++)
 		{
-			if (mainComponents.Count <= i)
+			if (mainComponents.Count <= i || !mainComponents[i].TryGetData(out EntityEquipmentData data))
 				m_hoveredUnitComponentIcons[i].gameObject.SetActive(false);
 			else
 			{
 				m_hoveredUnitComponentIcons[i].gameObject.SetActive(true);
-				m_hoveredUnitComponentIcons[i].sprite = mainComponents[i].GetData<EntityEquipmentData>().icon;
+				m_hoveredUnitComponentIcons[i].sprite = data.icon;
 			}
 		}
 	}
