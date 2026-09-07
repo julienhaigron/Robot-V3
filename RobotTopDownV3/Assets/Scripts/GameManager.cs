@@ -5,6 +5,7 @@ using System;
 using Sirenix.OdinInspector;
 using UnityEngine.SceneManagement;
 
+[DefaultExecutionOrder(-20000)]
 public class GameManager : SingletonPersistant<GameManager>
 {
 	[SerializeField] private Canvas m_fogCanvas;

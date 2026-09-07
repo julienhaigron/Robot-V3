@@ -29,6 +29,7 @@ public class Singleton<T> : MonoBehaviour where T : Singleton<T>
         }
         else
         {
+            gameObject.SetActive(false);
             Destroy(gameObject);
         }
     }

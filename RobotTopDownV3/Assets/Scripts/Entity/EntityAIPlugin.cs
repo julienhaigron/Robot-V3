@@ -110,7 +110,7 @@ public class EntityAIPlugin : EntityPlugin
 			return resultInfo;
 		}
 
-		DOAllPrewarmCheck(_recordedAction.action);
+		DOAllPrewarmCheck(_recordedAction.action, _recordedAction.entityState == Entity.EntityState.Patroling);
 
 		EntityActionData movementAction = GetMovementAction();
 		bool canMove = !m_linkedEntity.Status.Contains(EntityStatusEnumID.Stun) && !m_linkedEntity.Status.Contains(EntityStatusEnumID.Rooted) && movementAction != null;
@@ -308,9 +308,9 @@ public class EntityAIPlugin : EntityPlugin
 		return waitAction;
 	}
 
-	public void DOAllPrewarmCheck ( AEntityAction _action )
+	public void DOAllPrewarmCheck ( AEntityAction _action, bool _includeAlliesVision = false )
 	{
-		VisionCheck(_action);
+		VisionCheck(_action, true, _includeAlliesVision);
 		WeaponCheck(_action);
 	}
 
@@ -387,25 +387,49 @@ public class EntityAIPlugin : EntityPlugin
 
 	#region Vision
 
-	private List<Entity> VisionCheck ( AEntityAction _action, bool _isThisTurn = true )
+	private List<Entity> VisionCheck ( AEntityAction _action, bool _isThisTurn = true, bool _includeAlliesVision = false )
 	{
-		return RefreshEnemiesInVisionRange(_isThisTurn);
+		return RefreshEnemiesInVisionRange(_isThisTurn, _includeAlliesVision);
 	}
 
-	public List<Entity> RefreshEnemiesInVisionRange ( bool _isThisTurn = true )
+	public List<Entity> RefreshEnemiesInVisionRange ( bool _isThisTurn = true, bool _includeAlliesVision = false )
 	{
 		m_entitiesInVisionRange.Clear();
-		if (!GridManager.Instance.EntitiesVisions[m_linkedEntity.OwnerID].entitiesVisionRange.TryGetValue(m_linkedEntity, out HashSet<Tile> tilesInRange))
-			return m_entitiesInVisionRange;
 
-		foreach (Tile tile in tilesInRange)
+		Dictionary<Entity, HashSet<Tile>> visionPerAlly = GridManager.Instance.EntitiesVisions[m_linkedEntity.OwnerID].entitiesVisionRange;
+
+		if (!_includeAlliesVision)
 		{
-			int entityID = tile.GetEntityId(_isThisTurn);
-			if (entityID != -1 && GameManager.Instance.GetEntityFromID(out Entity entity, entityID) && !entity.IsAlliedTo(m_linkedEntity.OwnerID))
-				m_entitiesInVisionRange.Add(entity);
+			if (visionPerAlly.TryGetValue(m_linkedEntity, out HashSet<Tile> tilesInRange))
+				AddEnemiesInTiles(tilesInRange, _isThisTurn);
+
+			return m_entitiesInVisionRange;
+		}
+
+		foreach (KeyValuePair<Entity, HashSet<Tile>> allyVision in visionPerAlly)
+		{
+			if (allyVision.Key == null || allyVision.Key.Equipment.IsDead)
+				continue;
+
+			AddEnemiesInTiles(allyVision.Value, _isThisTurn);
 		}
 
 		return m_entitiesInVisionRange;
+	}
+
+	private void AddEnemiesInTiles ( HashSet<Tile> _tiles, bool _isThisTurn )
+	{
+		foreach (Tile tile in _tiles)
+		{
+			int entityID = tile.GetEntityId(_isThisTurn);
+			if (entityID == -1 || !GameManager.Instance.GetEntityFromID(out Entity entity, entityID))
+				continue;
+
+			if (entity.IsAlliedTo(m_linkedEntity.OwnerID) || m_entitiesInVisionRange.Contains(entity))
+				continue;
+
+			m_entitiesInVisionRange.Add(entity);
+		}
 	}
 
 	private bool HasEnemyInVisionRange ()
