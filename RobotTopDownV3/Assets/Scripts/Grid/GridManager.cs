@@ -34,6 +34,9 @@ public class GridManager : Singleton<GridManager>
 	private Dictionary<int, PlayerVisionRangeInfo> m_entitiesVisions = new();
 	public Dictionary<int, PlayerVisionRangeInfo> EntitiesVisions => m_entitiesVisions;
 
+	private bool m_wasWallDestroyedThisRound;
+	public bool WasWallDestroyedThisRound => m_wasWallDestroyedThisRound;
+
 	private static readonly Vector2Int[] HexDirectionOffsets =
 	{
 		new Vector2Int( 0,  1), // 0
@@ -251,6 +254,12 @@ public class GridManager : Singleton<GridManager>
 		EntityDisplacementPlugin.onAnyEntityMovement += OnEntityMovement;
 		EntityDisplacementPlugin.onAnyEntitySpawn += OnNewEntity;
 		EntityEquipmentPlugin.onAnyEntityDeath += OnEntityDeath;
+		TurnManager.onEndInputPhase += OnEndInputPhase;
+	}
+
+	private void OnEndInputPhase ()
+	{
+		m_wasWallDestroyedThisRound = false;
 	}
 
 	private void OnDestroy ()
@@ -260,6 +269,7 @@ public class GridManager : Singleton<GridManager>
 		EntityDisplacementPlugin.onAnyEntityMovement -= OnEntityMovement;
 		EntityDisplacementPlugin.onAnyEntitySpawn -= OnNewEntity;
 		EntityEquipmentPlugin.onAnyEntityDeath -= OnEntityDeath;
+		TurnManager.onEndInputPhase -= OnEndInputPhase;
 	}
 
 	#region Utils
@@ -1135,6 +1145,8 @@ public class GridManager : Singleton<GridManager>
 
 	public void OnWallDestruction ()
 	{
+		m_wasWallDestroyedThisRound = true;
+
 		foreach (PlayerVisionRangeInfo ownerVision in m_entitiesVisions.Values)
 		{
 			List<Entity> entities = ownerVision.entitiesVisionRange.Keys.ToList();
@@ -1201,7 +1213,7 @@ public class GridManager : Singleton<GridManager>
 					if (IsTileSeenBy(ownerVision.Value, currentTile))
 						ownerVision.Value.lastKnownEnemyPositions[entity] = currentTile;
 					else if (ownerVision.Value.lastKnownEnemyPositions.TryGetValue(entity, out Tile lastKnownTile)
-						&& IsTileSeenBy(ownerVision.Value, lastKnownTile))
+						&& IsTileReachedByAllyOf(ownerVision.Key, lastKnownTile))
 						ownerVision.Value.lastKnownEnemyPositions.Remove(entity);
 				}
 			}
@@ -1237,6 +1249,29 @@ public class GridManager : Singleton<GridManager>
 		}
 
 		return false;
+	}
+
+	private bool IsTileReachedByAllyOf ( int _ownerID, Tile _tile )
+	{
+		if (_tile == null)
+			return false;
+
+		if (IsTileHoldingAllyOf(_ownerID, _tile))
+			return true;
+
+		for (int i = 0; i < 6; i++)
+		{
+			if (IsTileHoldingAllyOf(_ownerID, _tile.GetNeighbor((HexDirection)i)))
+				return true;
+		}
+
+		return false;
+	}
+
+	private bool IsTileHoldingAllyOf ( int _ownerID, Tile _tile )
+	{
+		return _tile != null && _tile.TryGetCurrentEntity(out Entity entity)
+			&& !entity.Equipment.IsDead && entity.IsAlliedTo(_ownerID);
 	}
 
 	private void AddVisionTile ( Tile _tile, NeuronalMembraneEquipmentData.VisionTypes _visionType )

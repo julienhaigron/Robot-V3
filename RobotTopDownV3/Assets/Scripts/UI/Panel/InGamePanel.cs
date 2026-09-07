@@ -50,8 +50,8 @@ public sealed class InGamePanel : AUIPanel
 
 	private void OnDestroy ()
 	{
-		TurnManager.onStartInputPhase = OnStartInputPhase;
-		TurnManager.onEndInputPhase = OnEndInputPhase;
+		TurnManager.onStartInputPhase -= OnStartInputPhase;
+		TurnManager.onEndInputPhase -= OnEndInputPhase;
 		PlayerController.onEntitySelected -= OnEntitySelected;
 		m_endPhaseButton.onClick -= OnClickEndPhaseBtn;
 	}

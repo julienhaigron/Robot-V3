@@ -142,7 +142,7 @@ public class EntityAIPlugin : EntityPlugin
 			committedTarget = CommitTo(null);
 
 		if (committedTarget == null && hasEnemyInVisionRange)
-			committedTarget = CommitTo(GetClosestEnemyInVisionRange(true));
+			committedTarget = CommitTo(GetClosestEnemyInVisionRangeFrom(GetActionDestination(_recordedAction.action), true));
 
 		bool isTargetVisible = IsInVisionRange(committedTarget);
 
@@ -180,7 +180,8 @@ public class EntityAIPlugin : EntityPlugin
 			attackAction.Init(GameAssets.current.game.entityActionsData[attackAction.enumID], equipmentID, m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID, TurnManager.currentTick);
 			resultInfo.ReplaceAction(attackAction, "Has enemy in range, action replaced with " + attackAction);
 		}
-		else if (canMove && !isTargetVisible && TryGetNextMovementTile(_recordedAction.action, out Tile nextMovementTile))
+		else if (canMove && !isTargetVisible && !ShouldRepathTowardTarget(committedTarget)
+			&& TryGetNextMovementTile(_recordedAction.action, out Tile nextMovementTile))
 		{
 			int orientationTowardTarget = GridManager.Instance.GetClosestOrientation(m_linkedEntity.Displacement.Coordinates.GetTile(), nextMovementTile);
 			bool isAtCorrectOrientation = orientationTowardTarget == m_linkedEntity.Displacement.CurrentOrientation;
@@ -333,6 +334,20 @@ public class EntityAIPlugin : EntityPlugin
 
 		_tile = GridManager.Instance.Tiles[destinationID];
 		return true;
+	}
+
+	private bool ShouldRepathTowardTarget ( Entity _committedTarget )
+	{
+		return _committedTarget != null && GridManager.Instance.WasWallDestroyedThisRound;
+	}
+
+	private Tile GetActionDestination ( AEntityAction _action )
+	{
+		if (_action is MoveToTargetAction moveAction && moveAction.finalTargetTileID >= 0
+			&& moveAction.finalTargetTileID < GridManager.Instance.Tiles.Length)
+			return GridManager.Instance.Tiles[moveAction.finalTargetTileID];
+
+		return m_linkedEntity.Displacement.Coordinates.GetTile();
 	}
 
 	private WaitAction GetWaitActionFor ( TurnManager.RecordedAction _recordedAction )
@@ -621,7 +636,7 @@ public class EntityAIPlugin : EntityPlugin
 
 		Tile closestTile = null;
 		int closestDistance = int.MaxValue;
-		int closestRange = -1;
+		int closestRange = int.MaxValue;
 
 		foreach (System.Tuple<EntityActionData, string> pair in GetAvailableAttackAction(_ignoreRemainingTokens: true))
 		{
@@ -639,7 +654,7 @@ public class EntityAIPlugin : EntityPlugin
 				int candidateRange = Mathf.Max(Mathf.Abs(candidate.coordinates.X - targetTile.coordinates.X)
 					, Mathf.Abs(candidate.coordinates.Y - targetTile.coordinates.Y)
 					, Mathf.Abs(candidate.coordinates.Z - targetTile.coordinates.Z));
-				if (candidate.Distance == closestDistance && candidateRange <= closestRange)
+				if (candidate.Distance == closestDistance && candidateRange >= closestRange)
 					continue;
 
 				if (!CanFireFrom(candidate, _target, _isThisTurn))
@@ -656,7 +671,15 @@ public class EntityAIPlugin : EntityPlugin
 
 	public Entity GetClosestEnemyInVisionRange ( bool _isThisTurn = true )
 	{
-		GridManager.Instance.BFS(m_linkedEntity.Displacement.Coordinates.GetTile(), -1, null, _isThisTurn);
+		return GetClosestEnemyInVisionRangeFrom(m_linkedEntity.Displacement.Coordinates.GetTile(), _isThisTurn);
+	}
+
+	public Entity GetClosestEnemyInVisionRangeFrom ( Tile _from, bool _isThisTurn = true )
+	{
+		if (_from == null)
+			return null;
+
+		GridManager.Instance.BFS(_from, -1, null, _isThisTurn);
 
 		Entity closestEntity = null;
 		foreach (Entity entity in m_entitiesInVisionRange)
