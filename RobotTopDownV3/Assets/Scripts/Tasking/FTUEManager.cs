@@ -107,6 +107,7 @@ public class FTUEManager : SingletonPersistant<FTUEManager>
 
 	#region Tuto Sequences
 
+	private TaskSequence Cycle1Tuto ()
 	{
 		TaskSequence tutoSequence = new("Cycle1Tuto");
 
