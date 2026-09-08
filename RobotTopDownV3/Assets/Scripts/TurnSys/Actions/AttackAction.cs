@@ -122,9 +122,9 @@ public class AttackAction : AEntityAction
 		}
 
 		LocalizationManager localization = LocalizationManager.Instance;
-		LogConsole.AddLog(string.Format(localization.Get(LocalizationKey.log_use_weapon), PerformingEntity.Data.name
+		LogConsole.AddLog(TagLogMessage(string.Format(localization.Get(LocalizationKey.log_use_weapon), PerformingEntity.Data.name
 				, targetNames.Count == 0 ? localization.Get(LocalizationKey.log_use_weapon_ground) : string.Join(", ", targetNames)
-				, Data.GetLocalizedName())
+				, Data.GetLocalizedName()))
 			, LogConsole.LogEventType.UseWeapon
 			, new LogConsole.LogDetails("useweapon_" + LogConsole.Instance.LogsDetails.Keys.Count, Data.GetLocalizedName(), Data.GetDescription()));
 	}

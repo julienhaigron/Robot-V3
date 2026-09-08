@@ -16,6 +16,8 @@ public class TurnManager : Singleton<TurnManager>
 	public static Action onEndInputPhase;
 	public static Action onEndPlayPhase;
 	public static Action onNewRoundStart;
+	private int m_roundCount = 0;
+	public int RoundCount => m_roundCount;
 	public static Action onEndLevel;
 	public static Action onActionTargetsChanged;
 	
@@ -972,6 +974,9 @@ public class TurnManager : Singleton<TurnManager>
 		foreach (TrackedEntityEvents trackedEvents in m_trackedEventsPerEntity.Values)
 			trackedEvents.ResetAllValues();
 
+		m_roundCount++;
+		LogConsole.AddLog(string.Format(LocalizationManager.Instance.Get(LocalizationKey.log_round), m_roundCount), LogConsole.LogEventType.Round);
+
 		onStartInputPhase?.Invoke();
 		//PlayerController.Instance.SelectEntity(GameManager.Instance.PlayersEntityAnchor[GameManager.Instance.PlayerID].Entities[0]);
 
@@ -1113,6 +1118,8 @@ public class TurnManager : Singleton<TurnManager>
 						recordedAction.freeAction.CancelAction();
 					if (resultInfo.replacedFreeAction != null)
 						resultInfo.replacedFreeAction.OnModActionAdded(resultInfo.replacedAction);
+
+					resultInfo.replacedAction.wasReplacedByAI = true;
 
 					if (resultInfo.replacedAction.IsPerformingAtTick(currentTick))
 						resultInfo.replacedAction.ConflictCheckPrewarm();

@@ -31,6 +31,12 @@ public abstract class AEntityAction : INetworkSerializable
 
 	public int lifetime = 0;
 	public bool doesFreeActionOwnFacing;
+	public bool wasReplacedByAI;
+
+	public string TagLogMessage ( string _message )
+	{
+		return wasReplacedByAI ? "<b>" + _message + "</b>" : _message;
+	}
 	public int timeAtStart = 0;
 	public int TimeAtStartPerform => timeAtStart + preparationDuration;
 	public int TimeAtEnd => timeAtStart + TotalDuration;

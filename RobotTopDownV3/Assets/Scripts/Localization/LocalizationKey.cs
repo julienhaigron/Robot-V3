@@ -480,6 +480,9 @@ public enum LocalizationKey
     log_status_affected,
     log_wall_blocks,
     log_aoe_auto_hit,
+    log_round,
+    log_effect,
+    log_doom_triggers,
 }
 
 public static class LocalizationKeyExtensions
@@ -967,6 +970,9 @@ public static class LocalizationKeyExtensions
             case LocalizationKey.log_status_affected: return "log/status_affected";
             case LocalizationKey.log_wall_blocks: return "log/wall_blocks";
             case LocalizationKey.log_aoe_auto_hit: return "log/aoe_auto_hit";
+            case LocalizationKey.log_round: return "log/round";
+            case LocalizationKey.log_effect: return "log/effect";
+            case LocalizationKey.log_doom_triggers: return "log/doom_triggers";
             default: return string.Empty;
         }
     }

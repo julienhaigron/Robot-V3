@@ -28,6 +28,11 @@ public abstract class AEntityStatus : ScriptableEnum<EntityStatusEnumID>
         return builder.ToString();
     }
 
+    public virtual string GetTickEffectText ( int _remainingDuration, Entity _entity )
+    {
+        return null;
+    }
+
     //called each action tick
     public virtual void ApplyStatusEffect ( int _remainingDuration, Entity _entity )
     {

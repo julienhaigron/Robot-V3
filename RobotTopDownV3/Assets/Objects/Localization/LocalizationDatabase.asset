@@ -1888,16 +1888,16 @@ MonoBehaviour:
     - "Appliqu\xE9 via un jet de statut"
   - key: log/use_weapon
     values:
-    - "{0} attacks {1} with {2}"
-    - "{0} attaque {1} avec {2}"
+    - "{0} attacks {1} with <i>{2}</i>"
+    - "{0} attaque {1} avec <i>{2}</i>"
   - key: log/use_weapon_ground
     values:
     - the ground
     - le sol
   - key: log/use_tool
     values:
-    - "{0} uses {1} on {2}"
-    - "{0} utilise {1} sur {2}"
+    - "{0} uses <i>{1}</i> on {2}"
+    - "{0} utilise <i>{1}</i> sur {2}"
   - key: log/use_tool_effects
     values:
     - "-> Effects: {0}"
@@ -1920,8 +1920,8 @@ MonoBehaviour:
     - "{0} meurt"
   - key: log/status_affected
     values:
-    - "{0} is affected by {1}, {2} turns remaining"
-    - "{0} est affect\xE9 par {1}, {2} tours restants"
+    - "{0} is affected by <i>{1}</i>, {2} turns remaining"
+    - "{0} est affect\xE9 par <i>{1}</i>, {2} tours restants"
   - key: log/wall_blocks
     values:
     - "{0} cannot reach {1}, the shot hits the wall on tile {2}"
@@ -1930,3 +1930,15 @@ MonoBehaviour:
     values:
     - "Automatic hit on targets due to AoE type"
     - "Touche automatique sur les cibles (type de zone)"
+  - key: log/round
+    values:
+    - "Round {0}"
+    - "Manche {0}"
+  - key: log/effect
+    values:
+    - "-> {0}"
+    - "-> {0}"
+  - key: log/doom_triggers
+    values:
+    - "Doom triggers"
+    - "Doom se d\xE9clenche"

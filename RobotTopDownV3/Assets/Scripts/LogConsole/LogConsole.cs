@@ -15,7 +15,7 @@ public class LogConsole : SingletonPersistant<LogConsole>
 	private Dictionary<string, LogDetails> m_logsDetails = new();
 	public Dictionary<string, LogDetails> LogsDetails => m_logsDetails;
 
-	public enum LogEventType { PreGame, InputPhase, AICheck, ActionResolution, ActionConflict, DebugSys, AttackRoll, Damage, Status, UseWeapon, UseTool, Death }
+	public enum LogEventType { PreGame, InputPhase, AICheck, ActionResolution, ActionConflict, DebugSys, AttackRoll, Damage, Status, UseWeapon, UseTool, Death, Round }
 
 	[System.Serializable]
 	public class LogDetails
@@ -71,6 +71,9 @@ public class LogConsole : SingletonPersistant<LogConsole>
 
 		public override string ToString ()
 		{
+			if (eventType == LogEventType.Round)
+				return "<align=center><color=#" + ColorUtility.ToHtmlStringRGB(GameConfig.current.meta.colorsPerType[eventType]) + ">" + message + "</color></align>\n";
+
 			if(details != null)
 				return "- " + (details == null ? "" : ("<link=" + details.ID + ">")) + "<color=#" + ColorUtility.ToHtmlStringRGB(GameConfig.current.meta.colorsPerType[eventType]) + ">" + message + "</color>" + (details == null ? "\n" : "</link>\n");
 			else

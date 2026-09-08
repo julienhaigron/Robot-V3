@@ -17,6 +17,11 @@ public class BurnStatus : AEntityStatus
 		_entity.Equipment.TakeDamage(new EntityEquipmentPlugin.TakeDamageCallback() { damages = damage, entityTargeted = _entity });
 	}
 
+	public override string GetTickEffectText ( int _remainingDuration, Entity _entity )
+	{
+		return string.Format(LocalizationManager.Instance.Get(LocalizationKey.log_damages), damageAmount);
+	}
+
 	public override void PerformStatusEffectAtBeginingOfRound ( Tile _tile )
 	{
 		base.PerformStatusEffectAtBeginingOfRound(_tile);
