@@ -12,6 +12,7 @@ public class InputManager : MonoBehaviour
 {
 	public static Action<Tile> onTileleftClick;
 	public static Action<Tile> onTileRightClick;
+	public static Action onEmptyRightClick;
 	public static Action<Tile> onTileHovered;
 
 	public static Action<string> onTMPLinkHovered;
@@ -97,16 +98,19 @@ public class InputManager : MonoBehaviour
 
 			Ray ray = CameraManager.Instance.Camera.ScreenPointToRay(Input.mousePosition);
 
+			Tile clickedTile = null;
 			if (Physics.Raycast(ray, out RaycastHit hitInfo, GameConfig.current.input.interactionRayCastLength, GameConfig.current.input.interactionRayCastLayer))
+				hitInfo.transform.parent.TryGetComponent(out clickedTile);
+
+			if (clickedTile != null)
 			{
-				if (hitInfo.transform.parent.TryGetComponent(out Tile tile))
-				{
-					if (string.Equals(context.control.name, "leftButton"))
-						onTileleftClick?.Invoke(tile);
-					else if (string.Equals(context.control.name, "rightButton"))
-						onTileRightClick?.Invoke(tile);
-				}
+				if (string.Equals(context.control.name, "leftButton"))
+					onTileleftClick?.Invoke(clickedTile);
+				else if (string.Equals(context.control.name, "rightButton"))
+					onTileRightClick?.Invoke(clickedTile);
 			}
+			else if (string.Equals(context.control.name, "rightButton"))
+				onEmptyRightClick?.Invoke();
 		}
 	}
 

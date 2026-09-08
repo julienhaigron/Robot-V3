@@ -177,6 +177,20 @@ public class EntityEquipmentPlugin : EntityPlugin
 		}
 	}
 
+	public void SetWeaponConesHidden ( bool _hidden )
+	{
+		if (_hidden || m_isDead)
+		{
+			DisableWeaponCones();
+			return;
+		}
+
+		if (PlayerController.Instance != null && PlayerController.Instance.SelectedEntity == m_linkedEntity)
+			OnEntitySelected();
+		else
+			OnEntityDeselected();
+	}
+
 	private void DisableWeaponCones ()
 	{
 		foreach (WeaponCone weaponCone in m_weaponConeDictionary.Values)

@@ -290,7 +290,9 @@ public class Tile : MonoBehaviour
 	{
 		bool canInteract = _action.TileInteractPredicate(this);
 		m_canInteract = canInteract;
-		UI.SetAsInteractable(m_canInteract, GameAssets.current.ui.GetActionRangeColor(_action.Data.GetMainActionType(), false));
+
+		bool areOutlinesHidden = PlayerController.Instance != null && PlayerController.Instance.AreInteractableOutlinesHidden;
+		UI.SetAsInteractable(m_canInteract && !areOutlinesHidden, GameAssets.current.ui.GetActionRangeColor(_action.Data.GetMainActionType(), false));
 	}
 
 	private void OnActionAdded ( TurnManager.RecordedAction _recordedAction )

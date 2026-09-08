@@ -26,6 +26,14 @@ public class PlayerController : Singleton<PlayerController>
 	private bool m_isPanning;
 	private Vector2 m_lastPanScreenPosition;
 
+	[Header("Camera")]
+	[SerializeField] private float m_edgeScrollMargin = 12f;
+	[SerializeField] private float m_centerOnEntityDuration = .35f;
+	[SerializeField, Range(0f, .5f)] private float m_centerOnEntityViewportMargin = .25f;
+
+	private Tween m_cameraMoveTween;
+	private bool m_areInteractableOutlinesHidden;
+
 	private const float LegacyAxisPerNotch = 0.1f;
 
 	[Header("Camera Limits")]
@@ -85,6 +93,7 @@ public class PlayerController : Singleton<PlayerController>
 		base.Awake();
 		InputManager.onTileleftClick += OnTileLeftClick;
 		InputManager.onTileRightClick += OnTileRightClick;
+		InputManager.onEmptyRightClick += OnEmptyRightClick;
 		InputManager.onTileHovered += OnTileHovered;
 		TurnManager.onEndInputPhase += OnEndInputPhase;
 		EntityEquipmentPlugin.onAnyEntityDeath += OnAnyEntityDeath;
@@ -132,6 +141,7 @@ public class PlayerController : Singleton<PlayerController>
 	{
 		InputManager.onTileleftClick -= OnTileLeftClick;
 		InputManager.onTileRightClick -= OnTileRightClick;
+		InputManager.onEmptyRightClick -= OnEmptyRightClick;
 		InputManager.onTileHovered -= OnTileHovered;
 		TurnManager.onEndInputPhase -= OnEndInputPhase;
 		EntityEquipmentPlugin.onAnyEntityDeath -= OnAnyEntityDeath;
@@ -141,6 +151,9 @@ public class PlayerController : Singleton<PlayerController>
 
 		if (m_cameraRotationTween.IsActive())
 			m_cameraRotationTween.Kill();
+
+		if (m_cameraMoveTween.IsActive())
+			m_cameraMoveTween.Kill();
 	}
 
 	private void Update ()
@@ -171,23 +184,90 @@ public class PlayerController : Singleton<PlayerController>
 
 	private void HandleCameraMovement ()
 	{
-		Vector2 moveInput = m_moveAction.ReadValue<Vector2>();
+		Vector2 moveInput = Vector2.ClampMagnitude(m_moveAction.ReadValue<Vector2>() + GetEdgeScrollInput(), 1f);
+		if (moveInput.sqrMagnitude < .0001f)
+			return;
+
 		Vector3 forward = CameraManager.Instance.CameraParent.transform.forward;
 		Vector3 right = CameraManager.Instance.CameraParent.transform.right;
 
 		forward.y = 0f;
 		right.y = 0f;
 
-		Vector3 move = (forward.normalized * moveInput.y + right.normalized * moveInput.x)
+		MoveCameraBy((forward.normalized * moveInput.y + right.normalized * moveInput.x)
 			* GameConfig.current.game.cameraMovementSpeed
-			* Time.fixedDeltaTime;
+			* Time.fixedDeltaTime);
+	}
 
-		Vector3 targetPos = CameraManager.Instance.CameraParent.transform.position + move;
+	private Vector2 GetEdgeScrollInput ()
+	{
+		if (m_edgeScrollMargin <= 0f || !Application.isFocused)
+			return Vector2.zero;
 
-		targetPos.x = Mathf.Clamp(targetPos.x, xLimits.x - GameConfig.current.game.cameraMovementBoundsOffset.x, xLimits.y + GameConfig.current.game.cameraMovementBoundsOffset.x);
-		targetPos.z = Mathf.Clamp(targetPos.z, zLimits.x - GameConfig.current.game.cameraMovementBoundsOffset.y, zLimits.y + GameConfig.current.game.cameraMovementBoundsOffset.y);
+		Vector2 mousePosition = Input.mousePosition;
+		if (mousePosition.x < 0f || mousePosition.y < 0f || mousePosition.x > Screen.width || mousePosition.y > Screen.height)
+			return Vector2.zero;
 
-		CameraManager.Instance.CameraParent.transform.position = targetPos;
+		Vector2 edgeInput = Vector2.zero;
+
+		if (mousePosition.x <= m_edgeScrollMargin)
+			edgeInput.x = -1f;
+		else if (mousePosition.x >= Screen.width - m_edgeScrollMargin)
+			edgeInput.x = 1f;
+
+		if (mousePosition.y <= m_edgeScrollMargin)
+			edgeInput.y = -1f;
+		else if (mousePosition.y >= Screen.height - m_edgeScrollMargin)
+			edgeInput.y = 1f;
+
+		return edgeInput == Vector2.zero || InputManager.IsPointerOverBlockingUI() ? Vector2.zero : edgeInput;
+	}
+
+	private void MoveCameraBy ( Vector3 _move )
+	{
+		if (m_cameraMoveTween.IsActive())
+			m_cameraMoveTween.Kill();
+
+		CameraManager.Instance.CameraParent.transform.position = ClampToCameraBounds(CameraManager.Instance.CameraParent.transform.position + _move);
+		m_fogRenderer.MarkDirty();
+	}
+
+	private Vector3 ClampToCameraBounds ( Vector3 _position )
+	{
+		_position.x = Mathf.Clamp(_position.x, xLimits.x - GameConfig.current.game.cameraMovementBoundsOffset.x, xLimits.y + GameConfig.current.game.cameraMovementBoundsOffset.x);
+		_position.z = Mathf.Clamp(_position.z, zLimits.x - GameConfig.current.game.cameraMovementBoundsOffset.y, zLimits.y + GameConfig.current.game.cameraMovementBoundsOffset.y);
+		return _position;
+	}
+
+	private bool IsInsideScreenCenter ( Vector3 _worldPosition )
+	{
+		Vector3 viewportPosition = CameraManager.Instance.Camera.WorldToViewportPoint(_worldPosition);
+		if (viewportPosition.z <= 0f)
+			return false;
+
+		return viewportPosition.x >= m_centerOnEntityViewportMargin && viewportPosition.x <= 1f - m_centerOnEntityViewportMargin
+			&& viewportPosition.y >= m_centerOnEntityViewportMargin && viewportPosition.y <= 1f - m_centerOnEntityViewportMargin;
+	}
+
+	private void CenterCameraOn ( Entity _entity )
+	{
+		if (_entity == null || !CanControlCamera())
+			return;
+
+		Vector3 entityPosition = _entity.Displacement.Coordinates.GetTile().transform.position;
+		if (IsInsideScreenCenter(entityPosition))
+			return;
+
+		Vector3 cameraPosition = CameraManager.Instance.CameraParent.transform.position;
+		Vector3 targetPosition = ClampToCameraBounds(new Vector3(entityPosition.x, cameraPosition.y, entityPosition.z));
+
+		if (m_cameraMoveTween.IsActive())
+			m_cameraMoveTween.Kill();
+
+		m_cameraMoveTween = CameraManager.Instance.CameraParent.transform
+			.DOMove(targetPosition, m_centerOnEntityDuration)
+			.SetEase(Ease.OutQuad)
+			.OnUpdate(m_fogRenderer.MarkDirty);
 	}
 
 	private void HandleCameraRotation ()
@@ -268,20 +348,16 @@ public class PlayerController : Singleton<PlayerController>
 		forward.y = 0f;
 		right.y = 0f;
 
-		Vector3 move = -(right.normalized * screenDelta.x + forward.normalized * screenDelta.y) * GameConfig.current.game.cameraPanSpeed;
-		Vector3 targetPos = CameraManager.Instance.CameraParent.transform.position + move;
-
-		targetPos.x = Mathf.Clamp(targetPos.x, xLimits.x - GameConfig.current.game.cameraMovementBoundsOffset.x, xLimits.y + GameConfig.current.game.cameraMovementBoundsOffset.x);
-		targetPos.z = Mathf.Clamp(targetPos.z, zLimits.x - GameConfig.current.game.cameraMovementBoundsOffset.y, zLimits.y + GameConfig.current.game.cameraMovementBoundsOffset.y);
-
-		CameraManager.Instance.CameraParent.transform.position = targetPos;
-		m_fogRenderer.MarkDirty();
+		MoveCameraBy(-(right.normalized * screenDelta.x + forward.normalized * screenDelta.y) * GameConfig.current.game.cameraPanSpeed);
 	}
 
 	private void HandleCameraZoom ()
 	{
 		float rawScroll = m_zoomAction.ReadValue<Vector2>().y;
 		if (Mathf.Abs(rawScroll) < 0.01f)
+			return;
+
+		if (InputManager.IsPointerOverBlockingUI())
 			return;
 
 		float scroll = Mathf.Sign(rawScroll) * LegacyAxisPerNotch;
@@ -360,6 +436,16 @@ public class PlayerController : Singleton<PlayerController>
 			if(m_selectedEntity != null)
 				m_selectedEntity.Select();
 		}
+
+		CenterCameraOn(m_selectedEntity);
+	}
+
+	private void OnEmptyRightClick ()
+	{
+		if (m_turnManager.currentPhase != TurnManager.TurnPhase.Recording)
+			return;
+
+		SelectEntity(null);
 	}
 
 	private void OnTileRightClick ( Tile _tile )
@@ -747,14 +833,29 @@ public class PlayerController : Singleton<PlayerController>
 		ClearAoEPreviewOutlines();
 	}
 
-	private void RestoreInteractableOutlines ( List<Tile> _tiles )
+	public bool AreInteractableOutlinesHidden => m_areInteractableOutlinesHidden;
+
+	public void SetInteractableOutlinesHidden ( bool _hidden )
+	{
+		if (m_areInteractableOutlinesHidden == _hidden || GridManager.Instance == null)
+			return;
+
+		m_areInteractableOutlinesHidden = _hidden;
+
+		RestoreInteractableOutlines(GridManager.Instance.Tiles);
+		RedrawOutlines(m_rangePreviewTiles, m_currentRangePreviewColor);
+		RedrawOutlines(m_aoePreviewTiles, GameAssets.current.ui.aoePreviewColor);
+		RedrawTargetOutlines();
+	}
+
+	private void RestoreInteractableOutlines ( IEnumerable<Tile> _tiles )
 	{
 		Color interactableColor = m_turnManager.CurrentActionSelected != null
 			? GameAssets.current.ui.GetActionRangeColor(m_turnManager.CurrentActionSelected.Data.GetMainActionType(), false)
 			: GameAssets.current.ui.movementRangeColor;
 
 		foreach (Tile tile in _tiles)
-			tile.UI.SetAsInteractable(tile.CanInteract, interactableColor);
+			tile.UI.SetAsInteractable(!m_areInteractableOutlinesHidden && tile.CanInteract, interactableColor);
 	}
 
 	private void RedrawOutlines ( List<Tile> _tiles, Color _color )

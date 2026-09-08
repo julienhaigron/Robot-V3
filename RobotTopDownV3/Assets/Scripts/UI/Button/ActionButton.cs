@@ -151,7 +151,10 @@ public class ActionButton : BaseButton, IPointerEnterHandler, IPointerExitHandle
 		ToolTipManager.Instance.Show(data.displayName, data.GetDescription());
 
 		if (PlayerController.Instance != null)
+		{
 			PlayerController.Instance.ClearHoverPreviews();
+			PlayerController.Instance.SetInteractableOutlinesHidden(true);
+		}
 
 		DisplayRangePreview(data);
 	}
@@ -164,7 +167,10 @@ public class ActionButton : BaseButton, IPointerEnterHandler, IPointerExitHandle
 		ToolTipManager.Instance.Hide();
 
 		if (PlayerController.Instance != null)
+		{
 			PlayerController.Instance.ClearRangePreviewOutlines();
+			PlayerController.Instance.SetInteractableOutlinesHidden(false);
+		}
 	}
 
 	private void DisplayRangePreview ( EntityActionData _data )
