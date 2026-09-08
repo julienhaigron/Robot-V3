@@ -543,6 +543,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 188bed51bf7dbd84b9b789ba9bfb59f6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: RTD::BaseButton
+  m_label: {fileID: 0}
   m_button: {fileID: 647708332779995701}
   m_image: {fileID: 2808788845495704534}
 --- !u!1 &1508968442637869016
@@ -731,8 +732,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 800.7002, y: -170.29999}
-  m_SizeDelta: {x: 300.2, y: 50}
+  m_AnchoredPosition: {x: 784.7002, y: -170.29999}
+  m_SizeDelta: {x: 332.2, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6628261387892928810
 CanvasRenderer:
@@ -789,12 +790,12 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 34.2
+  m_fontSize: 28
   m_fontSizeBase: 34.2
   m_fontWeight: 400
-  m_enableAutoSizing: 0
-  m_fontSizeMin: 18
-  m_fontSizeMax: 72
+  m_enableAutoSizing: 1
+  m_fontSizeMin: 16
+  m_fontSizeMax: 28
   m_fontStyle: 16
   m_HorizontalAlignment: 4
   m_VerticalAlignment: 512
@@ -1006,8 +1007,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -1}
-  m_SizeDelta: {x: 236.6, y: 50}
+  m_AnchoredPosition: {x: 10.5, y: -1}
+  m_SizeDelta: {x: 259.6, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &695420468845472812
 CanvasRenderer:
@@ -1064,12 +1065,12 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 28.56
+  m_fontSize: 28
   m_fontSizeBase: 28.56
   m_fontWeight: 400
-  m_enableAutoSizing: 0
-  m_fontSizeMin: 18
-  m_fontSizeMax: 72
+  m_enableAutoSizing: 1
+  m_fontSizeMin: 16
+  m_fontSizeMax: 28
   m_fontStyle: 16
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -1109,6 +1110,19 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &9123456789012345660
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4295437807923088670}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8e84717eb35a2141b62ffd967b6c41f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  key: hangar/create_unit
 --- !u!1 &4630138238760861896
 GameObject:
   m_ObjectHideFlags: 0
@@ -1351,8 +1365,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 800.7002, y: -124.29999}
-  m_SizeDelta: {x: 300.2, y: 50}
+  m_AnchoredPosition: {x: 784.7002, y: -124.29999}
+  m_SizeDelta: {x: 332.2, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1567473931813175825
 CanvasRenderer:
@@ -1409,12 +1423,12 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 34.2
+  m_fontSize: 28
   m_fontSizeBase: 34.2
   m_fontWeight: 400
-  m_enableAutoSizing: 0
-  m_fontSizeMin: 18
-  m_fontSizeMax: 72
+  m_enableAutoSizing: 1
+  m_fontSizeMin: 16
+  m_fontSizeMax: 28
   m_fontStyle: 16
   m_HorizontalAlignment: 4
   m_VerticalAlignment: 512
@@ -1448,7 +1462,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: -47.696533, y: 0, z: 0, w: 0}
+  m_margin: {x: -0.1763916, y: 0, z: 0, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -5371,16 +5385,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6730badcaacf6b543abeaf70a88e6ab2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: RTD::UnitMissionDisplay
---- !u!114 &9123456789012345660
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4295437807923088670}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a8e84717eb35a2141b62ffd967b6c41f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  key: hangar/create_unit
