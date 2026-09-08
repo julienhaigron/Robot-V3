@@ -52,7 +52,7 @@ public class RotateEntityAction : AEntityAction
 
 	protected override void Perform ( Entity.EntityState _state )
 	{
-		if(targetedOrientationID == null || targetedOrientationID.Length < lifetime)
+		if(targetedOrientationID == null || targetedOrientationID.Length <= lifetime)
 		{
 			//shouldnt happen
 			EndTick();

@@ -744,6 +744,13 @@ public class TurnManager : Singleton<TurnManager>
 
 	public AEntityAction GetActionPerformedAtTick ( int _entityID )
 	{
+		if (m_actionsBeingDone.ContainsKey(_entityID) && m_actionsBeingDone[_entityID] != null)
+		{
+			AEntityAction actionBeingDone = m_actionsBeingDone[_entityID].Item1.action;
+			if (actionBeingDone.IsPerformingAtTick(currentTick))
+				return actionBeingDone;
+		}
+
 		if (m_actionsToPlay.ContainsKey(_entityID) && m_actionsToPlay[_entityID] != null)
 		{
 			foreach (RecordedAction recordedAction in m_actionsToPlay[_entityID])
@@ -753,18 +760,18 @@ public class TurnManager : Singleton<TurnManager>
 			}
 		}
 
-		if (m_actionsBeingDone.ContainsKey(_entityID) && m_actionsBeingDone[_entityID] != null)
-		{
-			AEntityAction actionBeingDone = m_actionsBeingDone[_entityID].Item1.action;
-			if (actionBeingDone.IsPerformingAtTick(currentTick))
-				return actionBeingDone;
-		}
-
 		return null;
 	}
 
 	public int GetEntityPositionAtEndOfTick ( int _entityID, int _defaultTileID )
 	{
+		if (m_actionsBeingDone.ContainsKey(_entityID) && m_actionsBeingDone[_entityID] != null)
+		{
+			AEntityAction actionBeingDone = m_actionsBeingDone[_entityID].Item1.action;
+			if (actionBeingDone.IsPerformingAtTick(currentTick))
+				return actionBeingDone.positionAtActionEndID;
+		}
+
 		if (m_actionsToPlay.ContainsKey(_entityID) && m_actionsToPlay[_entityID] != null)
 		{
 			foreach (RecordedAction recordedAction in m_actionsToPlay[_entityID])
@@ -772,13 +779,6 @@ public class TurnManager : Singleton<TurnManager>
 				if (recordedAction.action.IsPerformingAtTick(currentTick))
 					return recordedAction.action.positionAtActionEndID;
 			}
-		}
-
-		if (m_actionsBeingDone.ContainsKey(_entityID) && m_actionsBeingDone[_entityID] != null)
-		{
-			AEntityAction actionBeingDone = m_actionsBeingDone[_entityID].Item1.action;
-			if (actionBeingDone.IsPerformingAtTick(currentTick))
-				return actionBeingDone.positionAtActionEndID;
 		}
 
 		return _defaultTileID;
@@ -807,6 +807,13 @@ public class TurnManager : Singleton<TurnManager>
 
 	public bool HasRotationFreeActionThisTick ( int _entityID )
 	{
+		if (m_actionsBeingDone.ContainsKey(_entityID) && m_actionsBeingDone[_entityID] != null)
+		{
+			RecordedAction actionBeingDone = m_actionsBeingDone[_entityID].Item1;
+			if (actionBeingDone.action.IsPerformingAtTick(currentTick))
+				return IsRotationFreeAction(actionBeingDone);
+		}
+
 		if (m_actionsToPlay.ContainsKey(_entityID) && m_actionsToPlay[_entityID] != null)
 		{
 			foreach (RecordedAction recordedAction in m_actionsToPlay[_entityID])
@@ -814,13 +821,6 @@ public class TurnManager : Singleton<TurnManager>
 				if (recordedAction.action.IsPerformingAtTick(currentTick))
 					return IsRotationFreeAction(recordedAction);
 			}
-		}
-
-		if (m_actionsBeingDone.ContainsKey(_entityID) && m_actionsBeingDone[_entityID] != null)
-		{
-			RecordedAction actionBeingDone = m_actionsBeingDone[_entityID].Item1;
-			if (actionBeingDone.action.IsPerformingAtTick(currentTick))
-				return IsRotationFreeAction(actionBeingDone);
 		}
 
 		return false;

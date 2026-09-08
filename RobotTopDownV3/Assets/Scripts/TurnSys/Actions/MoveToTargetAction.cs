@@ -106,6 +106,9 @@ public class MoveToTargetAction : AEntityAction
 		{
 			m_movementTween = GameManager.Instance.GetEntityFromID(performingEntityID).Displacement.MoveToTile(targetTileIDs[i], null, true, movementSpeed);
 
+			if (m_movementTween == null)
+				break;
+
 			yield return new WaitForSeconds(movementSpeed);
 		}
 

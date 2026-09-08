@@ -210,8 +210,15 @@ public class EntityDisplacementPlugin : EntityPlugin
 
 	public void Rotate(Tile _towards, float _duration, System.Action _onEndPerform = null )
 	{
-		int closestOrientationToTile = GridManager.Instance.GetClosestOrientation(m_coordinate.GetTile(), _towards);
-		Rotate(closestOrientationToTile, _duration, _onEndPerform);
+		Tile from = m_coordinate.GetTile();
+
+		if (_towards == null || _towards == from)
+		{
+			_onEndPerform?.Invoke();
+			return;
+		}
+
+		Rotate(GridManager.Instance.GetClosestOrientation(from, _towards), _duration, _onEndPerform);
 	}
 
 	private void OnStartPerformAction(AEntityAction _actionPerformed )
