@@ -49,9 +49,9 @@ public class DisconnectionPopup : AUIPopup
 	private void RefreshText ()
 	{
 		string cause = m_isLocalDisconnection
-			? "Connection lost"
-			: "Player " + (m_disconnectedPlayerIndex + 1) + " disconnected";
+			? LocalizationManager.Instance.Get(LocalizationKey.disconnection_local)
+			: string.Format(LocalizationManager.Instance.Get(LocalizationKey.disconnection_player), m_disconnectedPlayerIndex + 1);
 
-		m_descriptionTMP.text = cause + "\nRemaining waiting time " + Mathf.CeilToInt(m_remainingTime) + "s";
+		m_descriptionTMP.text = string.Format(LocalizationManager.Instance.Get(LocalizationKey.disconnection_waiting), cause, Mathf.CeilToInt(m_remainingTime));
 	}
 }

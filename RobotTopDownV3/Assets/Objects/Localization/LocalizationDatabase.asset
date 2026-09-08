@@ -406,3 +406,187 @@ MonoBehaviour:
     values:
     - INVENTORY -
     - INVENTAIRE -
+  - key: return_hub/title
+    values:
+    - Info!
+    - Infos !
+  - key: return_hub/content
+    values:
+    - "Report:\n{0}"
+    - "Rapport :\n{0}"
+  - key: entity_config/upgrades
+    values:
+    - Upgrades
+    - "Am\xE9liorations"
+  - key: ingame/validate_targets
+    values:
+    - Validate Targets
+    - Valider les cibles
+  - key: ingame/input_phase
+    values:
+    - Input Phase
+    - Phase d'ordres
+  - key: ingame/play_phase
+    values:
+    - Play Phase
+    - "Phase de r\xE9solution"
+  - key: lobby/port
+    values:
+    - "Port:"
+    - "Port :"
+  - key: lobby/name
+    values:
+    - "Lobby name:"
+    - "Nom du lobby :"
+  - key: lobby/name_placeholder
+    values:
+    - Lobby name...
+    - Nom du lobby...
+  - key: lobby/create
+    values:
+    - Create Lobby
+    - "Cr\xE9er un lobby"
+  - key: lobby/none_found
+    values:
+    - No lobby found
+    - "Aucun lobby trouv\xE9"
+  - key: lobby/settings
+    values:
+    - Lobby Settings
+    - "Param\xE8tres du lobby"
+  - key: shop/inventory
+    values:
+    - INVENTORY -
+    - INVENTAIRE -
+  - key: shop/title
+    values:
+    - - SHOP
+    - - BOUTIQUE
+  - key: mission/components
+    values:
+    - Components
+    - Composants
+  - key: mission/start
+    values:
+    - START MISSION
+    - LANCER LA MISSION
+  - key: mission/rewards
+    values:
+    - REWARDS
+    - "R\xC9COMPENSES"
+  - key: tournament/round_1
+    values:
+    - Round 1
+    - Manche 1
+  - key: tournament/round_2
+    values:
+    - Round 2
+    - Manche 2
+  - key: tournament/final
+    values:
+    - Final
+    - Finale
+  - key: tournament/promotion
+    values:
+    - PROMOTION
+    - PROMOTION
+  - key: tournament/start
+    values:
+    - Start Tournament
+    - Lancer le tournoi
+  - key: endlevel/victory
+    values:
+    - Victory
+    - Victoire
+  - key: endlevel/draw
+    values:
+    - Draw
+    - "\xC9galit\xE9"
+  - key: endlevel/defeat
+    values:
+    - Defeat
+    - "D\xE9faite"
+  - key: endlevel/reward_points
+    values:
+    - "Remaining reward points to use: <color=yellow>{0}</color>"
+    - "Points de r\xE9compense restants : <color=yellow>{0}</color>"
+  - key: multiplayer/player_count
+    values:
+    - "Player Count: {0}"
+    - "Nombre de joueurs : {0}"
+  - key: multiplayer/port
+    values:
+    - "Port: {0}"
+    - "Port : {0}"
+  - key: disconnection/waiting
+    values:
+    - "{0}\nRemaining waiting time {1}s"
+    - "{0}\nTemps d'attente restant {1} s"
+  - key: hub/cycle
+    values:
+    - CYCLE {0}
+    - CYCLE {0}
+  - key: save/empty_slot
+    values:
+    - Empty save slot
+    - Emplacement de sauvegarde vide
+  - key: component/repair
+    values:
+    - Repair Component
+    - "R\xE9parer Composant"
+  - key: component/recycle
+    values:
+    - Recycle Component
+    - Recycler Composant
+  - key: component/buy
+    values:
+    - Buy Component
+    - Acheter Composant
+  - key: disconnection/local
+    values:
+    - Connection lost
+    - Connexion perdue
+  - key: disconnection/player
+    values:
+    - Player {0} disconnected
+    - "Joueur {0} d\xE9connect\xE9"
+  - key: entity_ui/modify
+    values:
+    - Modify
+    - Modifier
+  - key: repair/action
+    values:
+    - Repair
+    - "R\xE9parer"
+  - key: dialogue/skip
+    values:
+    - SKIP
+    - PASSER
+  - key: lobby/join
+    values:
+    - Join
+    - Rejoindre
+  - key: unit/config
+    values:
+    - Config
+    - Config
+  - key: ingame/log_toggle
+    values:
+    - Toggle
+    - Afficher
+  - key: ingame/hp
+    values:
+    - HP
+    - PV
+  - key: stat_section/damages
+    values:
+    - Damages
+    - "D\xE9g\xE2ts"
+  - key: stat_section/resistances
+    values:
+    - Resistances
+    - "R\xE9sistances"
+  - key: stat_section/status
+    values:
+    - Status stats
+    - Stats de statut

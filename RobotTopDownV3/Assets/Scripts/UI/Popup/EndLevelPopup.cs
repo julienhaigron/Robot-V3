@@ -27,11 +27,23 @@ public class EndLevelPopup : AUIPopup
 	private void OnDestroy ()
 	{
 		m_continueButton.onClick -= OnClickContinue;
+		LocalizationManager.onLanguageChanged -= RefreshResultLabel;
+	}
+
+	private GameResult m_gameResult;
+
+	private void RefreshResultLabel ()
+	{
+		m_texte.text = LocalizationManager.Instance.Get(m_gameResult == GameResult.Win ? LocalizationKey.endlevel_victory
+			: m_gameResult == GameResult.Draw ? LocalizationKey.endlevel_draw : LocalizationKey.endlevel_defeat);
 	}
 
 	public void Init ( GameResult _gameResult, MissionData _missionData )
 	{
-		m_texte.text = _gameResult == GameResult.Win ? "Victory" : _gameResult == GameResult.Draw ? "Draw" : "Defeat";
+		m_gameResult = _gameResult;
+		LocalizationManager.onLanguageChanged -= RefreshResultLabel;
+		LocalizationManager.onLanguageChanged += RefreshResultLabel;
+		RefreshResultLabel();
 
 		//damaged units
 		for (int i = 0; i < m_unitDisplay.Length; i++)
@@ -122,7 +134,7 @@ public class EndLevelPopup : AUIPopup
 			if (display.IsSelected && display.IsVisible)
 				totalUsedRewardPoint += 5;
 
-		m_rewardPointsTMP.text = "Remaining reward points to use: <color=yellow>" + (m_allocatedRewardPoint - totalUsedRewardPoint) + "</color>";
+		m_rewardPointsTMP.text = string.Format(LocalizationManager.Instance.Get(LocalizationKey.endlevel_reward_points), m_allocatedRewardPoint - totalUsedRewardPoint);
 
 		m_continueButton.SetInteractability(m_allocatedRewardPoint == 5 || totalUsedRewardPoint <= m_allocatedRewardPoint);
 	}

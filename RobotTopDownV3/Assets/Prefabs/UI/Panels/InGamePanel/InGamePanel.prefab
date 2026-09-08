@@ -547,6 +547,7 @@ GameObject:
   - component: {fileID: 3209786601152570611}
   - component: {fileID: 9002377210276295764}
   - component: {fileID: 4572308787168008188}
+  - component: {fileID: 9123456789012345601}
   m_Layer: 0
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -3043,3 +3044,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4f78aa36f102e9543a964c0a0735fb47, type: 3}
   m_Name: 
   m_EditorClassIdentifier: RTD::SquadUnitDisplayList
+--- !u!114 &9123456789012345601
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5506993281584439297}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8e84717eb35a2141b62ffd967b6c41f, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  key: ingame/validate_targets

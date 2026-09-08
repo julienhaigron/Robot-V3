@@ -19,7 +19,7 @@ public class SaveButton : BaseButton
 		if (!_hasSave)
 		{
 			SetInteractability(false);
-			m_name.text = "Empty save slot";
+			m_name.text = LocalizationManager.Instance.Get(LocalizationKey.save_empty_slot);
 		}
 		else
 		{

@@ -83,21 +83,21 @@ public class SquadUnitFullMicroDisplay : MonoBehaviour
 		}
 		if(damageStats.Count > 0)
 		{
-			m_damageSectionDisplay.Init("Damages", damageStats);
+			m_damageSectionDisplay.Init(LocalizationManager.Instance.Get(LocalizationKey.stat_section_damages), damageStats);
 			m_damageSectionDisplay.gameObject.SetActive(true);
 		}
 		else
 			m_damageSectionDisplay.gameObject.SetActive(false);
 		if (resStats.Count > 0)
 		{
-			m_resistanceSectionDisplay.Init("Resistances", resStats);
+			m_resistanceSectionDisplay.Init(LocalizationManager.Instance.Get(LocalizationKey.stat_section_resistances), resStats);
 			m_resistanceSectionDisplay.gameObject.SetActive(true);
 		}
 		else
 			m_resistanceSectionDisplay.gameObject.SetActive(false);
 		if (statusStats.Count > 0)
 		{
-			m_statusSectionDisplay.Init("Status stats", statusStats);
+			m_statusSectionDisplay.Init(LocalizationManager.Instance.Get(LocalizationKey.stat_section_status), statusStats);
 			m_statusSectionDisplay.gameObject.SetActive(true);
 		}
 		else

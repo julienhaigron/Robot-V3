@@ -20,6 +20,7 @@ public sealed class InGamePanel : AUIPanel
 
 	[SerializeField] private BaseButton m_endPhaseButton;
 	[SerializeField] private TextMeshProUGUI m_phaseTitleTmp;
+	private bool m_isInInputPhase = true;
 
 	[Title("Console")]
 	[SerializeField] private InGameLogConsole m_logConsole;
@@ -49,6 +50,7 @@ public sealed class InGamePanel : AUIPanel
 	{
 		TurnManager.onStartInputPhase += OnStartInputPhase;
 		TurnManager.onEndInputPhase += OnEndInputPhase;
+		LocalizationManager.onLanguageChanged += RefreshPhaseLabel;
 		TurnManager.onActionAdded += OnActionAdded;
 		PlayerController.onEntitySelected += OnEntitySelected;
 		m_endPhaseButton.onClick += OnClickEndPhaseBtn;
@@ -68,10 +70,16 @@ public sealed class InGamePanel : AUIPanel
 		SoundManager.Instance.Play(m_onActionAddedSfxID);
 	}
 
+	private void RefreshPhaseLabel ()
+	{
+		m_phaseTitleTmp.text = LocalizationManager.Instance.Get(m_isInInputPhase ? LocalizationKey.ingame_input_phase : LocalizationKey.ingame_play_phase);
+	}
+
 	private void OnDestroy ()
 	{
 		TurnManager.onStartInputPhase -= OnStartInputPhase;
 		TurnManager.onEndInputPhase -= OnEndInputPhase;
+		LocalizationManager.onLanguageChanged -= RefreshPhaseLabel;
 		TurnManager.onActionAdded -= OnActionAdded;
 		PlayerController.onEntitySelected -= OnEntitySelected;
 		m_endPhaseButton.onClick -= OnClickEndPhaseBtn;
@@ -121,7 +129,8 @@ public sealed class InGamePanel : AUIPanel
 
 	private void OnStartInputPhase ()
 	{
-		m_phaseTitleTmp.text = "Input Phase";
+		m_isInInputPhase = true;
+		RefreshPhaseLabel();
 
 		m_squadUnitDisplayList.Show(m_animationDuration);
 		if(m_tutoConsole.AllDialogs.Count > 0)
@@ -131,7 +140,8 @@ public sealed class InGamePanel : AUIPanel
 
 	private void OnEndInputPhase ()
 	{
-		m_phaseTitleTmp.text = "Play Phase";
+		m_isInInputPhase = false;
+		RefreshPhaseLabel();
 
 		m_squadUnitDisplayList.Hide(m_animationDuration);
 		m_tutoConsole.Hide(false);

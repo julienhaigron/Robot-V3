@@ -480,6 +480,7 @@ GameObject:
   - component: {fileID: 100494094328665843}
   - component: {fileID: 2796927261479726348}
   - component: {fileID: 2513124527876155472}
+  - component: {fileID: 9123456789012345601}
   m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -652,6 +653,7 @@ GameObject:
   - component: {fileID: 8579673531627269787}
   - component: {fileID: 3351063023134761236}
   - component: {fileID: 7383352907996256314}
+  - component: {fileID: 9123456789012345602}
   m_Layer: 5
   m_Name: No lobby Found TMP
   m_TagString: Untagged
@@ -1061,6 +1063,7 @@ GameObject:
   - component: {fileID: 5123520345692506099}
   - component: {fileID: 4753247363511866875}
   - component: {fileID: 258190804590500405}
+  - component: {fileID: 9123456789012345603}
   m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -1418,3 +1421,42 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 188bed51bf7dbd84b9b789ba9bfb59f6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &9123456789012345601
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4686476135760965856}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8e84717eb35a2141b62ffd967b6c41f, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  key: lobby/create
+--- !u!114 &9123456789012345602
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5114878541570738364}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8e84717eb35a2141b62ffd967b6c41f, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  key: lobby/none_found
+--- !u!114 &9123456789012345603
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8839694501077755681}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8e84717eb35a2141b62ffd967b6c41f, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  key: lobby/settings

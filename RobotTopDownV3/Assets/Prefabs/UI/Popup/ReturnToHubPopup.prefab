@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 3498813680016832939}
   - component: {fileID: 575817869735513052}
   - component: {fileID: 9142525499503205270}
+  - component: {fileID: 9123456789012345601}
   m_Layer: 5
   m_Name: TitleTMP
   m_TagString: Untagged
@@ -692,3 +693,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 188bed51bf7dbd84b9b789ba9bfb59f6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &9123456789012345601
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2477034810409689644}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8e84717eb35a2141b62ffd967b6c41f, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  key: return_hub/title

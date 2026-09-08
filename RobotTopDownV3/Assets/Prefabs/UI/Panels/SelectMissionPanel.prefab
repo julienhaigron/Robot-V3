@@ -205,6 +205,7 @@ GameObject:
   - component: {fileID: 6753041748471206211}
   - component: {fileID: 2409342906016382401}
   - component: {fileID: 8547263132256187729}
+  - component: {fileID: 9123456789012345601}
   m_Layer: 5
   m_Name: RecompencesTMP
   m_TagString: Untagged
@@ -2667,3 +2668,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9bb1bd3d393c7ce408d126bb6f355b1e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: RTD::MissionButton
+--- !u!114 &9123456789012345601
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3250727464057395717}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8e84717eb35a2141b62ffd967b6c41f, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  key: mission/rewards

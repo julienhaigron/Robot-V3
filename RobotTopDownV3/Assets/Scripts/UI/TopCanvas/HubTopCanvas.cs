@@ -170,7 +170,7 @@ public class HubTopCanvas : AUITopCanvas
 
 	private void RefreshDayDisplay ()
 	{
-		m_cycleTMP.text = "CYCLE " + (GameDatas.current.currentPlayerSave.cycleCount + 1);
+		m_cycleTMP.text = string.Format(LocalizationManager.Instance.Get(LocalizationKey.hub_cycle), GameDatas.current.currentPlayerSave.cycleCount + 1);
 
 		for (int i = 0; i < m_dayDisplays.Length; i++)
 		{

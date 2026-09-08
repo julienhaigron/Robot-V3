@@ -99,6 +99,52 @@ public enum LocalizationKey
     vision_thermic,
     vision_radar,
     entity_config_inventory,
+    return_hub_title,
+    return_hub_content,
+    entity_config_upgrades,
+    ingame_validate_targets,
+    ingame_input_phase,
+    ingame_play_phase,
+    lobby_port,
+    lobby_name,
+    lobby_name_placeholder,
+    lobby_create,
+    lobby_none_found,
+    lobby_settings,
+    shop_inventory,
+    shop_title,
+    mission_components,
+    mission_start,
+    mission_rewards,
+    tournament_round_1,
+    tournament_round_2,
+    tournament_final,
+    tournament_promotion,
+    tournament_start,
+    endlevel_victory,
+    endlevel_draw,
+    endlevel_defeat,
+    endlevel_reward_points,
+    multiplayer_player_count,
+    multiplayer_port,
+    disconnection_waiting,
+    hub_cycle,
+    save_empty_slot,
+    component_repair,
+    component_recycle,
+    component_buy,
+    disconnection_local,
+    disconnection_player,
+    entity_ui_modify,
+    repair_action,
+    dialogue_skip,
+    lobby_join,
+    unit_config,
+    ingame_log_toggle,
+    ingame_hp,
+    stat_section_damages,
+    stat_section_resistances,
+    stat_section_status,
 }
 
 public static class LocalizationKeyExtensions
@@ -205,6 +251,52 @@ public static class LocalizationKeyExtensions
             case LocalizationKey.vision_thermic: return "vision/thermic";
             case LocalizationKey.vision_radar: return "vision/radar";
             case LocalizationKey.entity_config_inventory: return "entity_config/inventory";
+            case LocalizationKey.return_hub_title: return "return_hub/title";
+            case LocalizationKey.return_hub_content: return "return_hub/content";
+            case LocalizationKey.entity_config_upgrades: return "entity_config/upgrades";
+            case LocalizationKey.ingame_validate_targets: return "ingame/validate_targets";
+            case LocalizationKey.ingame_input_phase: return "ingame/input_phase";
+            case LocalizationKey.ingame_play_phase: return "ingame/play_phase";
+            case LocalizationKey.lobby_port: return "lobby/port";
+            case LocalizationKey.lobby_name: return "lobby/name";
+            case LocalizationKey.lobby_name_placeholder: return "lobby/name_placeholder";
+            case LocalizationKey.lobby_create: return "lobby/create";
+            case LocalizationKey.lobby_none_found: return "lobby/none_found";
+            case LocalizationKey.lobby_settings: return "lobby/settings";
+            case LocalizationKey.shop_inventory: return "shop/inventory";
+            case LocalizationKey.shop_title: return "shop/title";
+            case LocalizationKey.mission_components: return "mission/components";
+            case LocalizationKey.mission_start: return "mission/start";
+            case LocalizationKey.mission_rewards: return "mission/rewards";
+            case LocalizationKey.tournament_round_1: return "tournament/round_1";
+            case LocalizationKey.tournament_round_2: return "tournament/round_2";
+            case LocalizationKey.tournament_final: return "tournament/final";
+            case LocalizationKey.tournament_promotion: return "tournament/promotion";
+            case LocalizationKey.tournament_start: return "tournament/start";
+            case LocalizationKey.endlevel_victory: return "endlevel/victory";
+            case LocalizationKey.endlevel_draw: return "endlevel/draw";
+            case LocalizationKey.endlevel_defeat: return "endlevel/defeat";
+            case LocalizationKey.endlevel_reward_points: return "endlevel/reward_points";
+            case LocalizationKey.multiplayer_player_count: return "multiplayer/player_count";
+            case LocalizationKey.multiplayer_port: return "multiplayer/port";
+            case LocalizationKey.disconnection_waiting: return "disconnection/waiting";
+            case LocalizationKey.hub_cycle: return "hub/cycle";
+            case LocalizationKey.save_empty_slot: return "save/empty_slot";
+            case LocalizationKey.component_repair: return "component/repair";
+            case LocalizationKey.component_recycle: return "component/recycle";
+            case LocalizationKey.component_buy: return "component/buy";
+            case LocalizationKey.disconnection_local: return "disconnection/local";
+            case LocalizationKey.disconnection_player: return "disconnection/player";
+            case LocalizationKey.entity_ui_modify: return "entity_ui/modify";
+            case LocalizationKey.repair_action: return "repair/action";
+            case LocalizationKey.dialogue_skip: return "dialogue/skip";
+            case LocalizationKey.lobby_join: return "lobby/join";
+            case LocalizationKey.unit_config: return "unit/config";
+            case LocalizationKey.ingame_log_toggle: return "ingame/log_toggle";
+            case LocalizationKey.ingame_hp: return "ingame/hp";
+            case LocalizationKey.stat_section_damages: return "stat_section/damages";
+            case LocalizationKey.stat_section_resistances: return "stat_section/resistances";
+            case LocalizationKey.stat_section_status: return "stat_section/status";
             default: return string.Empty;
         }
     }

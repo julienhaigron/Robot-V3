@@ -101,7 +101,7 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 				m_descriptionTMP.gameObject.SetActive(true);
 				if (m_outlineImg != null)
 					m_outlineImg.enabled = false;
-				m_descriptionTMP.text = "Réparer Composant";
+				m_descriptionTMP.text = LocalizationManager.Instance.Get(LocalizationKey.component_repair);
 				if (m_rerollBtn != null)
 					m_rerollBtn.gameObject.SetActive(false);
 				break;
@@ -116,7 +116,7 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 				m_descriptionTMP.gameObject.SetActive(true);
 				if (m_outlineImg != null)
 					m_outlineImg.enabled = false;
-				m_descriptionTMP.text = "Recycler Composant";
+				m_descriptionTMP.text = LocalizationManager.Instance.Get(LocalizationKey.component_recycle);
 				if (m_rerollBtn != null)
 					m_rerollBtn.gameObject.SetActive(false);
 				break;
@@ -131,7 +131,7 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 				m_descriptionTMP.gameObject.SetActive(true);
 				if (m_outlineImg != null)
 					m_outlineImg.enabled = false;
-				m_descriptionTMP.text = "Acheter Composant";
+				m_descriptionTMP.text = LocalizationManager.Instance.Get(LocalizationKey.component_buy);
 				if (m_rerollBtn != null)
 					m_rerollBtn.gameObject.SetActive(true);
 				break;

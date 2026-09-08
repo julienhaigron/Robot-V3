@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 7277753710654041710}
   - component: {fileID: 4860504096244105918}
   - component: {fileID: 3395870483299202658}
+  - component: {fileID: 9123456789012345601}
   m_Layer: 0
   m_Name: DisplayName (1)
   m_TagString: Untagged
@@ -625,6 +626,7 @@ GameObject:
   - component: {fileID: 6338097998397219722}
   - component: {fileID: 7558795472176013321}
   - component: {fileID: 8429773729635198829}
+  - component: {fileID: 9123456789012345602}
   m_Layer: 0
   m_Name: DisplayName
   m_TagString: Untagged
@@ -3480,3 +3482,29 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 2196480482947549660, guid: c8ee6a605b396d34ea29c3e6853b2515, type: 3}
   m_PrefabInstance: {fileID: 8594990318230162016}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &9123456789012345601
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 374102226570335082}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8e84717eb35a2141b62ffd967b6c41f, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  key: shop/inventory
+--- !u!114 &9123456789012345602
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5054612940285920860}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8e84717eb35a2141b62ffd967b6c41f, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  key: shop/title

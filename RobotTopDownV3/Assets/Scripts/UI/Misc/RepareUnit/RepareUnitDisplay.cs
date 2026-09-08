@@ -43,7 +43,7 @@ public class RepareUnitDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler,
 
 		m_corpIcon.gameObject.SetActive(true);
 		m_descriptionTMP.gameObject.SetActive(true);
-		m_descriptionTMP.text = "Réparer Composant";
+		m_descriptionTMP.text = LocalizationManager.Instance.Get(LocalizationKey.component_repair);
 	}
 
 	#region Interactions

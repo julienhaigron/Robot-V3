@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 7055732852511491339}
   - component: {fileID: 6001499293086339356}
   - component: {fileID: 8830038156513424044}
+  - component: {fileID: 9123456789012345601}
   m_Layer: 5
   m_Name: Round1TMP
   m_TagString: Untagged
@@ -1707,6 +1708,7 @@ GameObject:
   - component: {fileID: 349843004893524989}
   - component: {fileID: 5667169416959722296}
   - component: {fileID: 6412138621517476963}
+  - component: {fileID: 9123456789012345603}
   m_Layer: 5
   m_Name: FinalTMP
   m_TagString: Untagged
@@ -2207,6 +2209,7 @@ GameObject:
   - component: {fileID: 3173085636128174251}
   - component: {fileID: 3134138369894295255}
   - component: {fileID: 1338058385270002386}
+  - component: {fileID: 9123456789012345604}
   m_Layer: 5
   m_Name: PromotionTMP
   m_TagString: Untagged
@@ -2344,6 +2347,7 @@ GameObject:
   - component: {fileID: 7496157576346824537}
   - component: {fileID: 8379446896238727240}
   - component: {fileID: 378859526366930669}
+  - component: {fileID: 9123456789012345605}
   m_Layer: 5
   m_Name: ComponentTMP
   m_TagString: Untagged
@@ -2556,6 +2560,7 @@ GameObject:
   - component: {fileID: 5324658525784137897}
   - component: {fileID: 6614127008977338614}
   - component: {fileID: 6594980318269516633}
+  - component: {fileID: 9123456789012345606}
   m_Layer: 5
   m_Name: NameTMP
   m_TagString: Untagged
@@ -3022,6 +3027,7 @@ GameObject:
   - component: {fileID: 5682446129478144618}
   - component: {fileID: 9105177956828335868}
   - component: {fileID: 7773069764879247127}
+  - component: {fileID: 9123456789012345607}
   m_Layer: 5
   m_Name: RecompencesTMP
   m_TagString: Untagged
@@ -3908,6 +3914,7 @@ GameObject:
   - component: {fileID: 5350096485481846924}
   - component: {fileID: 6647345147312304286}
   - component: {fileID: 908521460560702483}
+  - component: {fileID: 9123456789012345602}
   m_Layer: 5
   m_Name: Round2TMP
   m_TagString: Untagged
@@ -12419,3 +12426,94 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 95dd401fadbef444683ae2b1257334ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: RTD::StatDisplay
+--- !u!114 &9123456789012345601
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 124504367726433687}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8e84717eb35a2141b62ffd967b6c41f, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  key: tournament/round_1
+--- !u!114 &9123456789012345602
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8037833166429028758}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8e84717eb35a2141b62ffd967b6c41f, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  key: tournament/round_2
+--- !u!114 &9123456789012345603
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2557367633267337626}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8e84717eb35a2141b62ffd967b6c41f, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  key: tournament/final
+--- !u!114 &9123456789012345604
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3567871510176441055}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8e84717eb35a2141b62ffd967b6c41f, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  key: tournament/promotion
+--- !u!114 &9123456789012345605
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3577405052709864165}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8e84717eb35a2141b62ffd967b6c41f, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  key: mission/components
+--- !u!114 &9123456789012345606
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3775305143226097640}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8e84717eb35a2141b62ffd967b6c41f, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  key: tournament/start
+--- !u!114 &9123456789012345607
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5921899379686394354}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8e84717eb35a2141b62ffd967b6c41f, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  key: mission/rewards

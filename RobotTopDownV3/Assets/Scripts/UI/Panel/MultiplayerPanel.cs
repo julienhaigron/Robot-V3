@@ -37,7 +37,7 @@ public class MultiplayerPanel : AUIPanel
 
 	void OnConnectionCountChange ( int count )
 	{
-		m_playerCountText.text = $"Player Count: {count}";
+		m_playerCountText.text = string.Format(LocalizationManager.Instance.Get(LocalizationKey.multiplayer_player_count), count);
 
 		if (!m_isHost)
 			return;
@@ -94,7 +94,7 @@ public class MultiplayerPanel : AUIPanel
 
 	void UpdateText ( string portText )
 	{
-		m_portText.text = $"Port: {portText}";
+		m_portText.text = string.Format(LocalizationManager.Instance.Get(LocalizationKey.multiplayer_port), portText);
 	}
 
 	#endregion*/

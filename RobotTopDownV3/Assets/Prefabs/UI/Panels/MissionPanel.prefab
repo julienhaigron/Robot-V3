@@ -1333,6 +1333,7 @@ GameObject:
   - component: {fileID: 7496157576346824537}
   - component: {fileID: 8379446896238727240}
   - component: {fileID: 378859526366930669}
+  - component: {fileID: 9123456789012345601}
   m_Layer: 5
   m_Name: ComponentTMP
   m_TagString: Untagged
@@ -1545,6 +1546,7 @@ GameObject:
   - component: {fileID: 5324658525784137897}
   - component: {fileID: 6614127008977338614}
   - component: {fileID: 6594980318269516633}
+  - component: {fileID: 9123456789012345602}
   m_Layer: 5
   m_Name: NameTMP
   m_TagString: Untagged
@@ -2086,6 +2088,7 @@ GameObject:
   - component: {fileID: 4169278242084240673}
   - component: {fileID: 4134886638754269198}
   - component: {fileID: 5976636078018704018}
+  - component: {fileID: 9123456789012345603}
   m_Layer: 5
   m_Name: RecompencesTMP
   m_TagString: Untagged
@@ -7211,3 +7214,42 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 95dd401fadbef444683ae2b1257334ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: RTD::StatDisplay
+--- !u!114 &9123456789012345601
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3577405052709864165}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8e84717eb35a2141b62ffd967b6c41f, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  key: mission/components
+--- !u!114 &9123456789012345602
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3775305143226097640}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8e84717eb35a2141b62ffd967b6c41f, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  key: mission/start
+--- !u!114 &9123456789012345603
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6226302932387404150}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8e84717eb35a2141b62ffd967b6c41f, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  key: mission/rewards
