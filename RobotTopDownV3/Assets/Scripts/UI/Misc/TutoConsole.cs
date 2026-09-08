@@ -19,6 +19,8 @@ public class TutoConsole : MonoBehaviour
 
 	[Title("Parameters")]
 	[SerializeField] private float m_charactersPerSecond = 30f;
+	[SerializeField] private float m_scrollSpeed = 25f;
+	[SerializeField] private float m_scrollEdgePause = 1.5f;
 
 	private List<TutoDialogueContainer> m_allDialogs = new();
 	public List<TutoDialogueContainer> AllDialogs => m_allDialogs;
@@ -37,17 +39,92 @@ public class TutoConsole : MonoBehaviour
 	private int m_currentLineIndex;
 	private Tween m_currentTextTween;
 	private bool m_didEndLastDialogue = true;
+	private RectTransform m_dialogueViewport;
+	private RectTransform m_dialogueTextRect;
+	private Sequence m_scrollSequence;
 
 	private void Awake ()
 	{
+		BuildDialogueViewport();
 		m_previousBtn.onClick += OnClickPreviousLineOrDialogue;
 		m_nextBtn.onClick += OnClickNextLineOrDialogue;
 	}
 
 	private void OnDestroy ()
 	{
+		m_scrollSequence?.Kill();
 		m_previousBtn.onClick -= OnClickPreviousLineOrDialogue;
 		m_nextBtn.onClick -= OnClickNextLineOrDialogue;
+	}
+
+	//The dialogue box has a fixed height, so a long line has to scroll. The clipping viewport is
+	//created here rather than in the prefab: the text keeps its authored rect, it is just reparented
+	//into a mask of that same size and left free to grow downwards.
+	private void BuildDialogueViewport ()
+	{
+		m_dialogueTextRect = m_dialogueTMP.rectTransform;
+		if (m_dialogueViewport != null || m_dialogueTextRect.parent == null)
+			return;
+
+		GameObject viewportGO = new GameObject("DialogueViewport", typeof(RectTransform), typeof(RectMask2D));
+		m_dialogueViewport = viewportGO.GetComponent<RectTransform>();
+		m_dialogueViewport.SetParent(m_dialogueTextRect.parent, false);
+		m_dialogueViewport.SetSiblingIndex(m_dialogueTextRect.GetSiblingIndex());
+
+		m_dialogueViewport.anchorMin = m_dialogueTextRect.anchorMin;
+		m_dialogueViewport.anchorMax = m_dialogueTextRect.anchorMax;
+		m_dialogueViewport.pivot = m_dialogueTextRect.pivot;
+		m_dialogueViewport.anchoredPosition = m_dialogueTextRect.anchoredPosition;
+		m_dialogueViewport.sizeDelta = m_dialogueTextRect.sizeDelta;
+
+		m_dialogueTextRect.SetParent(m_dialogueViewport, false);
+		m_dialogueTextRect.anchorMin = new Vector2(0f, 1f);
+		m_dialogueTextRect.anchorMax = new Vector2(1f, 1f);
+		m_dialogueTextRect.pivot = new Vector2(0.5f, 1f);
+		m_dialogueTextRect.anchoredPosition = Vector2.zero;
+		m_dialogueTextRect.sizeDelta = new Vector2(0f, m_dialogueViewport.rect.height);
+
+		m_dialogueTMP.overflowMode = TextOverflowModes.Overflow;
+		m_dialogueTMP.enableWordWrapping = true;
+	}
+
+	private float GetHiddenTextHeight ()
+	{
+		if (m_dialogueViewport == null)
+			return 0f;
+
+		return Mathf.Max(0f, m_dialogueTMP.preferredHeight - m_dialogueViewport.rect.height);
+	}
+
+	private void ResetScroll ()
+	{
+		m_scrollSequence?.Kill();
+		m_scrollSequence = null;
+
+		if (m_dialogueTextRect != null)
+			m_dialogueTextRect.anchoredPosition = Vector2.zero;
+	}
+
+	private void ScrollToBottom ()
+	{
+		if (m_dialogueTextRect != null)
+			m_dialogueTextRect.anchoredPosition = new Vector2(0f, GetHiddenTextHeight());
+	}
+
+	private void StartScrollLoop ()
+	{
+		ResetScroll();
+
+		float hiddenHeight = GetHiddenTextHeight();
+		if (hiddenHeight <= 1f || m_scrollSpeed <= 0f)
+			return;
+
+		m_scrollSequence = DOTween.Sequence();
+		m_scrollSequence.AppendInterval(m_scrollEdgePause);
+		m_scrollSequence.Append(m_dialogueTextRect.DOAnchorPosY(hiddenHeight, hiddenHeight / m_scrollSpeed).SetEase(Ease.Linear));
+		m_scrollSequence.AppendInterval(m_scrollEdgePause);
+		m_scrollSequence.AppendCallback(() => m_dialogueTextRect.anchoredPosition = Vector2.zero);
+		m_scrollSequence.SetLoops(-1);
 	}
 
 	public void Init ()
@@ -99,6 +176,7 @@ public class TutoConsole : MonoBehaviour
 		m_characterNameTMP.text = line.characterName;
 		m_dialogueImg.sprite = line.characterSprite;
 		m_dialogueTMP.text = "";
+		ResetScroll();
 		float duration = line.sentence.Length / m_charactersPerSecond;
 
 		m_currentTextTween?.Kill();
@@ -109,9 +187,12 @@ public class TutoConsole : MonoBehaviour
 			duration)
 			.SetEase(Ease.Linear)
 			.OnStart(() => m_dialogueTMP.text = "")
+			.OnUpdate(ScrollToBottom)
 			.OnComplete(() =>
 			{
 				m_dialogueTMP.text = line.sentence;
+				m_dialogueTMP.ForceMeshUpdate();
+				StartScrollLoop();
 			}
 		);
 
@@ -121,6 +202,7 @@ public class TutoConsole : MonoBehaviour
 	private void EndDialogue ()
 	{
 		m_didEndLastDialogue = true;
+		ResetScroll();
 		//Hide(false);
 		m_characterNameTMP.text = "";
 		m_dialogueTMP.text = "";

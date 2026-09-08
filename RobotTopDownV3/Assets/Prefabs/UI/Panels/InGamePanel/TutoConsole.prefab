@@ -34,8 +34,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 35.5, y: 2.5}
-  m_SizeDelta: {x: 241, y: 131}
+  m_AnchoredPosition: {x: 88.5, y: 2.5}
+  m_SizeDelta: {x: 347, y: 131}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4302553667217988770
 CanvasRenderer:
@@ -131,7 +131,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: -1.5884094, y: 1.0184326, z: -105.8905, w: 0.009643555}
+  m_margin: {x: -1.5884094, y: 1.0184326, z: 0.9229126, w: 0.009643555}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -194,6 +194,8 @@ MonoBehaviour:
   m_previousBtn: {fileID: 750350847440584869}
   m_nextBtn: {fileID: 9150902653829654508}
   m_charactersPerSecond: 30
+  m_scrollSpeed: 25
+  m_scrollEdgePause: 1.5
 --- !u!1 &2102013602612328560
 GameObject:
   m_ObjectHideFlags: 0
