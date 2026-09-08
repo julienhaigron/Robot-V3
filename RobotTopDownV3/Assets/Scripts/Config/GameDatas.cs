@@ -175,6 +175,15 @@ public partial class GameDatas : ScriptableObject
 			onNewDay?.Invoke();
 		}
 
+		//The day 4 tutorial hands the player the credits straight away instead of making them wait
+		//for the timer, so every pending job is marked as due and collected on the next day roll.
+		public void ForceFinishRecycling ()
+		{
+			foreach (DayData.RecyclingComponentData data in dayData.currentlyRecyclingComponents)
+				if (data != null)
+					data.remainingTime = 0;
+		}
+
 		public string CollectFinishedDayJobs ()
 		{
 			string report = "";

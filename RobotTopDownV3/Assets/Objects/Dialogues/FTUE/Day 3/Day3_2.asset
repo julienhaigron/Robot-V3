@@ -16,4 +16,4 @@ MonoBehaviour:
   - characterName: League Employee
     characterSprite: {fileID: 21300000, guid: 3ab256982cae8674388ec2dcdc0a1743, type: 3}
     isSpriteOnLeft: 1
-    sentence: "Blabla mort mais pas grave car r\xE9paration"
+    sentence: "Les composants secondaires (Armes, Outils, Blindages, Camouflages et Chipsets), ne sont pas n\xE9cessaires au fonctionnement d'une unit\xE9 mais la renforcent."

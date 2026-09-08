@@ -16,4 +16,4 @@ MonoBehaviour:
   - characterName: League Employee
     characterSprite: {fileID: 21300000, guid: 3ab256982cae8674388ec2dcdc0a1743, type: 3}
     isSpriteOnLeft: 1
-    sentence: Blabla statut, visible dans le log
+    sentence: "Une action a l'un des types suivants : Mouvement, Tir, M\xEAl\xE9e ou Sp\xE9cial. Une action de Mouvement, Tir ou M\xEAl\xE9e a \xE9galement un sous-type qui donne l'avantage sur un des deux autres types. Une action Sp\xE9ciale a un sous-type qui donne l'avantage, soit sur toutes les autres actions, soit sur aucune. Quand deux actions se d\xE9roulent simultan\xE9ment, celle qui a l'avantage prend effet en premier."

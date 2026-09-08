@@ -16,4 +16,4 @@ MonoBehaviour:
   - characterName: League Employee
     characterSprite: {fileID: 21300000, guid: 3ab256982cae8674388ec2dcdc0a1743, type: 3}
     isSpriteOnLeft: 1
-    sentence: "Blabla PFC + Sous-type d\u2019action"
+    sentence: "Ce bouton vous permet de lancer le match choisi."

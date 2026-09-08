@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5140234df1cbcb640bad62a1df6c5324, type: 3}
-  m_Name: Day5_0
+  m_Name: Day5_2
   m_EditorClassIdentifier: RTD::DialogueData
   lines:
   - characterName: League Employee
     characterSprite: {fileID: 21300000, guid: 3ab256982cae8674388ec2dcdc0a1743, type: 3}
     isSpriteOnLeft: 1
-    sentence: "Au cours des derniers matchs, vous avez acquis de quoi cr\xE9er une nouvelle unit\xE9. Pour ce faire, rendez vous dans le hangar."
+    sentence: "Pour cr\xE9er une unit\xE9, vous devez combiner un de chacun des composants suivants : Ch\xE2ssis, Membrane Neuronale, Module IA et R\xE9acteur."

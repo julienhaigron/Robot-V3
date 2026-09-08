@@ -16,4 +16,4 @@ MonoBehaviour:
   - characterName: League Employee
     characterSprite: {fileID: 21300000, guid: 3ab256982cae8674388ec2dcdc0a1743, type: 3}
     isSpriteOnLeft: 1
-    sentence: Blabla statut, visible dans le log
+    sentence: "Les actions Sp\xE9ciales ont le sous-type TBD1 qui a l'avantage sur toutes les autres actions et le sous-type TBD2 qui n'a l'avantage sur aucune autre action. Ces informations sont disponibles en d\xE9tail dans le compendium."

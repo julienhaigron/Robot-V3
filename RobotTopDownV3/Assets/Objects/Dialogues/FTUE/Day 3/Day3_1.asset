@@ -16,4 +16,4 @@ MonoBehaviour:
   - characterName: League Employee
     characterSprite: {fileID: 21300000, guid: 3ab256982cae8674388ec2dcdc0a1743, type: 3}
     isSpriteOnLeft: 1
-    sentence: "Blabla mort mais pas grave car r\xE9paration"
+    sentence: "Pour modifier une unit\xE9, rendez vous \xE0 nouveau dans l'atelier."
