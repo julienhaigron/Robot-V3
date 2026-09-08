@@ -172,7 +172,7 @@ public class BulletWeapon : Weapon
 			//rides on the last bullet of this burst instead, to be shown once and not once per bullet.
 			Entity missedTarget = i == hitAmount - 1 ? _target.targetEntity : null;
 			m_bulletPool.Get<Projectile>(m_bulletPoint.position, m_bulletPoint.rotation).SetProjectileDataAndLaunch(bulletData
-				, ( impactTile ) => ApplyBulletImpact(impactTile, _attackAction, _attackInfo, isLastBullet), () => OnProjectileDespawn(isLastBullet, missedTarget), hasTrajectoryProjectileBuff);
+				, ( impactTile ) => ApplyBulletImpact(impactTile, _attackAction, _attackInfo, isLastBullet, _target.targetEntity), () => OnProjectileDespawn(isLastBullet, missedTarget), hasTrajectoryProjectileBuff);
 
 			yield return m_timeBetweenBulletsWFS;
 		}
@@ -180,7 +180,7 @@ public class BulletWeapon : Weapon
 
 	#endregion
 	
-	private void ApplyBulletImpact ( Tile _impactTile, AttackAction _attackAction, AttackAction.SingleAttackInfo _attackInfo, bool _isLastBullet )
+	private void ApplyBulletImpact ( Tile _impactTile, AttackAction _attackAction, AttackAction.SingleAttackInfo _attackInfo, bool _isLastBullet, Entity _designatedTarget )
 	{
 		if (_impactTile == null)
 		{
@@ -195,6 +195,8 @@ public class BulletWeapon : Weapon
 			? m_user.Equipment.GetTilesInAoERange(_attackAction, _impactTile, true)
 			: new List<Tile>() { _impactTile };
 
+		bool wasDesignatedTargetHit = false;
+
 		foreach (Tile tile in impactedTiles)
 		{
 			if (tile.Wall != null && tile.Wall.Health > 0)
@@ -203,21 +205,31 @@ public class BulletWeapon : Weapon
 			if (!tile.TryGetCurrentEntity(out Entity entity))
 				continue;
 
-			entity.Equipment.TakeDamage(new EntityEquipmentPlugin.TakeDamageCallback()
-			{
-				entityAttacker = m_user,
-				entityTargeted = entity,
-				damages = damages
-			});
-
-			ApplyStatuses(entity, _attackInfo);
-
-			foreach (AEntityPassiveEffect.PassiveEffectContainer pe in m_lastPerformedAction.effects)
-				ApplyEffects(entity, pe);
+			wasDesignatedTargetHit |= entity == _designatedTarget;
+			ApplyDamageAndEffects(entity, damages, _attackInfo);
 		}
+
+		if (!wasDesignatedTargetHit && _designatedTarget != null && !_designatedTarget.Equipment.IsDead
+			&& impactedTiles.Contains(_attackAction.GetExchangeTileOf(_designatedTarget)))
+			ApplyDamageAndEffects(_designatedTarget, damages, _attackInfo);
 
 		if (_isLastBullet)
 			EndAttack(m_lastPerformedAction);
+	}
+
+	private void ApplyDamageAndEffects ( Entity _entity, Dictionary<WeaponEquipmentData.DamageType, int> _damages, AttackAction.SingleAttackInfo _attackInfo )
+	{
+		_entity.Equipment.TakeDamage(new EntityEquipmentPlugin.TakeDamageCallback()
+		{
+			entityAttacker = m_user,
+			entityTargeted = _entity,
+			damages = _damages
+		});
+
+		ApplyStatuses(_entity, _attackInfo);
+
+		foreach (AEntityPassiveEffect.PassiveEffectContainer pe in m_lastPerformedAction.effects)
+			ApplyEffects(_entity, pe);
 	}
 
 	private void OnProjectileDespawn ( bool _isLastBullet, Entity _missedTarget )
