@@ -338,7 +338,14 @@ public class Entity : MonoBehaviour
 				RemoveStatus(statusID);
 			}
 			else
-				GameAssets.current.game.entityStatus[statusID].ApplyStatusEffect(m_remainingDurationToActiveStatuses.ContainsKey(status) ? m_remainingDurationToActiveStatuses[GameAssets.current.game.entityStatus[statusID]]-- : 0, this);
+			{
+				int remainingDuration = m_remainingDurationToActiveStatuses.ContainsKey(status) ? m_remainingDurationToActiveStatuses[status]-- : 0;
+				status.ApplyStatusEffect(remainingDuration, this);
+
+				LogConsole.AddLog(m_data.name + " is affected by " + status.name + ", " + remainingDuration + " turns remaining"
+					, LogConsole.LogEventType.Status
+					, new LogConsole.LogDetails("status_" + LogConsole.Instance.LogsDetails.Keys.Count, status.name, status.GetTooltip(remainingDuration)));
+			}
 		}
 
 		foreach (EntityEquipmentData.StatBonusBuff buff in m_statBuffs.ToArray())
@@ -418,8 +425,6 @@ public class Entity : MonoBehaviour
 			m_remainingDurationToActiveStatuses[GameAssets.current.game.entityStatus[_statusID]] = GameAssets.current.game.entityStatus[_statusID].duration;
 		else
 			m_remainingDurationToActiveStatuses.Add(GameAssets.current.game.entityStatus[_statusID], GameAssets.current.game.entityStatus[_statusID].duration);
-
-		LogConsole.AddLog(m_data.name + " now has status " + GameAssets.current.game.entityStatus[_statusID].name, LogConsole.LogEventType.Status);
 
 		onStatusAdded?.Invoke(_statusID);
 	}

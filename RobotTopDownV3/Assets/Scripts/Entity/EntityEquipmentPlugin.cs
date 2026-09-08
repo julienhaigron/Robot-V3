@@ -351,7 +351,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 		//through radar, since optical vision cannot see past such a wall in the first place.
 		if (GridManager.Instance.IsThereBlockingWallBetween(_attackAction.PerformingEntity, _targetEntity, doesWinPFC, out _coverTile))
 		{
-			LogConsole.AddLog(m_linkedEntity.ID + " cannot reach " + _targetEntity.ID + ", the shot hits the wall on tile "
+			LogConsole.AddLog(m_linkedEntity.Data.name + " cannot reach " + _targetEntity.Data.name + ", the shot hits the wall on tile "
 				+ _coverTile.coordinates.ID, LogConsole.LogEventType.AttackRoll);
 			return false;
 		}
@@ -441,15 +441,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 
 		string detailsDescription = detailsBuilder.ToString();
 		LogConsole.LogDetails details = new("attack_" + LogConsole.Instance.LogsDetails.Keys.Count, "Attack Details", detailsDescription);
-		LogConsole.AddLog(
-			m_linkedEntity.ID
-			+ (isAttackSuccessful ? " succeeds " : " fails ")
-			+ _attackAction.ToString()
-			+ " against "
-			+ _targetEntity.ID,
-			LogConsole.LogEventType.AttackRoll,
-			details
-		);
+		LogConsole.AddLog(isAttackSuccessful ? "-> Success" : "-> Failure", LogConsole.LogEventType.AttackRoll, details);
 		return isAttackSuccessful;
 	}
 
@@ -484,7 +476,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 		bool isAttackSuccessful = hitProba >= 1f || roll <= hitProba;
 
 		StringBuilder detailsBuilder = new();
-		detailsBuilder.AppendLine($"<b>{m_linkedEntity.ID}</b> tries to apply <b>{_effect.GetType().Name}</b> on <b>{_target.ID}</b>");
+		detailsBuilder.AppendLine($"<b>{m_linkedEntity.Data.name}</b> tries to apply <b>{_effect.name}</b> on <b>{_target.Data.name}</b>");
 		detailsBuilder.AppendLine();
 		detailsBuilder.AppendLine("<b>Status Chance Calculation</b>");
 		detailsBuilder.AppendLine($"Base Chance: {actionProbability:+0.##%;-0.##%;0%}");
@@ -503,8 +495,8 @@ public class EntityEquipmentPlugin : EntityPlugin
 
 		string detailsDescription = detailsBuilder.ToString();
 		LogConsole.LogDetails details = new("status_" + LogConsole.Instance.LogsDetails.Keys.Count, "Status Details", detailsDescription);
-		LogConsole.AddLog(m_linkedEntity.ID + (isAttackSuccessful ? " applies " : " fails to apply ")
-			+ _effect.GetType().Name + " on " + _target.ID, LogConsole.LogEventType.Status, details);
+		LogConsole.AddLog(m_linkedEntity.Data.name + (isAttackSuccessful ? " applies " : " fails to apply ")
+			+ _effect.name + " on " + _target.Data.name, LogConsole.LogEventType.Status, details);
 
 		return isAttackSuccessful;
 	}
@@ -556,7 +548,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 		}
 
 		if (m_currentHealth <= 0)
-			Death();
+			Death(_damageInfo);
 
 		onHealthChangeDamage?.Invoke(_damageInfo);
 	}
@@ -566,20 +558,51 @@ public class EntityEquipmentPlugin : EntityPlugin
 		Dictionary<WeaponEquipmentData.DamageType, int> damages = new();
 		damages.Add(WeaponEquipmentData.DamageType.Bludgeoning, 999999);
 		m_currentHealth = 0;
-		onHealthChangeDamage?.Invoke(new TakeDamageCallback()
+		TakeDamageCallback deathInfo = new TakeDamageCallback()
 		{
 			critical = false,
 			damages = damages,
 			entityAttacker = m_linkedEntity,
 			entityTargeted = m_linkedEntity,
-			hitNormal = Vector3.zero,
-			hitPos = Vector3.zero
-		});
+			hitPos = Vector3.zero,
+			hitNormal = Vector3.zero
+		};
 
-		Death();
+		onHealthChangeDamage?.Invoke(deathInfo);
+		Death(deathInfo);
 	}
 
-	private void Death ()
+	private string BuildDeathTooltip ( TakeDamageCallback _damageInfo )
+	{
+		StringBuilder builder = new();
+		builder.AppendLine("<b>Death</b>");
+		builder.AppendLine($"Tick: {TurnManager.currentTick}");
+
+		if (_damageInfo.entityAttacker != null && _damageInfo.entityAttacker != m_linkedEntity)
+		{
+			builder.AppendLine($"Killed by: {_damageInfo.entityAttacker.Data.name}");
+			if (_damageInfo.entityAttacker.LastPerformedAction != null)
+				builder.AppendLine($"Action: {_damageInfo.entityAttacker.LastPerformedAction.Data.name}");
+		}
+
+		if (_damageInfo.damages != null)
+		{
+			int total = 0;
+			foreach (int value in _damageInfo.damages.Values)
+				total += value;
+			builder.AppendLine($"Killing blow: {total} damages" + (_damageInfo.critical ? " (critical)" : ""));
+		}
+
+		builder.AppendLine();
+		builder.AppendLine($"<b>{m_linkedEntity.Data.name}</b>");
+		builder.AppendLine($"Max Health: {m_maxHealth}");
+		foreach (EntityEquipmentData.StatDescription stat in m_linkedEntity.Data.GetStatsDesciptions().Values)
+			builder.AppendLine($"{stat.title}: {stat.stringValue}");
+
+		return builder.ToString();
+	}
+
+	private void Death ( TakeDamageCallback _damageInfo )
 	{
 		if (m_isDead)
 			return;
@@ -591,9 +614,8 @@ public class EntityEquipmentPlugin : EntityPlugin
 		//destination lives on a tile the entity never reached.
 		GridManager.Instance.ClearEntityFromAllTiles(m_linkedEntity);
 
-		string detailsDescription = m_linkedEntity.ID + " died";
-		//LogConsole.LogDetails details = new("death_" + LogConsole.Instance.LogsDetails.Keys.Count, "Damage Details", detailsDescription);
-		LogConsole.AddLog(detailsDescription, LogConsole.LogEventType.Damage/*, details*/);
+		LogConsole.AddLog(m_linkedEntity.Data.name + " dies", LogConsole.LogEventType.Death
+			, new LogConsole.LogDetails("death_" + LogConsole.Instance.LogsDetails.Keys.Count, m_linkedEntity.Data.name, BuildDeathTooltip(_damageInfo)));
 
 		m_isDead = true;
 		onDeath?.Invoke(m_linkedEntity.ID);

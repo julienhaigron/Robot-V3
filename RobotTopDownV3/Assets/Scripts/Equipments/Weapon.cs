@@ -52,10 +52,31 @@ public class Weapon : MonoBehaviour
 		m_lastPerformedAction = _attackAction;
 		m_onPerformAttackEnd = _onPerformEnd;
 
+		LogUseWeapon(_attackAction);
+
 		if (m_attackCR != null)
 			GameManager.Instance.StopCoroutine(m_attackCR);
 
 		m_attackCR = GameManager.Instance.StartCoroutine(PerformAttackCR(_attackAction));
+	}
+
+	private void LogUseWeapon ( AttackAction _attackAction )
+	{
+		List<string> targetNames = new();
+		if (_attackAction.targetedEntityIDs != null)
+		{
+			foreach (int targetID in _attackAction.targetedEntityIDs)
+			{
+				Entity target = GameManager.Instance.GetEntityFromID(targetID);
+				if (target != null && !targetNames.Contains(target.Data.name))
+					targetNames.Add(target.Data.name);
+			}
+		}
+
+		LogConsole.AddLog(m_user.Data.name + " attacks " + (targetNames.Count == 0 ? "the ground" : string.Join(", ", targetNames))
+				+ " with " + _attackAction.Data.name
+			, LogConsole.LogEventType.UseWeapon
+			, new LogConsole.LogDetails("useweapon_" + LogConsole.Instance.LogsDetails.Keys.Count, _attackAction.Data.name, _attackAction.Data.GetDescription()));
 	}
 
 	protected IEnumerator PerformAttackCR ( AttackAction _attackAction )
@@ -333,13 +354,13 @@ public class Weapon : MonoBehaviour
 		Dictionary<WeaponEquipmentData.DamageType, int> damages = new();
 		bool didWinPFC = _pfcResultType == EntityActionData.PFCResultType.FirstWins;
 		bool hasTarget = _target != null;
-		string targetName = hasTarget ? _target.ID.ToString() : "tile";
+		string targetName = hasTarget ? _target.Data.name : "tile";
 		float flankMod = GameConfig.current.game.entityFlankRatio[hasTarget
 			? GridManager.Instance.GetHitTileSide(_user, _target, didWinPFC)
 			: Tile.TileDirectionType.Front];
 		StringBuilder detailsBuilder = new();
 
-		detailsBuilder.AppendLine($"<b>{_user.ID}</b> => <b>{targetName}</b>");
+		detailsBuilder.AppendLine($"<b>{_user.Data.name}</b> => <b>{targetName}</b>");
 		detailsBuilder.AppendLine();
 
 		foreach (KeyValuePair<WeaponEquipmentData.DamageType, int> pair in _action.Data.baseDamages)
@@ -430,7 +451,13 @@ public class Weapon : MonoBehaviour
 		string detailsDescription = detailsBuilder.ToString();
 		LogConsole.LogDetails details = new("damage_" + LogConsole.Instance.LogsDetails.Keys.Count, "Damage Details", detailsDescription);
 		if (_isAttackSuccessful)
-			LogConsole.AddLog(targetName + " takes damages from " + _user.ID, LogConsole.LogEventType.Damage, details);
+		{
+			int totalDamage = 0;
+			foreach (int value in damages.Values)
+				totalDamage += value;
+
+			LogConsole.AddLog("-> " + totalDamage + " damages", LogConsole.LogEventType.Damage, details);
+		}
 
 		return damages;
 	}

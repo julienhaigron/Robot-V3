@@ -139,6 +139,11 @@ public class AttackAction : AEntityAction
 					attackInfo.isAttackSuccessfull = PerformingEntity.Equipment.AttackRoll(this, attackInfo, targetEntity, out coverHitted);
 
 				attackInfo.hittedTileID = coverHitted == null ? -1 : coverHitted.coordinates.ID;
+
+				Dictionary<WeaponEquipmentData.DamageType, int> damagesDealt =
+					PerformingEntity.Equipment.Weapons[linkedEquipmentId].GetDamages(PerformingEntity, targetEntity, this
+						, GetExchangeResultAgainst(targetEntity), attackInfo.isAttackSuccessfull);
+
 				if (attackInfo.isAttackSuccessfull && targetEntity != null)
 				{
 					List<AEntityStatus> appliedStatuses = Data.GetAppliedStatuses(this, PerformingEntity, targetEntity);
@@ -156,10 +161,6 @@ public class AttackAction : AEntityAction
 					}
 
 				}
-
-				Dictionary<WeaponEquipmentData.DamageType, int> damagesDealt =
-					PerformingEntity.Equipment.Weapons[linkedEquipmentId].GetDamages(PerformingEntity, targetEntity, this
-						, GetExchangeResultAgainst(targetEntity), attackInfo.isAttackSuccessfull);
 
 				if (coverHitted != null)
 					coverHitted.Wall.RegisterDamage(damagesDealt);
