@@ -138,13 +138,15 @@ public class EntityAIPlugin : EntityPlugin
 		EntityActionData.MainActionType currentActionMainType = _recordedAction.action.Data.GetMainActionType();
 
 		Entity committedTarget = GetCommittedTarget();
-		if (committedTarget != null && !IsInVisionRange(committedTarget) && !TryGetLastKnownTileOf(committedTarget, out Tile _))
+		if (committedTarget != null && (!CanEngageATarget()
+			|| (!IsInVisionRange(committedTarget) && !TryGetLastKnownTileOf(committedTarget, out Tile _))))
 			committedTarget = CommitTo(null);
 
-		if (committedTarget == null && hasEnemyInVisionRange)
+		if (committedTarget == null && hasEnemyInVisionRange && CanEngageATarget())
 			committedTarget = CommitTo(GetClosestEnemyInVisionRangeFrom(GetActionDestination(_recordedAction.action), true));
 
 		bool isTargetVisible = IsInVisionRange(committedTarget);
+		bool keepsPlannedMovement = !ShouldRepathTowardTarget(committedTarget) && HasPlannedMovement(_recordedAction.action);
 
 		if (hasEnemyInWeaponRange && currentActionMainType == EntityActionData.MainActionType.Movement)
 		{
@@ -180,20 +182,8 @@ public class EntityAIPlugin : EntityPlugin
 			attackAction.Init(GameAssets.current.game.entityActionsData[attackAction.enumID], equipmentID, m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID, TurnManager.currentTick);
 			resultInfo.ReplaceAction(attackAction, "Has enemy in range, action replaced with " + attackAction);
 		}
-		else if (canMove && !isTargetVisible && !ShouldRepathTowardTarget(committedTarget)
-			&& TryGetNextMovementTile(_recordedAction.action, out Tile nextMovementTile))
-		{
-			int orientationTowardTarget = GridManager.Instance.GetClosestOrientation(m_linkedEntity.Displacement.Coordinates.GetTile(), nextMovementTile);
-			bool isAtCorrectOrientation = orientationTowardTarget == m_linkedEntity.Displacement.CurrentOrientation;
-			if (!isAtCorrectOrientation)
-			{
-				RotateEntityAction rotateAction = (TurnManager.Instance.GetAction(EntityActionEnumID.RotateEntity, m_linkedEntity.ID, null, TurnManager.currentTick) as RotateEntityAction);
-				rotateAction.targetedOrientationID = new int[1] { orientationTowardTarget };
-				rotateAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.RotateEntity], null, m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID, TurnManager.currentTick);
-				resultInfo.ReplaceFreeAction(rotateAction, null);
-			}
-		}
-		else if (canMove && !isTargetVisible && committedTarget != null && TryGetLastKnownTileOf(committedTarget, out Tile lastKnownTargetTile))
+		else if (canMove && !isTargetVisible && !keepsPlannedMovement && committedTarget != null
+			&& TryGetLastKnownTileOf(committedTarget, out Tile lastKnownTargetTile))
 		{
 			TryMoveTowardTile(_recordedAction, movementAction, lastKnownTargetTile, "Keeps hunting " + committedTarget.Data.name + " at its last known position", ref resultInfo);
 		}
@@ -262,28 +252,21 @@ public class EntityAIPlugin : EntityPlugin
 					}
 
 					Tile orientationFrom = tileIDs.Count > 0 ? GridManager.Instance.Tiles[tileIDs[^1]] : from;
-					int firingOrientation;
 
 					if (CanFireFrom(orientationFrom, committedTarget, true))
 					{
 						Tile orientationTo = GridManager.Instance.Tiles[TurnManager.Instance.GetEntityPositionAtEndOfTick(committedTarget.ID, targetTile.coordinates.ID)];
-						firingOrientation = orientationTo == orientationFrom
+						int firingOrientation = orientationTo == orientationFrom
 							? m_linkedEntity.Displacement.CurrentOrientation
 							: GridManager.Instance.GetClosestOrientation(orientationFrom, orientationTo);
-					}
-					else
-					{
-						firingOrientation = orientationFrom == from
-							? m_linkedEntity.Displacement.CurrentOrientation
-							: GridManager.Instance.GetClosestOrientation(from, orientationFrom);
-					}
 
-					if (firingOrientation != m_linkedEntity.Displacement.CurrentOrientation)
-					{
-						RotateEntityAction rotateAction = (TurnManager.Instance.GetAction(EntityActionEnumID.RotateEntity, m_linkedEntity.ID, null, TurnManager.currentTick) as RotateEntityAction);
-						rotateAction.targetedOrientationID = new int[1] { firingOrientation };
-						rotateAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.RotateEntity], null, m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID, TurnManager.currentTick);
-						resultInfo.ReplaceFreeAction(rotateAction, "Rotate to shoot target");
+						if (firingOrientation != m_linkedEntity.Displacement.CurrentOrientation)
+						{
+							RotateEntityAction rotateAction = (TurnManager.Instance.GetAction(EntityActionEnumID.RotateEntity, m_linkedEntity.ID, null, TurnManager.currentTick) as RotateEntityAction);
+							rotateAction.targetedOrientationID = new int[1] { firingOrientation };
+							rotateAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.RotateEntity], null, m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID, TurnManager.currentTick);
+							resultInfo.ReplaceFreeAction(rotateAction, "Rotate to shoot target");
+						}
 					}
 				}
 			}
@@ -317,10 +300,8 @@ public class EntityAIPlugin : EntityPlugin
 		return resultInfo;
 	}
 
-	private bool TryGetNextMovementTile ( AEntityAction _action, out Tile _tile )
+	private bool HasPlannedMovement ( AEntityAction _action )
 	{
-		_tile = null;
-
 		if (_action.Data.type != EntityActionData.ActionType.Movement
 			&& _action.Data.codeType != EntityActionData.ActionCodeType.MoveThenAttack)
 			return false;
@@ -329,11 +310,7 @@ public class EntityAIPlugin : EntityPlugin
 			? moveAction.targetTileIDs[0]
 			: _action.positionAtActionEndID;
 
-		if (destinationID < 0 || destinationID == m_linkedEntity.Displacement.Coordinates.ID)
-			return false;
-
-		_tile = GridManager.Instance.Tiles[destinationID];
-		return true;
+		return destinationID >= 0 && destinationID != m_linkedEntity.Displacement.Coordinates.ID;
 	}
 
 	private bool ShouldRepathTowardTarget ( Entity _committedTarget )
@@ -755,16 +732,6 @@ public class EntityAIPlugin : EntityPlugin
 			, _recordedAction.action.supposedPositionAtActionStartID, TurnManager.currentTick);
 		_resultInfo.ReplaceAction(moveToAction, _reasonTxt);
 
-		int orientationTowardTarget = GridManager.Instance.GetClosestOrientation(from, GridManager.Instance.Tiles[tileIDs[^1]]);
-		if (orientationTowardTarget != m_linkedEntity.Displacement.CurrentOrientation)
-		{
-			RotateEntityAction rotateAction = TurnManager.Instance.GetAction(EntityActionEnumID.RotateEntity, m_linkedEntity.ID, null, TurnManager.currentTick) as RotateEntityAction;
-			rotateAction.targetedOrientationID = new int[1] { orientationTowardTarget };
-			rotateAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.RotateEntity], null, m_linkedEntity.ID
-				, _recordedAction.action.supposedPositionAtActionStartID, TurnManager.currentTick);
-			_resultInfo.ReplaceFreeAction(rotateAction, null);
-		}
-
 		return true;
 	}
 
@@ -796,6 +763,11 @@ public class EntityAIPlugin : EntityPlugin
 	public bool IsInVisionRange ( Entity _entity )
 	{
 		return _entity != null && m_entitiesInVisionRange.Contains(_entity);
+	}
+
+	public bool CanEngageATarget ()
+	{
+		return m_linkedEntity.Equipment.Weapons.Count > 0;
 	}
 
 	private void OnTakeDamage ( EntityEquipmentPlugin.TakeDamageCallback _damageInfo )

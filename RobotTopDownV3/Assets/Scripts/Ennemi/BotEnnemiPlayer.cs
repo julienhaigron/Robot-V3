@@ -62,6 +62,12 @@ public class BotEnnemiPlayer : MonoBehaviour
 
 	private void DetermineAggressiveActions ( Entity _entity )
 	{
+		if (!_entity.AI.CanEngageATarget())
+		{
+			DeterminePatrolPathActions(_entity, Entity.EntityState.Patroling, Entity.EntityState.Patroling);
+			return;
+		}
+
 		_entity.AI.RefreshEnemiesInVisionRange(true);
 
 		Entity target = _entity.AI.GetCommittedTarget();

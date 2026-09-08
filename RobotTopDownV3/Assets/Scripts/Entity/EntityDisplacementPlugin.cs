@@ -118,14 +118,14 @@ public class EntityDisplacementPlugin : EntityPlugin
 		if(m_coordinate.GetTile().GetEntity(false) == m_linkedEntity)
 			m_coordinate.GetTile().SetEntity(null, _isThisTurn: false);
 
+		float movementDuration
+ = _overrideMovementSpeed ? _overritenMovementSpeed : GameConfig.current.game.actionDuration;
+
 		if (ShouldFaceMovementDirection())
-			Rotate(tile, GameConfig.current.game.actionDuration);
-			//Rotate(tile, Mathf.Max(GameConfig.current.game.entityRotationDuration, GameConfig.current.game.actionDuration));
+			Rotate(tile, movementDuration);
 
 		KillMovementTweenAndReleasePendingAction();
 
-		float movementDuration
- = _overrideMovementSpeed ? _overritenMovementSpeed : GameConfig.current.game.actionDuration;
 		m_pendingMovementDoneAction = onMovementDoneAction;
 		m_movementTween = transform.DOMove(tile.transform.position - m_bottomPosition.localPosition, movementDuration)
 			.SetEase(Ease.Linear).OnComplete(ConsumePendingMovementDoneAction);
