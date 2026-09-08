@@ -312,13 +312,13 @@ MonoBehaviour:
   - groundType: 1
     wallType: 1
     orientation: 1
-  - groundType: 3
+  - groundType: 8
     wallType: 0
     orientation: 0
-  - groundType: 3
+  - groundType: 8
     wallType: 0
     orientation: 0
-  - groundType: 3
+  - groundType: 8
     wallType: 0
     orientation: 0
   - groundType: 1
