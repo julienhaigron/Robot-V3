@@ -28,6 +28,8 @@ public class HubTopCanvas : AUITopCanvas
 		GameDatas.onNewCycle += OnNewCycle;
 		m_upgradeStructureBtn.onClick += OnClickUpgradeStructure;
 		m_returnBtn.onClick += OnClickReturn;
+		EntityConfigPanel.onConfigChanged += RefreshReturnBtnLabel;
+		UIManager.onFocusedWindowChanged += RefreshReturnBtnLabel;
 		UIManager.onFocusedWindowChanged += OnFocusedWindowChanged;
 	}
 
@@ -100,6 +102,9 @@ public class HubTopCanvas : AUITopCanvas
 		}
 		else if (UIManager.Instance.currentPanel is EntityConfigPanel entityConfigPanel)
 		{
+			if (!entityConfigPanel.TryCommitUnit())
+				entityConfigPanel.DiscardUnit();
+
 			if (entityConfigPanel.DoesComeFromMissionPanel)
 			{
 				if (GameDatas.current.currentPlayerSave.dayCount <= 3)
@@ -118,6 +123,19 @@ public class HubTopCanvas : AUITopCanvas
 	}
 
 	#endregion
+
+	private void RefreshReturnBtnLabel ()
+	{
+		if (UIManager.Instance.currentPanel is not EntityConfigPanel configPanel)
+		{
+			m_returnBtn.SetLabel(null);
+			return;
+		}
+
+		m_returnBtn.SetLabel(LocalizationManager.Instance.Get(configPanel.IsCurrentUnitValid
+			? LocalizationKey.entity_config_save_and_quit
+			: LocalizationKey.entity_config_cancel));
+	}
 
 	private void Init ( bool _isInShop, ShopPanel _shopPanel )
 	{

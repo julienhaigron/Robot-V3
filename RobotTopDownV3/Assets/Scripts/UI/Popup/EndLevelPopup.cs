@@ -66,14 +66,18 @@ public class EndLevelPopup : AUIPopup
 		}
 
 		//rewards
-		m_allocatedRewardPoint = _gameResult == GameResult.Win ? 5 : _gameResult == GameResult.Draw ? 3 : 2;
+		MissionData.RewardSet rewardSet = _missionData.GetRewardSet();
+		bool isWin = _gameResult == GameResult.Win;
+		m_allocatedRewardPoint = isWin
+			? rewardSet.GetTotalPoints()
+			: _gameResult == GameResult.Draw ? MissionData.drawRewardPoints : MissionData.defeatRewardPoints;
 
 		for (int i = 0; i < m_rewardCurrencyDisplays.Length; i++)
 		{
-			if (_missionData.currencyRewards.Length > i)
+			if (rewardSet.creditAmounts.Count > i)
 			{
 				m_rewardCurrencyDisplays[i].Show();
-				m_rewardCurrencyDisplays[i].Init(_missionData.currencyRewards[i].type, _missionData.currencyRewards[i].amount, true, OnInterractWithRewardBtn, _gameResult == GameResult.Win);
+				m_rewardCurrencyDisplays[i].Init(CurrencyType.SoftCurrency, rewardSet.creditAmounts[i], true, OnInterractWithRewardBtn, isWin);
 			}
 			else
 				m_rewardCurrencyDisplays[i].Hide();
@@ -81,10 +85,10 @@ public class EndLevelPopup : AUIPopup
 
 		for (int i = 0; i < m_rewardComponentDisplays.Length; i++)
 		{
-			if (_missionData.equipmentRewards.Count > i)
+			if (rewardSet.components.Count > i)
 			{
 				m_rewardComponentDisplays[i].Show();
-				m_rewardComponentDisplays[i].Init(_missionData.equipmentRewards[i], OnInterractWithRewardBtn, _gameResult == GameResult.Win);
+				m_rewardComponentDisplays[i].Init(rewardSet.components[i], OnInterractWithRewardBtn, isWin);
 			}
 			else
 				m_rewardComponentDisplays[i].Hide();
@@ -92,16 +96,17 @@ public class EndLevelPopup : AUIPopup
 
 		for (int i = 0; i < m_rewardUnitsDisplays.Length; i++)
 		{
-			if (_missionData.unitReward.Count > i)
+			if (rewardSet.units.Count > i)
 			{
 				m_rewardUnitsDisplays[i].Show();
-				m_rewardUnitsDisplays[i].Init(_missionData.unitReward[i], OnInterractWithRewardBtn, _gameResult == GameResult.Win);
+				m_rewardUnitsDisplays[i].Init(rewardSet.units[i], OnInterractWithRewardBtn, isWin);
 			}
 			else
 				m_rewardUnitsDisplays[i].Hide();
 		}
 
 		OnInterractWithRewardBtn();
+
 	}
 
 	private void OnInterractWithRewardBtn ()
@@ -109,7 +114,7 @@ public class EndLevelPopup : AUIPopup
 		int totalUsedRewardPoint = 0;
 		foreach (CurrencyRewardDisplay display in m_rewardCurrencyDisplays)
 			if (display.IsSelected && display.IsVisible)
-				totalUsedRewardPoint += 1;
+				totalUsedRewardPoint += MissionData.creditPointValue;
 
 		foreach (ComponentRewardDisplay display in m_rewardComponentDisplays)
 		{
@@ -121,10 +126,10 @@ public class EndLevelPopup : AUIPopup
 					case EntityEquipmentData.EquipmentType.Brain:
 					case EntityEquipmentData.EquipmentType.Reactor:
 					case EntityEquipmentData.EquipmentType.NeuronalMembrane:
-						totalUsedRewardPoint += 3;
+						totalUsedRewardPoint += MissionData.mainComponentPointValue;
 						break;
 					default:
-						totalUsedRewardPoint += 2;
+						totalUsedRewardPoint += MissionData.secondaryComponentPointValue;
 						break;
 				}
 			}
@@ -132,7 +137,7 @@ public class EndLevelPopup : AUIPopup
 
 		foreach (UnitRewardDisplay display in m_rewardUnitsDisplays)
 			if (display.IsSelected && display.IsVisible)
-				totalUsedRewardPoint += 5;
+				totalUsedRewardPoint += MissionData.unitPointValue;
 
 		m_rewardPointsTMP.text = string.Format(LocalizationManager.Instance.Get(LocalizationKey.endlevel_reward_points), m_allocatedRewardPoint - totalUsedRewardPoint);
 

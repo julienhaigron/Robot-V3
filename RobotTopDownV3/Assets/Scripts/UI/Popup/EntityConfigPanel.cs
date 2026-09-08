@@ -21,6 +21,7 @@ public class EntityConfigPanel : AUIPanel
 	[Title("Unit")]
 	[SerializeField] private TMP_InputField m_unitNameInputField;
 	[SerializeField] private BaseButton m_renameBtn;
+	[SerializeField] private BaseButton m_disassembleBtn;
 	[SerializeField] private ActionButton[] m_actionBtns;
 	[SerializeField] private StatDisplay[] m_unitStatDisplays;
 	[SerializeField] private Image m_dominentCorpoIcon;
@@ -31,6 +32,8 @@ public class EntityConfigPanel : AUIPanel
 	private EntitySavedData m_entityData;
 	private bool m_doesComeFromMissionPanel;
 	public bool DoesComeFromMissionPanel => m_doesComeFromMissionPanel;
+	public bool IsNewUnit => m_isNewUnit;
+	public bool IsCurrentUnitValid => m_entityData != null && m_entityData.IsUnitValid();
 	private bool m_isNewUnit = false;
 
 	private System.Func<GameDatas.PlayerSave.Component, bool> InventoryGridPredicate => item => item != null && item.TryGetData(out EntityEquipmentData _data)
@@ -81,6 +84,9 @@ public class EntityConfigPanel : AUIPanel
 
 		m_unitNameInputField.onEndEdit.AddListener(( string s ) => OnInputFieldChange());
 		m_renameBtn.onClick += OnClickRenameBtn;
+
+		if (m_disassembleBtn != null)
+			m_disassembleBtn.onClick += OnClickDisassembleBtn;
 	}
 
 	protected override void OnShowStarted ()
@@ -111,12 +117,49 @@ public class EntityConfigPanel : AUIPanel
 		base.OnHideFinished();
 	}
 
+	//A unit being created only reaches the save once it is valid, so leaving an unfinished
+	//configuration cannot leave a broken unit in the hangar.
+	private void OnClickDisassembleBtn ()
+	{
+		if (m_entityData == null)
+			return;
+
+		if (m_isNewUnit)
+			DiscardUnit();
+		else
+			GameDatas.current.currentPlayerSave.DisassembleUnit(m_entityData);
+
+		m_entityData = null;
+		UIManager.Instance.OpenPanel<HangarPanel>();
+	}
+
+	public bool TryCommitUnit ()
+	{
+		if (!IsCurrentUnitValid)
+			return false;
+
+		if (m_isNewUnit)
+		{
+			GameDatas.current.currentPlayerSave.AddNewUnit(m_entityData, false);
+			m_isNewUnit = false;
+		}
+
+		return true;
+	}
+
+	public void DiscardUnit ()
+	{
+		if (!m_isNewUnit || m_entityData == null)
+			return;
+
+		GameDatas.current.currentPlayerSave.allBuiltUnits.Remove(m_entityData);
+		m_isNewUnit = false;
+	}
+
 	public void InitNewUnit ()
 	{
 		EntitySavedData newUnit = new();
 		newUnit.name = "New Unit";
-		GameDatas.current.currentPlayerSave.AddNewUnit(newUnit, false);
-		//HubManager.Instance.AddEntity(GameDatas.current.currentPlayerSave.AddNewUnit(newUnit, false));
 		Init(newUnit, false);
 		m_isNewUnit = true;
 	}
@@ -248,8 +291,12 @@ public class EntityConfigPanel : AUIPanel
 		return null;
 	}
 
+	public static System.Action onConfigChanged;
+
 	private void RefreshVisuals ()
 	{
+		onConfigChanged?.Invoke();
+
 		//actions
 		List<EntityActionEnumID> actions = new();
 		foreach (GameDatas.PlayerSave.Component equipmentData in m_entityData.GetAllEquipments())

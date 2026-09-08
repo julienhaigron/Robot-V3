@@ -210,7 +210,7 @@ public class TurnManager : Singleton<TurnManager>
 		{
 			Entity selectedEntity = GameManager.Instance.GetEntityFromID(_selectedEntity.Value);
 			SetCurrentActionSelected(selectedEntity.AI.GetMovementAction().enumID, null, true);
-			SetCurrentStateSelected(selectedEntity.KnownedStates[0]);
+			SetCurrentStateSelected(GetDefaultStateOf(selectedEntity));
 			//SetCurrentModActionSelected(selectedEntity.KnownedModActions[0], selectedEntity.ComponentLinkedToAction[selectedEntity.KnownedModActions[0]][0], true);
 		}
 		RefreshActionDisplay(_selectedEntity, false);
@@ -270,7 +270,7 @@ public class TurnManager : Singleton<TurnManager>
 			if (PlayerController.Instance.SelectedEntity != null)
 			{
 				SetCurrentActionSelected(PlayerController.Instance.SelectedEntity.AI.GetMovementAction().enumID, null, true);
-				SetCurrentStateSelected(PlayerController.Instance.SelectedEntity.KnownedStates[0]);
+				SetCurrentStateSelected(GetDefaultStateOf(PlayerController.Instance.SelectedEntity));
 			}
 		}
 	}
@@ -299,6 +299,16 @@ public class TurnManager : Singleton<TurnManager>
 	}
 
 	#region Input phase
+
+	public Entity.EntityState GetDefaultStateOf ( Entity _entity )
+	{
+		if (m_recordedActionInput.TryGetValue(_entity.ID, out Queue<RecordedAction> recordedActions) && recordedActions.Count > 0)
+			return recordedActions.ToArray()[^1].entityState;
+
+		return _entity.KnownedStates.Contains(Entity.EntityState.NoAIChange)
+			? Entity.EntityState.NoAIChange
+			: _entity.KnownedStates[0];
+	}
 
 	public void SetCurrentStateSelected ( Entity.EntityState _state )
 	{
@@ -1653,7 +1663,7 @@ public class TurnManager : Singleton<TurnManager>
 	{
 		int remainingActionTickThisTurn = GameConfig.current.game.actionTokenPerRound - currentTick;
 
-		Entity.EntityState availableState = _entity.KnownedStates[0];
+		Entity.EntityState availableState = GetDefaultStateOf(_entity);
 
 		for (int i = 1; i < remainingActionTickThisTurn; i++)
 		{

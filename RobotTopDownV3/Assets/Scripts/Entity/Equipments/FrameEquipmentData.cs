@@ -81,6 +81,47 @@ public class EntitySavedData : INetworkSerializable
 		return hasCapacity && IsUnitValid();
 	}
 
+	public List<GameDatas.PlayerSave.Component> GetAllComponents ()
+	{
+		List<GameDatas.PlayerSave.Component> components = new();
+
+		AddComponentTo(components, frame);
+		AddComponentTo(components, reactor);
+		AddComponentTo(components, neuronalMembrane);
+		AddComponentTo(components, brain);
+
+		if (arms != null)
+			foreach (GameDatas.PlayerSave.Component component in arms)
+				AddComponentTo(components, component);
+
+		if (auxiliar != null)
+			foreach (GameDatas.PlayerSave.Component component in auxiliar)
+				AddComponentTo(components, component);
+
+		if (chipsets != null)
+			foreach (GameDatas.PlayerSave.Component component in chipsets)
+				AddComponentTo(components, component);
+
+		return components;
+	}
+
+	private static void AddComponentTo ( List<GameDatas.PlayerSave.Component> _components, GameDatas.PlayerSave.Component _component )
+	{
+		if (_component != null && !string.IsNullOrEmpty(_component.dataID))
+			_components.Add(_component);
+	}
+
+	public void ClearAllComponents ()
+	{
+		frame = null;
+		reactor = null;
+		neuronalMembrane = null;
+		brain = null;
+		arms = null;
+		auxiliar = null;
+		chipsets = null;
+	}
+
 	public bool IsUnitValid ()
 	{
 		if (FrameData == null || frame.isDamaged

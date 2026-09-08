@@ -483,6 +483,9 @@ public enum LocalizationKey
     log_round,
     log_effect,
     log_doom_triggers,
+    entity_config_save_and_quit,
+    entity_config_cancel,
+    entity_config_disassemble,
 }
 
 public static class LocalizationKeyExtensions
@@ -973,6 +976,9 @@ public static class LocalizationKeyExtensions
             case LocalizationKey.log_round: return "log/round";
             case LocalizationKey.log_effect: return "log/effect";
             case LocalizationKey.log_doom_triggers: return "log/doom_triggers";
+            case LocalizationKey.entity_config_save_and_quit: return "entity_config/save_and_quit";
+            case LocalizationKey.entity_config_cancel: return "entity_config/cancel";
+            case LocalizationKey.entity_config_disassemble: return "entity_config/disassemble";
             default: return string.Empty;
         }
     }

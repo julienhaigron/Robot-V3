@@ -287,6 +287,34 @@ public partial class GameDatas : ScriptableObject
 			equipmentInventory.Remove(_data);
 		}
 
+		//squadUnitsIndex and EntitySavedData.index are positions in allBuiltUnits, so removing a unit
+		//has to shift every index above it or the squad silently points at the wrong units.
+		public bool DisassembleUnit ( EntitySavedData _unit )
+		{
+			if (_unit == null)
+				return false;
+
+			int removedIndex = allBuiltUnits.IndexOf(_unit);
+			if (removedIndex < 0)
+				return false;
+
+			foreach (Component component in _unit.GetAllComponents())
+				AddEquipmentToInventory(component);
+
+			_unit.ClearAllComponents();
+			allBuiltUnits.RemoveAt(removedIndex);
+			squadUnitsIndex.Remove(removedIndex);
+
+			for (int i = 0; i < squadUnitsIndex.Count; i++)
+				if (squadUnitsIndex[i] > removedIndex)
+					squadUnitsIndex[i]--;
+
+			for (int i = 0; i < allBuiltUnits.Count; i++)
+				allBuiltUnits[i].index = i;
+
+			return true;
+		}
+
 		public EntitySavedData AddNewUnit ( EntitySavedData _newUnit, bool _addToSquad )
 		{
 			//_newUnit.name = "New Unit";

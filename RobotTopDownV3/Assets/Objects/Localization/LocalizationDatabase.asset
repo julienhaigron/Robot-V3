@@ -1942,3 +1942,15 @@ MonoBehaviour:
     values:
     - "Doom triggers"
     - "Doom se d\xE9clenche"
+  - key: entity_config/save_and_quit
+    values:
+    - "Save changes n Quit"
+    - "Enregistrer et quitter"
+  - key: entity_config/cancel
+    values:
+    - "Cancel modifications"
+    - "Annuler les modifications"
+  - key: entity_config/disassemble
+    values:
+    - "Disassemble unit"
+    - "D\xE9sassembler l unit\xE9"

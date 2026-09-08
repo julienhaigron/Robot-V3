@@ -8,10 +8,21 @@ public class BaseButton : MonoBehaviour
 {
     public System.Action onClick;
 
+    [SerializeField] protected TMPro.TMP_Text m_label;
     [SerializeField] protected Button m_button;
     [SerializeField] protected Image m_image;
     public Button Button => m_button;
     public Image Image => m_image;
+    public TMPro.TMP_Text Label => m_label;
+
+    public void SetLabel ( string _text )
+    {
+        if (m_label == null)
+            return;
+
+        m_label.gameObject.SetActive(!string.IsNullOrEmpty(_text));
+        m_label.text = _text;
+    }
 
     protected bool m_isVisible = false;
     public bool IsVisible => m_isVisible;
