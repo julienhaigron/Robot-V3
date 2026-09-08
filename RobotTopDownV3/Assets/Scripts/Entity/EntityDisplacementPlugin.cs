@@ -193,10 +193,6 @@ public class EntityDisplacementPlugin : EntityPlugin
 			return;
 		}
 
-		//ROTATION PROBE - temporaire, a retirer
-		Debug.LogWarning("[ROT] tick " + TurnManager.currentTick + " | " + m_linkedEntity.Data.name + " (id " + m_linkedEntity.ID + ") "
-			+ m_currentOrientation + " -> " + _orientation + " | duree " + _duration, gameObject);
-
 		m_currentOrientation = _orientation;
 
 		if (m_rotationTween.IsActive())
