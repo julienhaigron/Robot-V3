@@ -351,8 +351,8 @@ public class EntityEquipmentPlugin : EntityPlugin
 		//through radar, since optical vision cannot see past such a wall in the first place.
 		if (GridManager.Instance.IsThereBlockingWallBetween(_attackAction.PerformingEntity, _targetEntity, doesWinPFC, out _coverTile))
 		{
-			LogConsole.AddLog(m_linkedEntity.Data.name + " cannot reach " + _targetEntity.Data.name + ", the shot hits the wall on tile "
-				+ _coverTile.coordinates.ID, LogConsole.LogEventType.AttackRoll);
+			LogConsole.AddLog(string.Format(LocalizationManager.Instance.Get(LocalizationKey.log_wall_blocks)
+				, m_linkedEntity.Data.name, _targetEntity.Data.name, _coverTile.coordinates.ID), LogConsole.LogEventType.AttackRoll);
 			return false;
 		}
 
@@ -399,49 +399,47 @@ public class EntityEquipmentPlugin : EntityPlugin
 		if (isAttackSuccessful || !isThereCoverBetween || roll < (1-GameConfig.current.game.entityCoverBonus))
 			_coverTile = null;
 
+				LocalizationManager localization = LocalizationManager.Instance;
 		StringBuilder detailsBuilder = new();
-		detailsBuilder.AppendLine($"<b>{m_linkedEntity.ID}</b> attacks <b>{_targetEntity.ID}</b>");
+		detailsBuilder.AppendLine(string.Format(localization.Get(LocalizationKey.roll_header), m_linkedEntity.Data.name, _targetEntity.Data.name));
 		detailsBuilder.AppendLine();
-		detailsBuilder.AppendLine("<b>Attacker Hit Score</b>");
-		//detailsBuilder.AppendLine($"Perception: {userPerception:+0.##;-0.##;0}");
-		detailsBuilder.AppendLine($"Aim: {userAim:+0.##;-0.##;0}");
+		detailsBuilder.AppendLine(localization.Get(LocalizationKey.roll_attacker_section));
+		detailsBuilder.AppendLine(string.Format(localization.Get(LocalizationKey.roll_aim), userAim.ToString("+0.##;-0.##;0")));
 
 		if (flankBonus != 0)
-			detailsBuilder.AppendLine($"Flank Bonus: {flankBonus:+0.##;-0.##;0}");
+			detailsBuilder.AppendLine(string.Format(localization.Get(LocalizationKey.roll_flank_bonus), flankBonus.ToString("+0.##;-0.##;0")));
 
 		if (modAction != 0)
-			detailsBuilder.AppendLine($"Action Modifier: {modAction:+0.##;-0.##;0}");
+			detailsBuilder.AppendLine(string.Format(localization.Get(LocalizationKey.roll_action_modifier), modAction.ToString("+0.##;-0.##;0")));
 
-		detailsBuilder.AppendLine($"<b>Total Hit Score: {userHitScore:F2}</b>");
+		detailsBuilder.AppendLine(string.Format(localization.Get(LocalizationKey.roll_total_hit_score), userHitScore.ToString("F2")));
 		detailsBuilder.AppendLine();
-		detailsBuilder.AppendLine("<b>Target Evasion Score</b>");
-		detailsBuilder.AppendLine($"Camouflage: {targetCamo:+0.##;-0.##;0}");
-		detailsBuilder.AppendLine($"Evasion: {evationRatio:+0.##;-0.##;0}");
+		detailsBuilder.AppendLine(localization.Get(LocalizationKey.roll_target_section));
+		detailsBuilder.AppendLine(string.Format(localization.Get(LocalizationKey.roll_camouflage), targetCamo.ToString("+0.##;-0.##;0")));
+		detailsBuilder.AppendLine(string.Format(localization.Get(LocalizationKey.roll_evasion), evationRatio.ToString("+0.##;-0.##;0")));
 
 		if (coverRatio > 0)
-			detailsBuilder.AppendLine($"Cover Bonus: +{coverRatio:0.##}");
+			detailsBuilder.AppendLine(string.Format(localization.Get(LocalizationKey.roll_cover_bonus), coverRatio.ToString("0.##")));
 
-		/*if (distanceRatio != 0)
-			detailsBuilder.AppendLine($"Distance Modifier: {distanceRatio:+0.##;-0.##;0}");*/
-
-		detailsBuilder.AppendLine($"<b>Total Evasion: {targetEvasionScore:F2}</b>");
+		detailsBuilder.AppendLine(string.Format(localization.Get(LocalizationKey.roll_total_evasion), targetEvasionScore.ToString("F2")));
 		detailsBuilder.AppendLine();
-		detailsBuilder.AppendLine($"Final Score = {userHitScore:F2} - {targetEvasionScore:F2}");
+		detailsBuilder.AppendLine(string.Format(localization.Get(LocalizationKey.roll_final_score), userHitScore.ToString("F2"), targetEvasionScore.ToString("F2")));
 
 		if (finalScore >= 1f)
-			detailsBuilder.AppendLine($"<color=green><b>Guaranteed Hit ({finalScore:F2})</b></color>");
+			detailsBuilder.AppendLine(string.Format(localization.Get(LocalizationKey.roll_guaranteed_hit), finalScore.ToString("F2")));
 		else
 		{
-			detailsBuilder.AppendLine($"Hit Chance: {(finalScore * 100f):F0}%");
-			detailsBuilder.AppendLine($"Roll: {roll:F2}");
-			detailsBuilder.AppendLine(isAttackSuccessful ? "<color=green><b>Hit Success</b></color>" : "<color=red><b>Hit Failed</b></color>");
+			detailsBuilder.AppendLine(string.Format(localization.Get(LocalizationKey.roll_hit_chance), (finalScore * 100f).ToString("F0")));
+			detailsBuilder.AppendLine(string.Format(localization.Get(LocalizationKey.roll_roll), roll.ToString("F2")));
+			detailsBuilder.AppendLine(localization.Get(isAttackSuccessful ? LocalizationKey.roll_hit_success : LocalizationKey.roll_hit_failed));
 			if(_coverTile != null)
-				detailsBuilder.AppendLine($"Will hit tile : {_coverTile.coordinates.ID}");
+				detailsBuilder.AppendLine(string.Format(localization.Get(LocalizationKey.roll_will_hit_tile), _coverTile.coordinates.ID));
 		}
 
 		string detailsDescription = detailsBuilder.ToString();
-		LogConsole.LogDetails details = new("attack_" + LogConsole.Instance.LogsDetails.Keys.Count, "Attack Details", detailsDescription);
-		LogConsole.AddLog(isAttackSuccessful ? "-> Success" : "-> Failure", LogConsole.LogEventType.AttackRoll, details);
+		LogConsole.LogDetails details = new("attack_" + LogConsole.Instance.LogsDetails.Keys.Count, localization.Get(LocalizationKey.roll_title), detailsDescription);
+
+		LogConsole.AddLog(localization.Get(isAttackSuccessful ? LocalizationKey.log_attack_success : LocalizationKey.log_attack_failure), LogConsole.LogEventType.AttackRoll, details);
 		return isAttackSuccessful;
 	}
 
@@ -475,28 +473,30 @@ public class EntityEquipmentPlugin : EntityPlugin
 		float roll = Random.Range(0f, 1f);
 		bool isAttackSuccessful = hitProba >= 1f || roll <= hitProba;
 
+				LocalizationManager localization = LocalizationManager.Instance;
 		StringBuilder detailsBuilder = new();
-		detailsBuilder.AppendLine($"<b>{m_linkedEntity.Data.name}</b> tries to apply <b>{_effect.name}</b> on <b>{_target.Data.name}</b>");
+		detailsBuilder.AppendLine(string.Format(localization.Get(LocalizationKey.status_roll_header), m_linkedEntity.Data.name, _effect.GetLocalizedName(), _target.Data.name));
 		detailsBuilder.AppendLine();
-		detailsBuilder.AppendLine("<b>Status Chance Calculation</b>");
-		detailsBuilder.AppendLine($"Base Chance: {actionProbability:+0.##%;-0.##%;0%}");
-		detailsBuilder.AppendLine($"Equipment Bonus: {equipmentProbability:+0.##%;-0.##%;0%}");
-		detailsBuilder.AppendLine($"Status Chance Bonus: {userStatusChance:+0.##%;-0.##%;0%}");
-		detailsBuilder.AppendLine($"Target Resistance: -{targetResistance:0.##%}");
+		detailsBuilder.AppendLine(localization.Get(LocalizationKey.status_roll_section));
+		detailsBuilder.AppendLine(string.Format(localization.Get(LocalizationKey.status_roll_base_chance), actionProbability.ToString("+0.##%;-0.##%;0%")));
+		detailsBuilder.AppendLine(string.Format(localization.Get(LocalizationKey.status_roll_equipment_bonus), equipmentProbability.ToString("+0.##%;-0.##%;0%")));
+		detailsBuilder.AppendLine(string.Format(localization.Get(LocalizationKey.status_roll_chance_bonus), userStatusChance.ToString("+0.##%;-0.##%;0%")));
+		detailsBuilder.AppendLine(string.Format(localization.Get(LocalizationKey.status_roll_target_resistance), targetResistance.ToString("0.##%")));
 		detailsBuilder.AppendLine();
-		detailsBuilder.AppendLine($"<b>Final Chance: {Mathf.Clamp01(hitProba):P0}</b>");
+		detailsBuilder.AppendLine(string.Format(localization.Get(LocalizationKey.status_roll_final_chance), Mathf.Clamp01(hitProba).ToString("P0")));
 		if (hitProba >= 1f)
-			detailsBuilder.AppendLine("<color=green><b>Guaranteed Apply</b></color>");
+			detailsBuilder.AppendLine(localization.Get(LocalizationKey.status_roll_guaranteed));
 		else
 		{
-			detailsBuilder.AppendLine($"Roll: {roll:F2}");
-			detailsBuilder.AppendLine(isAttackSuccessful ? "<color=green><b>Status Applied</b></color>" : "<color=red><b>Status Resisted</b></color>");
+			detailsBuilder.AppendLine(string.Format(localization.Get(LocalizationKey.roll_roll), roll.ToString("F2")));
+			detailsBuilder.AppendLine(localization.Get(isAttackSuccessful ? LocalizationKey.status_roll_applied : LocalizationKey.status_roll_resisted));
 		}
 
 		string detailsDescription = detailsBuilder.ToString();
-		LogConsole.LogDetails details = new("status_" + LogConsole.Instance.LogsDetails.Keys.Count, "Status Details", detailsDescription);
-		LogConsole.AddLog(m_linkedEntity.Data.name + (isAttackSuccessful ? " applies " : " fails to apply ")
-			+ _effect.name + " on " + _target.Data.name, LogConsole.LogEventType.Status, details);
+		LogConsole.LogDetails details = new("status_" + LogConsole.Instance.LogsDetails.Keys.Count, localization.Get(LocalizationKey.status_roll_title), detailsDescription);
+		LogConsole.AddLog(string.Format(localization.Get(isAttackSuccessful ? LocalizationKey.status_roll_log_applied : LocalizationKey.status_roll_log_failed)
+			, m_linkedEntity.Data.name, _effect.GetLocalizedName(), _target.Data.name), LogConsole.LogEventType.Status, details);
+
 
 		return isAttackSuccessful;
 	}
@@ -574,15 +574,16 @@ public class EntityEquipmentPlugin : EntityPlugin
 
 	private string BuildDeathTooltip ( TakeDamageCallback _damageInfo )
 	{
+		LocalizationManager localization = LocalizationManager.Instance;
 		StringBuilder builder = new();
-		builder.AppendLine("<b>Death</b>");
-		builder.AppendLine($"Tick: {TurnManager.currentTick}");
+		builder.AppendLine("<b>" + localization.Get(LocalizationKey.death_title) + "</b>");
+		builder.AppendLine(string.Format(localization.Get(LocalizationKey.death_tick), TurnManager.currentTick));
 
 		if (_damageInfo.entityAttacker != null && _damageInfo.entityAttacker != m_linkedEntity)
 		{
-			builder.AppendLine($"Killed by: {_damageInfo.entityAttacker.Data.name}");
+			builder.AppendLine(string.Format(localization.Get(LocalizationKey.death_killed_by), _damageInfo.entityAttacker.Data.name));
 			if (_damageInfo.entityAttacker.LastPerformedAction != null)
-				builder.AppendLine($"Action: {_damageInfo.entityAttacker.LastPerformedAction.Data.name}");
+				builder.AppendLine(string.Format(localization.Get(LocalizationKey.death_action), _damageInfo.entityAttacker.LastPerformedAction.Data.GetLocalizedName()));
 		}
 
 		if (_damageInfo.damages != null)
@@ -590,17 +591,19 @@ public class EntityEquipmentPlugin : EntityPlugin
 			int total = 0;
 			foreach (int value in _damageInfo.damages.Values)
 				total += value;
-			builder.AppendLine($"Killing blow: {total} damages" + (_damageInfo.critical ? " (critical)" : ""));
+			builder.AppendLine(string.Format(localization.Get(LocalizationKey.death_killing_blow), total)
+				+ (_damageInfo.critical ? localization.Get(LocalizationKey.death_critical) : ""));
 		}
 
 		builder.AppendLine();
 		builder.AppendLine($"<b>{m_linkedEntity.Data.name}</b>");
-		builder.AppendLine($"Max Health: {m_maxHealth}");
+		builder.AppendLine(string.Format(localization.Get(LocalizationKey.death_max_health), m_maxHealth));
 		foreach (EntityEquipmentData.StatDescription stat in m_linkedEntity.Data.GetStatsDesciptions().Values)
 			builder.AppendLine($"{stat.title}: {stat.stringValue}");
 
 		return builder.ToString();
 	}
+
 
 	private void Death ( TakeDamageCallback _damageInfo )
 	{
@@ -614,7 +617,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 		//destination lives on a tile the entity never reached.
 		GridManager.Instance.ClearEntityFromAllTiles(m_linkedEntity);
 
-		LogConsole.AddLog(m_linkedEntity.Data.name + " dies", LogConsole.LogEventType.Death
+		LogConsole.AddLog(string.Format(LocalizationManager.Instance.Get(LocalizationKey.log_death), m_linkedEntity.Data.name), LogConsole.LogEventType.Death
 			, new LogConsole.LogDetails("death_" + LogConsole.Instance.LogsDetails.Keys.Count, m_linkedEntity.Data.name, BuildDeathTooltip(_damageInfo)));
 
 		m_isDead = true;

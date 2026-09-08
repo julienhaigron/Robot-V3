@@ -108,13 +108,36 @@ public class AttackAction : AEntityAction
 		return new() { isFirstActionConflicted = false, isSecondActionConflicted = false };
 	}
 
+	private void LogUseWeapon ()
+	{
+		List<string> targetNames = new();
+		if (targetedEntityIDs != null)
+		{
+			foreach (int targetID in targetedEntityIDs)
+			{
+				Entity target = GameManager.Instance.GetEntityFromID(targetID);
+				if (target != null && !targetNames.Contains(target.Data.name))
+					targetNames.Add(target.Data.name);
+			}
+		}
+
+		LocalizationManager localization = LocalizationManager.Instance;
+		LogConsole.AddLog(string.Format(localization.Get(LocalizationKey.log_use_weapon), PerformingEntity.Data.name
+				, targetNames.Count == 0 ? localization.Get(LocalizationKey.log_use_weapon_ground) : string.Join(", ", targetNames)
+				, Data.GetLocalizedName())
+			, LogConsole.LogEventType.UseWeapon
+			, new LogConsole.LogDetails("useweapon_" + LogConsole.Instance.LogsDetails.Keys.Count, Data.GetLocalizedName(), Data.GetDescription()));
+	}
+
 	public override void Prepare ( Entity.EntityState _state )
 	{
 		if (targetedEntityIDs != null || (Data.aoeType != EntityActionData.AOEType.Noone && targetTileIDs != null))
 		{
 			//targetedEntityID = PerformingEntity.AI.TargetedEntity.ID;
+			LogUseWeapon();
+
 			if (Data.aoeType != EntityActionData.AOEType.Noone)
-				LogConsole.AddLog("Automatic hit on targets due to AoE type", LogConsole.LogEventType.AttackRoll);
+				LogConsole.AddLog(LocalizationManager.Instance.Get(LocalizationKey.log_aoe_auto_hit), LogConsole.LogEventType.AttackRoll);
 
 			for (int attackCount = 0; attackCount < attacksInfos.Length; attackCount++)
 			{

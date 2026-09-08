@@ -549,7 +549,7 @@ MonoBehaviour:
   m_consoleExpandedXPos: 0
   m_consoleCollapsedXPos: 318
   m_duration: 0.3
-  m_visibleEventType: 060000000700000008000000
+  m_visibleEventType: 060000000700000008000000090000000a0000000b000000
   m_logTmpPoolData: {fileID: 11400000, guid: a06db61f4d4efb443a74263e65e896ce, type: 2}
   m_content: {fileID: 2459052710642681712}
   m_maxVisibleLogs: 150
@@ -729,6 +729,19 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &9123456789012345601
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8246547026314432000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8e84717eb35a2141b62ffd967b6c41f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  key: ingame/log_toggle
 --- !u!1001 &451089446356392570
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -963,16 +976,3 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 5909219420003501140, guid: 610470f5c7e09224499375bfa2416e56, type: 3}
   m_PrefabInstance: {fileID: 4143204780381032376}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &9123456789012345601
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8246547026314432000}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a8e84717eb35a2141b62ffd967b6c41f, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
-  key: ingame/log_toggle

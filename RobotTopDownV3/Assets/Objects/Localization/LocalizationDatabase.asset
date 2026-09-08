@@ -1550,3 +1550,383 @@ MonoBehaviour:
     values:
     - Wummy 2
     - Wummy 2
+  - key: main_action/attack
+    values:
+    - Attack
+    - Attaque
+  - key: main_action/movement
+    values:
+    - Movement
+    - "D\xE9placement"
+  - key: main_action/special
+    values:
+    - Special
+    - "Sp\xE9cial"
+  - key: target_type/self
+    values:
+    - Self
+    - "Soi-m\xEAme"
+  - key: target_type/other_entity
+    values:
+    - Other entity
+    - "Autre unit\xE9"
+  - key: target_type/tile
+    values:
+    - Tile
+    - Case
+  - key: aoe_type/noone
+    values:
+    - None
+    - Aucune
+  - key: aoe_type/circle
+    values:
+    - Circle
+    - Cercle
+  - key: aoe_type/ray
+    values:
+    - Ray
+    - Rayon
+  - key: aoe_type/large_cone
+    values:
+    - Large cone
+    - "Grand c\xF4ne"
+  - key: aoe_type/thin_cone
+    values:
+    - Thin cone
+    - "C\xF4ne \xE9troit"
+  - key: aoe_type/large_arc
+    values:
+    - Large arc
+    - Grand arc
+  - key: aoe_type/thin_arc
+    values:
+    - Thin arc
+    - "Arc \xE9troit"
+  - key: aoe_type/chain
+    values:
+    - Chain
+    - "Cha\xEEne"
+  - key: damage_type/slash
+    values:
+    - Slash
+    - Tranchant
+  - key: damage_type/piercing
+    values:
+    - Piercing
+    - Perforant
+  - key: damage_type/bludgeoning
+    values:
+    - Bludgeoning
+    - Contondant
+  - key: damage_type/laser
+    values:
+    - Laser
+    - Laser
+  - key: damage_type/plasma
+    values:
+    - Plasma
+    - Plasma
+  - key: damage_type/fire
+    values:
+    - Fire
+    - Feu
+  - key: damage_type/radiation
+    values:
+    - Radiation
+    - Radiation
+  - key: damage_type/electric
+    values:
+    - Electric
+    - "\xC9lectrique"
+  - key: damage_type/magnetic
+    values:
+    - Magnetic
+    - "Magn\xE9tique"
+  - key: action_desc/type
+    values:
+    - "Type: {0}"
+    - "Type : {0}"
+  - key: action_desc/cost
+    values:
+    - "Cost: ({0},{1},{2})"
+    - "Co\xFBt : ({0},{1},{2})"
+  - key: action_desc/speed
+    values:
+    - "Speed: {0}"
+    - "Vitesse : {0}"
+  - key: action_desc/target
+    values:
+    - "Target: {0} {1}"
+    - "Cible : {0} {1}"
+  - key: action_desc/automatic_target
+    values:
+    - Automatic target
+    - Cible automatique
+  - key: action_desc/aoe
+    values:
+    - "AoE: {0}, range {1}-{2}"
+    - "Zone : {0}, port\xE9e {1}-{2}"
+  - key: action_desc/hit_amount
+    values:
+    - "Hit amount: {0}"
+    - "Nombre de coups : {0}"
+  - key: action_desc/damages
+    values:
+    - "Damages: {0}"
+    - "D\xE9g\xE2ts : {0}"
+  - key: action_desc/effects
+    values:
+    - "Effects: {0}"
+    - "Effets : {0}"
+  - key: roll/title
+    values:
+    - Attack Details
+    - "D\xE9tails de l'attaque"
+  - key: roll/header
+    values:
+    - <b>{0}</b> attacks <b>{1}</b>
+    - <b>{0}</b> attaque <b>{1}</b>
+  - key: roll/attacker_section
+    values:
+    - <b>Attacker Hit Score</b>
+    - <b>Score de touche de l'attaquant</b>
+  - key: roll/aim
+    values:
+    - "Aim: {0}"
+    - "Vis\xE9e : {0}"
+  - key: roll/flank_bonus
+    values:
+    - "Flank Bonus: {0}"
+    - "Bonus de flanc : {0}"
+  - key: roll/action_modifier
+    values:
+    - "Action Modifier: {0}"
+    - "Modificateur d'action : {0}"
+  - key: roll/total_hit_score
+    values:
+    - "<b>Total Hit Score: {0}</b>"
+    - "<b>Score de touche total : {0}</b>"
+  - key: roll/target_section
+    values:
+    - <b>Target Evasion Score</b>
+    - <b>Score d'esquive de la cible</b>
+  - key: roll/camouflage
+    values:
+    - "Camouflage: {0}"
+    - "Camouflage : {0}"
+  - key: roll/evasion
+    values:
+    - "Evasion: {0}"
+    - "Esquive : {0}"
+  - key: roll/cover_bonus
+    values:
+    - "Cover Bonus: +{0}"
+    - "Bonus de couvert : +{0}"
+  - key: roll/total_evasion
+    values:
+    - "<b>Total Evasion: {0}</b>"
+    - "<b>Esquive totale : {0}</b>"
+  - key: roll/final_score
+    values:
+    - Final Score = {0} - {1}
+    - Score final = {0} - {1}
+  - key: roll/guaranteed_hit
+    values:
+    - <color=green><b>Guaranteed Hit ({0})</b></color>
+    - <color=green><b>Touche garantie ({0})</b></color>
+  - key: roll/hit_chance
+    values:
+    - "Hit Chance: {0}%"
+    - "Chance de touche : {0} %"
+  - key: roll/roll
+    values:
+    - "Roll: {0}"
+    - "Jet : {0}"
+  - key: roll/hit_success
+    values:
+    - <color=green><b>Hit Success</b></color>
+    - "<color=green><b>Touch\xE9</b></color>"
+  - key: roll/hit_failed
+    values:
+    - <color=red><b>Hit Failed</b></color>
+    - "<color=red><b>Manqu\xE9</b></color>"
+  - key: roll/will_hit_tile
+    values:
+    - "Will hit tile: {0}"
+    - "Touchera la case : {0}"
+  - key: status_roll/title
+    values:
+    - Status Details
+    - "D\xE9tails du statut"
+  - key: status_roll/header
+    values:
+    - <b>{0}</b> tries to apply <b>{1}</b> on <b>{2}</b>
+    - <b>{0}</b> tente d'appliquer <b>{1}</b> sur <b>{2}</b>
+  - key: status_roll/section
+    values:
+    - <b>Status Chance Calculation</b>
+    - <b>Calcul de la chance de statut</b>
+  - key: status_roll/base_chance
+    values:
+    - "Base Chance: {0}"
+    - "Chance de base : {0}"
+  - key: status_roll/equipment_bonus
+    values:
+    - "Equipment Bonus: {0}"
+    - "Bonus d'\xE9quipement : {0}"
+  - key: status_roll/chance_bonus
+    values:
+    - "Status Chance Bonus: {0}"
+    - "Bonus de chance de statut : {0}"
+  - key: status_roll/target_resistance
+    values:
+    - "Target Resistance: -{0}"
+    - "R\xE9sistance de la cible : -{0}"
+  - key: status_roll/final_chance
+    values:
+    - "<b>Final Chance: {0}</b>"
+    - "<b>Chance finale : {0}</b>"
+  - key: status_roll/guaranteed
+    values:
+    - <color=green><b>Guaranteed Apply</b></color>
+    - <color=green><b>Application garantie</b></color>
+  - key: status_roll/applied
+    values:
+    - <color=green><b>Status Applied</b></color>
+    - "<color=green><b>Statut appliqu\xE9</b></color>"
+  - key: status_roll/resisted
+    values:
+    - <color=red><b>Status Resisted</b></color>
+    - "<color=red><b>Statut r\xE9sist\xE9</b></color>"
+  - key: status_roll/log_applied
+    values:
+    - "{0} applies {1} on {2}"
+    - "{0} applique {1} sur {2}"
+  - key: status_roll/log_failed
+    values:
+    - "{0} fails to apply {1} on {2}"
+    - "{0} \xE9choue \xE0 appliquer {1} sur {2}"
+  - key: damage_detail/title
+    values:
+    - Damage Details
+    - "D\xE9tails des d\xE9g\xE2ts"
+  - key: damage_detail/header
+    values:
+    - <b>{0}</b> => <b>{1}</b>
+    - <b>{0}</b> => <b>{1}</b>
+  - key: damage_detail/base
+    values:
+    - "Base Damage: {0}"
+    - "D\xE9g\xE2ts de base : {0}"
+  - key: damage_detail/action_factor
+    values:
+    - "Action Factor: x{0}"
+    - "Facteur d'action : x{0}"
+  - key: damage_detail/type_modifier
+    values:
+    - "Type Modifier: {0}%"
+    - "Modificateur de type : {0} %"
+  - key: damage_detail/category_modifier
+    values:
+    - "Category Modifier: {0}%"
+    - "Modificateur de cat\xE9gorie : {0} %"
+  - key: damage_detail/general_modifier
+    values:
+    - "General Modifier: {0}%"
+    - "Modificateur g\xE9n\xE9ral : {0} %"
+  - key: damage_detail/flank_modifier
+    values:
+    - "Flank Modifier: {0}%"
+    - "Modificateur de flanc : {0} %"
+  - key: damage_detail/final_modifier
+    values:
+    - "Final Modifier: {0}%"
+    - "Modificateur final : {0} %"
+  - key: damage_detail/final
+    values:
+    - "<color=red><b>Final Damage: {0}</b></color>"
+    - "<color=red><b>D\xE9g\xE2ts finaux : {0}</b></color>"
+  - key: death/title
+    values:
+    - Death
+    - Mort
+  - key: death/tick
+    values:
+    - "Tick: {0}"
+    - "Tick : {0}"
+  - key: death/killed_by
+    values:
+    - "Killed by: {0}"
+    - "Tu\xE9 par : {0}"
+  - key: death/action
+    values:
+    - "Action: {0}"
+    - "Action : {0}"
+  - key: death/killing_blow
+    values:
+    - "Killing blow: {0} damages"
+    - "Coup fatal : {0} d\xE9g\xE2ts"
+  - key: death/critical
+    values:
+    -  (critical)
+    -  (critique)
+  - key: death/max_health
+    values:
+    - "Max Health: {0}"
+    - "PV max : {0}"
+  - key: status_tip/duration
+    values:
+    - "Duration: {0} turns"
+    - "Dur\xE9e : {0} tours"
+  - key: status_tip/remaining
+    values:
+    - "Remaining: {0} turns"
+    - "Restant : {0} tours"
+  - key: status_tip/needs_roll
+    values:
+    - Applied through a status roll
+    - "Appliqu\xE9 via un jet de statut"
+  - key: log/use_weapon
+    values:
+    - "{0} attacks {1} with {2}"
+    - "{0} attaque {1} avec {2}"
+  - key: log/use_weapon_ground
+    values:
+    - the ground
+    - le sol
+  - key: log/use_tool
+    values:
+    - "{0} uses {1} on {2}"
+    - "{0} utilise {1} sur {2}"
+  - key: log/use_tool_effects
+    values:
+    - "-> Effects: {0}"
+    - "-> Effets : {0}"
+  - key: log/attack_success
+    values:
+    - -> Success
+    - "-> R\xE9ussite"
+  - key: log/attack_failure
+    values:
+    - -> Failure
+    - "-> \xC9chec"
+  - key: log/damages
+    values:
+    - -> {0} damages
+    - "-> {0} d\xE9g\xE2ts"
+  - key: log/death
+    values:
+    - "{0} dies"
+    - "{0} meurt"
+  - key: log/status_affected
+    values:
+    - "{0} is affected by {1}, {2} turns remaining"
+    - "{0} est affect\xE9 par {1}, {2} tours restants"
+  - key: log/wall_blocks
+    values:
+    - "{0} cannot reach {1}, the shot hits the wall on tile {2}"
+    - "{0} ne peut pas atteindre {1}, le tir touche le mur sur la case {2}"
+  - key: log/aoe_auto_hit
+    values:
+    - "Automatic hit on targets due to AoE type"
+    - "Touche automatique sur les cibles (type de zone)"

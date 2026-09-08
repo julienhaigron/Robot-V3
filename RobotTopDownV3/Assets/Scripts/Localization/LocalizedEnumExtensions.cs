@@ -32,7 +32,28 @@ public static class LocalizedEnumExtensions
 		return LocalizationManager.Instance.Get(key);
 	}
 
+	public static string GetLocalizedTitle ( this EntityActionData.MainActionType _type )
+	{
+		return LocalizationManager.Instance.Get("main_action/" + ToSnakeCase(_type.ToString()));
+	}
+
+	public static string GetLocalizedTitle ( this EntityActionData.TargetType _type )
+	{
+		return LocalizationManager.Instance.Get("target_type/" + ToSnakeCase(_type.ToString()));
+	}
+
+	public static string GetLocalizedTitle ( this EntityActionData.AOEType _type )
+	{
+		return LocalizationManager.Instance.Get("aoe_type/" + ToSnakeCase(_type.ToString()));
+	}
+
+	public static string GetLocalizedTitle ( this WeaponEquipmentData.DamageType _type )
+	{
+		return LocalizationManager.Instance.Get("damage_type/" + ToSnakeCase(_type.ToString()));
+	}
+
 	private static string ToSnakeCase ( string _name )
+
 	{
 		StringBuilder sb = new StringBuilder(_name.Length + 8);
 

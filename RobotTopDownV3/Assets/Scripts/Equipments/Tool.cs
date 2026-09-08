@@ -33,17 +33,18 @@ public class Tool : MonoBehaviour
 
 		List<string> effectNames = new();
 		foreach (AEntityStatus status in _specialAction.Data.GetAppliedStatuses(_specialAction, m_user, firstTarget))
-			if (!effectNames.Contains(status.name))
-				effectNames.Add(status.name);
+			if (!effectNames.Contains(status.GetLocalizedName()))
+				effectNames.Add(status.GetLocalizedName());
 
-		string message = m_user.Data.name + " uses " + _specialAction.Data.name
-			+ " on " + (targetNames.Count == 0 ? "the ground" : string.Join(", ", targetNames));
+		string message = string.Format(LocalizationManager.Instance.Get(LocalizationKey.log_use_tool), m_user.Data.name
+			, _specialAction.Data.GetLocalizedName()
+			, targetNames.Count == 0 ? LocalizationManager.Instance.Get(LocalizationKey.log_use_weapon_ground) : string.Join(", ", targetNames));
 
 		if (effectNames.Count > 0)
-			message += "\n-> Effects: " + string.Join(", ", effectNames);
+			message += "\n" + string.Format(LocalizationManager.Instance.Get(LocalizationKey.log_use_tool_effects), string.Join(", ", effectNames));
 
 		LogConsole.AddLog(message, LogConsole.LogEventType.UseTool
-			, new LogConsole.LogDetails("usetool_" + LogConsole.Instance.LogsDetails.Keys.Count, _specialAction.Data.name, _specialAction.Data.GetDescription()));
+			, new LogConsole.LogDetails("usetool_" + LogConsole.Instance.LogsDetails.Keys.Count, _specialAction.Data.GetLocalizedName(), _specialAction.Data.GetDescription()));
 	}
 
 	public virtual void Init ( Entity _user, ToolEquipmentData _data, string _id, bool _isFirstSide )

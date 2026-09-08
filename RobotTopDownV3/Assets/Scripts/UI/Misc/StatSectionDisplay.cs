@@ -33,7 +33,7 @@ public class StatSectionDisplay : MonoBehaviour, IPointerEnterHandler, IPointerE
 	{
 		string description = "";
 		foreach (EntityEquipmentData.StatDescription statDesc in m_statsDescriptions)
-			description += statDesc.ID + ": " + statDesc.stringValue +"\n";
+			description += statDesc.title + ": " + statDesc.stringValue + "\n";
 		ToolTipManager.Instance.Show(m_titleTMP.text, description);
 	}
 

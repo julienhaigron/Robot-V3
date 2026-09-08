@@ -52,31 +52,10 @@ public class Weapon : MonoBehaviour
 		m_lastPerformedAction = _attackAction;
 		m_onPerformAttackEnd = _onPerformEnd;
 
-		LogUseWeapon(_attackAction);
-
 		if (m_attackCR != null)
 			GameManager.Instance.StopCoroutine(m_attackCR);
 
 		m_attackCR = GameManager.Instance.StartCoroutine(PerformAttackCR(_attackAction));
-	}
-
-	private void LogUseWeapon ( AttackAction _attackAction )
-	{
-		List<string> targetNames = new();
-		if (_attackAction.targetedEntityIDs != null)
-		{
-			foreach (int targetID in _attackAction.targetedEntityIDs)
-			{
-				Entity target = GameManager.Instance.GetEntityFromID(targetID);
-				if (target != null && !targetNames.Contains(target.Data.name))
-					targetNames.Add(target.Data.name);
-			}
-		}
-
-		LogConsole.AddLog(m_user.Data.name + " attacks " + (targetNames.Count == 0 ? "the ground" : string.Join(", ", targetNames))
-				+ " with " + _attackAction.Data.name
-			, LogConsole.LogEventType.UseWeapon
-			, new LogConsole.LogDetails("useweapon_" + LogConsole.Instance.LogsDetails.Keys.Count, _attackAction.Data.name, _attackAction.Data.GetDescription()));
 	}
 
 	protected IEnumerator PerformAttackCR ( AttackAction _attackAction )
@@ -360,7 +339,8 @@ public class Weapon : MonoBehaviour
 			: Tile.TileDirectionType.Front];
 		StringBuilder detailsBuilder = new();
 
-		detailsBuilder.AppendLine($"<b>{_user.Data.name}</b> => <b>{targetName}</b>");
+		LocalizationManager localization = LocalizationManager.Instance;
+		detailsBuilder.AppendLine(string.Format(localization.Get(LocalizationKey.damage_detail_header), _user.Data.name, targetName));
 		detailsBuilder.AppendLine();
 
 		foreach (KeyValuePair<WeaponEquipmentData.DamageType, int> pair in _action.Data.baseDamages)
@@ -436,27 +416,27 @@ public class Weapon : MonoBehaviour
 
 			damages.Add(pair.Key, finalDamage);
 
-			detailsBuilder.AppendLine($"<b>{pair.Key}</b>");
-			detailsBuilder.AppendLine($"Base Damage: {baseDamage}");
-			detailsBuilder.AppendLine($"Action Factor: x{actionFactor}");
-			detailsBuilder.AppendLine($"Type Modifier: {(typeBuff >= 0 ? "+" : "")}{typeBuff}%");
-			detailsBuilder.AppendLine($"Category Modifier: {(categoryBuff >= 0 ? "+" : "")}{categoryBuff}%");
-			detailsBuilder.AppendLine($"General Modifier: {(generalDamage >= 0 ? "+" : "")}{generalDamage}%");
-			detailsBuilder.AppendLine($"Flank Modifier: {(flankBonus >= 0 ? "+" : "")}{flankBonus}%");
-			detailsBuilder.AppendLine($"Final Modifier: {(finalBonus >= 0 ? "+" : "")}{finalBonus}%");
-			detailsBuilder.AppendLine($"<color=red><b>Final Damage: {finalDamage}</b></color>");
+			detailsBuilder.AppendLine("<b>" + pair.Key.GetLocalizedTitle() + "</b>");
+			detailsBuilder.AppendLine(string.Format(localization.Get(LocalizationKey.damage_detail_base), baseDamage));
+			detailsBuilder.AppendLine(string.Format(localization.Get(LocalizationKey.damage_detail_action_factor), actionFactor));
+			detailsBuilder.AppendLine(string.Format(localization.Get(LocalizationKey.damage_detail_type_modifier), typeBuff.ToString("+0.##;-0.##;0")));
+			detailsBuilder.AppendLine(string.Format(localization.Get(LocalizationKey.damage_detail_category_modifier), categoryBuff.ToString("+0.##;-0.##;0")));
+			detailsBuilder.AppendLine(string.Format(localization.Get(LocalizationKey.damage_detail_general_modifier), generalDamage.ToString("+0.##;-0.##;0")));
+			detailsBuilder.AppendLine(string.Format(localization.Get(LocalizationKey.damage_detail_flank_modifier), flankBonus.ToString("+0.##;-0.##;0")));
+			detailsBuilder.AppendLine(string.Format(localization.Get(LocalizationKey.damage_detail_final_modifier), finalBonus.ToString("+0.##;-0.##;0")));
+			detailsBuilder.AppendLine(string.Format(localization.Get(LocalizationKey.damage_detail_final), finalDamage));
 			detailsBuilder.AppendLine();
 		}
 
 		string detailsDescription = detailsBuilder.ToString();
-		LogConsole.LogDetails details = new("damage_" + LogConsole.Instance.LogsDetails.Keys.Count, "Damage Details", detailsDescription);
+		LogConsole.LogDetails details = new("damage_" + LogConsole.Instance.LogsDetails.Keys.Count, localization.Get(LocalizationKey.damage_detail_title), detailsDescription);
 		if (_isAttackSuccessful)
 		{
 			int totalDamage = 0;
 			foreach (int value in damages.Values)
 				totalDamage += value;
 
-			LogConsole.AddLog("-> " + totalDamage + " damages", LogConsole.LogEventType.Damage, details);
+			LogConsole.AddLog(string.Format(localization.Get(LocalizationKey.log_damages), totalDamage), LogConsole.LogEventType.Damage, details);
 		}
 
 		return damages;

@@ -15,10 +15,10 @@ public abstract class AEntityStatus : ScriptableEnum<EntityStatusEnumID>
     {
         System.Text.StringBuilder builder = new();
         builder.AppendLine($"<b>{this.GetLocalizedName()}</b>");
-        builder.AppendLine($"Duration: {duration} turns");
-        builder.AppendLine($"Remaining: {_remainingDuration} turns");
+        builder.AppendLine(string.Format(LocalizationManager.Instance.Get(LocalizationKey.status_tip_duration), duration));
+        builder.AppendLine(string.Format(LocalizationManager.Instance.Get(LocalizationKey.status_tip_remaining), _remainingDuration));
         if (doesNeedRoll)
-            builder.AppendLine("Applied through a status roll");
+            builder.AppendLine(LocalizationManager.Instance.Get(LocalizationKey.status_tip_needs_roll));
         if (!string.IsNullOrWhiteSpace(this.GetLocalizedDescription()))
         {
             builder.AppendLine();
