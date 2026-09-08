@@ -69,13 +69,13 @@ MonoBehaviour:
   - groundType: 0
     wallType: 0
     orientation: 0
-  - groundType: 3
+  - groundType: 8
     wallType: 0
     orientation: 0
   - groundType: 0
     wallType: 0
     orientation: 0
-  - groundType: 3
+  - groundType: 8
     wallType: 0
     orientation: 0
   - groundType: 0
