@@ -767,7 +767,7 @@ public class GridManager : Singleton<GridManager>
 		if (_from == null || _to == null)
 			return false;
 
-		foreach (Tile tile in GetTilesInRay(_from, _to, _isThisTurn, true))
+		foreach (Tile tile in GetLineOfSightPath(_from, _to))
 		{
 			if (tile.GroundType != TileGroundType.Wall || tile.Wall == null || tile.Wall.Health <= 0)
 				continue;
@@ -777,6 +777,39 @@ public class GridManager : Singleton<GridManager>
 		}
 
 		return false;
+	}
+
+	//The tiles strictly between _from and _to, walked the same way GetTilesInVisionRange
+	//propagates visibility, so a unit that can see a tile can always fire at it.
+	public List<Tile> GetLineOfSightPath ( Tile _from, Tile _to )
+	{
+		List<Tile> path = new();
+		if (_from == null || _to == null)
+			return path;
+
+		TileCoordinates origin = _from.coordinates;
+		Tile current = _to;
+		int distance = origin.DistanceTo(current.coordinates);
+		int guard = 0;
+
+		while (distance > 1 && guard++ < 64)
+		{
+			float step = (distance - 1f) / distance;
+			Tile parent = CubeRound(CubeLerp(origin, current.coordinates, step)).GetTile();
+			if (parent == null)
+				break;
+
+			int parentDistance = origin.DistanceTo(parent.coordinates);
+			if (parentDistance >= distance)
+				break;
+
+			path.Add(parent);
+			current = parent;
+			distance = parentDistance;
+		}
+
+		path.Reverse();
+		return path;
 	}
 
 	public bool IsThereCoverBeween ( Entity _attacker, Entity _target, bool _didAttackerWinPFC, out Tile _cover )
