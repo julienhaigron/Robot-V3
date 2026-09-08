@@ -429,11 +429,8 @@ public class Weapon : MonoBehaviour
 
 		string detailsDescription = detailsBuilder.ToString();
 		LogConsole.LogDetails details = new("damage_" + LogConsole.Instance.LogsDetails.Keys.Count, "Damage Details", detailsDescription);
-		//Nothing is applied here, this only works the numbers out: a miss must not read as a hit in the log.
-		LogConsole.AddLog(_isAttackSuccessful
-			? targetName + " takes damages from " + _user.ID
-			: _user.ID + " deals no damage to " + targetName + ", attack failed"
-			, LogConsole.LogEventType.Damage, details);
+		if (_isAttackSuccessful)
+			LogConsole.AddLog(targetName + " takes damages from " + _user.ID, LogConsole.LogEventType.Damage, details);
 
 		return damages;
 	}

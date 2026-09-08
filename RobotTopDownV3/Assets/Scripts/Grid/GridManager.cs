@@ -586,6 +586,9 @@ public class GridManager : Singleton<GridManager>
 		Tile rightestTile = previousLine[^1];
 		for (; cursor < _maxDistance - 1; cursor++)
 		{
+			if (previousLine.Count == 0)
+				break;
+
 			List<Tile> newLine = new();
 
 			if (_type == EntityActionData.AOEType.ThinCone)
@@ -643,7 +646,7 @@ public class GridManager : Singleton<GridManager>
 				else
 				{
 					Tile leftAnchor = leftestTile.Neighbors[leftOrientation];
-					if (leftAnchor != null && IsVisionLineClear(origin, previousLine[0].Neighbors[leftOrientation], _isThisTurn))
+					if (leftAnchor != null && IsVisionLineClear(origin, leftAnchor, _isThisTurn))
 					{
 						newLine.Add(leftAnchor);
 						if (leftAnchor.Neighbors[leftOrientation] != null && IsVisionLineClear(origin, leftAnchor.Neighbors[leftOrientation], _isThisTurn))
@@ -655,7 +658,7 @@ public class GridManager : Singleton<GridManager>
 							newLine.Add(leftAnchor.Neighbors[_orientation]);
 					}
 					Tile rightAnchor = rightestTile.Neighbors[rightOrientation];
-					if (rightAnchor != null && IsVisionLineClear(origin, previousLine[0].Neighbors[rightOrientation], _isThisTurn))
+					if (rightAnchor != null && IsVisionLineClear(origin, rightAnchor, _isThisTurn))
 					{
 						newLine.Add(rightAnchor);
 						if (rightAnchor.Neighbors[rightOrientation] != null && IsVisionLineClear(origin, rightAnchor.Neighbors[rightOrientation], _isThisTurn))
@@ -682,7 +685,7 @@ public class GridManager : Singleton<GridManager>
 		}
 
 		for (int i = tilesInRange.Count - 1; i >= 0; i--)
-			if (tilesInRange[i].Distance < _minDistance)
+			if (_from.coordinates.DistanceTo(tilesInRange[i].coordinates) < _minDistance)
 				tilesInRange.RemoveAt(i);
 
 		return tilesInRange;
@@ -779,8 +782,6 @@ public class GridManager : Singleton<GridManager>
 		return false;
 	}
 
-	//The tiles strictly between _from and _to, walked the same way GetTilesInVisionRange
-	//propagates visibility, so a unit that can see a tile can always fire at it.
 	public List<Tile> GetLineOfSightPath ( Tile _from, Tile _to )
 	{
 		List<Tile> path = new();
