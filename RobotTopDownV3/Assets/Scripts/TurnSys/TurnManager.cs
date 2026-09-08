@@ -744,44 +744,44 @@ public class TurnManager : Singleton<TurnManager>
 
 	public AEntityAction GetActionPerformedAtTick ( int _entityID )
 	{
-		if (m_actionsBeingDone.ContainsKey(_entityID) && m_actionsBeingDone[_entityID] != null)
-		{
-			AEntityAction actionBeingDone = m_actionsBeingDone[_entityID].Item1.action;
-			if (actionBeingDone.IsPerformingAtTick(currentTick))
-				return actionBeingDone;
-		}
+		return GetRecordedActionPerformedAtTick(_entityID)?.action;
+	}
 
-		if (m_actionsToPlay.ContainsKey(_entityID) && m_actionsToPlay[_entityID] != null)
+	public int GetEntityPositionAtEndOfTick ( int _entityID, int _defaultTileID )
+	{
+		RecordedAction recordedAction = GetRecordedActionPerformedAtTick(_entityID);
+		return recordedAction == null ? _defaultTileID : recordedAction.action.positionAtActionEndID;
+	}
+
+	private RecordedAction GetRecordedActionPerformedAtTick ( int _entityID )
+	{
+		if (currentPhase == TurnPhase.Calculating)
+			return FindQueuedActionPerformedAtTick(_entityID) ?? FindActionBeingDonePerformedAtTick(_entityID);
+
+		return FindActionBeingDonePerformedAtTick(_entityID) ?? FindQueuedActionPerformedAtTick(_entityID);
+	}
+
+	private RecordedAction FindQueuedActionPerformedAtTick ( int _entityID )
+	{
+		if (!m_actionsToPlay.ContainsKey(_entityID) || m_actionsToPlay[_entityID] == null)
+			return null;
+
+		foreach (RecordedAction recordedAction in m_actionsToPlay[_entityID])
 		{
-			foreach (RecordedAction recordedAction in m_actionsToPlay[_entityID])
-			{
-				if (recordedAction.action.IsPerformingAtTick(currentTick))
-					return recordedAction.action;
-			}
+			if (recordedAction.action.IsPerformingAtTick(currentTick))
+				return recordedAction;
 		}
 
 		return null;
 	}
 
-	public int GetEntityPositionAtEndOfTick ( int _entityID, int _defaultTileID )
+	private RecordedAction FindActionBeingDonePerformedAtTick ( int _entityID )
 	{
-		if (m_actionsBeingDone.ContainsKey(_entityID) && m_actionsBeingDone[_entityID] != null)
-		{
-			AEntityAction actionBeingDone = m_actionsBeingDone[_entityID].Item1.action;
-			if (actionBeingDone.IsPerformingAtTick(currentTick))
-				return actionBeingDone.positionAtActionEndID;
-		}
+		if (!m_actionsBeingDone.ContainsKey(_entityID) || m_actionsBeingDone[_entityID] == null)
+			return null;
 
-		if (m_actionsToPlay.ContainsKey(_entityID) && m_actionsToPlay[_entityID] != null)
-		{
-			foreach (RecordedAction recordedAction in m_actionsToPlay[_entityID])
-			{
-				if (recordedAction.action.IsPerformingAtTick(currentTick))
-					return recordedAction.action.positionAtActionEndID;
-			}
-		}
-
-		return _defaultTileID;
+		RecordedAction actionBeingDone = m_actionsBeingDone[_entityID].Item1;
+		return actionBeingDone.action.IsPerformingAtTick(currentTick) ? actionBeingDone : null;
 	}
 
 	public bool IsEntityLeavingTileThisTick ( int _entityID, int _tileID )
@@ -800,27 +800,6 @@ public class TurnManager : Singleton<TurnManager>
 			AEntityAction actionBeingDone = m_actionsBeingDone[_entityID].Item1.action;
 			if (actionBeingDone.IsPerformingAtTick(currentTick) && actionBeingDone.DoesLeaveTileThisTick(_tileID))
 				return true;
-		}
-
-		return false;
-	}
-
-	public bool HasRotationFreeActionThisTick ( int _entityID )
-	{
-		if (m_actionsBeingDone.ContainsKey(_entityID) && m_actionsBeingDone[_entityID] != null)
-		{
-			RecordedAction actionBeingDone = m_actionsBeingDone[_entityID].Item1;
-			if (actionBeingDone.action.IsPerformingAtTick(currentTick))
-				return IsRotationFreeAction(actionBeingDone);
-		}
-
-		if (m_actionsToPlay.ContainsKey(_entityID) && m_actionsToPlay[_entityID] != null)
-		{
-			foreach (RecordedAction recordedAction in m_actionsToPlay[_entityID])
-			{
-				if (recordedAction.action.IsPerformingAtTick(currentTick))
-					return IsRotationFreeAction(recordedAction);
-			}
 		}
 
 		return false;
@@ -1324,10 +1303,15 @@ public class TurnManager : Singleton<TurnManager>
 
 	private void PlayActionTick ( RecordedAction _recordedAction )
 	{
-		if (_recordedAction.freeAction != null
+		bool doesPlayFreeAction = _recordedAction.freeAction != null
 			&& _recordedAction.freeActionType != EntityActionEnumID.Wait
 			&& _recordedAction.freeActionType != EntityActionEnumID.Unknowned
-			&& _recordedAction.action.IsPerformingAtTick(currentTick))
+			&& _recordedAction.freeAction.lifetime < _recordedAction.freeAction.TotalDuration
+			&& _recordedAction.action.IsPerformingAtTick(currentTick);
+
+		_recordedAction.action.doesFreeActionOwnFacing = doesPlayFreeAction && IsRotationFreeAction(_recordedAction);
+
+		if (doesPlayFreeAction)
 		{
 			if (_recordedAction.freeAction.Data.isPlayedFirst)
 			{

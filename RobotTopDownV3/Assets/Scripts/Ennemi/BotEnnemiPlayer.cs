@@ -165,16 +165,30 @@ public class BotEnnemiPlayer : MonoBehaviour
 			return;
 		}
 
+		Tile entryNode = closestTile;
+		Tile rememberedNode = _entity.AI.PatrolNode;
+		if (rememberedNode != null && System.Array.IndexOf(closestPath.Path, rememberedNode) >= 0)
+			entryNode = rememberedNode;
+
 		Tile lastDestination = from;
-		Tile targetNode = closestTile;
 		Queue<Tile> pendingSteps = new();
 
-		List<Tile> pathToClosestTileInPath = GridManager.Instance.GetPath(from, closestTile, true, _movingEntity: _entity, _canTraverseAllies: true);
-		if (pathToClosestTileInPath != null)
+		List<Tile> pathToEntryNode = entryNode == from ? null
+			: GridManager.Instance.GetPath(from, entryNode, true, _movingEntity: _entity, _canTraverseAllies: true);
+
+		if (pathToEntryNode == null && entryNode != closestTile && closestTile != from)
 		{
-			pathToClosestTileInPath.Reverse();
-			for (int i = 1; i < pathToClosestTileInPath.Count; i++)
-				pendingSteps.Enqueue(pathToClosestTileInPath[i]);
+			entryNode = closestTile;
+			pathToEntryNode = GridManager.Instance.GetPath(from, closestTile, true, _movingEntity: _entity, _canTraverseAllies: true);
+		}
+
+		Tile targetNode = entryNode;
+
+		if (pathToEntryNode != null)
+		{
+			pathToEntryNode.Reverse();
+			for (int i = 1; i < pathToEntryNode.Count; i++)
+				pendingSteps.Enqueue(pathToEntryNode[i]);
 		}
 
 		for (int i = 0; i < GameConfig.current.game.actionTokenPerRound;)
@@ -215,12 +229,13 @@ public class BotEnnemiPlayer : MonoBehaviour
 
 			movementAction.targetTileIDs = thisActionPath.ToArray();
 			movementAction.mode = MoveToTargetAction.MoveActionMode.Coordinate;
-			movementAction.targetTileID = thisActionPath[^1];
+			movementAction.targetTileID = targetNode == null ? thisActionPath[^1] : targetNode.coordinates.ID;
 
 			movementAction.Init(movementActionData, movementAction.linkedEquipmentId, _entity.ID
 				, movementAction.supposedPositionAtActionStartID, i);
 
 			TurnManager.Instance.AddAction(_entity.ID, movementAction, _moveState);
+			_entity.AI.PatrolNode = targetNode;
 
 			i += movementAction.TotalDuration;
 
@@ -314,7 +329,7 @@ public class BotEnnemiPlayer : MonoBehaviour
 
 			movementAction.targetTileIDs = thisActionPath.ToArray();
 			movementAction.mode = MoveToTargetAction.MoveActionMode.Coordinate;
-			movementAction.targetTileID = thisActionPath[^1];
+			movementAction.targetTileID = _path[^1].coordinates.ID;
 
 			movementAction.Init(movementActionData, movementAction.linkedEquipmentId, _entity.ID
 				, movementAction.supposedPositionAtActionStartID, spentTokens);

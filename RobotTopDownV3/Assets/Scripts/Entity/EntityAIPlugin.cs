@@ -28,6 +28,9 @@ public class EntityAIPlugin : EntityPlugin
 	public List<Entity> LastTargetedEntities => m_lastEntitiesTargeted;
 
 	private Entity m_committedTarget;
+	private int m_committedDestinationID = -1;
+	private Tile m_patrolNode;
+	public Tile PatrolNode { get => m_patrolNode; set => m_patrolNode = value; }
 	private bool m_hasEngagedTarget;
 	public bool HasEngagedTarget => m_hasEngagedTarget;
 	private int m_lastKnownHealth;
@@ -70,6 +73,8 @@ public class EntityAIPlugin : EntityPlugin
 
 		m_committedTarget = null;
 		m_hasEngagedTarget = false;
+		m_committedDestinationID = -1;
+		m_patrolNode = null;
 		m_lastKnownHealth = m_linkedEntity.Equipment.CurrentHealth;
 
 		foreach (EntityActionEnumID actionID in m_linkedEntity.KnownedActions)
@@ -128,6 +133,8 @@ public class EntityAIPlugin : EntityPlugin
 			//no action change if in NoAIChange
 			return resultInfo;
 		}
+
+		DropStaleFacing(_recordedAction, ref resultInfo);
 
 		DOAllPrewarmCheck(_recordedAction.action, _recordedAction.entityState == Entity.EntityState.Patroling);
 
@@ -211,10 +218,7 @@ public class EntityAIPlugin : EntityPlugin
 				{
 					Tile from = m_linkedEntity.Displacement.Coordinates.GetTile();
 					Tile targetTile = committedTarget.Displacement.Coordinates.GetTile();
-					Tile firingTile = GetCommittedFiringTile(_recordedAction.action, committedTarget, true);
-
-					if (firingTile == null)
-						firingTile = GetClosestFiringTile(committedTarget, true);
+					Tile firingTile = GetStickyFiringTile(_recordedAction.action, committedTarget, true);
 
 					if (firingTile == null)
 					{
@@ -251,14 +255,12 @@ public class EntityAIPlugin : EntityPlugin
 						resultInfo.ReplaceAction(waitAction, "Already in position to shoot target");
 					}
 
-					Tile orientationFrom = tileIDs.Count > 0 ? GridManager.Instance.Tiles[tileIDs[^1]] : from;
-
-					if (CanFireFrom(orientationFrom, committedTarget, true))
+					if (tileIDs.Count == 0 && CanFireFrom(from, committedTarget, true))
 					{
 						Tile orientationTo = GridManager.Instance.Tiles[TurnManager.Instance.GetEntityPositionAtEndOfTick(committedTarget.ID, targetTile.coordinates.ID)];
-						int firingOrientation = orientationTo == orientationFrom
+						int firingOrientation = orientationTo == from
 							? m_linkedEntity.Displacement.CurrentOrientation
-							: GridManager.Instance.GetClosestOrientation(orientationFrom, orientationTo);
+							: GridManager.Instance.GetClosestOrientation(from, orientationTo);
 
 						if (firingOrientation != m_linkedEntity.Displacement.CurrentOrientation)
 						{
@@ -311,6 +313,19 @@ public class EntityAIPlugin : EntityPlugin
 			: _action.positionAtActionEndID;
 
 		return destinationID >= 0 && destinationID != m_linkedEntity.Displacement.Coordinates.ID;
+	}
+
+	private void DropStaleFacing ( TurnManager.RecordedAction _recordedAction, ref CheckActionResultInfo _resultInfo )
+	{
+		AEntityAction freeAction = _recordedAction.freeAction;
+		if (freeAction == null || freeAction.Data.type != EntityActionData.ActionType.Rotation)
+			return;
+
+		freeAction.CancelAction();
+
+		_recordedAction.freeAction = null;
+		_recordedAction.freeActionType = EntityActionEnumID.Wait;
+		_resultInfo.replacedFreeAction = null;
 	}
 
 	private bool ShouldRepathTowardTarget ( Entity _committedTarget )
@@ -564,6 +579,44 @@ public class EntityAIPlugin : EntityPlugin
 		return closest;
 	}
 
+	private bool IsUsableFiringTile ( Tile _tile, Entity _target, bool _isThisTurn )
+	{
+		if (_tile == null || _tile.IsObstacle(_isThisTurn))
+			return false;
+
+		Entity occupant = _tile.GetEntity(_isThisTurn);
+		if (occupant != null && occupant != m_linkedEntity)
+			return false;
+
+		return CanFireFrom(_tile, _target, _isThisTurn);
+	}
+
+	private Tile GetStickyFiringTile ( AEntityAction _currentAction, Entity _target, bool _isThisTurn = true )
+	{
+		Tile from = m_linkedEntity.Displacement.Coordinates.GetTile();
+
+		if (CanFireFrom(from, _target, _isThisTurn))
+		{
+			m_committedDestinationID = from.coordinates.ID;
+			return from;
+		}
+
+		if (m_committedDestinationID >= 0 && m_committedDestinationID < GridManager.Instance.Tiles.Length)
+		{
+			Tile committed = GridManager.Instance.Tiles[m_committedDestinationID];
+			if (IsUsableFiringTile(committed, _target, _isThisTurn)
+				&& (committed == from || GridManager.Instance.GetPath(from, committed, _isThisTurn, _movingEntity: m_linkedEntity, _canTraverseAllies: true) != null))
+				return committed;
+		}
+
+		Tile firingTile = GetCommittedFiringTile(_currentAction, _target, _isThisTurn);
+		if (firingTile == null)
+			firingTile = GetClosestFiringTile(_target, _isThisTurn);
+
+		m_committedDestinationID = firingTile == null ? -1 : firingTile.coordinates.ID;
+		return firingTile;
+	}
+
 	private Tile GetCommittedFiringTile ( AEntityAction _currentAction, Entity _target, bool _isThisTurn = true )
 	{
 		if (_currentAction is not MoveToTargetAction currentMove || currentMove.finalTargetTileID == -1)
@@ -750,6 +803,9 @@ public class EntityAIPlugin : EntityPlugin
 
 	public Entity CommitTo ( Entity _target )
 	{
+		if (m_committedTarget != _target)
+			m_committedDestinationID = -1;
+
 		m_committedTarget = _target;
 		if (_target != null)
 		{

@@ -181,7 +181,8 @@ public class EntityDisplacementPlugin : EntityPlugin
 
 	private bool ShouldFaceMovementDirection ()
 	{
-		return TurnManager.Instance == null || !TurnManager.Instance.HasRotationFreeActionThisTick(m_linkedEntity.ID);
+		AEntityAction performedAction = m_linkedEntity.LastPerformedAction;
+		return performedAction == null || !performedAction.doesFreeActionOwnFacing;
 	}
 
 	public void Rotate ( int _orientation, float _duration = 0f, System.Action _onEndPerform = null )
@@ -191,6 +192,10 @@ public class EntityDisplacementPlugin : EntityPlugin
 			_onEndPerform?.Invoke();
 			return;
 		}
+
+		//ROTATION PROBE - temporaire, a retirer
+		Debug.LogWarning("[ROT] tick " + TurnManager.currentTick + " | " + m_linkedEntity.Data.name + " (id " + m_linkedEntity.ID + ") "
+			+ m_currentOrientation + " -> " + _orientation + " | duree " + _duration, gameObject);
 
 		m_currentOrientation = _orientation;
 

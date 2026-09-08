@@ -37,17 +37,6 @@ public class GridManager : Singleton<GridManager>
 	private bool m_wasWallDestroyedThisRound;
 	public bool WasWallDestroyedThisRound => m_wasWallDestroyedThisRound;
 
-	private static readonly Vector2Int[] HexDirectionOffsets =
-	{
-		new Vector2Int( 0,  1), // 0
-		new Vector2Int( 1,  0), // 1
-		new Vector2Int( 1, -1), // 2
-
-		new Vector2Int( 0, -1), // 3
-		new Vector2Int(-1,  0), // 4
-		new Vector2Int(-1,  1), // 5
-	};
-
 	#region Editor
 #if UNITY_EDITOR
 
@@ -283,25 +272,35 @@ public class GridManager : Singleton<GridManager>
 
 		List<Tile> path = new();
 		path.Add(_to);
-		Queue<Tile> search = new Queue<Tile>();
-		search.Enqueue(_to);
 
-		int currentDistance = _to.Distance;
-		while (search.Count > 0)
+		Tile current = _to;
+		int lastDirection = -1;
+
+		while (current.Distance > 0)
 		{
-			Tile current = search.Dequeue();
+			Tile next = null;
+			int nextDirection = -1;
+			int bestDistance = current.Distance;
+
 			for (int i = 0; i < 6; i++)
 			{
-				Tile neighbor = current.GetNeighbor((HexDirection)i);
-				if (neighbor == null || neighbor.Distance >= currentDistance)
-				{
-					continue;
-				}
+				int direction = lastDirection < 0 ? i : (lastDirection + i) % 6;
+				Tile neighbor = current.GetNeighbor((HexDirection)direction);
 
-				currentDistance = neighbor.Distance;
-				search.Enqueue(neighbor);
-				path.Add(neighbor);
+				if (neighbor == null || neighbor.Distance >= bestDistance)
+					continue;
+
+				next = neighbor;
+				nextDirection = direction;
+				bestDistance = neighbor.Distance;
 			}
+
+			if (next == null)
+				break;
+
+			path.Add(next);
+			current = next;
+			lastDirection = nextDirection;
 		}
 
 		return path;
@@ -446,7 +445,7 @@ public class GridManager : Singleton<GridManager>
 
 		foreach (Tile tile in tilesInRange.ToArray())
 		{
-			if (tile.Distance < _minDistance)
+			if (_from.coordinates.DistanceTo(tile.coordinates) < _minDistance)
 				tilesInRange.Remove(tile);
 		}
 
@@ -507,49 +506,15 @@ public class GridManager : Singleton<GridManager>
 				continue;
 			else if (dx == 0f || dy == 0f || dz == 0f)
 			{
-				int dir = 0;
-				if (dx == 0f)
-				{
-					if (dy > 0)
-						dir = dx > 0 ? 5 : 2;
-					else
-						dir = dx < 0 ? 2 : 5;
-				}
-				else if (dy == 0f)
-				{
-					if (dx > 0)
-						dir = dz > 0 ? 4 : 1;
-					else
-						dir = dz < 0 ? 1 : 4;
-				}
-				else if (dz == 0f)
-				{
-					if (dz > 0)
-						dir = dy > 0 ? 3 : 0;
-					else
-						dir = dy < 0 ? 0 : 3;
-				}
-
-				TileCoordinates adj = CubeNeighbor(c, dir);
+				TileCoordinates adj = new TileCoordinates(c.X + Mathf.RoundToInt(dx * 2f)
+					, c.Z + Mathf.RoundToInt(dz * 2f), -1);
 				TryAdd(adj, tilesInRange, _isThisTurn);
 			}
-
-			/*for (int dir = 0; dir < 6; dir++)
-			{
-				TileCoordinates neighbor = CubeNeighbor(c, dir);
-				TryAdd(neighbor, tilesInRange);
-			}*/
 
 		}
 
 		return tilesInRange;
 	}
-
-	private static readonly (int x, int y, int z)[] CubeDirections = new (int, int, int)[]
-	{
-		(1, -1, 0), (1, 0, -1), (0, 1, -1),
-		(-1, 1, 0), (-1, 0, 1), (0, -1, 1)
-	};
 
 	public CubeF CubeLerp ( TileCoordinates a, TileCoordinates b, float t )
 	{
@@ -578,12 +543,6 @@ public class GridManager : Singleton<GridManager>
 			rz = -rx - ry;
 
 		return new TileCoordinates(rx, rz, -1);
-	}
-
-	private TileCoordinates CubeNeighbor ( TileCoordinates c, int direction )
-	{
-		var dir = CubeDirections[direction];
-		return new TileCoordinates(c.X + dir.x, c.Z + dir.z, -1);
 	}
 
 	void TryAdd ( TileCoordinates c, List<Tile> set, bool _isThisTurn )
@@ -880,14 +839,11 @@ public class GridManager : Singleton<GridManager>
 	{
 		Vector2 origin = new Vector2(_from.transform.position.x, _from.transform.position.z);
 		Vector2 destination = new Vector2(_to.transform.position.x, _to.transform.position.z);
-		float angle = GetAngleFrom(origin, destination);
-		angle += 90f;
-		if (angle > 360)
-			angle -= 360f;
-		if (angle < 0)
+		float angle = (GetAngleFrom(origin, destination) + 90f) % 360f;
+		if (angle < 0f)
 			angle += 360f;
 
-		return (int)((angle - 30f) / 60f);
+		return Mathf.FloorToInt(angle / 60f) % 6;
 	}
 
 	public float FromOrientationToAngle ( int _orientation )

@@ -30,6 +30,7 @@ public abstract class AEntityAction : INetworkSerializable
 	public int ActiveLifetime => lifetime - preparationDuration;
 
 	public int lifetime = 0;
+	public bool doesFreeActionOwnFacing;
 	public int timeAtStart = 0;
 	public int TimeAtStartPerform => timeAtStart + preparationDuration;
 	public int TimeAtEnd => timeAtStart + TotalDuration;
