@@ -70,6 +70,7 @@ public class FTUEManager : SingletonPersistant<FTUEManager>
 		ftueSequence.Append(Day3Tuto());
 		ftueSequence.Append(Day4Tuto());
 		ftueSequence.Append(Day5Tuto());
+		ftueSequence.Append(Cycle1Tuto());
 
 		ftueSequence.Start();
 	}
@@ -91,17 +92,30 @@ public class FTUEManager : SingletonPersistant<FTUEManager>
 			TaskManager.Instance.StopAndMarkAsCompletedSequence("Day4Tuto");
 		if (!GameDatas.current.currentPlayerSave.sequencesProgressions.ContainsKey("Day5Tuto") || GameDatas.current.currentPlayerSave.sequencesProgressions["Day5Tuto"] != -1)
 			TaskManager.Instance.StopAndMarkAsCompletedSequence("Day5Tuto");
+		if (!GameDatas.current.currentPlayerSave.sequencesProgressions.ContainsKey("Cycle1Tuto") || GameDatas.current.currentPlayerSave.sequencesProgressions["Cycle1Tuto"] != -1)
+			TaskManager.Instance.StopAndMarkAsCompletedSequence("Cycle1Tuto");
 
 		if (GameDatas.current.currentPlayerSave.sequencesProgressions[FTUEID] != -1)
 			TaskManager.Instance.StopAndMarkAsCompletedSequence(FTUEID);
 
 		GameDatas.current.currentPlayerSave.didUnlockRecycler = true;
 		GameDatas.current.currentPlayerSave.didUnlockRepareStation = true;
+		GameDatas.current.currentPlayerSave.didUnlockShops = true;
 		GameDatas.current.currentPlayerSave.didUnlockReturnToHubPopup = true;
 		GameDatas.current.currentPlayerSave.didStartTuto = true;
 	}
 
 	#region Tuto Sequences
+
+	{
+		TaskSequence tutoSequence = new("Cycle1Tuto");
+
+		tutoSequence.Append(new ManualTask("Unlock shops", ( context ) => GameDatas.current.currentPlayerSave.cycleCount >= 1
+			, () => GameDatas.current.currentPlayerSave.didUnlockShops = true));
+
+		tutoSequence.SetSkipPredicate(( context ) => GameDatas.current.currentPlayerSave.didUnlockShops);
+		return tutoSequence;
+	}
 
 	private TaskSequence MicroTuto0 ()
 	{

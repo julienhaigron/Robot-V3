@@ -50,8 +50,8 @@ public class SoloHubPanel : AUIPanel
 		m_missionBtn.SetInteractability(isSquadValid);
 		m_repairBtn.SetInteractability(GameDatas.current.currentPlayerSave.didUnlockRepareStation);
 		m_recycleShopBtn.SetInteractability(GameDatas.current.currentPlayerSave.didUnlockRecycler);
-		/*foreach (KeyValuePair<EntityEquipmentData.EntityFaction, BaseButton> shopBtn in m_openShopBtns)
-			shopBtn.Value.SetInteractability(GameDatas.current.currentPlayerSave.didUnlockShops);*/
+		foreach (KeyValuePair<EntityEquipmentData.EntityFaction, BaseButton> shopBtn in m_openShopBtns)
+			shopBtn.Value.SetInteractability(GameDatas.current.currentPlayerSave.didUnlockShops);
 		//m_tournamentBtn.SetInteractability(isSquadValid);
 	}
 
