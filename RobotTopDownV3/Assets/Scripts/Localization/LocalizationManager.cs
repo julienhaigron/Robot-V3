@@ -42,6 +42,11 @@ public class LocalizationManager : Singleton<LocalizationManager>
         return m_localizedDict.TryGetValue(_key, out var value) ? value : _key;
     }
 
+    public string Get ( string _key, string _fallback )
+    {
+        return m_localizedDict.TryGetValue(_key, out var value) && !string.IsNullOrEmpty(value) ? value : _fallback;
+    }
+
     public void SetLanguage ( SystemLanguage _language )
     {
         CurrentLanguage = _language;

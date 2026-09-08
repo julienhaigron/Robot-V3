@@ -27,7 +27,7 @@ public class ComponentFullDisplay : MonoBehaviour
 		m_corpIcon.sprite = componentData == null ? null : GameAssets.current.ui.corporationsIcons[componentData.faction];
 		m_corpIcon.gameObject.SetActive(componentData != null);
 		//m_icon.sprite = componentData.icon;
-		m_titleTMP.text = componentData == null ? null : componentData.displayName;
+		m_titleTMP.text = componentData == null ? null : componentData.GetLocalizedName();
 		m_priceTMP.text = componentData == null ? null : componentData.GetSellingPrice().Item2.ToString();
 
 		if (componentData != null)

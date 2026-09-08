@@ -59,7 +59,7 @@ public class StructureUpgradePopup : AUIPopup
 	{
 		m_buyUpgradeBtn.SetInteractability(Upgrade.CanUpgrade());
 
-		m_titleTMP.text = Upgrade.displayName;
+		m_titleTMP.text = Upgrade.GetLocalizedName();
 		for(int i = 0; i< addonDisplays.Length; i++)
 		{
 			if (Upgrade.addonDescriptions.Length <= i)

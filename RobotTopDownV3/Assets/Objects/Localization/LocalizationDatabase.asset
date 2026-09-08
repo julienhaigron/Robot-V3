@@ -590,3 +590,963 @@ MonoBehaviour:
     values:
     - Status stats
     - Stats de statut
+  - key: action/chain_throw
+    values:
+    - Chain_Throw
+    - Chain_Throw
+  - key: action/charged_punch
+    values:
+    - Charged_Punch
+    - Charged_Punch
+  - key: action/charged_strike
+    values:
+    - Charged_Strike
+    - Charged_Strike
+  - key: action/crushing
+    values:
+    - Crushing
+    - Crushing
+  - key: action/gravipatate
+    values:
+    - GraviPatate
+    - GraviPatate
+  - key: action/perforate
+    values:
+    - Perforate
+    - Perforate
+  - key: action/punch
+    values:
+    - Punch
+    - Punch
+  - key: action/rush
+    values:
+    - Rush
+    - Rush
+  - key: action/simple_strike
+    values:
+    - Simple_Strike
+    - Simple_Strike
+  - key: action/spear_strike
+    values:
+    - Spear_Strike
+    - Spear_Strike
+  - key: action/spear_strike_flurry
+    values:
+    - Spear_Strike_Flurry
+    - Spear_Strike_Flurry
+  - key: action/throw
+    values:
+    - Throw
+    - Throw
+  - key: action/thrust
+    values:
+    - Thrust
+    - Thrust
+  - key: action/thrust_flurry
+    values:
+    - Thrust_Flurry
+    - Thrust_Flurry
+  - key: action/leap
+    values:
+    - Saut
+    - Saut
+  - key: action/ride
+    values:
+    - "Mont\xE9e"
+    - "Mont\xE9e"
+  - key: action/rotateentity
+    values:
+    - Tourner
+    - Tourner
+  - key: action/rotatetoentity
+    values:
+    - Turn to target
+    - Turn to target
+  - key: action/wait
+    values:
+    - Attendre
+    - Attendre
+  - key: action/walk
+    values:
+    - Marche
+    - Marche
+  - key: action/walkbutdodge
+    values:
+    - Marche
+    - Marche
+  - key: action/deploy_amplifier
+    values:
+    - Deploy_Amplifier
+    - Deploy_Amplifier
+  - key: action/dooming
+    values:
+    - Dooming
+    - Dooming
+  - key: action/explode
+    values:
+    - Explosion
+    - Explosion
+  - key: action/incendiary_grenade
+    values:
+    - Incendiary_Grenade
+    - Incendiary_Grenade
+  - key: action/land
+    values:
+    - Atterissage
+    - Atterissage
+  - key: action/move_portal
+    values:
+    - Move_Portal
+    - Move_Portal
+  - key: action/push_plasma
+    values:
+    - Push_Plasma
+    - Push_Plasma
+  - key: action/repel
+    values:
+    - Repel
+    - Repel
+  - key: action/set_mine
+    values:
+    - Set_Mine
+    - Set_Mine
+  - key: action/set_portal
+    values:
+    - Set_Portal
+    - Set_Portal
+  - key: action/set_trap_marking
+    values:
+    - Set_Trap_Marking
+    - Set_Trap_Marking
+  - key: action/set_trap_shock
+    values:
+    - Set_Trap_Shock
+    - Set_Trap_Shock
+  - key: action/shield_repositioning
+    values:
+    - Shield_Repositioning
+    - Shield_Repositioning
+  - key: action/smoke_grenade
+    values:
+    - Smoke_Grenade
+    - Smoke_Grenade
+  - key: action/soar
+    values:
+    - Envol
+    - Envol
+  - key: action/stun_plasma
+    values:
+    - Stun_Plasma
+    - Stun_Plasma
+  - key: action/attractive_shot
+    values:
+    - Munition Attirante
+    - Munition Attirante
+  - key: action/boom_plasma
+    values:
+    - Boom_Plasma
+    - Boom_Plasma
+  - key: action/firetir
+    values:
+    - FireTir
+    - FireTir
+  - key: action/flame_jet
+    values:
+    - Trait de feu
+    - Trait de feu
+  - key: action/missile_barrage
+    values:
+    - Barrage de missile
+    - Barrage de missile
+  - key: action/repulsive_shot
+    values:
+    - Munition Repoussante
+    - Munition Repoussante
+  - key: action/shrapnel_grenade
+    values:
+    - Shrapnel Grenade
+    - Shrapnel Grenade
+  - key: action/sniper_shot
+    values:
+    - Tir de sniper
+    - Tir de sniper
+  - key: action/sweep_shot_flamethrower
+    values:
+    - Balayage
+    - Balayage
+  - key: action/sweep_shot_minigun
+    values:
+    - Balayage
+    - Balayage
+  - key: action/targeted_salves
+    values:
+    - "Rafales Cibl\xE9es"
+    - "Rafales Cibl\xE9es"
+  - key: component/arm_broken
+    values:
+    - Arm_Broken
+    - Arm_Broken
+  - key: component/arm_com_mag
+    values:
+    - "Magn\xE9tique Armouring"
+    - "Magn\xE9tique Armouring"
+  - key: component/arm_com_reflecting
+    values:
+    - Reflecting armouring
+    - Reflecting armouring
+  - key: component/arm_dum_heat
+    values:
+    - Heat Armouring
+    - Heat Armouring
+  - key: component/arm_dum_mag
+    values:
+    - "Magn\xE9tique Armouring"
+    - "Magn\xE9tique Armouring"
+  - key: component/arm_dum_plasma
+    values:
+    - Plasma Armouring
+    - Plasma Armouring
+  - key: component/arm_pal_heat
+    values:
+    - Heat Armouring
+    - Heat Armouring
+  - key: component/arm_pal_insulating
+    values:
+    - Insulating Armouring
+    - Insulating Armouring
+  - key: component/arm_psy_plasma
+    values:
+    - Plasma Armouring
+    - Plasma Armouring
+  - key: component/arm_psy_rad
+    values:
+    - Radiation Armouring
+    - Radiation Armouring
+  - key: component/arm_start_blud
+    values:
+    - Arm_Start_Blud
+    - Arm_Start_Blud
+  - key: component/arm_start_fire
+    values:
+    - Arm_Start_Fire
+    - Arm_Start_Fire
+  - key: component/aim_com_chi
+    values:
+    - AIM_Chi
+    - AIM_Chi
+  - key: component/aim_com_def
+    values:
+    - AIM_Def
+    - AIM_Def
+  - key: component/aim_com_mel
+    values:
+    - AIM_Mel
+    - AIM_Mel
+  - key: component/aim_com_off
+    values:
+    - AIM_Off
+    - AIM_Off
+  - key: component/aim_com_sho
+    values:
+    - AIM_Sho
+    - AIM_Sho
+  - key: component/aim_dummy
+    values:
+    - AIM_Dummy
+    - AIM_Dummy
+  - key: component/aim_pal_chi
+    values:
+    - AIM_Chi
+    - AIM_Chi
+  - key: component/aim_pal_def
+    values:
+    - AIM_Def
+    - AIM_Def
+  - key: component/aim_pal_mel
+    values:
+    - AIM_Mel
+    - AIM_Mel
+  - key: component/aim_pal_off
+    values:
+    - AIM_Off
+    - AIM_Off
+  - key: component/aim_pal_sho
+    values:
+    - AIM_Sho
+    - AIM_Sho
+  - key: component/aim_psy_chi
+    values:
+    - AIM_Chi
+    - AIM_Chi
+  - key: component/aim_psy_def
+    values:
+    - AIM_Def
+    - AIM_Def
+  - key: component/aim_psy_mel
+    values:
+    - AIM_Mel
+    - AIM_Mel
+  - key: component/aim_psy_off
+    values:
+    - AIM_Off
+    - AIM_Off
+  - key: component/aim_psy_sho
+    values:
+    - AIM_Sho
+    - AIM_Sho
+  - key: component/aim_starting_melee
+    values:
+    - AIM_Starting_Melee
+    - AIM_Starting_Melee
+  - key: component/aim_starting_shoot
+    values:
+    - AIM_Starting_Shoot
+    - AIM_Starting_Shoot
+  - key: component/aim_starting_status
+    values:
+    - AIM_Starting_Status
+    - AIM_Starting_Status
+  - key: component/chip_com_assault
+    values:
+    - Assault Chipset
+    - Assault Chipset
+  - key: component/chip_com_run
+    values:
+    - Run Chipset
+    - Run Chipset
+  - key: component/chip_pal_cool
+    values:
+    - Cool Chipset
+    - Cool Chipset
+  - key: component/chip_pal_safe
+    values:
+    - Safe Chipset
+    - Safe Chipset
+  - key: component/chip_psy_prep
+    values:
+    - Prep Chipset
+    - Prep Chipset
+  - key: component/chip_psy_travel
+    values:
+    - Travel Chipset
+    - Travel Chipset
+  - key: component/frame_com_assault
+    values:
+    - Assault
+    - Assault
+  - key: component/frame_com_goliath
+    values:
+    - Goliath
+    - Goliath
+  - key: component/frame_com_kamikaze
+    values:
+    - Kamikaze
+    - Kamikaze
+  - key: component/frame_cummy
+    values:
+    - Cummy Frame
+    - Cummy Frame
+  - key: component/frame_dummy_base
+    values:
+    - Dummy Frame
+    - Dummy Frame
+  - key: component/frame_dummy_immortal
+    values:
+    - Dummy Frame
+    - Dummy Frame
+  - key: component/frame_pal_knight
+    values:
+    - Knight
+    - Knight
+  - key: component/frame_pal_tankv1
+    values:
+    - TankV1
+    - TankV1
+  - key: component/frame_pal_tankv2
+    values:
+    - TankV2
+    - TankV2
+  - key: component/frame_psy_armoured
+    values:
+    - Armoured
+    - Armoured
+  - key: component/frame_psy_marksman
+    values:
+    - Marksman
+    - Marksman
+  - key: component/frame_psy_rogue
+    values:
+    - Rogue
+    - Rogue
+  - key: component/frame_start
+    values:
+    - Frame_Start
+    - Frame_Start
+  - key: component/frame_start_cheat
+    values:
+    - Frame_Start_Cheat
+    - Frame_Start_Cheat
+  - key: component/frame_wummy_dodge
+    values:
+    - Dummy Frame
+    - Dummy Frame
+  - key: component/frame_wummy_flight
+    values:
+    - Dummy Frame
+    - Dummy Frame
+  - key: component/frame_wummy_immortal
+    values:
+    - Dummy Frame
+    - Dummy Frame
+  - key: component/neurint_com_optic
+    values:
+    - Optic
+    - Optic
+  - key: component/neurint_com_radar
+    values:
+    - Radar
+    - Radar
+  - key: component/neurint_com_thermic
+    values:
+    - Thermic
+    - Thermic
+  - key: component/neurint_dummy
+    values:
+    - NeurInt_Dummy
+    - NeurInt_Dummy
+  - key: component/neurint_pal_optic
+    values:
+    - Optic
+    - Optic
+  - key: component/neurint_pal_radar
+    values:
+    - Radar
+    - Radar
+  - key: component/neurint_pal_thermic
+    values:
+    - Thermic
+    - Thermic
+  - key: component/neurint_psy_optic
+    values:
+    - Optic
+    - Optic
+  - key: component/neurint_psy_radar
+    values:
+    - Radar
+    - Radar
+  - key: component/neurint_psy_thermic
+    values:
+    - Thermic
+    - Thermic
+  - key: component/neurint_start_optic
+    values:
+    - NeurInt_Start_Optic
+    - NeurInt_Start_Optic
+  - key: component/neurint_start_radar
+    values:
+    - NeurInt_Start_Radar
+    - NeurInt_Start_Radar
+  - key: component/neurint_start_thermic
+    values:
+    - NeurInt_Start_Thermic
+    - NeurInt_Start_Thermic
+  - key: component/occ_broken
+    values:
+    - Occ_Broken
+    - Occ_Broken
+  - key: component/occ_com_radar
+    values:
+    - Radar Occ
+    - Radar Occ
+  - key: component/occ_com_thermic
+    values:
+    - Thermic Occ
+    - Thermic Occ
+  - key: component/occ_dum_optic
+    values:
+    - Optic Occ
+    - Optic Occ
+  - key: component/occ_dum_radar
+    values:
+    - Radar Occ
+    - Radar Occ
+  - key: component/occ_dum_thermic
+    values:
+    - Thermic Occ
+    - Thermic Occ
+  - key: component/occ_pal_optic
+    values:
+    - Optic Occ
+    - Optic Occ
+  - key: component/occ_pal_thermic
+    values:
+    - Thermic Occ
+    - Thermic Occ
+  - key: component/occ_psy_optic
+    values:
+    - Optic Occ
+    - Optic Occ
+  - key: component/occ_psy_radar
+    values:
+    - Radar Occ
+    - Radar Occ
+  - key: component/occ_start_radar
+    values:
+    - Radar Occ
+    - Radar Occ
+  - key: component/occ_start_thermic
+    values:
+    - Thermic Occ
+    - Thermic Occ
+  - key: component/reactor_com_mel_en
+    values:
+    - Mel_En
+    - Mel_En
+  - key: component/reactor_com_mel_ult
+    values:
+    - Mel_Ult
+    - Mel_Ult
+  - key: component/reactor_com_mvt_en
+    values:
+    - Mvt_En
+    - Mvt_En
+  - key: component/reactor_com_mvt_ult
+    values:
+    - Mvt_Ult
+    - Mvt_Ult
+  - key: component/reactor_com_sho_en
+    values:
+    - Sho_En
+    - Sho_En
+  - key: component/reactor_com_sho_ult
+    values:
+    - Sho_Ult
+    - Sho_Ult
+  - key: component/reactor_dummy
+    values:
+    - Reactor_Dummy
+    - Reactor_Dummy
+  - key: component/reactor_pal_mel_en
+    values:
+    - Mel_En
+    - Mel_En
+  - key: component/reactor_pal_mel_ult
+    values:
+    - Mel_Ult
+    - Mel_Ult
+  - key: component/reactor_pal_mvt_en
+    values:
+    - Mvt_En
+    - Mvt_En
+  - key: component/reactor_pal_mvt_ult
+    values:
+    - Mvt_Ult
+    - Mvt_Ult
+  - key: component/reactor_pal_sho_en
+    values:
+    - Sho_En
+    - Sho_En
+  - key: component/reactor_pal_sho_ult
+    values:
+    - Sho_Ult
+    - Sho_Ult
+  - key: component/reactor_psy_mel_en
+    values:
+    - Mel_En
+    - Mel_En
+  - key: component/reactor_psy_mel_ult
+    values:
+    - Mel_Ult
+    - Mel_Ult
+  - key: component/reactor_psy_mvt_en
+    values:
+    - Mvt_En
+    - Mvt_En
+  - key: component/reactor_psy_mvt_ult
+    values:
+    - Mvt_Ult
+    - Mvt_Ult
+  - key: component/reactor_psy_sho_en
+    values:
+    - Sho_En
+    - Sho_En
+  - key: component/reactor_psy_sho_ult
+    values:
+    - Sho_Ult
+    - Sho_Ult
+  - key: component/reactor_start
+    values:
+    - Reactor_Start
+    - Reactor_Start
+  - key: component/tool_com_mine_kit
+    values:
+    - Mine kit
+    - Mine kit
+  - key: component/tool_com_trap_kit
+    values:
+    - Trap kit
+    - Trap kit
+  - key: component/tool_pal_defense_amplifier
+    values:
+    - Defense Amplifier
+    - Defense Amplifier
+  - key: component/tool_pal_shield
+    values:
+    - Shield
+    - Shield
+  - key: component/tool_psy_repulsor
+    values:
+    - Repulsor
+    - Repulsor
+  - key: component/tool_psy_teleporter
+    values:
+    - Teleporter
+    - Teleporter
+  - key: component/tool_start_doomgun
+    values:
+    - DoomGun
+    - DoomGun
+  - key: component/weap_com_flame_thrower
+    values:
+    - Flame Thrower
+    - Flame Thrower
+  - key: component/weap_com_gauntlet
+    values:
+    - Gauntlet
+    - Gauntlet
+  - key: component/weap_com_grenade_launcher
+    values:
+    - Grenade launcher
+    - Grenade launcher
+  - key: component/weap_com_rapier
+    values:
+    - Rapier
+    - Rapier
+  - key: component/weap_pal_flail
+    values:
+    - Flail
+    - Flail
+  - key: component/weap_pal_hammer
+    values:
+    - Hammer
+    - Hammer
+  - key: component/weap_pal_minigun
+    values:
+    - Minigun
+    - Minigun
+  - key: component/weap_pal_missil_array
+    values:
+    - Missil array
+    - Missil array
+  - key: component/weap_psy_glaive
+    values:
+    - Glaive
+    - Glaive
+  - key: component/weap_psy_railgun
+    values:
+    - Railgun
+    - Railgun
+  - key: component/weap_psy_sniper
+    values:
+    - Sniper
+    - Sniper
+  - key: component/weap_psy_spear
+    values:
+    - Spear
+    - Spear
+  - key: component/weap_start_firegun
+    values:
+    - FireGun
+    - FireGun
+  - key: component/weap_start_hammag
+    values:
+    - Gravitox
+    - Gravitox
+  - key: component/weap_start_plasmacannon
+    values:
+    - Plasma Cannon
+    - Plasma Cannon
+  - key: effect/applyburning1status
+    values:
+    - ApplyBurning1Status
+    - ApplyBurning1Status
+  - key: effect/applydoomstatus
+    values:
+    - ApplyDoomStatus
+    - ApplyDoomStatus
+  - key: effect/applyflyingstatus
+    values:
+    - ApplyFlyingStatus
+    - ApplyFlyingStatus
+  - key: effect/applymarkedstatus
+    values:
+    - ApplyMarkedStatus
+    - ApplyMarkedStatus
+  - key: effect/applyrootedstatus
+    values:
+    - ApplyRootedStatus
+    - ApplyRootedStatus
+  - key: effect/applysmokedstatus
+    values:
+    - ApplySmokedStatus
+    - ApplySmokedStatus
+  - key: effect/applystunstatus
+    values:
+    - ApplyStunStatus
+    - ApplyStunStatus
+  - key: effect/cooldowncostreduction
+    values:
+    - CooldownCostReduction
+    - CooldownCostReduction
+  - key: effect/damageuponmarked
+    values:
+    - DamageUpOnMarked
+    - DamageUpOnMarked
+  - key: effect/deathexplosion100
+    values:
+    - DeathExplosion100
+    - DeathExplosion100
+  - key: effect/deathexplosion50
+    values:
+    - DeathExplosion50
+    - DeathExplosion50
+  - key: effect/doubledamage
+    values:
+    - DoubleDamage
+    - DoubleDamage
+  - key: effect/hitamountboost
+    values:
+    - HitAmountBoost
+    - HitAmountBoost
+  - key: effect/instantdeath
+    values:
+    - InstantDeath
+    - InstantDeath
+  - key: effect/maxaoerangeup
+    values:
+    - MaxAoERangeUp
+    - MaxAoERangeUp
+  - key: effect/maxrangeup
+    values:
+    - MaxRangeUp
+    - MaxRangeUp
+  - key: effect/maxtargetup
+    values:
+    - MaxTargetUp
+    - MaxTargetUp
+  - key: effect/preparationcostreduction
+    values:
+    - PreparationCostReduction
+    - PreparationCostReduction
+  - key: effect/pull1
+    values:
+    - Pull1
+    - Pull1
+  - key: effect/push1
+    values:
+    - Push1
+    - Push1
+  - key: effect/push3
+    values:
+    - Push3
+    - Push3
+  - key: effect/quickdraw
+    values:
+    - QuickDraw
+    - QuickDraw
+  - key: effect/removeflyingstatus
+    values:
+    - RemoveFlyingStatus
+    - RemoveFlyingStatus
+  - key: effect/trajectorycontrol
+    values:
+    - TrajectoryControl
+    - TrajectoryControl
+  - key: currency/commandocredit
+    values:
+    - CommandoCredit
+    - CommandoCredit
+  - key: currency/paladincredit
+    values:
+    - PaladinCredit
+    - PaladinCredit
+  - key: currency/psycredit
+    values:
+    - PsyCredit
+    - PsyCredit
+  - key: currency/softcurrency
+    values:
+    - Soft Currency
+    - Soft Currency
+  - key: mission/day0tuto
+    values:
+    - Day0Tuto
+    - Day0Tuto
+  - key: mission/day1tuto
+    values:
+    - Day1Tuto
+    - Day1Tuto
+  - key: mission/day2tuto
+    values:
+    - Day2Tuto
+    - Day2Tuto
+  - key: mission/day3tuto
+    values:
+    - Day3Tuto
+    - Day3Tuto
+  - key: mission/day4tuto
+    values:
+    - Day4Tuto
+    - Day4Tuto
+  - key: mission/day5tuto
+    values:
+    - Day5Tuto
+    - Day5Tuto
+  - key: mission/day6tuto
+    values:
+    - Day6Tuto
+    - Day6Tuto
+  - key: mission/day7tuto
+    values:
+    - Day6Tuto
+    - Day6Tuto
+  - key: mission/mission1
+    values:
+    - Mission 1
+    - Mission 1
+  - key: mission/tuto
+    values:
+    - Tuto
+    - Tuto
+  - key: upgrade/hangarstructureupgrade
+    values:
+    - Hangar Structure upgrade
+    - Hangar Structure upgrade
+  - key: upgrade/recyclingstructureupgrade
+    values:
+    - Recyclingstructure
+    - Recyclingstructure
+  - key: upgrade/repairstationstructureupgrade
+    values:
+    - Repairstationstructure
+    - Repairstationstructure
+  - key: upgrade/shopstructureupgrade
+    values:
+    - Shopstructure
+    - Shopstructure
+  - key: status/burn1
+    values:
+    - Burn1
+    - Burn1
+  - key: status/doom
+    values:
+    - Doom
+    - Doom
+  - key: status/flying
+    values:
+    - Flying
+    - Flying
+  - key: status/marked
+    values:
+    - Marked
+    - Marked
+  - key: status/rooted
+    values:
+    - Rooted
+    - Rooted
+  - key: status/smoked
+    values:
+    - Smoked
+    - Smoked
+  - key: status/stun
+    values:
+    - Stun
+    - Stun
+  - key: unit/cheater_1
+    values:
+    - Cheater_1
+    - Cheater_1
+  - key: unit/com_ass
+    values:
+    - Com Ass
+    - Com Ass
+  - key: unit/com_boom
+    values:
+    - Com Boom
+    - Com Boom
+  - key: unit/com_tank
+    values:
+    - Com Tank
+    - Com Tank
+  - key: unit/cummy_optic
+    values:
+    - Cummy Optic
+    - Cummy Optic
+  - key: unit/cummy_radar
+    values:
+    - Cummy Radar
+    - Cummy Radar
+  - key: unit/cummy_thermic
+    values:
+    - Cummy Thermic
+    - Cummy Thermic
+  - key: unit/dummy_1
+    values:
+    - Dummy 1
+    - Dummy 1
+  - key: unit/dummy_2
+    values:
+    - Dummy 2
+    - Dummy 2
+  - key: unit/immortal_dummy
+    values:
+    - Immortal Dummy
+    - Immortal Dummy
+  - key: unit/immortal_wummy
+    values:
+    - Immortal Wummy
+    - Immortal Wummy
+  - key: unit/pal_shooting
+    values:
+    - Pal shooting
+    - Pal shooting
+  - key: unit/pal_tank
+    values:
+    - Pal tank
+    - Pal tank
+  - key: unit/pal_melee
+    values:
+    - Pal melee
+    - Pal melee
+  - key: unit/psy_mel
+    values:
+    - Psy Mel
+    - Psy Mel
+  - key: unit/psy_snper
+    values:
+    - Psy Snper
+    - Psy Snper
+  - key: unit/psy_tank
+    values:
+    - Psy Tank
+    - Psy Tank
+  - key: unit/start_melee
+    values:
+    - Start_Melee
+    - Start_Melee
+  - key: unit/start_shot
+    values:
+    - Start_Shot
+    - Start_Shot
+  - key: unit/start_status
+    values:
+    - Start_Status
+    - Start_Status
+  - key: unit/wummy_1
+    values:
+    - Wummy 1
+    - Wummy 1
+  - key: unit/wummy_2
+    values:
+    - Wummy 2
+    - Wummy 2

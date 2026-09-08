@@ -15,7 +15,7 @@ public class LevelButton : BaseButton
 	public void Init( MissionData _level )
 	{
 		m_level = _level;
-		m_name.text = _level.missionName;
+		m_name.text = _level.GetLocalizedName();
 	}
 
 	protected override void OnClick ()

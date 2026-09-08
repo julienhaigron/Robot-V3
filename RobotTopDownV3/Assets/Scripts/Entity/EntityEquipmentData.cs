@@ -128,7 +128,7 @@ public class EntityEquipmentData : AParsableScriptableObject
 			{
 				if (passiveEffects[i].enumID == EntityPassiveEffectEnumID.Unknown)
 					continue;
-				allStatesInString += GameAssets.current.game.entityEffects[passiveEffects[i].enumID].displayName + (i + 1 < passiveEffects.Length ? ", " : "");
+				allStatesInString += GameAssets.current.game.entityEffects[passiveEffects[i].enumID].GetLocalizedName() + (i + 1 < passiveEffects.Length ? ", " : "");
 			}
 			description.Add(new() { ID = SecondaryStat.StatType.PassiveEffect, floatValue = 0, stringValue = allStatesInString });
 		}
@@ -138,7 +138,7 @@ public class EntityEquipmentData : AParsableScriptableObject
 			for (int i = 0; i < knownedActions.Length; i++)
 			{
 				if(knownedActions[i] != EntityActionEnumID.Unknowned && GameAssets.current.game.entityActionsData.ContainsKey(knownedActions[i]))
-					allActionsInString += GameAssets.current.game.entityActionsData[knownedActions[i]].displayName + (i + 1 < knownedActions.Length ? ", " : "");
+					allActionsInString += GameAssets.current.game.entityActionsData[knownedActions[i]].GetLocalizedName() + (i + 1 < knownedActions.Length ? ", " : "");
 			}
 			description.Add(new() { ID = SecondaryStat.StatType.Action, floatValue = 0, stringValue = allActionsInString });
 		}

@@ -117,7 +117,7 @@ public class MissionPanel : AUIPanel
 
 		m_currentMissionHovered = _missionBtn;
 
-		m_currentMissionNameTMP.text = _missionBtn.MissionData.missionName;
+		m_currentMissionNameTMP.text = _missionBtn.MissionData.GetLocalizedName();
 		m_currentMissionDescriptionTMP.text = _missionBtn.MissionData.GetDescription();
 
 		for (int i = 0; i < m_componentRewardDisplays.Length; i++)

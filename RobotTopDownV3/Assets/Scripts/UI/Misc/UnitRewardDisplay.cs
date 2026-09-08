@@ -22,7 +22,7 @@ public class UnitRewardDisplay : MonoBehaviour
 	public void Init ( UnitPreset _unit, System.Action _onSelected, bool _isLockedOnSelected = false )
 	{
 		m_unitPreset = _unit;
-		m_nameTMP.text = _unit.displayName;
+		m_nameTMP.text = _unit.GetLocalizedName();
 		m_mainIcon.sprite = _unit.icon;
 		m_subIcon.sprite = GameAssets.current.ui.corporationsIcons[_unit.GetSavedData().GetDominentFaction(out float percentage)];
 

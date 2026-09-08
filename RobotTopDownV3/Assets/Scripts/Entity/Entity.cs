@@ -342,9 +342,9 @@ public class Entity : MonoBehaviour
 				int remainingDuration = m_remainingDurationToActiveStatuses.ContainsKey(status) ? m_remainingDurationToActiveStatuses[status]-- : 0;
 				status.ApplyStatusEffect(remainingDuration, this);
 
-				LogConsole.AddLog(m_data.name + " is affected by " + status.name + ", " + remainingDuration + " turns remaining"
+				LogConsole.AddLog(m_data.name + " is affected by " + status.GetLocalizedName() + ", " + remainingDuration + " turns remaining"
 					, LogConsole.LogEventType.Status
-					, new LogConsole.LogDetails("status_" + LogConsole.Instance.LogsDetails.Keys.Count, status.name, status.GetTooltip(remainingDuration)));
+					, new LogConsole.LogDetails("status_" + LogConsole.Instance.LogsDetails.Keys.Count, status.GetLocalizedName(), status.GetTooltip(remainingDuration)));
 			}
 		}
 

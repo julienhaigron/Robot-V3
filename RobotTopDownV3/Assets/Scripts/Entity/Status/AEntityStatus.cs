@@ -14,15 +14,15 @@ public abstract class AEntityStatus : ScriptableEnum<EntityStatusEnumID>
     public string GetTooltip ( int _remainingDuration )
     {
         System.Text.StringBuilder builder = new();
-        builder.AppendLine($"<b>{name}</b>");
+        builder.AppendLine($"<b>{this.GetLocalizedName()}</b>");
         builder.AppendLine($"Duration: {duration} turns");
         builder.AppendLine($"Remaining: {_remainingDuration} turns");
         if (doesNeedRoll)
             builder.AppendLine("Applied through a status roll");
-        if (!string.IsNullOrWhiteSpace(description))
+        if (!string.IsNullOrWhiteSpace(this.GetLocalizedDescription()))
         {
             builder.AppendLine();
-            builder.AppendLine(description);
+            builder.AppendLine(this.GetLocalizedDescription());
         }
 
         return builder.ToString();

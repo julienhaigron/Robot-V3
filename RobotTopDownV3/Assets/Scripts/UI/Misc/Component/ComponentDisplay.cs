@@ -78,7 +78,7 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 		switch (m_currentDisplayMode)
 		{
 			case DisplayMode.Hangar:
-				m_titleTMP.text = m_componentData == null ? null : m_componentData.displayName;
+				m_titleTMP.text = m_componentData == null ? null : m_componentData.GetLocalizedName();
 				m_titleTMP.gameObject.SetActive(true);
 				m_componentTypeIcon.gameObject.SetActive(false);
 				m_corpIcon.gameObject.SetActive(false);
@@ -91,7 +91,7 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 					m_rerollBtn.gameObject.SetActive(false);
 				break;
 			case DisplayMode.RepairStation:
-				m_titleTMP.text = m_componentData == null ? null : m_componentData.displayName;
+				m_titleTMP.text = m_componentData == null ? null : m_componentData.GetLocalizedName();
 				m_titleTMP.gameObject.SetActive(true);
 				m_componentTypeIcon.gameObject.SetActive(false);
 				m_corpIcon.gameObject.SetActive(true);
@@ -106,7 +106,7 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 					m_rerollBtn.gameObject.SetActive(false);
 				break;
 			case DisplayMode.RecyclingStation:
-				m_titleTMP.text = m_componentData == null ? null : m_componentData.displayName;
+				m_titleTMP.text = m_componentData == null ? null : m_componentData.GetLocalizedName();
 				m_titleTMP.gameObject.SetActive(true);
 				m_componentTypeIcon.gameObject.SetActive(false);
 				m_corpIcon.gameObject.SetActive(true);
@@ -121,7 +121,7 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 					m_rerollBtn.gameObject.SetActive(false);
 				break;
 			case DisplayMode.ShopBuying:
-				m_titleTMP.text = m_componentData == null ? null : m_componentData.displayName;
+				m_titleTMP.text = m_componentData == null ? null : m_componentData.GetLocalizedName();
 				m_titleTMP.gameObject.SetActive(true);
 				m_componentTypeIcon.gameObject.SetActive(true);
 				m_corpIcon.gameObject.SetActive(true);
@@ -136,7 +136,7 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 					m_rerollBtn.gameObject.SetActive(true);
 				break;
 			case DisplayMode.ShopSelling:
-				m_titleTMP.text = m_componentData == null ? null : m_componentData.displayName;
+				m_titleTMP.text = m_componentData == null ? null : m_componentData.GetLocalizedName();
 				m_titleTMP.gameObject.SetActive(false);
 				m_componentTypeIcon.gameObject.SetActive(false);
 				m_corpIcon.gameObject.SetActive(false);
@@ -292,7 +292,7 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 	public void OnPointerEnter ( PointerEventData eventData )
 	{
 		onDisplayHovered?.Invoke(this);
-		//ToolTipManager.Instance.Show(m_componentData.displayName, null);
+		//ToolTipManager.Instance.Show(m_componentData.GetLocalizedName(), null);
 	}
 
 	public void OnPointerExit ( PointerEventData eventData )

@@ -27,7 +27,7 @@ public class MissionButton : BaseButton, IPointerEnterHandler, IPointerExitHandl
 	public void Init( MissionDataEnumID _missionID )
 	{
 		m_missionData = GameAssets.current.game.missions[_missionID];
-		string title = m_missionData.missionName;
+		string title = m_missionData.GetLocalizedName();
 		string description = m_missionData.GetDescription();
 		m_name.text = title;
 		m_description.text = description;

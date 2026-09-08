@@ -135,7 +135,7 @@ public class EntityActionDisplay :
 			return;
 
 		EntityActionData data = m_recordedAction.action.Data;
-		ToolTipManager.Instance.Show(data.displayName, data.GetDescription());
+		ToolTipManager.Instance.Show(data.GetLocalizedName(), data.GetDescription());
 
 		if (m_selectedDisplay == this || TurnManager.Instance.currentPhase != TurnManager.TurnPhase.Recording)
 			return;

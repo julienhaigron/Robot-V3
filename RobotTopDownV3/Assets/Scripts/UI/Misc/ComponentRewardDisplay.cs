@@ -23,7 +23,7 @@ public class ComponentRewardDisplay : MonoBehaviour
     public void Init(EntityEquipmentData _component, System.Action _onSelected, bool _isLockedOnSelected = false )
 	{
         m_component = _component;
-        m_nameTMP.text = _component.displayName;
+        m_nameTMP.text = _component.GetLocalizedName();
         m_mainIcon.sprite = _component.icon;
         System.Tuple<CurrencyType, ulong> price = _component.GetPrice();
         m_priceTMP.text = price.Item2.ToString();
