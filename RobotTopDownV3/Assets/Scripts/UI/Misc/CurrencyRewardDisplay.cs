@@ -42,6 +42,17 @@ public class CurrencyRewardDisplay : MonoBehaviour
 		}
 	}
 
+	public void SetInteractable ( bool _isInteractable )
+	{
+		if (!_isInteractable)
+		{
+			m_onSelected = null;
+			m_btn.onClick = null;
+		}
+
+		m_btn.SetInteractability(_isInteractable);
+	}
+
 	private void OnClick ()
 	{
 		SetIsSelected(!m_isSelected);

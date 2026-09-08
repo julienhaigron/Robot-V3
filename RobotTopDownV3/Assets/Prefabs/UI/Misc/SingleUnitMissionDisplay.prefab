@@ -138,6 +138,7 @@ MonoBehaviour:
   m_selectBtn: {fileID: 2947557489960774983}
   m_selectGO: {fileID: 9126248270211719233}
   m_isDamagedGO: {fileID: 5679062670001985377}
+  m_hoveredGO: {fileID: 6513513592830421569}
 --- !u!1 &4815301400323809561
 GameObject:
   m_ObjectHideFlags: 0
@@ -459,8 +460,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: 163.5, y: 0}
-  m_SizeDelta: {x: 327, y: 53}
+  m_AnchoredPosition: {x: 190, y: 0}
+  m_SizeDelta: {x: 405.76, y: 60}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3095960479866814298
 CanvasRenderer:

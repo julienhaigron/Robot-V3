@@ -16,6 +16,7 @@ public class MissionPanel : AUIPanel
 	[Title("Squad")]
 	[SerializeField] private UnitMissionDisplay[] m_unitDisplays;
 	[SerializeField] private UnitMissionDisplay m_hoveredUnitDisplay;
+	[SerializeField] private SlidingDoors m_hoveredUnitDoors;
 	[SerializeField] private Image[] m_hoveredUnitComponentIcons;
 	[SerializeField] private StatDisplay[] m_hoveredUnitStatDisplays;
 
@@ -40,6 +41,9 @@ public class MissionPanel : AUIPanel
 	protected override void OnShowStarted ()
 	{
 		base.OnShowStarted();
+
+		if (m_hoveredUnitDoors != null)
+			m_hoveredUnitDoors.SetClosed(true, _isInstant: true);
 
 		RefreshMissionBtns();
 
@@ -122,6 +126,7 @@ public class MissionPanel : AUIPanel
 			{
 				m_componentRewardDisplays[i].Show();
 				m_componentRewardDisplays[i].Init(_missionBtn.MissionData.equipmentRewards[i], null);
+				m_componentRewardDisplays[i].SetInteractable(false);
 			}
 			else
 				m_componentRewardDisplays[i].Hide();
@@ -134,6 +139,7 @@ public class MissionPanel : AUIPanel
 			{
 				m_currencyRewardDisplays[i].Show();
 				m_currencyRewardDisplays[i].Init(_missionBtn.MissionData.currencyRewards[i].type, _missionBtn.MissionData.currencyRewards[i].amount, true, null);
+				m_currencyRewardDisplays[i].SetInteractable(false);
 			}
 			else
 				m_currencyRewardDisplays[i].Hide();
@@ -163,11 +169,20 @@ public class MissionPanel : AUIPanel
 		if (_display == null || _display.Data == null)
 			return;
 
+		if (m_hoveredUnitDoors == null)
+			RefreshHoveredUnit(_display);
+		else
+			m_hoveredUnitDoors.CloseThenOpen(() => RefreshHoveredUnit(_display));
+	}
+
+	private void RefreshHoveredUnit ( UnitMissionDisplay _display )
+	{
 		m_hoveredUnitDisplay.Init(_display.Data, _display.Index, false);
 
 		//set unit stats
 		SerializableDictionary<EntityEquipmentData.SecondaryStat.StatType, EntityEquipmentData.StatDescription> statsDescriptions = _display.Data.GetStatsDesciptions();
-		List<EntityEquipmentData.SecondaryStat.StatType> keys = statsDescriptions.Keys.ToList();
+		List<EntityEquipmentData.SecondaryStat.StatType> keys = UIManager.Instance.GetPanel<EntityConfigPanel>().GetDisplayedStats(statsDescriptions);
+
 		for (int i = 0; i < m_hoveredUnitStatDisplays.Length; i++)
 		{
 			if (keys.Count <= i)

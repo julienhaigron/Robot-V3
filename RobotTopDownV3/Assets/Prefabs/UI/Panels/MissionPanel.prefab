@@ -270,6 +270,7 @@ MonoBehaviour:
   - {fileID: 7183068758074808623}
   - {fileID: 7170485976077879698}
   m_hoveredUnitDisplay: {fileID: 1188773111849443639}
+  m_hoveredUnitDoors: {fileID: 0}
   m_hoveredUnitComponentIcons:
   - {fileID: 9005291039548866840}
   - {fileID: 7942094007300162633}
@@ -1846,6 +1847,41 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: -540}
   m_SizeDelta: {x: 0, y: 1080}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1 &4298396942791646598
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7893772573306031845}
+  m_Layer: 5
+  m_Name: SlidingDoors
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &7893772573306031845
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4298396942791646598}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7066927531268383511}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &5034073819523435279
 GameObject:
   m_ObjectHideFlags: 0
@@ -2622,6 +2658,7 @@ RectTransform:
   - {fileID: 5398772638647569351}
   - {fileID: 7530420006200000618}
   - {fileID: 3841080285625948448}
+  - {fileID: 7893772573306031845}
   m_Father: {fileID: 6439162501826373345}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}

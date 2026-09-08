@@ -3,7 +3,7 @@ using TMPro;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
-public class UnitMissionDisplay : MonoBehaviour, IPointerEnterHandler
+public class UnitMissionDisplay : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
 	public static System.Action<UnitMissionDisplay> onAnyUnitHovered;
 
@@ -14,6 +14,7 @@ public class UnitMissionDisplay : MonoBehaviour, IPointerEnterHandler
 	[SerializeField] private BaseButton m_selectBtn;
 	[SerializeField] private GameObject m_selectGO;
 	[SerializeField] private GameObject m_isDamagedGO;
+	[SerializeField] private GameObject m_hoveredGO;
 
 	private int m_index;
 	public int Index => m_index;
@@ -78,6 +79,18 @@ public class UnitMissionDisplay : MonoBehaviour, IPointerEnterHandler
 
 	public void OnPointerEnter ( PointerEventData eventData )
 	{
+		SetHovered(true);
 		onAnyUnitHovered?.Invoke(this);
+	}
+
+	public void OnPointerExit ( PointerEventData eventData )
+	{
+		SetHovered(false);
+	}
+
+	public void SetHovered ( bool _isHovered )
+	{
+		if (m_hoveredGO != null)
+			m_hoveredGO.SetActive(_isHovered);
 	}
 }

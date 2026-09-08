@@ -108,9 +108,7 @@ public abstract class AEntityAction : INetworkSerializable
 
 	public bool IsMissingTarget ()
 	{
-		return Data.targetType != EntityActionData.TargetType.Self
-			&& !Data.DoesResolveItsOwnTarget()
-			&& (targetTileIDs == null || targetTileIDs.Length == 0);
+		return Data.DoesNeedATargetTile() && (targetTileIDs == null || targetTileIDs.Length == 0);
 	}
 
 	public void DisplayAoEPreviewOnHoveredTile ()

@@ -79,14 +79,20 @@ public class EntityConfigPanel : AUIPanel
 			pair.Value.onClick = () => OnToggleComponentType(pair.Key);
 		m_displayedEquipmentTypes.AddRange(m_componentTypeFilterBtnDictionary.Keys);
 
-		m_unitNameInputField.onSubmit.AddListener(( string s ) => OnInputFieldChange());
-		m_unitNameInputField.onEndTextSelection.AddListener(( string s, int i, int j ) => OnInputFieldChange());
+		m_unitNameInputField.onEndEdit.AddListener(( string s ) => OnInputFieldChange());
 		m_renameBtn.onClick += OnClickRenameBtn;
 	}
 
 	protected override void OnShowStarted ()
 	{
 		base.OnShowStarted();
+	}
+
+	protected override void OnHideStarted ()
+	{
+		base.OnHideStarted();
+
+		OnInputFieldChange();
 	}
 
 	protected override void OnHideFinished ()
@@ -264,18 +270,7 @@ public class EntityConfigPanel : AUIPanel
 
 		//set unit stats
 		SerializableDictionary<EntityEquipmentData.SecondaryStat.StatType, EntityEquipmentData.StatDescription> statsDescriptions = m_entityData.GetStatsDesciptions();
-		List<EntityEquipmentData.SecondaryStat.StatType> keys = statsDescriptions.Keys.ToList();
-		foreach (EntityEquipmentData.SecondaryStat.StatType stat in keys.ToArray())
-		{
-			bool conditionalPredicate = m_displayConditionalStatsFilter.Contains(stat)
-				&& ((statsDescriptions[stat].floatValue != 0 && (statsDescriptions[stat].Format == EntityEquipmentData.SecondaryStat.StatTypeFormat.Int || statsDescriptions[stat].Format == EntityEquipmentData.SecondaryStat.StatTypeFormat.Percentage || statsDescriptions[stat].Format == EntityEquipmentData.SecondaryStat.StatTypeFormat.Cell))
-				|| (statsDescriptions[stat].Format == EntityEquipmentData.SecondaryStat.StatTypeFormat.String));
-			bool staticPredicate = m_displayStaticStatsFilter.Contains(stat);
-			if (!conditionalPredicate && !staticPredicate)
-				keys.Remove(stat);
-		}
-		List<EntityEquipmentData.SecondaryStat.StatType> order = GameConfig.current.ui.statsDisplayOrder.ToList();
-		keys.OrderByDescending(e => order.IndexOf(e));
+		List<EntityEquipmentData.SecondaryStat.StatType> keys = GetDisplayedStats(statsDescriptions);
 		for (int i = 0; i < m_unitStatDisplays.Length; i++)
 		{
 			if (keys.Count <= i)
@@ -551,8 +546,35 @@ public class EntityConfigPanel : AUIPanel
 		RefreshVisuals();
 	}
 
+	public List<EntityEquipmentData.SecondaryStat.StatType> GetDisplayedStats ( SerializableDictionary<EntityEquipmentData.SecondaryStat.StatType, EntityEquipmentData.StatDescription> _statsDescriptions )
+	{
+		List<EntityEquipmentData.SecondaryStat.StatType> keys = _statsDescriptions.Keys.ToList();
+
+		foreach (EntityEquipmentData.SecondaryStat.StatType stat in keys.ToArray())
+		{
+			bool conditionalPredicate = m_displayConditionalStatsFilter.Contains(stat)
+				&& ((_statsDescriptions[stat].floatValue != 0 && (_statsDescriptions[stat].Format == EntityEquipmentData.SecondaryStat.StatTypeFormat.Int || _statsDescriptions[stat].Format == EntityEquipmentData.SecondaryStat.StatTypeFormat.Percentage || _statsDescriptions[stat].Format == EntityEquipmentData.SecondaryStat.StatTypeFormat.Cell))
+				|| (_statsDescriptions[stat].Format == EntityEquipmentData.SecondaryStat.StatTypeFormat.String));
+			bool staticPredicate = m_displayStaticStatsFilter.Contains(stat);
+			if (!conditionalPredicate && !staticPredicate)
+				keys.Remove(stat);
+		}
+
+		List<EntityEquipmentData.SecondaryStat.StatType> order = GameConfig.current.ui.statsDisplayOrder.ToList();
+		return keys.OrderBy(e => order.IndexOf(e) < 0 ? int.MaxValue : order.IndexOf(e)).ToList();
+	}
+
 	private void OnInputFieldChange ()
 	{
+		if (m_entityData == null)
+			return;
+
+		if (string.IsNullOrWhiteSpace(m_unitNameInputField.text))
+		{
+			m_unitNameInputField.SetTextWithoutNotify(m_entityData.name);
+			return;
+		}
+
 		m_entityData.name = m_unitNameInputField.text;
 	}
 

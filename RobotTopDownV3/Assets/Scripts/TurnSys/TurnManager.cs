@@ -488,7 +488,7 @@ public class TurnManager : Singleton<TurnManager>
 	/// </summary>
 	public bool TryRegisterActionWithoutTarget ()
 	{
-		if (hasModActionSelected || m_currentEntityAction == null || !m_currentEntityAction.Data.DoesResolveItsOwnTarget())
+		if (hasModActionSelected || m_currentEntityAction == null || m_currentEntityAction.Data.DoesNeedATargetTile())
 			return false;
 
 		int performingEntityID = m_currentEntityAction.performingEntityID;

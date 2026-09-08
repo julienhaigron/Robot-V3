@@ -170,6 +170,13 @@ public class EntityActionData : AParsableScriptableObject
 			&& (mainType == MainActionType.Attack || mainType == MainActionType.Special);
 	}
 
+	public bool DoesNeedATargetTile ()
+	{
+		return targetType != TargetType.Self
+			&& codeType != ActionCodeType.Wait
+			&& !DoesResolveItsOwnTarget();
+	}
+
 	public MainActionType GetMainActionType ()
 	{
 		switch (type)
