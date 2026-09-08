@@ -821,7 +821,7 @@ public class GridManager : Singleton<GridManager>
 
 		float highestCoverValue = -1;
 
-		List<Tile> tilesInLine = GetTilesInRay(Tiles[attackerPosition], Tiles[defenderPosition], _didAttackerWinPFC, true);
+		List<Tile> tilesInLine = GetLineOfSightPath(Tiles[attackerPosition], Tiles[defenderPosition]);
 		foreach (Tile tile in tilesInLine)
 		{
 			if (GameConfig.current.game.coverBonusPerGroundType.ContainsKey(tile.GroundType))
