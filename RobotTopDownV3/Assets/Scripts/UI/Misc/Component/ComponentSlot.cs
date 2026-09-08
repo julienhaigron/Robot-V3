@@ -89,14 +89,16 @@ public class ComponentSlot : ComponentContainer
 
     public void Cleanup ()
     {
-        if(m_currentDisplay != null)
-		{
+        if (m_currentDisplay != null)
             Destroy(m_currentDisplay.gameObject);
-            m_currentDisplay = null;
-            m_equipmentData = null;
-            m_equipmentSavedData = null;
-            m_unitData = null;
-        }
+
+        m_currentDisplay = null;
+        m_equipmentData = null;
+        m_equipmentSavedData = null;
+        m_unitData = null;
+
+        if (m_timerTMP != null)
+            m_timerTMP.text = "";
     }
 
     #region DnD

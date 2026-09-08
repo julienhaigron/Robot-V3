@@ -166,7 +166,7 @@ public class MissionPanel : AUIPanel
 
 	private void OnAnyUnitHovered ( UnitMissionDisplay _display )
 	{
-		if (_display == null || _display.Data == null)
+		if (_display == null || _display == m_hoveredUnitDisplay || _display.Data == null)
 			return;
 
 		if (m_hoveredUnitDoors == null)

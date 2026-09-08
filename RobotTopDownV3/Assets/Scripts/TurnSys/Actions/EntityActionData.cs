@@ -301,6 +301,8 @@ public class EntityActionData : AParsableScriptableObject
 		else
 		{
 			description += "Target: " + maxTargetAmount + " " + targetType + "\n";
+			if (DoesResolveItsOwnTarget())
+				description += "Automatic target\n";
 			description += aoeType != AOEType.Noone ? "AoE: " + aoeType + " of range " + aoeMinEffectRange + "-" + aoeMaxEffectRange + ":\n" : "";
 			if (mainType == MainActionType.Attack) 
 				description += "Hit amount: " + hitAmount + ":\n";

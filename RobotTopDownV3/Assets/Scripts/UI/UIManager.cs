@@ -250,6 +250,9 @@ public sealed class UIManager : SingletonPersistant<UIManager>
 			}
 		}
 
+		if (currentPanel != null)
+			currentPanel.CanClick = false;
+
 		popup.SetCanvasEnable(true);
 		popup.ShowWindow(_delay, _instant);
 		SetActivePopup(popup);
@@ -313,6 +316,8 @@ public sealed class UIManager : SingletonPersistant<UIManager>
 		_popup.SetCanvasEnable(false);
 		if (this.currentPanel.CanvasEnabled == false)
 			this.currentPanel.SetCanvasEnable(true);
+
+		this.currentPanel.CanClick = true;
 
 		if (m_succesivePopups.Count > 0)
 		{

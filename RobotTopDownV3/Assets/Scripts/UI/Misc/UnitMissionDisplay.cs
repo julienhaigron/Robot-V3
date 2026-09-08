@@ -41,11 +41,13 @@ public class UnitMissionDisplay : MonoBehaviour, IPointerEnterHandler, IPointerE
 
 	public void Show ()
 	{
+		SetHovered(false);
 		gameObject.SetActive(true);
 	}
 
 	public void Hide ()
 	{
+		SetHovered(false);
 		gameObject.SetActive(false);
 	}
 
@@ -91,6 +93,6 @@ public class UnitMissionDisplay : MonoBehaviour, IPointerEnterHandler, IPointerE
 	public void SetHovered ( bool _isHovered )
 	{
 		if (m_hoveredGO != null)
-			m_hoveredGO.SetActive(_isHovered);
+			m_hoveredGO.SetActive(_isHovered && UIManager.Instance.currentPanel is MissionPanel or TournamentPanel);
 	}
 }

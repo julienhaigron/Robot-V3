@@ -17,6 +17,8 @@ public class Projectile : PoolElement
 	private float m_lastPlanarDistanceToDestination = float.MaxValue;
 	private Action m_onDespawnNoEntityHit;
 	private bool m_didHitSomething = false;
+	private Vector3 m_launchDestination;
+	private Tile m_launchTargetTile;
 
 	private void Reset ()
 	{
@@ -78,10 +80,10 @@ public class Projectile : PoolElement
 	}
 	private void FixedUpdate ()
 	{
-		if (!m_isInit || m_rb.isKinematic || !m_projectileData.HasValidTarget)
+		if (!m_isInit || m_rb.isKinematic)
 			return;
 
-		Vector3 destination = m_projectileData.Destination;
+		Vector3 destination = m_projectileData.HasValidTarget ? m_projectileData.Destination : m_launchDestination;
 		float planarDistance = Vector2.Distance(new Vector2(transform.position.x, transform.position.z)
 			, new Vector2(destination.x, destination.z));
 
@@ -95,6 +97,12 @@ public class Projectile : PoolElement
 	}
 
 	private Tile GetTargetTile ()
+	{
+		Tile liveTargetTile = GetLiveTargetTile();
+		return liveTargetTile != null ? liveTargetTile : m_launchTargetTile;
+	}
+
+	private Tile GetLiveTargetTile ()
 	{
 		switch (m_projectileData.targetType)
 		{
@@ -188,6 +196,8 @@ public class Projectile : PoolElement
 	{
 		m_projectileData = _projectileData;
 		m_lastPlanarDistanceToDestination = float.MaxValue;
+		m_launchTargetTile = GetLiveTargetTile();
+		m_launchDestination = m_projectileData.HasValidTarget ? m_projectileData.Destination : transform.position;
 
 		bool isOwnerHidden = m_projectileData.owner != null
 			&& !m_projectileData.owner.IsAlliedTo(GameManager.Instance.PlayerID)

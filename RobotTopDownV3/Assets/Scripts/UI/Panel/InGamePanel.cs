@@ -28,9 +28,14 @@ public sealed class InGamePanel : AUIPanel
 	[SerializeField] private TutoConsole m_tutoConsole;
 	public TutoConsole TutoConsole => m_tutoConsole;
 
+	[Title("Sounds")]
+	[SerializeField] private SfxId m_onActionAddedSfxID = SfxId.None;
+
 	[Title("Animations")]
 	[SerializeField] private SerializableDictionary<RectTransform, AnchoredPositions> m_sectionPlacementsDictionary;
 	[SerializeField] private float m_animationDuration = .5f;
+
+	private int m_lastActionAddedSfxFrame = -1;
 
 	[Serializable]
 	public class AnchoredPositions
@@ -44,14 +49,30 @@ public sealed class InGamePanel : AUIPanel
 	{
 		TurnManager.onStartInputPhase += OnStartInputPhase;
 		TurnManager.onEndInputPhase += OnEndInputPhase;
+		TurnManager.onActionAdded += OnActionAdded;
 		PlayerController.onEntitySelected += OnEntitySelected;
 		m_endPhaseButton.onClick += OnClickEndPhaseBtn;
+	}
+
+	private void OnActionAdded ( TurnManager.RecordedAction _recordedAction )
+	{
+		if (m_onActionAddedSfxID == SfxId.None || TurnManager.Instance.currentPhase != TurnManager.TurnPhase.Recording
+			|| m_lastActionAddedSfxFrame == Time.frameCount)
+			return;
+
+		Entity performingEntity = GameManager.Instance.GetEntityFromID(_recordedAction.performingEntityID);
+		if (performingEntity == null || !performingEntity.IsAlliedTo(GameManager.Instance.PlayerID))
+			return;
+
+		m_lastActionAddedSfxFrame = Time.frameCount;
+		SoundManager.Instance.Play(m_onActionAddedSfxID);
 	}
 
 	private void OnDestroy ()
 	{
 		TurnManager.onStartInputPhase -= OnStartInputPhase;
 		TurnManager.onEndInputPhase -= OnEndInputPhase;
+		TurnManager.onActionAdded -= OnActionAdded;
 		PlayerController.onEntitySelected -= OnEntitySelected;
 		m_endPhaseButton.onClick -= OnClickEndPhaseBtn;
 	}

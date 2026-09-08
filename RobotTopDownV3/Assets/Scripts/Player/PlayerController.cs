@@ -249,6 +249,20 @@ public class PlayerController : Singleton<PlayerController>
 			&& viewportPosition.y >= m_centerOnEntityViewportMargin && viewportPosition.y <= 1f - m_centerOnEntityViewportMargin;
 	}
 
+	private Vector3 GetCameraFocusOffset ( float _groundHeight )
+	{
+		Ray centerRay = CameraManager.Instance.Camera.ViewportPointToRay(new Vector3(.5f, .5f, 0f));
+		Plane groundPlane = new Plane(Vector3.up, new Vector3(0f, _groundHeight, 0f));
+
+		if (!groundPlane.Raycast(centerRay, out float distance))
+			return Vector3.zero;
+
+		Vector3 focusPoint = centerRay.GetPoint(distance);
+		Vector3 parentPosition = CameraManager.Instance.CameraParent.transform.position;
+
+		return new Vector3(focusPoint.x - parentPosition.x, 0f, focusPoint.z - parentPosition.z);
+	}
+
 	private void CenterCameraOn ( Entity _entity )
 	{
 		if (_entity == null || !CanControlCamera())
@@ -259,7 +273,8 @@ public class PlayerController : Singleton<PlayerController>
 			return;
 
 		Vector3 cameraPosition = CameraManager.Instance.CameraParent.transform.position;
-		Vector3 targetPosition = ClampToCameraBounds(new Vector3(entityPosition.x, cameraPosition.y, entityPosition.z));
+		Vector3 focusOffset = GetCameraFocusOffset(entityPosition.y);
+		Vector3 targetPosition = ClampToCameraBounds(new Vector3(entityPosition.x - focusOffset.x, cameraPosition.y, entityPosition.z - focusOffset.z));
 
 		if (m_cameraMoveTween.IsActive())
 			m_cameraMoveTween.Kill();
@@ -601,6 +616,7 @@ public class PlayerController : Singleton<PlayerController>
 
 	private void OnEndInputPhase ()
 	{
+		SetInteractableOutlinesHidden(false);
 		SelectEntity(null);
 		ClearActionOnTileDisplay();
 		ClearGhostActionOnTileDisplay();
