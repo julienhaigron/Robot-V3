@@ -166,7 +166,7 @@ public class TutoConsole : MonoBehaviour
 	private void DisplayCurrentLine ()
 	{
 		DialogueData.Line line = m_currentDialogueData.dialogue.lines[m_currentLineIndex];
-		TutorialHighlightZone highlightZone = string.IsNullOrEmpty(m_currentDialogueData.highlightedZoneId) ? null : FTUEManager.Instance.RegisterdTutorialHighlightZones[m_currentDialogueData.highlightedZoneId];
+		FTUEManager.Instance.TryGetTutorialHighlightZone(m_currentDialogueData.highlightedZoneId, out TutorialHighlightZone highlightZone);
 		if (m_currentLineIndex == 0 && highlightZone != null)
 		{
 
@@ -208,8 +208,8 @@ public class TutoConsole : MonoBehaviour
 		m_dialogueTMP.text = "";
 		m_dialogueImg.sprite = null;
 
-		if (!string.IsNullOrEmpty(m_currentDialogueData.highlightedZoneId))
-			FTUEManager.Instance.RegisterdTutorialHighlightZones[m_currentDialogueData.highlightedZoneId].Hide();
+		if (FTUEManager.Instance.TryGetTutorialHighlightZone(m_currentDialogueData.highlightedZoneId, out TutorialHighlightZone endedZone))
+			endedZone.Hide();
 
 		if (m_onDialogueEnded != null)
 		{

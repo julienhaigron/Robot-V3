@@ -41,13 +41,45 @@ public class FTUEManager : SingletonPersistant<FTUEManager>
 
 	public void AddTutorialHighlightZone ( TutorialHighlightZone _highlightZone )
 	{
-		if (m_registerdTutorialHighlightZones.ContainsKey(_highlightZone.ID))
-		{
-			Debug.LogError("this highlightZone has the same ID has another one. ID = " + _highlightZone.ID, _highlightZone.gameObject);
+		if (_highlightZone == null || string.IsNullOrEmpty(_highlightZone.ID))
 			return;
+
+		if (m_registerdTutorialHighlightZones.TryGetValue(_highlightZone.ID, out TutorialHighlightZone registeredZone))
+		{
+			if (registeredZone == _highlightZone)
+				return;
+
+			if (registeredZone != null)
+			{
+				Debug.LogError("this highlightZone has the same ID has another one. ID = " + _highlightZone.ID, _highlightZone.gameObject);
+				return;
+			}
 		}
 
-		m_registerdTutorialHighlightZones.Add(_highlightZone.ID, _highlightZone);
+		m_registerdTutorialHighlightZones[_highlightZone.ID] = _highlightZone;
+	}
+
+	//A zone registers from its Awake, which only runs the first time its panel is activated - UIManager
+	//deactivates every window on load - so one in a panel never opened yet is simply not in the dictionary.
+	public bool TryGetTutorialHighlightZone ( string _id, out TutorialHighlightZone _zone )
+	{
+		_zone = null;
+
+		//A dialogue with no highlight passes an empty id, and TryGetValue throws on a null key.
+		if (string.IsNullOrEmpty(_id))
+			return false;
+
+		if (m_registerdTutorialHighlightZones.TryGetValue(_id, out _zone) && _zone != null)
+			return true;
+
+		RefreshTutorialHighlightZones();
+		return m_registerdTutorialHighlightZones.TryGetValue(_id, out _zone) && _zone != null;
+	}
+
+	public void RefreshTutorialHighlightZones ()
+	{
+		foreach (TutorialHighlightZone zone in FindObjectsByType<TutorialHighlightZone>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+			AddTutorialHighlightZone(zone);
 	}
 
 
