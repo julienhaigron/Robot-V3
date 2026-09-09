@@ -82,6 +82,12 @@ public class ObjectsPooling : SingletonPersistant<ObjectsPooling>
 	private void OnDiscarded ( PoolElement _element )
 	{
 		_element.gameObject.SetActive(false);
+
+		//A discarded element that stays under the transform its user parented it to keeps that sibling index,
+		//and SetParent to an already-current parent does not move it - so it comes back in the wrong slot.
+		if (m_everyPoolTfm.TryGetValue(_element.Pool, out Transform poolParent) && _element.transform.parent != poolParent)
+			_element.transform.SetParent(poolParent, false);
+
 		m_availablePoolElements[_element.Pool].Push(_element);
 	}
 

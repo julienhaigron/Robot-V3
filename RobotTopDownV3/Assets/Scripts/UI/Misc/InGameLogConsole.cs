@@ -48,6 +48,12 @@ public class InGameLogConsole : MonoBehaviour
 		if (m_visibleEventType.Contains(_newLog.eventType))
 			m_consoleTMP.text += _newLog.ToString();
 	}*/
+	public void Init ()
+	{
+		ClearVisibleLogs();
+		LogConsole.Clear();
+	}
+
 	private void OnLogAdded ( LogConsole.Log _newLog )
 	{
 		if (!m_visibleEventType.Contains(_newLog.eventType))
@@ -55,6 +61,7 @@ public class InGameLogConsole : MonoBehaviour
 
 		LogPoolElement elem = ObjectsPooling.GetElement(m_logTmpPoolData) as LogPoolElement;
 		elem.transform.SetParent(m_content, false);
+		elem.transform.SetAsLastSibling();
 		elem.Init(_newLog.ToString());
 		m_visibleLogs.Enqueue(elem);
 
@@ -69,6 +76,11 @@ public class InGameLogConsole : MonoBehaviour
 	}
 
 	private void OnEndLevel ()
+	{
+		ClearVisibleLogs();
+	}
+
+	private void ClearVisibleLogs ()
 	{
 		while (m_visibleLogs.Count > 0)
 			m_visibleLogs.Dequeue().Discard();

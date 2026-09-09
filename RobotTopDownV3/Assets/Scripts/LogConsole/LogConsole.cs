@@ -38,6 +38,13 @@ public class LogConsole : SingletonPersistant<LogConsole>
 		}
 	}
 
+	public static void Clear ()
+	{
+		Instance.m_allLogs.Clear();
+		Instance.m_logs.Clear();
+		Instance.m_logsDetails.Clear();
+	}
+
 	public static void AddLog (string _message, LogEventType _eventType, LogDetails _details = null )
 	{
 		Log newLog = new Log(_message, _eventType, _details);

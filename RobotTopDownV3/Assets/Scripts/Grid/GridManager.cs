@@ -845,7 +845,9 @@ public class GridManager : Singleton<GridManager>
 		int defenderPosition = GetExchangePositionID(_to, _didAttackerWinPFC);
 		int hitOrientation = GetClosestOrientation(m_tiles[attackerPosition], m_tiles[defenderPosition]);
 		int targetOrientation = _to.Displacement.CurrentOrientation;
-		int delta = (hitOrientation - targetOrientation + 6) % 6;
+		//hitOrientation points attacker -> target, so the side the shot lands on is read from the opposite
+		//direction: facing the same way as the shot means the target has its back to it.
+		int delta = (hitOrientation + 3 - targetOrientation + 6) % 6;
 
 		switch (delta)
 		{

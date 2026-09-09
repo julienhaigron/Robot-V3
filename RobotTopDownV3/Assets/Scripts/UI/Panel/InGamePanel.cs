@@ -89,6 +89,7 @@ public sealed class InGamePanel : AUIPanel
 	{
 		m_squadUnitDisplayList.Init();
 		RefreshVisual(false, true);
+		m_logConsole.Init();
 		m_tutoConsole.Init();
 		m_entityActionList.Init();
 		m_actionQueue.Init();

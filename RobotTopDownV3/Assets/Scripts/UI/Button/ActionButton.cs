@@ -118,10 +118,24 @@ public class ActionButton : BaseButton, IPointerEnterHandler, IPointerExitHandle
 
 		Select();
 		TurnManager.Instance.SetCurrentActionSelected(m_actionType, m_linkedEquipmentData, true);
+		ForceNoAIChangeOnNonMovementAction();
 		if (TurnManager.Instance.TryRegisterActionWithoutTarget())
 			DisplayRangePreview(GameAssets.current.game.entityActionsData[m_actionType]);
 
 		base.OnClick();
+	}
+
+	private void ForceNoAIChangeOnNonMovementAction ()
+	{
+		Entity selectedEntity = PlayerController.Instance.SelectedEntity;
+		if (selectedEntity == null || !selectedEntity.KnownedStates.Contains(Entity.EntityState.NoAIChange))
+			return;
+
+		EntityActionData movementAction = selectedEntity.AI.GetMovementAction();
+		if (movementAction != null && movementAction.enumID == m_actionType)
+			return;
+
+		TurnManager.Instance.SetCurrentStateSelected(Entity.EntityState.NoAIChange);
 	}
 
 	public void Select ()
