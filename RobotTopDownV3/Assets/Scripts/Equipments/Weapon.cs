@@ -403,27 +403,31 @@ public class Weapon : MonoBehaviour
 					-1f
 				);
 
-			float damage =
-				baseDamage
-				* actionFactor
-				* (1 + typeBuff)
-				* (1 + categoryBuff)
-				* (1 + generalDamage)
-				* (1 + flankBonus)
-				* (1 + finalBonus);
+			detailsBuilder.AppendLine("<b>" + pair.Key.GetLocalizedTitle() + "</b>");
+			detailsBuilder.AppendLine(string.Format(localization.Get(LocalizationKey.damage_detail_base), baseDamage));
+
+			float damage = baseDamage * actionFactor;
+			detailsBuilder.AppendFactorLine(LocalizationKey.damage_detail_action_factor, actionFactor, damage);
+
+			damage *= 1 + typeBuff;
+			detailsBuilder.AppendPercentLine(LocalizationKey.damage_detail_type_modifier, typeBuff, damage);
+
+			damage *= 1 + categoryBuff;
+			detailsBuilder.AppendPercentLine(LocalizationKey.damage_detail_category_modifier, categoryBuff, damage);
+
+			damage *= 1 + generalDamage;
+			detailsBuilder.AppendPercentLine(LocalizationKey.damage_detail_general_modifier, generalDamage, damage);
+
+			damage *= 1 + flankBonus;
+			detailsBuilder.AppendPercentLine(LocalizationKey.damage_detail_flank_modifier, flankBonus, damage);
+
+			damage *= 1 + finalBonus;
+			detailsBuilder.AppendPercentLine(LocalizationKey.damage_detail_final_modifier, finalBonus, damage);
 
 			int finalDamage = Mathf.RoundToInt(damage);
 
 			damages.Add(pair.Key, finalDamage);
 
-			detailsBuilder.AppendLine("<b>" + pair.Key.GetLocalizedTitle() + "</b>");
-			detailsBuilder.AppendLine(string.Format(localization.Get(LocalizationKey.damage_detail_base), baseDamage));
-			detailsBuilder.AppendLine(string.Format(localization.Get(LocalizationKey.damage_detail_action_factor), actionFactor));
-			detailsBuilder.AppendLine(string.Format(localization.Get(LocalizationKey.damage_detail_type_modifier), typeBuff.ToString("+0.##;-0.##;0")));
-			detailsBuilder.AppendLine(string.Format(localization.Get(LocalizationKey.damage_detail_category_modifier), categoryBuff.ToString("+0.##;-0.##;0")));
-			detailsBuilder.AppendLine(string.Format(localization.Get(LocalizationKey.damage_detail_general_modifier), generalDamage.ToString("+0.##;-0.##;0")));
-			detailsBuilder.AppendLine(string.Format(localization.Get(LocalizationKey.damage_detail_flank_modifier), flankBonus.ToString("+0.##;-0.##;0")));
-			detailsBuilder.AppendLine(string.Format(localization.Get(LocalizationKey.damage_detail_final_modifier), finalBonus.ToString("+0.##;-0.##;0")));
 			detailsBuilder.AppendLine(string.Format(localization.Get(LocalizationKey.damage_detail_final), finalDamage));
 			detailsBuilder.AppendLine();
 		}

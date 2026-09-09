@@ -352,7 +352,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 		if (GridManager.Instance.IsThereBlockingWallBetween(_attackAction.PerformingEntity, _targetEntity, doesWinPFC, out _coverTile))
 		{
 			LogConsole.AddLog(string.Format(LocalizationManager.Instance.Get(LocalizationKey.log_wall_blocks)
-				, m_linkedEntity.Data.name, _targetEntity.Data.name, _coverTile.coordinates.ID), LogConsole.LogEventType.AttackRoll);
+				, m_linkedEntity.Data.name, _targetEntity.Data.name), LogConsole.LogEventType.AttackRoll);
 			return false;
 		}
 
@@ -399,41 +399,29 @@ public class EntityEquipmentPlugin : EntityPlugin
 		if (isAttackSuccessful || !isThereCoverBetween || roll < (1-GameConfig.current.game.entityCoverBonus))
 			_coverTile = null;
 
-				LocalizationManager localization = LocalizationManager.Instance;
+		LocalizationManager localization = LocalizationManager.Instance;
 		StringBuilder detailsBuilder = new();
 		detailsBuilder.AppendLine(string.Format(localization.Get(LocalizationKey.roll_header), m_linkedEntity.Data.name, _targetEntity.Data.name));
 		detailsBuilder.AppendLine();
-		detailsBuilder.AppendLine(localization.Get(LocalizationKey.roll_attacker_section));
-		detailsBuilder.AppendLine(string.Format(localization.Get(LocalizationKey.roll_aim), userAim.ToString("+0.##;-0.##;0")));
-
-		if (flankBonus != 0)
-			detailsBuilder.AppendLine(string.Format(localization.Get(LocalizationKey.roll_flank_bonus), flankBonus.ToString("+0.##;-0.##;0")));
-
-		if (modAction != 0)
-			detailsBuilder.AppendLine(string.Format(localization.Get(LocalizationKey.roll_action_modifier), modAction.ToString("+0.##;-0.##;0")));
-
-		detailsBuilder.AppendLine(string.Format(localization.Get(LocalizationKey.roll_total_hit_score), userHitScore.ToString("F2")));
+		detailsBuilder.AppendLine(string.Format(localization.Get(LocalizationKey.roll_attacker_section), userHitScore.ToPercent()));
+		detailsBuilder.AppendPercentLine(LocalizationKey.roll_aim, userAim);
+		detailsBuilder.AppendPercentLine(LocalizationKey.roll_flank_bonus, flankBonus);
+		detailsBuilder.AppendPercentLine(LocalizationKey.roll_action_modifier, modAction);
 		detailsBuilder.AppendLine();
-		detailsBuilder.AppendLine(localization.Get(LocalizationKey.roll_target_section));
-		detailsBuilder.AppendLine(string.Format(localization.Get(LocalizationKey.roll_camouflage), targetCamo.ToString("+0.##;-0.##;0")));
-		detailsBuilder.AppendLine(string.Format(localization.Get(LocalizationKey.roll_evasion), evationRatio.ToString("+0.##;-0.##;0")));
-
-		if (coverRatio > 0)
-			detailsBuilder.AppendLine(string.Format(localization.Get(LocalizationKey.roll_cover_bonus), coverRatio.ToString("0.##")));
-
-		detailsBuilder.AppendLine(string.Format(localization.Get(LocalizationKey.roll_total_evasion), targetEvasionScore.ToString("F2")));
+		detailsBuilder.AppendLine(string.Format(localization.Get(LocalizationKey.roll_target_section), targetEvasionScore.ToPercent()));
+		detailsBuilder.AppendPercentLine(LocalizationKey.roll_camouflage, targetCamo);
+		detailsBuilder.AppendPercentLine(LocalizationKey.roll_evasion, evationRatio);
+		detailsBuilder.AppendPercentLine(LocalizationKey.roll_cover_bonus, coverRatio);
 		detailsBuilder.AppendLine();
-		detailsBuilder.AppendLine(string.Format(localization.Get(LocalizationKey.roll_final_score), userHitScore.ToString("F2"), targetEvasionScore.ToString("F2")));
+		detailsBuilder.AppendLine(string.Format(localization.Get(LocalizationKey.roll_final_score)
+			, userHitScore.ToPercent(), targetEvasionScore.ToPercent(), finalScore.ToPercent()));
 
 		if (finalScore >= 1f)
-			detailsBuilder.AppendLine(string.Format(localization.Get(LocalizationKey.roll_guaranteed_hit), finalScore.ToString("F2")));
+			detailsBuilder.AppendLine(localization.Get(LocalizationKey.roll_guaranteed_hit));
 		else
 		{
-			detailsBuilder.AppendLine(string.Format(localization.Get(LocalizationKey.roll_hit_chance), (finalScore * 100f).ToString("F0")));
-			detailsBuilder.AppendLine(string.Format(localization.Get(LocalizationKey.roll_roll), roll.ToString("F2")));
+			detailsBuilder.AppendLine(string.Format(localization.Get(LocalizationKey.roll_roll), roll.ToPercent()));
 			detailsBuilder.AppendLine(localization.Get(isAttackSuccessful ? LocalizationKey.roll_hit_success : LocalizationKey.roll_hit_failed));
-			if(_coverTile != null)
-				detailsBuilder.AppendLine(string.Format(localization.Get(LocalizationKey.roll_will_hit_tile), _coverTile.coordinates.ID));
 		}
 
 		string detailsDescription = detailsBuilder.ToString();
@@ -473,22 +461,21 @@ public class EntityEquipmentPlugin : EntityPlugin
 		float roll = Random.Range(0f, 1f);
 		bool isAttackSuccessful = hitProba >= 1f || roll <= hitProba;
 
-				LocalizationManager localization = LocalizationManager.Instance;
+		LocalizationManager localization = LocalizationManager.Instance;
 		StringBuilder detailsBuilder = new();
 		detailsBuilder.AppendLine(string.Format(localization.Get(LocalizationKey.status_roll_header), m_linkedEntity.Data.name, _effect.GetLocalizedName(), _target.Data.name));
 		detailsBuilder.AppendLine();
-		detailsBuilder.AppendLine(localization.Get(LocalizationKey.status_roll_section));
-		detailsBuilder.AppendLine(string.Format(localization.Get(LocalizationKey.status_roll_base_chance), actionProbability.ToString("+0.##%;-0.##%;0%")));
-		detailsBuilder.AppendLine(string.Format(localization.Get(LocalizationKey.status_roll_equipment_bonus), equipmentProbability.ToString("+0.##%;-0.##%;0%")));
-		detailsBuilder.AppendLine(string.Format(localization.Get(LocalizationKey.status_roll_chance_bonus), userStatusChance.ToString("+0.##%;-0.##%;0%")));
-		detailsBuilder.AppendLine(string.Format(localization.Get(LocalizationKey.status_roll_target_resistance), targetResistance.ToString("0.##%")));
+		detailsBuilder.AppendLine(string.Format(localization.Get(LocalizationKey.status_roll_section), Mathf.Clamp01(hitProba).ToPercent()));
+		detailsBuilder.AppendPercentLine(LocalizationKey.status_roll_base_chance, actionProbability);
+		detailsBuilder.AppendPercentLine(LocalizationKey.status_roll_equipment_bonus, equipmentProbability);
+		detailsBuilder.AppendPercentLine(LocalizationKey.status_roll_chance_bonus, userStatusChance);
+		detailsBuilder.AppendPercentLine(LocalizationKey.status_roll_target_resistance, -targetResistance);
 		detailsBuilder.AppendLine();
-		detailsBuilder.AppendLine(string.Format(localization.Get(LocalizationKey.status_roll_final_chance), Mathf.Clamp01(hitProba).ToString("P0")));
 		if (hitProba >= 1f)
 			detailsBuilder.AppendLine(localization.Get(LocalizationKey.status_roll_guaranteed));
 		else
 		{
-			detailsBuilder.AppendLine(string.Format(localization.Get(LocalizationKey.roll_roll), roll.ToString("F2")));
+			detailsBuilder.AppendLine(string.Format(localization.Get(LocalizationKey.roll_roll), roll.ToPercent()));
 			detailsBuilder.AppendLine(localization.Get(isAttackSuccessful ? LocalizationKey.status_roll_applied : LocalizationKey.status_roll_resisted));
 		}
 

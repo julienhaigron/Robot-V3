@@ -412,8 +412,12 @@ MonoBehaviour:
     - Infos !
   - key: return_hub/content
     values:
-    - "Report:\n{0}"
-    - "Rapport :\n{0}"
+    - 'Report:
+
+      {0}'
+    - 'Rapport :
+
+      {0}'
   - key: entity_config/upgrades
     values:
     - Upgrades
@@ -432,12 +436,12 @@ MonoBehaviour:
     - "Phase de r\xE9solution"
   - key: lobby/port
     values:
-    - "Port:"
-    - "Port :"
+    - 'Port:'
+    - 'Port :'
   - key: lobby/name
     values:
-    - "Lobby name:"
-    - "Nom du lobby :"
+    - 'Lobby name:'
+    - 'Nom du lobby :'
   - key: lobby/name_placeholder
     values:
     - Lobby name...
@@ -460,8 +464,8 @@ MonoBehaviour:
     - INVENTAIRE -
   - key: shop/title
     values:
-    - - SHOP
-    - - BOUTIQUE
+    - 
+    - 
   - key: mission/components
     values:
     - Components
@@ -508,20 +512,24 @@ MonoBehaviour:
     - "D\xE9faite"
   - key: endlevel/reward_points
     values:
-    - "Remaining reward points to use: <color=yellow>{0}</color>"
+    - 'Remaining reward points to use: <color=yellow>{0}</color>'
     - "Points de r\xE9compense restants : <color=yellow>{0}</color>"
   - key: multiplayer/player_count
     values:
-    - "Player Count: {0}"
-    - "Nombre de joueurs : {0}"
+    - 'Player Count: {0}'
+    - 'Nombre de joueurs : {0}'
   - key: multiplayer/port
     values:
-    - "Port: {0}"
-    - "Port : {0}"
+    - 'Port: {0}'
+    - 'Port : {0}'
   - key: disconnection/waiting
     values:
-    - "{0}\nRemaining waiting time {1}s"
-    - "{0}\nTemps d'attente restant {1} s"
+    - '{0}
+
+      Remaining waiting time {1}s'
+    - '{0}
+
+      Temps d''attente restant {1} s'
   - key: hub/cycle
     values:
     - CYCLE {0}
@@ -1644,40 +1652,40 @@ MonoBehaviour:
     - "Magn\xE9tique"
   - key: action_desc/type
     values:
-    - "Type: {0}"
-    - "Type : {0}"
+    - 'Type: {0}'
+    - 'Type : {0}'
   - key: action_desc/cost
     values:
-    - "Cost: ({0},{1},{2})"
+    - 'Cost: ({0},{1},{2})'
     - "Co\xFBt : ({0},{1},{2})"
   - key: action_desc/speed
     values:
-    - "Speed: {0}"
-    - "Vitesse : {0}"
+    - 'Speed: {0}'
+    - 'Vitesse : {0}'
   - key: action_desc/target
     values:
-    - "Target: {0} {1}"
-    - "Cible : {0} {1}"
+    - 'Target: {0} {1}'
+    - 'Cible : {0} {1}'
   - key: action_desc/automatic_target
     values:
     - Automatic target
     - Cible automatique
   - key: action_desc/aoe
     values:
-    - "AoE: {0}, range {1}-{2}"
+    - 'AoE: {0}, range {1}-{2}'
     - "Zone : {0}, port\xE9e {1}-{2}"
   - key: action_desc/hit_amount
     values:
-    - "Hit amount: {0}"
-    - "Nombre de coups : {0}"
+    - 'Hit amount: {0}'
+    - 'Nombre de coups : {0}'
   - key: action_desc/damages
     values:
-    - "Damages: {0}"
+    - 'Damages: {0}'
     - "D\xE9g\xE2ts : {0}"
   - key: action_desc/effects
     values:
-    - "Effects: {0}"
-    - "Effets : {0}"
+    - 'Effects: {0}'
+    - 'Effets : {0}'
   - key: roll/title
     values:
     - Attack Details
@@ -1688,60 +1696,48 @@ MonoBehaviour:
     - <b>{0}</b> attaque <b>{1}</b>
   - key: roll/attacker_section
     values:
-    - <b>Attacker Hit Score</b>
-    - <b>Score de touche de l'attaquant</b>
+    - '<b>Attacker Hit Score: {0}%</b>'
+    - '<b>Score de touche attaquant : {0} %</b>'
   - key: roll/aim
     values:
-    - "Aim: {0}"
-    - "Vis\xE9e : {0}"
+    - 'Aim: {0}%'
+    - "Vis\xE9e : {0} %"
   - key: roll/flank_bonus
     values:
-    - "Flank Bonus: {0}"
-    - "Bonus de flanc : {0}"
+    - 'Flank Bonus: {0}%'
+    - 'Bonus de flanc : {0} %'
   - key: roll/action_modifier
     values:
-    - "Action Modifier: {0}"
-    - "Modificateur d'action : {0}"
-  - key: roll/total_hit_score
-    values:
-    - "<b>Total Hit Score: {0}</b>"
-    - "<b>Score de touche total : {0}</b>"
+    - 'Action Modifier: {0}%'
+    - 'Modificateur d''action : {0} %'
   - key: roll/target_section
     values:
-    - <b>Target Evasion Score</b>
-    - <b>Score d'esquive de la cible</b>
+    - '<b>Target Evasion Score: {0}%</b>'
+    - '<b>Score d''esquive cible : {0} %</b>'
   - key: roll/camouflage
     values:
-    - "Camouflage: {0}"
-    - "Camouflage : {0}"
+    - 'Camouflage: {0}%'
+    - 'Camouflage : {0} %'
   - key: roll/evasion
     values:
-    - "Evasion: {0}"
-    - "Esquive : {0}"
+    - 'Evasion: {0}%'
+    - 'Esquive : {0} %'
   - key: roll/cover_bonus
     values:
-    - "Cover Bonus: +{0}"
-    - "Bonus de couvert : +{0}"
-  - key: roll/total_evasion
-    values:
-    - "<b>Total Evasion: {0}</b>"
-    - "<b>Esquive totale : {0}</b>"
+    - 'Cover: {0}%'
+    - 'Couvert : {0} %'
   - key: roll/final_score
     values:
-    - Final Score = {0} - {1}
-    - Score final = {0} - {1}
+    - 'Threshold: {0}% - {1}% = {2}%'
+    - 'Seuil : {0} % - {1} % = {2} %'
   - key: roll/guaranteed_hit
     values:
-    - <color=green><b>Guaranteed Hit ({0})</b></color>
-    - <color=green><b>Touche garantie ({0})</b></color>
-  - key: roll/hit_chance
-    values:
-    - "Hit Chance: {0}%"
-    - "Chance de touche : {0} %"
+    - <color=green><b>Guaranteed Hit</b></color>
+    - <color=green><b>Touche garantie</b></color>
   - key: roll/roll
     values:
-    - "Roll: {0}"
-    - "Jet : {0}"
+    - 'Roll: {0}%'
+    - 'Jet : {0} %'
   - key: roll/hit_success
     values:
     - <color=green><b>Hit Success</b></color>
@@ -1750,10 +1746,6 @@ MonoBehaviour:
     values:
     - <color=red><b>Hit Failed</b></color>
     - "<color=red><b>Manqu\xE9</b></color>"
-  - key: roll/will_hit_tile
-    values:
-    - "Will hit tile: {0}"
-    - "Touchera la case : {0}"
   - key: status_roll/title
     values:
     - Status Details
@@ -1764,28 +1756,24 @@ MonoBehaviour:
     - <b>{0}</b> tente d'appliquer <b>{1}</b> sur <b>{2}</b>
   - key: status_roll/section
     values:
-    - <b>Status Chance Calculation</b>
-    - <b>Calcul de la chance de statut</b>
+    - '<b>Status Chance: {0}%</b>'
+    - '<b>Chance de statut : {0} %</b>'
   - key: status_roll/base_chance
     values:
-    - "Base Chance: {0}"
-    - "Chance de base : {0}"
+    - 'Base Chance: {0}%'
+    - 'Chance de base : {0} %'
   - key: status_roll/equipment_bonus
     values:
-    - "Equipment Bonus: {0}"
-    - "Bonus d'\xE9quipement : {0}"
+    - 'Equipment Bonus: {0}%'
+    - "Bonus d'\xE9quipement : {0} %"
   - key: status_roll/chance_bonus
     values:
-    - "Status Chance Bonus: {0}"
-    - "Bonus de chance de statut : {0}"
+    - 'Status Chance Bonus: {0}%'
+    - 'Bonus de chance de statut : {0} %'
   - key: status_roll/target_resistance
     values:
-    - "Target Resistance: -{0}"
-    - "R\xE9sistance de la cible : -{0}"
-  - key: status_roll/final_chance
-    values:
-    - "<b>Final Chance: {0}</b>"
-    - "<b>Chance finale : {0}</b>"
+    - 'Target Resistance: {0}%'
+    - "R\xE9sistance de la cible : {0} %"
   - key: status_roll/guaranteed
     values:
     - <color=green><b>Guaranteed Apply</b></color>
@@ -1800,11 +1788,11 @@ MonoBehaviour:
     - "<color=red><b>Statut r\xE9sist\xE9</b></color>"
   - key: status_roll/log_applied
     values:
-    - "{0} applies {1} on {2}"
-    - "{0} applique {1} sur {2}"
+    - '{0} applies {1} on {2}'
+    - '{0} applique {1} sur {2}'
   - key: status_roll/log_failed
     values:
-    - "{0} fails to apply {1} on {2}"
+    - '{0} fails to apply {1} on {2}'
     - "{0} \xE9choue \xE0 appliquer {1} sur {2}"
   - key: damage_detail/title
     values:
@@ -1816,35 +1804,35 @@ MonoBehaviour:
     - <b>{0}</b> => <b>{1}</b>
   - key: damage_detail/base
     values:
-    - "Base Damage: {0}"
+    - 'Base Damage: {0}'
     - "D\xE9g\xE2ts de base : {0}"
   - key: damage_detail/action_factor
     values:
-    - "Action Factor: x{0}"
-    - "Facteur d'action : x{0}"
+    - 'Action Factor: x{0} = {1}'
+    - 'Facteur d''action : x{0} = {1}'
   - key: damage_detail/type_modifier
     values:
-    - "Type Modifier: {0}%"
-    - "Modificateur de type : {0} %"
+    - 'Type Modifier: {0}% = {1}'
+    - 'Modificateur de type : {0} % = {1}'
   - key: damage_detail/category_modifier
     values:
-    - "Category Modifier: {0}%"
-    - "Modificateur de cat\xE9gorie : {0} %"
+    - 'Category Modifier: {0}% = {1}'
+    - "Modificateur de cat\xE9gorie : {0} % = {1}"
   - key: damage_detail/general_modifier
     values:
-    - "General Modifier: {0}%"
-    - "Modificateur g\xE9n\xE9ral : {0} %"
+    - 'General Modifier: {0}% = {1}'
+    - "Modificateur g\xE9n\xE9ral : {0} % = {1}"
   - key: damage_detail/flank_modifier
     values:
-    - "Flank Modifier: {0}%"
-    - "Modificateur de flanc : {0} %"
+    - 'Flank Modifier: {0}% = {1}'
+    - 'Modificateur de flanc : {0} % = {1}'
   - key: damage_detail/final_modifier
     values:
-    - "Final Modifier: {0}%"
-    - "Modificateur final : {0} %"
+    - 'Final Modifier: {0}% = {1}'
+    - 'Modificateur final : {0} % = {1}'
   - key: damage_detail/final
     values:
-    - "<color=red><b>Final Damage: {0}</b></color>"
+    - '<color=red><b>Final Damage: {0}</b></color>'
     - "<color=red><b>D\xE9g\xE2ts finaux : {0}</b></color>"
   - key: death/title
     values:
@@ -1852,56 +1840,56 @@ MonoBehaviour:
     - Mort
   - key: death/tick
     values:
-    - "Tick: {0}"
-    - "Tick : {0}"
+    - 'Tick: {0}'
+    - 'Tick : {0}'
   - key: death/killed_by
     values:
-    - "Killed by: {0}"
+    - 'Killed by: {0}'
     - "Tu\xE9 par : {0}"
   - key: death/action
     values:
-    - "Action: {0}"
-    - "Action : {0}"
+    - 'Action: {0}'
+    - 'Action : {0}'
   - key: death/killing_blow
     values:
-    - "Killing blow: {0} damages"
+    - 'Killing blow: {0} damages'
     - "Coup fatal : {0} d\xE9g\xE2ts"
   - key: death/critical
     values:
-    -  (critical)
-    -  (critique)
+    - (critical)
+    - (critique)
   - key: death/max_health
     values:
-    - "Max Health: {0}"
-    - "PV max : {0}"
+    - 'Max Health: {0}'
+    - 'PV max : {0}'
   - key: status_tip/duration
     values:
-    - "Duration: {0} turns"
+    - 'Duration: {0} turns'
     - "Dur\xE9e : {0} tours"
   - key: status_tip/remaining
     values:
-    - "Remaining: {0} turns"
-    - "Restant : {0} tours"
+    - 'Remaining: {0} turns'
+    - 'Restant : {0} tours'
   - key: status_tip/needs_roll
     values:
     - Applied through a status roll
     - "Appliqu\xE9 via un jet de statut"
   - key: log/use_weapon
     values:
-    - "{0} attacks {1} with <i>{2}</i>"
-    - "{0} attaque {1} avec <i>{2}</i>"
+    - '{0} attacks {1} with <i>{2}</i>'
+    - '{0} attaque {1} avec <i>{2}</i>'
   - key: log/use_weapon_ground
     values:
     - the ground
     - le sol
   - key: log/use_tool
     values:
-    - "{0} uses <i>{1}</i> on {2}"
-    - "{0} utilise <i>{1}</i> sur {2}"
+    - '{0} uses <i>{1}</i> on {2}'
+    - '{0} utilise <i>{1}</i> sur {2}'
   - key: log/use_tool_effects
     values:
-    - "-> Effects: {0}"
-    - "-> Effets : {0}"
+    - '-> Effects: {0}'
+    - '-> Effets : {0}'
   - key: log/attack_success
     values:
     - -> Success
@@ -1916,41 +1904,41 @@ MonoBehaviour:
     - "-> {0} d\xE9g\xE2ts"
   - key: log/death
     values:
-    - "{0} dies"
-    - "{0} meurt"
+    - '{0} dies'
+    - '{0} meurt'
   - key: log/status_affected
     values:
-    - "{0} is affected by <i>{1}</i>, {2} turns remaining"
+    - '{0} is affected by <i>{1}</i>, {2} turns remaining'
     - "{0} est affect\xE9 par <i>{1}</i>, {2} tours restants"
   - key: log/wall_blocks
     values:
-    - "{0} cannot reach {1}, the shot hits the wall on tile {2}"
-    - "{0} ne peut pas atteindre {1}, le tir touche le mur sur la case {2}"
+    - '{0} cannot reach {1}, the shot hits a wall'
+    - '{0} ne peut pas atteindre {1}, le tir touche un mur'
   - key: log/aoe_auto_hit
     values:
-    - "Automatic hit on targets due to AoE type"
-    - "Touche automatique sur les cibles (type de zone)"
+    - Automatic hit on targets due to AoE type
+    - Touche automatique sur les cibles (type de zone)
   - key: log/round
     values:
-    - "Round {0}"
-    - "Manche {0}"
+    - Round {0}
+    - Tour {0}
   - key: log/effect
     values:
-    - "-> {0}"
-    - "-> {0}"
+    - -> {0}
+    - -> {0}
   - key: log/doom_triggers
     values:
-    - "Doom triggers"
+    - Doom triggers
     - "Doom se d\xE9clenche"
   - key: entity_config/save_and_quit
     values:
-    - "Save changes n Quit"
-    - "Enregistrer et quitter"
+    - Save changes n Quit
+    - Enregistrer et quitter
   - key: entity_config/cancel
     values:
-    - "Cancel modifications"
-    - "Annuler les modifications"
+    - Cancel modifications
+    - Annuler les modifications
   - key: entity_config/disassemble
     values:
-    - "Disassemble unit"
+    - Disassemble unit
     - "D\xE9sassembler l unit\xE9"

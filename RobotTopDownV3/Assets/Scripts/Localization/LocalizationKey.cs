@@ -423,19 +423,15 @@ public enum LocalizationKey
     roll_aim,
     roll_flank_bonus,
     roll_action_modifier,
-    roll_total_hit_score,
     roll_target_section,
     roll_camouflage,
     roll_evasion,
     roll_cover_bonus,
-    roll_total_evasion,
     roll_final_score,
     roll_guaranteed_hit,
-    roll_hit_chance,
     roll_roll,
     roll_hit_success,
     roll_hit_failed,
-    roll_will_hit_tile,
     status_roll_title,
     status_roll_header,
     status_roll_section,
@@ -443,7 +439,6 @@ public enum LocalizationKey
     status_roll_equipment_bonus,
     status_roll_chance_bonus,
     status_roll_target_resistance,
-    status_roll_final_chance,
     status_roll_guaranteed,
     status_roll_applied,
     status_roll_resisted,
@@ -916,19 +911,15 @@ public static class LocalizationKeyExtensions
             case LocalizationKey.roll_aim: return "roll/aim";
             case LocalizationKey.roll_flank_bonus: return "roll/flank_bonus";
             case LocalizationKey.roll_action_modifier: return "roll/action_modifier";
-            case LocalizationKey.roll_total_hit_score: return "roll/total_hit_score";
             case LocalizationKey.roll_target_section: return "roll/target_section";
             case LocalizationKey.roll_camouflage: return "roll/camouflage";
             case LocalizationKey.roll_evasion: return "roll/evasion";
             case LocalizationKey.roll_cover_bonus: return "roll/cover_bonus";
-            case LocalizationKey.roll_total_evasion: return "roll/total_evasion";
             case LocalizationKey.roll_final_score: return "roll/final_score";
             case LocalizationKey.roll_guaranteed_hit: return "roll/guaranteed_hit";
-            case LocalizationKey.roll_hit_chance: return "roll/hit_chance";
             case LocalizationKey.roll_roll: return "roll/roll";
             case LocalizationKey.roll_hit_success: return "roll/hit_success";
             case LocalizationKey.roll_hit_failed: return "roll/hit_failed";
-            case LocalizationKey.roll_will_hit_tile: return "roll/will_hit_tile";
             case LocalizationKey.status_roll_title: return "status_roll/title";
             case LocalizationKey.status_roll_header: return "status_roll/header";
             case LocalizationKey.status_roll_section: return "status_roll/section";
@@ -936,7 +927,6 @@ public static class LocalizationKeyExtensions
             case LocalizationKey.status_roll_equipment_bonus: return "status_roll/equipment_bonus";
             case LocalizationKey.status_roll_chance_bonus: return "status_roll/chance_bonus";
             case LocalizationKey.status_roll_target_resistance: return "status_roll/target_resistance";
-            case LocalizationKey.status_roll_final_chance: return "status_roll/final_chance";
             case LocalizationKey.status_roll_guaranteed: return "status_roll/guaranteed";
             case LocalizationKey.status_roll_applied: return "status_roll/applied";
             case LocalizationKey.status_roll_resisted: return "status_roll/resisted";

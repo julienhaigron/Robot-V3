@@ -1,12 +1,44 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 
 public static class Utils
 {
+	public static int ToPercent ( this float _ratio )
+	{
+		return Mathf.RoundToInt(_ratio * 100f);
+	}
+
+	public static void AppendPercentLine ( this StringBuilder _builder, LocalizationKey _key, float _ratio )
+	{
+		int percent = _ratio.ToPercent();
+		if (percent == 0)
+			return;
+
+		_builder.AppendLine(string.Format(LocalizationManager.Instance.Get(_key), percent));
+	}
+
+	public static void AppendPercentLine ( this StringBuilder _builder, LocalizationKey _key, float _ratio, float _runningValue )
+	{
+		int percent = _ratio.ToPercent();
+		if (percent == 0)
+			return;
+
+		_builder.AppendLine(string.Format(LocalizationManager.Instance.Get(_key), percent.ToString("+0;-0"), _runningValue.ToString("0.##")));
+	}
+
+	public static void AppendFactorLine ( this StringBuilder _builder, LocalizationKey _key, float _factor, float _runningValue )
+	{
+		if (Mathf.Approximately(_factor, 1f))
+			return;
+
+		_builder.AppendLine(string.Format(LocalizationManager.Instance.Get(_key), _factor.ToString("0.##"), _runningValue.ToString("0.##")));
+	}
+
 	public static T RandomElement<T> ( this List<T> _list )
 	{
 		return _list[UnityEngine.Random.Range(0, _list.Count)];
