@@ -71,7 +71,7 @@ public static class CsvImporter
             .Select(h => h.Trim())
             .ToArray();
 
-        // créer les objets (colonnes)
+        // crï¿½er les objets (colonnes)
         for (int col = 1; col < headers.Length; col++)
         {
             string id = headers[col];
@@ -153,6 +153,12 @@ public static class CsvImporter
 			try
 			{
                 object converted = CsvTypeConverter.Convert(value, field.FieldType);
+
+                //An empty cell converts to null, which a value type field cannot take. Leaving the field on
+                //its current value is what the exception already did, minus an error per blank row.
+                if (converted == null && field.FieldType.IsValueType)
+                    continue;
+
                 field.SetValue(_asset, converted);
 			}
 			catch(System.Exception ex)

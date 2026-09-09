@@ -33,6 +33,8 @@ public class TurnShieldAction : SpecialAction
 		return new() { isFirstActionConflicted = false, isSecondActionConflicted = false };
 	}
 
+	protected override bool DoesOwnItsCompletion => true;
+
 	protected override void Perform ( Entity.EntityState _state )
 	{
 		//todo : apply effect

@@ -26,6 +26,13 @@ MonoBehaviour:
   afterPerformAnimationKey: 
   onPerformSingleAttackSFXID: 0
   onSingleAttackHitSFXID: 0
+  onSingleAttackHitVFXPool: {fileID: 0}
+  visualEffectType: 0
+  visualEffectDuration: 0.3
+  projectilePool: {fileID: 11400000, guid: a252f0d10d1073d4d8b13868267c748d, type: 2}
+  projectileSpeed: 10
+  spellVfxPrefab: {fileID: 0}
+  spellVfxLifetime: 2
   conditionType: 0
   previousActionAttackModificator: 0
   type: 4

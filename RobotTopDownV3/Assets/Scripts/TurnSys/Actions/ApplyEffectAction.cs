@@ -13,19 +13,17 @@ public class ApplyEffectAction : SpecialAction
 		return new() { isFirstActionConflicted = false, isSecondActionConflicted = false };
 	}
 
-	protected override void Perform ( Entity.EntityState _state )
+	protected override void ApplyActionEffect ()
 	{
 		Entity user = PerformingEntity;
 
-		if (user != null && Data.passiveEffects != null && Data.passiveEffects.Length > 0)
-		{
-			if (Data.aoeType != EntityActionData.AOEType.Noone)
-				ApplyOnAoEZone(user);
-			else
-				ApplyOnRecordedTargets(user);
-		}
+		if (user == null || Data.passiveEffects == null || Data.passiveEffects.Length == 0)
+			return;
 
-		base.Perform(_state);
+		if (Data.aoeType != EntityActionData.AOEType.Noone)
+			ApplyOnAoEZone(user);
+		else
+			ApplyOnRecordedTargets(user);
 	}
 
 	private void ApplyOnAoEZone ( Entity _user )

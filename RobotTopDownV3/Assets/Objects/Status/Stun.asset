@@ -14,6 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enumID: 6
   duration: 1
+  durationType: 0
   doesNeedRoll: 1
+  description: 
   icon: {fileID: 0}
   groundPrefab: {fileID: 0}

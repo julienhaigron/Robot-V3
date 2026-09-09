@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a743e40aeafc0445b10e59cec8dfa98, type: 3}
   m_Name: RotateToEntity
   m_EditorClassIdentifier: RTD::EntityActionData
-  spreadsheetId: 
-  displayName: Turn to target
+  spreadsheetId: https://docs.google.com/spreadsheets/d/1quAn64T5zuE6npFmDzjOhNFFvw4UJaXSoWxX-uvy3gI/export?format=csv&gid=0
+  displayName: Tourner
   enumID: 48
   icon: {fileID: 21300000, guid: bc8f395fbbcd7624c9a136ad3035aa14, type: 3}
   tileOutlineColor: {r: 0, g: 1, b: 0, a: 1}
@@ -26,9 +26,16 @@ MonoBehaviour:
   afterPerformAnimationKey: 
   onPerformSingleAttackSFXID: 0
   onSingleAttackHitSFXID: 0
+  onSingleAttackHitVFXPool: {fileID: 0}
+  visualEffectType: 2
+  visualEffectDuration: 0.3
+  projectilePool: {fileID: 0}
+  projectileSpeed: 10
+  spellVfxPrefab: {fileID: 0}
+  spellVfxLifetime: 2
   conditionType: 0
   previousActionAttackModificator: 0
-  type: 3
+  type: 2
   subType: 0
   codeType: 8
   targetType: 1

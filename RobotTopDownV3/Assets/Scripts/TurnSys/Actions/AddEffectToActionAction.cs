@@ -13,6 +13,8 @@ public class AddEffectToAction : SpecialAction
 		return new() { isFirstActionConflicted = false, isSecondActionConflicted = false };
 	}
 
+	protected override bool DoesOwnItsCompletion => true;
+
 	protected override void Perform ( Entity.EntityState _state )
 	{
 		base.Perform(_state);

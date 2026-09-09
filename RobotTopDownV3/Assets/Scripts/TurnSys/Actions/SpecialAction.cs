@@ -5,6 +5,7 @@ using Unity.Netcode;
 
 public class SpecialAction : AEntityAction
 {
+	private const float ProjectileTimeout = 10f;
 
 	public override void Prepare ( Entity.EntityState _state )
 	{
@@ -55,11 +56,165 @@ public class SpecialAction : AEntityAction
 		return new() { isFirstActionConflicted = false, isSecondActionConflicted = false };
 	}
 
+	protected virtual bool DoesOwnItsCompletion => false;
+
+	protected virtual void ApplyActionEffect ()
+	{
+	}
+
 	protected override void Perform ( Entity.EntityState _state )
 	{
 		base.Perform(_state);
 
-		DG.Tweening.DOVirtual.DelayedCall(GameConfig.current.game.actionDuration, EndTick);
+		if (DoesOwnItsCompletion)
+		{
+			DG.Tweening.DOVirtual.DelayedCall(GameConfig.current.game.actionDuration, EndTick);
+			return;
+		}
+
+		GameManager.Instance.StartCoroutine(PlayVisualEffectCR());
+	}
+
+	private IEnumerator PlayVisualEffectCR ()
+	{
+		switch (Data.visualEffectType)
+		{
+			case EntityActionData.VisualEffectType.Projectile:
+				yield return ProjectileVisualCR();
+				break;
+
+			case EntityActionData.VisualEffectType.Spell:
+				yield return SpellVisualCR();
+				break;
+
+			default:
+				yield return CharacterAnimationVisualCR();
+				break;
+		}
+
+		EndTick();
+	}
+
+	//The action animation is already triggered by OnStartPerform, so this only holds the tick open for it.
+	private IEnumerator CharacterAnimationVisualCR ()
+	{
+		yield return new WaitForSeconds(Data.visualEffectDuration);
+		ApplyActionEffect();
+	}
+
+	private IEnumerator SpellVisualCR ()
+	{
+		if (Data.spellVfxPrefab == null)
+		{
+			yield return CharacterAnimationVisualCR();
+			yield break;
+		}
+
+		GameObject vfx = Object.Instantiate(Data.spellVfxPrefab, GetVisualTargetPosition(), Quaternion.identity);
+
+		yield return new WaitForSeconds(Data.visualEffectDuration);
+		ApplyActionEffect();
+
+		Object.Destroy(vfx, Data.spellVfxLifetime);
+	}
+
+	private IEnumerator ProjectileVisualCR ()
+	{
+		Entity user = PerformingEntity;
+		Tile targetTile = GetVisualTargetTile();
+		Entity targetEntity = GetVisualTargetEntity();
+
+		if (Data.projectilePool == null || user == null || (targetTile == null && targetEntity == null))
+		{
+			yield return CharacterAnimationVisualCR();
+			yield break;
+		}
+
+		ProjectileData projectileData = new()
+		{
+			owner = user,
+			speed = Vector2.right * Data.projectileSpeed,
+			attackData = Data,
+			onHitSFXID = Data.onSingleAttackHitSFXID,
+			onHitVFXPool = Data.onSingleAttackHitVFXPool,
+			isAttackSuccessful = true,
+			damages = new()
+		};
+
+		projectileData.SetTarget(targetEntity != null ? ProjectileData.TargetType.Entity : ProjectileData.TargetType.Tile
+			, targetEntity != null ? null : targetTile, targetEntity, null);
+
+		bool isProjectileDone = false;
+		bool wasEffectApplied = false;
+
+		Projectile projectile = Data.projectilePool.Get<Projectile>(GetProjectileOrigin(user), Quaternion.identity);
+		projectile.SetProjectileDataAndLaunch(projectileData
+			, ( impactTile ) =>
+			{
+				wasEffectApplied = true;
+				ApplyActionEffect();
+			}
+			, () => isProjectileDone = true
+			, false);
+
+		//A projectile that never despawns would hold the tick open for good, so the sequence gives up on it.
+		float elapsed = 0f;
+		while (!isProjectileDone && elapsed < ProjectileTimeout)
+		{
+			elapsed += Time.deltaTime;
+			yield return null;
+		}
+
+		if (!wasEffectApplied)
+			ApplyActionEffect();
+	}
+
+	private Vector3 GetProjectileOrigin ( Entity _user )
+	{
+		return _user.Skin != null && _user.Skin.Center != null ? _user.Skin.Center.position : _user.transform.position;
+	}
+
+	private Vector3 GetVisualTargetPosition ()
+	{
+		Entity targetEntity = GetVisualTargetEntity();
+		if (targetEntity != null && targetEntity.Skin != null && targetEntity.Skin.Center != null)
+			return targetEntity.Skin.Center.position;
+
+		Tile targetTile = GetVisualTargetTile();
+		if (targetTile != null)
+			return targetTile.transform.position;
+
+		Entity user = PerformingEntity;
+		return user == null ? Vector3.zero : user.transform.position;
+	}
+
+	private Tile GetVisualTargetTile ()
+	{
+		if (targetTileIDs == null)
+			return null;
+
+		foreach (int tileID in targetTileIDs)
+		{
+			if (tileID >= 0 && tileID < GridManager.Instance.Tiles.Length)
+				return GridManager.Instance.Tiles[tileID];
+		}
+
+		return null;
+	}
+
+	private Entity GetVisualTargetEntity ()
+	{
+		if (targetedEntityIDs == null)
+			return null;
+
+		foreach (int entityID in targetedEntityIDs)
+		{
+			Entity entity = GameManager.Instance.GetEntityFromID(entityID);
+			if (entity != null && !entity.Equipment.IsDead)
+				return entity;
+		}
+
+		return null;
 	}
 
 	public override void Display ( TurnManager.RecordedAction _recordedAction )

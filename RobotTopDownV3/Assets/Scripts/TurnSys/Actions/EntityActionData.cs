@@ -15,9 +15,9 @@ public class EntityActionData : AParsableScriptableObject
 
 	public Sprite icon;
 	public Color tileOutlineColor = Color.green;
-	[SerializeField, Parsing("Pr�paration")] private int m_tokenPreparationDuration;
+	[SerializeField, Parsing("Préparation")] private int m_tokenPreparationDuration;
 	[SerializeField, Parsing("Refroidissement")] private int m_tokenCooldown;
-	[Parsing("Dur�e")]
+	[Parsing("Durée")]
 	public int tokenDuration = 1;
 	[Parsing("Is Mod Action")]
 	public bool isModAction = false;
@@ -30,6 +30,22 @@ public class EntityActionData : AParsableScriptableObject
 	public SfxId onPerformSingleAttackSFXID;
 	public SfxId onSingleAttackHitSFXID;
 	public PoolData onSingleAttackHitVFXPool;
+
+	public enum VisualEffectType
+	{
+		Projectile,
+		Spell,
+		OnlyCharacterAnimation
+	}
+	[Title("Visual Effect")]
+	[Parsing("VisuelEffectType")]
+	public VisualEffectType visualEffectType = VisualEffectType.OnlyCharacterAnimation;
+	public float visualEffectDuration = .3f;
+
+	[ShowIf("@visualEffectType == VisualEffectType.Projectile")] public PoolData projectilePool;
+	[ShowIf("@visualEffectType == VisualEffectType.Projectile")] public float projectileSpeed = 10f;
+	[ShowIf("@visualEffectType == VisualEffectType.Spell")] public GameObject spellVfxPrefab;
+	[ShowIf("@visualEffectType == VisualEffectType.Spell")] public float spellVfxLifetime = 2f;
 
 	[Title("Condition")]
 	[Parsing("Condition")]

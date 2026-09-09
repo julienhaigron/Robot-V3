@@ -65,6 +65,8 @@ public class InvokeEntityAction : SpecialAction
 		return new() { isFirstActionConflicted = doesSelfHaveConflict, isSecondActionConflicted = doesOtherHaveConflict };
 	}
 
+	protected override bool DoesOwnItsCompletion => true;
+
 	protected override void Perform ( Entity.EntityState _state )
 	{
 		if (isActionCanceled)
