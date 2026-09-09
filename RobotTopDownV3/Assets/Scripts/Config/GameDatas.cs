@@ -84,10 +84,58 @@ public partial class GameDatas : ScriptableObject
 		newSave.Initialize();
 	}
 
+	public bool RenameSave ( int _saveID, string _newName )
+	{
+		string trimmedName = _newName == null ? null : _newName.Trim();
+		if (!IsValidSaveID(_saveID) || string.IsNullOrEmpty(trimmedName))
+			return false;
+
+		playerSaves[_saveID].saveName = trimmedName;
+		return true;
+	}
+
+	public bool DeleteSave ( int _saveID )
+	{
+		if (!IsValidSaveID(_saveID))
+			return false;
+
+		playerSaves.RemoveAt(_saveID);
+
+		//Saves are addressed by their index in the list, so every id above the removed one shifts down with it.
+		if (playerSaves.Count == 0 || game.lastPlayerSaveSelectedID == _saveID)
+			game.lastPlayerSaveSelectedID = -1;
+		else if (game.lastPlayerSaveSelectedID > _saveID)
+			game.lastPlayerSaveSelectedID--;
+
+		return true;
+	}
+
+	public bool IsValidSaveID ( int _saveID )
+	{
+		return playerSaves != null && _saveID >= 0 && _saveID < playerSaves.Count && playerSaves[_saveID] != null;
+	}
+
+	private void StampCurrentSaveTime ()
+	{
+		if (IsValidSaveID(game.lastPlayerSaveSelectedID))
+			playerSaves[game.lastPlayerSaveSelectedID].lastSaveTimeTicks = DateTime.Now.Ticks;
+	}
+
 	[System.Serializable]
 	public class PlayerSave
 	{
 		public string saveName;
+
+		//DateTime is not serialized by JsonUtility, so the clock is stored as ticks.
+		public long lastSaveTimeTicks = 0;
+
+		public string GetLastSaveTimeText ()
+		{
+			return lastSaveTimeTicks <= 0
+				? LocalizationManager.Instance.Get(LocalizationKey.save_never_saved)
+				: string.Format(LocalizationManager.Instance.Get(LocalizationKey.save_last_played), new DateTime(lastSaveTimeTicks).ToString("g"));
+		}
+
 		public List<EntitySavedData> allBuiltUnits = new();
 		public List<int> squadUnitsIndex = new();
 		public List<Component> equipmentInventory = new();
@@ -499,6 +547,8 @@ public partial class GameDatas : ScriptableObject
 		}
 
 		onBeforeSave?.Invoke();
+
+		datas.StampCurrentSaveTime();
 
 		if (savePath == null)
 		{

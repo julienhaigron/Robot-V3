@@ -538,6 +538,22 @@ MonoBehaviour:
     values:
     - Empty save slot
     - Emplacement de sauvegarde vide
+  - key: save/never_saved
+    values:
+    - Never saved
+    - "Jamais sauvegard\xE9e"
+  - key: save/last_played
+    values:
+    - "Last played: {0}"
+    - "Derni\xE8re partie : {0}"
+  - key: save/delete
+    values:
+    - Delete
+    - Supprimer
+  - key: save/delete_confirm
+    values:
+    - Confirm?
+    - Confirmer ?
   - key: component/repair
     values:
     - Repair Component

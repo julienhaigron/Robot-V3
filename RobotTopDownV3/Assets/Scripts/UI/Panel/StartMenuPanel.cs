@@ -37,6 +37,7 @@ public class StartMenuPanel : AUIPanel
 		m_multiplayerModeBtn.onClick += OnClickMultiModeBtn;
 		m_returnFromLoadButton.onClick += OnClickReturn;
 		m_returnFromNewSave.onClick += OnClickReturn;
+		SaveButton.onSaveListChanged += OnSaveListChanged;
 	}
 
 	private void OnDestroy ()
@@ -48,6 +49,13 @@ public class StartMenuPanel : AUIPanel
 		m_multiplayerModeBtn.onClick -= OnClickMultiModeBtn;
 		m_returnFromLoadButton.onClick -= OnClickReturn;
 		m_returnFromNewSave.onClick -= OnClickReturn;
+		SaveButton.onSaveListChanged -= OnSaveListChanged;
+	}
+
+	private void OnSaveListChanged ()
+	{
+		//Deleting a save shifts every id above it, so the whole strip is rebuilt rather than patched.
+		ChangeDisplayMode(GameDatas.current.playerSaves.Count > 0 ? StartMenuDisplayMode.LoadSave : StartMenuDisplayMode.Start, true);
 	}
 
 	private void ChangeDisplayMode(StartMenuDisplayMode _displayMode, bool _isInstant )

@@ -130,6 +130,10 @@ public enum LocalizationKey
     disconnection_waiting,
     hub_cycle,
     save_empty_slot,
+    save_never_saved,
+    save_last_played,
+    save_delete,
+    save_delete_confirm,
     component_repair,
     component_recycle,
     component_buy,
@@ -618,6 +622,10 @@ public static class LocalizationKeyExtensions
             case LocalizationKey.disconnection_waiting: return "disconnection/waiting";
             case LocalizationKey.hub_cycle: return "hub/cycle";
             case LocalizationKey.save_empty_slot: return "save/empty_slot";
+            case LocalizationKey.save_never_saved: return "save/never_saved";
+            case LocalizationKey.save_last_played: return "save/last_played";
+            case LocalizationKey.save_delete: return "save/delete";
+            case LocalizationKey.save_delete_confirm: return "save/delete_confirm";
             case LocalizationKey.component_repair: return "component/repair";
             case LocalizationKey.component_recycle: return "component/recycle";
             case LocalizationKey.component_buy: return "component/buy";
