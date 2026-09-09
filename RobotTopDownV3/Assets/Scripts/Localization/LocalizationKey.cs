@@ -471,10 +471,10 @@ public enum LocalizationKey
     log_attack_success,
     log_attack_failure,
     log_damages,
+    log_damages_on_target,
     log_death,
     log_status_affected,
     log_wall_blocks,
-    log_aoe_auto_hit,
     log_round,
     log_effect,
     log_doom_triggers,
@@ -959,10 +959,10 @@ public static class LocalizationKeyExtensions
             case LocalizationKey.log_attack_success: return "log/attack_success";
             case LocalizationKey.log_attack_failure: return "log/attack_failure";
             case LocalizationKey.log_damages: return "log/damages";
+            case LocalizationKey.log_damages_on_target: return "log/damages_on_target";
             case LocalizationKey.log_death: return "log/death";
             case LocalizationKey.log_status_affected: return "log/status_affected";
             case LocalizationKey.log_wall_blocks: return "log/wall_blocks";
-            case LocalizationKey.log_aoe_auto_hit: return "log/aoe_auto_hit";
             case LocalizationKey.log_round: return "log/round";
             case LocalizationKey.log_effect: return "log/effect";
             case LocalizationKey.log_doom_triggers: return "log/doom_triggers";

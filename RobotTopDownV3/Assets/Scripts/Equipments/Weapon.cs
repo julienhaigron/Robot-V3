@@ -328,7 +328,7 @@ public class Weapon : MonoBehaviour
 	/// numbers are needed for attackInfo.damages and for the wall a blocked shot lands on - so _isAttackSuccessful
 	/// says whether the target is really about to take them, and only changes what gets logged.
 	/// </summary>
-	public virtual Dictionary<WeaponEquipmentData.DamageType, int> GetDamages ( Entity _user, Entity _target, AEntityAction _action, EntityActionData.PFCResultType _pfcResultType, bool _isAttackSuccessful = true )
+	public virtual Dictionary<WeaponEquipmentData.DamageType, int> GetDamages ( Entity _user, Entity _target, AEntityAction _action, EntityActionData.PFCResultType _pfcResultType, out LogConsole.LogDetails _details )
 	{
 		Dictionary<WeaponEquipmentData.DamageType, int> damages = new();
 		bool didWinPFC = _pfcResultType == EntityActionData.PFCResultType.FirstWins;
@@ -433,15 +433,7 @@ public class Weapon : MonoBehaviour
 		}
 
 		string detailsDescription = detailsBuilder.ToString();
-		LogConsole.LogDetails details = new("damage_" + LogConsole.Instance.LogsDetails.Keys.Count, localization.Get(LocalizationKey.damage_detail_title), detailsDescription);
-		if (_isAttackSuccessful)
-		{
-			int totalDamage = 0;
-			foreach (int value in damages.Values)
-				totalDamage += value;
-
-			LogConsole.AddLog(string.Format(localization.Get(LocalizationKey.log_damages), totalDamage), LogConsole.LogEventType.Damage, details);
-		}
+		_details = new("damage_" + LogConsole.Instance.LogsDetails.Keys.Count, localization.Get(LocalizationKey.damage_detail_title), detailsDescription);
 
 		return damages;
 	}

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,6 +11,8 @@ public class GameToolboxWindow : EditorWindow
 	private int m_missingActionCount;
 	private int m_missingComponentCount;
 
+	private const float SoftLockWarningDelay = 5f;
+	private Vector2 m_scroll;
 
 	[MenuItem("Tools/Game Toolbox")]
 	public static void LoadWindows ()
@@ -17,9 +20,155 @@ public class GameToolboxWindow : EditorWindow
 		GetWindow<GameToolboxWindow>("Game Toolbox");
 	}
 
+	private void Update ()
+	{
+		if (Application.isPlaying)
+			Repaint();
+	}
+
 	private void OnGUI ()
 	{
+		m_scroll = EditorGUILayout.BeginScrollView(m_scroll);
+		TickWatch();
 		Parsing();
+		EditorGUILayout.EndScrollView();
+	}
+
+	/// <summary>
+	/// A tick ends only when every action in ActionsBeingDone reports done and InPlayEvents is empty, so
+	/// whatever is still listed here after a few seconds is what the tick is waiting on.
+	/// </summary>
+	private void TickWatch ()
+	{
+		StartBox("Tick watch");
+
+		if (!Application.isPlaying || TurnManager.Instance == null)
+		{
+			EditorGUILayout.HelpBox("Enter play mode in a level to watch running actions and events.", MessageType.None);
+			EndBox();
+			return;
+		}
+
+		TurnManager turn = TurnManager.Instance;
+		float elapsed = turn.CurrentTickElapsedTime;
+
+		EditorGUILayout.LabelField($"Phase {turn.currentPhase}   Round {turn.RoundCount}   Tick {TurnManager.currentTick}"
+			+ (turn.currentPhase == TurnManager.TurnPhase.Playing ? $"   running for {elapsed:0.0}s" : ""), EditorStyles.boldLabel);
+
+		List<string> pending = new();
+		DrawActionsBeingDone(turn, pending);
+		DrawInPlayEvents(turn, pending);
+
+		if (turn.currentPhase == TurnManager.TurnPhase.Playing && elapsed > SoftLockWarningDelay)
+		{
+			//Nothing pending is its own failure: the tick can only be waiting on a TryEndRoundTick that was
+			//never re-entered, not on an action or an event.
+			EditorGUILayout.HelpBox(pending.Count > 0
+				? $"Tick has been running for {elapsed:0.0}s, still waiting on:\n- " + string.Join("\n- ", pending)
+				: $"Tick has been running for {elapsed:0.0}s with nothing pending - TryEndRoundTick was never re-entered."
+				, MessageType.Warning);
+		}
+
+		EndBox();
+	}
+
+	//Reports the instance actually in flight, not the one the RecordedAction was planned with: CheckAction swaps
+	//actions during the Calculating phase, and a free action can be the half that is running.
+	private void DrawActionsBeingDone ( TurnManager _turn, List<string> _pending )
+	{
+		List<string> lines = new();
+
+		foreach (KeyValuePair<int, Tuple<TurnManager.RecordedAction, bool>> pair in _turn.ActionsBeingDone)
+		{
+			if (pair.Value == null || pair.Value.Item1 == null)
+				continue;
+
+			TurnManager.RecordedAction recordedAction = pair.Value.Item1;
+			bool isDone = pair.Value.Item2;
+			AEntityAction performingAction = GetPerformingAction(recordedAction);
+
+			if (performingAction == null)
+			{
+				//Nothing in flight and nothing reported done is exactly the shape of a soft lock.
+				if (!isDone)
+				{
+					string idleLabel = $"[{GetEntityName(pair.Key)}] nothing performing, not reported done"
+						+ $"  (planned {DescribeAction(recordedAction.action)})";
+					lines.Add(idleLabel);
+					_pending.Add(idleLabel);
+				}
+				continue;
+			}
+
+			//Wait is noise in the list, but one that never reports done still holds the tick, so it stays
+			//in the pending set and surfaces in the warning.
+			if (performingAction.enumID == EntityActionEnumID.Wait)
+			{
+				if (!isDone)
+					_pending.Add($"[{GetEntityName(pair.Key)}] {DescribeAction(performingAction)}  RUNNING");
+
+				continue;
+			}
+
+			string label = $"[{GetEntityName(pair.Key)}] {DescribeAction(performingAction)}"
+				+ $"  state {recordedAction.entityState}"
+				+ (performingAction.wasReplacedByAI ? "  (AI swapped)" : "")
+				+ (isDone ? "  DONE" : "  RUNNING");
+
+			lines.Add(label);
+
+			if (!isDone)
+				_pending.Add(label);
+		}
+
+		EditorGUILayout.LabelField($"Actions playing ({lines.Count})");
+		EditorGUI.indentLevel++;
+		foreach (string line in lines)
+			EditorGUILayout.LabelField(line);
+		EditorGUI.indentLevel--;
+	}
+
+	private AEntityAction GetPerformingAction ( TurnManager.RecordedAction _recordedAction )
+	{
+		if (_recordedAction.freeAction != null && _recordedAction.freeAction.IsPerforming)
+			return _recordedAction.freeAction;
+
+		return _recordedAction.action != null && _recordedAction.action.IsPerforming ? _recordedAction.action : null;
+	}
+
+	private string DescribeAction ( AEntityAction _action )
+	{
+		if (_action == null)
+			return "<null>";
+
+		return $"{_action.Data.name} lifetime {_action.lifetime}/{_action.TotalDuration} ticks {_action.timeAtStart}-{_action.TimeAtEnd}";
+	}
+
+	private void DrawInPlayEvents ( TurnManager _turn, List<string> _pending )
+	{
+		EditorGUILayout.LabelField($"In play events ({_turn.InPlayEvents.Count})");
+		EditorGUI.indentLevel++;
+
+		foreach (TurnManager.RecordedEvent gameEvent in _turn.InPlayEvents)
+		{
+			if (gameEvent == null)
+				continue;
+
+			string label = $"{gameEvent.label}  started tick {gameEvent.startTick}, {Time.time - gameEvent.startTime:0.0}s ago";
+			EditorGUILayout.LabelField(label);
+			_pending.Add(label);
+		}
+
+		EditorGUI.indentLevel--;
+	}
+
+	private string GetEntityName ( int _entityID )
+	{
+		if (GameManager.Instance == null)
+			return "entity " + _entityID;
+
+		Entity entity = GameManager.Instance.GetEntityFromID(_entityID);
+		return entity == null || entity.Data == null ? "entity " + _entityID : entity.Data.name;
 	}
 
 

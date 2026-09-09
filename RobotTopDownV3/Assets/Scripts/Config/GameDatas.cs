@@ -104,6 +104,9 @@ public partial class GameDatas : ScriptableObject
 		public int cycleCount = 0;
 		public int dayCount = 0;
 
+		//The last days of a cycle are the three tournament rounds, TournamentPanel indexes them as dayCount - 4.
+		public bool IsTournamentDay => dayCount > 3;
+
 		//tutos
 		public bool didStartTuto = false;
 		public bool didUnlockReturnToHubPopup = false;

@@ -1204,8 +1204,10 @@ public class GridManager : Singleton<GridManager>
 
 					if (IsTileSeenBy(ownerVision.Value, currentTile))
 						ownerVision.Value.lastKnownEnemyPositions[entity] = currentTile;
+					//Only standing on the remembered tile proves it is empty. Counting a neighbour as "checked"
+					//wiped the trail every time any ally walked past it, which is most ticks of a round.
 					else if (ownerVision.Value.lastKnownEnemyPositions.TryGetValue(entity, out Tile lastKnownTile)
-						&& IsTileReachedByAllyOf(ownerVision.Key, lastKnownTile))
+						&& IsTileHoldingAllyOf(ownerVision.Key, lastKnownTile))
 						ownerVision.Value.lastKnownEnemyPositions.Remove(entity);
 				}
 			}
@@ -1237,23 +1239,6 @@ public class GridManager : Singleton<GridManager>
 				continue;
 
 			if (allyVision.Value.Contains(_tile))
-				return true;
-		}
-
-		return false;
-	}
-
-	private bool IsTileReachedByAllyOf ( int _ownerID, Tile _tile )
-	{
-		if (_tile == null)
-			return false;
-
-		if (IsTileHoldingAllyOf(_ownerID, _tile))
-			return true;
-
-		for (int i = 0; i < 6; i++)
-		{
-			if (IsTileHoldingAllyOf(_ownerID, _tile.GetNeighbor((HexDirection)i)))
 				return true;
 		}
 

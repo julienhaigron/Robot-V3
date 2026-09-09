@@ -1902,6 +1902,10 @@ MonoBehaviour:
     values:
     - -> {0} damages
     - "-> {0} d\xE9g\xE2ts"
+  - key: log/damages_on_target
+    values:
+    - -> {0} takes {1} damages
+    - "-> {0} subit {1} d\xE9g\xE2ts"
   - key: log/death
     values:
     - '{0} dies'
@@ -1914,10 +1918,6 @@ MonoBehaviour:
     values:
     - '{0} cannot reach {1}, the shot hits a wall'
     - '{0} ne peut pas atteindre {1}, le tir touche un mur'
-  - key: log/aoe_auto_hit
-    values:
-    - Automatic hit on targets due to AoE type
-    - Touche automatique sur les cibles (type de zone)
   - key: log/round
     values:
     - Round {0}

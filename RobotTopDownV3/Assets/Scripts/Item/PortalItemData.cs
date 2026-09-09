@@ -48,7 +48,7 @@ public class PortalItemData : AItemData
             return;
 		}
 
-        TurnManager.RecordedEvent teleportEvent = new();
+        TurnManager.RecordedEvent teleportEvent = new("Portal teleport of " + _walkingEntityn.Data.name);
         TurnManager.Instance.AddGameEvent(teleportEvent);
 
         _walkingEntityn.Displacement.TeleportToTile(_usedItem.CurrentPosition == portalLinkedData.portalATile

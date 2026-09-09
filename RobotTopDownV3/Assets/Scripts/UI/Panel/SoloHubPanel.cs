@@ -57,7 +57,7 @@ public class SoloHubPanel : AUIPanel
 
 	private void RefreshMissionBtnLabel ()
 	{
-		bool isTournament = GameDatas.current.currentPlayerSave.dayCount > 3;
+		bool isTournament = GameDatas.current.currentPlayerSave.IsTournamentDay;
 
 		m_missionBtnTMP.text = LocalizationManager.Instance.Get(isTournament ? LocalizationKey.hub_tournament : LocalizationKey.hub_mission);
 	}
@@ -86,7 +86,7 @@ public class SoloHubPanel : AUIPanel
 
 	private void OnClickMissionBtn ()
 	{
-		if (GameDatas.current.currentPlayerSave.dayCount > 3)
+		if (GameDatas.current.currentPlayerSave.IsTournamentDay)
 			UIManager.Instance.OpenPanel<TournamentPanel>();
 		else
 			UIManager.Instance.OpenPanel<MissionPanel>();

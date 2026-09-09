@@ -24,6 +24,9 @@ public class TurnManager : Singleton<TurnManager>
 	public static int currentTick = 0;
 	public bool IsLastTickOfRound => currentTick >= GameConfig.current.game.actionTokenPerRound - 1;
 
+	private float m_currentTickStartTime;
+	public float CurrentTickElapsedTime => currentPhase == TurnPhase.Playing ? Time.time - m_currentTickStartTime : 0f;
+
 	[SerializeField] private NetworkedTurnSystem m_networkedTurnSystem;
 
 	[SerializeField] private SerializableDictionary<int, Queue<RecordedAction>> m_recordedActionInput = new(); //all actions this turn
@@ -31,6 +34,7 @@ public class TurnManager : Singleton<TurnManager>
 	[SerializeField] private SerializableDictionary<int, Queue<RecordedAction>> m_actionsToPlay = new(); //this tick actions
 	public SerializableDictionary<int, Queue<RecordedAction>> ActionsToPlay => m_actionsToPlay;
 	private SerializableDictionary<int, Tuple<RecordedAction, bool>> m_actionsBeingDone = new(); //current actions running
+	public SerializableDictionary<int, Tuple<RecordedAction, bool>> ActionsBeingDone => m_actionsBeingDone;
 
 	private SerializableDictionary<int, int> m_remainingActionToken = new();
 	public SerializableDictionary<int, int> RemainingActionToken => m_remainingActionToken;
@@ -89,9 +93,24 @@ public class TurnManager : Singleton<TurnManager>
 	}
 
 	private List<RecordedEvent> m_inPlayEventBeingDone = new();
+	public IReadOnlyList<RecordedEvent> InPlayEvents => m_inPlayEventBeingDone;
+
+	//A tick only ends once every action reports done and this list is empty, so an event that never calls
+	//EndEvent soft locks the game. The label and timestamps exist to name the culprit in the Game Toolbox.
 	public class RecordedEvent
 	{
+		public readonly string label;
+		public readonly int startTick;
+		public readonly float startTime;
+
 		public Action<RecordedEvent> onEventFinished;
+
+		public RecordedEvent ( string _label = null )
+		{
+			label = string.IsNullOrEmpty(_label) ? "Unnamed event" : _label;
+			startTick = currentTick;
+			startTime = Time.time;
+		}
 
 		public void EndEvent ()
 		{
@@ -1057,6 +1076,7 @@ public class TurnManager : Singleton<TurnManager>
 
 	private void StartNextRoundTick ()
 	{
+		m_currentTickStartTime = Time.time;
 		LogConsole.AddLog("Start tick " + currentTick, LogConsole.LogEventType.DebugSys);
 
 		//1 - calculate phase

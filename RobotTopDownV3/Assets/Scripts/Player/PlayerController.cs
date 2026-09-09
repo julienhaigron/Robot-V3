@@ -29,7 +29,6 @@ public class PlayerController : Singleton<PlayerController>
 	[Header("Camera")]
 	[SerializeField] private float m_edgeScrollMargin = 12f;
 	[SerializeField] private float m_centerOnEntityDuration = .35f;
-	[SerializeField, Range(0f, .5f)] private float m_centerOnEntityViewportMargin = .25f;
 
 	private Tween m_cameraMoveTween;
 	private bool m_areInteractableOutlinesHidden;
@@ -239,16 +238,6 @@ public class PlayerController : Singleton<PlayerController>
 		return _position;
 	}
 
-	private bool IsInsideScreenCenter ( Vector3 _worldPosition )
-	{
-		Vector3 viewportPosition = CameraManager.Instance.Camera.WorldToViewportPoint(_worldPosition);
-		if (viewportPosition.z <= 0f)
-			return false;
-
-		return viewportPosition.x >= m_centerOnEntityViewportMargin && viewportPosition.x <= 1f - m_centerOnEntityViewportMargin
-			&& viewportPosition.y >= m_centerOnEntityViewportMargin && viewportPosition.y <= 1f - m_centerOnEntityViewportMargin;
-	}
-
 	private Vector3 GetCameraFocusOffset ( float _groundHeight )
 	{
 		Ray centerRay = CameraManager.Instance.Camera.ViewportPointToRay(new Vector3(.5f, .5f, 0f));
@@ -269,9 +258,6 @@ public class PlayerController : Singleton<PlayerController>
 			return;
 
 		Vector3 entityPosition = _entity.Displacement.Coordinates.GetTile().transform.position;
-		if (IsInsideScreenCenter(entityPosition))
-			return;
-
 		Vector3 cameraPosition = CameraManager.Instance.CameraParent.transform.position;
 		Vector3 focusOffset = GetCameraFocusOffset(entityPosition.y);
 		Vector3 targetPosition = ClampToCameraBounds(new Vector3(entityPosition.x - focusOffset.x, cameraPosition.y, entityPosition.z - focusOffset.z));

@@ -63,7 +63,8 @@ public class PushOrPullPassiveEffect : AEntityPassiveEffect
 
 		if (destination != origin && !_targetEntity.Equipment.IsDead)
 		{
-			TurnManager.RecordedEvent movementEvent = new();
+			TurnManager.RecordedEvent movementEvent = new((movementStrength > 0 ? "Push " : "Pull ") + _targetEntity.Data.name
+				+ " (" + this.GetLocalizedName() + ")");
 			TurnManager.Instance.AddGameEvent(movementEvent);
 			_targetEntity.Displacement.MoveToTile(destination.coordinates.ID, movementEvent.EndEvent, false);
 		}

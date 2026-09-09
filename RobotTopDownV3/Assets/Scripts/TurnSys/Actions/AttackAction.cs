@@ -129,15 +129,62 @@ public class AttackAction : AEntityAction
 			, new LogConsole.LogDetails("useweapon_" + LogConsole.Instance.LogsDetails.Keys.Count, Data.GetLocalizedName(), Data.GetDescription()));
 	}
 
+	//An AoE names who took the hit: a bare total says nothing about who was in the blast, and nothing at all
+	//when it caught noone - in which case no line is emitted.
+	private void LogDamages ( Dictionary<WeaponEquipmentData.DamageType, int> _damages, LogConsole.LogDetails _details, Entity _targetEntity, int _attackIndex )
+	{
+		int totalDamage = 0;
+		foreach (int value in _damages.Values)
+			totalDamage += value;
+
+		LocalizationManager localization = LocalizationManager.Instance;
+
+		if (Data.aoeType == EntityActionData.AOEType.Noone)
+		{
+			LogConsole.AddLog(string.Format(localization.Get(LocalizationKey.log_damages), totalDamage), LogConsole.LogEventType.Damage, _details);
+			return;
+		}
+
+		foreach (Entity caughtEntity in GetEntitiesCaughtInAoEAt(_attackIndex))
+		{
+			LogConsole.AddLog(string.Format(localization.Get(LocalizationKey.log_damages_on_target), caughtEntity.Data.name, totalDamage)
+				, LogConsole.LogEventType.Damage
+				, _details);
+		}
+	}
+
+	//Mirrors Weapon.GetEntityCaughtOn without its outline and target-list side effects, so the blast can be
+	//reported from Prepare, where every other line of this attack is emitted.
+	private List<Entity> GetEntitiesCaughtInAoEAt ( int _attackIndex )
+	{
+		List<Entity> caught = new();
+		Tile aoeCenter = GetTargetTileAt(_attackIndex);
+		if (aoeCenter == null)
+			return caught;
+
+		HashSet<Tile> zone = PerformingEntity.Equipment.GetTilesInAoERange(this, aoeCenter).ToHashSet();
+
+		foreach (EntityAnchor anchor in GameManager.Instance.PlayersEntityAnchor)
+		{
+			foreach (Entity entity in anchor.Entities)
+			{
+				if (entity.Equipment.IsDead || caught.Contains(entity))
+					continue;
+
+				if (zone.Contains(GetExchangeTileOf(entity)))
+					caught.Add(entity);
+			}
+		}
+
+		return caught;
+	}
+
 	public override void Prepare ( Entity.EntityState _state )
 	{
 		if (targetedEntityIDs != null || (Data.aoeType != EntityActionData.AOEType.Noone && targetTileIDs != null))
 		{
 			//targetedEntityID = PerformingEntity.AI.TargetedEntity.ID;
 			LogUseWeapon();
-
-			if (Data.aoeType != EntityActionData.AOEType.Noone)
-				LogConsole.AddLog(LocalizationManager.Instance.Get(LocalizationKey.log_aoe_auto_hit), LogConsole.LogEventType.AttackRoll);
 
 			for (int attackCount = 0; attackCount < attacksInfos.Length; attackCount++)
 			{
@@ -163,10 +210,6 @@ public class AttackAction : AEntityAction
 
 				attackInfo.hittedTileID = coverHitted == null ? -1 : coverHitted.coordinates.ID;
 
-				Dictionary<WeaponEquipmentData.DamageType, int> damagesDealt =
-					PerformingEntity.Equipment.Weapons[linkedEquipmentId].GetDamages(PerformingEntity, targetEntity, this
-						, GetExchangeResultAgainst(targetEntity), attackInfo.isAttackSuccessfull);
-
 				if (attackInfo.isAttackSuccessfull && targetEntity != null)
 				{
 					List<AEntityStatus> appliedStatuses = Data.GetAppliedStatuses(this, PerformingEntity, targetEntity);
@@ -184,6 +227,13 @@ public class AttackAction : AEntityAction
 					}
 
 				}
+
+				Dictionary<WeaponEquipmentData.DamageType, int> damagesDealt =
+					PerformingEntity.Equipment.Weapons[linkedEquipmentId].GetDamages(PerformingEntity, targetEntity, this
+						, GetExchangeResultAgainst(targetEntity), out LogConsole.LogDetails damageDetails);
+
+				if (attackInfo.isAttackSuccessfull)
+					LogDamages(damagesDealt, damageDetails, targetEntity, attackCount);
 
 				if (coverHitted != null)
 					coverHitted.Wall.RegisterDamage(damagesDealt);
