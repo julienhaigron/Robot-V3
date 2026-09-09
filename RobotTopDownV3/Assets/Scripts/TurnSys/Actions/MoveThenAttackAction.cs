@@ -20,9 +20,6 @@ public class MoveThenAttackAction : AttackAction
 	{
 		positionAfterMovementID = _tile.Neighbors[GridManager.Instance.GetClosestOrientation(_tile, GridManager.Instance.Tiles[supposedPositionAtActionStartID])].coordinates.ID;
 
-		//Without this the action reports the unit as never moving, and everything asking "where will it
-		//be" (GetLastRegisteredPositionOfEntity, IsEntityLeavingTileThisTick, the planning ghosts) reads its
-		//start tile instead.
 		positionAtActionEndID = positionAfterMovementID;
 
 		base.RegisterInteraction(_tile);

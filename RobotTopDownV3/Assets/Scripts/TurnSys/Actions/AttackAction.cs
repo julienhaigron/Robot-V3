@@ -129,8 +129,6 @@ public class AttackAction : AEntityAction
 			, new LogConsole.LogDetails("useweapon_" + LogConsole.Instance.LogsDetails.Keys.Count, Data.GetLocalizedName(), Data.GetDescription()));
 	}
 
-	//An AoE names who took the hit: a bare total says nothing about who was in the blast, and nothing at all
-	//when it caught noone - in which case no line is emitted.
 	private void LogDamages ( Dictionary<WeaponEquipmentData.DamageType, int> _damages, LogConsole.LogDetails _details, Entity _targetEntity, int _attackIndex )
 	{
 		int totalDamage = 0;
@@ -153,8 +151,6 @@ public class AttackAction : AEntityAction
 		}
 	}
 
-	//Mirrors Weapon.GetEntityCaughtOn without its outline and target-list side effects, so the blast can be
-	//reported from Prepare, where every other line of this attack is emitted.
 	private List<Entity> GetEntitiesCaughtInAoEAt ( int _attackIndex )
 	{
 		List<Entity> caught = new();

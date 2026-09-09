@@ -34,10 +34,6 @@ public class GameToolboxWindow : EditorWindow
 		EditorGUILayout.EndScrollView();
 	}
 
-	/// <summary>
-	/// A tick ends only when every action in ActionsBeingDone reports done and InPlayEvents is empty, so
-	/// whatever is still listed here after a few seconds is what the tick is waiting on.
-	/// </summary>
 	private void TickWatch ()
 	{
 		StartBox("Tick watch");
@@ -61,8 +57,6 @@ public class GameToolboxWindow : EditorWindow
 
 		if (turn.currentPhase == TurnManager.TurnPhase.Playing && elapsed > SoftLockWarningDelay)
 		{
-			//Nothing pending is its own failure: the tick can only be waiting on a TryEndRoundTick that was
-			//never re-entered, not on an action or an event.
 			EditorGUILayout.HelpBox(pending.Count > 0
 				? $"Tick has been running for {elapsed:0.0}s, still waiting on:\n- " + string.Join("\n- ", pending)
 				: $"Tick has been running for {elapsed:0.0}s with nothing pending - TryEndRoundTick was never re-entered."
@@ -72,8 +66,6 @@ public class GameToolboxWindow : EditorWindow
 		EndBox();
 	}
 
-	//Reports the instance actually in flight, not the one the RecordedAction was planned with: CheckAction swaps
-	//actions during the Calculating phase, and a free action can be the half that is running.
 	private void DrawActionsBeingDone ( TurnManager _turn, List<string> _pending )
 	{
 		List<string> lines = new();
@@ -89,7 +81,6 @@ public class GameToolboxWindow : EditorWindow
 
 			if (performingAction == null)
 			{
-				//Nothing in flight and nothing reported done is exactly the shape of a soft lock.
 				if (!isDone)
 				{
 					string idleLabel = $"[{GetEntityName(pair.Key)}] nothing performing, not reported done"
@@ -100,8 +91,6 @@ public class GameToolboxWindow : EditorWindow
 				continue;
 			}
 
-			//Wait is noise in the list, but one that never reports done still holds the tick, so it stays
-			//in the pending set and surfaces in the warning.
 			if (performingAction.enumID == EntityActionEnumID.Wait)
 			{
 				if (!isDone)

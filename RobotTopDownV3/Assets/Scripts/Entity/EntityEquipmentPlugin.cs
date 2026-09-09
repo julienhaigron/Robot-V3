@@ -347,8 +347,6 @@ public class EntityEquipmentPlugin : EntityPlugin
 		//WeaponEquipmentData usedWeapon = m_weapons[_attackAction.linkedEquipmentId].Data;
 		bool doesWinPFC = _attackAction.DoesWinExchangeAgainst(_targetEntity);
 
-		//A full wall between the two ends the shot then and there. Typically when the target is only known
-		//through radar, since optical vision cannot see past such a wall in the first place.
 		if (GridManager.Instance.IsThereBlockingWallBetween(_attackAction.PerformingEntity, _targetEntity, doesWinPFC, out _coverTile))
 		{
 			LogConsole.AddLog(string.Format(LocalizationManager.Instance.Get(LocalizationKey.log_wall_blocks)

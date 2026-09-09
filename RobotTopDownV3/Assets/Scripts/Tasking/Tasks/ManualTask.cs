@@ -12,8 +12,6 @@ public class ManualTask : Task
         m_stuffToDo = _stuffToDo;
     }
 
-    //A ManualTask is a state change, not something the player performs: it has to apply even when its sequence
-    //is skipped, or the unlocks hanging off it are lost for good.
     public void Apply ()
     {
         if (m_wasApplied)

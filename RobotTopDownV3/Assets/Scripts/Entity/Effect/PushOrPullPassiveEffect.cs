@@ -17,8 +17,6 @@ public class PushOrPullPassiveEffect : AEntityPassiveEffect
 	{
 		Tile origin = _targetEntity.Displacement.Coordinates.GetTile();
 
-		//A unit standing on the impact tile has no direction to be thrown along, so it falls back to the
-		//caster - the blast still reached it from there.
 		Tile from = _originTile == null || _originTile == origin ? _entity.Displacement.Coordinates.GetTile() : _originTile;
 		if (from == origin)
 		{

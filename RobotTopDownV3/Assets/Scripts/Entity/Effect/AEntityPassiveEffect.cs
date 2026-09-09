@@ -40,7 +40,6 @@ public abstract class AEntityPassiveEffect : ScriptableEnum<EntityPassiveEffectE
 			_targetEntity.RemoveStatus(EntityStatusEnumID.Marked);
     }
 
-	//_originTile is where an AoE radiates from, null when it has no meaning; direction-less effects ignore it.
 	public virtual void ApplyEffect ( Entity _performingEntity, Entity _targetEntity, PassiveEffectContainer _effectContainer, Tile _originTile )
 	{
 		ApplyEffect(_performingEntity, _targetEntity, _effectContainer);

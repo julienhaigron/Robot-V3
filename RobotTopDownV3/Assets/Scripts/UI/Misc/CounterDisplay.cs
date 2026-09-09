@@ -130,7 +130,6 @@ public class CounterDisplay : MonoBehaviour
 			material.SetColor(ShaderUtilities.ID_OutlineColor, _color);
 			material.SetFloat(ShaderUtilities.ID_OutlineWidth, _width);
 
-			//Without this the glyph quad keeps the size it had for a zero width outline, and clips the outline
 			text.UpdateMeshPadding();
 		}
 	}

@@ -18,7 +18,6 @@ public class EntityDisplay : MonoBehaviour
         if (_unitData.frame != null && _unitData.frame.TryGetData(out EntityEquipmentData frameData))
             m_iconImg.sprite = frameData.icon;
 
-        //A unit still being built has a null arms array, and it can hold more arms than there are icon slots.
         if (_unitData.arms != null)
 		{
             for (int i = 0; i < _unitData.arms.Length && i < m_armsImgs.Length; i++)

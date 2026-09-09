@@ -323,11 +323,6 @@ public class Weapon : MonoBehaviour
 		m_targetedTiles.Clear();
 	}
 
-	/// <summary>
-	/// Computes what an attack would deal. AttackAction.Prepare calls this for every target, hit or miss - the
-	/// numbers are needed for attackInfo.damages and for the wall a blocked shot lands on - so _isAttackSuccessful
-	/// says whether the target is really about to take them, and only changes what gets logged.
-	/// </summary>
 	public virtual Dictionary<WeaponEquipmentData.DamageType, int> GetDamages ( Entity _user, Entity _target, AEntityAction _action, EntityActionData.PFCResultType _pfcResultType, out LogConsole.LogDetails _details )
 	{
 		Dictionary<WeaponEquipmentData.DamageType, int> damages = new();

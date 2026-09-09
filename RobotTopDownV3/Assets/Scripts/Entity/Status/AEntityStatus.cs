@@ -31,7 +31,6 @@ public abstract class AEntityStatus : ScriptableEnum<EntityStatusEnumID>
         return builder.ToString();
     }
 
-    //A Round status still ticks every tick, it just only spends duration on the last one.
     public bool DoesConsumeDurationThisTick ()
     {
         return durationType == DurationType.Tick

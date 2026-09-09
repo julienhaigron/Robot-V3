@@ -59,13 +59,10 @@ public class FTUEManager : SingletonPersistant<FTUEManager>
 		m_registerdTutorialHighlightZones[_highlightZone.ID] = _highlightZone;
 	}
 
-	//A zone registers from its Awake, which only runs the first time its panel is activated - UIManager
-	//deactivates every window on load - so one in a panel never opened yet is simply not in the dictionary.
 	public bool TryGetTutorialHighlightZone ( string _id, out TutorialHighlightZone _zone )
 	{
 		_zone = null;
 
-		//A dialogue with no highlight passes an empty id, and TryGetValue throws on a null key.
 		if (string.IsNullOrEmpty(_id))
 			return false;
 

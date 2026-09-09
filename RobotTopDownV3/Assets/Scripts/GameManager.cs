@@ -302,8 +302,6 @@ public class GameManager : SingletonPersistant<GameManager>
 		bool wasTournamentMatch = GameDatas.current.currentPlayerSave.IsTournamentDay;
 		GameDatas.current.currentPlayerSave.NewDay();
 
-		//Losing a tournament match ends the run there, the remaining rounds are skipped. NewDay already rolls
-		//the cycle over after the final, and clears hasInitTournament doing so - which is what stops a double roll.
 		if (wasTournamentMatch && _gameResult == EndLevelPopup.GameResult.Loose
 			&& GameDatas.current.currentPlayerSave.cycleData.hasInitTournament)
 			GameDatas.current.currentPlayerSave.NewCycle();

@@ -54,7 +54,6 @@ public class EntitySavedData : INetworkSerializable
 
 	public int currentHp;
 
-	//Through Component.GetData, which is the only lookup that survives a dataID missing from GameAssets.
 	public FrameEquipmentData FrameData => frame == null ? null : frame.GetData<FrameEquipmentData>();
 	public ReactorEquipmentData ReactorData => reactor == null ? null : reactor.GetData<ReactorEquipmentData>();
 	public NeuronalMembraneEquipmentData NeuronalMembraneData => neuronalMembrane == null ? null : neuronalMembrane.GetData<NeuronalMembraneEquipmentData>();
@@ -177,7 +176,6 @@ public class EntitySavedData : INetworkSerializable
 		totalEnergyUsed += BrainData.energyCost;
 		totalEnergyUsed += NeuronalMembraneData.energyCost;
 
-		//A unit being built has null slot arrays and empty slots inside them; GetAllSubEquipments already
 		foreach (GameDatas.PlayerSave.Component equipment in GetAllSubEquipments())
 			if (equipment.TryGetData(out EntityEquipmentData data))
 				totalEnergyUsed += data.energyCost;

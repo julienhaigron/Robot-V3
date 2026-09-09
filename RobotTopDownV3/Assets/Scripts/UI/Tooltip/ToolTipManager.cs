@@ -51,8 +51,6 @@ public class ToolTipManager : Singleton<ToolTipManager>
 	{
 		if (!m_isActive) return;
 
-		//Nothing raises OnPointerExit on an object that gets deactivated or destroyed under the cursor, which
-		//used to leave its tooltip stuck there until something else showed one.
 		if (m_hasOwner && (m_owner == null || !m_owner.activeInHierarchy))
 		{
 			Hide();
@@ -76,8 +74,6 @@ public class ToolTipManager : Singleton<ToolTipManager>
 	[Button]
 	public void Show ( string _title, string _description, GameObject _owner = null )
 	{
-		//Never early out on an already visible tooltip: hovering straight from one element to another otherwise
-		//keeps showing the previous one's text.
 		m_isActive = true;
 		m_owner = _owner;
 		m_hasOwner = _owner != null;

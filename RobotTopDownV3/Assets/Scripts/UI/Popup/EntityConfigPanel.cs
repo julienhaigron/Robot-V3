@@ -117,8 +117,6 @@ public class EntityConfigPanel : AUIPanel
 		base.OnHideFinished();
 	}
 
-	//A unit being created only reaches the save once it is valid, so leaving an unfinished
-	//configuration cannot leave a broken unit in the hangar.
 	private void OnClickDisassembleBtn ()
 	{
 		if (m_entityData == null)
@@ -538,7 +536,6 @@ public class EntityConfigPanel : AUIPanel
 		switch (_type)
 		{
 			case EntityEquipmentData.EquipmentType.Frame:
-				//FrameData is derived from frame, so the slot count has to be read before clearing it.
 				int auxiliarSlotCount = m_entityData.FrameData == null ? 0
 					: m_entityData.FrameData.armouringSlotAvailable + m_entityData.FrameData.occultorSlotAvailable;
 

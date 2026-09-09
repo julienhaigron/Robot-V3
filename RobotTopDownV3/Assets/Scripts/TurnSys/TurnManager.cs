@@ -95,8 +95,6 @@ public class TurnManager : Singleton<TurnManager>
 	private List<RecordedEvent> m_inPlayEventBeingDone = new();
 	public IReadOnlyList<RecordedEvent> InPlayEvents => m_inPlayEventBeingDone;
 
-	//A tick only ends once every action reports done and this list is empty, so an event that never calls
-	//EndEvent soft locks the game. The label and timestamps exist to name the culprit in the Game Toolbox.
 	public class RecordedEvent
 	{
 		public readonly string label;
@@ -511,13 +509,6 @@ public class TurnManager : Singleton<TurnManager>
 		_action.targetTileIDs = tilesIds.ToArray();
 	}
 
-	/// <summary>
-	/// Queues the selected action right away, with no target, when it is one that aims at an entity: the
-	/// player picks the action and EntityAIPlugin.CheckAction resolves what it shoots at when its tick comes
-	/// up. Returns false for anything that still needs the player to click a tile.
-	/// Called from the action button and not from SetCurrentActionSelected, which RefreshActionDisplay
-	/// re-enters on every refresh - the action would be queued again on each one.
-	/// </summary>
 	public bool TryRegisterActionWithoutTarget ()
 	{
 		if (hasModActionSelected || m_currentEntityAction == null || m_currentEntityAction.Data.DoesNeedATargetTile())
@@ -953,7 +944,6 @@ public class TurnManager : Singleton<TurnManager>
 				if (_specificTokenCount != -1 && totalCost <= _specificTokenCount)
 				{
 					lastRecordedPosition = GridManager.Instance.Tiles[recordedAction.action.positionAtActionEndID];
-					//Both rotations land in this slot, so the type is what identifies one, not its enumID
 					if (recordedAction.freeAction is RotateEntityAction rotateEntityAction
 						&& rotateEntityAction.targetedOrientationID != null && rotateEntityAction.targetedOrientationID.Length > 0)
 						lastRecordedOrientation = rotateEntityAction.targetedOrientationID[^1];
@@ -1454,10 +1444,6 @@ public class TurnManager : Singleton<TurnManager>
 		}
 	}
 
-	/// <summary>
-	/// A client whose tick finished while it was disconnected never got its barrier answer through, so the
-	/// resume re-sends it. Harmless when the tick is still running, or when the answer already landed.
-	/// </summary>
 	public void NotifyTickCompletionIfDone ()
 	{
 		if (currentPhase == TurnPhase.Playing)
@@ -1514,11 +1500,6 @@ public class TurnManager : Singleton<TurnManager>
 		m_actionsBeingDone.Remove(_entityID);
 	}
 
-	/// <summary>
-	/// IsGameFinished reports in absolute player one / player two terms, so the outcome must travel that way
-	/// and be turned into a local verdict on each peer - the server broadcasting its own result would tell
-	/// the loser it won.
-	/// </summary>
 	public EndLevelPopup.GameResult GetLocalGameResult ( bool _playerOneWin, bool _playerTwoWin )
 	{
 		if (_playerOneWin && _playerTwoWin)

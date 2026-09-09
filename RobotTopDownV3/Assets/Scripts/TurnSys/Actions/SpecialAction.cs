@@ -38,7 +38,6 @@ public class SpecialAction : AEntityAction
 
 	public override void GhostDisplay ( Entity.EntityState _state )
 	{
-		//An action aimed at an entity waits in the queue with no target at all until its tick comes up
 		if (targetTileIDs == null)
 			return;
 

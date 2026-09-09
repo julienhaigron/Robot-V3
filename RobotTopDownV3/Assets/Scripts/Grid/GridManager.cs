@@ -840,13 +840,10 @@ public class GridManager : Singleton<GridManager>
 
 	public Tile.TileDirectionType GetHitTileSide ( Entity _from, Entity _to, bool _didAttackerWinPFC )
 	{
-		//Same fix as the cover check: the flank bonus is read from the tile the exchange actually resolves on.
 		int attackerPosition = GetExchangePositionID(_from, true);
 		int defenderPosition = GetExchangePositionID(_to, _didAttackerWinPFC);
 		int hitOrientation = GetClosestOrientation(m_tiles[attackerPosition], m_tiles[defenderPosition]);
 		int targetOrientation = _to.Displacement.CurrentOrientation;
-		//hitOrientation points attacker -> target, so the side the shot lands on is read from the opposite
-		//direction: facing the same way as the shot means the target has its back to it.
 		int delta = (hitOrientation + 3 - targetOrientation + 6) % 6;
 
 		switch (delta)
@@ -1204,8 +1201,6 @@ public class GridManager : Singleton<GridManager>
 
 					if (IsTileSeenBy(ownerVision.Value, currentTile))
 						ownerVision.Value.lastKnownEnemyPositions[entity] = currentTile;
-					//Only standing on the remembered tile proves it is empty. Counting a neighbour as "checked"
-					//wiped the trail every time any ally walked past it, which is most ticks of a round.
 					else if (ownerVision.Value.lastKnownEnemyPositions.TryGetValue(entity, out Tile lastKnownTile)
 						&& IsTileHoldingAllyOf(ownerVision.Key, lastKnownTile))
 						ownerVision.Value.lastKnownEnemyPositions.Remove(entity);

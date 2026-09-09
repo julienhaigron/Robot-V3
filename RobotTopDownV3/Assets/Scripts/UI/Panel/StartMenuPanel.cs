@@ -54,7 +54,6 @@ public class StartMenuPanel : AUIPanel
 
 	private void OnSaveListChanged ()
 	{
-		//Deleting a save shifts every id above it, so the whole strip is rebuilt rather than patched.
 		ChangeDisplayMode(GameDatas.current.playerSaves.Count > 0 ? StartMenuDisplayMode.LoadSave : StartMenuDisplayMode.Start, true);
 	}
 

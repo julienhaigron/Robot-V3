@@ -27,7 +27,6 @@ public class SaveButton : BaseButton
 		if (m_deleteBtn != null)
 			m_deleteBtn.onClick += OnClickDelete;
 
-		//onEndEdit is the only event that covers both Enter and losing focus, see the unit rename trap.
 		if (m_nameInput != null)
 			m_nameInput.onEndEdit.AddListener(OnEndNameEdit);
 	}
@@ -90,7 +89,6 @@ public class SaveButton : BaseButton
 		if (!m_hasSave)
 			return;
 
-		//Restore the old name rather than let an empty field wipe it.
 		if (!GameDatas.current.RenameSave(m_id, _newName))
 		{
 			m_nameInput.SetTextWithoutNotify(GameDatas.current.playerSaves[m_id].saveName);
@@ -106,7 +104,6 @@ public class SaveButton : BaseButton
 		if (!m_hasSave)
 			return;
 
-		//Deleting a save cannot be undone, so the first click only arms the button.
 		if (!m_isDeleteArmed)
 		{
 			SetDeleteArmed(true);

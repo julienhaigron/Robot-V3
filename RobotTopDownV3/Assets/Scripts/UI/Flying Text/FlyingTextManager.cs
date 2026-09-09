@@ -81,8 +81,6 @@ public class FlyingTextManager : MonoBehaviour
 
 	public FlyingTextConfig config;
 
-	//Kept out of the config on purpose: that class is already serialized in the prefabs, and a field added to
-	//it now comes back at its default rather than at the value written here. On the component it holds.
 	[Title("Outline")]
 	[SerializeField] private bool m_useOutline = true;
 	[SerializeField, ShowIf("@m_useOutline")] private Color m_outlineColor = Color.black;

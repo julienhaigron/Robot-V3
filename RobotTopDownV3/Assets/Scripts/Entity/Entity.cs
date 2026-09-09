@@ -349,7 +349,6 @@ public class Entity : MonoBehaviour
 
 				status.ApplyStatusEffect(remainingDuration, this);
 
-				//A round-long status would otherwise repeat the same countdown line on all ten ticks of a round.
 				if (!status.DoesConsumeDurationThisTick())
 					continue;
 

@@ -101,7 +101,6 @@ public partial class GameDatas : ScriptableObject
 
 		playerSaves.RemoveAt(_saveID);
 
-		//Saves are addressed by their index in the list, so every id above the removed one shifts down with it.
 		if (playerSaves.Count == 0 || game.lastPlayerSaveSelectedID == _saveID)
 			game.lastPlayerSaveSelectedID = -1;
 		else if (game.lastPlayerSaveSelectedID > _saveID)
@@ -126,7 +125,6 @@ public partial class GameDatas : ScriptableObject
 	{
 		public string saveName;
 
-		//DateTime is not serialized by JsonUtility, so the clock is stored as ticks.
 		public long lastSaveTimeTicks = 0;
 
 		public string GetLastSaveTimeText ()
@@ -152,7 +150,6 @@ public partial class GameDatas : ScriptableObject
 		public int cycleCount = 0;
 		public int dayCount = 0;
 
-		//The last days of a cycle are the three tournament rounds, TournamentPanel indexes them as dayCount - 4.
 		public bool IsTournamentDay => dayCount > 3;
 
 		//tutos
@@ -226,8 +223,6 @@ public partial class GameDatas : ScriptableObject
 			onNewDay?.Invoke();
 		}
 
-		//The day 4 tutorial hands the player the credits straight away instead of making them wait
-		//for the timer, so every pending job is marked as due and collected on the next day roll.
 		public void ForceFinishRecycling ()
 		{
 			foreach (DayData.RecyclingComponentData data in dayData.currentlyRecyclingComponents)
@@ -347,8 +342,6 @@ public partial class GameDatas : ScriptableObject
 			equipmentInventory.Remove(_data);
 		}
 
-		//squadUnitsIndex and EntitySavedData.index are positions in allBuiltUnits, so removing a unit
-		//has to shift every index above it or the squad silently points at the wrong units.
 		public bool DisassembleUnit ( EntitySavedData _unit )
 		{
 			if (_unit == null)

@@ -25,7 +25,6 @@ public class ApplyEffectAction : SpecialAction
 				ApplyOnRecordedTargets(user);
 		}
 
-		//base.Perform now schedules EndTick itself, scheduling it here too would end the action twice.
 		base.Perform(_state);
 	}
 
@@ -35,8 +34,6 @@ public class ApplyEffectAction : SpecialAction
 		List<Entity> affectedEntities = new();
 		List<Tile> effectOrigins = new();
 
-		//The whole zone is read before anything is applied: an effect that displaces a unit would otherwise
-		//change the occupancy of tiles this scan has not reached yet.
 		foreach (Tile center in GetAoECenterTiles())
 		{
 			foreach (Tile tile in _user.Equipment.GetTilesInAoERange(this, center))

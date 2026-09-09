@@ -17,7 +17,6 @@ public class DialogueHighlightTask : Task
     {
         base.OnStart(_context);
 
-        //The in game console draws its own highlight from the id, it never needs the zone object.
         if (_context.UI.currentPanel is InGamePanel inGamePanel)
 		{
             inGamePanel.TutoConsole.PlayDialogue(dialogue, null, highlightZoneID);
@@ -25,8 +24,6 @@ public class DialogueHighlightTask : Task
             return;
         }
 
-        //Indexing the dictionary here used to throw out of TaskManager.Update and stall the whole tutorial
-        //whenever a zone was not registered yet; the dialogue is worth playing even without its highlight.
         if (FTUEManager.Instance.TryGetTutorialHighlightZone(highlightZoneID, out TutorialHighlightZone highlightZone))
         {
             highlightZone.Show();
