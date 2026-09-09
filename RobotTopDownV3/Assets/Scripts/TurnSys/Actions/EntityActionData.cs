@@ -43,7 +43,7 @@ public class EntityActionData : AParsableScriptableObject
 	public float visualEffectDuration = .3f;
 
 	[ShowIf("@visualEffectType == VisualEffectType.Projectile")] public PoolData projectilePool;
-	[ShowIf("@visualEffectType == VisualEffectType.Projectile")] public float projectileSpeed = 10f;
+	[ShowIf("@visualEffectType == VisualEffectType.Projectile")] public float projectileSpeed = 40f;
 	[ShowIf("@visualEffectType == VisualEffectType.Spell")] public GameObject spellVfxPrefab;
 	[ShowIf("@visualEffectType == VisualEffectType.Spell")] public float spellVfxLifetime = 2f;
 

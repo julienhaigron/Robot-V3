@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,7 +6,7 @@ using Unity.Netcode;
 
 public class SpecialAction : AEntityAction
 {
-	private const float ProjectileTimeout = 10f;
+	private const float ProjectileTimeout = 3f;
 
 	public override void Prepare ( Entity.EntityState _state )
 	{
@@ -110,12 +111,12 @@ public class SpecialAction : AEntityAction
 			yield break;
 		}
 
-		GameObject vfx = Object.Instantiate(Data.spellVfxPrefab, GetVisualTargetPosition(), Quaternion.identity);
+		GameObject vfx = UnityEngine.Object.Instantiate(Data.spellVfxPrefab, GetVisualTargetPosition(), Quaternion.identity);
 
 		yield return new WaitForSeconds(Data.visualEffectDuration);
 		ApplyActionEffect();
 
-		Object.Destroy(vfx, Data.spellVfxLifetime);
+		UnityEngine.Object.Destroy(vfx, Data.spellVfxLifetime);
 	}
 
 	private IEnumerator ProjectileVisualCR ()
@@ -124,40 +125,19 @@ public class SpecialAction : AEntityAction
 		Tile targetTile = GetVisualTargetTile();
 		Entity targetEntity = GetVisualTargetEntity();
 
-		if (Data.projectilePool == null || user == null || (targetTile == null && targetEntity == null))
+		bool isProjectileDone = false;
+		bool wasEffectApplied = false;
+
+		if (Data.projectilePool == null || user == null || (targetTile == null && targetEntity == null)
+			|| !TryLaunchProjectile(user, targetTile, targetEntity
+				, () => { wasEffectApplied = true; ApplyActionEffect(); }
+				, () => isProjectileDone = true))
 		{
 			yield return CharacterAnimationVisualCR();
 			yield break;
 		}
 
-		ProjectileData projectileData = new()
-		{
-			owner = user,
-			speed = Vector2.right * Data.projectileSpeed,
-			attackData = Data,
-			onHitSFXID = Data.onSingleAttackHitSFXID,
-			onHitVFXPool = Data.onSingleAttackHitVFXPool,
-			isAttackSuccessful = true,
-			damages = new()
-		};
-
-		projectileData.SetTarget(targetEntity != null ? ProjectileData.TargetType.Entity : ProjectileData.TargetType.Tile
-			, targetEntity != null ? null : targetTile, targetEntity, null);
-
-		bool isProjectileDone = false;
-		bool wasEffectApplied = false;
-
-		Projectile projectile = Data.projectilePool.Get<Projectile>(GetProjectileOrigin(user), Quaternion.identity);
-		projectile.SetProjectileDataAndLaunch(projectileData
-			, ( impactTile ) =>
-			{
-				wasEffectApplied = true;
-				ApplyActionEffect();
-			}
-			, () => isProjectileDone = true
-			, false);
-
-		//A projectile that never despawns would hold the tick open for good, so the sequence gives up on it.
+		//A projectile that misses everything never despawns, and the tick cannot end until this returns.
 		float elapsed = 0f;
 		while (!isProjectileDone && elapsed < ProjectileTimeout)
 		{
@@ -167,6 +147,47 @@ public class SpecialAction : AEntityAction
 
 		if (!wasEffectApplied)
 			ApplyActionEffect();
+	}
+
+	private bool TryLaunchProjectile ( Entity _user, Tile _targetTile, Entity _targetEntity, Action _onImpact, Action _onDespawn )
+	{
+		try
+		{
+			Vector3 origin = GetProjectileOrigin(_user);
+			Vector3 direction = GetVisualTargetPosition() - origin;
+
+			//Projectile.Launch pushes along transform.forward, so an unrotated one flies off to world +Z
+			//and never reaches anything.
+			Quaternion rotation = direction.sqrMagnitude > .0001f
+				? Quaternion.LookRotation(direction.normalized)
+				: _user.transform.rotation;
+
+			Projectile projectile = Data.projectilePool.Get<Projectile>(origin, rotation);
+			if (projectile == null)
+				return false;
+
+			ProjectileData projectileData = new()
+			{
+				owner = _user,
+				speed = Vector2.right * Data.projectileSpeed,
+				attackData = Data,
+				onHitSFXID = Data.onSingleAttackHitSFXID,
+				onHitVFXPool = Data.onSingleAttackHitVFXPool,
+				isAttackSuccessful = true,
+				damages = new()
+			};
+
+			projectileData.SetTarget(_targetEntity != null ? ProjectileData.TargetType.Entity : ProjectileData.TargetType.Tile
+				, _targetEntity != null ? null : _targetTile, _targetEntity, null);
+
+			projectile.SetProjectileDataAndLaunch(projectileData, ( impactTile ) => _onImpact(), _onDespawn, false);
+			return true;
+		}
+		catch (Exception ex)
+		{
+			Debug.LogError("Projectile visual effect failed for action " + Data.name + ", falling back on the animation: " + ex);
+			return false;
+		}
 	}
 
 	private Vector3 GetProjectileOrigin ( Entity _user )

@@ -30,7 +30,7 @@ MonoBehaviour:
   visualEffectType: 0
   visualEffectDuration: 0.3
   projectilePool: {fileID: 11400000, guid: 8b811996c2199ba4abd49242e01a6d56, type: 2}
-  projectileSpeed: 10
+  projectileSpeed: 40
   spellVfxPrefab: {fileID: 0}
   spellVfxLifetime: 2
   conditionType: 0
