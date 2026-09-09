@@ -10,8 +10,23 @@ public class PushOrPullPassiveEffect : AEntityPassiveEffect
 
 	public override void ApplyEffect ( Entity _entity, Entity _targetEntity, PassiveEffectContainer _effectContainer )
 	{
+		ApplyEffect(_entity, _targetEntity, _effectContainer, null);
+	}
+
+	public override void ApplyEffect ( Entity _entity, Entity _targetEntity, PassiveEffectContainer _effectContainer, Tile _originTile )
+	{
 		Tile origin = _targetEntity.Displacement.Coordinates.GetTile();
-		int direction = GridManager.Instance.GetClosestOrientation(origin, _entity.Displacement.Coordinates.GetTile());
+
+		//A unit standing on the impact tile has no direction to be thrown along, so it falls back to the
+		//caster - the blast still reached it from there.
+		Tile from = _originTile == null || _originTile == origin ? _entity.Displacement.Coordinates.GetTile() : _originTile;
+		if (from == origin)
+		{
+			base.ApplyEffect(_entity, _targetEntity, _effectContainer);
+			return;
+		}
+
+		int direction = GridManager.Instance.GetClosestOrientation(origin, from);
 		if (movementStrength > 0)
 			direction = (direction + 3) % HexDirectionCount;
 

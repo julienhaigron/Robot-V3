@@ -15,39 +15,92 @@ public class ApplyEffectAction : SpecialAction
 
 	protected override void Perform ( Entity.EntityState _state )
 	{
-		//Guarded: a Tile targeted effect can legitimately have no entity recorded at all.
-		int targetAmount = targetedEntityIDs == null ? 0 : targetedEntityIDs.Length;
-		for (int targetCount = 0; targetCount < targetAmount; targetCount++)
+		Entity user = PerformingEntity;
+
+		if (user != null && Data.passiveEffects != null && Data.passiveEffects.Length > 0)
 		{
 			if (Data.aoeType != EntityActionData.AOEType.Noone)
-			{
-				Entity user = GameManager.Instance.GetEntityFromID(performingEntityID);
-				int maxDist = Data.GetMaxRange(this, PerformingEntity, null);
-				int minDist = Data.minDistance;
-				List<Tile> tilesInEffectRange = GridManager.Instance.GetTilesInVisionRange(GridManager.Instance.Tiles[TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntityID)], minDist, maxDist, false, true, false);
-				foreach (Tile tile in tilesInEffectRange)
-				{
-					if (Data.targetType == EntityActionData.TargetType.Tile)
-					{
-						foreach (AEntityPassiveEffect.PassiveEffectContainer effect in Data.passiveEffects)
-							GameAssets.current.game.entityEffects[effect.enumID].ApplyEffect(tile);
-					}
-					else
-					{
-						foreach (AEntityPassiveEffect.PassiveEffectContainer effect in Data.passiveEffects)
-							GameAssets.current.game.entityEffects[effect.enumID].ApplyEffect(tile.GetCurrentEntity(), GameManager.Instance.GetEntityFromID(targetedEntityIDs[targetCount]), effect);
-					}
-				}
-			}
+				ApplyOnAoEZone(user);
 			else
-			{
-				foreach (AEntityPassiveEffect.PassiveEffectContainer effect in Data.passiveEffects)
-					GameAssets.current.game.entityEffects[effect.enumID].ApplyEffect(GameManager.Instance.GetEntityFromID(performingEntityID), GameManager.Instance.GetEntityFromID(targetedEntityIDs[targetCount]), effect);
-			}
+				ApplyOnRecordedTargets(user);
 		}
 
 		//base.Perform now schedules EndTick itself, scheduling it here too would end the action twice.
 		base.Perform(_state);
+	}
+
+	private void ApplyOnAoEZone ( Entity _user )
+	{
+		HashSet<Tile> affectedTiles = new();
+		List<Entity> affectedEntities = new();
+		List<Tile> effectOrigins = new();
+
+		//The whole zone is read before anything is applied: an effect that displaces a unit would otherwise
+		//change the occupancy of tiles this scan has not reached yet.
+		foreach (Tile center in GetAoECenterTiles())
+		{
+			foreach (Tile tile in _user.Equipment.GetTilesInAoERange(this, center))
+			{
+				if (!affectedTiles.Add(tile))
+					continue;
+
+				if (Data.doesAffectTile)
+				{
+					foreach (AEntityPassiveEffect.PassiveEffectContainer effect in Data.passiveEffects)
+						GameAssets.current.game.entityEffects[effect.enumID].ApplyEffect(tile);
+				}
+
+				Entity hitEntity = tile.GetCurrentEntity();
+				if (hitEntity == null || affectedEntities.Contains(hitEntity))
+					continue;
+
+				affectedEntities.Add(hitEntity);
+				effectOrigins.Add(center);
+			}
+		}
+
+		for (int i = 0; i < affectedEntities.Count; i++)
+			ApplyEveryEffectOn(_user, affectedEntities[i], effectOrigins[i]);
+	}
+
+	private void ApplyOnRecordedTargets ( Entity _user )
+	{
+		int targetAmount = targetedEntityIDs == null ? 0 : targetedEntityIDs.Length;
+		for (int targetCount = 0; targetCount < targetAmount; targetCount++)
+		{
+			Entity target = GameManager.Instance.GetEntityFromID(targetedEntityIDs[targetCount]);
+			if (target != null)
+				ApplyEveryEffectOn(_user, target, null);
+		}
+	}
+
+	private void ApplyEveryEffectOn ( Entity _user, Entity _target, Tile _originTile )
+	{
+		foreach (AEntityPassiveEffect.PassiveEffectContainer effect in Data.passiveEffects)
+			GameAssets.current.game.entityEffects[effect.enumID].ApplyEffect(_user, _target, effect, _originTile);
+	}
+
+	private List<Tile> GetAoECenterTiles ()
+	{
+		List<Tile> centers = new();
+
+		if (Data.aoECenterType == EntityActionData.AOECenterType.Target && targetTileIDs != null)
+		{
+			foreach (int tileID in targetTileIDs)
+			{
+				if (tileID < 0 || tileID >= GridManager.Instance.Tiles.Length)
+					continue;
+
+				Tile tile = GridManager.Instance.Tiles[tileID];
+				if (!centers.Contains(tile))
+					centers.Add(tile);
+			}
+		}
+
+		if (centers.Count == 0)
+			centers.Add(GridManager.Instance.Tiles[TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntityID)]);
+
+		return centers;
 	}
 
 	public override void Display ( TurnManager.RecordedAction _recordedAction )
