@@ -23,6 +23,7 @@ public class TurnShieldAction : SpecialAction
 
 	public override void Prepare ( Entity.EntityState _state )
 	{
+		base.Prepare(_state);
 
 	}
 

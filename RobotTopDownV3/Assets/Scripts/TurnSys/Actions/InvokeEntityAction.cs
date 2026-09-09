@@ -18,6 +18,7 @@ public class InvokeEntityAction : SpecialAction
 
 	public override void Prepare ( Entity.EntityState _state )
 	{
+		base.Prepare(_state);
 		isActionCanceled = false;
 		newEntityID = GameManager.Instance.PlayersEntityAnchor[GameManager.Instance.PlayerID].Entities[^1].ID + 1;
 		foreach(int tileID in targetTileIDs)

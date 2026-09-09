@@ -41,6 +41,32 @@ public class Weapon : MonoBehaviour
 		m_singleAttackDuration = new WaitForSeconds(_data.singleAttackAnimationDuration);
 	}
 
+	protected virtual void Awake ()
+	{
+		SilenceAttackFeedback();
+	}
+
+	protected virtual void OnEnable ()
+	{
+		SilenceAttackFeedback();
+	}
+
+	private void SilenceAttackFeedback ()
+	{
+		if (m_onPerformPS == null)
+			return;
+
+		foreach (ParticleSystem ps in m_onPerformPS)
+		{
+			if (ps == null)
+				continue;
+
+			ParticleSystem.MainModule main = ps.main;
+			main.playOnAwake = false;
+			ps.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+		}
+	}
+
 	private void OnDestroy ()
 	{
 		if (m_attackCR != null && GameManager.Instance != null)

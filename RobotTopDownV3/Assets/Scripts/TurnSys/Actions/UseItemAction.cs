@@ -24,6 +24,7 @@ public class UseItemAction : SpecialAction
 
 	public override void Prepare ( Entity.EntityState _state )
 	{
+		base.Prepare(_state);
 		isActionCanceled = false;
 		//newEntityID = GameManager.Instance.PlayersEntityAnchor[GameManager.Instance.PlayerID].Entities[^1].ID + 1;
 		//GridManager.Instance.Tiles[targetTileID].SetItem(GameManager.Instance.GetEntityFromID(newEntityID), false);

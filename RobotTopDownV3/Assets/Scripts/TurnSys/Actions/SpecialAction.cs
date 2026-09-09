@@ -8,13 +8,44 @@ public class SpecialAction : AEntityAction
 
 	public override void Prepare ( Entity.EntityState _state )
 	{
-		/*if (targetedEntityID == -1 && GameManager.Instance.GetEntityFromID(performingEntityID).AI.TargetedEntity != null)
-			targetedEntityID = GameManager.Instance.GetEntityFromID(performingEntityID).AI.TargetedEntity.ID;
-		else if(targetedEntityID == -1)
+		if (TurnManager.currentTick == TimeAtStartPerform)
+			LogUseSpecialAction();
+	}
+
+	protected void LogUseSpecialAction ()
+	{
+		Entity user = PerformingEntity;
+		if (user == null)
+			return;
+
+		List<string> targetNames = new();
+		if (targetedEntityIDs != null)
 		{
-			//TODO : handle this situation
-			Debug.Log("ERROR : no available target");
-		}*/
+			foreach (int targetID in targetedEntityIDs)
+			{
+				Entity target = GameManager.Instance.GetEntityFromID(targetID);
+				if (target != null && !targetNames.Contains(target.Data.name))
+					targetNames.Add(target.Data.name);
+			}
+		}
+
+		Entity firstTarget = targetNames.Count == 0 || targetedEntityIDs == null
+			? null : GameManager.Instance.GetEntityFromID(targetedEntityIDs[0]);
+
+		LocalizationManager localization = LocalizationManager.Instance;
+
+		LogConsole.AddLog(TagLogMessage(string.Format(localization.Get(LocalizationKey.log_use_tool), user.Data.name
+				, Data.GetLocalizedName()
+				, targetNames.Count == 0 ? localization.Get(LocalizationKey.log_use_weapon_ground) : string.Join(", ", targetNames)))
+			, LogConsole.LogEventType.UseTool
+			, new LogConsole.LogDetails("usetool_" + LogConsole.Instance.LogsDetails.Keys.Count, Data.GetLocalizedName(), Data.GetDescription()));
+
+		foreach (AEntityStatus status in Data.GetAppliedStatuses(this, user, firstTarget))
+		{
+			LogConsole.AddLog(string.Format(localization.Get(LocalizationKey.log_effect), status.GetLocalizedName())
+				, LogConsole.LogEventType.UseTool
+				, new LogConsole.LogDetails("effect_" + LogConsole.Instance.LogsDetails.Keys.Count, status.GetLocalizedName(), status.GetTooltip(status.duration)));
+		}
 	}
 
 	public override ActionConflictResultInfo CheckConflict ( AEntityAction _otherAction, bool _isCheck = true )
