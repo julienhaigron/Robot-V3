@@ -36,7 +36,10 @@ public class EntityComponentConfigPanel : AUIPanel
 		switch (_equipmentData.GetData<EntityEquipmentData>().GetEquipmentType())
 		{
 			case EntityEquipmentData.EquipmentType.Frame:
-				FrameEquipmentData chassisData = GameAssets.current.equipments[_data.frame.dataID] as FrameEquipmentData;
+				FrameEquipmentData chassisData = _data.frame == null ? null : _data.frame.GetData<FrameEquipmentData>();
+				if (chassisData == null)
+					break;
+
 				
 				m_subPartGrid.Init(m_slots[0], _data, _data.frame
 					, item => item != null && item.TryGetData(out EntityEquipmentData _data) && (_data.GetEquipmentType() == EntityEquipmentData.EquipmentType.Armor || _data.GetEquipmentType() == EntityEquipmentData.EquipmentType.Occultor)
@@ -47,14 +50,14 @@ public class EntityComponentConfigPanel : AUIPanel
 					if (chassisData.armouringSlotAvailable > i)
 					{
 						m_slots[i].gameObject.SetActive(true);
-						m_slots[i].Init(m_subPartGrid, _data, _data.auxiliar.Length <= i ? null : _data.auxiliar[i]
+						m_slots[i].Init(m_subPartGrid, _data, _data.auxiliar == null || _data.auxiliar.Length <= i ? null : _data.auxiliar[i]
 							, item => item != null && item.TryGetData(out EntityEquipmentData _data) && (_data.GetEquipmentType() == EntityEquipmentData.EquipmentType.Armor)
 							, ComponentDisplay.DisplayMode.Hangar);
 					}
 					else if(chassisData.armouringSlotAvailable + chassisData.occultorSlotAvailable > i)
 					{
 						m_slots[i].gameObject.SetActive(true);
-						m_slots[i].Init(m_subPartGrid, _data, _data.auxiliar.Length <= i ? null : _data.auxiliar[i]
+						m_slots[i].Init(m_subPartGrid, _data, _data.auxiliar == null || _data.auxiliar.Length <= i ? null : _data.auxiliar[i]
 							, item => item != null && item.TryGetData(out EntityEquipmentData _data) && (_data.GetEquipmentType() == EntityEquipmentData.EquipmentType.Occultor)
 							, ComponentDisplay.DisplayMode.Hangar);
 					}
@@ -63,7 +66,10 @@ public class EntityComponentConfigPanel : AUIPanel
 				}
 				break;
 			case EntityEquipmentData.EquipmentType.Brain:
-				BrainEquipmentData brainData = GameAssets.current.equipments[_data.brain.dataID] as BrainEquipmentData;
+				BrainEquipmentData brainData = _data.brain == null ? null : _data.brain.GetData<BrainEquipmentData>();
+				if (brainData == null)
+					break;
+
 
 				m_subPartGrid.Init(m_slots[0], _data, _data.brain
 					, item => item != null && item.TryGetData(out EntityEquipmentData _data) && _data.GetEquipmentType() == EntityEquipmentData.EquipmentType.Chipset
@@ -74,7 +80,7 @@ public class EntityComponentConfigPanel : AUIPanel
 					if (brainData.chipsetSlotAvailable > i)
 					{
 						m_slots[i].gameObject.SetActive(true);
-						m_slots[i].Init(m_subPartGrid, _data, _data.chipsets.Length <= i ? null : _data.chipsets[i]
+						m_slots[i].Init(m_subPartGrid, _data, _data.chipsets == null || _data.chipsets.Length <= i ? null : _data.chipsets[i]
 							, item => item != null && item.TryGetData(out EntityEquipmentData _data) && _data.GetEquipmentType() == EntityEquipmentData.EquipmentType.Chipset
 							, ComponentDisplay.DisplayMode.Hangar);
 					}
@@ -86,7 +92,10 @@ public class EntityComponentConfigPanel : AUIPanel
 				//no sub parts
 				break;
 			case EntityEquipmentData.EquipmentType.NeuronalMembrane:
-				NeuronalMembraneEquipmentData neuronalMembraneData = GameAssets.current.equipments[_data.neuronalMembrane.dataID] as NeuronalMembraneEquipmentData;
+				NeuronalMembraneEquipmentData neuronalMembraneData = _data.neuronalMembrane == null ? null : _data.neuronalMembrane.GetData<NeuronalMembraneEquipmentData>();
+				if (neuronalMembraneData == null)
+					break;
+
 
 				m_subPartGrid.Init(m_slots[0], _data, _data.neuronalMembrane
 					, item => item != null && item.TryGetData(out EntityEquipmentData _data) && (_data.GetEquipmentType() == EntityEquipmentData.EquipmentType.Weapon || _data.GetEquipmentType() == EntityEquipmentData.EquipmentType.Tool)
@@ -97,7 +106,7 @@ public class EntityComponentConfigPanel : AUIPanel
 					if (neuronalMembraneData.equipmentSlotAvailable > i)
 					{
 						m_slots[i].gameObject.SetActive(true);
-						m_slots[i].Init(m_subPartGrid, _data, _data.arms.Length <= i ? null : _data.arms[i]
+						m_slots[i].Init(m_subPartGrid, _data, _data.arms == null || _data.arms.Length <= i ? null : _data.arms[i]
 							, item => item != null && item.TryGetData(out EntityEquipmentData _data) && (_data.GetEquipmentType() == EntityEquipmentData.EquipmentType.Weapon || _data.GetEquipmentType() == EntityEquipmentData.EquipmentType.Tool)
 							, ComponentDisplay.DisplayMode.Hangar);
 					}

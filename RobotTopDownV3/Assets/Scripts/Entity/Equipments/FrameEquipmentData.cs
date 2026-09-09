@@ -54,10 +54,9 @@ public class EntitySavedData : INetworkSerializable
 
 	public int currentHp;
 
-	public FrameEquipmentData FrameData => frame == null || string.IsNullOrEmpty(frame.dataID) ? null : GameAssets.current.equipments[frame.dataID] as FrameEquipmentData;
-	public ReactorEquipmentData ReactorData => reactor == null || string.IsNullOrEmpty(reactor.dataID) ? null : GameAssets.current.equipments[reactor.dataID] as ReactorEquipmentData;
-	public NeuronalMembraneEquipmentData NeuronalMembraneData => neuronalMembrane == null || string.IsNullOrEmpty(neuronalMembrane.dataID) ? null : GameAssets.current.equipments[neuronalMembrane.dataID] as NeuronalMembraneEquipmentData;
-	public BrainEquipmentData BrainData => brain == null || string.IsNullOrEmpty(brain.dataID) ? null : GameAssets.current.equipments[brain.dataID] as BrainEquipmentData;
+	//Through Component.GetData, which is the only lookup that survives a dataID missing from GameAssets.
+	public FrameEquipmentData FrameData => frame == null ? null : frame.GetData<FrameEquipmentData>();
+	public ReactorEquipmentData ReactorData => reactor == null ? null : reactor.GetData<ReactorEquipmentData>();
 
 	public void NetworkSerialize<T> ( BufferSerializer<T> serializer ) where T : IReaderWriter
 	{
@@ -175,12 +174,11 @@ public class EntitySavedData : INetworkSerializable
 		totalEnergyUsed += FrameData.energyCost;
 		totalEnergyUsed += BrainData.energyCost;
 		totalEnergyUsed += NeuronalMembraneData.energyCost;
-		foreach (GameDatas.PlayerSave.Component equipment in arms)
-			totalEnergyUsed += GameAssets.current.equipments[equipment.dataID].energyCost;
-		foreach (GameDatas.PlayerSave.Component equipment in auxiliar)
-			totalEnergyUsed += GameAssets.current.equipments[equipment.dataID].energyCost;
-		foreach (GameDatas.PlayerSave.Component equipment in chipsets)
-			totalEnergyUsed += GameAssets.current.equipments[equipment.dataID].energyCost;
+
+		//A unit being built has null slot arrays and empty slots inside them; GetAllSubEquipments already
+		foreach (GameDatas.PlayerSave.Component equipment in GetAllSubEquipments())
+			if (equipment.TryGetData(out EntityEquipmentData data))
+				totalEnergyUsed += data.energyCost;
 
 		return totalEnergyUsed;
 	}
@@ -213,7 +211,7 @@ public class EntitySavedData : INetworkSerializable
 		{
 			foreach (GameDatas.PlayerSave.Component container in auxiliar)
 			{
-				if (!container.isDamaged && GameAssets.current.equipments[container.dataID] is OccultorEquipmentData occultor)
+				if (container != null && !container.isDamaged && container.TryGetData(out OccultorEquipmentData occultor))
 				{
 					foreach (EntityEquipmentData.SecondaryStat statBonus in occultor.statBonuses)
 					{
@@ -221,7 +219,7 @@ public class EntitySavedData : INetworkSerializable
 							totalBonus += statBonus.value;
 					}
 				}
-				else if (!container.isDamaged && GameAssets.current.equipments[container.dataID] is ArmorEquipmentData armor)
+				else if (container != null && !container.isDamaged && container.TryGetData(out ArmorEquipmentData armor))
 				{
 					foreach (EntityEquipmentData.SecondaryStat statBonus in armor.statBonuses)
 					{
@@ -261,21 +259,21 @@ public class EntitySavedData : INetworkSerializable
 
 		foreach (GameDatas.PlayerSave.Component container in arms)
 		{
-			if (!container.isDamaged && GameAssets.current.equipments[container.dataID] is EntityEquipmentData equipment && equipment.knownedActions.Contains(_actionID))
+			if (container != null && !container.isDamaged && container.TryGetData(out EntityEquipmentData equipment) && equipment.knownedActions.Contains(_actionID))
 			{
 				passiveEffects.AddRange(equipment.passiveEffects);
 			}
 		}
 		foreach (GameDatas.PlayerSave.Component container in auxiliar)
 		{
-			if (!container.isDamaged && GameAssets.current.equipments[container.dataID] is EntityEquipmentData equipment && equipment.knownedActions.Contains(_actionID))
+			if (container != null && !container.isDamaged && container.TryGetData(out EntityEquipmentData equipment) && equipment.knownedActions.Contains(_actionID))
 			{
 				passiveEffects.AddRange(equipment.passiveEffects);
 			}
 		}
 		foreach (GameDatas.PlayerSave.Component container in chipsets)
 		{
-			if (!container.isDamaged && GameAssets.current.equipments[container.dataID] is EntityEquipmentData equipment)
+			if (container != null && !container.isDamaged && container.TryGetData(out EntityEquipmentData equipment))
 			{
 				passiveEffects.AddRange(equipment.passiveEffects);
 			}
@@ -390,7 +388,7 @@ public class EntitySavedData : INetworkSerializable
 		}*/
 		foreach (GameDatas.PlayerSave.Component container in auxiliar)
 		{
-			if (!container.isDamaged && GameAssets.current.equipments[container.dataID] is OccultorEquipmentData occultor)
+			if (container != null && !container.isDamaged && container.TryGetData(out OccultorEquipmentData occultor))
 			{
 				foreach (EntityEquipmentData.SecondaryStat statBonus in occultor.statBonuses)
 				{
@@ -422,7 +420,7 @@ public class EntitySavedData : INetworkSerializable
 		float result = 0;
 		foreach (GameDatas.PlayerSave.Component container in auxiliar)
 		{
-			if (!container.isDamaged && GameAssets.current.equipments[container.dataID] is OccultorEquipmentData occultor)
+			if (container != null && !container.isDamaged && container.TryGetData(out OccultorEquipmentData occultor))
 			{
 				if (_isVisual)
 					result += occultor.visualCamo;
@@ -503,7 +501,7 @@ public class EntitySavedData : INetworkSerializable
 		{
 			foreach (GameDatas.PlayerSave.Component container in auxiliar)
 			{
-				if (GameAssets.current.equipments[container.dataID] is OccultorEquipmentData occultor)
+				if (container != null && container.TryGetData(out OccultorEquipmentData occultor))
 				{
 					foreach (EntityEquipmentData.StatDescription stat in occultor.GetDesciption())
 					{
@@ -513,7 +511,7 @@ public class EntitySavedData : INetworkSerializable
 							statsDictionary.Add(stat.ID, stat);
 					}
 				}
-				else if (GameAssets.current.equipments[container.dataID] is ArmorEquipmentData armor)
+				else if (container != null && container.TryGetData(out ArmorEquipmentData armor))
 				{
 					foreach (EntityEquipmentData.StatDescription stat in armor.GetDesciption())
 					{
@@ -529,7 +527,7 @@ public class EntitySavedData : INetworkSerializable
 		{
 			foreach (GameDatas.PlayerSave.Component container in arms)
 			{
-				if (GameAssets.current.equipments[container.dataID] is WeaponEquipmentData weapon)
+				if (container != null && container.TryGetData(out WeaponEquipmentData weapon))
 				{
 					foreach (EntityEquipmentData.StatDescription stat in weapon.GetDesciption())
 					{
@@ -539,7 +537,7 @@ public class EntitySavedData : INetworkSerializable
 							statsDictionary.Add(stat.ID, stat);
 					}
 				}
-				else if (GameAssets.current.equipments[container.dataID] is ToolEquipmentData tool)
+				else if (container != null && container.TryGetData(out ToolEquipmentData tool))
 				{
 					foreach (EntityEquipmentData.StatDescription stat in tool.GetDesciption())
 					{
@@ -555,7 +553,7 @@ public class EntitySavedData : INetworkSerializable
 		{
 			foreach (GameDatas.PlayerSave.Component container in chipsets)
 			{
-				if (GameAssets.current.equipments[container.dataID] is ChipsetEquipmentData chipset)
+				if (container != null && container.TryGetData(out ChipsetEquipmentData chipset))
 				{
 					foreach (EntityEquipmentData.StatDescription stat in chipset.GetDesciption())
 					{

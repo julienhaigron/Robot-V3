@@ -15,10 +15,17 @@ public class EntityDisplay : MonoBehaviour
     {
         m_unitData = _unitData;
         m_title.text = _unitData.name;
-        m_iconImg.sprite = GameAssets.current.equipments[_unitData.frame.dataID].icon;
-		for (int i = 0; i < _unitData.arms.Length; i++)
+        if (_unitData.frame != null && _unitData.frame.TryGetData(out EntityEquipmentData frameData))
+            m_iconImg.sprite = frameData.icon;
+
+        //A unit still being built has a null arms array, and it can hold more arms than there are icon slots.
+        if (_unitData.arms != null)
 		{
-            m_armsImgs[i].sprite = GameAssets.current.equipments[_unitData.arms[i].dataID].icon;
+            for (int i = 0; i < _unitData.arms.Length && i < m_armsImgs.Length; i++)
+		    {
+                if (_unitData.arms[i] != null && _unitData.arms[i].TryGetData(out EntityEquipmentData armData))
+                    m_armsImgs[i].sprite = armData.icon;
+		    }
 		}
         m_openEntityConfigBtn.onClick += OnClickOpenEntityConfigBtn;
     }

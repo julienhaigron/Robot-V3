@@ -334,7 +334,6 @@ public partial class GameDatas : ScriptableObject
 
 		public void AddEquipmentToInventory(Component _equipment )
 		{
-			if (_equipment == null)
 				return;
 
 			_equipment.acquisitionDateTicks = DateTime.UtcNow.Ticks;

@@ -349,12 +349,17 @@ public class EntityConfigPanel : AUIPanel
 
 	#region Callbacks
 
+	private static List<GameDatas.PlayerSave.Component> ToSafeList ( GameDatas.PlayerSave.Component[] _slots )
+	{
+		return _slots == null ? new() : _slots.ToList();
+	}
+
 	private void OnItemAddedOnSubSlot ( ComponentDisplay _display, EntityEquipmentData.EquipmentType _type )
 	{
 		switch (_type)
 		{
 			case EntityEquipmentData.EquipmentType.Frame:
-				List<GameDatas.PlayerSave.Component> newArray = m_entityData.auxiliar.ToList();
+				List<GameDatas.PlayerSave.Component> newArray = ToSafeList(m_entityData.auxiliar);
 				newArray.Add(_display.SavedData);
 				m_entityData.auxiliar = newArray.ToArray();
 				for (int i = 0; i < m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Frame].slots.Count; i++)
@@ -387,7 +392,7 @@ public class EntityConfigPanel : AUIPanel
 
 				break;
 			case EntityEquipmentData.EquipmentType.Brain:
-				List<GameDatas.PlayerSave.Component> newArray2 = m_entityData.chipsets.ToList();
+				List<GameDatas.PlayerSave.Component> newArray2 = ToSafeList(m_entityData.chipsets);
 				newArray2.Add(_display.SavedData);
 				m_entityData.chipsets = newArray2.ToArray();
 				for (int i = 0; i < m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Brain].slots.Count; i++)
@@ -406,7 +411,7 @@ public class EntityConfigPanel : AUIPanel
 				//no interaction possible
 				break;
 			case EntityEquipmentData.EquipmentType.NeuronalMembrane:
-				List<GameDatas.PlayerSave.Component> newArray3 = m_entityData.arms.ToList();
+				List<GameDatas.PlayerSave.Component> newArray3 = ToSafeList(m_entityData.arms);
 				newArray3.Add(_display.SavedData);
 				m_entityData.arms = newArray3.ToArray();
 				for (int i = 0; i < m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.NeuronalMembrane].slots.Count; i++)
@@ -431,7 +436,7 @@ public class EntityConfigPanel : AUIPanel
 		switch (_type)
 		{
 			case EntityEquipmentData.EquipmentType.Frame:
-				List<GameDatas.PlayerSave.Component> newArray = m_entityData.auxiliar.ToList();
+				List<GameDatas.PlayerSave.Component> newArray = ToSafeList(m_entityData.auxiliar);
 				newArray.Remove(_display.SavedData);
 				m_entityData.auxiliar = newArray.ToArray();
 				for (int i = 0; i < m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Frame].slots.Count; i++)
@@ -464,7 +469,7 @@ public class EntityConfigPanel : AUIPanel
 
 				break;
 			case EntityEquipmentData.EquipmentType.Brain:
-				List<GameDatas.PlayerSave.Component> newArray2 = m_entityData.chipsets.ToList();
+				List<GameDatas.PlayerSave.Component> newArray2 = ToSafeList(m_entityData.chipsets);
 				newArray2.Remove(_display.SavedData);
 				m_entityData.chipsets = newArray2.ToArray();
 				for (int i = 0; i < m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Brain].slots.Count; i++)
@@ -483,7 +488,7 @@ public class EntityConfigPanel : AUIPanel
 				//no interaction possible
 				break;
 			case EntityEquipmentData.EquipmentType.NeuronalMembrane:
-				List<GameDatas.PlayerSave.Component> newArray3 = m_entityData.arms.ToList();
+				List<GameDatas.PlayerSave.Component> newArray3 = ToSafeList(m_entityData.arms);
 				newArray3.Remove(_display.SavedData);
 				m_entityData.arms = newArray3.ToArray();
 				for (int i = 0; i < m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.NeuronalMembrane].slots.Count; i++)
@@ -533,6 +538,10 @@ public class EntityConfigPanel : AUIPanel
 		switch (_type)
 		{
 			case EntityEquipmentData.EquipmentType.Frame:
+				//FrameData is derived from frame, so the slot count has to be read before clearing it.
+				int auxiliarSlotCount = m_entityData.FrameData == null ? 0
+					: m_entityData.FrameData.armouringSlotAvailable + m_entityData.FrameData.occultorSlotAvailable;
+
 				m_entityData.frame = null;
 				if (m_entityData.auxiliar != null)
 				{
@@ -541,7 +550,7 @@ public class EntityConfigPanel : AUIPanel
 						if (eq != null)
 							GameDatas.current.currentPlayerSave.AddEquipmentToInventory(eq);
 					}
-					m_entityData.auxiliar = new GameDatas.PlayerSave.Component[m_entityData.FrameData != null ? m_entityData.FrameData.armouringSlotAvailable + m_entityData.FrameData.occultorSlotAvailable : 0];
+					m_entityData.auxiliar = new GameDatas.PlayerSave.Component[auxiliarSlotCount];
 				}
 				break;
 			case EntityEquipmentData.EquipmentType.Brain:

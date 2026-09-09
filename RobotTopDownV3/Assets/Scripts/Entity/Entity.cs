@@ -206,9 +206,9 @@ public class Entity : MonoBehaviour
 			}
 		}*/
 
-		foreach (GameDatas.PlayerSave.Component container in m_data.arms)
+		foreach (GameDatas.PlayerSave.Component container in m_data.arms ?? System.Array.Empty<GameDatas.PlayerSave.Component>())
 		{
-			if (!container.isDamaged && GameAssets.current.equipments[container.dataID] is EntityEquipmentData equipment)
+			if (container != null && !container.isDamaged && container.TryGetData(out EntityEquipmentData equipment))
 			{
 				foreach (EntityActionEnumID actionID in equipment.knownedActions)
 				{
@@ -222,9 +222,9 @@ public class Entity : MonoBehaviour
 				}
 			}
 		}
-		foreach (GameDatas.PlayerSave.Component container in m_data.auxiliar)
+		foreach (GameDatas.PlayerSave.Component container in m_data.auxiliar ?? System.Array.Empty<GameDatas.PlayerSave.Component>())
 		{
-			if (!container.isDamaged && GameAssets.current.equipments[container.dataID] is EntityEquipmentData equipment)
+			if (container != null && !container.isDamaged && container.TryGetData(out EntityEquipmentData equipment))
 			{
 				foreach (EntityActionEnumID actionID in equipment.knownedActions)
 				{
@@ -238,9 +238,9 @@ public class Entity : MonoBehaviour
 				}
 			}
 		}
-		foreach (GameDatas.PlayerSave.Component container in m_data.chipsets)
+		foreach (GameDatas.PlayerSave.Component container in m_data.chipsets ?? System.Array.Empty<GameDatas.PlayerSave.Component>())
 		{
-			if (!container.isDamaged && GameAssets.current.equipments[container.dataID] is EntityEquipmentData equipment)
+			if (container != null && !container.isDamaged && container.TryGetData(out EntityEquipmentData equipment))
 			{
 				foreach (EntityActionEnumID actionID in equipment.knownedActions)
 				{
