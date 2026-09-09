@@ -419,6 +419,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: a06db61f4d4efb443a74263e65e896ce, type: 2}
   - {fileID: 11400000, guid: c4051b3e629be3e4cb705d71986f995f, type: 2}
   - {fileID: 11400000, guid: bae268804309e4a4383e6d6ca07a9aff, type: 2}
+  - {fileID: 11400000, guid: be12d479f7a3f5f4cb0d470bd964bf7a, type: 2}
+  - {fileID: 11400000, guid: 083bc1849ce1b2a40bd16d842887a909, type: 2}
 --- !u!1 &4980921478567790642
 GameObject:
   m_ObjectHideFlags: 0
@@ -991,6 +993,14 @@ MonoBehaviour:
       m_Calls: []
     m_ActionId: 6c7d2f3a-4b5e-4c6d-ae7f-8a9b0c1d2e3f
     m_ActionName: 'Player/RotateCameraCW[/Keyboard/e]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 7d8e3a4b-5c6f-4d7e-bf8a-9b0c1d2e3f4a
+    m_ActionName: 'Player/ZoomCamera[/Mouse/scroll]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 1a2b3c4d-5e6f-4a7b-8c9d-0e1f2a3b4c5d
+    m_ActionName: 'Player/PanCamera[/Mouse/rightButton]'
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Player
@@ -1011,6 +1021,8 @@ MonoBehaviour:
   m_turnManager: {fileID: 2601377726672517245}
   m_fogRenderer: {fileID: 5089135159799770867}
   m_inputActions: {fileID: -944628639613478452, guid: 2da90cdffd3702b458769b7a7a8aaf67, type: 3}
+  m_edgeScrollMargin: 12
+  m_centerOnEntityDuration: 0.35
 --- !u!114 &2601377726672517245
 MonoBehaviour:
   m_ObjectHideFlags: 0
