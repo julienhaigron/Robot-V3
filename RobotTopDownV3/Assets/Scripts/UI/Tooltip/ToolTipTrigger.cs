@@ -14,7 +14,7 @@ public class ToolTipTrigger : MonoBehaviour, IPointerEnterHandler, IPointerExitH
 
     public void OnPointerEnter ( PointerEventData eventData )
     {
-        ToolTipManager.Instance.Show(m_tooltipTitle, m_tooltipDescription);
+        ToolTipManager.Instance.Show(m_tooltipTitle, m_tooltipDescription, gameObject);
     }
 
     public void OnPointerExit ( PointerEventData eventData )

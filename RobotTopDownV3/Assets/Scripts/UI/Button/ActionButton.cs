@@ -162,7 +162,7 @@ public class ActionButton : BaseButton, IPointerEnterHandler, IPointerExitHandle
 	{
 		//GridManager.Instance.ClearTileOutile();
 		EntityActionData data = GameAssets.current.game.entityActionsData[m_actionType];
-		ToolTipManager.Instance.Show(data.GetLocalizedName(), data.GetDescription());
+		ToolTipManager.Instance.Show(data.GetLocalizedName(), data.GetDescription(), gameObject);
 
 		if (PlayerController.Instance != null)
 		{

@@ -52,7 +52,7 @@ public class PriorityQueueActionDisplay :
 			return;
 
 		EntityActionData data = GameAssets.current.game.entityActionsData[m_actionEnumID];
-		ToolTipManager.Instance.Show(data.GetLocalizedName(), data.GetDescription());
+		ToolTipManager.Instance.Show(data.GetLocalizedName(), data.GetDescription(), gameObject);
 	}
 
 	public void OnPointerExit ( PointerEventData eventData )

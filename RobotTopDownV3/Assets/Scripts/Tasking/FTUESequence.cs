@@ -41,6 +41,7 @@ public class FTUESequence
 		{
 			if(Sequences[i].SkipPredicate != null && Sequences[i].SkipPredicate(TaskManager.Instance.Context))
 			{
+				Sequences[i].ApplyPendingManualEffects();
 				OnEndFTUESingleSequence(Sequences[i]);
 			}
 			else if (i + 1 == Sequences.Count)

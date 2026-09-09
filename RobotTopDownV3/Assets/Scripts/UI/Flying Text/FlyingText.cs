@@ -400,4 +400,17 @@ public class FlyingText : MonoBehaviour
 		m_playingCR = null;
 		m_mergeIndex = -1;
 	}
+
+	//Deactivating a parent kills the coroutine chain without ever reaching OnHideFinished, and the entity UI is
+	//toggled on every vision change - so a number caught mid-animation would come back frozen and fully opaque.
+	protected virtual void OnDisable ()
+	{
+		if (!isPlaying)
+			return;
+
+		m_moveTween?.Kill();
+		m_fadeTween?.Kill();
+		OnHideFinished();
+		onFinished?.Invoke();
+	}
 }

@@ -22,6 +22,7 @@ public class TurnManager : Singleton<TurnManager>
 	public static Action onActionTargetsChanged;
 	
 	public static int currentTick = 0;
+	public bool IsLastTickOfRound => currentTick >= GameConfig.current.game.actionTokenPerRound - 1;
 
 	[SerializeField] private NetworkedTurnSystem m_networkedTurnSystem;
 

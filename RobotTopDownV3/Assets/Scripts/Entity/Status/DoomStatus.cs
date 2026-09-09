@@ -14,14 +14,14 @@ public class DoomStatus : AEntityStatus
 
 	public override string GetTickEffectText ( int _remainingDuration, Entity _entity )
 	{
-		return _remainingDuration <= 1 ? LocalizationManager.Instance.Get(LocalizationKey.log_doom_triggers) : null;
+		return IsLastActiveTick(_remainingDuration) ? LocalizationManager.Instance.Get(LocalizationKey.log_doom_triggers) : null;
 	}
 
 	public override void ApplyStatusEffect ( int _remainingDuration, Entity _entity )
 	{
 		base.ApplyStatusEffect(_remainingDuration, _entity);
 
-		if (_remainingDuration <= 1)
+		if (IsLastActiveTick(_remainingDuration))
 			_entity.Equipment.InstantDeath();
 	}
 }

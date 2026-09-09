@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: RTD::DoomStatus
   enumID: 7
   duration: 3
+  durationType: 1
   doesNeedRoll: 1
   icon: {fileID: 0}
   groundPrefab: {fileID: 0}

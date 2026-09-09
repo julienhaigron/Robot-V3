@@ -4,7 +4,10 @@ using System;
 [Serializable]
 public abstract class AEntityStatus : ScriptableEnum<EntityStatusEnumID>
 {
+    public enum DurationType { Tick, Round }
+
     public int duration = 1;
+    public DurationType durationType = DurationType.Tick;
     public bool doesNeedRoll = false;
     [TextArea(2, 6)] public string description;
 
@@ -26,6 +29,19 @@ public abstract class AEntityStatus : ScriptableEnum<EntityStatusEnumID>
         }
 
         return builder.ToString();
+    }
+
+    //A Round status still ticks every tick, it just only spends duration on the last one.
+    public bool DoesConsumeDurationThisTick ()
+    {
+        return durationType == DurationType.Tick
+            || TurnManager.Instance == null
+            || TurnManager.Instance.IsLastTickOfRound;
+    }
+
+    public bool IsLastActiveTick ( int _remainingDuration )
+    {
+        return _remainingDuration <= 1 && DoesConsumeDurationThisTick();
     }
 
     public virtual string GetTickEffectText ( int _remainingDuration, Entity _entity )

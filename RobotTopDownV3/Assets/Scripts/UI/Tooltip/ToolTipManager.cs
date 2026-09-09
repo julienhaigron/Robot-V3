@@ -17,6 +17,8 @@ public class ToolTipManager : Singleton<ToolTipManager>
 	[SerializeField] private float m_fadeDuration = 0.2f;
 
 	private bool m_isActive = false;
+	private GameObject m_owner;
+	private bool m_hasOwner;
 	private CanvasGroup m_canvasGroup;
 	private Coroutine m_fadeCoroutine;
 	private RectTransform m_tooltipParentRtfm;
@@ -49,6 +51,14 @@ public class ToolTipManager : Singleton<ToolTipManager>
 	{
 		if (!m_isActive) return;
 
+		//Nothing raises OnPointerExit on an object that gets deactivated or destroyed under the cursor, which
+		//used to leave its tooltip stuck there until something else showed one.
+		if (m_hasOwner && (m_owner == null || !m_owner.activeInHierarchy))
+		{
+			Hide();
+			return;
+		}
+
 		RectTransformUtility.ScreenPointToLocalPointInRectangle(
 			m_tooltipParentRtfm,
 			Input.mousePosition,
@@ -64,11 +74,13 @@ public class ToolTipManager : Singleton<ToolTipManager>
 	}
 
 	[Button]
-	public void Show ( string _title, string _description )
+	public void Show ( string _title, string _description, GameObject _owner = null )
 	{
-		if (m_isActive)
-			return;
+		//Never early out on an already visible tooltip: hovering straight from one element to another otherwise
+		//keeps showing the previous one's text.
 		m_isActive = true;
+		m_owner = _owner;
+		m_hasOwner = _owner != null;
 		m_tooltipTitleTMP.text = _title;
 		m_tooltipDescriptionTMP.text = _description;
 
@@ -86,6 +98,8 @@ public class ToolTipManager : Singleton<ToolTipManager>
 	public void Hide ()
 	{
 		m_isActive = false;
+		m_owner = null;
+		m_hasOwner = false;
 		if (m_fadeCoroutine != null)
 			StopCoroutine(m_fadeCoroutine);
 		m_fadeCoroutine = StartCoroutine(FadeCanvas(0f, true));

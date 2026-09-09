@@ -62,8 +62,18 @@ public class TaskSequence
 
 	public void Complete ()
 	{
+		ApplyPendingManualEffects();
 		GameDatas.current.currentPlayerSave.sequencesProgressions[m_id] = -1;
 		onCompleted?.Invoke(this);
+	}
+
+	public void ApplyPendingManualEffects ()
+	{
+		foreach (Task task in m_tasks)
+		{
+			if (task is ManualTask manualTask)
+				manualTask.Apply();
+		}
 	}
 
 	private void OnComplete (Task _task)

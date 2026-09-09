@@ -339,8 +339,19 @@ public class Entity : MonoBehaviour
 			}
 			else
 			{
-				int remainingDuration = m_remainingDurationToActiveStatuses.ContainsKey(status) ? m_remainingDurationToActiveStatuses[status]-- : 0;
+				int remainingDuration = 0;
+				if (m_remainingDurationToActiveStatuses.ContainsKey(status))
+				{
+					remainingDuration = m_remainingDurationToActiveStatuses[status];
+					if (status.DoesConsumeDurationThisTick())
+						m_remainingDurationToActiveStatuses[status]--;
+				}
+
 				status.ApplyStatusEffect(remainingDuration, this);
+
+				//A round-long status would otherwise repeat the same countdown line on all ten ticks of a round.
+				if (!status.DoesConsumeDurationThisTick())
+					continue;
 
 				LogConsole.AddLog(string.Format(LocalizationManager.Instance.Get(LocalizationKey.log_status_affected), m_data.name, status.GetLocalizedName(), remainingDuration)
 					, LogConsole.LogEventType.Status
@@ -414,7 +425,7 @@ public class Entity : MonoBehaviour
 			m_skin.Hide();*/
 		m_isVisible = _isVisible;
 		if (_isVisible)
-			m_howIsUnitVisible = _visionType; // toujours la valeur courante, calculée en amont par la Tile
+			m_howIsUnitVisible = _visionType; // toujours la valeur courante, calculï¿½e en amont par la Tile
 		m_ui.gameObject.SetActive(m_isVisible && (int)m_howIsUnitVisible < (int)NeuronalMembraneEquipmentData.VisionTypes.Radar);
 		if (m_isVisible)
 			m_skin.Show(m_howIsUnitVisible);
