@@ -70,7 +70,12 @@ public class LogConsole : SingletonPersistant<LogConsole>
 		Instance.Logs[_eventType].Add(newLog);
 		Instance.AllLogs.Add(newLog);
 		if (_details != null)
-			Instance.LogsDetails.Add(_details.ID, _details);
+		{
+			if (Instance.LogsDetails.ContainsKey(_details.ID))
+				Instance.LogsDetails[_details.ID] = _details;
+			else
+				Instance.LogsDetails.Add(_details.ID, _details);
+		}
 
 		onLogAdded?.Invoke(newLog);
 	}
