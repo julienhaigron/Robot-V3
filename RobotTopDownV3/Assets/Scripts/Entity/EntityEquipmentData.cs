@@ -311,12 +311,13 @@ public class EntityEquipmentData : AParsableScriptableObject
 		AssetDatabase.Refresh();
 	}
 
+#endif
+
+	//Outside the guard: the base declares it abstract unconditionally, so a player build needs the override.
 	public override void OnParse ( ImportedData _data )
 	{
 		/*List<EntityActionEnumID> actions = new();
 		if(_data.TryGetValue("Actions", out EntityActionEnumID[] values))
 			actions.AddRange(values);*/
 	}
-
-#endif
 }

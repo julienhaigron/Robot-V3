@@ -37,11 +37,6 @@ public class GridManager : Singleton<GridManager>
 	private bool m_wasWallDestroyedThisRound;
 	public bool WasWallDestroyedThisRound => m_wasWallDestroyedThisRound;
 
-	#region Editor
-#if UNITY_EDITOR
-
-	//public bool isGroundBrushSelected = false;
-	public TileGroundType currentGroundBrushSelected;
 	[SerializeField] private GridData m_gridData;
 	public GridData GridData
 	{
@@ -76,6 +71,7 @@ public class GridManager : Singleton<GridManager>
 
 			if (_isEditorMode)
 			{
+#if UNITY_EDITOR
 				m_tiles[i].SetGroundType(groundType);
 				if (groundType == TileGroundType.Wall || groundType == TileGroundType.Cover)
 				{
@@ -85,6 +81,7 @@ public class GridManager : Singleton<GridManager>
 				{
 					m_tiles[i].RemoveWall();
 				}
+#endif
 			}
 			else
 			{
@@ -108,6 +105,12 @@ public class GridManager : Singleton<GridManager>
 
 		FogOfWarRenderer.Instance.ConfigureTopDownFogCamera();
 	}
+
+	#region Editor
+#if UNITY_EDITOR
+
+	//public bool isGroundBrushSelected = false;
+	public TileGroundType currentGroundBrushSelected;
 
 	public void GenerateGrid ()
 	{
@@ -156,10 +159,6 @@ public class GridManager : Singleton<GridManager>
 		newTile.Init(_x, _z, _data);
 		newTile.coordinates = TileCoordinates.FromOffsetCoordinates(_x, _z, _i);
 
-		/*#if UNITY_EDITOR
-				if (!Application.isPlaying)
-					return;
-		#endif*/
 		if (_x > 0)
 		{
 			newTile.SetNeighbor(HexDirection.W, m_tiles[_i - 1]);

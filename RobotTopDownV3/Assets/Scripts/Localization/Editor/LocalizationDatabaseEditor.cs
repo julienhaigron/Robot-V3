@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 using UnityEngine;
 using UnityEditor;
 using System.Collections;
@@ -376,3 +377,5 @@ public class LocalizationDatabaseEditor : Editor
         Debug.Log("Localization validation complete.");
     }
 }
+
+#endif

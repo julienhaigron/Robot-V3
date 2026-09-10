@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 using UnityEditor;
 using UnityEngine;
 using System.Linq;
@@ -110,3 +111,4 @@ public class LocalizedKeyDrawer : PropertyDrawer
         return AssetDatabase.LoadAssetAtPath<LocalizationDatabase>(path);
     }
 }
+#endif

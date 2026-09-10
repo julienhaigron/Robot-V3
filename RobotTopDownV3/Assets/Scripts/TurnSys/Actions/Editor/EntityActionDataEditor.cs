@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 using UnityEngine;
 using Sirenix.OdinInspector.Editor;
 using System.Collections.Generic;
@@ -163,3 +164,5 @@ public class EntityActionDataEditor : OdinEditor
 		return assets;
 	}
 }
+
+#endif

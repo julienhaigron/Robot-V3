@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 using UnityEditor;
 using UnityEditor.UI;
 
@@ -37,3 +38,5 @@ public class UniformHorizontalLayoutGroupEditor : HorizontalOrVerticalLayoutGrou
 		serializedObject.ApplyModifiedProperties();
 	}
 }
+
+#endif

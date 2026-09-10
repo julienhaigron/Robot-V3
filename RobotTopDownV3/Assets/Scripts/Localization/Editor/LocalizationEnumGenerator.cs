@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 using UnityEditor;
 using System.IO;
 using System.Text;
@@ -78,3 +79,4 @@ public static class LocalizationEnumGenerator
         return AssetDatabase.LoadAssetAtPath<LocalizationDatabase>(path);
     }
 }
+#endif

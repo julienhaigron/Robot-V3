@@ -511,6 +511,9 @@ public class EntityActionData : AParsableScriptableObject
 
 	public override void OnParse ( ImportedData _data )
 	{
+		//Signature outside the guard (the base declares it abstract), body inside: ImportedData's accessors
+		//go through CsvTypeConverter, which is editor-only.
+#if UNITY_EDITOR
 		/*if(enumID == EntityActionEnumID.Unknowned)
 		{
 			if (System.Enum.TryParse(typeof(EntityActionEnumID), _data.id, out object result))
@@ -543,5 +546,6 @@ public class EntityActionData : AParsableScriptableObject
 
 		if (codeType == ActionCodeType.InvokeItem)
 			invocatedItem = _data.GetValue<AItemData>("Special Extra Values");
+#endif
 	}
 }
