@@ -90,8 +90,10 @@ public class SkipConfirmationPopup : AUIPopup
 				dayReport += "Day " + GameDatas.current.currentPlayerSave.dayCount + ":\n" + finishedThisDay;
 		}
 		
+		ApplicationManager.Instance.SaveApplication();
+
 		Close(_instant: true);
-		
+
 		UIManager.Instance.OpenPopup<ReturnToHubPopup>().Init(dayReport);
 	}
 

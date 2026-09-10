@@ -110,6 +110,7 @@ public class StartMenuPanel : AUIPanel
 
 		GameDatas.current.game.lastPlayerSaveSelectedID = GameDatas.current.playerSaves.Count;
 		GameDatas.current.CreateSave("New save");
+		ApplicationManager.Instance.SaveApplication();
 		GameManager.Instance.LoadSaveAndGoToHub(GameDatas.current.game.lastPlayerSaveSelectedID);
 	}
 

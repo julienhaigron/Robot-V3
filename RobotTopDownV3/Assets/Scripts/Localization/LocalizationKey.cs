@@ -132,6 +132,10 @@ public enum LocalizationKey
     save_empty_slot,
     save_never_saved,
     save_last_played,
+    save_time_seconds,
+    save_time_minutes,
+    save_time_hours,
+    save_time_days,
     save_delete,
     save_delete_confirm,
     component_repair,
@@ -624,6 +628,10 @@ public static class LocalizationKeyExtensions
             case LocalizationKey.save_empty_slot: return "save/empty_slot";
             case LocalizationKey.save_never_saved: return "save/never_saved";
             case LocalizationKey.save_last_played: return "save/last_played";
+            case LocalizationKey.save_time_seconds: return "save/time_seconds";
+            case LocalizationKey.save_time_minutes: return "save/time_minutes";
+            case LocalizationKey.save_time_hours: return "save/time_hours";
+            case LocalizationKey.save_time_days: return "save/time_days";
             case LocalizationKey.save_delete: return "save/delete";
             case LocalizationKey.save_delete_confirm: return "save/delete_confirm";
             case LocalizationKey.component_repair: return "component/repair";

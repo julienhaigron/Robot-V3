@@ -125,6 +125,8 @@ public class GameManager : SingletonPersistant<GameManager>
 					else
 						UIManager.Instance.OpenPanel<SoloHubPanel>();
 				}
+
+				ApplicationManager.Instance.SaveApplication();
 			});
 	}
 
@@ -184,6 +186,8 @@ public class GameManager : SingletonPersistant<GameManager>
 
 	public void GoToStartScreen ()
 	{
+		ApplicationManager.Instance.SaveApplication();
+
 		LoadingManager.Instance.LoadScene(GameConfig.current.game.startScreenSceneName
 		, () =>
 		{

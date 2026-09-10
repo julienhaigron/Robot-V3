@@ -53,6 +53,9 @@ public class MissionPanel : AUIPanel
 
 	private void OnClickStartMission ()
 	{
+		if (GameDatas.current.currentPlayerSave.squadUnitsIndex.Count == 0)
+			return;
+
 		if (m_currentMissionSelected.MissionData.preMissionDialogue != null)
 			DialogueManager.Instance.PlayDialogue(m_currentMissionSelected.MissionData.preMissionDialogue, () => GameManager.Instance.SetupLevel(m_currentMissionSelected.MissionData));
 		else
@@ -99,6 +102,8 @@ public class MissionPanel : AUIPanel
 			else
 				m_unitDisplays[i].Hide();
 		}
+
+		m_startMissionBtn.SetInteractability(GameDatas.current.currentPlayerSave.squadUnitsIndex.Count > 0);
 
 		OnAnyMissionHovered(m_missionBtns[0]);
 		OnAnyUnitHovered(m_unitDisplays[0]);

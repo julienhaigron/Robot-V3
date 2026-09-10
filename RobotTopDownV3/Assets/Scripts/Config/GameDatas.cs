@@ -129,9 +129,24 @@ public partial class GameDatas : ScriptableObject
 
 		public string GetLastSaveTimeText ()
 		{
-			return lastSaveTimeTicks <= 0
-				? LocalizationManager.Instance.Get(LocalizationKey.save_never_saved)
-				: string.Format(LocalizationManager.Instance.Get(LocalizationKey.save_last_played), new DateTime(lastSaveTimeTicks).ToString("g"));
+			if (lastSaveTimeTicks <= 0)
+				return LocalizationManager.Instance.Get(LocalizationKey.save_never_saved);
+
+			DateTime lastSave = new DateTime(lastSaveTimeTicks);
+			TimeSpan elapsed = DateTime.Now - lastSave;
+			if (elapsed < TimeSpan.Zero)
+				elapsed = TimeSpan.Zero;
+
+			if (elapsed.TotalMinutes < 1d)
+				return string.Format(LocalizationManager.Instance.Get(LocalizationKey.save_time_seconds), (int)elapsed.TotalSeconds);
+			if (elapsed.TotalHours < 1d)
+				return string.Format(LocalizationManager.Instance.Get(LocalizationKey.save_time_minutes), (int)elapsed.TotalMinutes);
+			if (elapsed.TotalDays < 1d)
+				return string.Format(LocalizationManager.Instance.Get(LocalizationKey.save_time_hours), (int)elapsed.TotalHours);
+			if (elapsed.TotalDays < 7d)
+				return string.Format(LocalizationManager.Instance.Get(LocalizationKey.save_time_days), (int)elapsed.TotalDays);
+
+			return string.Format(LocalizationManager.Instance.Get(LocalizationKey.save_last_played), lastSave.ToString("g"));
 		}
 
 		public List<EntitySavedData> allBuiltUnits = new();

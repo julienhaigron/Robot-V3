@@ -546,6 +546,22 @@ MonoBehaviour:
     values:
     - 'Last played: {0}'
     - "Derni\xE8re partie : {0}"
+  - key: save/time_seconds
+    values:
+    - '{0}s ago'
+    - Il y a {0}s
+  - key: save/time_minutes
+    values:
+    - '{0}min ago'
+    - Il y a {0}min
+  - key: save/time_hours
+    values:
+    - '{0}h ago'
+    - Il y a {0}h
+  - key: save/time_days
+    values:
+    - '{0}d ago'
+    - Il y a {0}j
   - key: save/delete
     values:
     - Delete

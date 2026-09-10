@@ -121,4 +121,9 @@ public partial class ApplicationManager : SingletonPersistant<ApplicationManager
 			GameDatas.Save();
 		}
 	}
+
+	private void OnApplicationQuit ()
+	{
+		SaveApplication();
+	}
 }

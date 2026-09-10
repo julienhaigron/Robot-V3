@@ -122,6 +122,8 @@ public class TournamentPanel : AUIPanel
 			m_squadsIcons[2].color = GameAssets.current.ui.corporationsColors[dominentCorpo];
 		}
 
+		m_startMissionBtn.SetInteractability(GameDatas.current.currentPlayerSave.squadUnitsIndex.Count > 0);
+
 		OnAnyUnitHovered(m_unitDisplays[0]);
 	}
 
@@ -178,6 +180,9 @@ public class TournamentPanel : AUIPanel
 
 	private void OnClickStartMission ()
 	{
+		if (GameDatas.current.currentPlayerSave.squadUnitsIndex.Count == 0)
+			return;
+
 		MissionData missionData = GameAssets.current.game.missions[GameDatas.current.currentPlayerSave.cycleData.roundsDatas[CurrentRound]];
 		if (missionData.preMissionDialogue != null)
 			DialogueManager.Instance.PlayDialogue(missionData.preMissionDialogue, () => GameManager.Instance.SetupLevel(missionData));
