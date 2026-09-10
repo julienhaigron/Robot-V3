@@ -54,7 +54,7 @@ public class MissionPanel : AUIPanel
 
 	private void OnClickStartMission ()
 	{
-		if (GameDatas.current.currentPlayerSave.squadUnitsIndex.Count == 0)
+		if (m_currentMissionSelected == null || GameDatas.current.currentPlayerSave.squadUnitsIndex.Count == 0)
 			return;
 
 		if (m_currentMissionSelected.MissionData.preMissionDialogue != null)
@@ -65,6 +65,11 @@ public class MissionPanel : AUIPanel
 
 	private void RefreshMissionBtns ()
 	{
+		//The buttons are reused from one opening to the next with a different mission on them, so a hovered
+		//button kept from last time makes the guard in OnAnyMissionHovered short-circuit on stale rewards.
+		m_currentMissionHovered = null;
+		m_currentMissionSelected = null;
+
 		bool doTutoMission = false;
 #if UNITY_EDITOR
 		doTutoMission = !GameConfig.current.debug.skipFTUE;

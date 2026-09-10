@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f71a1187493589744bad6fd241af4c7b, type: 3}
   m_Name: Day7Tuto
   m_EditorClassIdentifier: RTD::MissionData
-  enumID: 8
+  enumID: 9
   missionName: Day6Tuto
   icon: {fileID: 21300000, guid: 03da9b037a0d27b4db02f45130a6cb28, type: 3}
   preMissionDialogue: {fileID: 0}

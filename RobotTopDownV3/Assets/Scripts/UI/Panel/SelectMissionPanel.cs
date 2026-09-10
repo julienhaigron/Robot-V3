@@ -34,6 +34,10 @@ public class SelectMissionPanel : AUIPanel
 
 	private void RefreshMissions ()
 	{
+		//Same button objects, different missions on them from one opening to the next: a hovered button kept
+		//from last time would make OnAnyMissionHovered short-circuit on stale rewards.
+		m_currentMissionHovered = null;
+
 		for (int i = 0; i < m_missionBtns.Length; i++)
 		{
 			if (GameDatas.current.currentPlayerSave.cycleData.availableMissionsIds.Count > i)

@@ -11,6 +11,7 @@ public enum MissionDataEnumID
 	Day4Tuto,
 	Day5Tuto,
 	Day6Tuto,
+	Day7Tuto,
 
 	//#END#MISSIONDATAENUMID#//
 
