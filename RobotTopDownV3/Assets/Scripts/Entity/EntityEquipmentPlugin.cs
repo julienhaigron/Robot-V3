@@ -115,7 +115,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 
 		//init health
 		m_maxHealth = m_linkedEntity.Data.GetMaxHealth();
-		m_currentHealth = _entityData.currentHp;
+		m_currentHealth = _entityData.currentHp <= 0 ? m_maxHealth : Mathf.Min(_entityData.currentHp, m_maxHealth);
 		m_isDead = false;
 
 		//resistance

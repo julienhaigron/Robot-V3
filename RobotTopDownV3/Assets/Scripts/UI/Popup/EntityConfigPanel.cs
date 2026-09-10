@@ -37,7 +37,7 @@ public class EntityConfigPanel : AUIPanel
 	private bool m_isNewUnit = false;
 
 	private System.Func<GameDatas.PlayerSave.Component, bool> InventoryGridPredicate => item => item != null && item.TryGetData(out EntityEquipmentData _data)
-		&& m_displayedEquipmentTypes.Contains(_data.GetEquipmentType()) && !item.isDamaged;
+		&& m_displayedEquipmentTypes.Contains(_data.GetEquipmentType());
 
 	[System.Serializable]
 	public class SubSlotContainer
@@ -75,7 +75,7 @@ public class EntityConfigPanel : AUIPanel
 			slot.onItemRemoved += ( ComponentContainer container, ComponentDisplay display ) => OnItemRemovedOnSubSlot(display, EntityEquipmentData.EquipmentType.NeuronalMembrane);
 		}
 
-		m_inventoryGrid.onItemAdded += ( container, item ) => { GameDatas.current.currentPlayerSave.AddComponentToInventory(item.ComponentData); RefreshVisuals(); };
+		m_inventoryGrid.onItemAdded += ( container, item ) => { GameDatas.current.currentPlayerSave.AddEquipmentToInventory(item.SavedData); RefreshVisuals(); };
 		m_inventoryGrid.onItemRemoved += ( container, item ) => { GameDatas.current.currentPlayerSave.RemoveEquipmentFromInventory(item.SavedData); RefreshVisuals(); };
 
 		foreach (KeyValuePair<EntityEquipmentData.EquipmentType, BaseButton> pair in m_componentTypeFilterBtnDictionary)
@@ -276,18 +276,34 @@ public class EntityConfigPanel : AUIPanel
 		}
 	}
 
-	public ComponentContainer GetFreeContainer ( EntityEquipmentData.EquipmentType _type )
+	public ComponentContainer GetContainerFor ( ComponentDisplay _display )
 	{
-		if (!m_subComponentSlotDictionary.ContainsKey(_type))
+		if (_display == null || _display.SavedData == null)
 			return null;
 
-		foreach (ComponentSlot slot in m_subComponentSlotDictionary[_type].slots)
+		foreach (ComponentSlot mainSlot in m_mainComponentSlotDictionary.Values)
 		{
-			if (slot.CurrentDisplay == null)
-				return slot;
+			if (mainSlot.gameObject.activeInHierarchy && mainSlot.IsValid(_display))
+				return mainSlot;
 		}
 
-		return null;
+		ComponentSlot occupiedSlot = null;
+		foreach (SubSlotContainer slotContainer in m_subComponentSlotDictionary.Values)
+		{
+			foreach (ComponentSlot slot in slotContainer.slots)
+			{
+				if (!slot.gameObject.activeInHierarchy || !slot.IsValid(_display))
+					continue;
+
+				if (slot.CurrentDisplay == null)
+					return slot;
+
+				if (occupiedSlot == null)
+					occupiedSlot = slot;
+			}
+		}
+
+		return occupiedSlot;
 	}
 
 	public static System.Action onConfigChanged;

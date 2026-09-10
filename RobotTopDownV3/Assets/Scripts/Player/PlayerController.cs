@@ -219,7 +219,7 @@ public class PlayerController : Singleton<PlayerController>
 		else if (mousePosition.y >= Screen.height - m_edgeScrollMargin)
 			edgeInput.y = 1f;
 
-		return edgeInput == Vector2.zero || InputManager.IsPointerOverBlockingUI() ? Vector2.zero : edgeInput;
+		return UIManager.Instance.HaveAnActivePopup() ? Vector2.zero : edgeInput;
 	}
 
 	private void MoveCameraBy ( Vector3 _move )

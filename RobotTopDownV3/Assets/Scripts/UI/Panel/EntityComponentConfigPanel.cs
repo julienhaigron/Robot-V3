@@ -18,7 +18,7 @@ public class EntityComponentConfigPanel : AUIPanel
 		m_closeBtn.onClick += OnClickClose;
 		m_upgradeHangarBtn.onClick += OnClickOpenUpgradePopup;
 
-		m_subPartGrid.onItemAdded += ( container, item ) => GameDatas.current.currentPlayerSave.AddComponentToInventory(item.ComponentData);
+		m_subPartGrid.onItemAdded += ( container, item ) => GameDatas.current.currentPlayerSave.AddEquipmentToInventory(item.SavedData);
 		m_subPartGrid.onItemRemoved += ( container, item ) => GameDatas.current.currentPlayerSave.RemoveEquipmentFromInventory(item.SavedData);
 
 		foreach(ComponentSlot slot in m_slots)

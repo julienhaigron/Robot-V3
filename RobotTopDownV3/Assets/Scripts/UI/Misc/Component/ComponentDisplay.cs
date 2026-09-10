@@ -247,7 +247,7 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 		}
 		else if (CurrentContainer != null && CurrentContainer.LinkedContainer == null && UIManager.Instance.currentPanel is EntityConfigPanel entityConfigPanel)
 		{
-			ComponentContainer appropriateContainer = entityConfigPanel.GetFreeContainer(m_componentData.GetEquipmentType());
+			ComponentContainer appropriateContainer = entityConfigPanel.GetContainerFor(this);
 			if (appropriateContainer == null)
 				return;
 

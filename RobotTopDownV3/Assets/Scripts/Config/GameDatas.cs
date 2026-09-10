@@ -344,10 +344,12 @@ public partial class GameDatas : ScriptableObject
 
 		public void AddEquipmentToInventory(Component _equipment )
 		{
-			if (_equipment == null || string.IsNullOrEmpty(_equipment.ID))
+			if (_equipment == null || string.IsNullOrEmpty(_equipment.ID) || equipmentInventory.Contains(_equipment))
 				return;
 
-			_equipment.acquisitionDateTicks = DateTime.UtcNow.Ticks;
+			if (_equipment.acquisitionDateTicks <= 0)
+				_equipment.acquisitionDateTicks = DateTime.UtcNow.Ticks;
+
 			equipmentInventory.Add(_equipment);
 			equipmentCounter++;
 		}
@@ -387,6 +389,9 @@ public partial class GameDatas : ScriptableObject
 		{
 			//_newUnit.name = "New Unit";
 			_newUnit.index = allBuiltUnits.Count;
+
+			if (_newUnit.currentHp <= 0)
+				_newUnit.currentHp = _newUnit.GetMaxHealth();
 
 			if (_addToSquad && _newUnit.CanAddToSquad())
 				squadUnitsIndex.Add(allBuiltUnits.Count);
