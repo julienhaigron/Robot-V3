@@ -126,7 +126,7 @@ public class AttackAction : AEntityAction
 				, targetNames.Count == 0 ? localization.Get(LocalizationKey.log_use_weapon_ground) : string.Join(", ", targetNames)
 				, Data.GetLocalizedName()))
 			, LogConsole.LogEventType.UseWeapon
-			, new LogConsole.LogDetails("useweapon_" + LogConsole.Instance.LogsDetails.Keys.Count, Data.GetLocalizedName(), Data.GetDescription()));
+			, new LogConsole.LogDetails("useweapon_" + LogConsole.Instance.Counter, Data.GetLocalizedName(), Data.GetDescription()));
 	}
 
 	private void LogDamages ( Dictionary<WeaponEquipmentData.DamageType, int> _damages, LogConsole.LogDetails _details, Entity _targetEntity, int _attackIndex )

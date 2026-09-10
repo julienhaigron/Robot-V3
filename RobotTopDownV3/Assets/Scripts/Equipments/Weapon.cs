@@ -454,7 +454,7 @@ public class Weapon : MonoBehaviour
 		}
 
 		string detailsDescription = detailsBuilder.ToString();
-		_details = new("damage_" + LogConsole.Instance.LogsDetails.Keys.Count, localization.Get(LocalizationKey.damage_detail_title), detailsDescription);
+		_details = new("damage_" + LogConsole.Instance.Counter, localization.Get(LocalizationKey.damage_detail_title), detailsDescription);
 
 		return damages;
 	}

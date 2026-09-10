@@ -103,9 +103,6 @@ public class EntityConfigPanel : AUIPanel
 
 	protected override void OnHideFinished ()
 	{
-		/*if (m_isNewUnit && m_entityData.IsUnitValid())
-			GameDatas.current.currentPlayerSave.AddNewUnit(m_entityData, false);*/
-
 		m_inventoryGrid.Cleanup();
 		foreach (ComponentSlot slot in m_mainComponentSlotDictionary.Values)
 			slot.Cleanup();
@@ -147,7 +144,7 @@ public class EntityConfigPanel : AUIPanel
 
 	public void DiscardUnit ()
 	{
-		if (/*!m_isNewUnit ||*/ m_entityData == null)
+		if (m_entityData == null)
 			return;
 
 		GameDatas.current.currentPlayerSave.DisassembleUnit(m_entityData);

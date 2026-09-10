@@ -15,6 +15,19 @@ public class LogConsole : SingletonPersistant<LogConsole>
 	private Dictionary<string, LogDetails> m_logsDetails = new();
 	public Dictionary<string, LogDetails> LogsDetails => m_logsDetails;
 
+	private int m_counter = 0;
+	public int Counter
+	{
+		get
+		{
+			return m_counter;
+		}
+		set
+		{
+			m_counter = value;
+		}
+	}
+
 	public enum LogEventType { PreGame, InputPhase, AICheck, ActionResolution, ActionConflict, DebugSys, AttackRoll, Damage, Status, UseWeapon, UseTool, Death, Round }
 
 	[System.Serializable]
@@ -48,6 +61,7 @@ public class LogConsole : SingletonPersistant<LogConsole>
 	public static void AddLog (string _message, LogEventType _eventType, LogDetails _details = null )
 	{
 		Log newLog = new Log(_message, _eventType, _details);
+		Instance.Counter++;
 
 		if (!Instance.Logs.ContainsKey(_eventType))
 			Instance.Logs.Add(_eventType, new());

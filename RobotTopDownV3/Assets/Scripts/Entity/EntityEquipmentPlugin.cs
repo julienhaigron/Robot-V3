@@ -423,7 +423,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 		}
 
 		string detailsDescription = detailsBuilder.ToString();
-		LogConsole.LogDetails details = new("attack_" + LogConsole.Instance.LogsDetails.Keys.Count, localization.Get(LocalizationKey.roll_title), detailsDescription);
+		LogConsole.LogDetails details = new("attack_" + LogConsole.Instance.Counter, localization.Get(LocalizationKey.roll_title), detailsDescription);
 
 		LogConsole.AddLog(localization.Get(isAttackSuccessful ? LocalizationKey.log_attack_success : LocalizationKey.log_attack_failure), LogConsole.LogEventType.AttackRoll, details);
 		return isAttackSuccessful;
@@ -478,7 +478,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 		}
 
 		string detailsDescription = detailsBuilder.ToString();
-		LogConsole.LogDetails details = new("status_" + LogConsole.Instance.LogsDetails.Keys.Count, localization.Get(LocalizationKey.status_roll_title), detailsDescription);
+		LogConsole.LogDetails details = new("status_" + LogConsole.Instance.Counter, localization.Get(LocalizationKey.status_roll_title), detailsDescription);
 		LogConsole.AddLog(string.Format(localization.Get(isAttackSuccessful ? LocalizationKey.status_roll_log_applied : LocalizationKey.status_roll_log_failed)
 			, m_linkedEntity.Data.name, _effect.GetLocalizedName(), _target.Data.name), LogConsole.LogEventType.Status, details);
 
@@ -603,7 +603,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 		GridManager.Instance.ClearEntityFromAllTiles(m_linkedEntity);
 
 		LogConsole.AddLog(string.Format(LocalizationManager.Instance.Get(LocalizationKey.log_death), m_linkedEntity.Data.name), LogConsole.LogEventType.Death
-			, new LogConsole.LogDetails("death_" + LogConsole.Instance.LogsDetails.Keys.Count, m_linkedEntity.Data.name, BuildDeathTooltip(_damageInfo)));
+			, new LogConsole.LogDetails("death_" + LogConsole.Instance.Counter, m_linkedEntity.Data.name, BuildDeathTooltip(_damageInfo)));
 
 		m_isDead = true;
 		onDeath?.Invoke(m_linkedEntity.ID);
