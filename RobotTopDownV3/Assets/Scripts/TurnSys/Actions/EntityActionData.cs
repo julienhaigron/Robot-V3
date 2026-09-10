@@ -59,11 +59,17 @@ public class EntityActionData : AParsableScriptableObject
 		DistanceAttack,
 		MeleeAttack,
 		Movement,
-		Rotation,
 		Special
 	}
 	[Parsing("Type")]
 	public ActionType type;
+
+	public static bool IsRotationAction ( EntityActionEnumID _enumID )
+	{
+		return _enumID == EntityActionEnumID.RotateEntity || _enumID == EntityActionEnumID.RotateToEntity;
+	}
+
+	public bool IsRotation => IsRotationAction(enumID);
 
 	public enum ActionSubType
 	{
@@ -195,6 +201,9 @@ public class EntityActionData : AParsableScriptableObject
 
 	public MainActionType GetMainActionType ()
 	{
+		if (IsRotation)
+			return MainActionType.Special;
+
 		switch (type)
 		{
 			case ActionType.DistanceAttack:
@@ -202,7 +211,6 @@ public class EntityActionData : AParsableScriptableObject
 				return MainActionType.Attack;
 			case ActionType.Movement:
 				return MainActionType.Movement;
-			case ActionType.Rotation:
 			case ActionType.Special:
 				return MainActionType.Special;
 		}

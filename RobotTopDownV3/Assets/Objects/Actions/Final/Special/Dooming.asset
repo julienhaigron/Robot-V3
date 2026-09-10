@@ -35,7 +35,7 @@ MonoBehaviour:
   spellVfxLifetime: 1
   conditionType: 10
   previousActionAttackModificator: 0
-  type: 4
+  type: 3
   subType: 6
   codeType: 5
   targetType: 1

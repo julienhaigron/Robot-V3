@@ -224,7 +224,7 @@ public class EntityDisplacementPlugin : EntityPlugin
 
 	private void OnStartPerformAction(AEntityAction _actionPerformed )
 	{
-		if (_actionPerformed.Data.type == EntityActionData.ActionType.Movement)
+		if (_actionPerformed.Data.type == EntityActionData.ActionType.Movement && !_actionPerformed.Data.IsRotation)
 		{
 			m_didMoveThisTurn = true;
 			m_traveledTileCountThisTurn++;

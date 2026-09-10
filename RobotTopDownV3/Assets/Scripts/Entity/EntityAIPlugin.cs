@@ -159,35 +159,9 @@ public class EntityAIPlugin : EntityPlugin
 		{
 			// if eneemy in weapon range
 			//  => shoot directly
-			m_lastEntitiesTargeted = enemies;
-
-			AttackAction attackAction = (TurnManager.Instance.GetAction(attackEnumID, m_linkedEntity.ID, equipmentID, TurnManager.currentTick) as AttackAction);
-
-			if (attackAction == null)
-			{
-				Debug.LogError("error, action " + attackEnumID + " isnt an AttackAction code type", gameObject);
+			if (!TryReplaceActionWithAttack(_recordedAction, enemies, attackEnumID, equipmentID
+				, "Has enemy in range, action replaced with " + attackEnumID, ref resultInfo))
 				return resultInfo;
-			}
-
-			bool shouldAddTileInDirectionToTarget = attackAction.Data.aoeType != EntityActionData.AOEType.Noone && attackAction.Data.aoECenterType == EntityActionData.AOECenterType.Self;
-			Tile from = m_linkedEntity.Displacement.Coordinates.GetTile();
-			//int maxAmount = Mathf.Min(attackAction.Data.GetMaxTargetAmount(attackAction, m_linkedEntity, null), m_lastEntitiesTargeted.Count);
-			int maxAmount = attackAction.Data.GetMaxTargetAmount(attackAction, m_linkedEntity, null) * attackAction.actualDuration;
-			int[] targetTilesID = new int[maxAmount];
-			int[] targetEntitiesID = new int[maxAmount];
-			for (int i = 0; i < maxAmount; i++)
-			{
-				targetTilesID[i] = shouldAddTileInDirectionToTarget
-					? from.GetNeighbor((HexDirection)GridManager.Instance.GetClosestOrientation(from, m_lastEntitiesTargeted[i % m_lastEntitiesTargeted.Count].Displacement.Coordinates.GetTile())).coordinates.ID
-					: m_lastEntitiesTargeted[i % m_lastEntitiesTargeted.Count].Displacement.Coordinates.ID;
-				targetEntitiesID[i] = m_lastEntitiesTargeted[i % m_lastEntitiesTargeted.Count].ID;
-			}
-
-			attackAction.linkedEquipmentId = equipmentID;
-			attackAction.targetedEntityIDs = targetEntitiesID;
-			attackAction.targetTileIDs = targetTilesID;
-			attackAction.Init(GameAssets.current.game.entityActionsData[attackAction.enumID], equipmentID, m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID, TurnManager.currentTick);
-			resultInfo.ReplaceAction(attackAction, "Has enemy in range, action replaced with " + attackAction);
 		}
 		else if (canMove && !isTargetVisible && !keepsPlannedMovement && committedTarget != null
 			&& TryGetLastKnownTileOf(committedTarget, out Tile lastKnownTargetTile))
@@ -206,13 +180,16 @@ public class EntityAIPlugin : EntityPlugin
 				TargetEntity(committedTarget);
 				if (!isAtCorrectOrientation && isEntityInRangeWeaponsPossibleRange)
 				{
-					if (!isAtCorrectOrientation)
-					{
-						RotateEntityAction rotateAction = (TurnManager.Instance.GetAction(EntityActionEnumID.RotateEntity, m_linkedEntity.ID, null, TurnManager.currentTick) as RotateEntityAction);
-						rotateAction.targetedOrientationID = new int[1] { orientationTowardTarget };
-						rotateAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.RotateEntity], null, m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID, TurnManager.currentTick);
-						resultInfo.ReplaceFreeAction(rotateAction, "Rotates toward target");
-					}
+					RotateEntityAction rotateAction = (TurnManager.Instance.GetAction(EntityActionEnumID.RotateEntity, m_linkedEntity.ID, null, TurnManager.currentTick) as RotateEntityAction);
+					rotateAction.targetedOrientationID = new int[1] { orientationTowardTarget };
+					rotateAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.RotateEntity], null, m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID, TurnManager.currentTick);
+					resultInfo.ReplaceFreeAction(rotateAction, "Rotates toward target");
+
+					if (_recordedAction.action.Data.codeType == EntityActionData.ActionCodeType.Wait
+						&& TryGetEnemiesInWeaponRangeAt(_recordedAction.action, m_linkedEntity.Displacement.Coordinates.GetTile(), orientationTowardTarget
+							, out List<Entity> enemiesOnceRotated, out EntityActionEnumID rotatedAttackEnumID, out string rotatedEquipmentID))
+						TryReplaceActionWithAttack(_recordedAction, enemiesOnceRotated, rotatedAttackEnumID, rotatedEquipmentID
+							, "Rotates and shoots target with " + rotatedAttackEnumID, ref resultInfo);
 				}
 				else
 				{
@@ -268,6 +245,11 @@ public class EntityAIPlugin : EntityPlugin
 							rotateAction.targetedOrientationID = new int[1] { firingOrientation };
 							rotateAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.RotateEntity], null, m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID, TurnManager.currentTick);
 							resultInfo.ReplaceFreeAction(rotateAction, "Rotate to shoot target");
+
+							if (TryGetEnemiesInWeaponRangeAt(_recordedAction.action, from, firingOrientation
+								, out List<Entity> enemiesOnceAimed, out EntityActionEnumID aimedAttackEnumID, out string aimedEquipmentID))
+								TryReplaceActionWithAttack(_recordedAction, enemiesOnceAimed, aimedAttackEnumID, aimedEquipmentID
+									, "Rotates and shoots target with " + aimedAttackEnumID, ref resultInfo);
 						}
 					}
 				}
@@ -290,7 +272,7 @@ public class EntityAIPlugin : EntityPlugin
 
 			}*/
 		}
-		else if (!canMove && _recordedAction.type != EntityActionEnumID.Wait && (_recordedAction.action.Data.type == EntityActionData.ActionType.Movement || _recordedAction.action.Data.type == EntityActionData.ActionType.Rotation
+		else if (!canMove && _recordedAction.type != EntityActionEnumID.Wait && (_recordedAction.action.Data.type == EntityActionData.ActionType.Movement || EntityActionData.IsRotationAction(_recordedAction.action.enumID)
 			 || _recordedAction.action.Data.codeType == EntityActionData.ActionCodeType.MoveThenAttack))
 		{
 			resultInfo.ReplaceAction(GetWaitActionFor(_recordedAction), "Unit cannot move");
@@ -300,6 +282,77 @@ public class EntityAIPlugin : EntityPlugin
 			resultInfo.ReplaceAction(GetWaitActionFor(_recordedAction), "No target in reach for " + _recordedAction.type);
 
 		return resultInfo;
+	}
+
+	private bool TryReplaceActionWithAttack ( TurnManager.RecordedAction _recordedAction, List<Entity> _enemies, EntityActionEnumID _attackEnumID
+		, string _equipmentID, string _reason, ref CheckActionResultInfo _resultInfo )
+	{
+		AttackAction attackAction = (TurnManager.Instance.GetAction(_attackEnumID, m_linkedEntity.ID, _equipmentID, TurnManager.currentTick) as AttackAction);
+
+		if (attackAction == null)
+		{
+			Debug.LogError("error, action " + _attackEnumID + " isnt an AttackAction code type", gameObject);
+			return false;
+		}
+
+		m_lastEntitiesTargeted = _enemies;
+
+		bool shouldAddTileInDirectionToTarget = attackAction.Data.aoeType != EntityActionData.AOEType.Noone && attackAction.Data.aoECenterType == EntityActionData.AOECenterType.Self;
+		Tile from = m_linkedEntity.Displacement.Coordinates.GetTile();
+		int maxAmount = attackAction.Data.GetMaxTargetAmount(attackAction, m_linkedEntity, null) * attackAction.actualDuration;
+		int[] targetTilesID = new int[maxAmount];
+		int[] targetEntitiesID = new int[maxAmount];
+		for (int i = 0; i < maxAmount; i++)
+		{
+			Entity target = m_lastEntitiesTargeted[i % m_lastEntitiesTargeted.Count];
+			targetTilesID[i] = shouldAddTileInDirectionToTarget
+				? from.GetNeighbor((HexDirection)GridManager.Instance.GetClosestOrientation(from, target.Displacement.Coordinates.GetTile())).coordinates.ID
+				: target.Displacement.Coordinates.ID;
+			targetEntitiesID[i] = target.ID;
+		}
+
+		attackAction.linkedEquipmentId = _equipmentID;
+		attackAction.targetedEntityIDs = targetEntitiesID;
+		attackAction.targetTileIDs = targetTilesID;
+		attackAction.Init(GameAssets.current.game.entityActionsData[attackAction.enumID], _equipmentID, m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID, TurnManager.currentTick);
+		_resultInfo.ReplaceAction(attackAction, _reason);
+		return true;
+	}
+
+	private bool TryGetEnemiesInWeaponRangeAt ( AEntityAction _action, Tile _from, int _orientation, out List<Entity> _enemies
+		, out EntityActionEnumID _attackEnumID, out string _equipmentID, bool _isThisTurn = true )
+	{
+		_enemies = null;
+		_attackEnumID = EntityActionEnumID.Unknowned;
+		_equipmentID = null;
+
+		if (_from == null)
+			return false;
+
+		foreach (System.Tuple<EntityActionData, string> pair in GetAvailableAttackAction())
+		{
+			AEntityAction relatedAction = _action.enumID == pair.Item1.enumID
+				? _action
+				: TurnManager.Instance.GetAction(GameAssets.current.game.entityActionsData[pair.Item1.enumID], m_linkedEntity.ID, pair.Item2, _action.timeAtStart);
+
+			List<Entity> enemiesInCone = new();
+			foreach (Tile tile in m_linkedEntity.Equipment.GetTilesInWeaponRange(relatedAction, _isThisTurn, _from, _orientation))
+			{
+				Entity entityOnTile = tile.GetEntity(_isThisTurn);
+				if (entityOnTile != null && !entityOnTile.IsAlliedTo(m_linkedEntity.OwnerID))
+					enemiesInCone.Add(entityOnTile);
+			}
+
+			if (enemiesInCone.Count == 0)
+				continue;
+
+			_enemies = enemiesInCone;
+			_attackEnumID = pair.Item1.enumID;
+			_equipmentID = pair.Item2;
+			return true;
+		}
+
+		return false;
 	}
 
 	private bool HasPlannedMovement ( AEntityAction _action )
@@ -318,7 +371,7 @@ public class EntityAIPlugin : EntityPlugin
 	private void DropStaleFacing ( TurnManager.RecordedAction _recordedAction, ref CheckActionResultInfo _resultInfo )
 	{
 		AEntityAction freeAction = _recordedAction.freeAction;
-		if (freeAction == null || freeAction.Data.type != EntityActionData.ActionType.Rotation)
+		if (freeAction == null || !EntityActionData.IsRotationAction(freeAction.enumID))
 			return;
 
 		freeAction.CancelAction();

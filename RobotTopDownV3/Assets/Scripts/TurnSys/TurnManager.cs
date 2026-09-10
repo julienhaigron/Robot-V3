@@ -833,7 +833,7 @@ public class TurnManager : Singleton<TurnManager>
 		return _recordedAction.freeAction != null
 			&& _recordedAction.freeActionType != EntityActionEnumID.Wait
 			&& _recordedAction.freeActionType != EntityActionEnumID.Unknowned
-			&& _recordedAction.freeAction.Data.type == EntityActionData.ActionType.Rotation;
+			&& EntityActionData.IsRotationAction(_recordedAction.freeAction.enumID);
 	}
 
 	public int GetLastRegisteredPositionOfEntity ( int _entityID )

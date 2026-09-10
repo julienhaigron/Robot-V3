@@ -303,10 +303,6 @@ public class Entity : MonoBehaviour
 					if (data.type == EntityActionData.ActionType.Movement)
 						replacements.Add(actionID);
 					break;
-				case EntityActionData.ActionType.Rotation:
-					if (data.type == EntityActionData.ActionType.Rotation)
-						replacements.Add(actionID);
-					break;
 				case EntityActionData.ActionType.Special:
 					if (data.type == EntityActionData.ActionType.Special)
 						replacements.Add(actionID);
