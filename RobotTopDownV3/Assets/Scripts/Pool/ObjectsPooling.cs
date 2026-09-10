@@ -6,7 +6,10 @@ using UnityEngine;
 
 [DisallowMultipleComponent()]
 [RequireComponent(typeof(LoadingElement))]
-public class ObjectsPooling : SingletonPersistant<ObjectsPooling>
+//Not SingletonPersistant: this sits on a CHILD GameObject, where DontDestroyOnLoad is a no-op and only logs a
+//warning. It survives scene loads through its persisting root (GameManager.prefab). Moving it out from under that root
+//would silently break that - it would need to become SingletonPersistant again, on a root object.
+public class ObjectsPooling : Singleton<ObjectsPooling>
 {
 	[SerializeField] private LoadingElement m_loadingElement;
 	[SerializeField] private Transform m_mainParent;

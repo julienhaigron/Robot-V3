@@ -97,18 +97,33 @@ public class PlayerController : Singleton<PlayerController>
 		TurnManager.onEndInputPhase += OnEndInputPhase;
 		EntityEquipmentPlugin.onAnyEntityDeath += OnAnyEntityDeath;
 		TurnManager.onEndLevel += OnEndLevel;
+		GameDatas.onAfterLoad += ApplySavedInputBindings;
 
 		InitInputActions();
+	}
 
+	//Not in Awake: CameraManager sits on the same prefab and its own Awake may not have run yet, so its Instance
+	//is null there. Start is guaranteed to come after every Awake.
+	private void Start ()
+	{
 		m_targetRotation = CameraManager.Instance.CameraParent.transform.rotation;
 		m_currentZoomDistance = CameraManager.Instance.CameraParent.transform.position.y;
 	}
 
-	private void InitInputActions ()
+	//Awake runs before ApplicationManager has loaded the save, so the overrides are applied a second time on
+	//onAfterLoad - otherwise a rebind saved by the player would never reach the actions.
+	private void ApplySavedInputBindings ()
 	{
-		string savedOverrides = GameDatas.current.app.inputBindingOverridesJson;
+		GameDatas datas = GameDatas.current;
+		string savedOverrides = datas == null || datas.app == null ? null : datas.app.inputBindingOverridesJson;
+
 		if (!string.IsNullOrEmpty(savedOverrides))
 			m_inputActions.LoadBindingOverridesFromJson(savedOverrides);
+	}
+
+	private void InitInputActions ()
+	{
+		ApplySavedInputBindings();
 
 		InputActionMap playerMap = m_inputActions.FindActionMap("Player");
 
@@ -145,6 +160,7 @@ public class PlayerController : Singleton<PlayerController>
 		TurnManager.onEndInputPhase -= OnEndInputPhase;
 		EntityEquipmentPlugin.onAnyEntityDeath -= OnAnyEntityDeath;
 		TurnManager.onEndLevel -= OnEndLevel;
+		GameDatas.onAfterLoad -= ApplySavedInputBindings;
 
 		m_inputActions.FindActionMap("Player")?.Disable();
 
