@@ -147,7 +147,11 @@ public class EntityConfigPanel : AUIPanel
 		if (m_entityData == null)
 			return;
 
-		GameDatas.current.currentPlayerSave.DisassembleUnit(m_entityData);
+		if(m_isNewUnit)
+			GameDatas.current.currentPlayerSave.DisassembleUnit(m_entityData);
+		else
+			//GameDatas.current.currentPlayerSave.allBuiltUnits.Remove(m_entityData);
+
 		m_isNewUnit = false;
 	}
 

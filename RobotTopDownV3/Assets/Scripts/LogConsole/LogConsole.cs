@@ -39,6 +39,7 @@ public class LogConsole : SingletonPersistant<LogConsole>
 
 		public LogDetails(string _ID, string _title, string _description )
 		{
+			Instance.Counter++;
 			ID = _ID;
 			title = _title;
 			description = _description;
