@@ -132,7 +132,7 @@ public class ActionButton : BaseButton, IPointerEnterHandler, IPointerExitHandle
 			return;
 
 		EntityActionData movementAction = selectedEntity.AI.GetMovementAction();
-		if (movementAction != null && movementAction.enumID == m_actionType)
+		if (movementAction != null && movementAction.enumID == m_actionType || GameAssets.current.game.entityActionsData[m_actionType].DoesResolveItsOwnTarget())
 			return;
 
 		TurnManager.Instance.SetCurrentStateSelected(Entity.EntityState.NoAIChange);

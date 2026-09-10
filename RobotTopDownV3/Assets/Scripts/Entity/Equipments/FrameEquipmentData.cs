@@ -145,7 +145,7 @@ public class EntitySavedData : INetworkSerializable
 		foreach (GameDatas.PlayerSave.Component ep in GetAllEquipments())
 			if (ep.isDamaged)
 				return true;
-		
+
 		return false;
 	}
 
@@ -250,32 +250,45 @@ public class EntitySavedData : INetworkSerializable
 	public List<AEntityPassiveEffect.PassiveEffectContainer> GetPassiveEffects ( EntityActionEnumID _actionID )
 	{
 		List<AEntityPassiveEffect.PassiveEffectContainer> passiveEffects = new();
-		passiveEffects.AddRange(FrameData.passiveEffects);
-		passiveEffects.AddRange(ReactorData.passiveEffects);
-		passiveEffects.AddRange(NeuronalMembraneData.passiveEffects);
-		passiveEffects.AddRange(BrainData.passiveEffects);
+		if (FrameData != null)
+			passiveEffects.AddRange(FrameData.passiveEffects);
+		if (ReactorData != null)
+			passiveEffects.AddRange(ReactorData.passiveEffects);
+		if (NeuronalMembraneData != null)
+			passiveEffects.AddRange(NeuronalMembraneData.passiveEffects);
+		if (BrainData != null)
+			passiveEffects.AddRange(BrainData.passiveEffects);
 		if (_actionID != EntityActionEnumID.Unknowned && GameAssets.current.game.entityActionsData.ContainsKey(_actionID))
 			passiveEffects.AddRange(GameAssets.current.game.entityActionsData[_actionID].passiveEffects);
 
-		foreach (GameDatas.PlayerSave.Component container in arms)
+		if (arms != null)
 		{
-			if (container != null && !container.isDamaged && container.TryGetData(out EntityEquipmentData equipment) && equipment.knownedActions.Contains(_actionID))
+			foreach (GameDatas.PlayerSave.Component container in arms)
 			{
-				passiveEffects.AddRange(equipment.passiveEffects);
+				if (container != null && !container.isDamaged && container.TryGetData(out EntityEquipmentData equipment) && equipment.knownedActions.Contains(_actionID))
+				{
+					passiveEffects.AddRange(equipment.passiveEffects);
+				}
 			}
 		}
-		foreach (GameDatas.PlayerSave.Component container in auxiliar)
+		if (auxiliar != null)
 		{
-			if (container != null && !container.isDamaged && container.TryGetData(out EntityEquipmentData equipment) && equipment.knownedActions.Contains(_actionID))
+			foreach (GameDatas.PlayerSave.Component container in auxiliar)
 			{
-				passiveEffects.AddRange(equipment.passiveEffects);
+				if (container != null && !container.isDamaged && container.TryGetData(out EntityEquipmentData equipment) && equipment.knownedActions.Contains(_actionID))
+				{
+					passiveEffects.AddRange(equipment.passiveEffects);
+				}
 			}
 		}
-		foreach (GameDatas.PlayerSave.Component container in chipsets)
+		if (chipsets != null)
 		{
-			if (container != null && !container.isDamaged && container.TryGetData(out EntityEquipmentData equipment))
+			foreach (GameDatas.PlayerSave.Component container in chipsets)
 			{
-				passiveEffects.AddRange(equipment.passiveEffects);
+				if (container != null && !container.isDamaged && container.TryGetData(out EntityEquipmentData equipment))
+				{
+					passiveEffects.AddRange(equipment.passiveEffects);
+				}
 			}
 		}
 
@@ -334,7 +347,7 @@ public class EntitySavedData : INetworkSerializable
 		return equipments;
 	}
 
-	public EntityEquipmentData.EntityFaction GetDominentFaction (out float _percentage)
+	public EntityEquipmentData.EntityFaction GetDominentFaction ( out float _percentage )
 	{
 		Dictionary<EntityEquipmentData.EntityFaction, int> count = new();
 		foreach (GameDatas.PlayerSave.Component eq in GetAllEquipments())
@@ -418,21 +431,24 @@ public class EntitySavedData : INetworkSerializable
 	public float GetStaticStealthBonus ( bool _isVisual )
 	{
 		float result = 0;
-		foreach (GameDatas.PlayerSave.Component container in auxiliar)
+		if (auxiliar != null)
 		{
-			if (container != null && !container.isDamaged && container.TryGetData(out OccultorEquipmentData occultor))
+			foreach (GameDatas.PlayerSave.Component container in auxiliar)
 			{
-				if (_isVisual)
-					result += occultor.visualCamo;
-				else
-					result += occultor.soundCamo;
-
-				foreach (EntityEquipmentData.SecondaryStat statBonus in occultor.statBonuses)
+				if (container != null && !container.isDamaged && container.TryGetData(out OccultorEquipmentData occultor))
 				{
-					if (statBonus.type == EntityEquipmentData.SecondaryStat.StatType.VisualCamo && _isVisual)
-						result += statBonus.value;
-					else if (statBonus.type == EntityEquipmentData.SecondaryStat.StatType.RadarCamo && !_isVisual)
-						result += statBonus.value;
+					if (_isVisual)
+						result += occultor.visualCamo;
+					else
+						result += occultor.soundCamo;
+
+					foreach (EntityEquipmentData.SecondaryStat statBonus in occultor.statBonuses)
+					{
+						if (statBonus.type == EntityEquipmentData.SecondaryStat.StatType.VisualCamo && _isVisual)
+							result += statBonus.value;
+						else if (statBonus.type == EntityEquipmentData.SecondaryStat.StatType.RadarCamo && !_isVisual)
+							result += statBonus.value;
+					}
 				}
 			}
 		}

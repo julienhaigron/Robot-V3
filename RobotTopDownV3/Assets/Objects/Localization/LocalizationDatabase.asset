@@ -544,7 +544,7 @@ MonoBehaviour:
     - "Jamais sauvegard\xE9e"
   - key: save/last_played
     values:
-    - "Last played: {0}"
+    - 'Last played: {0}'
     - "Derni\xE8re partie : {0}"
   - key: save/delete
     values:
@@ -1752,8 +1752,8 @@ MonoBehaviour:
     - <color=green><b>Touche garantie</b></color>
   - key: roll/roll
     values:
-    - 'Roll: {0}%'
-    - 'Jet : {0} %'
+    - 'Roll: {0}'
+    - 'Jet : {0}'
   - key: roll/hit_success
     values:
     - <color=green><b>Hit Success</b></color>
