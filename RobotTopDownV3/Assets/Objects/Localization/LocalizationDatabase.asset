@@ -1890,10 +1890,10 @@ MonoBehaviour:
     values:
     - (critical)
     - (critique)
-  - key: death/max_health
+  - key: death/health
     values:
-    - 'Max Health: {0}'
-    - 'PV max : {0}'
+    - 'Health: {0}/{1}'
+    - 'PV : {0}/{1}'
   - key: status_tip/duration
     values:
     - 'Duration: {0} turns'

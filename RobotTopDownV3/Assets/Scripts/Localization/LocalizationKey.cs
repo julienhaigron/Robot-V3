@@ -468,7 +468,7 @@ public enum LocalizationKey
     death_action,
     death_killing_blow,
     death_critical,
-    death_max_health,
+    death_health,
     status_tip_duration,
     status_tip_remaining,
     status_tip_needs_roll,
@@ -964,7 +964,7 @@ public static class LocalizationKeyExtensions
             case LocalizationKey.death_action: return "death/action";
             case LocalizationKey.death_killing_blow: return "death/killing_blow";
             case LocalizationKey.death_critical: return "death/critical";
-            case LocalizationKey.death_max_health: return "death/max_health";
+            case LocalizationKey.death_health: return "death/health";
             case LocalizationKey.status_tip_duration: return "status_tip/duration";
             case LocalizationKey.status_tip_remaining: return "status_tip/remaining";
             case LocalizationKey.status_tip_needs_roll: return "status_tip/needs_roll";

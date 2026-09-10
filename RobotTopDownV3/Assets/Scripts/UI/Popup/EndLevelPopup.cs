@@ -31,6 +31,7 @@ public class EndLevelPopup : AUIPopup
 	}
 
 	private GameResult m_gameResult;
+	private MissionData m_missionData;
 
 	private void RefreshResultLabel ()
 	{
@@ -41,6 +42,7 @@ public class EndLevelPopup : AUIPopup
 	public void Init ( GameResult _gameResult, MissionData _missionData )
 	{
 		m_gameResult = _gameResult;
+		m_missionData = _missionData;
 		LocalizationManager.onLanguageChanged -= RefreshResultLabel;
 		LocalizationManager.onLanguageChanged += RefreshResultLabel;
 		RefreshResultLabel();
@@ -173,6 +175,14 @@ public class EndLevelPopup : AUIPopup
 		foreach (UnitRewardDisplay display in m_rewardUnitsDisplays)
 			if (display.IsSelected && display.IsVisible)
 				display.UnitPreset.AddToUnits(false);
+
+		//The set is cached on the MissionData, so the preview the player saw in the mission panel is the set that
+		//was just handed out. Dropping it here is what lets the same mission roll fresh rewards next time.
+		if (m_missionData != null)
+		{
+			m_missionData.ClearRewardSet();
+			m_missionData = null;
+		}
 
 		GameManager.Instance.GoBackToHub();
 		Close();

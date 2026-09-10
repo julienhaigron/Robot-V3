@@ -37,8 +37,9 @@ public class PushOrPullPassiveEffect : AEntityPassiveEffect
 		for (int i = 0; i < stepAmount; i++)
 		{
 			Tile nextTile = destination.Neighbors[direction];
+			bool isVoid = nextTile != null && nextTile.GroundType == TileGroundType.Void;
 
-			if (nextTile == null || nextTile.IsObstacle(false))
+			if (nextTile == null || (!isVoid && nextTile.IsObstacle(false)))
 			{
 				blockingTile = nextTile;
 				didCollide = true;
@@ -54,6 +55,9 @@ public class PushOrPullPassiveEffect : AEntityPassiveEffect
 			}
 
 			destination = nextTile;
+
+			if (isVoid && !_targetEntity.Status.Contains(EntityStatusEnumID.Flying))
+				break;
 		}
 
 		if (didCollide)

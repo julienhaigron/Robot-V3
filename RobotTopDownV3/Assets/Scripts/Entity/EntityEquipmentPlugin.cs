@@ -557,6 +557,18 @@ public class EntityEquipmentPlugin : EntityPlugin
 		Death(deathInfo);
 	}
 
+	private static readonly HashSet<EntityEquipmentData.SecondaryStat.StatType> m_statsHiddenInDeathTooltip = new()
+	{
+		EntityEquipmentData.SecondaryStat.StatType.BaseHp,
+		EntityEquipmentData.SecondaryStat.StatType.EnergyCost,
+		EntityEquipmentData.SecondaryStat.StatType.EnergyProduced,
+		EntityEquipmentData.SecondaryStat.StatType.Action,
+		EntityEquipmentData.SecondaryStat.StatType.ChipsetSlot,
+		EntityEquipmentData.SecondaryStat.StatType.EquipmentSlot,
+		EntityEquipmentData.SecondaryStat.StatType.ArmourySlot,
+		EntityEquipmentData.SecondaryStat.StatType.OccultorSlot,
+	};
+
 	private string BuildDeathTooltip ( TakeDamageCallback _damageInfo )
 	{
 		LocalizationManager localization = LocalizationManager.Instance;
@@ -582,9 +594,15 @@ public class EntityEquipmentPlugin : EntityPlugin
 
 		builder.AppendLine();
 		builder.AppendLine($"<b>{m_linkedEntity.Data.name}</b>");
-		builder.AppendLine(string.Format(localization.Get(LocalizationKey.death_max_health), m_maxHealth));
-		foreach (EntityEquipmentData.StatDescription stat in m_linkedEntity.Data.GetStatsDesciptions().Values)
-			builder.AppendLine($"{stat.title}: {stat.stringValue}");
+		builder.AppendLine(string.Format(localization.Get(LocalizationKey.death_health), Mathf.Max(0, m_currentHealth), m_maxHealth));
+
+		foreach (KeyValuePair<EntityEquipmentData.SecondaryStat.StatType, EntityEquipmentData.StatDescription> stat in m_linkedEntity.Data.GetStatsDesciptions())
+		{
+			if (m_statsHiddenInDeathTooltip.Contains(stat.Key))
+				continue;
+
+			builder.AppendLine($"{stat.Value.title}: {stat.Value.stringValue}");
+		}
 
 		return builder.ToString();
 	}

@@ -26,6 +26,7 @@ public class TournamentPanel : AUIPanel
 	[Title("Rewards")]
 	[SerializeField] private ComponentRewardDisplay[] m_componentRewardDisplays;
 	[SerializeField] private CurrencyRewardDisplay[] m_currencyRewardDisplays;
+	[SerializeField] private UnitRewardDisplay[] m_unitRewardDisplays;
 
 	private int CurrentRound => GameDatas.current.currentPlayerSave.dayCount - 4;
 
@@ -129,12 +130,14 @@ public class TournamentPanel : AUIPanel
 
 	private void SetCurrentMatchInfo ( MissionData _data )
 	{
+		MissionData.RewardSet rewardSet = _data.GetRewardSet();
+
 		for (int i = 0; i < m_componentRewardDisplays.Length; i++)
 		{
-			if (_data.equipmentRewards.Count > i)
+			if (rewardSet.components.Count > i)
 			{
 				m_componentRewardDisplays[i].Show();
-				m_componentRewardDisplays[i].Init(_data.equipmentRewards[i], null);
+				m_componentRewardDisplays[i].Init(rewardSet.components[i], null);
 			}
 			else
 				m_componentRewardDisplays[i].Hide();
@@ -142,14 +145,16 @@ public class TournamentPanel : AUIPanel
 
 		for (int i = 0; i < m_currencyRewardDisplays.Length; i++)
 		{
-			if (_data.currencyRewards.Length > i)
+			if (rewardSet.creditAmounts.Count > i)
 			{
 				m_currencyRewardDisplays[i].Show();
-				m_currencyRewardDisplays[i].Init(_data.currencyRewards[i].type, _data.currencyRewards[i].amount, true, null);
+				m_currencyRewardDisplays[i].Init(CurrencyType.SoftCurrency, rewardSet.creditAmounts[i], true, null);
 			}
 			else
 				m_currencyRewardDisplays[i].Hide();
 		}
+
+		UnitRewardDisplay.RefreshPreview(m_unitRewardDisplays, rewardSet);
 	}
 
 	private EntityEquipmentData.EntityFaction GetDominentSquadFaction ( List<UnitPreset> _units )
