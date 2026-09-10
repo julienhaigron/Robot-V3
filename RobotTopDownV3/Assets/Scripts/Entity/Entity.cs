@@ -354,7 +354,7 @@ public class Entity : MonoBehaviour
 
 				LogConsole.AddLog(string.Format(LocalizationManager.Instance.Get(LocalizationKey.log_status_affected), m_data.name, status.GetLocalizedName(), remainingDuration)
 					, LogConsole.LogEventType.Status
-					, new LogConsole.LogDetails("status_" + LogConsole.Instance.Counter, status.GetLocalizedName(), status.GetTooltip(remainingDuration)));
+					, new LogConsole.LogDetails("status_effect_" + LogConsole.Instance.Counter, status.GetLocalizedName(), status.GetTooltip(remainingDuration)));
 
 				string tickEffect = status.GetTickEffectText(remainingDuration, this);
 				if (!string.IsNullOrEmpty(tickEffect))

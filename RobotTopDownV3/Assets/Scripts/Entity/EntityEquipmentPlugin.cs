@@ -478,7 +478,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 		}
 
 		string detailsDescription = detailsBuilder.ToString();
-		LogConsole.LogDetails details = new("status_" + LogConsole.Instance.Counter, localization.Get(LocalizationKey.status_roll_title), detailsDescription);
+		LogConsole.LogDetails details = new("status_roll_" + LogConsole.Instance.Counter, localization.Get(LocalizationKey.status_roll_title), detailsDescription);
 		LogConsole.AddLog(string.Format(localization.Get(isAttackSuccessful ? LocalizationKey.status_roll_log_applied : LocalizationKey.status_roll_log_failed)
 			, m_linkedEntity.Data.name, _effect.GetLocalizedName(), _target.Data.name), LogConsole.LogEventType.Status, details);
 
