@@ -56,6 +56,12 @@ public class TournamentPanel : AUIPanel
 		foreach (Image image in m_squadsIcons)
 			image.gameObject.SetActive(false);
 
+		//Only the rounds already reached show a squad. Without this the displays of a round that is not there yet
+		//keep whatever the previous opening left on them, which is how enemies of later rounds stayed on screen.
+		HideSquadDisplays(m_round1SquadUnits);
+		HideSquadDisplays(m_round2SquadUnits);
+		HideSquadDisplays(m_round3SquadUnits);
+
 		for (int i = 0; i < m_unitDisplays.Length; i++)
 		{
 			if (GameDatas.current.currentPlayerSave.squadUnitsIndex.Count > i)
@@ -126,6 +132,16 @@ public class TournamentPanel : AUIPanel
 		m_startMissionBtn.SetInteractability(GameDatas.current.currentPlayerSave.squadUnitsIndex.Count > 0);
 
 		OnAnyUnitHovered(m_unitDisplays[0]);
+	}
+
+	private void HideSquadDisplays ( UnitMissionDisplay[] _displays )
+	{
+		if (_displays == null)
+			return;
+
+		foreach (UnitMissionDisplay display in _displays)
+			if (display != null)
+				display.Hide();
 	}
 
 	private void SetCurrentMatchInfo ( MissionData _data )

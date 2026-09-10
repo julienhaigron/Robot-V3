@@ -184,6 +184,9 @@ public class Weapon : MonoBehaviour
 			ps.Play();
 		SoundManager.Instance.Play(_attackAction.Data.onPerformSingleAttackSFXID);
 
+		if (_attackAction.Data.type == EntityActionData.ActionType.MeleeAttack)
+			DamageWallsInWeaponRange(_attackAction, damages);
+
 		foreach (WeaponTarget target in targets)
 		{
 			Entity targetEntity = target.targetEntity != null ? target.targetEntity : target.targetTile.GetCurrentEntity();
@@ -212,6 +215,22 @@ public class Weapon : MonoBehaviour
 		}
 
 		yield return m_singleAttackDuration;
+	}
+
+	//A melee swing hits whatever is around it, walls included: the ranged path already does this on the impact
+	//tile in BulletWeapon.ApplyBulletImpact, and the base path only ever touched entities.
+	private void DamageWallsInWeaponRange ( AttackAction _attackAction, Dictionary<WeaponEquipmentData.DamageType, int> _damages )
+	{
+		int hitAmount = Mathf.Max(1, _attackAction.Data.GetHitAmount(_attackAction, m_user, null));
+
+		foreach (Tile tile in m_user.Equipment.GetTilesInWeaponRange(_attackAction, true))
+		{
+			if (tile == null || tile.Wall == null)
+				continue;
+
+			for (int i = 0; i < hitAmount && tile.Wall.Health > 0; i++)
+				tile.Wall.TakeDamage(_damages);
+		}
 	}
 
 	private Entity GetEntityCaughtOn ( Tile _tile, AttackAction _attackAction )
