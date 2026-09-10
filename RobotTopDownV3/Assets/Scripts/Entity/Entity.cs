@@ -60,6 +60,11 @@ public class Entity : MonoBehaviour
 	private EntityState m_state;
 	public EntityState State => m_state;
 
+	//The state every action this entity queues is tagged with. Only a StateButton click changes it, and it only
+	//applies to actions added after the change - already queued ones keep the state they were registered with.
+	private EntityState m_defaultState = EntityState.NoAIChange;
+	public EntityState DefaultState => m_defaultState;
+
 	private List<EntityStatusEnumID> m_status = new();
 	public List<EntityStatusEnumID> Status => m_status;
 	private Dictionary<AEntityStatus, int> m_remainingDurationToActiveStatuses = new();
@@ -131,6 +136,15 @@ public class Entity : MonoBehaviour
 		}
 
 		m_knownedStates.AddRange(GameAssets.current.game.states);
+		m_defaultState = EntityState.NoAIChange;
+	}
+
+	public void SetDefaultState ( EntityState _state )
+	{
+		if (!m_knownedStates.Contains(_state))
+			return;
+
+		m_defaultState = _state;
 	}
 
 	private Dictionary<EntityActionEnumID, List<string>> GetAllActions ()

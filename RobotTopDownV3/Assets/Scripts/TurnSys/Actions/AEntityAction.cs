@@ -102,7 +102,7 @@ public abstract class AEntityAction : INetworkSerializable
 
 		if (TurnManager.Instance.CurrentActionTargetTiles.Count == (maxTargetAmount * Data.tokenDuration))
 		{
-			TurnManager.Instance.RegisterAction(performingEntityID, TurnManager.Instance.CurrentActionSelected, TurnManager.Instance.CurrentStateTypeSelected);
+			TurnManager.Instance.RegisterAction(performingEntityID, TurnManager.Instance.CurrentActionSelected, TurnManager.Instance.GetDefaultStateOf(performingEntityID));
 			TurnManager.Instance.RefreshActionDisplay(performingEntityID, true);
 		}
 	}

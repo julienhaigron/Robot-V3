@@ -351,7 +351,7 @@ public class AttackAction : AEntityAction
 			modAction.targetTileIDs = new int[1];
 			modAction.targetTileIDs[0] = _tile.coordinates.ID;
 			modAction.targetedOrientationID = m_orientations.ToArray();
-			TurnManager.Instance.RegisterActionAndMod(performingEntityID, TurnManager.Instance.CurrentActionSelected, modAction, TurnManager.Instance.CurrentStateTypeSelected);
+			TurnManager.Instance.RegisterActionAndMod(performingEntityID, TurnManager.Instance.CurrentActionSelected, modAction, TurnManager.Instance.GetDefaultStateOf(performingEntityID));
 			TurnManager.Instance.RefreshActionDisplay(performingEntityID, true);
 		}
 	}

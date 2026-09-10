@@ -169,7 +169,7 @@ public sealed class InGamePanel : AUIPanel
 			int remainingToken = TurnManager.Instance.RemainingActionToken[entity.ID];
 			for (int i = 0; i < remainingToken; i++)
 			{
-				TurnManager.Instance.AddAction(entity.ID, EntityActionEnumID.Wait, Entity.EntityState.Patroling, null);
+				TurnManager.Instance.AddAction(entity.ID, EntityActionEnumID.Wait, entity.DefaultState, null);
 			}
 		}
 

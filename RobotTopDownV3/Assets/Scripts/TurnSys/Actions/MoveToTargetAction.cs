@@ -171,7 +171,7 @@ public class MoveToTargetAction : AEntityAction
 				_item.Data.OnRegisterInteraction(action, _item);
 
 			actionCount++;
-			TurnManager.Instance.RegisterAction(performingEntityID, action, TurnManager.Instance.CurrentStateTypeSelected);
+			TurnManager.Instance.RegisterAction(performingEntityID, action, TurnManager.Instance.GetDefaultStateOf(performingEntityID));
 
 			if (TurnManager.Instance.RemainingActionToken[performingEntityID] < Data.tokenDuration)
 				break;

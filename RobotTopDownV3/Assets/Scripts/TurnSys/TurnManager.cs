@@ -54,8 +54,10 @@ public class TurnManager : Singleton<TurnManager>
 	private string m_currentEquipmentLinkedToActionTypeSelected;
 	public string CurrentEquipmentLinkedToActionTypeSelected => m_currentEquipmentLinkedToActionTypeSelected;
 
-	private Entity.EntityState m_currentStateTypeSelected;
-	public Entity.EntityState CurrentStateTypeSelected => m_currentStateTypeSelected;
+	//No selection state of its own: the state lives on the entity, this only reads the one being configured.
+	public Entity.EntityState CurrentStateTypeSelected => PlayerController.Instance == null || PlayerController.Instance.SelectedEntity == null
+		? Entity.EntityState.NoAIChange
+		: PlayerController.Instance.SelectedEntity.DefaultState;
 
 	private List<Tile> m_currentActionTargetTiles = new();
 	public List<Tile> CurrentActionTargetTiles => m_currentActionTargetTiles;
@@ -254,7 +256,6 @@ public class TurnManager : Singleton<TurnManager>
 		if (_selectedDisplay != null)
 		{
 			hasModActionSelected = _isModAction;
-			m_currentStateTypeSelected = _selectedDisplay.RecordedAction.entityState;
 			m_currentActionTargetTiles.Clear();
 			AEntityAction action = _isModAction ? _selectedDisplay.RecordedAction.freeAction : _selectedDisplay.RecordedAction.action;
 			if (action.targetTileIDs != null)
@@ -320,20 +321,23 @@ public class TurnManager : Singleton<TurnManager>
 
 	public Entity.EntityState GetDefaultStateOf ( Entity _entity )
 	{
-		if (m_recordedActionInput.TryGetValue(_entity.ID, out Queue<RecordedAction> recordedActions) && recordedActions.Count > 0)
-			return recordedActions.ToArray()[^1].entityState;
+		return _entity == null ? Entity.EntityState.NoAIChange : _entity.DefaultState;
+	}
 
-		return _entity.KnownedStates.Contains(Entity.EntityState.NoAIChange)
-			? Entity.EntityState.NoAIChange
-			: _entity.KnownedStates[0];
+	public Entity.EntityState GetDefaultStateOf ( int _entityID )
+	{
+		return GetDefaultStateOf(GameManager.Instance.GetEntityFromID(_entityID));
 	}
 
 	public void SetCurrentStateSelected ( Entity.EntityState _state )
 	{
-		m_currentStateTypeSelected = _state;
+		Entity selectedEntity = PlayerController.Instance.SelectedEntity;
+		if (selectedEntity != null)
+			selectedEntity.SetDefaultState(_state);
+
 		onStateSelected?.Invoke(_state);
 
-		RefreshActionDisplay(PlayerController.Instance.SelectedEntity != null ? PlayerController.Instance.SelectedEntity.ID : null, false);
+		RefreshActionDisplay(selectedEntity != null ? selectedEntity.ID : null, false);
 	}
 
 	public void SetCurrentActionSelected ( EntityActionEnumID _action, string _linkedEquipmentID, bool _isResetingAction )
@@ -515,7 +519,7 @@ public class TurnManager : Singleton<TurnManager>
 			return false;
 
 		int performingEntityID = m_currentEntityAction.performingEntityID;
-		RegisterAction(performingEntityID, m_currentEntityAction, m_currentStateTypeSelected);
+		RegisterAction(performingEntityID, m_currentEntityAction, GetDefaultStateOf(performingEntityID));
 
 		Entity performingEntity = GameManager.Instance.GetEntityFromID(performingEntityID);
 		EntityActionData movementAction = performingEntity == null ? null : performingEntity.AI.GetMovementAction();
@@ -966,7 +970,7 @@ public class TurnManager : Singleton<TurnManager>
 		if (_selectedEntityID.HasValue && _specificTokenCount != -1 && currentSelectedAction != null)
 		{
 			currentSelectedAction.DisplayAoEPreviewOnHoveredTile();
-			currentSelectedAction.GhostDisplay(m_currentStateTypeSelected);
+			currentSelectedAction.GhostDisplay(CurrentStateTypeSelected);
 		}
 
 		PlayerController.Instance.RedrawTargetOutlines();
