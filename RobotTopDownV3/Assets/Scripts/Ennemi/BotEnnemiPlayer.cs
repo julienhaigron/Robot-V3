@@ -33,6 +33,9 @@ public class BotEnnemiPlayer : MonoBehaviour
 
 	private void DetermineEntityActions ( Entity _entity )
 	{
+		if (_entity.Data.aiRole == EnnemiAIRole.PatrolPath && TryPlanHuntOfCommittedTarget(_entity))
+			return;
+
 		switch (_entity.Data.aiRole)
 		{
 			case EnnemiAIRole.Immobile:
@@ -60,6 +63,28 @@ public class BotEnnemiPlayer : MonoBehaviour
 
 	#region Roles
 
+	private bool TryPlanHuntOfCommittedTarget ( Entity _entity )
+	{
+		if (!_entity.AI.CanEngageATarget())
+			return false;
+
+		_entity.AI.RefreshEnemiesInVisionRange(true);
+
+		Entity target = _entity.AI.GetCommittedTarget();
+		if (target == null || _entity.AI.IsInVisionRange(target))
+			return false;
+
+		if (!_entity.AI.TryGetLastKnownTileOf(target, out Tile lastKnownTile))
+		{
+			_entity.AI.CommitTo(null);
+			return false;
+		}
+
+		AddWaitActionsFrom(_entity, PlanPathTo(_entity, _entity.AI.GetReachableDestinationFor(lastKnownTile, true)
+			, Entity.EntityState.Patroling, out bool _), Entity.EntityState.Patroling);
+		return true;
+	}
+
 	private void DetermineAggressiveActions ( Entity _entity )
 	{
 		if (!_entity.AI.CanEngageATarget())
@@ -76,14 +101,9 @@ public class BotEnnemiPlayer : MonoBehaviour
 
 		if (target != null && !_entity.AI.IsInVisionRange(target))
 		{
-			if (_entity.AI.TryGetLastKnownTileOf(target, out Tile lastKnownTile))
-			{
-				AddWaitActionsFrom(_entity, PlanPathTo(_entity, _entity.AI.GetReachableDestinationFor(lastKnownTile, true)
-					, Entity.EntityState.Patroling, out bool _), Entity.EntityState.Patroling);
+			if (TryPlanHuntOfCommittedTarget(_entity))
 				return;
-			}
 
-			_entity.AI.CommitTo(null);
 			target = null;
 		}
 

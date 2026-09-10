@@ -357,6 +357,9 @@ public class EntityAIPlugin : EntityPlugin
 
 	private bool HasPlannedMovement ( AEntityAction _action )
 	{
+		if (_action.Data.codeType == EntityActionData.ActionCodeType.Wait || _action.Data.IsRotation)
+			return false;
+
 		if (_action.Data.type != EntityActionData.ActionType.Movement
 			&& _action.Data.codeType != EntityActionData.ActionCodeType.MoveThenAttack)
 			return false;
