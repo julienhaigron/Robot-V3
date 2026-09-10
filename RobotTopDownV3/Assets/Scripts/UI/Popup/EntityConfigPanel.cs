@@ -147,10 +147,10 @@ public class EntityConfigPanel : AUIPanel
 
 	public void DiscardUnit ()
 	{
-		if (!m_isNewUnit || m_entityData == null)
+		if (/*!m_isNewUnit ||*/ m_entityData == null)
 			return;
 
-		GameDatas.current.currentPlayerSave.allBuiltUnits.Remove(m_entityData);
+		GameDatas.current.currentPlayerSave.DisassembleUnit(m_entityData);
 		m_isNewUnit = false;
 	}
 

@@ -347,14 +347,14 @@ public partial class GameDatas : ScriptableObject
 			if (_unit == null)
 				return false;
 
-			int removedIndex = allBuiltUnits.IndexOf(_unit);
-			if (removedIndex < 0)
-				return false;
-
 			foreach (Component component in _unit.GetAllComponents())
 				AddEquipmentToInventory(component);
 
 			_unit.ClearAllComponents();
+			
+			int removedIndex = allBuiltUnits.IndexOf(_unit);
+			if (removedIndex < 0)
+				return false;
 			allBuiltUnits.RemoveAt(removedIndex);
 			squadUnitsIndex.Remove(removedIndex);
 
