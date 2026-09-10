@@ -79,7 +79,8 @@ public class EndLevelPopup : AUIPopup
 			if (rewardSet.creditAmounts.Count > i)
 			{
 				m_rewardCurrencyDisplays[i].Show();
-				m_rewardCurrencyDisplays[i].Init(CurrencyType.SoftCurrency, rewardSet.creditAmounts[i], true, OnInterractWithRewardBtn, isWin);
+				m_rewardCurrencyDisplays[i].Init(CurrencyType.SoftCurrency, rewardSet.creditAmounts[i], true, OnInterractWithRewardBtn);
+				m_rewardCurrencyDisplays[i].SetIsSelected(isWin);
 			}
 			else
 				m_rewardCurrencyDisplays[i].Hide();
@@ -90,7 +91,8 @@ public class EndLevelPopup : AUIPopup
 			if (rewardSet.components.Count > i)
 			{
 				m_rewardComponentDisplays[i].Show();
-				m_rewardComponentDisplays[i].Init(rewardSet.components[i], OnInterractWithRewardBtn, isWin);
+				m_rewardComponentDisplays[i].Init(rewardSet.components[i], OnInterractWithRewardBtn);
+				m_rewardComponentDisplays[i].SetIsSelected(isWin);
 			}
 			else
 				m_rewardComponentDisplays[i].Hide();
@@ -101,7 +103,8 @@ public class EndLevelPopup : AUIPopup
 			if (rewardSet.units.Count > i)
 			{
 				m_rewardUnitsDisplays[i].Show();
-				m_rewardUnitsDisplays[i].Init(rewardSet.units[i], OnInterractWithRewardBtn, isWin);
+				m_rewardUnitsDisplays[i].Init(rewardSet.units[i], OnInterractWithRewardBtn);
+				m_rewardUnitsDisplays[i].SetIsSelected(isWin);
 			}
 			else
 				m_rewardUnitsDisplays[i].Hide();
