@@ -171,7 +171,7 @@ public class MissionData : ScriptableEnum<MissionDataEnumID>
     {
         List<EntityEquipmentData> pool = new();
         foreach (EntityEquipmentData data in GameAssets.current.equipments.Values)
-            if (data != null && IsMainComponent(data) == _isMain)
+            if (data != null && data.canDropAsRandomReward && IsMainComponent(data) == _isMain)
                 pool.Add(data);
 
         if (pool.Count > 0)
