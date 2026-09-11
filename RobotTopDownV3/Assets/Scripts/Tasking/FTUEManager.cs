@@ -224,7 +224,7 @@ public class FTUEManager : Singleton<FTUEManager>
 		tutoSequence.Append(new DialogueHighlightTask("Go to hangar", ( context ) => context.UI.currentPanel is SoloHubPanel
 		, m_day2TutoDialogues[0], "hangarBtn"));
 		tutoSequence.Append(new DialogueHighlightTask("Go to workshop", ( context ) => context.UI.currentPanel is HangarPanel
-		, m_day2TutoDialogues[1], "squadUnit0"));
+		, m_day2TutoDialogues[1], "squadUnit2"));
 		tutoSequence.Append(new DialogueTask("Unit composition explenation", ( context ) => context.UI.currentPanel is EntityConfigPanel
 		, m_day2TutoDialogues[2]).SetSkipPredicate(( context ) => context.UI.currentPanel is InGamePanel));
 		tutoSequence.Append(new DialogueTask("Equip neuronal membranes", null
@@ -295,11 +295,11 @@ public class FTUEManager : Singleton<FTUEManager>
 		//macro
 		tutoSequence.Append(new DialogueHighlightTask("Go to hangar to create a unit", ( context ) => context.UI.currentPanel is SoloHubPanel
 			&& GameDatas.current.currentPlayerSave.dayCount == 4, m_day5TutoDialogues[0], "hangarBtn"));
-		tutoSequence.Append(new DialogueTask("Create unit btn explenation", ( context ) => context.UI.currentPanel is HangarPanel, m_day5TutoDialogues[1]));
+		tutoSequence.Append(new DialogueHighlightTask("Create unit btn explenation", ( context ) => context.UI.currentPanel is HangarPanel, m_day5TutoDialogues[1], "createUnitBtn"));
 		tutoSequence.Append(new DialogueTask("Core components explenation", ( context ) => context.UI.currentPanel is EntityConfigPanel, m_day5TutoDialogues[2]));
 		tutoSequence.Append(new DialogueTask("Cycle explenation", ( context ) => context.UI.currentPanel is SoloHubPanel, m_day5TutoDialogues[3]));
 		tutoSequence.Append(new DialogueTask("Skip btn explenation", null, m_day5TutoDialogues[4]));
-		tutoSequence.Append(new DialogueTask("Tournament btn explenation", null, m_day5TutoDialogues[5]));
+		tutoSequence.Append(new DialogueHighlightTask("Tournament btn explenation", null, m_day5TutoDialogues[5], "missionSection"));
 		tutoSequence.Append(new DialogueTask("Tournament squad warning", ( context ) => context.UI.currentPanel is TournamentPanel, m_day5TutoDialogues[6]));
 
 		tutoSequence.SetSkipPredicate(( context ) => GameDatas.current.currentPlayerSave.dayCount > 4);

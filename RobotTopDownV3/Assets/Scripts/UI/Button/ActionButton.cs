@@ -16,6 +16,7 @@ public class ActionButton : BaseButton, IPointerExitHandler
 	[SerializeField] private TextMeshProUGUI m_tokenCost;*/
 	//[SerializeField] protected BaseButton m_modActionBtn;
 	[SerializeField] protected GameObject m_selectionOutline;
+	[SerializeField] private TutorialHighlightZone m_zone;
 
 	protected EntityActionEnumID m_actionType;
 	protected string m_linkedEquipmentData;
@@ -43,6 +44,7 @@ public class ActionButton : BaseButton, IPointerExitHandler
 		m_linkedEquipmentData = _linkedEquipmentData;
 		EntityActionData data = GameAssets.current.game.entityActionsData[_action];
 		m_icon.sprite = data.icon;
+		m_zone.SetId("actionButton_" + _action);
 		/*m_name.text = data.displayName;
 		m_tokenCost.text = data.GetTokenTotalCost(null, null, null).ToString();*/
 		m_isOnlyVisual = false;

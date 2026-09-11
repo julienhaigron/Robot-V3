@@ -12,6 +12,7 @@ public class SoloHubPanel : AUIPanel
 	[SerializeField] private BaseButton m_repairBtn;
 	[SerializeField] private BaseButton m_missionBtn;
 	[SerializeField] private BaseButton m_skipDayBtn;
+	[SerializeField] private BaseButton m_missionSelectionPanelBtn;
 	[SerializeField] private TextMeshProUGUI m_missionBtnTMP;
 
 	private void Awake ()
@@ -23,6 +24,7 @@ public class SoloHubPanel : AUIPanel
 		m_repairBtn.onClick += OnClickOpenRepairBtn;
 		m_missionBtn.onClick += OnClickMissionBtn;
 		m_skipDayBtn.onClick += OnClickSkipDay;
+		m_missionSelectionPanelBtn.onClick += OnClickMissionSelectionBtn;
 	}
 
 	private void OnEnable ()
@@ -52,6 +54,7 @@ public class SoloHubPanel : AUIPanel
 		m_recycleShopBtn.SetInteractability(GameDatas.current.currentPlayerSave.didUnlockRecycler);
 		foreach (KeyValuePair<EntityEquipmentData.EntityFaction, BaseButton> shopBtn in m_openShopBtns)
 			shopBtn.Value.SetInteractability(GameDatas.current.currentPlayerSave.didUnlockShops);
+		m_missionSelectionPanelBtn.SetInteractability(GameDatas.current.currentPlayerSave.cycleCount > 0);
 		//m_tournamentBtn.SetInteractability(isSquadValid);
 	}
 
@@ -63,6 +66,11 @@ public class SoloHubPanel : AUIPanel
 	}
 
 	#region Callbacks
+
+	private void OnClickMissionSelectionBtn ()
+	{
+		UIManager.Instance.OpenPanel<SelectMissionPanel>();
+	}
 
 	private void OnClickHangarBtn ()
 	{

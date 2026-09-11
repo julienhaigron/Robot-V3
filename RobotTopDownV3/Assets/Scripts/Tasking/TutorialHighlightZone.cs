@@ -16,18 +16,25 @@ public class TutorialHighlightZone : MonoBehaviour
 	[SerializeField] private MPUIKIT.MPImage m_image;
 
 	public BaseButton UsedButton => m_linkedButton != null ? m_linkedButton : m_ownButton;
-	public bool IsUsingOwnButton => m_linkedButton == null && m_ownButton != null;
+	public bool IsUsingOwnButton => m_linkedButton == null;
 
 	private bool m_isVisible = false;
 	public bool IsVisible => m_isVisible;
 
 	private void Awake ()
 	{
-		FTUEManager.Instance.AddTutorialHighlightZone(this);
+		if(!string.IsNullOrEmpty(m_id))
+			FTUEManager.Instance.AddTutorialHighlightZone(this);
 		RefreshRaycastTarget();
 
 		if (!m_isVisible)
 			m_highlight.SetActive(false);
+	}
+
+	public void SetId (string _id)
+	{
+		m_id = _id;
+		FTUEManager.Instance.AddTutorialHighlightZone(this);
 	}
 
 	public void Show ()
