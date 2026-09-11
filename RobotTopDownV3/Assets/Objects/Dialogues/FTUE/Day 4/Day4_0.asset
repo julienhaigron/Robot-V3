@@ -16,4 +16,5 @@ MonoBehaviour:
   - characterName: League Employee
     characterSprite: {fileID: 21300000, guid: 3ab256982cae8674388ec2dcdc0a1743, type: 3}
     isSpriteOnLeft: 1
-    sentence: "\xC0 l'issue du dernier match, une de vos unit\xE9s a \xE9t\xE9 endommag\xE9e mais vous avez gagn\xE9 de quoi la r\xE9parer. Pour ce faire, rendez vous dans la station de r\xE9paration."
+    sentence: "\xC0 l\u2019issue du dernier match, une de vos unit\xE9s a \xE9t\xE9
+      endommag\xE9e. Rendez vous dans la station de r\xE9paration."

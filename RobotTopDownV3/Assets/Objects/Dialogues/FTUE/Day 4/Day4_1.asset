@@ -16,4 +16,17 @@ MonoBehaviour:
   - characterName: League Employee
     characterSprite: {fileID: 21300000, guid: 3ab256982cae8674388ec2dcdc0a1743, type: 3}
     isSpriteOnLeft: 1
-    sentence: "Lorem Ipsum R\xE9paration"
+    sentence: "Bienvenue dans la station de r\xE9paration. Ici vous pourrez r\xE9parer
+      vos unit\xE9s endommag\xE9es contre des cr\xE9dits. Pour ce faire, prenez une
+      de vos unit\xE9s (\xE0 droite) et glissez la dans un des emplacements de r\xE9paration
+      (\xE0 gauche) ou double cliquez simplement sur l\u2019unit\xE9.Bienvenue dans
+      la station de r\xE9paration. Ici vous pourrez r\xE9parer vos unit\xE9s endommag\xE9es
+      contre des cr\xE9dits. Pour ce faire, prenez une de vos unit\xE9s (\xE0 droite)
+      et glissez la dans un des emplacements de r\xE9paration (\xE0 gauche) ou double
+      cliquez simplement sur l\u2019unit\xE9."
+  - characterName: League Employee
+    characterSprite: {fileID: 21300000, guid: 3ab256982cae8674388ec2dcdc0a1743, type: 3}
+    isSpriteOnLeft: 1
+    sentence: "Le nombre qui s\u2019affiche est le co\xFBt de r\xE9paration pour
+      cette unit\xE9. Les r\xE9parations sont instantan\xE9es mais chaque emplacement
+      ne peut \xEAtre utilis\xE9 qu\u2019une fois par jour."

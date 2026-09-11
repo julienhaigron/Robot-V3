@@ -16,6 +16,16 @@ MonoBehaviour:
   - characterName: League Employee
     characterSprite: {fileID: 21300000, guid: 3ab256982cae8674388ec2dcdc0a1743, type: 3}
     isSpriteOnLeft: 1
-    sentence: "Il est possible de modifier la state d\u2019une action planifi\xE9e,
-      il vous suffit de tirer le rectangle correspondant \xE0 l\u2019action dans
-      la couleur de la state de votre choix."
+    sentence: "Lors de la planification d\u2019une action, il est possible de d\xE9finir
+      une state susceptible de remplacer l\u2019action par une autre en fonction
+      de la situation. La state d\u2019Agression (en rouge) autorisera votre unit\xE9
+      \xE0 pourchasser et attaquer l\u2019ennemi le plus proche. La state d\u2019Ex\xE9cution
+      (en vert) n\u2019autorisera aucune modification des actions planifi\xE9es.
+      La state de Fuite (en bleu) n\u2019a pour l\u2019instant pas d\u2019effet."
+  - characterName: League Employee
+    characterSprite: {fileID: 21300000, guid: 3ab256982cae8674388ec2dcdc0a1743, type: 3}
+    isSpriteOnLeft: 1
+    sentence: "Ces boutons permettent d\u2019\xE9tablir une state par d\xE9faut pour
+      l\u2019unit\xE9, c\u2018est cette state que les actions planifi\xE9es suivront
+      et c\u2019est selon cette state que l\u2019unit\xE9 agira en l\u2019absence
+      d\u2019instruction."

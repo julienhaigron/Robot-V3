@@ -16,4 +16,5 @@ MonoBehaviour:
   - characterName: League Employee
     characterSprite: {fileID: 21300000, guid: 3ab256982cae8674388ec2dcdc0a1743, type: 3}
     isSpriteOnLeft: 1
-    sentence: "Lors du choix d'une action, il est possible de choisir une state qui peut changer l'action."
+    sentence: "Ici sont affich\xE9s les logs. Ils indiquent la nature et le r\xE9sultat
+      des actions. En survoler un permet d'avoir plus de d\xE9tails."

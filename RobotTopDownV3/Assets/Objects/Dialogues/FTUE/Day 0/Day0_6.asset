@@ -16,11 +16,6 @@ MonoBehaviour:
   - characterName: League Employee
     characterSprite: {fileID: 21300000, guid: 3ab256982cae8674388ec2dcdc0a1743, type: 3}
     isSpriteOnLeft: 1
-    sentence: "Lorsqu'une attaque ciblant une unit\xE9 est utilis\xE9e, le r\xE9sultat
-      d\xE9pend des statistiques des unit\xE9s concern\xE9es (\xC9vasion et Camouflage
-      de la cible ainsi que Pr\xE9cision de l'attaquant) et de la situation sur le
-      terrain (Couvert, Angle et Action pr\xE9c\xE9demment effectu\xE9e). Le calcul
-      est le suivant : Pr\xE9cision + Angle + Action - \xC9vasion - Camouflage -
-      Couvert. Le r\xE9sultat est une probabilit\xE9 de r\xE9ussite. Une attaque
-      ciblant une case touchera quoi qu'il arrive. Le d\xE9tail est visible dans
-      les logs. Ces informations sont disponibles en d\xE9tail dans le compendium."
+    sentence: "Il est possible de modifier la state d\u2019une action planifi\xE9e.
+      Il vous suffit de tirer le segment correspondant \xE0 l\u2019action dans la
+      couleur de la state de votre choix."
