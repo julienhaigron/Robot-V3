@@ -216,9 +216,10 @@ public partial class GameDatas : ScriptableObject
 				NewCycle();
 
 			//new items in shop
-			for (int i = 0; i < GameAssets.current.game.ShopStructureUpgrade.GetMaxItemAmount(); i++)
+			List<EntityEquipmentData> shopPool = GameAssets.current.GetRandomlyDroppableEquipments();
+			for (int i = 0; shopPool.Count > 0 && i < GameAssets.current.game.ShopStructureUpgrade.GetMaxItemAmount(); i++)
 			{
-				EntityEquipmentData equipmentData = GameAssets.current.equipments.Values.ToArray().RandomElement();
+				EntityEquipmentData equipmentData = shopPool.RandomElement();
 				dayData.itemsInShop.Add(new() { component = new() { ID = equipmentData.name + current.currentPlayerSave.equipmentCounter++, dataID = equipmentData.name, isDamaged = false }, isFrozen = false });
 			}
 

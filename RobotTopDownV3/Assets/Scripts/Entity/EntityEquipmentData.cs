@@ -29,7 +29,7 @@ public class EntityEquipmentData : AParsableScriptableObject
 	public int recyclingDurationAmount = 1;
 	public int reparingDurationAmount = 1;
 	[Parsing("Can Drop")]
-	public bool canDropAsRandomReward = true;
+	public bool canDropRandomly = true;
 
 	[System.Serializable]
 	public enum EquipmentType { Frame, Brain, Reactor, Occultor, NeuronalMembrane, Weapon, Tool, Armor, Chipset }
