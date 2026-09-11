@@ -10,6 +10,7 @@ public class ApplyEffectItemData : AItemData
 	public EffectType type;
 	[SerializeField] public int range = 1;
 	[SerializeField, ShowIf("@type == EffectType.Status")] public AEntityStatus givenStatus;
+	[SerializeField, ShowIf("@type == EffectType.Status")] public int givenStatusDuration = 1;
 	[SerializeField, ShowIf("@type == EffectType.StatBuff")] public EntityEquipmentData.StatBonusBuff givenStatBonus;
 
 	public override AItemLinkedData GetNewLinkedData ()
@@ -69,7 +70,7 @@ public class ApplyEffectItemData : AItemData
 		foreach (Entity entity in entities)
 		{
 			if (type == EffectType.Status)
-				entity.AddStatus(givenStatus.enumID);
+				entity.AddStatus(givenStatus.enumID, givenStatusDuration);
 			else
 				entity.AddAdditionaryStatBonus(givenStatBonus);
 		}

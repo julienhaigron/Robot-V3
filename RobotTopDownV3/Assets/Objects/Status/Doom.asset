@@ -13,7 +13,6 @@ MonoBehaviour:
   m_Name: Doom
   m_EditorClassIdentifier: RTD::DoomStatus
   enumID: 7
-  duration: 2
   durationType: 1
   doesNeedRoll: 1
   description: 

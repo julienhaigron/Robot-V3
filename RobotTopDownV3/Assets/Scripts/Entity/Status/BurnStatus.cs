@@ -26,6 +26,6 @@ public class BurnStatus : AEntityStatus
 	{
 		base.PerformStatusEffectAtBeginingOfRound(_tile);
 		if (_tile.GetEntity(true) != null)
-			_tile.GetEntity(true).AddStatus(enumID);
+			_tile.GetEntity(true).AddStatus(enumID, _tile.GetRemainingStatusDuration(enumID));
 	}
 }

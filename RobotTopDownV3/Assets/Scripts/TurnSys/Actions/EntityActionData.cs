@@ -487,19 +487,19 @@ public class EntityActionData : AParsableScriptableObject
 		return hitAmount;
 	}
 
-	public List<AEntityStatus> GetAppliedStatuses ( AEntityAction _action, Entity _performingEntity, Entity _targetEntity )
+	public List<ApplyStatusPassiveEffect> GetAppliedStatusEffects ( AEntityAction _action, Entity _performingEntity, Entity _targetEntity )
 	{
-		List<AEntityStatus> appliedStatuses = new();
+		List<ApplyStatusPassiveEffect> appliedStatusEffects = new();
 
 		foreach(AEntityPassiveEffect.PassiveEffectContainer pe in passiveEffects)
 		{
 			if(Condition.UseConditionPredicate(_action, _performingEntity, _targetEntity, pe.conditionType)
 				&& GameAssets.current.game.entityEffects[pe.enumID] is ApplyStatusPassiveEffect applyStatusPassiveEffect
 				&& GameAssets.current.game.entityStatus[applyStatusPassiveEffect.statusApplied])
-				appliedStatuses.Add(GameAssets.current.game.entityStatus[applyStatusPassiveEffect.statusApplied]);
+				appliedStatusEffects.Add(applyStatusPassiveEffect);
 		}
 
-		return appliedStatuses;
+		return appliedStatusEffects;
 	}
 
 	#endregion

@@ -66,6 +66,7 @@ public class Entity : MonoBehaviour
 	private List<EntityStatusEnumID> m_status = new();
 	public List<EntityStatusEnumID> Status => m_status;
 	private Dictionary<AEntityStatus, int> m_remainingDurationToActiveStatuses = new();
+	private Dictionary<AEntityStatus, int> m_appliedDurationToActiveStatuses = new();
 	private List<EntityEquipmentData.StatBonusBuff> m_statBuffs = new();
 	public List<EntityEquipmentData.StatBonusBuff> StatBuffs => m_statBuffs;
 	private Dictionary<EntityEquipmentData.SecondaryStat.StatType, float> m_activeStatBonusBuffs = new();
@@ -362,7 +363,7 @@ public class Entity : MonoBehaviour
 
 				LogConsole.AddLog(string.Format(LocalizationManager.Instance.Get(LocalizationKey.log_status_affected), m_data.name, status.GetLocalizedName(), remainingDuration)
 					, LogConsole.LogEventType.Status
-					, new LogConsole.LogDetails("status_effect_" + LogConsole.Instance.Counter, status.GetLocalizedName(), status.GetTooltip(remainingDuration)));
+					, new LogConsole.LogDetails("status_effect_" + LogConsole.Instance.Counter, status.GetLocalizedName(), status.GetTooltip(GetAppliedStatusDuration(status), remainingDuration)));
 
 				string tickEffect = status.GetTickEffectText(remainingDuration, this);
 				if (!string.IsNullOrEmpty(tickEffect))
@@ -440,14 +441,19 @@ public class Entity : MonoBehaviour
 			m_skin.Hide();
 	}
 
-	public void AddStatus ( EntityStatusEnumID _statusID )
+	private int GetAppliedStatusDuration ( AEntityStatus _status )
 	{
-		m_status.Add(_statusID);
-		if (m_remainingDurationToActiveStatuses.ContainsKey(GameAssets.current.game.entityStatus[_statusID]))
-			m_remainingDurationToActiveStatuses[GameAssets.current.game.entityStatus[_statusID]] = GameAssets.current.game.entityStatus[_statusID].duration;
-		else
-			m_remainingDurationToActiveStatuses.Add(GameAssets.current.game.entityStatus[_statusID], GameAssets.current.game.entityStatus[_statusID].duration);
+		return m_appliedDurationToActiveStatuses.TryGetValue(_status, out int duration) ? duration : 0;
+	}
 
+	public void AddStatus ( EntityStatusEnumID _statusID, int _duration )
+	{
+		AEntityStatus status = GameAssets.current.game.entityStatus[_statusID];
+
+		m_status.Add(_statusID);
+		m_remainingDurationToActiveStatuses[status] = _duration;
+		m_appliedDurationToActiveStatuses[status] = _duration;
+		
 		onStatusAdded?.Invoke(_statusID);
 	}
 
@@ -456,6 +462,7 @@ public class Entity : MonoBehaviour
 		GameAssets.current.game.entityStatus[_statusID].OnRemoveStatusEffect(this);
 		m_status.Remove(_statusID);
 		m_remainingDurationToActiveStatuses.Remove(GameAssets.current.game.entityStatus[_statusID]);
+		m_appliedDurationToActiveStatuses.Remove(GameAssets.current.game.entityStatus[_statusID]);
 
 		onStatusRemoved?.Invoke(_statusID);
 	}

@@ -13,7 +13,6 @@ MonoBehaviour:
   m_Name: Marked
   m_EditorClassIdentifier: 
   enumID: 3
-  duration: 1
   durationType: 0
   doesNeedRoll: 1
   description: 

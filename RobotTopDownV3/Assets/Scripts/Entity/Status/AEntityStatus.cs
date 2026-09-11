@@ -6,7 +6,6 @@ public abstract class AEntityStatus : ScriptableEnum<EntityStatusEnumID>
 {
     public enum DurationType { Tick, Round }
 
-    public int duration = 1;
     public DurationType durationType = DurationType.Tick;
     public bool doesNeedRoll = false;
     [TextArea(2, 6)] public string description;
@@ -14,11 +13,11 @@ public abstract class AEntityStatus : ScriptableEnum<EntityStatusEnumID>
     public Sprite icon;
     public GameObject groundPrefab;
 
-    public string GetTooltip ( int _remainingDuration )
+    public string GetTooltip ( int _duration, int _remainingDuration )
     {
         System.Text.StringBuilder builder = new();
         builder.AppendLine($"<b>{this.GetLocalizedName()}</b>");
-        builder.AppendLine(string.Format(LocalizationManager.Instance.Get(LocalizationKey.status_tip_duration), duration));
+        builder.AppendLine(string.Format(LocalizationManager.Instance.Get(LocalizationKey.status_tip_duration), _duration));
         builder.AppendLine(string.Format(LocalizationManager.Instance.Get(LocalizationKey.status_tip_remaining), _remainingDuration));
         if (doesNeedRoll)
             builder.AppendLine(LocalizationManager.Instance.Get(LocalizationKey.status_tip_needs_roll));

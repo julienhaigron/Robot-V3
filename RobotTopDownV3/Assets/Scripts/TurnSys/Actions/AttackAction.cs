@@ -19,6 +19,7 @@ public class AttackAction : AEntityAction
 		public bool isAttackSuccessfull;
 		public bool[] areStatusesSuccess;
 		public short[] statusIds;
+		public short[] statusDurations;
 		public int[] damages;
 		public short[] damageTypes;
 		public int hittedTileID;
@@ -27,6 +28,7 @@ public class AttackAction : AEntityAction
 			serializer.SerializeValue(ref isAttackSuccessfull);
 			serializer.SerializeValue(ref areStatusesSuccess);
 			serializer.SerializeValue(ref statusIds);
+			serializer.SerializeValue(ref statusDurations);
 			serializer.SerializeValue(ref damages);
 			serializer.SerializeValue(ref damageTypes);
 			serializer.SerializeValue(ref hittedTileID);
@@ -208,14 +210,18 @@ public class AttackAction : AEntityAction
 
 				if (attackInfo.isAttackSuccessfull && targetEntity != null)
 				{
-					List<AEntityStatus> appliedStatuses = Data.GetAppliedStatuses(this, PerformingEntity, targetEntity);
-					attackInfo.statusIds = new short[appliedStatuses.Count];
-					for (int i = 0; i < appliedStatuses.Count; i++)
-						attackInfo.statusIds[i] = (short)appliedStatuses[i].enumID;
+					List<ApplyStatusPassiveEffect> appliedStatusEffects = Data.GetAppliedStatusEffects(this, PerformingEntity, targetEntity);
+					attackInfo.statusIds = new short[appliedStatusEffects.Count];
+					attackInfo.statusDurations = new short[appliedStatusEffects.Count];
+					for (int i = 0; i < appliedStatusEffects.Count; i++)
+					{
+						attackInfo.statusIds[i] = (short)appliedStatusEffects[i].statusApplied;
+						attackInfo.statusDurations[i] = (short)appliedStatusEffects[i].duration;
+					}
 					attackInfo.areStatusesSuccess = new bool[attackInfo.statusIds.Length];
 					for (int i = 0; i < attackInfo.statusIds.Length; i++)
 					{
-						if (!appliedStatuses[i].doesNeedRoll)
+						if (!appliedStatusEffects[i].Status.doesNeedRoll)
 							attackInfo.areStatusesSuccess[i] = true;
 						else
 							attackInfo.areStatusesSuccess[i] = PerformingEntity.Equipment.StatusRoll(targetEntity, GameAssets.current.game.entityStatus[(EntityStatusEnumID)attackInfo.statusIds[i]]

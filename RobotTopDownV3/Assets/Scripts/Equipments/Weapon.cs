@@ -335,7 +335,7 @@ public class Weapon : MonoBehaviour
 			for (int i = 0; i < _attackInfo.areStatusesSuccess.Length; i++)
 			{
 				if (_attackInfo.areStatusesSuccess[i])
-					_target.AddStatus((EntityStatusEnumID)_attackInfo.statusIds[i]);
+					_target.AddStatus((EntityStatusEnumID)_attackInfo.statusIds[i], _attackInfo.statusDurations[i]);
 			}
 		}
 	}

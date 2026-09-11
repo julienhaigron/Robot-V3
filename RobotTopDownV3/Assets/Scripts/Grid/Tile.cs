@@ -456,12 +456,17 @@ public class Tile : MonoBehaviour
 
 	#endregion
 
-	public void AddStatus ( EntityStatusEnumID _statusID )
+	public int GetRemainingStatusDuration ( EntityStatusEnumID _statusID )
+	{
+		return m_remainingDurationToActiveEffects.TryGetValue(GameAssets.current.game.entityStatus[_statusID], out int duration) ? duration : 0;
+	}
+
+	public void AddStatus ( EntityStatusEnumID _statusID, int _duration )
 	{
 		AEntityStatus statusData = GameAssets.current.game.entityStatus[_statusID];
 		statusData.ApplyStatus(this);
 		m_status.Add(_statusID);
-		m_remainingDurationToActiveEffects.Add(GameAssets.current.game.entityStatus[_statusID], GameAssets.current.game.entityStatus[_statusID].duration);
+		m_remainingDurationToActiveEffects[statusData] = _duration;
 
 		//spawn visual
 		if (statusData.groundPrefab != null && !m_statusVisuals.ContainsKey(_statusID))

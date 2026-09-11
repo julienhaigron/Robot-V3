@@ -42,11 +42,13 @@ public class SpecialAction : AEntityAction
 			, LogConsole.LogEventType.UseTool
 			, new LogConsole.LogDetails("usetool_" + LogConsole.Instance.Counter, Data.GetLocalizedName(), Data.GetDescription()));
 
-		foreach (AEntityStatus status in Data.GetAppliedStatuses(this, user, firstTarget))
+		foreach (ApplyStatusPassiveEffect statusEffect in Data.GetAppliedStatusEffects(this, user, firstTarget))
 		{
+			AEntityStatus status = statusEffect.Status;
+
 			LogConsole.AddLog(string.Format(localization.Get(LocalizationKey.log_effect), status.GetLocalizedName())
 				, LogConsole.LogEventType.UseTool
-				, new LogConsole.LogDetails("effect_" + LogConsole.Instance.Counter, status.GetLocalizedName(), status.GetTooltip(status.duration)));
+				, new LogConsole.LogDetails("effect_" + LogConsole.Instance.Counter, status.GetLocalizedName(), status.GetTooltip(statusEffect.duration, statusEffect.duration)));
 		}
 	}
 
