@@ -4,9 +4,6 @@ using UnityEngine;
 
 [DisallowMultipleComponent()]
 [RequireComponent(typeof(LoadingElement))]
-//Not SingletonPersistant: this sits on a CHILD GameObject, where DontDestroyOnLoad is a no-op and only logs a
-//warning. It survives scene loads through its persisting root (GameManager.prefab). Moving it out from under that root
-//would silently break that - it would need to become SingletonPersistant again, on a root object.
 public partial class ApplicationManager : Singleton<ApplicationManager>
 {
 
@@ -17,9 +14,6 @@ public partial class ApplicationManager : Singleton<ApplicationManager>
 	[SerializeField] private GameConfig m_gameConfig;
 	[SerializeField] private GameDatas m_gameDatas;
 
-	//The fallbacks must NOT be editor-only: Awake order between singletons is undefined, so anything reading
-	//these during its own Awake hits a null Instance. In the editor that was hidden by the fallback, in a build
-	//it threw. Resources.Load resolves the same assets (Assets/Objects/Resources) in both.
 	public static GameAssets assets
 	{
 		get

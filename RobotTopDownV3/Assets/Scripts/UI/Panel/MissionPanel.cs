@@ -65,8 +65,6 @@ public class MissionPanel : AUIPanel
 
 	private void RefreshMissionBtns ()
 	{
-		//The buttons are reused from one opening to the next with a different mission on them, so a hovered
-		//button kept from last time makes the guard in OnAnyMissionHovered short-circuit on stale rewards.
 		m_currentMissionHovered = null;
 		m_currentMissionSelected = null;
 

@@ -201,10 +201,6 @@ public abstract class AEntityAction : INetworkSerializable
 
 	protected virtual void EndTick ()
 	{
-		//EndAction clears m_isPerforming, so this swallows any second report. It has to be swallowed rather
-		//than prevented: PerformTick's preparation branch schedules its EndTick through a DOVirtual.DelayedCall
-		//that is stored nowhere and cannot be killed, and a second onEndTick makes TurnManager dequeue an
-		//action out of band.
 		if (!m_isPerforming)
 			return;
 

@@ -155,8 +155,6 @@ public static class CsvImporter
 			{
                 object converted = CsvTypeConverter.Convert(value, field.FieldType);
 
-                //An empty cell converts to null, which a value type field cannot take. Leaving the field on
-                //its current value is what the exception already did, minus an error per blank row.
                 if (converted == null && field.FieldType.IsValueType)
                     continue;
 

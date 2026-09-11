@@ -217,8 +217,6 @@ public class Weapon : MonoBehaviour
 		yield return m_singleAttackDuration;
 	}
 
-	//A melee swing hits whatever is around it, walls included: the ranged path already does this on the impact
-	//tile in BulletWeapon.ApplyBulletImpact, and the base path only ever touched entities.
 	private void DamageWallsInWeaponRange ( AttackAction _attackAction, Dictionary<WeaponEquipmentData.DamageType, int> _damages )
 	{
 		int hitAmount = Mathf.Max(1, _attackAction.Data.GetHitAmount(_attackAction, m_user, null));

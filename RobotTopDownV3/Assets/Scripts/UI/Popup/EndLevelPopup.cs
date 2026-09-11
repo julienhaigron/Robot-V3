@@ -179,8 +179,6 @@ public class EndLevelPopup : AUIPopup
 			if (display.IsSelected && display.IsVisible)
 				display.UnitPreset.AddToUnits(false);
 
-		//The set is cached on the MissionData, so the preview the player saw in the mission panel is the set that
-		//was just handed out. Dropping it here is what lets the same mission roll fresh rewards next time.
 		if (m_missionData != null)
 		{
 			m_missionData.ClearRewardSet();

@@ -19,8 +19,6 @@ public abstract class ScriptableEnum<TEnum> : ScriptableObject, IScriptableEnum 
 	}
 #endif
 
-	//Both must stay outside the guard: GetEnumName is the only member of IScriptableEnum, and subclasses
-	//override OnValidate - a player build would have neither to satisfy.
 	public string GetEnumName ()
 	{
 		return enumID.ToString();

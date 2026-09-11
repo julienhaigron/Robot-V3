@@ -511,8 +511,6 @@ public class EntityActionData : AParsableScriptableObject
 
 	public override void OnParse ( ImportedData _data )
 	{
-		//Signature outside the guard (the base declares it abstract), body inside: ImportedData's accessors
-		//go through CsvTypeConverter, which is editor-only.
 #if UNITY_EDITOR
 		/*if(enumID == EntityActionEnumID.Unknowned)
 		{

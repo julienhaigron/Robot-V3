@@ -174,8 +174,6 @@ public class EntityAIPlugin : EntityPlugin
 			int orientationTowardTarget = GridManager.Instance.GetClosestOrientation(currentTile, committedTarget.Displacement.Coordinates.GetTile());
 			bool isAtCorrectOrientation = orientationTowardTarget == m_linkedEntity.Displacement.CurrentOrientation;
 
-			//The walk owns the facing on a tick the unit travels. GetMainActionType cannot answer that question,
-			//a Wait reports Movement; only the action's own leave condition can.
 			bool isTravellingThisTick = _recordedAction.action.DoesLeaveTileThisTick(currentTile.coordinates.ID);
 
 			if (_recordedAction.entityState == Entity.EntityState.Patroling)
@@ -183,8 +181,6 @@ public class EntityAIPlugin : EntityPlugin
 				//only rotate weapon, no movement if entity is too far
 				TargetEntity(committedTarget);
 
-				//Turning is decided on the very test that decides the shot - cone, line of sight and min range -
-				//never on a looser distance check, or the unit turns toward someone it then cannot shoot at.
 				List<Entity> enemiesOnceRotated = null;
 				EntityActionEnumID rotatedAttackEnumID = EntityActionEnumID.Unknowned;
 				string rotatedEquipmentID = null;

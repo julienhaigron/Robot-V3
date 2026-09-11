@@ -102,16 +102,12 @@ public class PlayerController : Singleton<PlayerController>
 		InitInputActions();
 	}
 
-	//Not in Awake: CameraManager sits on the same prefab and its own Awake may not have run yet, so its Instance
-	//is null there. Start is guaranteed to come after every Awake.
 	private void Start ()
 	{
 		m_targetRotation = CameraManager.Instance.CameraParent.transform.rotation;
 		m_currentZoomDistance = CameraManager.Instance.CameraParent.transform.position.y;
 	}
 
-	//Awake runs before ApplicationManager has loaded the save, so the overrides are applied a second time on
-	//onAfterLoad - otherwise a rebind saved by the player would never reach the actions.
 	private void ApplySavedInputBindings ()
 	{
 		GameDatas datas = GameDatas.current;

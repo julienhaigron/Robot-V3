@@ -3,9 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using Sirenix.OdinInspector;
 
-//Not SingletonPersistant: this sits on a CHILD GameObject, where DontDestroyOnLoad is a no-op and only logs a
-//warning. It survives scene loads through its persisting root (UIManager.prefab, via TopLayer). Moving it out from under that root
-//would silently break that - it would need to become SingletonPersistant again, on a root object.
 public class FTUEManager : Singleton<FTUEManager>
 {
 	[SerializeField] private MissionData m_day0MissionData;

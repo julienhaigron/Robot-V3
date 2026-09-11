@@ -56,8 +56,6 @@ public class TournamentPanel : AUIPanel
 		foreach (Image image in m_squadsIcons)
 			image.gameObject.SetActive(false);
 
-		//Only the rounds already reached show a squad. Without this the displays of a round that is not there yet
-		//keep whatever the previous opening left on them, which is how enemies of later rounds stayed on screen.
 		HideSquadDisplays(m_round1SquadUnits);
 		HideSquadDisplays(m_round2SquadUnits);
 		HideSquadDisplays(m_round3SquadUnits);

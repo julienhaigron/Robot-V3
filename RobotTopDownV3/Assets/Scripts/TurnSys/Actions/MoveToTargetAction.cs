@@ -118,8 +118,6 @@ public class MoveToTargetAction : AEntityAction
 		RefreshTilesTakenAtEndOfTurn();
 	}
 
-	//Planning reads end-of-turn positions, not live ones: the path is allowed to cross allies because they
-	//move too, so the only thing a destination really has to be is somewhere nobody ends the turn standing.
 	private void RefreshTilesTakenAtEndOfTurn ()
 	{
 		m_tilesTakenAtEndOfTurn.Clear();
@@ -309,13 +307,8 @@ public class MoveToTargetAction : AEntityAction
 		if (finalTargetTileID == -1)
 			return;
 
-		//The path being abandoned still holds this entity in the next tick slot of every tile it booked.
-		//Left there they block other units for the rest of the tick, on tiles nobody will ever stand on.
 		ReleaseBookedTiles();
 
-		//Planning paths through allies on purpose - they move too - but a reroute happens at resolution, where
-		//only the units that really stay are obstacles. GetStayingEntityOtherThan already lets a leaving ally
-		//through, so _canTraverseAllies stays false here and is spelled out rather than left to the default.
 		Tile from = PerformingEntity.Displacement.Coordinates.GetTile();
 		List<Tile> pathToTile = GridManager.Instance.GetPath(from, GridManager.Instance.Tiles[(int)finalTargetTileID],
 			_isThisTurn: false, _movingEntity: PerformingEntity, _canTraverseAllies: false, _canEndOnOccupiedTile: false);
@@ -329,8 +322,6 @@ public class MoveToTargetAction : AEntityAction
 
 		pathToTile.Reverse();
 
-		//A last leg shorter than movementSpeed is legitimate - the unit is simply arriving. Demanding a full
-		//stride here used to cancel the move of anyone standing one step from its destination.
 		int stepCount = Mathf.Min(Data.movementSpeed, pathToTile.Count - 1);
 		targetTileIDs = new int[stepCount];
 		for (int i = 0; i < stepCount; i++)

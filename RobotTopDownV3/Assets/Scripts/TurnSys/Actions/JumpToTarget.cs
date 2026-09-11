@@ -22,14 +22,10 @@ public class JumpToTarget : AEntityAction
 		if (IsDestinationOccupiedOnNextTurnAction())
 			CancelPath();
 
-		//Only free the tile when the jump is actually going to happen: clearing it for a cancelled move leaves
-		//the entity registered nowhere while its Coordinates still point here, and the next unit walks through.
-		//Current tick slot, same convention as MoveToTargetAction, so a follower reads the tile as free at once.
 		if (targetTileIDs != null)
 			PerformingEntity.Displacement.Coordinates.GetTile().SetEntity(null, _isThisTurn: true);
 	}
 
-	//A leap has no reroute - it is a single jump onto a chosen tile - so a blocked one is cancelled outright.
 	private void CancelPath ()
 	{
 		ReleaseBookedTiles();
@@ -167,9 +163,6 @@ public class JumpToTarget : AEntityAction
 		bool doesSelfHaveConflict = false;
 		bool doesOtherHaveConflict = false;
 
-		//Both branches cancel on the resolve pass: with no reroute to offer, leaving the flag up forever ends
-		//in "This action conflict cannot be resolved", which aborts the whole tick. The early return at the
-		//top of this method then reports the cancelled jump as unconflicted on the next iteration.
 		if (IsDestinationOccupiedOnNextTurnAction())
 		{
 			doesSelfHaveConflict = true;

@@ -313,7 +313,6 @@ public class EntityEquipmentData : AParsableScriptableObject
 
 #endif
 
-	//Outside the guard: the base declares it abstract unconditionally, so a player build needs the override.
 	public override void OnParse ( ImportedData _data )
 	{
 		/*List<EntityActionEnumID> actions = new();

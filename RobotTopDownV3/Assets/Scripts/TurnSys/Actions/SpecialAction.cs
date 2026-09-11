@@ -96,7 +96,6 @@ public class SpecialAction : AEntityAction
 		EndTick();
 	}
 
-	//The action animation is already triggered by OnStartPerform, so this only holds the tick open for it.
 	private IEnumerator CharacterAnimationVisualCR ()
 	{
 		yield return new WaitForSeconds(Data.visualEffectDuration);
@@ -137,7 +136,6 @@ public class SpecialAction : AEntityAction
 			yield break;
 		}
 
-		//A projectile that misses everything never despawns, and the tick cannot end until this returns.
 		float elapsed = 0f;
 		while (!isProjectileDone && elapsed < ProjectileTimeout)
 		{
@@ -156,8 +154,6 @@ public class SpecialAction : AEntityAction
 			Vector3 origin = GetProjectileOrigin(_user);
 			Vector3 direction = GetVisualTargetPosition() - origin;
 
-			//Projectile.Launch pushes along transform.forward, so an unrotated one flies off to world +Z
-			//and never reaches anything.
 			Quaternion rotation = direction.sqrMagnitude > .0001f
 				? Quaternion.LookRotation(direction.normalized)
 				: _user.transform.rotation;

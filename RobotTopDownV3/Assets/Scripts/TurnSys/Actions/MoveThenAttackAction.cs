@@ -50,9 +50,6 @@ public class MoveThenAttackAction : AttackAction
 	{
 		base.Prepare(_state);
 
-		//Only free the tile when the charge is actually going to happen: clearing it for a cancelled move leaves
-		//the entity registered nowhere while its Coordinates still point here, and the next unit walks through.
-		//After base.Prepare, so the attack resolves its targets against the board it was planned on.
 		if (!isActionCanceled && positionAfterMovementID != -1)
 			PerformingEntity.Displacement.Coordinates.GetTile().SetEntity(null, _isThisTurn: true);
 	}
@@ -73,7 +70,6 @@ public class MoveThenAttackAction : AttackAction
 		}
 	}
 
-	//Release the destination this charge had booked for itself.
 	public void ReleaseBookedTile ()
 	{
 		if (positionAfterMovementID == -1 || positionAfterMovementID == PerformingEntity.Displacement.Coordinates.ID)
@@ -244,8 +240,6 @@ public class MoveThenAttackAction : AttackAction
 		if (positionAfterMovementID == -1)
 			return false;
 
-		//GetBlockingEntityFor, not GetEntity(false): the next tick slot only holds entities that booked a move,
-		//so reading it alone walks straight over anyone standing still.
 		Entity entityOnDestination = GridManager.Instance.Tiles[(int)positionAfterMovementID].GetBlockingEntityFor(PerformingEntity);
 
 		return entityOnDestination != null || GridManager.Instance.Tiles[(int)positionAfterMovementID].IsObstacle(false);

@@ -902,9 +902,6 @@ public class GridManager : Singleton<GridManager>
 		}
 	}
 
-	//_canEndOnOccupiedTile exists because most callers path *at* something - an enemy to charge, an ally to
-	//follow - and need the destination reachable even though it is occupied. A move order is the opposite:
-	//its destination has to be somewhere the unit can actually stand.
 	private bool IsBlockedByEntity ( Tile _tile, Tile _to, bool _isThisTurn, Entity _movingEntity, bool _canTraverseAllies, bool _canEndOnOccupiedTile )
 	{
 		if (_to == null || (_canEndOnOccupiedTile && _tile.coordinates.ID == _to.coordinates.ID))

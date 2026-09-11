@@ -60,8 +60,6 @@ public class Entity : MonoBehaviour
 	private EntityState m_state;
 	public EntityState State => m_state;
 
-	//The state every action this entity queues is tagged with. Only a StateButton click changes it, and it only
-	//applies to actions added after the change - already queued ones keep the state they were registered with.
 	private EntityState m_defaultState = EntityState.NoAIChange;
 	public EntityState DefaultState => m_defaultState;
 
