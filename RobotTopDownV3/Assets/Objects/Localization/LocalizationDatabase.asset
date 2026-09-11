@@ -430,6 +430,10 @@ MonoBehaviour:
     - 'Rapport :
 
       {0}'
+  - key: return_hub/nothing
+    values:
+    - Nothing to report today.
+    - "Rien \xE0 signaler aujourd'hui."
   - key: entity_config/upgrades
     values:
     - Upgrades

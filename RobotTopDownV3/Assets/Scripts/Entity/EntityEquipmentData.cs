@@ -188,6 +188,23 @@ public class EntityEquipmentData : AParsableScriptableObject
 		return new System.Tuple<CurrencyType, ulong>(CurrencyType.SoftCurrency, creditCost / 2ul);
 	}
 
+	public System.Tuple<CurrencyType, ulong> GetShopSellingPrice ()
+	{
+		return new System.Tuple<CurrencyType, ulong>(CurrencyType.SoftCurrency
+			, ApplyTradeBonus(GetSellingPrice().Item2, GameAssets.current.game.ShopStructureUpgrade.GetPriceFactor()));
+	}
+
+	public System.Tuple<CurrencyType, ulong> GetRecyclingPrice ()
+	{
+		return new System.Tuple<CurrencyType, ulong>(CurrencyType.SoftCurrency
+			, ApplyTradeBonus(GetSellingPrice().Item2, GameAssets.current.game.RecyclerStructureUpgrade.GetCurrentTradeBonusAmount()));
+	}
+
+	private static ulong ApplyTradeBonus ( ulong _basePrice, float _bonus )
+	{
+		return (ulong)Mathf.Max(0f, _basePrice * (1f + _bonus));
+	}
+
 	[System.Serializable, ShowOdinSerializedPropertiesInInspector]
 	public class SecondaryStat
 	{

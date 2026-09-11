@@ -261,7 +261,7 @@ public partial class GameDatas : ScriptableObject
 				EntityEquipmentData componentData = data.component.GetData<EntityEquipmentData>();
 				report += componentData.GetLocalizedName() + " finished recycling \n";
 
-				System.Tuple<CurrencyType, ulong> sellingPrice = componentData.GetSellingPrice();
+				System.Tuple<CurrencyType, ulong> sellingPrice = componentData.GetRecyclingPrice();
 				AddCurrency(sellingPrice.Item1, sellingPrice.Item2);
 				dayData.currentlyRecyclingComponents[i] = null;
 			}

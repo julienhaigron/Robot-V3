@@ -104,6 +104,7 @@ public enum LocalizationKey
     entity_config_inventory,
     return_hub_title,
     return_hub_content,
+    return_hub_nothing,
     entity_config_upgrades,
     ingame_validate_targets,
     ingame_input_phase,
@@ -603,6 +604,7 @@ public static class LocalizationKeyExtensions
             case LocalizationKey.entity_config_inventory: return "entity_config/inventory";
             case LocalizationKey.return_hub_title: return "return_hub/title";
             case LocalizationKey.return_hub_content: return "return_hub/content";
+            case LocalizationKey.return_hub_nothing: return "return_hub/nothing";
             case LocalizationKey.entity_config_upgrades: return "entity_config/upgrades";
             case LocalizationKey.ingame_validate_targets: return "ingame/validate_targets";
             case LocalizationKey.ingame_input_phase: return "ingame/input_phase";

@@ -298,6 +298,7 @@ public class TurnManager : Singleton<TurnManager>
 	public void Init ()
 	{
 		currentTick = 0;
+		m_roundCount = 0;
 		m_trackedEventsPerEntity.Clear();
 		m_entireGameTrackedEventsPerEntity.Clear();
 	}

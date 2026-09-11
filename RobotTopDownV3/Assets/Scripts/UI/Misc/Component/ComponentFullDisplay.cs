@@ -19,7 +19,7 @@ public class ComponentFullDisplay : MonoBehaviour
 		ComponentDisplay.onDisplayHovered += OnComponentHovered;
 	}
 
-	public void Init ( GameDatas.PlayerSave.Component _componentSavedData )
+	public void Init ( GameDatas.PlayerSave.Component _componentSavedData, ComponentDisplay.DisplayMode _displayMode = ComponentDisplay.DisplayMode.Hangar )
 	{
 		EntityEquipmentData componentData = _componentSavedData != null ? _componentSavedData.GetData<EntityEquipmentData>() : null;
 		m_componentTypeIcon.sprite = componentData == null ? null : GameAssets.current.ui.componentIcons[componentData.GetEquipmentType()];
@@ -28,7 +28,7 @@ public class ComponentFullDisplay : MonoBehaviour
 		m_corpIcon.gameObject.SetActive(componentData != null);
 		//m_icon.sprite = componentData.icon;
 		m_titleTMP.text = componentData == null ? null : componentData.GetLocalizedName();
-		m_priceTMP.text = componentData == null ? null : componentData.GetSellingPrice().Item2.ToString();
+		m_priceTMP.text = componentData == null ? null : ComponentDisplay.GetDisplayedPrice(componentData, _displayMode).Item2.ToString();
 
 		if (componentData != null)
 		{
@@ -58,6 +58,6 @@ public class ComponentFullDisplay : MonoBehaviour
 
 		m_currentDisplayedComponent = _display;
 
-		Init(_display.SavedData);
+		Init(_display.SavedData, _display.CurrentDisplayMode);
 	}
 }

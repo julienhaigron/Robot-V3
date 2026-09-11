@@ -39,6 +39,19 @@ public class FTUEManager : Singleton<FTUEManager>
 	private bool m_isInit = false;
 	public bool IsInit => m_isInit;
 
+	public bool IsFTUERunning
+	{
+		get
+		{
+#if UNITY_EDITOR
+			if (GameConfig.current.debug.skipFTUE)
+				return false;
+#endif
+			return !GameDatas.current.currentPlayerSave.sequencesProgressions.ContainsKey(FTUEID)
+				|| GameDatas.current.currentPlayerSave.sequencesProgressions[FTUEID] != -1;
+		}
+	}
+
 	public void AddTutorialHighlightZone ( TutorialHighlightZone _highlightZone )
 	{
 		if (_highlightZone == null || string.IsNullOrEmpty(_highlightZone.ID))

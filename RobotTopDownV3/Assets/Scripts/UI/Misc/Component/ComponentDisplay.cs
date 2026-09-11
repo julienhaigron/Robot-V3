@@ -40,6 +40,23 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 
 	public enum DisplayMode { Hangar, RepairStation, RecyclingStation, ShopBuying, ShopSelling, Empty }
 	private DisplayMode m_currentDisplayMode;
+	public DisplayMode CurrentDisplayMode => m_currentDisplayMode;
+
+	public static System.Tuple<CurrencyType, ulong> GetDisplayedPrice ( EntityEquipmentData _componentData, DisplayMode _displayMode )
+	{
+		if (_componentData == null)
+			return null;
+
+		switch (_displayMode)
+		{
+			case DisplayMode.RecyclingStation:
+				return _componentData.GetRecyclingPrice();
+			case DisplayMode.ShopSelling:
+				return _componentData.GetShopSellingPrice();
+			default:
+				return _componentData.GetPrice();
+		}
+	}
 
 	public void Init ( EntitySavedData _unitData, GameDatas.PlayerSave.Component _componentSavedData, DisplayMode _displayMode )
 	{
@@ -97,7 +114,7 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 				m_corpIcon.gameObject.SetActive(true);
 				m_priceBackground.gameObject.SetActive(true);
 				m_priceTMP.gameObject.SetActive(true);
-				m_priceTMP.text = m_componentData == null ? null : m_componentData.GetPrice().Item2.ToString();
+				m_priceTMP.text = m_componentData == null ? null : GetDisplayedPrice(m_componentData, m_currentDisplayMode).Item2.ToString();
 				m_descriptionTMP.gameObject.SetActive(true);
 				if (m_outlineImg != null)
 					m_outlineImg.enabled = false;
@@ -112,7 +129,7 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 				m_corpIcon.gameObject.SetActive(true);
 				m_priceBackground.gameObject.SetActive(true);
 				m_priceTMP.gameObject.SetActive(true);
-				m_priceTMP.text = m_componentData == null ? null : m_componentData.GetSellingPrice().Item2.ToString();
+				m_priceTMP.text = m_componentData == null ? null : GetDisplayedPrice(m_componentData, m_currentDisplayMode).Item2.ToString();
 				m_descriptionTMP.gameObject.SetActive(true);
 				if (m_outlineImg != null)
 					m_outlineImg.enabled = false;
@@ -127,7 +144,7 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 				m_corpIcon.gameObject.SetActive(true);
 				m_priceBackground.gameObject.SetActive(true);
 				m_priceTMP.gameObject.SetActive(true);
-				m_priceTMP.text = m_componentData == null ? null : m_componentData.GetPrice().Item2.ToString();
+				m_priceTMP.text = m_componentData == null ? null : GetDisplayedPrice(m_componentData, m_currentDisplayMode).Item2.ToString();
 				m_descriptionTMP.gameObject.SetActive(true);
 				if (m_outlineImg != null)
 					m_outlineImg.enabled = false;
@@ -143,7 +160,7 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 				m_priceBackground.gameObject.SetActive(true);
 				m_priceBackground.gameObject.SetActive(false);
 				m_priceTMP.gameObject.SetActive(true);
-				m_priceTMP.text = m_componentData == null ? null : m_componentData.GetSellingPrice().Item2.ToString();
+				m_priceTMP.text = m_componentData == null ? null : GetDisplayedPrice(m_componentData, m_currentDisplayMode).Item2.ToString();
 				m_descriptionTMP.gameObject.SetActive(false);
 				if (m_outlineImg != null)
 					m_outlineImg.enabled = true;

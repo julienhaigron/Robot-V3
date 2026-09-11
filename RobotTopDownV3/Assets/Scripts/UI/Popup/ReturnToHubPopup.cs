@@ -39,7 +39,11 @@ public class ReturnToHubPopup : AUIPopup
 
 	private void RefreshContent ()
 	{
-		m_contentTMP.text = string.Format(LocalizationManager.Instance.Get(LocalizationKey.return_hub_content), m_dayReport);
+		string report = string.IsNullOrWhiteSpace(m_dayReport)
+			? LocalizationManager.Instance.Get(LocalizationKey.return_hub_nothing)
+			: m_dayReport;
+
+		m_contentTMP.text = string.Format(LocalizationManager.Instance.Get(LocalizationKey.return_hub_content), report);
 	}
 
 }

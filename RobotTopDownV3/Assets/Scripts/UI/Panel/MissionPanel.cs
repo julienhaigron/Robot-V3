@@ -68,10 +68,9 @@ public class MissionPanel : AUIPanel
 		m_currentMissionHovered = null;
 		m_currentMissionSelected = null;
 
-		bool doTutoMission = false;
-#if UNITY_EDITOR
-		doTutoMission = !GameConfig.current.debug.skipFTUE;
-#endif
+		bool doTutoMission = FTUEManager.Instance.IsFTUERunning
+			&& GameDatas.current.currentPlayerSave.dayCount >= 0
+			&& GameDatas.current.currentPlayerSave.cycleData.selectedMissionsIds.Count > GameDatas.current.currentPlayerSave.dayCount;
 		for (int i = 0; i < m_missionBtns.Length; i++)
 		{
 			if (doTutoMission)
