@@ -44,7 +44,7 @@ public class ActionButton : BaseButton, IPointerExitHandler
 		m_linkedEquipmentData = _linkedEquipmentData;
 		EntityActionData data = GameAssets.current.game.entityActionsData[_action];
 		m_icon.sprite = data.icon;
-		m_zone.SetId("actionButton_" + _action);
+		m_zone.SetId(gameObject.name + "_" + _action);
 		/*m_name.text = data.displayName;
 		m_tokenCost.text = data.GetTokenTotalCost(null, null, null).ToString();*/
 		m_isOnlyVisual = false;
