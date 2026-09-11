@@ -23,6 +23,7 @@ MonoBehaviour:
   creditCost: 35
   recyclingDurationAmount: 1
   reparingDurationAmount: 1
+  canDropAsRandomReward: 0
   prefab: {fileID: 7856189691443182411, guid: ed8142aee81b15f418fd5ec3822adc75, type: 3}
   attackAnimationSuccessId: 
   attackAnimationFailureId: 

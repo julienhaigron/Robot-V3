@@ -15,7 +15,7 @@ MonoBehaviour:
   spreadsheetId: https://docs.google.com/spreadsheets/d/1AeQujaBf6YdyVQRD2gBNWazoosesi46DpAoY5b6hrt8/export?format=csv&gid=1085589491
   faction: 6
   icon: {fileID: 1771874642, guid: b61920d2917644949a125f8a6af0e45c, type: 3}
-  displayName: Occ_Broken
+  displayName: Trash
   energyCost: 0
   knownedActions: 
   passiveEffects: []
@@ -23,6 +23,7 @@ MonoBehaviour:
   creditCost: 50
   recyclingDurationAmount: 1
   reparingDurationAmount: 1
+  canDropAsRandomReward: 0
   soundCamo: -10
   visualCamo: -10
   thermicCamo: -10

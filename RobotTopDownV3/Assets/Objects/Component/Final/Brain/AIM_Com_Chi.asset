@@ -23,6 +23,7 @@ MonoBehaviour:
   creditCost: 75
   recyclingDurationAmount: 1
   reparingDurationAmount: 1
+  canDropAsRandomReward: 1
   chipsetSlotAvailable: 4
   agility: 0.25
   distanceAccuracy: 0.25

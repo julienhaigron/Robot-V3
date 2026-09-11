@@ -23,5 +23,6 @@ MonoBehaviour:
   creditCost: 0
   recyclingDurationAmount: 1
   reparingDurationAmount: 1
+  canDropAsRandomReward: 0
   equipmentSlotAvailable: 0
   visionType: 0

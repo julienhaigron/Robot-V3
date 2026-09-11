@@ -23,6 +23,7 @@ MonoBehaviour:
   creditCost: 35
   recyclingDurationAmount: 1
   reparingDurationAmount: 1
+  canDropAsRandomReward: 0
   soundCamo: 0.15
   visualCamo: 0
   thermicCamo: 0

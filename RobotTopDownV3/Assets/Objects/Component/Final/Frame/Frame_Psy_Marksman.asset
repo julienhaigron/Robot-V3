@@ -29,6 +29,7 @@ MonoBehaviour:
   creditCost: 75
   recyclingDurationAmount: 1
   reparingDurationAmount: 1
+  canDropAsRandomReward: 1
   prefab: {fileID: 4673310249167116355, guid: 206cf16509b1846479a1f553fd6add2d, type: 3}
   maxHealth: 200
   armouringSlotAvailable: 2

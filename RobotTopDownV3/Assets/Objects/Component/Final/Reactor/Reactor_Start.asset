@@ -23,4 +23,5 @@ MonoBehaviour:
   creditCost: 60
   recyclingDurationAmount: 1
   reparingDurationAmount: 1
+  canDropAsRandomReward: 0
   energyProduced: 100
