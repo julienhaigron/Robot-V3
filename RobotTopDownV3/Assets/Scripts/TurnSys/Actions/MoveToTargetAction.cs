@@ -17,6 +17,7 @@ public class MoveToTargetAction : AEntityAction
 
 	private Coroutine m_performCR;
 	private Tween m_movementTween;
+	private readonly HashSet<int> m_tilesTakenAtEndOfTurn = new();
 
 	public override void NetworkSerialize<T> ( BufferSerializer<T> serializer )
 	{
@@ -55,18 +56,7 @@ public class MoveToTargetAction : AEntityAction
 		base.CancelAction();
 
 		PerformingEntity.Displacement.RegisterOnCurrentTile();
-
-		if (targetTileIDs == null)
-			return;
-
-		int currenTileID = PerformingEntity.Displacement.Coordinates.ID;
-		foreach (int tileID in targetTileIDs)
-		{
-			if (currenTileID == tileID)
-				continue;
-			if(GridManager.Instance.Tiles[tileID].TryGetEntity(false, out Entity entity) && entity.ID == performingEntityID)
-				GridManager.Instance.Tiles[tileID].SetEntity(null, _isThisTurn: false);
-		}
+		ReleaseBookedTiles();
 
 		if (m_isPerforming)
 		{
@@ -124,6 +114,26 @@ public class MoveToTargetAction : AEntityAction
 		Tile from = GridManager.Instance.Tiles[TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntityID)];
 		//if (GridManager.Instance.LastBFSOriginTile != from && GridManager.Instance.LastBFSMaxDistance >= maxDistance)
 		GridManager.Instance.BFS(from, maxDistance, null, true);
+
+		RefreshTilesTakenAtEndOfTurn();
+	}
+
+	//Planning reads end-of-turn positions, not live ones: the path is allowed to cross allies because they
+	//move too, so the only thing a destination really has to be is somewhere nobody ends the turn standing.
+	private void RefreshTilesTakenAtEndOfTurn ()
+	{
+		m_tilesTakenAtEndOfTurn.Clear();
+
+		foreach (EntityAnchor anchor in GameManager.Instance.PlayersEntityAnchor)
+		{
+			foreach (Entity entity in anchor.Entities)
+			{
+				if (entity == null || entity.ID == performingEntityID || entity.Equipment.IsDead)
+					continue;
+
+				m_tilesTakenAtEndOfTurn.Add(TurnManager.Instance.GetLastRegisteredPositionOfEntity(entity.ID));
+			}
+		}
 	}
 
 	public override bool TileInteractPredicate ( Tile _tile )
@@ -134,7 +144,7 @@ public class MoveToTargetAction : AEntityAction
 		if (_tile.IsObstacle(true) || distance > maxDistance || distance < 1)
 			return false;
 
-		return true;
+		return !m_tilesTakenAtEndOfTurn.Contains(_tile.coordinates.ID);
 	}
 
 	public override void RegisterInteraction ( Tile _tile )
@@ -236,12 +246,14 @@ public class MoveToTargetAction : AEntityAction
 			if (roll == 0)
 			{
 				//performing entity wins roll
+				_otherMoveToTargetAction.ReleaseBookedTiles();
 				_otherMoveToTargetAction.targetTileIDs = null;
 				doesOtherHaveConflict = true;
 			}
 			else
 			{
 				doesSelfHaveConflict = true;
+				ReleaseBookedTiles();
 				targetTileIDs = null;
 			}
 		}
@@ -282,18 +294,14 @@ public class MoveToTargetAction : AEntityAction
 		if (targetTileIDs == null)
 			return false;
 
-		bool hasOtherEntityOnDestinations = false;
 		foreach (int tileID in targetTileIDs)
 		{
-			Entity entity = GridManager.Instance.Tiles[tileID].GetEntity(_isThisTurn: true);
-			if ((entity != null && entity.ID != performingEntityID) || GridManager.Instance.Tiles[tileID].IsObstacle(false))
-			{
-				hasOtherEntityOnDestinations = true;
-				break;
-			}
+			Tile tile = GridManager.Instance.Tiles[tileID];
+			if (tile.GetStayingEntityOtherThan(PerformingEntity) != null || tile.IsObstacle(false))
+				return true;
 		}
 
-		return hasOtherEntityOnDestinations;
+		return false;
 	}
 
 	private void RefreshDestinatedTile ()
@@ -301,24 +309,49 @@ public class MoveToTargetAction : AEntityAction
 		if (finalTargetTileID == -1)
 			return;
 
-		/*foreach (int tileID in targetTileIDs)
-			GridManager.Instance.Tiles[tileID].*/
+		//The path being abandoned still holds this entity in the next tick slot of every tile it booked.
+		//Left there they block other units for the rest of the tick, on tiles nobody will ever stand on.
+		ReleaseBookedTiles();
 
-		List <Tile> pathToTile = GridManager.Instance.GetPath(GameManager.Instance.GetEntityFromID(performingEntityID).Displacement.Coordinates.GetTile(), GridManager.Instance.Tiles[(int)finalTargetTileID], _isThisTurn: false, _movingEntity: PerformingEntity);
+		//Planning paths through allies on purpose - they move too - but a reroute happens at resolution, where
+		//only the units that really stay are obstacles. GetStayingEntityOtherThan already lets a leaving ally
+		//through, so _canTraverseAllies stays false here and is spelled out rather than left to the default.
+		Tile from = PerformingEntity.Displacement.Coordinates.GetTile();
+		List<Tile> pathToTile = GridManager.Instance.GetPath(from, GridManager.Instance.Tiles[(int)finalTargetTileID],
+			_isThisTurn: false, _movingEntity: PerformingEntity, _canTraverseAllies: false, _canEndOnOccupiedTile: false);
 
-		if (pathToTile == null || pathToTile.Count < Data.movementSpeed + 1)
+		if (pathToTile == null || pathToTile.Count < 2)
 		{
 			finalTargetTileID = -1;
-			positionAtActionEndID = GameManager.Instance.GetEntityFromID(performingEntityID).Displacement.Coordinates.ID;
+			positionAtActionEndID = from.coordinates.ID;
 			return;
 		}
 
 		pathToTile.Reverse();
-		targetTileIDs = new int[Data.movementSpeed];
-		for (int i = 0; i < Data.movementSpeed; i++)
+
+		//A last leg shorter than movementSpeed is legitimate - the unit is simply arriving. Demanding a full
+		//stride here used to cancel the move of anyone standing one step from its destination.
+		int stepCount = Mathf.Min(Data.movementSpeed, pathToTile.Count - 1);
+		targetTileIDs = new int[stepCount];
+		for (int i = 0; i < stepCount; i++)
 		{
 			targetTileIDs[i] = pathToTile[i + 1].coordinates.ID;
 			positionAtActionEndID = pathToTile[i + 1].coordinates.ID;
+		}
+	}
+
+	public void ReleaseBookedTiles ()
+	{
+		if (targetTileIDs == null)
+			return;
+
+		int currentTileID = PerformingEntity.Displacement.Coordinates.ID;
+		foreach (int tileID in targetTileIDs)
+		{
+			if (currentTileID == tileID)
+				continue;
+			if (GridManager.Instance.Tiles[tileID].TryGetEntity(false, out Entity booked) && booked.ID == performingEntityID)
+				GridManager.Instance.Tiles[tileID].SetEntity(null, _isThisTurn: false);
 		}
 	}
 

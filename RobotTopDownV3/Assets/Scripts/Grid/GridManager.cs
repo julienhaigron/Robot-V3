@@ -262,9 +262,9 @@ public class GridManager : Singleton<GridManager>
 
 	#region Utils
 
-	public List<Tile> GetPath ( Tile _from, Tile _to, bool _isThisTurn, bool _ignoreObstacles = false, Entity _movingEntity = null, bool _canTraverseAllies = false )
+	public List<Tile> GetPath ( Tile _from, Tile _to, bool _isThisTurn, bool _ignoreObstacles = false, Entity _movingEntity = null, bool _canTraverseAllies = false, bool _canEndOnOccupiedTile = true )
 	{
-		BFS(_from, _to: _to, _isThisTurn: _isThisTurn, _ignoreObstacles: _ignoreObstacles, _movingEntity: _movingEntity, _canTraverseAllies: _canTraverseAllies);
+		BFS(_from, _to: _to, _isThisTurn: _isThisTurn, _ignoreObstacles: _ignoreObstacles, _movingEntity: _movingEntity, _canTraverseAllies: _canTraverseAllies, _canEndOnOccupiedTile: _canEndOnOccupiedTile);
 
 		if (_to.Distance == int.MaxValue)
 			return null;
@@ -902,15 +902,18 @@ public class GridManager : Singleton<GridManager>
 		}
 	}
 
-	private bool IsBlockedByEntity ( Tile _tile, Tile _to, bool _isThisTurn, Entity _movingEntity, bool _canTraverseAllies )
+	//_canEndOnOccupiedTile exists because most callers path *at* something - an enemy to charge, an ally to
+	//follow - and need the destination reachable even though it is occupied. A move order is the opposite:
+	//its destination has to be somewhere the unit can actually stand.
+	private bool IsBlockedByEntity ( Tile _tile, Tile _to, bool _isThisTurn, Entity _movingEntity, bool _canTraverseAllies, bool _canEndOnOccupiedTile )
 	{
-		if (_to == null || _tile.coordinates.ID == _to.coordinates.ID)
+		if (_to == null || (_canEndOnOccupiedTile && _tile.coordinates.ID == _to.coordinates.ID))
 			return false;
 
 		Entity blocker = _tile.GetEntity(_isThisTurn);
 
 		if (blocker == null && !_isThisTurn)
-			blocker = GetEntityStayingOn(_tile);
+			blocker = _tile.GetStayingEntityOtherThan(null);
 
 		if (blocker == null)
 			return false;
@@ -924,19 +927,8 @@ public class GridManager : Singleton<GridManager>
 		return !_canTraverseAllies || !blocker.IsAlliedTo(_movingEntity.OwnerID);
 	}
 
-	private Entity GetEntityStayingOn ( Tile _tile )
-	{
-		Entity entity = _tile.GetEntity(_isThisTurn: true);
-		if (entity == null)
-			return null;
 
-		if (TurnManager.Instance == null)
-			return entity;
-
-		return TurnManager.Instance.IsEntityLeavingTileThisTick(entity.ID, _tile.coordinates.ID) ? null : entity;
-	}
-
-	public void BFS ( Tile _from, int _maxDistance = -1, Tile _to = null, bool _isThisTurn = false, bool _ignoreObstacles = false, Entity _movingEntity = null, bool _canTraverseAllies = false )
+	public void BFS ( Tile _from, int _maxDistance = -1, Tile _to = null, bool _isThisTurn = false, bool _ignoreObstacles = false, Entity _movingEntity = null, bool _canTraverseAllies = false, bool _canEndOnOccupiedTile = true )
 	{
 		/*m_lastBFSOriginTile = _from;
 		m_lastBFSMaxDistance = _maxDistance;*/
@@ -974,7 +966,7 @@ public class GridManager : Singleton<GridManager>
 				}
 
 				//obstacle
-				if (!_ignoreObstacles && (neighbor.IsObstacle(_isThisTurn) || IsBlockedByEntity(neighbor, _to, _isThisTurn, _movingEntity, _canTraverseAllies)))
+				if (!_ignoreObstacles && (neighbor.IsObstacle(_isThisTurn) || IsBlockedByEntity(neighbor, _to, _isThisTurn, _movingEntity, _canTraverseAllies, _canEndOnOccupiedTile)))
 				{
 					continue;
 				}

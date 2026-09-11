@@ -532,17 +532,31 @@ public class Tile : MonoBehaviour
 		return m_visionTypeCounts.ContainsKey(_visionType);
 	}
 
-	//Who will still be standing here once this tick is played. The next tick slot only holds entities that
-	//booked a move, so a motionless one has to be read on the current tick and checked against its own action.
-	//Prepare clears a mover's current tick slot, which is what lets a unit follow an ally out of a tile.
-	public Entity GetEntityAtEndOfTick ()
+	//Who will still be standing here once this tick is played, from the point of view of _mover. The next tick
+	//slot only holds entities that booked a move, so a motionless one has to be read on the current tick and
+	//checked against its own action; Prepare clears a mover's current tick slot, which is what lets a unit
+	//follow an ally out of a tile. _mover is exempted from its own booking - conflict resolution writes a mover
+	//into the next tick slot of every tile of its path, so without that it is answered "myself" and never sees
+	//whoever is really standing here.
+	public Entity GetBlockingEntityFor ( Entity _mover )
 	{
 		Entity booked = GetEntity(_isThisTurn: false);
-		if (booked != null)
+		if (booked != null && booked != _mover)
 			return booked;
 
+		return GetStayingEntityOtherThan(_mover);
+	}
+
+	//Only the physical occupancy half: who is on this tile now and is not going anywhere this tick. Planning
+	//has to ask this rather than GetBlockingEntityFor, so that two movers wanting the same tile still reach
+	//the arbitration roll instead of the first one to book it silently winning.
+	public Entity GetStayingEntityOtherThan ( Entity _mover )
+	{
 		Entity current = GetEntity(_isThisTurn: true);
-		if (current == null || TurnManager.Instance == null)
+		if (current == null || current == _mover)
+			return null;
+
+		if (TurnManager.Instance == null)
 			return current;
 
 		return TurnManager.Instance.IsEntityLeavingTileThisTick(current.ID, coordinates.ID) ? null : current;

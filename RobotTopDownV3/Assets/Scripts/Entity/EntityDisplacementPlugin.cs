@@ -104,8 +104,8 @@ public class EntityDisplacementPlugin : EntityPlugin
 	{
 		Tile tile = GridManager.Instance.Tiles[_tileID];
 
-		Entity occupant = tile.GetEntityAtEndOfTick();
-		if (occupant != null && occupant != m_linkedEntity)
+		Entity occupant = tile.GetBlockingEntityFor(m_linkedEntity);
+		if (occupant != null)
 		{
 			Debug.LogError("Movement refused: " + m_linkedEntity.Data.name + " cannot enter tile " + tile.coordinates.ID
 				+ ", still held by " + occupant.Data.name, gameObject);
@@ -145,8 +145,8 @@ public class EntityDisplacementPlugin : EntityPlugin
 	{
 		Tile tile = GridManager.Instance.Tiles[_tileID];
 
-		Entity teleportOccupant = tile.GetEntityAtEndOfTick();
-		if (teleportOccupant != null && teleportOccupant != m_linkedEntity)
+		Entity teleportOccupant = tile.GetBlockingEntityFor(m_linkedEntity);
+		if (teleportOccupant != null)
 		{
 			Debug.LogError("Teleport refused: " + m_linkedEntity.Data.name + " cannot enter tile " + tile.coordinates.ID
 				+ ", still held by " + teleportOccupant.Data.name, gameObject);
