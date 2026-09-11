@@ -199,6 +199,8 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 		transform.SetAsLastSibling();
 
 		m_canvasGroup.blocksRaycasts = false;
+
+		SoundManager.PlayUISafe(SfxId.None, _config => _config.dragPickUp);
 	}
 
 	public void OnDrag ( PointerEventData eventData )
@@ -213,6 +215,8 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 	{
 		if (m_currentDisplayMode == DisplayMode.Empty)
 			return;
+
+		SoundManager.PlayUISafe(SfxId.None, _config => _config.dragDrop);
 
 		m_canvasGroup.blocksRaycasts = true;
 

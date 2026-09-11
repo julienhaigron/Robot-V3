@@ -206,6 +206,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_button: {fileID: 8316944323044440879}
   m_image: {fileID: 6720206594890336095}
+  m_useDefaultSfx: 1
+  m_clickSfxOverride: 0
+  m_hoverSfxOverride: 0
   m_icon: {fileID: 8788899401807284414}
   m_modActionBtn: {fileID: 551038795606510356}
   m_selectionOutline: {fileID: 3794323081253816574}

@@ -13,6 +13,11 @@ public class AUIWindow : UICanvasParent
 	[SerializeField] protected GameObject m_blockClickGO;
 	[SerializeField] protected CanvasGroup[] m_canvasGroupVisibilityArray;
 	[SerializeField] private TutorialHighlightZone[] m_highlighZones; 
+	[Header("Sounds")]
+	[SerializeField] protected bool m_useDefaultWindowSfx = true;
+	[SerializeField] protected SfxId m_openSfxOverride = SfxId.None;
+	[SerializeField] protected SfxId m_closeSfxOverride = SfxId.None;
+
 	[SerializeField] protected bool m_overrideDurations = false;
 	[ShowIf("m_overrideDurations")]
 	[SerializeField] protected float m_showDuration = 0.3f;
@@ -92,7 +97,8 @@ public class AUIWindow : UICanvasParent
 
 	protected virtual void OnHideStarted ()
 	{
-
+		if (gameObject.activeSelf)
+			SoundManager.PlayUISafe(m_closeSfxOverride, GetDefaultCloseSfx, m_useDefaultWindowSfx);
 	}
 
 	protected virtual void OnHideFinished ()
@@ -135,7 +141,17 @@ public class AUIWindow : UICanvasParent
 
 	protected virtual void OnShowStarted ()
 	{
+		SoundManager.PlayUISafe(m_openSfxOverride, GetDefaultOpenSfx, m_useDefaultWindowSfx);
+	}
 
+	protected virtual SfxId GetDefaultOpenSfx ( UISoundConfig _config )
+	{
+		return SfxId.None;
+	}
+
+	protected virtual SfxId GetDefaultCloseSfx ( UISoundConfig _config )
+	{
+		return SfxId.None;
 	}
 
 	protected virtual void OnShowFinished ()

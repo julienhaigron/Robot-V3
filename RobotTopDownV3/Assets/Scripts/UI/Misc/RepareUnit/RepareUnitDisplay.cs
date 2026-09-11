@@ -53,6 +53,8 @@ public class RepareUnitDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler,
 		transform.SetAsLastSibling();
 
 		m_canvasGroup.blocksRaycasts = false;
+
+		SoundManager.PlayUISafe(SfxId.None, _config => _config.dragPickUp);
 	}
 
 	public void OnDrag ( PointerEventData eventData )
@@ -67,6 +69,8 @@ public class RepareUnitDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler,
 	{
 		if (m_isEmpty)
 			return;
+
+		SoundManager.PlayUISafe(SfxId.None, _config => _config.dragDrop);
 
 		m_canvasGroup.blocksRaycasts = true;
 

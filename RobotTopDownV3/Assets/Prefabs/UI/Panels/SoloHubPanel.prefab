@@ -240,6 +240,9 @@ MonoBehaviour:
   - {fileID: 5715945392643680111}
   - {fileID: 5259867336134500395}
   - {fileID: 8136691779481699493}
+  m_useDefaultWindowSfx: 1
+  m_openSfxOverride: 0
+  m_closeSfxOverride: 0
   m_overrideDurations: 0
   m_showDuration: 0.3
   m_hideDuration: 0.3

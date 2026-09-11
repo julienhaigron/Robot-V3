@@ -12,6 +12,7 @@ public class SfxData
 {
     public string Id;
     public SfxCategory Category;
+    public SoundChannel Channel = SoundChannel.Sfx;
     public AudioClip Clip;
 
     [Range(0f, 1f)]

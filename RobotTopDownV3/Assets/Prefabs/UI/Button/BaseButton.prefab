@@ -171,3 +171,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_button: {fileID: 3255975849467071082}
   m_image: {fileID: 8050504334977871492}
+  m_useDefaultSfx: 1
+  m_clickSfxOverride: 0
+  m_hoverSfxOverride: 0

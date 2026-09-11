@@ -188,6 +188,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: RTD::MissionButton
   m_button: {fileID: 3136753431461068814}
   m_image: {fileID: 0}
+  m_useDefaultSfx: 1
+  m_clickSfxOverride: 0
+  m_hoverSfxOverride: 0
   m_icon: {fileID: 0}
   m_name: {fileID: 7644138648904935613}
   m_description: {fileID: 8768785578248626509}

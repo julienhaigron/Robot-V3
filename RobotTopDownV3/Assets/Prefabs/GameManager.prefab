@@ -1249,4 +1249,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: RTD::SoundManager
   database: {fileID: 11400000, guid: 201b7202e52098b4780b2f11a6f3e399, type: 2}
+  uiSounds: {fileID: 11400000, guid: d5362fba5e6bf6ff70f747bd9f116711, type: 2}
   poolSize: 16
+  musicFadeDuration: 1

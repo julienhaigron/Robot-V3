@@ -707,6 +707,9 @@ MonoBehaviour:
   m_label: {fileID: 0}
   m_button: {fileID: 8316944323044440879}
   m_image: {fileID: 0}
+  m_useDefaultSfx: 1
+  m_clickSfxOverride: 0
+  m_hoverSfxOverride: 0
   m_icon: {fileID: 6720206594890336095}
   m_name: {fileID: 8694540675461424014}
   m_lastSaveTimeTMP: {fileID: 5947184628040823535}

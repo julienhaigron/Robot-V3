@@ -197,6 +197,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 52bcbd65a9bb57b4b9c812db97275ee4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_useDefaultSfx: 1
+  m_clickSfxOverride: 0
+  m_hoverSfxOverride: 0
   m_button: {fileID: 8316944323044440879}
   m_icon: {fileID: 6720206594890336095}
   m_name: {fileID: 4058478780312817923}

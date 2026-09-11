@@ -6,7 +6,7 @@ using TMPro;
 using DG.Tweening;
 using UnityEngine.EventSystems;
 
-public class ActionButton : BaseButton, IPointerEnterHandler, IPointerExitHandler
+public class ActionButton : BaseButton, IPointerExitHandler
 {
 	protected static ActionButton m_selectedBtn;
 	public static ActionButton SelectedBtn => m_selectedBtn;
@@ -144,8 +144,10 @@ public class ActionButton : BaseButton, IPointerEnterHandler, IPointerExitHandle
 		RefreshVisual();
 	}
 
-	public void OnPointerEnter ( PointerEventData eventData )
+	public override void OnPointerEnter ( PointerEventData eventData )
 	{
+		base.OnPointerEnter(eventData);
+
 		//GridManager.Instance.ClearTileOutile();
 		EntityActionData data = GameAssets.current.game.entityActionsData[m_actionType];
 		ToolTipManager.Instance.Show(data.GetLocalizedName(), data.GetDescription(), gameObject);

@@ -490,6 +490,9 @@ MonoBehaviour:
   m_blockClickGO: {fileID: 2577375397142400522}
   m_canvasGroupVisibilityArray: []
   m_highlighZones: []
+  m_useDefaultWindowSfx: 1
+  m_openSfxOverride: 0
+  m_closeSfxOverride: 0
   m_overrideDurations: 0
   m_showDuration: 0.3
   m_hideDuration: 0.3
