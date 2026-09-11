@@ -18,8 +18,11 @@ public class GhostEntity : MonoBehaviour
 
 	public void ShowAtPositionAndOrientation(Tile _position, int _orientation )
 	{
-		m_linkedEntity.Skin.Hide();
-		m_linkedEntity.Equipment.SetWeaponConesHidden(true);
+		if (m_linkedEntity != null)
+		{
+			m_linkedEntity.Skin.Hide();
+			m_linkedEntity.Equipment.SetWeaponConesHidden(true);
+		}
 
 		transform.position = _position.transform.position/* - m_bottomPosition.localPosition*/;
 		float angle = 30f + _orientation * 60f;
@@ -30,8 +33,11 @@ public class GhostEntity : MonoBehaviour
 
 	public void Hide ()
 	{
-		m_linkedEntity.Skin.Show(NeuronalMembraneEquipmentData.VisionTypes.Optic);
-		m_linkedEntity.Equipment.SetWeaponConesHidden(false);
+		if (m_linkedEntity != null)
+		{
+			m_linkedEntity.Skin.Show(NeuronalMembraneEquipmentData.VisionTypes.Optic);
+			m_linkedEntity.Equipment.SetWeaponConesHidden(false);
+		}
 
 		transform.position = new Vector3(0f, -10f, 0f);
 		gameObject.SetActive(false);

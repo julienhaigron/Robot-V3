@@ -240,6 +240,7 @@ public class GameManager : SingletonPersistant<GameManager>
 		}
 		m_fogCanvas.gameObject.SetActive(true);
 		CameraManager.Instance.TeleportCameraTo(m_playersEntityAnchor[PlayerID].Entities[0].transform.position, Quaternion.identity);
+		PlayerController.Instance.ClearGhosts();
 		PlayerController.Instance.ResetZoom();
 		PlayerController.Instance.ResetRotation();
 

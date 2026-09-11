@@ -626,18 +626,19 @@ public class PlayerController : Singleton<PlayerController>
 		SelectEntity(null);
 		ClearActionOnTileDisplay();
 		ClearGhostActionOnTileDisplay();
+		ClearGhosts();
+	}
 
+	public void ClearGhosts ()
+	{
 		foreach (GhostEntity ghost in m_ghostEntities.Values)
-		{
-			if(ghost != null)
+			if (ghost != null)
 				Destroy(ghost.gameObject);
-		}
 		m_ghostEntities.Clear();
+
 		foreach (GhostItem ghost in m_ghostItems.Values)
-		{
-			if(ghost != null)
+			if (ghost != null)
 				Destroy(ghost.gameObject);
-		}
 		m_ghostItems.Clear();
 	}
 
@@ -690,14 +691,20 @@ public class PlayerController : Singleton<PlayerController>
 
 	public void ClearGhostEntitiesAndItems ()
 	{
-		foreach (GhostEntity ghost in m_ghostEntities.Values)
+		foreach (int entityID in new List<int>(m_ghostEntities.Keys))
 		{
-			ghost.Hide();
+			if (m_ghostEntities[entityID] == null)
+				m_ghostEntities.Remove(entityID);
+			else
+				m_ghostEntities[entityID].Hide();
 		}
 
-		foreach (GhostItem ghost in m_ghostItems.Values)
+		foreach (int itemID in new List<int>(m_ghostItems.Keys))
 		{
-			ghost.Hide();
+			if (m_ghostItems[itemID] == null)
+				m_ghostItems.Remove(itemID);
+			else
+				m_ghostItems[itemID].Hide();
 		}
 	}
 
@@ -882,7 +889,12 @@ public class PlayerController : Singleton<PlayerController>
 
 	private void OnAnyEntityDeath ( Entity _entity )
 	{
-		m_ghostEntities.Remove(_entity.ID);
+		if (m_ghostEntities.ContainsKey(_entity.ID))
+		{
+			if (m_ghostEntities[_entity.ID] != null)
+				Destroy(m_ghostEntities[_entity.ID].gameObject);
+			m_ghostEntities.Remove(_entity.ID);
+		}
 
 		if (m_selectedEntity == _entity)
 			SelectEntity(null);

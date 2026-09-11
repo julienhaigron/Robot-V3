@@ -33,33 +33,33 @@ public class HangarEntityDisplay : MonoBehaviour
         m_isSelected = _isSelected;
         m_selectGO.SetActive(_isSelected);
 
-        m_mainComponentSlots[EntityEquipmentData.EquipmentType.Frame].Init(_data.FrameData.icon, _data.frame.isDamaged);
-        m_mainComponentSlots[EntityEquipmentData.EquipmentType.Brain].Init(_data.BrainData.icon, _data.brain.isDamaged);
-        m_mainComponentSlots[EntityEquipmentData.EquipmentType.Reactor].Init(_data.ReactorData.icon, _data.reactor.isDamaged);
-        m_mainComponentSlots[EntityEquipmentData.EquipmentType.NeuronalMembrane].Init(_data.NeuronalMembraneData.icon, _data.neuronalMembrane.isDamaged);
+        InitComponentSlot(m_mainComponentSlots[EntityEquipmentData.EquipmentType.Frame], _data.frame);
+        InitComponentSlot(m_mainComponentSlots[EntityEquipmentData.EquipmentType.Brain], _data.brain);
+        InitComponentSlot(m_mainComponentSlots[EntityEquipmentData.EquipmentType.Reactor], _data.reactor);
+        InitComponentSlot(m_mainComponentSlots[EntityEquipmentData.EquipmentType.NeuronalMembrane], _data.neuronalMembrane);
 
         for (int i = 0; i < m_subComponentSlots[EntityEquipmentData.EquipmentType.NeuronalMembrane].slots.Count; i++)
 		{
-            if (i >= _data.arms.Length)
+            if (_data.arms == null || i >= _data.arms.Length)
                 m_subComponentSlots[EntityEquipmentData.EquipmentType.NeuronalMembrane].slots[i].Hide();
             else
-                m_subComponentSlots[EntityEquipmentData.EquipmentType.NeuronalMembrane].slots[i].Init(_data.arms[i].GetData<EntityEquipmentData>().icon, _data.arms[i].isDamaged);
+                InitComponentSlot(m_subComponentSlots[EntityEquipmentData.EquipmentType.NeuronalMembrane].slots[i], _data.arms[i]);
         }
 
         for (int i = 0; i < m_subComponentSlots[EntityEquipmentData.EquipmentType.Frame].slots.Count; i++)
 		{
-            if(i >= _data.auxiliar.Length)
+            if (_data.auxiliar == null || i >= _data.auxiliar.Length)
                 m_subComponentSlots[EntityEquipmentData.EquipmentType.Frame].slots[i].Hide();
             else
-                m_subComponentSlots[EntityEquipmentData.EquipmentType.Frame].slots[i].Init(_data.auxiliar[i].GetData<EntityEquipmentData>().icon, _data.auxiliar[i].isDamaged);
+                InitComponentSlot(m_subComponentSlots[EntityEquipmentData.EquipmentType.Frame].slots[i], _data.auxiliar[i]);
 		}
 
         for (int i = 0; i < m_subComponentSlots[EntityEquipmentData.EquipmentType.Brain].slots.Count; i++)
 		{
-            if (i >= _data.chipsets.Length)
+            if (_data.chipsets == null || i >= _data.chipsets.Length)
                 m_subComponentSlots[EntityEquipmentData.EquipmentType.Brain].slots[i].Hide();
             else
-                m_subComponentSlots[EntityEquipmentData.EquipmentType.Brain].slots[i].Init(_data.chipsets[i].GetData<EntityEquipmentData>().icon, _data.chipsets[i].isDamaged);
+                InitComponentSlot(m_subComponentSlots[EntityEquipmentData.EquipmentType.Brain].slots[i], _data.chipsets[i]);
 		}
 
     }
@@ -94,4 +94,14 @@ public class HangarEntityDisplay : MonoBehaviour
     }
 
 
+
+	private static void InitComponentSlot ( DamagedSlotDisplay _slot, GameDatas.PlayerSave.Component _component )
+	{
+		EntityEquipmentData componentData = _component == null ? null : _component.GetData<EntityEquipmentData>();
+
+		if (componentData == null)
+			_slot.Hide();
+		else
+			_slot.Init(componentData.icon, _component.isDamaged);
+	}
 }

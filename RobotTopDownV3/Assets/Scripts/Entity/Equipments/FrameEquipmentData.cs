@@ -307,13 +307,13 @@ public class EntitySavedData : INetworkSerializable
 	{
 		List<GameDatas.PlayerSave.Component> equipments = new();
 
-		if (frame != null)
+		if (frame != null && !string.IsNullOrEmpty(frame.ID))
 			equipments.Add(frame);
-		if (reactor != null)
+		if (reactor != null && !string.IsNullOrEmpty(reactor.ID))
 			equipments.Add(reactor);
-		if (neuronalMembrane != null)
+		if (neuronalMembrane != null && !string.IsNullOrEmpty(neuronalMembrane.ID))
 			equipments.Add(neuronalMembrane);
-		if (brain != null)
+		if (brain != null && !string.IsNullOrEmpty(brain.ID))
 			equipments.Add(brain);
 
 		return equipments;
