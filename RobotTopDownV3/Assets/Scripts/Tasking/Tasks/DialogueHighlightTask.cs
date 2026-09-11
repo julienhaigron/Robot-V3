@@ -6,6 +6,7 @@ public class DialogueHighlightTask : Task
     private readonly DialogueData dialogue;
     private readonly string highlightZoneID;
     private BaseButton button;
+    private TutoConsole tutoConsole;
 
     public DialogueHighlightTask ( string _description, Func<TaskManager.TaskContext, bool> _startPredicate, DialogueData _dialogue, string _highlightZoneID, BaseButton _button = null )
         : base(_description, _startPredicate)
@@ -37,7 +38,8 @@ public class DialogueHighlightTask : Task
 
         if (isInGame)
         {
-            ((InGamePanel)_context.UI.currentPanel).TutoConsole.PlayDialogue(dialogue, highlightZoneID);
+            tutoConsole = ((InGamePanel)_context.UI.currentPanel).TutoConsole;
+            tutoConsole.PlayDialogue(dialogue, highlightZoneID);
 
             if (button == null)
                 Complete();
@@ -55,6 +57,9 @@ public class DialogueHighlightTask : Task
     {
         if (IsCompleted)
             return;
+
+        if (tutoConsole != null)
+            tutoConsole.GoToNextLineOrDialogue();
 
         if (FTUEManager.Instance.TryGetTutorialHighlightZone(highlightZoneID, out TutorialHighlightZone highlightZone))
             highlightZone.Hide();

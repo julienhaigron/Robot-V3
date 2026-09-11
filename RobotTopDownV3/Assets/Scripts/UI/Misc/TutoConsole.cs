@@ -45,8 +45,8 @@ public class TutoConsole : MonoBehaviour
 	private void Awake ()
 	{
 		BuildDialogueViewport();
-		m_previousBtn.onClick += OnClickPreviousLineOrDialogue;
-		m_nextBtn.onClick += OnClickNextLineOrDialogue;
+		m_previousBtn.onClick += GoToPreviousLineOrDialogue;
+		m_nextBtn.onClick += GoToNextLineOrDialogue;
 		m_showBtn.onClick += OnClickShow;
 		m_hideBtn.onClick += OnClickHide;
 	}
@@ -54,8 +54,8 @@ public class TutoConsole : MonoBehaviour
 	private void OnDestroy ()
 	{
 		m_scrollSequence?.Kill();
-		m_previousBtn.onClick -= OnClickPreviousLineOrDialogue;
-		m_nextBtn.onClick -= OnClickNextLineOrDialogue;
+		m_previousBtn.onClick -= GoToPreviousLineOrDialogue;
+		m_nextBtn.onClick -= GoToNextLineOrDialogue;
 		m_showBtn.onClick -= OnClickShow;
 		m_hideBtn.onClick -= OnClickHide;
 	}
@@ -264,7 +264,7 @@ public class TutoConsole : MonoBehaviour
 		m_nextBtn.SetInteractability(canGoNext);
 	}
 
-	private void OnClickPreviousLineOrDialogue ()
+	public void GoToPreviousLineOrDialogue ()
 	{
 		if (m_currentDialogueIndex < 0)
 			return;
@@ -277,7 +277,7 @@ public class TutoConsole : MonoBehaviour
 			DisplayDialogue(m_currentDialogueIndex - 1, m_allDialogs[m_currentDialogueIndex - 1].dialogue.lines.Count - 1);
 	}
 
-	private void OnClickNextLineOrDialogue ()
+	public void GoToNextLineOrDialogue ()
 	{
 		if (m_currentDialogueIndex < 0)
 			return;
