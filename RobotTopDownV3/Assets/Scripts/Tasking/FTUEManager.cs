@@ -170,10 +170,16 @@ public class FTUEManager : Singleton<FTUEManager>
 		tutoSequence.Append(new WalkOnTileTask("Wait for unit to walk on trigger tile", null, TileGroundType.Trigger));
 		tutoSequence.Append(new DialogueHighlightTask("State explenation", null, m_firstTutoDialogues[4], "stateButtons"));
 		tutoSequence.Append(new DialogueHighlightTask("State modification explenation", null, m_firstTutoDialogues[5], "stateLines"));
-		tutoSequence.Append(new DialogueHighlightTask("Attack roll explenation", ( context ) => context.Log.Logs.ContainsKey(LogConsole.LogEventType.AttackRoll)
-		, m_firstTutoDialogues[6], "logs"));
-		tutoSequence.Append(new DialogueHighlightTask("Damage explenation", ( context ) => context.Log.Logs.ContainsKey(LogConsole.LogEventType.Damage)
-		, m_firstTutoDialogues[7], "logs"));
+		
+		tutoSequence.Append(new HighlightLogTask("Highlight attack roll logs", ( context ) => context.Log.Logs.ContainsKey(LogConsole.LogEventType.AttackRoll)
+		, LogConsole.LogEventType.AttackRoll, true));
+		tutoSequence.Append(new DialogueHighlightTask("Attack roll explenation", null, m_firstTutoDialogues[6], "logs"));
+		tutoSequence.Append(new HighlightLogTask("Stop highlighting attack roll logs", null, LogConsole.LogEventType.AttackRoll, false));
+
+		tutoSequence.Append(new HighlightLogTask("Highlight damage logs", ( context ) => context.Log.Logs.ContainsKey(LogConsole.LogEventType.Damage)
+		, LogConsole.LogEventType.Damage, true));
+		tutoSequence.Append(new DialogueHighlightTask("Damage explenation", null, m_firstTutoDialogues[7], "logs"));
+		tutoSequence.Append(new HighlightLogTask("Stop highlighting damage logs", null, LogConsole.LogEventType.Damage, false));
 
 		tutoSequence.SetSkipPredicate(( context ) => GameDatas.current.currentPlayerSave.didStartTuto && GameDatas.current.currentPlayerSave.dayCount >= 0);
 		return tutoSequence;

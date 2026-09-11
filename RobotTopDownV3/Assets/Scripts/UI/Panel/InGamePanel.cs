@@ -24,6 +24,7 @@ public sealed class InGamePanel : AUIPanel
 
 	[Title("Console")]
 	[SerializeField] private InGameLogConsole m_logConsole;
+	public InGameLogConsole LogConsole => m_logConsole;
 
 	//[SerializeField] private BaseButton m_validateTargetsBtn;
 	[SerializeField] private TutoConsole m_tutoConsole;

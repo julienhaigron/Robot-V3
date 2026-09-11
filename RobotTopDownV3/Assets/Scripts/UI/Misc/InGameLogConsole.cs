@@ -20,6 +20,7 @@ public class InGameLogConsole : MonoBehaviour
 	[SerializeField] private int m_maxVisibleLogs = 150;
 
 	private readonly Queue<LogPoolElement> m_visibleLogs = new();
+	private readonly HashSet<LogConsole.LogEventType> m_highlightedEventTypes = new();
 
 	private bool m_isConsoleExpanded = true;
 	private Tween m_currentToggleConsoleBtnTween;
@@ -51,6 +52,7 @@ public class InGameLogConsole : MonoBehaviour
 	public void Init ()
 	{
 		ClearVisibleLogs();
+		m_highlightedEventTypes.Clear();
 		LogConsole.Clear();
 	}
 
@@ -62,7 +64,7 @@ public class InGameLogConsole : MonoBehaviour
 		LogPoolElement elem = ObjectsPooling.GetElement(m_logTmpPoolData) as LogPoolElement;
 		elem.transform.SetParent(m_content, false);
 		elem.transform.SetAsLastSibling();
-		elem.Init(_newLog.ToString());
+		elem.Init(_newLog, m_highlightedEventTypes.Contains(_newLog.eventType));
 		m_visibleLogs.Enqueue(elem);
 
 		if (m_visibleLogs.Count > m_maxVisibleLogs)
@@ -73,6 +75,21 @@ public class InGameLogConsole : MonoBehaviour
 
 		LayoutRebuilder.MarkLayoutForRebuild(m_content as RectTransform);
 		m_scrollRect.verticalNormalizedPosition = 0f;
+	}
+
+	public void SetEventTypeHighlighted ( LogConsole.LogEventType _eventType, bool _isHighlighted )
+	{
+		bool didChange = _isHighlighted ? m_highlightedEventTypes.Add(_eventType) : m_highlightedEventTypes.Remove(_eventType);
+		if (!didChange)
+			return;
+
+		foreach (LogPoolElement elem in m_visibleLogs)
+		{
+			if (elem.EventType == _eventType)
+				elem.SetHighlighted(_isHighlighted);
+		}
+
+		LayoutRebuilder.MarkLayoutForRebuild(m_content as RectTransform);
 	}
 
 	private void OnEndLevel ()
