@@ -48,13 +48,13 @@ MonoBehaviour:
   - groundType: 1
     wallType: 1
     orientation: 2
-  - groundType: 5
+  - groundType: 0
     wallType: 0
     orientation: 0
-  - groundType: 5
+  - groundType: 0
     wallType: 0
     orientation: 0
-  - groundType: 5
+  - groundType: 0
     wallType: 0
     orientation: 0
   - groundType: 1
@@ -66,16 +66,16 @@ MonoBehaviour:
   - groundType: 1
     wallType: 1
     orientation: 2
-  - groundType: 5
+  - groundType: 0
     wallType: 0
     orientation: 0
-  - groundType: 5
+  - groundType: 0
     wallType: 0
     orientation: 0
-  - groundType: 5
+  - groundType: 0
     wallType: 0
     orientation: 0
-  - groundType: 5
+  - groundType: 0
     wallType: 0
     orientation: 0
   - groundType: 1
@@ -132,10 +132,10 @@ MonoBehaviour:
   - groundType: 1
     wallType: 1
     orientation: 2
-  - groundType: 5
+  - groundType: 0
     wallType: 0
     orientation: 0
-  - groundType: 5
+  - groundType: 0
     wallType: 0
     orientation: 0
   - groundType: 1
@@ -150,13 +150,13 @@ MonoBehaviour:
   - groundType: 1
     wallType: 1
     orientation: 2
-  - groundType: 5
+  - groundType: 0
     wallType: 0
     orientation: 0
-  - groundType: 5
+  - groundType: 0
     wallType: 0
     orientation: 0
-  - groundType: 5
+  - groundType: 0
     wallType: 0
     orientation: 0
   - groundType: 1
@@ -543,13 +543,13 @@ MonoBehaviour:
   - groundType: 1
     wallType: 1
     orientation: 1
-  - groundType: 5
+  - groundType: 0
     wallType: 0
     orientation: 0
-  - groundType: 5
+  - groundType: 0
     wallType: 0
     orientation: 0
-  - groundType: 5
+  - groundType: 0
     wallType: 0
     orientation: 0
   - groundType: 1
@@ -564,10 +564,10 @@ MonoBehaviour:
   - groundType: 1
     wallType: 1
     orientation: 1
-  - groundType: 5
+  - groundType: 0
     wallType: 0
     orientation: 0
-  - groundType: 5
+  - groundType: 0
     wallType: 0
     orientation: 0
   - groundType: 1
@@ -624,16 +624,16 @@ MonoBehaviour:
   - groundType: 1
     wallType: 1
     orientation: 1
-  - groundType: 5
+  - groundType: 0
     wallType: 0
     orientation: 0
-  - groundType: 5
+  - groundType: 0
     wallType: 0
     orientation: 0
-  - groundType: 5
+  - groundType: 0
     wallType: 0
     orientation: 0
-  - groundType: 5
+  - groundType: 0
     wallType: 0
     orientation: 0
   - groundType: 1
@@ -645,13 +645,13 @@ MonoBehaviour:
   - groundType: 1
     wallType: 1
     orientation: 1
-  - groundType: 5
+  - groundType: 0
     wallType: 0
     orientation: 0
-  - groundType: 5
+  - groundType: 0
     wallType: 0
     orientation: 0
-  - groundType: 5
+  - groundType: 0
     wallType: 0
     orientation: 0
   - groundType: 1
