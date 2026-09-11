@@ -15,7 +15,6 @@ public class SelectEntityTask : Task
 	{
         if (entityID == -1 || (_entityID.HasValue && _entityID.Value == entityID))
 		{
-            PlayerController.onEntitySelected -= OnEntitySelected;
             Complete();
 		}
 	}
@@ -24,5 +23,11 @@ public class SelectEntityTask : Task
     {
         base.OnStart(_context);
         PlayerController.onEntitySelected += OnEntitySelected;
+    }
+
+    protected override void OnComplete ()
+    {
+        PlayerController.onEntitySelected -= OnEntitySelected;
+        base.OnComplete();
     }
 }

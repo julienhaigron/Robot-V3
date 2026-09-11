@@ -18,7 +18,12 @@ public class WaitEndLoadingTask : Task
 
     private void OnStartEndLoading ()
 	{
-        LoadingManager.onStartFadeOut += OnStartEndLoading;
         Complete();
 	}
+
+    protected override void OnComplete ()
+    {
+        LoadingManager.onStartFadeOut -= OnStartEndLoading;
+        base.OnComplete();
+    }
 }

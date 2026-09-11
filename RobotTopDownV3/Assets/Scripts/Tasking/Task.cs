@@ -31,13 +31,19 @@ public abstract class Task
 		return this;
 	}
 
+	public bool TrySkip ( TaskManager.TaskContext _context )
+	{
+		if (IsCompleted || m_skipPredicate == null || !m_skipPredicate(_context))
+			return false;
+
+		Skip();
+		return true;
+	}
+
 	public bool TryStart ( TaskManager.TaskContext _context )
 	{
-		if (m_skipPredicate != null && m_skipPredicate(_context))
-		{
-			Skip();
+		if (TrySkip(_context))
 			return false;
-		}
 		else if (m_startPredicate == null || m_startPredicate(_context))
 		{
 			Start(_context);

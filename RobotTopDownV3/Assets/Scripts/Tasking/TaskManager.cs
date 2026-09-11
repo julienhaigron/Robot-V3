@@ -57,6 +57,8 @@ public class TaskManager : SingletonPersistant<TaskManager>
 			}
 			else if (seq.SkipPredicate != null && seq.SkipPredicate(m_context))
 				seq.Complete();
+			else
+				seq.TrySkipCurrentTask(m_context);
 		}
 	}
 

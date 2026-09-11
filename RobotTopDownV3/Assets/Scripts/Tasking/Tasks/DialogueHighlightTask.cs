@@ -7,6 +7,7 @@ public class DialogueHighlightTask : Task
     private readonly string highlightZoneID;
     private BaseButton button;
     private TutoConsole tutoConsole;
+    private bool didShowZone;
 
     public DialogueHighlightTask ( string _description, Func<TaskManager.TaskContext, bool> _startPredicate, DialogueData _dialogue, string _highlightZoneID, BaseButton _button = null )
         : base(_description, _startPredicate)
@@ -28,7 +29,10 @@ public class DialogueHighlightTask : Task
                 button = highlightZone.UsedButton;
 
             if (!isInGame || button != null)
+            {
                 highlightZone.Show();
+                didShowZone = true;
+            }
         }
         else
             Debug.LogWarning("No TutorialHighlightZone registered with ID \"" + highlightZoneID + "\", playing " + Description + " without it");
@@ -61,9 +65,6 @@ public class DialogueHighlightTask : Task
         if (tutoConsole != null)
             tutoConsole.GoToNextLineOrDialogue();
 
-        if (FTUEManager.Instance.TryGetTutorialHighlightZone(highlightZoneID, out TutorialHighlightZone highlightZone))
-            highlightZone.Hide();
-
         Complete();
     }
 
@@ -71,6 +72,9 @@ public class DialogueHighlightTask : Task
     {
         if (button != null)
             button.onClick -= CompleteTask;
+
+        if (didShowZone && FTUEManager.Instance.TryGetTutorialHighlightZone(highlightZoneID, out TutorialHighlightZone highlightZone))
+            highlightZone.Hide();
 
         base.OnComplete();
     }

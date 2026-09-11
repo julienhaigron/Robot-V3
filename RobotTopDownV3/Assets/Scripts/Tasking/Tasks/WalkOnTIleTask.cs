@@ -15,7 +15,6 @@ public class WalkOnTileTask : Task
 	{
         if (_walkingEntity.OwnerID == GameManager.Instance.PlayerID && _walkingEntity.Displacement.Coordinates.GetTile().GroundType == groundType)
 		{
-            EntityDisplacementPlugin.onAnyEntityMovement -= OnAnyEntityWalkOnTile;
             Complete();
 		}
 	}
@@ -24,5 +23,11 @@ public class WalkOnTileTask : Task
     {
         base.OnStart(_context);
         EntityDisplacementPlugin.onAnyEntityMovement += OnAnyEntityWalkOnTile;
+    }
+
+    protected override void OnComplete ()
+    {
+        EntityDisplacementPlugin.onAnyEntityMovement -= OnAnyEntityWalkOnTile;
+        base.OnComplete();
     }
 }

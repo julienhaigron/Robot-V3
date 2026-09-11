@@ -55,6 +55,11 @@ public class TaskSequence
 		//TaskManager.Instance.StartSequence(this);
 	}
 
+	public bool TrySkipCurrentTask ( TaskManager.TaskContext _context )
+	{
+		return CurrentTask.TrySkip(_context);
+	}
+
 	public bool TryStart (TaskManager.TaskContext _context)
 	{
 		return CurrentTask.TryStart(_context)
