@@ -37,6 +37,7 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 	public ComponentContainer CurrentContainer;
 
 	private float m_lastClickTime;
+	private bool m_isDragBlocked;
 
 	public enum DisplayMode { Hangar, RepairStation, RecyclingStation, ShopBuying, ShopSelling, Empty }
 	private DisplayMode m_currentDisplayMode;
@@ -209,7 +210,10 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 	#region Interactions
 	public void OnBeginDrag ( PointerEventData eventData )
 	{
-		if (m_currentDisplayMode == DisplayMode.Empty)
+		m_isDragBlocked = m_currentDisplayMode == DisplayMode.Empty
+			|| (CurrentContainer != null && !CurrentContainer.CanRelease(this));
+
+		if (m_isDragBlocked)
 			return;
 
 		transform.SetParent(UIManager.Instance.TopLayer);
@@ -222,7 +226,7 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 
 	public void OnDrag ( PointerEventData eventData )
 	{
-		if (m_currentDisplayMode == DisplayMode.Empty)
+		if (m_isDragBlocked || m_currentDisplayMode == DisplayMode.Empty)
 			return;
 
 		transform.position = eventData.position;
@@ -230,6 +234,12 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 
 	public void OnEndDrag ( PointerEventData eventData )
 	{
+		if (m_isDragBlocked)
+		{
+			m_isDragBlocked = false;
+			return;
+		}
+
 		if (m_currentDisplayMode == DisplayMode.Empty)
 			return;
 

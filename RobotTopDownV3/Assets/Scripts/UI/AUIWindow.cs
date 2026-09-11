@@ -156,7 +156,16 @@ public class AUIWindow : UICanvasParent
 
 	protected virtual void OnShowFinished ()
 	{
-		CanClick = true;
+		CanClick = !IsCoveredByPopup();
+	}
+
+	protected bool IsCoveredByPopup ()
+	{
+		if (UIManager.Instance == null)
+			return false;
+
+		AUIPopup activePopup = UIManager.Instance.activePopup;
+		return activePopup != null && activePopup != this && activePopup.CanvasEnabled;
 	}
 
 	public virtual void OnLoad ()

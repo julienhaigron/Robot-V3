@@ -27,6 +27,7 @@ public class ComponentSlot : ComponentContainer
     private GameDatas.PlayerSave.Component m_equipmentSavedData;
     public GameDatas.PlayerSave.Component Equipment => m_equipmentSavedData;
     private bool m_canInteract = true;
+    private Func<ComponentDisplay, bool> m_releasePredicate;
 
     public override void Init ( ComponentContainer _container, EntitySavedData _unitData, GameDatas.PlayerSave.Component _componentSavedData, Func<GameDatas.PlayerSave.Component, bool> _predicate
         , ComponentDisplay.DisplayMode _displayMode, int _index = 0 )
@@ -62,6 +63,16 @@ public class ComponentSlot : ComponentContainer
         }*/
     }
 
+    public void SetReleasePredicate ( Func<ComponentDisplay, bool> _releasePredicate )
+	{
+        m_releasePredicate = _releasePredicate;
+    }
+
+    public override bool CanRelease ( ComponentDisplay _display )
+	{
+        return m_releasePredicate == null || m_releasePredicate(_display);
+    }
+
     public void SetInteractability (bool _canInterract)
 	{
         m_canInteract = _canInterract;
@@ -84,7 +95,7 @@ public class ComponentSlot : ComponentContainer
 
     public override bool IsValid ( ComponentDisplay _display )
 	{
-		return m_currentDisplay != _display && base.IsValid(_display) && m_canInteract;
+		return m_currentDisplay != _display && base.IsValid(_display) && m_canInteract && CanRelease(m_currentDisplay);
 	}
 
     public void Cleanup ()

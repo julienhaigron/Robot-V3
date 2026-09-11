@@ -212,6 +212,11 @@ public class GameToolboxWindow : EditorWindow
 
 			TurnManager.Instance.EndLevel(EndLevelPopup.GameResult.Loose);
 		}
+		if (GUILayout.Button("Repair Everything", group))
+		{
+			GameDatas.current.currentPlayerSave.RepairEverything();
+			LogConsole.AddLog("Repaired every unit and every inventory component", LogConsole.LogEventType.DebugSys);
+		}
 		EditorGUILayout.EndVertical();
 
 		EndBox();

@@ -51,9 +51,11 @@ public class RepairStationPanel : AUIPanel
 			else
 			{
 				m_repairingSlots[i].gameObject.SetActive(true);
+				int slotIndex = i;
+
 				m_repairingSlots[i].SetInteractability(!IsSlotUsedToday(i));
 				m_repairingSlots[i].Init(m_inventoryGrid, repairingComponent != null && repairingComponent.unit != null && !string.IsNullOrEmpty(repairingComponent.unit.name) ? repairingComponent.unit : null
-					, item => item != null && (repairingComponent == null || repairingComponent.unit == null)
+					, item => item != null && IsSlotFree(slotIndex)
 					, i);
 			}
 		}
@@ -81,6 +83,14 @@ public class RepairStationPanel : AUIPanel
 			SetSlotData(i, null);
 			m_repairingSlots[i].Cleanup();
 		}
+	}
+
+	private static bool IsSlotFree ( int _index )
+	{
+		List<GameDatas.PlayerSave.DayData.RepairingUnitData> slots = GameDatas.current.currentPlayerSave.dayData.repairingComponents;
+
+		return _index >= 0 && _index < slots.Count
+			&& (slots[_index] == null || slots[_index].unit == null || string.IsNullOrEmpty(slots[_index].unit.name));
 	}
 
 	private bool IsSlotUsedToday ( int _index )

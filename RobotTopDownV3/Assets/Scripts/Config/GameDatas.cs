@@ -241,6 +241,24 @@ public partial class GameDatas : ScriptableObject
 			onNewDay?.Invoke();
 		}
 
+		public void RepairEverything ()
+		{
+			foreach (EntitySavedData unit in allBuiltUnits)
+			{
+				if (unit == null)
+					continue;
+
+				foreach (Component equipment in unit.GetAllEquipments())
+					equipment.isDamaged = false;
+
+				unit.isRepairing = false;
+			}
+
+			foreach (Component equipment in equipmentInventory)
+				if (equipment != null)
+					equipment.isDamaged = false;
+		}
+
 		public void ForceFinishRecycling ()
 		{
 			foreach (DayData.RecyclingComponentData data in dayData.currentlyRecyclingComponents)

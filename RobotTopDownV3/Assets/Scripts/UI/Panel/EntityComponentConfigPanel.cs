@@ -5,6 +5,31 @@ using System.Linq;
 
 public class EntityComponentConfigPanel : AUIPanel
 {
+	private static GameDatas.PlayerSave.Component GetFrameSubComponentAt ( EntitySavedData _data, int _slotIndex )
+	{
+		FrameEquipmentData frameData = _data == null || _data.frame == null ? null : _data.frame.GetData<FrameEquipmentData>();
+		if (frameData == null || _data.auxiliar == null)
+			return null;
+
+		bool isArmourSlot = _slotIndex < frameData.armouringSlotAvailable;
+		EntityEquipmentData.EquipmentType wantedType = isArmourSlot ? EntityEquipmentData.EquipmentType.Armor : EntityEquipmentData.EquipmentType.Occultor;
+		int wantedRank = isArmourSlot ? _slotIndex : _slotIndex - frameData.armouringSlotAvailable;
+
+		int rank = 0;
+		foreach (GameDatas.PlayerSave.Component component in _data.auxiliar)
+		{
+			if (component == null || !component.TryGetData(out EntityEquipmentData data) || data.GetEquipmentType() != wantedType)
+				continue;
+
+			if (rank == wantedRank)
+				return component;
+
+			rank++;
+		}
+
+		return null;
+	}
+
 	[SerializeField] private BaseButton m_closeBtn;
 	[SerializeField] private ComponentSlot[] m_slots;
 	[SerializeField] private ComponentDisplayGrid m_subPartGrid;
@@ -50,14 +75,14 @@ public class EntityComponentConfigPanel : AUIPanel
 					if (chassisData.armouringSlotAvailable > i)
 					{
 						m_slots[i].gameObject.SetActive(true);
-						m_slots[i].Init(m_subPartGrid, _data, _data.auxiliar == null || _data.auxiliar.Length <= i ? null : _data.auxiliar[i]
+						m_slots[i].Init(m_subPartGrid, _data, GetFrameSubComponentAt(_data, i)
 							, item => item != null && item.TryGetData(out EntityEquipmentData _data) && (_data.GetEquipmentType() == EntityEquipmentData.EquipmentType.Armor)
 							, ComponentDisplay.DisplayMode.Hangar);
 					}
 					else if(chassisData.armouringSlotAvailable + chassisData.occultorSlotAvailable > i)
 					{
 						m_slots[i].gameObject.SetActive(true);
-						m_slots[i].Init(m_subPartGrid, _data, _data.auxiliar == null || _data.auxiliar.Length <= i ? null : _data.auxiliar[i]
+						m_slots[i].Init(m_subPartGrid, _data, GetFrameSubComponentAt(_data, i)
 							, item => item != null && item.TryGetData(out EntityEquipmentData _data) && (_data.GetEquipmentType() == EntityEquipmentData.EquipmentType.Occultor)
 							, ComponentDisplay.DisplayMode.Hangar);
 					}

@@ -32,9 +32,17 @@ public abstract class ComponentContainer : MonoBehaviour, IDropHandler
         m_index = _index;
     }
 
+    public virtual bool CanRelease ( ComponentDisplay _display )
+    {
+        return true;
+    }
+
     public virtual bool IsValid ( ComponentDisplay _display )
     {
         if (_display.SavedData == null || _display.CurrentContainer == this)
+            return false;
+
+        if (_display.CurrentContainer != null && !_display.CurrentContainer.CanRelease(_display))
             return false;
 
         return m_predicate == null || m_predicate(_display.SavedData);

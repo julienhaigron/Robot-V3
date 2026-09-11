@@ -14,6 +14,7 @@ public class LogConsolePopup : AUIPopup
 	[SerializeField] private BaseButton m_forceWin;
 	[SerializeField] private BaseButton m_forceDraw;
 	[SerializeField] private BaseButton m_forceLoose;
+	[SerializeField] private BaseButton m_repairEverything;
 
 	private List<LogConsole.LogEventType> m_visibleEventType = new();
 
@@ -28,6 +29,7 @@ public class LogConsolePopup : AUIPopup
 		m_forceWin.onClick += OnClickForceWin;
 		m_forceDraw.onClick += OnClickForceDraw;
 		m_forceLoose.onClick += OnClickForceLoose;
+		m_repairEverything.onClick += OnClickRepairEverything;
 	}
 
 	protected override void OnShowFinished ()
@@ -61,5 +63,11 @@ public class LogConsolePopup : AUIPopup
 	private void OnClickForceLoose ()
 	{
 		TurnManager.Instance.EndLevel(EndLevelPopup.GameResult.Loose);
+	}
+
+	private void OnClickRepairEverything ()
+	{
+		GameDatas.current.currentPlayerSave.RepairEverything();
+		LogConsole.AddLog("Repaired every unit and every inventory component", LogConsole.LogEventType.DebugSys);
 	}
 }
