@@ -71,6 +71,19 @@ public class EntityDisplacementPlugin : EntityPlugin
 		pendingAction?.Invoke();
 	}
 
+	private void ReleaseTileLeftBehind ( Tile _destination )
+	{
+		Tile originTile = m_coordinate.GetTile();
+		if (originTile == null || originTile == _destination)
+			return;
+
+		if (originTile.GetEntity(true) == m_linkedEntity)
+			originTile.SetEntity(null, _isThisTurn: true);
+
+		if (originTile.GetEntity(false) == m_linkedEntity)
+			originTile.SetEntity(null, _isThisTurn: false);
+	}
+
 	public void RegisterOnCurrentTile ()
 	{
 		Tile tile = m_coordinate.GetTile();
@@ -115,8 +128,7 @@ public class EntityDisplacementPlugin : EntityPlugin
 			return null;
 		}
 
-		if(m_coordinate.GetTile().GetEntity(false) == m_linkedEntity)
-			m_coordinate.GetTile().SetEntity(null, _isThisTurn: false);
+		ReleaseTileLeftBehind(tile);
 
 		float movementDuration
  = _overrideMovementSpeed ? _overritenMovementSpeed : GameConfig.current.game.actionDuration;
@@ -156,8 +168,7 @@ public class EntityDisplacementPlugin : EntityPlugin
 			return null;
 		}
 
-		if (m_coordinate.GetTile().GetEntity(false) == m_linkedEntity)
-			m_coordinate.GetTile().SetEntity(null, _isThisTurn: false);
+		ReleaseTileLeftBehind(tile);
 
 		if (ShouldFaceMovementDirection())
 			Rotate(tile, GameConfig.current.game.actionDuration);
