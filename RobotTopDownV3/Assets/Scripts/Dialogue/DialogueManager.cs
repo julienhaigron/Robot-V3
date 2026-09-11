@@ -120,8 +120,8 @@ public class DialogueManager : Singleton<DialogueManager>
 
 		m_currentDialogueData = null;
 
-		Action previousAction = new(m_onDialogueEnded);
-		m_onDialogueEnded -= previousAction;
+		Action previousAction = m_onDialogueEnded;
+		m_onDialogueEnded = null;
 		previousAction?.Invoke();
 	}
 }

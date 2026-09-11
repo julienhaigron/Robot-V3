@@ -5,34 +5,50 @@ public class DialogueHighlightTask : Task
 {
     private readonly DialogueData dialogue;
     private readonly string highlightZoneID;
+    private BaseButton button;
 
-    public DialogueHighlightTask ( string _description, Func<TaskManager.TaskContext, bool> _startPredicate, DialogueData _dialogue, string _highlightZoneID )
+    public DialogueHighlightTask ( string _description, Func<TaskManager.TaskContext, bool> _startPredicate, DialogueData _dialogue, string _highlightZoneID, BaseButton _button = null )
         : base(_description, _startPredicate)
     {
         this.dialogue = _dialogue;
         this.highlightZoneID = _highlightZoneID;
+        this.button = _button;
     }
 
     protected override void OnStart ( TaskManager.TaskContext _context )
     {
         base.OnStart(_context);
 
-        if (_context.UI.currentPanel is InGamePanel inGamePanel)
-		{
-            inGamePanel.TutoConsole.PlayDialogue(dialogue, null, highlightZoneID);
-            Complete();
-            return;
-        }
+        bool isInGame = _context.UI.currentPanel is InGamePanel;
 
         if (FTUEManager.Instance.TryGetTutorialHighlightZone(highlightZoneID, out TutorialHighlightZone highlightZone))
         {
-            highlightZone.Show();
-            highlightZone.onInteract += CompleteTask;
+            if (button == null)
+                button = highlightZone.UsedButton;
+
+            if (!isInGame || button != null)
+                highlightZone.Show();
         }
         else
             Debug.LogWarning("No TutorialHighlightZone registered with ID \"" + highlightZoneID + "\", playing " + Description + " without it");
 
-        _context.Dialogue.PlayDialogue(dialogue, CompleteTask);
+        if (button != null)
+            button.onClick += CompleteTask;
+
+        if (isInGame)
+        {
+            ((InGamePanel)_context.UI.currentPanel).TutoConsole.PlayDialogue(dialogue, highlightZoneID);
+
+            if (button == null)
+                Complete();
+
+            return;
+        }
+
+        if (button != null)
+            _context.Dialogue.PlayDialogue(dialogue, null);
+        else
+            _context.Dialogue.PlayDialogue(dialogue, CompleteTask);
     }
 
     private void CompleteTask ()
@@ -46,11 +62,11 @@ public class DialogueHighlightTask : Task
         Complete();
     }
 
-    /*protected override void OnComplete ()
+    protected override void OnComplete ()
     {
-        TutorialHighlightZone highlightZone = FTUEManager.Instance.RegisterdTutorialHighlightZones[highlightZoneID];
-        //highlightZone.Hide();
-        //highlightZone.onInteract -= CompleteTask;
+        if (button != null)
+            button.onClick -= CompleteTask;
+
         base.OnComplete();
-    }*/
+    }
 }

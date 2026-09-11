@@ -156,8 +156,8 @@ public class FTUEManager : Singleton<FTUEManager>
 		//input phase
 		tutoSequence.Append(new DialogueHighlightTask("Select Unit", ( context ) => context.Game.CurrentMission != null && context.Game.CurrentMission.enumID == m_day0MissionData.enumID
 			&& context.UI.currentPanel is InGamePanel
-		, m_firstTutoDialogues[0], "squadUnitsBtns"));
-		tutoSequence.Append(new SelectEntityTask("Select Entity", null, -1));
+		, m_firstTutoDialogues[0], "squadUnitsMicroBtn0"));
+		//tutoSequence.Append(new SelectEntityTask("Select Entity", null, -1));
 		tutoSequence.Append(new DialogueHighlightTask("Action explenation", null, m_firstTutoDialogues[1], "actionBtns"));
 		tutoSequence.Append(new DialogueHighlightTask("Action Queue explenation", ( context ) => context.Turn.RecordedActions.ContainsKey(firstPlayerEntityID) && context.Turn.RecordedActions[firstPlayerEntityID].Count > 0
 		, m_firstTutoDialogues[2], "actionQueue"));

@@ -184,7 +184,6 @@ RectTransform:
   m_Children:
   - {fileID: 2201455186253164166}
   - {fileID: 7186168577646518175}
-  - {fileID: 7389524019519472008}
   - {fileID: 7655725646069541550}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -446,6 +445,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 7389524019519472008}
   - {fileID: 2779783811238572178}
   - {fileID: 1342516840755059288}
   - {fileID: 8576538025822409915}
@@ -2659,6 +2659,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 52bcbd65a9bb57b4b9c812db97275ee4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: RTD::StateButton
+  m_label: {fileID: 0}
   m_button: {fileID: 2807501278005339473}
   m_image: {fileID: 7232939654701629887}
   m_useDefaultSfx: 1
@@ -3675,7 +3676,7 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 4354607023986749943}
+    m_TransformParent: {fileID: 7186168577646518175}
     m_Modifications:
     - target: {fileID: 7474914942458423662, guid: 6c4e9437b851aba48a529aa437287753, type: 3}
       propertyPath: m_Name
@@ -5570,6 +5571,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 52bcbd65a9bb57b4b9c812db97275ee4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: RTD::StateButton
+  m_label: {fileID: 0}
   m_button: {fileID: 1820588898600922021}
   m_image: {fileID: 6616535760403550027}
   m_useDefaultSfx: 1
@@ -7715,6 +7717,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 52bcbd65a9bb57b4b9c812db97275ee4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: RTD::StateButton
+  m_label: {fileID: 0}
   m_button: {fileID: 8124421040772811363}
   m_image: {fileID: 3614440134408957581}
   m_useDefaultSfx: 1
