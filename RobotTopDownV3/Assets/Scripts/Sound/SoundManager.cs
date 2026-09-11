@@ -3,9 +3,6 @@ using UnityEngine;
 using System;
 using DG.Tweening;
 
-//Not SingletonPersistant: this sits on a CHILD GameObject, where DontDestroyOnLoad is a no-op and only logs a
-//warning. It survives scene loads through its persisting root (GameManager.prefab). Moving it out from under that root
-//would silently break that - it would need to become SingletonPersistant again, on a root object.
 public class SoundManager : Singleton<SoundManager>
 {
 	[SerializeField]

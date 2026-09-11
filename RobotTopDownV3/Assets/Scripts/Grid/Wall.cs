@@ -69,8 +69,6 @@ public class Wall : MonoBehaviour
 		m_registeredHealth = m_hp;
 	}
 
-	//Both build the wall visual through SetWallType, which needs PrefabUtility: walls are authored at edit time
-	//and baked into the scene, the runtime LoadGrid never touches them.
 #if UNITY_EDITOR
 	public void Init ( Tile _tile , WallType _type, bool _isCover, int _orientation )
 	{

@@ -38,8 +38,6 @@ public class ComponentRewardDisplay : MonoBehaviour
             SetIsSelected(false);
             m_onSelected = _onSelected;
             m_btn.onClick = OnClick;
-            //These displays are reused across openings: without this a single locked Init leaves the button
-            //dead for every later one.
             m_btn.SetInteractability(true);
         }
     }

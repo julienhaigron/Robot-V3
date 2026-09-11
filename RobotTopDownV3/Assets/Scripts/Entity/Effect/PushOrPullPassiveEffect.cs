@@ -46,8 +46,8 @@ public class PushOrPullPassiveEffect : AEntityPassiveEffect
 				break;
 			}
 
-			Entity occupant = nextTile.GetEntityAtEndOfTick();
-			if (occupant != null && occupant != _targetEntity)
+			Entity occupant = nextTile.GetBlockingEntityFor(_targetEntity);
+			if (occupant != null)
 			{
 				blockingEntity = occupant;
 				didCollide = true;

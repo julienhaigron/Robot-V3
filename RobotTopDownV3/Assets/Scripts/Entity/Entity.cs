@@ -60,8 +60,6 @@ public class Entity : MonoBehaviour
 	private EntityState m_state;
 	public EntityState State => m_state;
 
-	//The state every action this entity queues is tagged with. Only a StateButton click changes it, and it only
-	//applies to actions added after the change - already queued ones keep the state they were registered with.
 	private EntityState m_defaultState = EntityState.NoAIChange;
 	public EntityState DefaultState => m_defaultState;
 
@@ -488,14 +486,17 @@ public class Entity : MonoBehaviour
 		if (m_activeStatBonusBuffs.ContainsKey(_type))
 			bonus += m_activeStatBonusBuffs[_type];
 
-		foreach (GameDatas.PlayerSave.Component eq in m_data.chipsets)
+		if (m_data.chipsets != null)
 		{
-			if (!eq.isDamaged && eq.TryGetData(out ChipsetEquipmentData _chipsedData))
+			foreach (GameDatas.PlayerSave.Component eq in m_data.chipsets)
 			{
-				foreach (ChipsetEquipmentData.ConditionalStatBonus conditionalStatBonus in _chipsedData.statBonuses)
+				if (eq != null && !eq.isDamaged && eq.TryGetData(out ChipsetEquipmentData _chipsedData))
 				{
-					if (conditionalStatBonus.bonus.type == _type && Condition.UseConditionPredicate(_relatedAction, this, null, conditionalStatBonus.conditionType))
-						bonus += conditionalStatBonus.bonus.value;
+					foreach (ChipsetEquipmentData.ConditionalStatBonus conditionalStatBonus in _chipsedData.statBonuses)
+					{
+						if (conditionalStatBonus.bonus.type == _type && Condition.UseConditionPredicate(_relatedAction, this, null, conditionalStatBonus.conditionType))
+							bonus += conditionalStatBonus.bonus.value;
+					}
 				}
 			}
 		}

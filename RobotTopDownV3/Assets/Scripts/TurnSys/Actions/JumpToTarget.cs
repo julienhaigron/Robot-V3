@@ -4,9 +4,13 @@ using UnityEngine;
 using System;
 using Unity.Netcode;
 using System.Linq;
+using DG.Tweening;
 
 public class JumpToTarget : AEntityAction
 {
+	private Coroutine m_performCR;
+	private Tween m_movementTween;
+
 	public override void Init ( EntityActionData _data, string _linkedEquipmentID, int _performingEntityID, int _positionAtActionStartID, int _timeAtStart )
 	{
 		base.Init(_data, _linkedEquipmentID, _performingEntityID, _positionAtActionStartID, _timeAtStart);
@@ -15,15 +19,33 @@ public class JumpToTarget : AEntityAction
 
 	public override void Prepare ( Entity.EntityState _state )
 	{
-		//check here if can do movement and where to exactly
 		if (IsDestinationOccupiedOnNextTurnAction())
-			targetTileIDs = null;
-			//RefreshDestinatedTile();
+			CancelPath();
 
-		//Only free the tile when the jump is actually going to happen: clearing it for a cancelled move leaves
-		//the entity registered nowhere while its Coordinates still point here, and the next unit walks through.
 		if (targetTileIDs != null)
-			GameManager.Instance.GetEntityFromID(performingEntityID).Displacement.Coordinates.GetTile().SetEntity(null, _isThisTurn: false);
+			PerformingEntity.Displacement.Coordinates.GetTile().SetEntity(null, _isThisTurn: true);
+	}
+
+	private void CancelPath ()
+	{
+		ReleaseBookedTiles();
+		targetTileIDs = null;
+		positionAtActionEndID = PerformingEntity.Displacement.Coordinates.ID;
+	}
+
+	public void ReleaseBookedTiles ()
+	{
+		if (targetTileIDs == null)
+			return;
+
+		int currentTileID = PerformingEntity.Displacement.Coordinates.ID;
+		foreach (int tileID in targetTileIDs)
+		{
+			if (currentTileID == tileID)
+				continue;
+			if (GridManager.Instance.Tiles[tileID].TryGetEntity(false, out Entity bookedEntity) && bookedEntity.ID == performingEntityID)
+				GridManager.Instance.Tiles[tileID].SetEntity(null, _isThisTurn: false);
+		}
 	}
 
 	public override bool DoesLeaveTileThisTick ( int _tileID )
@@ -35,20 +57,18 @@ public class JumpToTarget : AEntityAction
 	{
 		base.CancelAction();
 
-		//Release the tiles this jump had booked for itself, then put the entity back on its own tile.
-		if (targetTileIDs != null)
-		{
-			int currentTileID = PerformingEntity.Displacement.Coordinates.ID;
-			foreach (int tileID in targetTileIDs)
-			{
-				if (currentTileID == tileID)
-					continue;
-				if (GridManager.Instance.Tiles[tileID].TryGetEntity(false, out Entity bookedEntity) && bookedEntity.ID == performingEntityID)
-					GridManager.Instance.Tiles[tileID].SetEntity(null, _isThisTurn: false);
-			}
-		}
-
 		PerformingEntity.Displacement.RegisterOnCurrentTile();
+		ReleaseBookedTiles();
+
+		if (m_isPerforming)
+		{
+			if (m_performCR != null)
+				GameManager.Instance.StopCoroutine(m_performCR);
+			if (m_movementTween != null && m_movementTween.IsActive())
+				m_movementTween.Kill();
+
+			EndTick();
+		}
 	}
 
 	protected override void Perform ( Entity.EntityState _state )
@@ -56,13 +76,13 @@ public class JumpToTarget : AEntityAction
 		base.Perform(_state);
 
 		//move to targetTile
-		if (targetTileIDs != null && targetTileIDs.Length > 0/* && thisActionDestination.GetEntity(false) == null*/)
+		if (targetTileIDs != null && targetTileIDs.Length > 0)
 		{
-			GameManager.Instance.StartCoroutine(PerformCR());
+			m_performCR = GameManager.Instance.StartCoroutine(PerformCR());
 		}
 		else
 		{
-			DG.Tweening.DOVirtual.DelayedCall(GameConfig.current.game.actionDuration, () =>
+			m_movementTween = DOVirtual.DelayedCall(GameConfig.current.game.actionDuration, () =>
 			{
 				EndTick();
 			});
@@ -87,7 +107,10 @@ public class JumpToTarget : AEntityAction
 			{
 				tile.UI.SetOutlineColor(Color.blue);
 			}*/
-			GameManager.Instance.GetEntityFromID(performingEntityID).Displacement.MoveToTile(targetTileIDs[i], null, true, movementSpeed);
+			m_movementTween = PerformingEntity.Displacement.MoveToTile(targetTileIDs[i], null, true, movementSpeed);
+
+			if (m_movementTween == null)
+				break;
 
 			yield return new WaitForSeconds(movementSpeed);
 			/*foreach (Tile tile in tilesInRange)
@@ -133,10 +156,7 @@ public class JumpToTarget : AEntityAction
 		if (targetTileIDs == null || targetTileIDs.Length == 0)
 		{
 			//entity move action canceled
-			if (performingEntity.Displacement.Coordinates.GetTile().GetEntity(false) != null)
-				Debug.LogError("CRITICAL ERROR : performing entity " + performingEntity.Data.name + " cant go back to where it was. Hope this never happens"); // solution? insta kill performing entity
-			else
-				performingEntity.Displacement.Coordinates.GetTile().SetEntity(performingEntity, _isThisTurn: false);
+			performingEntity.Displacement.Coordinates.GetTile().SetEntity(performingEntity, _isThisTurn: true);
 			return new() { isFirstActionConflicted = false, isSecondActionConflicted = false };
 		}
 
@@ -145,25 +165,16 @@ public class JumpToTarget : AEntityAction
 
 		if (IsDestinationOccupiedOnNextTurnAction())
 		{
-			if (_isCheck)
-				doesSelfHaveConflict = true;
-			else
-			{
-				//RefreshDestinatedTile();
-				if (targetTileIDs == null)
-					doesSelfHaveConflict = true;
-			}
+			doesSelfHaveConflict = true;
+			if (!_isCheck)
+				CancelPath();
 		}
-		else if (targetTileIDs != null && GridManager.Instance.GetDistanceBetween(PerformingEntity.Displacement.Coordinates.GetTile(), GridManager.Instance.Tiles[targetTileIDs[0]], Data.movementSpeed, false) != Data.movementSpeed)
+		else if (GridManager.Instance.GetDistanceBetween(PerformingEntity.Displacement.Coordinates.GetTile(), GridManager.Instance.Tiles[targetTileIDs[0]], Data.movementSpeed, false) != Data.movementSpeed)
 		{
 			//check if tile too far
 			doesSelfHaveConflict = true;
-			//RefreshDestinatedTile();
-		}
-		else if (targetTileIDs == null)
-		{
-			doesSelfHaveConflict = true;
-			//RefreshDestinatedTile();
+			if (!_isCheck)
+				CancelPath();
 		}
 		/*else if (_otherAction is MoveToNeighborAction _otherNeighborMoveAction && thisActionDestinationIDArray.Contains(_otherNeighborMoveAction.finalTargetTileID))
 		{
@@ -186,13 +197,14 @@ public class JumpToTarget : AEntityAction
 			if (roll == 0)
 			{
 				//performing entity wins roll
+				_otherMoveToTargetAction.ReleaseBookedTiles();
 				_otherMoveToTargetAction.targetTileIDs = null;
 				doesOtherHaveConflict = true;
 			}
 			else
 			{
 				doesSelfHaveConflict = true;
-				targetTileIDs = null;
+				CancelPath();
 			}
 		}
 
@@ -210,43 +222,15 @@ public class JumpToTarget : AEntityAction
 		if (targetTileIDs == null)
 			return false;
 
-		bool hasOtherEntityOnDestinations = false;
 		foreach (int tileID in targetTileIDs)
 		{
-			Entity entity = GridManager.Instance.Tiles[tileID].GetEntity(_isThisTurn: false);
-			if ((entity != null && entity.ID != performingEntityID)
-				|| GridManager.Instance.Tiles[tileID].IsObstacle(false))
-			{
-				hasOtherEntityOnDestinations = true;
-				break;
-			}
+			Tile tile = GridManager.Instance.Tiles[tileID];
+			if (tile.GetStayingEntityOtherThan(PerformingEntity) != null || tile.IsObstacle(false))
+				return true;
 		}
 
-		return hasOtherEntityOnDestinations;
+		return false;
 	}
-
-	/*private void RefreshDestinatedTile ()
-	{
-		if (targetTileIDs == null)
-			return;
-
-		List<Tile> pathToTile = GridManager.Instance.GetPath(GameManager.Instance.GetEntityFromID(performingEntityID).Displacement.Coordinates.GetTile(), GridManager.Instance.Tiles[(int)finalTargetTileID], _isThisTurn: false);
-
-		if (pathToTile == null || pathToTile.Count < Data.movementSpeed + 1)
-		{
-			targetTileIDs = null;
-			positionAtActionEndID = GameManager.Instance.GetEntityFromID(performingEntityID).Displacement.Coordinates.ID;
-			return;
-		}
-
-		pathToTile.Reverse();
-		targetTileIDs = new int[Data.movementSpeed];
-		for (int i = 0; i < Data.movementSpeed; i++)
-		{
-			targetTileIDs[i] = pathToTile[i + 1].coordinates.ID;
-			positionAtActionEndID = pathToTile[i + 1].coordinates.ID;
-		}
-	}*/
 
 	public override void Display ( TurnManager.RecordedAction _recordedAction )
 	{
@@ -275,6 +259,9 @@ public class JumpToTarget : AEntityAction
 
 		Tile from = GridManager.Instance.Tiles[TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntityID)];
 		List<Tile> path = GridManager.Instance.GetPath(from, GridManager.Instance.Tiles[positionAtActionEndID], true, false);
+		if (path == null)
+			return;
+
 		path.Reverse();
 
 		for (int i = 0; i < path.Count - 1; i++)

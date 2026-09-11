@@ -532,17 +532,22 @@ public class Tile : MonoBehaviour
 		return m_visionTypeCounts.ContainsKey(_visionType);
 	}
 
-	//Who will still be standing here once this tick is played. The next tick slot only holds entities that
-	//booked a move, so a motionless one has to be read on the current tick and checked against its own action.
-	//Prepare clears a mover's current tick slot, which is what lets a unit follow an ally out of a tile.
-	public Entity GetEntityAtEndOfTick ()
+	public Entity GetBlockingEntityFor ( Entity _mover )
 	{
 		Entity booked = GetEntity(_isThisTurn: false);
-		if (booked != null)
+		if (booked != null && booked != _mover)
 			return booked;
 
+		return GetStayingEntityOtherThan(_mover);
+	}
+
+	public Entity GetStayingEntityOtherThan ( Entity _mover )
+	{
 		Entity current = GetEntity(_isThisTurn: true);
-		if (current == null || TurnManager.Instance == null)
+		if (current == null || current == _mover)
+			return null;
+
+		if (TurnManager.Instance == null)
 			return current;
 
 		return TurnManager.Instance.IsEntityLeavingTileThisTick(current.ID, coordinates.ID) ? null : current;

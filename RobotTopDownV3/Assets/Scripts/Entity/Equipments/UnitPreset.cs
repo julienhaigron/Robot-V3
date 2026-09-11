@@ -99,8 +99,6 @@ public class UnitPreset : AParsableScriptableObject
 
 	public override void OnParse ( ImportedData _data )
 	{
-		//Signature outside the guard (the base declares it abstract), body inside: ImportedData's accessors go
-		//through CsvTypeConverter, which is editor-only.
 #if UNITY_EDITOR
         List<EntityEquipmentData> newArms = new();
         if (_data.TryGetValue("Weapon", out EntityEquipmentData[] weapons))

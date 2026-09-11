@@ -54,7 +54,6 @@ public class TurnManager : Singleton<TurnManager>
 	private string m_currentEquipmentLinkedToActionTypeSelected;
 	public string CurrentEquipmentLinkedToActionTypeSelected => m_currentEquipmentLinkedToActionTypeSelected;
 
-	//No selection state of its own: the state lives on the entity, this only reads the one being configured.
 	public Entity.EntityState CurrentStateTypeSelected => PlayerController.Instance == null || PlayerController.Instance.SelectedEntity == null
 		? Entity.EntityState.NoAIChange
 		: PlayerController.Instance.SelectedEntity.DefaultState;

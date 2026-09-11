@@ -3,11 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
 using System.Linq;
+using DG.Tweening;
 
 public class MoveThenAttackAction : AttackAction
 {
 	public int positionAfterMovementID = -1;
 	public bool isActionCanceled = false;
+
+	private Tween m_movementTween;
 
 	public override void NetworkSerialize<T> ( BufferSerializer<T> serializer )
 	{
@@ -45,24 +48,35 @@ public class MoveThenAttackAction : AttackAction
 
 	public override void Prepare ( Entity.EntityState _state )
 	{
-		//Only free the tile when the charge is actually going to happen: clearing it for a cancelled move leaves
-		//the entity registered nowhere while its Coordinates still point here, and the next unit walks through.
-		if (!isActionCanceled && positionAfterMovementID != -1)
-			GameManager.Instance.GetEntityFromID(performingEntityID).Displacement.Coordinates.GetTile().SetEntity(null, _isThisTurn: false);
-
 		base.Prepare(_state);
+
+		if (!isActionCanceled && positionAfterMovementID != -1)
+			PerformingEntity.Displacement.Coordinates.GetTile().SetEntity(null, _isThisTurn: true);
 	}
 
 	public override void CancelAction ()
 	{
 		base.CancelAction();
 
-		//Release the destination this charge had booked for itself, then put the entity back on its own tile.
-		if (positionAfterMovementID != -1 && positionAfterMovementID != PerformingEntity.Displacement.Coordinates.ID
-			&& GridManager.Instance.Tiles[positionAfterMovementID].TryGetEntity(false, out Entity bookedEntity) && bookedEntity.ID == performingEntityID)
-			GridManager.Instance.Tiles[positionAfterMovementID].SetEntity(null, _isThisTurn: false);
-
 		PerformingEntity.Displacement.RegisterOnCurrentTile();
+		ReleaseBookedTile();
+
+		if (m_isPerforming)
+		{
+			if (m_movementTween != null && m_movementTween.IsActive())
+				m_movementTween.Kill();
+
+			EndTick();
+		}
+	}
+
+	public void ReleaseBookedTile ()
+	{
+		if (positionAfterMovementID == -1 || positionAfterMovementID == PerformingEntity.Displacement.Coordinates.ID)
+			return;
+
+		if (GridManager.Instance.Tiles[positionAfterMovementID].TryGetEntity(false, out Entity bookedEntity) && bookedEntity.ID == performingEntityID)
+			GridManager.Instance.Tiles[positionAfterMovementID].SetEntity(null, _isThisTurn: false);
 	}
 
 	public override bool DoesLeaveTileThisTick ( int _tileID )
@@ -114,11 +128,13 @@ public class MoveThenAttackAction : AttackAction
 			int roll = UnityEngine.Random.Range((int)0, 2);
 			if (roll == 0)
 			{
-				(_otherAction as MoveToTargetAction).targetTileIDs = null;
+				otherMoveToTarget.ReleaseBookedTiles();
+				otherMoveToTarget.targetTileIDs = null;
 				doesOtherHaveConflict = true;
 			}
 			else
 			{
+				ReleaseBookedTile();
 				positionAfterMovementID = -1;
 				positionAtActionEndID = supposedPositionAtActionStartID;
 				isActionCanceled = false;
@@ -161,7 +177,7 @@ public class MoveThenAttackAction : AttackAction
 		//move to targetTile
 		if (positionAfterMovementID != -1/* && thisActionDestination.GetEntity(false) == null*/)
 		{
-			GameManager.Instance.GetEntityFromID(performingEntityID).Displacement.MoveToTile((int)positionAfterMovementID, () =>
+			m_movementTween = PerformingEntity.Displacement.MoveToTile((int)positionAfterMovementID, () =>
 			{
 				/*foreach (Tile tile in tilesInRange)
 				{
@@ -224,11 +240,9 @@ public class MoveThenAttackAction : AttackAction
 		if (positionAfterMovementID == -1)
 			return false;
 
-		//GetEntityAtEndOfTick, not GetEntity(false): the next tick slot only holds entities that booked a move,
-		//so reading it alone walks straight over anyone standing still.
-		Entity entityOnDestination = GridManager.Instance.Tiles[(int)positionAfterMovementID].GetEntityAtEndOfTick();
+		Entity entityOnDestination = GridManager.Instance.Tiles[(int)positionAfterMovementID].GetBlockingEntityFor(PerformingEntity);
 
-		return (entityOnDestination != null && entityOnDestination.ID != performingEntityID) || GridManager.Instance.Tiles[(int)positionAfterMovementID].IsObstacle(false);
+		return entityOnDestination != null || GridManager.Instance.Tiles[(int)positionAfterMovementID].IsObstacle(false);
 	}
 
 	//Two units exchanging tiles never overlap in their destinations, so the check above cannot see it and both

@@ -201,6 +201,9 @@ public abstract class AEntityAction : INetworkSerializable
 
 	protected virtual void EndTick ()
 	{
+		if (!m_isPerforming)
+			return;
+
 		lifetime++;
 
 		bool didEndAction = lifetime >= TotalDuration;

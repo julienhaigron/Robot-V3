@@ -65,6 +65,7 @@ public class InvokeItemAction : SpecialAction
 		{
 			if (result == EntityActionData.PFCResultType.FirstWins)
 			{
+				_otherMoveToTargetAction.ReleaseBookedTiles();
 				_otherMoveToTargetAction.targetTileIDs = null;
 				doesOtherHaveConflict = true;
 			}
@@ -78,6 +79,7 @@ public class InvokeItemAction : SpecialAction
 				int roll = Random.Range((int)0, 2);
 				if (roll == 0)
 				{
+					_otherMoveToTargetAction.ReleaseBookedTiles();
 					_otherMoveToTargetAction.targetTileIDs = null;
 					doesOtherHaveConflict = true;
 				}
