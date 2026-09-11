@@ -118,27 +118,39 @@ public class EntitySkinPlugin : EntityPlugin
 		switch (_type)
 		{
 			case NeuronalMembraneEquipmentData.VisionTypes.Optic:
-				m_visualRoot.SetActive(true);
-				m_thermicRoot.SetActive(false);
-				m_radarRoot.SetActive(false);
+				if(m_visualRoot!= null)
+					m_visualRoot.SetActive(true);
+				if (m_thermicRoot != null)
+					m_thermicRoot.SetActive(false);
+				if (m_radarRoot != null)
+					m_radarRoot.SetActive(false);
 				break;
 			case NeuronalMembraneEquipmentData.VisionTypes.Thermic:
-				m_visualRoot.SetActive(false);
-				m_thermicRoot.SetActive(true);
-				m_radarRoot.SetActive(false);
+				if (m_visualRoot != null)
+					m_visualRoot.SetActive(false);
+				if (m_thermicRoot != null)
+					m_thermicRoot.SetActive(true);
+				if (m_radarRoot != null)
+					m_radarRoot.SetActive(false);
 				break;
 			case NeuronalMembraneEquipmentData.VisionTypes.Radar:
-				m_visualRoot.SetActive(false);
-				m_thermicRoot.SetActive(false);
-				m_radarRoot.SetActive(true);
+				if (m_visualRoot != null)
+					m_visualRoot.SetActive(false);
+				if (m_thermicRoot != null)
+					m_thermicRoot.SetActive(false);
+				if (m_radarRoot != null)
+					m_radarRoot.SetActive(true);
 				break;
 		}
 	}
 
 	public void Hide ()
 	{
-		m_visualRoot.SetActive(false);
-		m_thermicRoot.SetActive(false);
-		m_radarRoot.SetActive(false);
+		if (m_visualRoot != null)
+			m_visualRoot.SetActive(false);
+		if (m_thermicRoot != null)
+			m_thermicRoot.SetActive(false);
+		if (m_radarRoot != null)
+			m_radarRoot.SetActive(false);
 	}
 }

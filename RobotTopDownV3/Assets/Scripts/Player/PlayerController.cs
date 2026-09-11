@@ -629,12 +629,14 @@ public class PlayerController : Singleton<PlayerController>
 
 		foreach (GhostEntity ghost in m_ghostEntities.Values)
 		{
-			Destroy(ghost.gameObject);
+			if(ghost != null)
+				Destroy(ghost.gameObject);
 		}
 		m_ghostEntities.Clear();
 		foreach (GhostItem ghost in m_ghostItems.Values)
 		{
-			Destroy(ghost.gameObject);
+			if(ghost != null)
+				Destroy(ghost.gameObject);
 		}
 		m_ghostItems.Clear();
 	}
