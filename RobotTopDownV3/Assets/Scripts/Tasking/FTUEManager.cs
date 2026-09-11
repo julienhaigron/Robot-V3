@@ -207,7 +207,7 @@ public class FTUEManager : Singleton<FTUEManager>
 		tutoSequence.Append(new OpenPanelTask<HangarPanel>("Send player directly to hangar", ( context ) => context.UI.currentPanel is SoloHubPanel
 			&& GameDatas.current.currentPlayerSave.dayCount == 0));
 		tutoSequence.Append(new DialogueHighlightTask("New unit won explenation", ( context ) => context.UI.currentPanel is HangarPanel
-		, m_day1TutoDialogues[0], "squadUnits"));
+		, m_day1TutoDialogues[0], "squadUnit2").SetSkipPredicate(( context ) => context.UI.currentPanel is SoloHubPanel));
 		tutoSequence.Append(new DialogueHighlightTask("Hub presentation", ( context ) => context.UI.currentPanel is SoloHubPanel
 		, m_day1TutoDialogues[1], "missionSection"));
 		tutoSequence.Append(new DialogueHighlightTask("Available matches explenation", ( context ) => context.UI.currentPanel is MissionPanel
