@@ -67,8 +67,9 @@ MonoBehaviour:
   - {fileID: 11400000, guid: ee4274986c419ac4d9edda7d3857eaba, type: 2}
   - {fileID: 11400000, guid: 8df74ab18e196d447931bcadea21d2c6, type: 2}
   - {fileID: 11400000, guid: 3020b5480ff8c134db69e94ed09a0918, type: 2}
-  - {fileID: 11400000, guid: ab6917deee2ad8b4ea55445515a015e8, type: 2}
+  - {fileID: 11400000, guid: ae74d8bf4944d4f418861838e6536d9f, type: 2}
   - {fileID: 11400000, guid: 438b53b392d491315f88d30f8c57c473, type: 2}
+  - {fileID: 11400000, guid: ab6917deee2ad8b4ea55445515a015e8, type: 2}
   m_day1TutoDialogues:
   - {fileID: 11400000, guid: 25d81795daf20e84bb772ec67ac7cf0b, type: 2}
   - {fileID: 11400000, guid: e7e882158e028344db3ddc6204c83466, type: 2}

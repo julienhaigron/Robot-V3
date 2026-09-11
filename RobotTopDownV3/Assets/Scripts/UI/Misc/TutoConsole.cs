@@ -16,6 +16,8 @@ public class TutoConsole : MonoBehaviour
 	[SerializeField] private Image m_dialogueImg;
 	[SerializeField] private BaseButton m_previousBtn;
 	[SerializeField] private BaseButton m_nextBtn;
+	[SerializeField] private BaseButton m_showBtn;
+	[SerializeField] private BaseButton m_hideBtn;
 
 	[Title("Parameters")]
 	[SerializeField] private float m_charactersPerSecond = 30f;
@@ -45,6 +47,8 @@ public class TutoConsole : MonoBehaviour
 		BuildDialogueViewport();
 		m_previousBtn.onClick += OnClickPreviousLineOrDialogue;
 		m_nextBtn.onClick += OnClickNextLineOrDialogue;
+		m_showBtn.onClick += OnClickShow;
+		m_hideBtn.onClick += OnClickHide;
 	}
 
 	private void OnDestroy ()
@@ -52,6 +56,8 @@ public class TutoConsole : MonoBehaviour
 		m_scrollSequence?.Kill();
 		m_previousBtn.onClick -= OnClickPreviousLineOrDialogue;
 		m_nextBtn.onClick -= OnClickNextLineOrDialogue;
+		m_showBtn.onClick -= OnClickShow;
+		m_hideBtn.onClick -= OnClickHide;
 	}
 
 	private void BuildDialogueViewport ()
@@ -139,14 +145,28 @@ public class TutoConsole : MonoBehaviour
 		Hide(true);
 	}
 
+	private void OnClickShow ()
+	{
+		Show(false);
+	}
+
+	private void OnClickHide ()
+	{
+		Hide(false);
+	}
+
 	public void Show ( bool _isInstant )
 	{
 		m_dialogueParent.SetActive(true);
+		m_showBtn.SetVisible(false, true);
+		m_hideBtn.SetVisible(true, true);
 	}
 
 	public void Hide ( bool _isInstant )
 	{
 		m_dialogueParent.SetActive(false);
+		m_showBtn.SetVisible(true, true);
+		m_hideBtn.SetVisible(false, true);
 	}
 
 	public void PlayDialogue ( DialogueData _dialogueData, string _higlightedZoneID = "" )

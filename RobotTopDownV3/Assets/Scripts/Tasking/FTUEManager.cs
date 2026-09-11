@@ -168,11 +168,12 @@ public class FTUEManager : Singleton<FTUEManager>
 
 		//input phase
 		tutoSequence.Append(new WalkOnTileTask("Wait for unit to walk on trigger tile", null, TileGroundType.Trigger));
-		tutoSequence.Append(new DialogueTask("State explenation", null, m_firstTutoDialogues[4]));
+		tutoSequence.Append(new DialogueHighlightTask("State explenation", null, m_firstTutoDialogues[4], "stateButtons"));
+		tutoSequence.Append(new DialogueHighlightTask("State modification explenation", null, m_firstTutoDialogues[5], "stateLines"));
 		tutoSequence.Append(new DialogueHighlightTask("Attack roll explenation", ( context ) => context.Log.Logs.ContainsKey(LogConsole.LogEventType.AttackRoll)
-		, m_firstTutoDialogues[5], "logs"));
-		tutoSequence.Append(new DialogueHighlightTask("Damage explenation", ( context ) => context.Log.Logs.ContainsKey(LogConsole.LogEventType.Damage)
 		, m_firstTutoDialogues[6], "logs"));
+		tutoSequence.Append(new DialogueHighlightTask("Damage explenation", ( context ) => context.Log.Logs.ContainsKey(LogConsole.LogEventType.Damage)
+		, m_firstTutoDialogues[7], "logs"));
 
 		tutoSequence.SetSkipPredicate(( context ) => GameDatas.current.currentPlayerSave.didStartTuto && GameDatas.current.currentPlayerSave.dayCount >= 0);
 		return tutoSequence;
