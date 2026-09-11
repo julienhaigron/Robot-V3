@@ -6,6 +6,7 @@ public class SfxCreatePopup : EditorWindow
 {
 	private string sfxName = "NewSFX";
 	private SfxCategory category = SfxCategory.UI;
+	private SoundChannel channel = SoundChannel.UI;
 	private AudioClip clip;
 
 	private SfxDatabase database;
@@ -28,6 +29,7 @@ public class SfxCreatePopup : EditorWindow
 
 		sfxName = EditorGUILayout.TextField("Name", sfxName);
 		category = (SfxCategory)EditorGUILayout.EnumPopup("Category", category);
+		channel = (SoundChannel)EditorGUILayout.EnumPopup("Channel", channel);
 		clip = (AudioClip)EditorGUILayout.ObjectField("Clip", clip, typeof(AudioClip), false);
 
 		EditorGUILayout.Space();
@@ -57,6 +59,7 @@ public class SfxCreatePopup : EditorWindow
 		{
 			Id = sfxName,
 			Category = category,
+			Channel = channel,
 			Clip = clip,
 			Volume = 1f,
 			Pitch = 1f

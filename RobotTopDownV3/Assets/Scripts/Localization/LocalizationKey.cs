@@ -11,6 +11,9 @@ public enum LocalizationKey
     option_language,
     option_volume,
     option_master_volume,
+    option_music_volume,
+    option_sfx_volume,
+    option_ui_volume,
     option_controls,
     option_move_up,
     option_move_down,
@@ -507,6 +510,9 @@ public static class LocalizationKeyExtensions
             case LocalizationKey.option_language: return "option/language";
             case LocalizationKey.option_volume: return "option/volume";
             case LocalizationKey.option_master_volume: return "option/master_volume";
+            case LocalizationKey.option_music_volume: return "option/music_volume";
+            case LocalizationKey.option_sfx_volume: return "option/sfx_volume";
+            case LocalizationKey.option_ui_volume: return "option/ui_volume";
             case LocalizationKey.option_controls: return "option/controls";
             case LocalizationKey.option_move_up: return "option/move_up";
             case LocalizationKey.option_move_down: return "option/move_down";

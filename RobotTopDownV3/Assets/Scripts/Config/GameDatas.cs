@@ -64,8 +64,10 @@ public partial class GameDatas : ScriptableObject
 	public partial class App
 	{
 		public bool hapticEnabled = true;
+		public float masterVolume = 1f;
 		public float musicVolume = 1f;
 		public float sfxVolume = 1f;
+		public float uiVolume = 1f;
 		public SystemLanguage language = SystemLanguage.English;
 		public string inputBindingOverridesJson = "";
 	}

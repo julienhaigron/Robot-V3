@@ -209,6 +209,9 @@ MonoBehaviour:
   m_blockClickGO: {fileID: 1862865783987743521}
   m_canvasGroupVisibilityArray: []
   m_highlighZones: []
+  m_useDefaultWindowSfx: 1
+  m_openSfxOverride: 0
+  m_closeSfxOverride: 0
   m_overrideDurations: 0
   m_showDuration: 0.3
   m_hideDuration: 0.3
@@ -546,6 +549,9 @@ MonoBehaviour:
   m_label: {fileID: 0}
   m_button: {fileID: 647708332779995701}
   m_image: {fileID: 2808788845495704534}
+  m_useDefaultSfx: 1
+  m_clickSfxOverride: 0
+  m_hoverSfxOverride: 0
 --- !u!1 &1508968442637869016
 GameObject:
   m_ObjectHideFlags: 0

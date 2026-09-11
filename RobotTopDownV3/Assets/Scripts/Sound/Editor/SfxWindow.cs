@@ -9,6 +9,8 @@ public class SfxWindow : EditorWindow
 	private Vector2 scroll;
 
 	private readonly Dictionary<SfxCategory, bool> foldouts = new();
+	private readonly Dictionary<SoundChannel, bool> channelFoldouts = new();
+	private bool groupByChannel = false;
 
 	[MenuItem("Tools/Sound Manager")]
 	public static void Open ()
@@ -36,6 +38,8 @@ public class SfxWindow : EditorWindow
 			SfxEnumGenerator.GenerateAndRefresh(database);
 		}
 
+		groupByChannel = EditorGUILayout.ToggleLeft("Group by channel", groupByChannel);
+
 		DrawContent();
 
 		HandleDragAndDrop();
@@ -59,9 +63,15 @@ public class SfxWindow : EditorWindow
 	{
 		scroll = EditorGUILayout.BeginScrollView(scroll);
 
-		foreach (SfxCategory category in System.Enum.GetValues(typeof(SfxCategory)))
+		if (groupByChannel)
 		{
-			DrawCategory(category);
+			foreach (SoundChannel channel in System.Enum.GetValues(typeof(SoundChannel)))
+				DrawChannel(channel);
+		}
+		else
+		{
+			foreach (SfxCategory category in System.Enum.GetValues(typeof(SfxCategory)))
+				DrawCategory(category);
 		}
 
 		EditorGUILayout.EndScrollView();
@@ -93,6 +103,32 @@ public class SfxWindow : EditorWindow
 		EditorGUI.indentLevel--;
 	}
 
+	private void DrawChannel ( SoundChannel channel )
+	{
+		if (!channelFoldouts.ContainsKey(channel))
+			channelFoldouts[channel] = true;
+
+		channelFoldouts[channel] = EditorGUILayout.Foldout(
+			channelFoldouts[channel],
+			channel.ToString(),
+			true);
+
+		if (!channelFoldouts[channel])
+			return;
+
+		EditorGUI.indentLevel++;
+
+		foreach (var sound in database.EditorSounds)
+		{
+			if (sound.Channel != channel)
+				continue;
+
+			DrawSfxLine(sound);
+		}
+
+		EditorGUI.indentLevel--;
+	}
+
 	private void DrawSfxLine ( SfxData sound )
 	{
 		EditorGUILayout.BeginHorizontal("box");
@@ -110,7 +146,8 @@ public class SfxWindow : EditorWindow
 
 		EditorGUILayout.LabelField(sound.Id, GUILayout.Width(150));
 
-		sound.Category = (SfxCategory)EditorGUILayout.EnumPopup(sound.Category, GUILayout.Width(120));
+		sound.Category = (SfxCategory)EditorGUILayout.EnumPopup(sound.Category, GUILayout.Width(100));
+		sound.Channel = (SoundChannel)EditorGUILayout.EnumPopup(sound.Channel, GUILayout.Width(70));
 		AudioClip newClip = (AudioClip)EditorGUILayout.ObjectField(sound.Clip,typeof(AudioClip),false);
 		if (newClip != sound.Clip)
 		{
@@ -202,6 +239,7 @@ public class SfxWindow : EditorWindow
 		{
 			Id = id,
 			Category = SfxCategory.UI,
+			Channel = SoundChannel.UI,
 			Clip = clip,
 			Volume = 1f,
 			Pitch = 1f

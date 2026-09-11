@@ -54,6 +54,18 @@ MonoBehaviour:
     values:
     - Master volume
     - "Volume g\xE9n\xE9ral"
+  - key: option/music_volume
+    values:
+    - Music
+    - Musique
+  - key: option/sfx_volume
+    values:
+    - Sound effects
+    - Bruitages
+  - key: option/ui_volume
+    values:
+    - Interface
+    - Interface
   - key: option/controls
     values:
     - Controls

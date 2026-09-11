@@ -13,7 +13,8 @@ public class ModActionButton : ActionButton
 	{
 		Select();
 		TurnManager.Instance.SetCurrentModActionSelected(m_actionType, m_linkedEquipmentData, true);
-		onClick?.Invoke();
+
+		base.OnClick();
 	}
 
 

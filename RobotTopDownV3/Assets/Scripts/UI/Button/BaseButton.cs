@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
+using UnityEngine.EventSystems;
 
-public class BaseButton : MonoBehaviour
+public class BaseButton : MonoBehaviour, IPointerEnterHandler
 {
     public System.Action onClick;
 
@@ -24,6 +25,11 @@ public class BaseButton : MonoBehaviour
         m_label.text = _text;
     }
 
+    [Header("Sounds")]
+    [SerializeField] protected bool m_useDefaultSfx = true;
+    [SerializeField] protected SfxId m_clickSfxOverride = SfxId.None;
+    [SerializeField] protected SfxId m_hoverSfxOverride = SfxId.None;
+
     protected bool m_isVisible = false;
     public bool IsVisible => m_isVisible;
 
@@ -40,7 +46,21 @@ public class BaseButton : MonoBehaviour
 
     protected virtual void OnClick ()
     {
+        PlayClickSfx();
         onClick?.Invoke();
+    }
+
+    public virtual void OnPointerEnter ( PointerEventData eventData )
+    {
+        if (m_button != null && !m_button.interactable)
+            return;
+
+        SoundManager.PlayUISafe(m_hoverSfxOverride, _config => _config.buttonHover, m_useDefaultSfx);
+    }
+
+    protected void PlayClickSfx ()
+    {
+        SoundManager.PlayUISafe(m_clickSfxOverride, _config => _config.buttonClick, m_useDefaultSfx);
     }
 
     public virtual void SetVisible ( bool _isVisible, bool _isInstant )

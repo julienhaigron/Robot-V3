@@ -2661,6 +2661,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: RTD::StateButton
   m_button: {fileID: 2807501278005339473}
   m_image: {fileID: 7232939654701629887}
+  m_useDefaultSfx: 1
+  m_clickSfxOverride: 0
+  m_hoverSfxOverride: 0
   m_selectedGO: {fileID: 4967753949365425989}
 --- !u!224 &6474048160752528239 stripped
 RectTransform:
@@ -5569,6 +5572,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: RTD::StateButton
   m_button: {fileID: 1820588898600922021}
   m_image: {fileID: 6616535760403550027}
+  m_useDefaultSfx: 1
+  m_clickSfxOverride: 0
+  m_hoverSfxOverride: 0
   m_selectedGO: {fileID: 6450520929255383017}
 --- !u!224 &8539089036895054820 stripped
 RectTransform:
@@ -7711,6 +7717,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: RTD::StateButton
   m_button: {fileID: 8124421040772811363}
   m_image: {fileID: 3614440134408957581}
+  m_useDefaultSfx: 1
+  m_clickSfxOverride: 0
+  m_hoverSfxOverride: 0
   m_selectedGO: {fileID: 7007065534723062705}
 --- !u!224 &2268488396698962466 stripped
 RectTransform:

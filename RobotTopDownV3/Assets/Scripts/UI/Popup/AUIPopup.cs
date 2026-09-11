@@ -10,4 +10,14 @@ public class AUIPopup : AUIWindow
 		base.OnHideFinished();
 		UIManager.Instance.OnPopupClosed(this);
 	}
+
+	protected override SfxId GetDefaultOpenSfx ( UISoundConfig _config )
+	{
+		return _config.popupOpen;
+	}
+
+	protected override SfxId GetDefaultCloseSfx ( UISoundConfig _config )
+	{
+		return _config.popupClose;
+	}
 }

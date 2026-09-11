@@ -7,7 +7,7 @@ using DG.Tweening;
 using Sirenix.OdinInspector;
 using UnityEngine.EventSystems;
 
-public class MissionButton : BaseButton, IPointerEnterHandler, IPointerExitHandler
+public class MissionButton : BaseButton, IPointerExitHandler
 {
 	public static System.Action<MissionButton> onAnyMissionSelected;
 	public static System.Action<MissionButton> onAnyMissionHovered;
@@ -59,8 +59,10 @@ public class MissionButton : BaseButton, IPointerEnterHandler, IPointerExitHandl
 		base.OnClick();
 	}
 
-	public void OnPointerEnter ( PointerEventData eventData )
+	public override void OnPointerEnter ( PointerEventData eventData )
 	{
+		base.OnPointerEnter(eventData);
+
 		onAnyMissionHovered?.Invoke(this);
 	}
 	

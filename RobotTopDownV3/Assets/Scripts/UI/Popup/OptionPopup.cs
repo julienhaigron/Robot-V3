@@ -7,6 +7,13 @@ using TMPro;
 public class OptionPopup : AUIPopup
 {
 	[System.Serializable]
+	private class VolumeSlider
+	{
+		public SoundChannel channel;
+		public Slider slider;
+	}
+
+	[System.Serializable]
 	private class RebindEntry
 	{
 		public string actionName;
@@ -20,7 +27,8 @@ public class OptionPopup : AUIPopup
 	[SerializeField] private BaseButton m_closeBtn;
 
 	[Header("Volume")]
-	[SerializeField] private Slider m_volumeSlider;
+	[SerializeField] private Slider m_masterVolumeSlider;
+	[SerializeField] private VolumeSlider[] m_channelVolumeSliders;
 
 	[Header("Language")]
 	[SerializeField] private TMP_Dropdown m_languageDropdown;
@@ -30,13 +38,20 @@ public class OptionPopup : AUIPopup
 	[SerializeField] private BaseButton m_resetControlsBtn;
 	[SerializeField] private TextMeshProUGUI m_rebindPromptLabel;
 
+	private const float VOLUME_PREVIEW_INTERVAL = .08f;
+
 	private List<SystemLanguage> m_availableLanguages;
+	private float m_lastVolumePreviewTime = float.NegativeInfinity;
 	private InputActionRebindingExtensions.RebindingOperation m_activeRebind;
 
 	private void Awake ()
 	{
 		m_closeBtn.onClick += OnClickClose;
-		m_volumeSlider.onValueChanged.AddListener(OnVolumeChanged);
+		m_masterVolumeSlider.onValueChanged.AddListener(OnMasterVolumeChanged);
+
+		foreach (VolumeSlider entry in m_channelVolumeSliders)
+			entry.slider.onValueChanged.AddListener(_value => OnChannelVolumeChanged(entry.channel, _value));
+
 		m_languageDropdown.onValueChanged.AddListener(OnLanguageChanged);
 		LocalizationManager.onLanguageChanged += RefreshLanguages;
 
@@ -50,7 +65,11 @@ public class OptionPopup : AUIPopup
 	private void OnDestroy ()
 	{
 		m_closeBtn.onClick -= OnClickClose;
-		m_volumeSlider.onValueChanged.RemoveListener(OnVolumeChanged);
+		m_masterVolumeSlider.onValueChanged.RemoveAllListeners();
+
+		foreach (VolumeSlider entry in m_channelVolumeSliders)
+			entry.slider.onValueChanged.RemoveAllListeners();
+
 		m_languageDropdown.onValueChanged.RemoveListener(OnLanguageChanged);
 		LocalizationManager.onLanguageChanged -= RefreshLanguages;
 
@@ -69,6 +88,13 @@ public class OptionPopup : AUIPopup
 		RefreshBindings();
 	}
 
+	protected override void OnHideStarted ()
+	{
+		base.OnHideStarted();
+
+		SaveVolumes();
+	}
+
 	private void OnClickClose ()
 	{
 		Close();
@@ -78,12 +104,40 @@ public class OptionPopup : AUIPopup
 
 	private void RefreshVolume ()
 	{
-		m_volumeSlider.SetValueWithoutNotify(SoundManager.Instance.MasterVolume);
+		m_masterVolumeSlider.SetValueWithoutNotify(SoundManager.Instance.MasterVolume);
+
+		foreach (VolumeSlider entry in m_channelVolumeSliders)
+			entry.slider.SetValueWithoutNotify(SoundManager.Instance.GetChannelVolume(entry.channel));
 	}
 
-	private void OnVolumeChanged ( float _value )
+	private void OnMasterVolumeChanged ( float _value )
 	{
-		SoundManager.Instance.SetMasterVolume(_value);
+		SoundManager.Instance.SetMasterVolume(_value, false);
+		PlayVolumePreview(SoundChannel.UI);
+	}
+
+	private void OnChannelVolumeChanged ( SoundChannel _channel, float _value )
+	{
+		SoundManager.Instance.SetChannelVolume(_channel, _value, false);
+		PlayVolumePreview(_channel);
+	}
+
+	private void SaveVolumes ()
+	{
+		if (SoundManager.Instance != null)
+			SoundManager.Instance.SaveVolumes();
+	}
+
+	private void PlayVolumePreview ( SoundChannel _channel )
+	{
+		if (_channel == SoundChannel.Music || SoundManager.Instance.UISounds == null)
+			return;
+
+		if (Time.unscaledTime - m_lastVolumePreviewTime < VOLUME_PREVIEW_INTERVAL)
+			return;
+
+		m_lastVolumePreviewTime = Time.unscaledTime;
+		SoundManager.Instance.Play(SoundManager.Instance.UISounds.sliderChanged, _channel);
 	}
 
 	#endregion

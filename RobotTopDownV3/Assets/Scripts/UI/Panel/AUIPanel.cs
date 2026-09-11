@@ -19,6 +19,16 @@ public class AUIPanel : AUIWindow
 		SetCanvasEnable(false);
 	}
 
+	protected override SfxId GetDefaultOpenSfx ( UISoundConfig _config )
+	{
+		return _config.panelOpen;
+	}
+
+	protected override SfxId GetDefaultCloseSfx ( UISoundConfig _config )
+	{
+		return _config.panelClose;
+	}
+
 #if UNITY_EDITOR
 
 	[FoldoutGroup("EditorBtns")]
