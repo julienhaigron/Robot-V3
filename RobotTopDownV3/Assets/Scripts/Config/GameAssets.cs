@@ -21,6 +21,16 @@ public class GameAssets : ScriptableObject
     public SerializableDictionary<string, EntityEquipmentData> equipments = new SerializableDictionary<string, EntityEquipmentData>();
     public List<UpgradeAsset> upgrades = new List<UpgradeAsset>();
 
+    public List<EntityEquipmentData> GetRandomlyDroppableEquipments ()
+    {
+        List<EntityEquipmentData> pool = new();
+        foreach (EntityEquipmentData data in equipments.Values)
+            if (data != null && data.canDropRandomly)
+                pool.Add(data);
+
+        return pool;
+    }
+
     [System.Serializable]
     public class Game
     {

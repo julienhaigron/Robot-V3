@@ -91,13 +91,20 @@ public class ShopPanel : AUIPanel
 
 	public void RerollItem(ComponentDisplay _display )
 	{
-		int itemIndex = GameDatas.current.currentPlayerSave.dayData.itemsInShop.IndexOf(_display.ShopSavedData);
+		List<GameDatas.PlayerSave.DayData.ShopComponentData> itemsInShop = GameDatas.current.currentPlayerSave.dayData.itemsInShop;
+		int itemIndex = itemsInShop.IndexOf(_display.ShopSavedData);
+		if (itemIndex < 0)
+			return;
 
-		EntityEquipmentData equipmentData = GameAssets.current.equipments.Values.ToArray().RandomElement();
-		GameDatas.current.currentPlayerSave.dayData.itemsInShop.Add(new() { component = new() { ID = equipmentData.name + GameDatas.current.currentPlayerSave.equipmentCounter++, dataID = equipmentData.name, isDamaged = false }, isFrozen = false });
+		List<EntityEquipmentData> shopPool = GameAssets.current.GetRandomlyDroppableEquipments();
+		if (shopPool.Count == 0)
+			return;
 
-		_display.Init(null, GameDatas.current.currentPlayerSave.dayData.itemsInShop[itemIndex].component, ComponentDisplay.DisplayMode.ShopBuying);
-		_display.SetShopData(GameDatas.current.currentPlayerSave.dayData.itemsInShop[itemIndex]);
+		EntityEquipmentData equipmentData = shopPool.RandomElement();
+		itemsInShop[itemIndex] = new() { component = new() { ID = equipmentData.name + GameDatas.current.currentPlayerSave.equipmentCounter++, dataID = equipmentData.name, isDamaged = false }, isFrozen = false };
+
+		_display.Init(null, itemsInShop[itemIndex].component, ComponentDisplay.DisplayMode.ShopBuying);
+		_display.SetShopData(itemsInShop[itemIndex]);
 	}
 
 	private void RefreshShopBuyableItems ()

@@ -170,8 +170,8 @@ public class MissionData : ScriptableEnum<MissionDataEnumID>
     private static void AddRandomComponentTo ( RewardSet _set, bool _isMain )
     {
         List<EntityEquipmentData> pool = new();
-        foreach (EntityEquipmentData data in GameAssets.current.equipments.Values)
-            if (data != null && data.canDropAsRandomReward && IsMainComponent(data) == _isMain)
+        foreach (EntityEquipmentData data in GameAssets.current.GetRandomlyDroppableEquipments())
+            if (IsMainComponent(data) == _isMain)
                 pool.Add(data);
 
         if (pool.Count > 0)
