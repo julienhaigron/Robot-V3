@@ -320,8 +320,10 @@ public class FTUEManager : Singleton<FTUEManager>
 		tutoSequence.Append(new DialogueHighlightTask("Go to hangar to create a unit", ( context ) => context.UI.currentPanel is SoloHubPanel
 			&& GameDatas.current.currentPlayerSave.dayCount == 4, m_day5TutoDialogues[0], "hangarBtn"));
 		tutoSequence.Append(new DialogueHighlightTask("Create unit btn explenation", ( context ) => context.UI.currentPanel is HangarPanel, m_day5TutoDialogues[1], "createUnitBtn"));
-		tutoSequence.Append(new DialogueHighlightTask("Core components explenation", ( context ) => context.UI.currentPanel is EntityConfigPanel panel && panel.IsNewUnit, m_day5TutoDialogues[2]
+		tutoSequence.Append(new HighlightMainComponentsTask("Highlight main components", ( context ) => context.UI.currentPanel is EntityConfigPanel panel && panel.IsNewUnit, true));
+		tutoSequence.Append(new DialogueHighlightTask("Core components explenation", null, m_day5TutoDialogues[2]
 			, new[] { "frameSlot", "brainSlot", "neuronalMembraneSlot", "reactorSlot" } ));
+		tutoSequence.Append(new HighlightMainComponentsTask("Stop highlighting main components", null, false));
 		tutoSequence.Append(new DialogueTask("Cycle explenation", ( context ) => context.UI.currentPanel is SoloHubPanel, m_day5TutoDialogues[3]));
 		tutoSequence.Append(new DialogueTask("Skip btn explenation", null, m_day5TutoDialogues[4]));
 		tutoSequence.Append(new DialogueHighlightTask("Tournament btn explenation", null, m_day5TutoDialogues[5], "missionSection"));

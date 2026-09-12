@@ -172,6 +172,20 @@ public class EntityEquipmentData : AParsableScriptableObject
 		return EquipmentType.Frame;
 	}
 
+	public bool IsMainComponent ()
+	{
+		switch (GetEquipmentType())
+		{
+			case EquipmentType.Frame:
+			case EquipmentType.Brain:
+			case EquipmentType.Reactor:
+			case EquipmentType.NeuronalMembrane:
+				return true;
+			default:
+				return false;
+		}
+	}
+
 	public bool TryGetEquipmentType ( out EquipmentType _type )
 	{
 		_type = GetEquipmentType();

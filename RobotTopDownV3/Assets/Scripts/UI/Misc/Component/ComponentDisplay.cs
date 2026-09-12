@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using TMPro;
 using UnityEngine.EventSystems;
 using Sirenix.OdinInspector;
+using DG.Tweening;
 
 
 public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler
@@ -38,6 +39,15 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 
 	private float m_lastClickTime;
 	private bool m_isDragBlocked;
+
+	private static readonly Color s_tutorialHighlightColor = Color.white;
+	private const float TUTORIAL_HIGHLIGHT_DURATION = 0.55f;
+	private const float TUTORIAL_HIGHLIGHT_SCALE = 1.08f;
+
+	private Color m_baseOutlineColor = Color.white;
+	private Sequence m_tutorialHighlightSequence;
+	private bool m_isTutorialHighlighted;
+	public bool IsTutorialHighlighted => m_isTutorialHighlighted;
 
 	public enum DisplayMode { Hangar, RepairStation, RecyclingStation, ShopBuying, ShopSelling, Empty }
 	private DisplayMode m_currentDisplayMode;
@@ -193,7 +203,44 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 
 	public void SetOutlineColor(Color _color )
 	{
-		m_outlineImg.color = _color;
+		m_baseOutlineColor = _color;
+
+		if (!m_isTutorialHighlighted)
+			m_outlineImg.color = _color;
+	}
+
+	public void SetTutorialHighlighted ( bool _isHighlighted )
+	{
+		if (m_isTutorialHighlighted == _isHighlighted)
+			return;
+
+		m_isTutorialHighlighted = _isHighlighted;
+
+		m_tutorialHighlightSequence?.Kill();
+		m_tutorialHighlightSequence = null;
+		transform.localScale = Vector3.one;
+
+		if (!_isHighlighted)
+		{
+			if (m_outlineImg != null)
+				m_outlineImg.color = m_baseOutlineColor;
+			return;
+		}
+
+		m_tutorialHighlightSequence = DOTween.Sequence().SetUpdate(true).SetLoops(-1, LoopType.Yoyo);
+
+		if (m_outlineImg != null)
+		{
+			m_outlineImg.color = m_baseOutlineColor;
+			m_tutorialHighlightSequence.Join(m_outlineImg.DOColor(s_tutorialHighlightColor, TUTORIAL_HIGHLIGHT_DURATION).SetEase(Ease.InOutSine));
+		}
+
+		m_tutorialHighlightSequence.Join(transform.DOScale(TUTORIAL_HIGHLIGHT_SCALE, TUTORIAL_HIGHLIGHT_DURATION).SetEase(Ease.InOutSine));
+	}
+
+	private void OnDestroy ()
+	{
+		m_tutorialHighlightSequence?.Kill();
 	}
 
 	private void OnClickReroll ()

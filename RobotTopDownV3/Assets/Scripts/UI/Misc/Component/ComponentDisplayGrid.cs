@@ -11,6 +11,9 @@ public class ComponentDisplayGrid : ComponentContainer
     private List<ComponentDisplay> m_items = new();
     public List<ComponentDisplay> Items => m_items;
 
+    private bool m_areMainComponentsHighlighted;
+    public bool AreMainComponentsHighlighted => m_areMainComponentsHighlighted;
+
     public override void Init ( ComponentContainer _container, EntitySavedData _unitData, GameDatas.PlayerSave.Component _componentSavedData, Func<GameDatas.PlayerSave.Component, bool> _predicate
         , ComponentDisplay.DisplayMode _displayMode, int _index = 0 )
     {
@@ -33,8 +36,23 @@ public class ComponentDisplayGrid : ComponentContainer
         newDisplay.transform.localPosition = Vector3.zero;
 
         SortByAcquisitionDate();
+        RefreshMainComponentHighlight(newDisplay);
 
         return newDisplay;
+    }
+
+    public void SetMainComponentsHighlighted ( bool _isHighlighted )
+    {
+        m_areMainComponentsHighlighted = _isHighlighted;
+
+        foreach (ComponentDisplay display in m_items)
+            RefreshMainComponentHighlight(display);
+    }
+
+    private void RefreshMainComponentHighlight ( ComponentDisplay _display )
+    {
+        if (_display != null)
+            _display.SetTutorialHighlighted(m_areMainComponentsHighlighted && _display.ComponentData != null && _display.ComponentData.IsMainComponent());
     }
 
     public void SortByAcquisitionDate ()
@@ -98,13 +116,17 @@ public class ComponentDisplayGrid : ComponentContainer
 
         _component.transform.SetParent(m_displayParent);
         _component.transform.localPosition = Vector3.zero;
+        RefreshMainComponentHighlight(_component);
         base.RegisterInteraction(_component);
     }
 
 	public override void RemoveDisplay ( ComponentDisplay _display )
 	{
         if (m_items.Remove(_display))
+        {
+            _display.SetTutorialHighlighted(false);
             base.RemoveDisplay(_display);
+        }
 	}
 
 	#endregion

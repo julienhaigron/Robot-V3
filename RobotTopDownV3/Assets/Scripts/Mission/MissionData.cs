@@ -115,16 +115,7 @@ public class MissionData : ScriptableEnum<MissionDataEnumID>
 
     public static bool IsMainComponent ( EntityEquipmentData _data )
     {
-        switch (_data.GetEquipmentType())
-        {
-            case EntityEquipmentData.EquipmentType.Frame:
-            case EntityEquipmentData.EquipmentType.Brain:
-            case EntityEquipmentData.EquipmentType.Reactor:
-            case EntityEquipmentData.EquipmentType.NeuronalMembrane:
-                return true;
-            default:
-                return false;
-        }
+        return _data.IsMainComponent();
     }
 
     public static int GetPointValueOf ( EntityEquipmentData _data )

@@ -16,6 +16,7 @@ public class EntityConfigPanel : AUIPanel
 
 	[Title("Inventory")]
 	[SerializeField] private ComponentDisplayGrid m_inventoryGrid;
+	public ComponentDisplayGrid InventoryGrid => m_inventoryGrid;
 	[SerializeField] private SerializableDictionary<EntityEquipmentData.EquipmentType, BaseButton> m_componentTypeFilterBtnDictionary = new();
 
 	[Title("Unit")]
