@@ -179,7 +179,7 @@ public class FTUEManager : Singleton<FTUEManager>
 		tutoSequence.Append(new DialogueTask("Camera explenation", ( context ) => context.Game.CurrentMission != null && context.Game.CurrentMission.enumID == m_day0MissionData.enumID
 			&& context.UI.currentPanel is InGamePanel
 		, m_firstTutoDialogues[0]));
-		tutoSequence.Append(new DialogueHighlightTask("Select Unit", null, m_firstTutoDialogues[1], "squadUnitsMicroBtn0", null, true));
+		tutoSequence.Append(new DialogueHighlightTask("Select Unit", null, m_firstTutoDialogues[1], new[] { "squadUnitsMicroBtn0", "squadUnitsMicroBtn1" }, null, true));
 		tutoSequence.Append(new DialogueHighlightTask("Action explenation", null, m_firstTutoDialogues[2], "actionBtns"));
 		tutoSequence.Append(new DialogueHighlightTask("Action Queue explenation", ( context ) => context.Turn.RecordedActions.ContainsKey(firstPlayerEntityID) && context.Turn.RecordedActions[firstPlayerEntityID].Count > 0
 		, m_firstTutoDialogues[3], "actionQueue"));
@@ -320,7 +320,8 @@ public class FTUEManager : Singleton<FTUEManager>
 		tutoSequence.Append(new DialogueHighlightTask("Go to hangar to create a unit", ( context ) => context.UI.currentPanel is SoloHubPanel
 			&& GameDatas.current.currentPlayerSave.dayCount == 4, m_day5TutoDialogues[0], "hangarBtn"));
 		tutoSequence.Append(new DialogueHighlightTask("Create unit btn explenation", ( context ) => context.UI.currentPanel is HangarPanel, m_day5TutoDialogues[1], "createUnitBtn"));
-		tutoSequence.Append(new DialogueTask("Core components explenation", ( context ) => context.UI.currentPanel is EntityConfigPanel panel && panel.IsNewUnit, m_day5TutoDialogues[2]));
+		tutoSequence.Append(new DialogueHighlightTask("Core components explenation", ( context ) => context.UI.currentPanel is EntityConfigPanel panel && panel.IsNewUnit, m_day5TutoDialogues[2]
+			, new[] { "frameSlot", "brainSlot", "neuronalMembraneSlot", "reactorSlot" } ));
 		tutoSequence.Append(new DialogueTask("Cycle explenation", ( context ) => context.UI.currentPanel is SoloHubPanel, m_day5TutoDialogues[3]));
 		tutoSequence.Append(new DialogueTask("Skip btn explenation", null, m_day5TutoDialogues[4]));
 		tutoSequence.Append(new DialogueHighlightTask("Tournament btn explenation", null, m_day5TutoDialogues[5], "missionSection"));

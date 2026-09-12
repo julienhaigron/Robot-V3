@@ -1,21 +1,28 @@
 using UnityEngine;
 using System;
+using System.Collections.Generic;
 
 public class DialogueHighlightTask : Task
 {
     private readonly DialogueData dialogue;
-    private readonly string highlightZoneID;
+    private readonly string[] highlightZoneIDs;
+    private readonly BaseButton overrideButton;
     private readonly bool completeOnEntitySelected;
-    private BaseButton button;
+    private readonly List<BaseButton> buttons = new();
+    private readonly List<TutorialHighlightZone> shownZones = new();
     private TutoConsole tutoConsole;
-    private bool didShowZone;
 
     public DialogueHighlightTask ( string _description, Func<TaskManager.TaskContext, bool> _startPredicate, DialogueData _dialogue, string _highlightZoneID, BaseButton _button = null, bool _completeOnEntitySelected = false )
+        : this(_description, _startPredicate, _dialogue, new string[] { _highlightZoneID }, _button, _completeOnEntitySelected)
+    {
+    }
+
+    public DialogueHighlightTask ( string _description, Func<TaskManager.TaskContext, bool> _startPredicate, DialogueData _dialogue, string[] _highlightZoneIDs, BaseButton _button = null, bool _completeOnEntitySelected = false )
         : base(_description, _startPredicate)
     {
         this.dialogue = _dialogue;
-        this.highlightZoneID = _highlightZoneID;
-        this.button = _button;
+        this.highlightZoneIDs = _highlightZoneIDs ?? new string[0];
+        this.overrideButton = _button;
         this.completeOnEntitySelected = _completeOnEntitySelected;
     }
 
@@ -24,35 +31,54 @@ public class DialogueHighlightTask : Task
         base.OnStart(_context);
 
         bool isInGame = _context.UI.currentPanel is InGamePanel;
+        List<TutorialHighlightZone> zonesToShow = new();
 
-        if (FTUEManager.Instance.TryGetTutorialHighlightZone(highlightZoneID, out TutorialHighlightZone highlightZone))
+        foreach (string highlightZoneID in highlightZoneIDs)
         {
-            if (button == null)
-                button = highlightZone.UsedButton;
+            if (!FTUEManager.Instance.TryGetTutorialHighlightZone(highlightZoneID, out TutorialHighlightZone highlightZone))
+            {
+                Debug.LogWarning("No TutorialHighlightZone registered with ID \"" + highlightZoneID + "\", playing " + Description + " without it");
+                continue;
+            }
 
             if (!highlightZone.gameObject.activeInHierarchy)
-                Debug.LogWarning("TutorialHighlightZone \"" + highlightZoneID + "\" is not in an active hierarchy, " + Description + " will show no highlight", highlightZone.gameObject);
-            else if (!isInGame || button != null)
             {
-                highlightZone.Show();
-                didShowZone = true;
+                Debug.LogWarning("TutorialHighlightZone \"" + highlightZoneID + "\" is not in an active hierarchy, " + Description + " will not show it", highlightZone.gameObject);
+                continue;
+            }
+
+            if (overrideButton == null && highlightZone.UsedButton != null)
+                buttons.Add(highlightZone.UsedButton);
+
+            zonesToShow.Add(highlightZone);
+        }
+
+        if (overrideButton != null)
+            buttons.Add(overrideButton);
+
+        if (zonesToShow.Count > 0 && (!isInGame || buttons.Count > 0))
+        {
+            TutorialHighlightZone.HideAllActive();
+
+            foreach (TutorialHighlightZone zone in zonesToShow)
+            {
+                zone.Show();
+                shownZones.Add(zone);
             }
         }
-        else
-            Debug.LogWarning("No TutorialHighlightZone registered with ID \"" + highlightZoneID + "\", playing " + Description + " without it");
 
         if (completeOnEntitySelected)
             PlayerController.onEntitySelected += OnEntitySelected;
 
         if (isInGame)
         {
-            if (button != null)
-                button.onClick += CompleteTask;
+            foreach (BaseButton zoneButton in buttons)
+                zoneButton.onClick += CompleteTask;
 
             tutoConsole = ((InGamePanel)_context.UI.currentPanel).TutoConsole;
-            tutoConsole.PlayDialogue(dialogue, highlightZoneID);
+            tutoConsole.PlayDialogue(dialogue, highlightZoneIDs);
 
-            if (button == null)
+            if (buttons.Count == 0)
                 Complete();
 
             return;
@@ -80,14 +106,16 @@ public class DialogueHighlightTask : Task
 
     protected override void OnComplete ()
     {
-        if (button != null)
-            button.onClick -= CompleteTask;
+        foreach (BaseButton zoneButton in buttons)
+            if (zoneButton != null)
+                zoneButton.onClick -= CompleteTask;
 
         if (completeOnEntitySelected)
             PlayerController.onEntitySelected -= OnEntitySelected;
 
-        if (didShowZone && FTUEManager.Instance.TryGetTutorialHighlightZone(highlightZoneID, out TutorialHighlightZone highlightZone))
-            highlightZone.Hide();
+        foreach (TutorialHighlightZone zone in shownZones)
+            if (zone != null)
+                zone.Hide();
 
         base.OnComplete();
     }

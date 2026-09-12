@@ -31,7 +31,7 @@ public class TutoConsole : MonoBehaviour
 	public class TutoDialogueContainer
 	{
 		public DialogueData dialogue;
-		public string highlightedZoneId;
+		public string[] highlightedZoneIds;
 	}
 
 	private TutoDialogueContainer m_currentDialogueData;
@@ -130,6 +130,7 @@ public class TutoConsole : MonoBehaviour
 	public void Init ()
 	{
 		m_allDialogs.Clear();
+		TutorialHighlightZone.HideAllActive();
 
 		m_currentTextTween?.Kill();
 		m_currentDialogueData = null;
@@ -169,11 +170,11 @@ public class TutoConsole : MonoBehaviour
 		m_hideBtn.SetVisible(false, true);
 	}
 
-	public void PlayDialogue ( DialogueData _dialogueData, string _higlightedZoneID = "" )
+	public void PlayDialogue ( DialogueData _dialogueData, params string[] _higlightedZoneIDs )
 	{
 		bool wasCaughtUp = IsCaughtUp();
 
-		m_allDialogs.Add(new() { dialogue = _dialogueData, highlightedZoneId = _higlightedZoneID });
+		m_allDialogs.Add(new() { dialogue = _dialogueData, highlightedZoneIds = _higlightedZoneIDs });
 
 		Show(false);
 
@@ -204,19 +205,21 @@ public class TutoConsole : MonoBehaviour
 		m_currentLineIndex = Mathf.Clamp(_lineIndex, 0, m_currentDialogueData.dialogue.lines.Count - 1);
 
 		if (previousDialogueIndex != m_currentDialogueIndex)
-			RefreshHighlightZone(previousDialogueIndex);
+			RefreshHighlightZones();
 
 		DisplayCurrentLine();
 	}
 
-	private void RefreshHighlightZone ( int _previousDialogueIndex )
+	private void RefreshHighlightZones ()
 	{
-		if (_previousDialogueIndex >= 0 && _previousDialogueIndex < m_allDialogs.Count
-			&& FTUEManager.Instance.TryGetTutorialHighlightZone(m_allDialogs[_previousDialogueIndex].highlightedZoneId, out TutorialHighlightZone previousZone))
-			previousZone.Hide();
+		TutorialHighlightZone.HideAllActive();
 
-		if (FTUEManager.Instance.TryGetTutorialHighlightZone(m_currentDialogueData.highlightedZoneId, out TutorialHighlightZone currentZone))
-			currentZone.Show();
+		if (m_currentDialogueData.highlightedZoneIds == null)
+			return;
+
+		foreach (string highlightedZoneId in m_currentDialogueData.highlightedZoneIds)
+			if (FTUEManager.Instance.TryGetTutorialHighlightZone(highlightedZoneId, out TutorialHighlightZone currentZone))
+				currentZone.Show();
 	}
 
 	private void DisplayCurrentLine ()

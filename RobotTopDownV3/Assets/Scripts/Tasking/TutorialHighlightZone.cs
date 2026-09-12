@@ -1,8 +1,11 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 public class TutorialHighlightZone : MonoBehaviour
 {
-	public static TutorialHighlightZone currentActiveHighlightZone;
+	private static readonly List<TutorialHighlightZone> s_activeHighlightZones = new();
+	public static IReadOnlyList<TutorialHighlightZone> ActiveHighlightZones => s_activeHighlightZones;
+
 	public System.Action onInteract;
 
 	[SerializeField] private GameObject m_highlight;
@@ -31,6 +34,11 @@ public class TutorialHighlightZone : MonoBehaviour
 			m_highlight.SetActive(false);
 	}
 
+	private void OnDestroy ()
+	{
+		s_activeHighlightZones.Remove(this);
+	}
+
 	public void SetId (string _id)
 	{
 		if (string.Equals(m_id, _id))
@@ -41,12 +49,22 @@ public class TutorialHighlightZone : MonoBehaviour
 		FTUEManager.Instance.AddTutorialHighlightZone(this);
 	}
 
+	public static void HideAllActive ()
+	{
+		for (int i = s_activeHighlightZones.Count - 1; i >= 0; i--)
+		{
+			if (s_activeHighlightZones[i] != null)
+				s_activeHighlightZones[i].Hide();
+			else
+				s_activeHighlightZones.RemoveAt(i);
+		}
+	}
+
 	public void Show ()
 	{
-		if (currentActiveHighlightZone != null)
-			currentActiveHighlightZone.Hide();
+		if (!s_activeHighlightZones.Contains(this))
+			s_activeHighlightZones.Add(this);
 
-		currentActiveHighlightZone = this;
 		m_isVisible = true;
 		RefreshRaycastTarget();
 		m_highlight.SetActive(true);
@@ -55,7 +73,7 @@ public class TutorialHighlightZone : MonoBehaviour
 	public void Hide ()
 	{
 		m_highlight.SetActive(false);
-		currentActiveHighlightZone = null;
+		s_activeHighlightZones.Remove(this);
 		m_isVisible = false;
 	}
 
