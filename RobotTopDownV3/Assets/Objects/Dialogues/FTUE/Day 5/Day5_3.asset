@@ -16,4 +16,11 @@ MonoBehaviour:
   - characterName: League Employee
     characterSprite: {fileID: 21300000, guid: 3ab256982cae8674388ec2dcdc0a1743, type: 3}
     isSpriteOnLeft: 1
-    sentence: "Vous \xEAtes au cinqui\xE8me jour du cycle actuel. Chaque cycle dure sept jours. Au cours des quatre premiers, vous effectuerez des matchs simples. Du cinqui\xE8me au septi\xE8me a lieu le tournoi hebdomadaire. Si vous perdez au tournoi, vous effectuerez des matchs simples jusqu'\xE0 la fin du cycle."
+    sentence: "Vous \xEAtes au cinqui\xE8me jour du cycle actuel. Chaque cycle dure
+      sept jours. Au cours des quatre premiers, vous effectuerez des matchs simples."
+  - characterName: League Employee
+    characterSprite: {fileID: 21300000, guid: 3ab256982cae8674388ec2dcdc0a1743, type: 3}
+    isSpriteOnLeft: 1
+    sentence: "Du cinqui\xE8me au septi\xE8me a lieu le tournoi hebdomadaire. Si
+      vous perdez au tournoi, vous effectuerez des matchs simples jusqu'\xE0 la fin
+      du cycle."

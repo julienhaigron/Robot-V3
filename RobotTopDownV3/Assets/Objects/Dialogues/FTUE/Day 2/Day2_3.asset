@@ -16,4 +16,10 @@ MonoBehaviour:
   - characterName: League Employee
     characterSprite: {fileID: 21300000, guid: 3ab256982cae8674388ec2dcdc0a1743, type: 3}
     isSpriteOnLeft: 1
-    sentence: "Il est possible d'ajouter un composant ou de l'\xE9changer avec un d\xE9j\xE0 install\xE9 en double cliquant dessus ou en le tirant sur l'emplacement. Pour le prochain match, il est conseill\xE9 d'\xE9quiper les deux membranes neuronales nouvellement acquises."
+    sentence: "Il est possible d'ajouter un composant ou de l'\xE9changer avec un
+      d\xE9j\xE0 install\xE9 en double cliquant dessus ou en le tirant sur l'emplacement."
+  - characterName: League Employee
+    characterSprite: {fileID: 21300000, guid: 3ab256982cae8674388ec2dcdc0a1743, type: 3}
+    isSpriteOnLeft: 1
+    sentence: "Pour le prochain match, il est conseill\xE9 d'\xE9quiper les deux
+      membranes neuronales nouvellement acquises."
