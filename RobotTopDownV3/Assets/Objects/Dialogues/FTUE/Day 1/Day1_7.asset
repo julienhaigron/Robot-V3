@@ -16,4 +16,4 @@ MonoBehaviour:
   - characterName: League Employee
     characterSprite: {fileID: 21300000, guid: 3ab256982cae8674388ec2dcdc0a1743, type: 3}
     isSpriteOnLeft: 1
-    sentence: "Les actions de M\xEAl\xE9e permettent d'infliger des d\xE9g\xE2ts au corps-\xE0-corps et ont le sous-type Poursuite (avantage sur Mouvement) ou Engagement (avantage sur Tir)."
+    sentence: "Les actions de Tir permettent d'infliger des d\xE9g\xE2ts \xE0 distance et ont le sous-type Barrage (avantage sur Mouvement) ou R\xE9flexe (avantage sur M\xEAl\xE9e)."

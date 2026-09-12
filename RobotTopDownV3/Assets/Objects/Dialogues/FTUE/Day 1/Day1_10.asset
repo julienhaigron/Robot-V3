@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5140234df1cbcb640bad62a1df6c5324, type: 3}
-  m_Name: Day1_2
+  m_Name: Day1_10
   m_EditorClassIdentifier: RTD::DialogueData
   lines:
   - characterName: League Employee
     characterSprite: {fileID: 21300000, guid: 3ab256982cae8674388ec2dcdc0a1743, type: 3}
     isSpriteOnLeft: 1
-    sentence: "Bienvenue en ville. D'ici, vous pourrez acc\xE9der \xE0 votre hangar. D'autres b\xE2timents vous seront bient\xF4t accessibles. Mais pour le moment, continuons votre entra\xEEnement."
+    sentence: "Lorsqu'une unit\xE9 effectue une action pouvant infliger un statut, la chance d'application correspond \xE0 la somme des chances de statuts de l'action et du bonus de l'unit\xE9, \xE0 laquelle on soustrait la r\xE9sistance aux statuts. Le d\xE9tail est visible dans le log."

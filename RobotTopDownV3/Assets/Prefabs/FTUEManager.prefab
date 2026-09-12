@@ -73,6 +73,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 438b53b392d491315f88d30f8c57c473, type: 2}
   m_day1TutoDialogues:
   - {fileID: 11400000, guid: 25d81795daf20e84bb772ec67ac7cf0b, type: 2}
+  - {fileID: 11400000, guid: 53fa1004a539436584854b381cf747ab, type: 2}
   - {fileID: 11400000, guid: e7e882158e028344db3ddc6204c83466, type: 2}
   - {fileID: 11400000, guid: badecd1528f9dc34a8db201c42ed4f28, type: 2}
   - {fileID: 11400000, guid: 25da7f754fdf67b46b467c9dbe27ecd5, type: 2}

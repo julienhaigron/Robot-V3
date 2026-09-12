@@ -3245,7 +3245,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 93705002080302661, guid: d4b64a824f89b934f85c452aaf5023bf, type: 3}
       propertyPath: m_id
-      value: missionSelectionBtn
+      value: missionSelectionPanelBtn
       objectReference: {fileID: 0}
     - target: {fileID: 2723818394614235755, guid: d4b64a824f89b934f85c452aaf5023bf, type: 3}
       propertyPath: m_Name

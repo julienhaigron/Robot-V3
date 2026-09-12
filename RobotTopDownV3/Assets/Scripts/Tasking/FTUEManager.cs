@@ -217,21 +217,23 @@ public class FTUEManager : Singleton<FTUEManager>
 			&& GameDatas.current.currentPlayerSave.dayCount == 0));
 		tutoSequence.Append(new DialogueHighlightTask("New unit won explenation", ( context ) => context.UI.currentPanel is HangarPanel
 		, m_day1TutoDialogues[0], "squadUnit2").SetSkipPredicate(( context ) => context.UI.currentPanel is SoloHubPanel));
+		tutoSequence.Append(new DialogueHighlightTask("Return btn explenation", null
+		, m_day1TutoDialogues[1], "topCanvasReturnBtn").SetSkipPredicate(( context ) => context.UI.currentPanel is SoloHubPanel));
 		tutoSequence.Append(new DialogueHighlightTask("Hub presentation", ( context ) => context.UI.currentPanel is SoloHubPanel
-		, m_day1TutoDialogues[1], "missionSection"));
+		, m_day1TutoDialogues[2], "missionSection"));
 		tutoSequence.Append(new DialogueHighlightTask("Available matches explenation", ( context ) => context.UI.currentPanel is MissionPanel
-		, m_day1TutoDialogues[2], "missionSelectionBtn"));
-		tutoSequence.Append(new DialogueHighlightTask("Start match btn explenation", null, m_day1TutoDialogues[3], "startMissionBtn"));
+		, m_day1TutoDialogues[3], "missionSelectionBtn"));
+		tutoSequence.Append(new DialogueHighlightTask("Start match btn explenation", null, m_day1TutoDialogues[4], "startMissionBtn"));
 
 		//micro
 		tutoSequence.Append(new WaitEndLoadingTask("Wait for end loading", ( context ) => context.Game.CurrentMission != null && context.Game.CurrentMission.enumID == MissionDataEnumID.Day1Tuto));
-		tutoSequence.Append(new DialogueTask("Action types explenation", ( context ) => context.UI.currentPanel is InGamePanel, m_day1TutoDialogues[4]));
-		tutoSequence.Append(new DialogueHighlightTask("Movement actions explenation", null, m_day1TutoDialogues[5], "actionBtns"));
-		tutoSequence.Append(new DialogueHighlightTask("Distance attack actions explenation", null, m_day1TutoDialogues[6], "actionBtns"));
-		tutoSequence.Append(new DialogueHighlightTask("Melee attack actions explenation", null, m_day1TutoDialogues[7], "actionBtns"));
-		tutoSequence.Append(new DialogueHighlightTask("Special actions explenation", null, m_day1TutoDialogues[8], "actionBtns"));
+		tutoSequence.Append(new DialogueTask("Action types explenation", ( context ) => context.UI.currentPanel is InGamePanel, m_day1TutoDialogues[5]));
+		tutoSequence.Append(new DialogueHighlightTask("Movement actions explenation", null, m_day1TutoDialogues[6], "actionBtns"));
+		tutoSequence.Append(new DialogueHighlightTask("Distance attack actions explenation", null, m_day1TutoDialogues[7], "actionBtns"));
+		tutoSequence.Append(new DialogueHighlightTask("Melee attack actions explenation", null, m_day1TutoDialogues[8], "actionBtns"));
+		tutoSequence.Append(new DialogueHighlightTask("Special actions explenation", null, m_day1TutoDialogues[9], "actionBtns"));
 		tutoSequence.Append(new DialogueHighlightTask("Status roll explenation", ( context ) => context.Log.Logs.ContainsKey(LogConsole.LogEventType.Status)
-		, m_day1TutoDialogues[9], "logs"));
+		, m_day1TutoDialogues[10], "logs"));
 
 		tutoSequence.SetSkipPredicate(( context ) => GameDatas.current.currentPlayerSave.dayCount > 0);
 		return tutoSequence;
