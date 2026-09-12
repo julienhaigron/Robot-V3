@@ -5,16 +5,18 @@ public class DialogueHighlightTask : Task
 {
     private readonly DialogueData dialogue;
     private readonly string highlightZoneID;
+    private readonly bool completeOnEntitySelected;
     private BaseButton button;
     private TutoConsole tutoConsole;
     private bool didShowZone;
 
-    public DialogueHighlightTask ( string _description, Func<TaskManager.TaskContext, bool> _startPredicate, DialogueData _dialogue, string _highlightZoneID, BaseButton _button = null )
+    public DialogueHighlightTask ( string _description, Func<TaskManager.TaskContext, bool> _startPredicate, DialogueData _dialogue, string _highlightZoneID, BaseButton _button = null, bool _completeOnEntitySelected = false )
         : base(_description, _startPredicate)
     {
         this.dialogue = _dialogue;
         this.highlightZoneID = _highlightZoneID;
         this.button = _button;
+        this.completeOnEntitySelected = _completeOnEntitySelected;
     }
 
     protected override void OnStart ( TaskManager.TaskContext _context )
@@ -28,7 +30,9 @@ public class DialogueHighlightTask : Task
             if (button == null)
                 button = highlightZone.UsedButton;
 
-            if (!isInGame || button != null)
+            if (!highlightZone.gameObject.activeInHierarchy)
+                Debug.LogWarning("TutorialHighlightZone \"" + highlightZoneID + "\" is not in an active hierarchy, " + Description + " will show no highlight", highlightZone.gameObject);
+            else if (!isInGame || button != null)
             {
                 highlightZone.Show();
                 didShowZone = true;
@@ -37,11 +41,14 @@ public class DialogueHighlightTask : Task
         else
             Debug.LogWarning("No TutorialHighlightZone registered with ID \"" + highlightZoneID + "\", playing " + Description + " without it");
 
-        if (button != null)
-            button.onClick += CompleteTask;
+        if (completeOnEntitySelected)
+            PlayerController.onEntitySelected += OnEntitySelected;
 
         if (isInGame)
         {
+            if (button != null)
+                button.onClick += CompleteTask;
+
             tutoConsole = ((InGamePanel)_context.UI.currentPanel).TutoConsole;
             tutoConsole.PlayDialogue(dialogue, highlightZoneID);
 
@@ -51,10 +58,13 @@ public class DialogueHighlightTask : Task
             return;
         }
 
-        if (button != null)
-            _context.Dialogue.PlayDialogue(dialogue, null);
-        else
-            _context.Dialogue.PlayDialogue(dialogue, CompleteTask);
+        _context.Dialogue.PlayDialogue(dialogue, CompleteTask);
+    }
+
+    private void OnEntitySelected ( int? _entityID )
+    {
+        if (_entityID.HasValue)
+            CompleteTask();
     }
 
     private void CompleteTask ()
@@ -72,6 +82,9 @@ public class DialogueHighlightTask : Task
     {
         if (button != null)
             button.onClick -= CompleteTask;
+
+        if (completeOnEntitySelected)
+            PlayerController.onEntitySelected -= OnEntitySelected;
 
         if (didShowZone && FTUEManager.Instance.TryGetTutorialHighlightZone(highlightZoneID, out TutorialHighlightZone highlightZone))
             highlightZone.Hide();

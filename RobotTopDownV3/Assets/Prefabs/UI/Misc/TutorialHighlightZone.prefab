@@ -50,7 +50,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: RTD::TutorialHighlightZone
   m_highlight: {fileID: 6014882372062707648}
-  m_id: actionQueue
+  m_id: 
   m_linkedButton: {fileID: 0}
   m_ownButton: {fileID: 4498800750305722713}
   m_image: {fileID: 9026207019820905397}

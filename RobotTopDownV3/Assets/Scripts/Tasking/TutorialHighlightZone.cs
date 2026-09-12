@@ -33,6 +33,10 @@ public class TutorialHighlightZone : MonoBehaviour
 
 	public void SetId (string _id)
 	{
+		if (string.Equals(m_id, _id))
+			return;
+
+		FTUEManager.Instance.RemoveTutorialHighlightZone(this);
 		m_id = _id;
 		FTUEManager.Instance.AddTutorialHighlightZone(this);
 	}

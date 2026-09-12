@@ -72,6 +72,15 @@ public class FTUEManager : Singleton<FTUEManager>
 		m_registerdTutorialHighlightZones[_highlightZone.ID] = _highlightZone;
 	}
 
+	public void RemoveTutorialHighlightZone ( TutorialHighlightZone _highlightZone )
+	{
+		if (_highlightZone == null || string.IsNullOrEmpty(_highlightZone.ID))
+			return;
+
+		if (m_registerdTutorialHighlightZones.TryGetValue(_highlightZone.ID, out TutorialHighlightZone registeredZone) && registeredZone == _highlightZone)
+			m_registerdTutorialHighlightZones.Remove(_highlightZone.ID);
+	}
+
 	public bool TryGetTutorialHighlightZone ( string _id, out TutorialHighlightZone _zone )
 	{
 		_zone = null;
@@ -167,31 +176,31 @@ public class FTUEManager : Singleton<FTUEManager>
 		TaskSequence tutoSequence = new("MicroTuto0");
 
 		//input phase
-		tutoSequence.Append(new DialogueHighlightTask("Select Unit", ( context ) => context.Game.CurrentMission != null && context.Game.CurrentMission.enumID == m_day0MissionData.enumID
+		tutoSequence.Append(new DialogueTask("Camera explenation", ( context ) => context.Game.CurrentMission != null && context.Game.CurrentMission.enumID == m_day0MissionData.enumID
 			&& context.UI.currentPanel is InGamePanel
-		, m_firstTutoDialogues[0], "squadUnitsMicroBtn0"));
-		//tutoSequence.Append(new SelectEntityTask("Select Entity", null, -1));
-		tutoSequence.Append(new DialogueHighlightTask("Action explenation", null, m_firstTutoDialogues[1], "actionBtns"));
+		, m_firstTutoDialogues[0]));
+		tutoSequence.Append(new DialogueHighlightTask("Select Unit", null, m_firstTutoDialogues[1], "squadUnitsMicroBtn0", null, true));
+		tutoSequence.Append(new DialogueHighlightTask("Action explenation", null, m_firstTutoDialogues[2], "actionBtns"));
 		tutoSequence.Append(new DialogueHighlightTask("Action Queue explenation", ( context ) => context.Turn.RecordedActions.ContainsKey(firstPlayerEntityID) && context.Turn.RecordedActions[firstPlayerEntityID].Count > 0
-		, m_firstTutoDialogues[2], "actionQueue"));
+		, m_firstTutoDialogues[3], "actionQueue"));
 
 		//play phase
 		tutoSequence.Append(new DialogueHighlightTask("Log explenation", ( context ) => context.Turn.currentPhase == TurnManager.TurnPhase.Playing
-		, m_firstTutoDialogues[3], "logs"));
+		, m_firstTutoDialogues[4], "logs"));
 
 		//input phase
 		tutoSequence.Append(new WalkOnTileTask("Wait for unit to walk on trigger tile", null, TileGroundType.Trigger));
-		tutoSequence.Append(new DialogueHighlightTask("State explenation", null, m_firstTutoDialogues[4], "stateButtons"));
-		tutoSequence.Append(new DialogueHighlightTask("State modification explenation", null, m_firstTutoDialogues[5], "stateLines"));
-		
+		tutoSequence.Append(new DialogueHighlightTask("State explenation", null, m_firstTutoDialogues[5], "stateButtons"));
+		tutoSequence.Append(new DialogueHighlightTask("State modification explenation", null, m_firstTutoDialogues[6], "stateLines"));
+
 		tutoSequence.Append(new HighlightLogTask("Highlight attack roll logs", ( context ) => context.Log.Logs.ContainsKey(LogConsole.LogEventType.AttackRoll)
 		, LogConsole.LogEventType.AttackRoll, true));
-		tutoSequence.Append(new DialogueHighlightTask("Attack roll explenation", null, m_firstTutoDialogues[6], "logs"));
+		tutoSequence.Append(new DialogueHighlightTask("Attack roll explenation", null, m_firstTutoDialogues[7], "logs"));
 		tutoSequence.Append(new HighlightLogTask("Stop highlighting attack roll logs", null, LogConsole.LogEventType.AttackRoll, false));
 
 		tutoSequence.Append(new HighlightLogTask("Highlight damage logs", ( context ) => context.Log.Logs.ContainsKey(LogConsole.LogEventType.Damage)
 		, LogConsole.LogEventType.Damage, true));
-		tutoSequence.Append(new DialogueHighlightTask("Damage explenation", null, m_firstTutoDialogues[7], "logs"));
+		tutoSequence.Append(new DialogueHighlightTask("Damage explenation", null, m_firstTutoDialogues[8], "logs"));
 		tutoSequence.Append(new HighlightLogTask("Stop highlighting damage logs", null, LogConsole.LogEventType.Damage, false));
 
 		tutoSequence.SetSkipPredicate(( context ) => GameDatas.current.currentPlayerSave.didStartTuto && GameDatas.current.currentPlayerSave.dayCount >= 0);
