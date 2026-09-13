@@ -6,6 +6,7 @@ public class DialogueHighlightTask : Task
 {
     private readonly DialogueData dialogue;
     private readonly string[] highlightZoneIDs;
+    private readonly Func<TaskManager.TaskContext, string[]> highlightZoneIDsResolver;
     private readonly BaseButton overrideButton;
     private readonly bool completeOnEntitySelected;
     private readonly List<BaseButton> buttons = new();
@@ -26,14 +27,22 @@ public class DialogueHighlightTask : Task
         this.completeOnEntitySelected = _completeOnEntitySelected;
     }
 
+    //For zones whose id only exists at runtime, like the one each ActionButton renames for itself in Init.
+    public DialogueHighlightTask ( string _description, Func<TaskManager.TaskContext, bool> _startPredicate, DialogueData _dialogue, Func<TaskManager.TaskContext, string[]> _highlightZoneIDsResolver, BaseButton _button = null, bool _completeOnEntitySelected = false )
+        : this(_description, _startPredicate, _dialogue, (string[])null, _button, _completeOnEntitySelected)
+    {
+        this.highlightZoneIDsResolver = _highlightZoneIDsResolver;
+    }
+
     protected override void OnStart ( TaskManager.TaskContext _context )
     {
         base.OnStart(_context);
 
         bool isInGame = _context.UI.currentPanel is InGamePanel;
         List<TutorialHighlightZone> zonesToShow = new();
+        string[] resolvedZoneIDs = highlightZoneIDsResolver == null ? highlightZoneIDs : highlightZoneIDsResolver(_context) ?? new string[0];
 
-        foreach (string highlightZoneID in highlightZoneIDs)
+        foreach (string highlightZoneID in resolvedZoneIDs)
         {
             if (!FTUEManager.Instance.TryGetTutorialHighlightZone(highlightZoneID, out TutorialHighlightZone highlightZone))
             {
@@ -76,7 +85,7 @@ public class DialogueHighlightTask : Task
                 zoneButton.onClick += CompleteTask;
 
             tutoConsole = ((InGamePanel)_context.UI.currentPanel).TutoConsole;
-            tutoConsole.PlayDialogue(dialogue, highlightZoneIDs);
+            tutoConsole.PlayDialogue(dialogue, resolvedZoneIDs);
 
             if (buttons.Count == 0)
                 Complete();

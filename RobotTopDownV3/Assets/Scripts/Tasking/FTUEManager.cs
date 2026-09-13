@@ -179,6 +179,19 @@ public class FTUEManager : Singleton<FTUEManager>
 		return _context.Player.SelectedEntity == null;
 	}
 
+	private static System.Func<TaskManager.TaskContext, string[]> ActionButtonsOfType ( EntityActionData.ActionType _type )
+	{
+		return ( context ) =>
+		{
+			if (context.UI.currentPanel is not InGamePanel inGamePanel)
+				return new string[0];
+
+			string[] zoneIDs = inGamePanel.EntityActionList.GetHighlightZoneIDsOfType(_type);
+
+			return zoneIDs.Length > 0 ? zoneIDs : new[] { "actionBtns" };
+		};
+	}
+
 	private TaskSequence MicroTuto0 ()
 	{
 		int firstPlayerEntityID = 0;
@@ -244,14 +257,14 @@ public class FTUEManager : Singleton<FTUEManager>
 		//micro
 		tutoSequence.Append(new WaitEndLoadingTask("Wait for end loading", ( context ) => context.Game.CurrentMission != null && context.Game.CurrentMission.enumID == MissionDataEnumID.Day1Tuto));
 		tutoSequence.Append(new DialogueTask("Action types explenation", ( context ) => context.UI.currentPanel is InGamePanel, m_day1TutoDialogues[5]));
-		tutoSequence.Append(new DialogueHighlightTask("Movement actions explenation", IsUnitSelected, m_day1TutoDialogues[6], "actionBtns")
-			.SetSkipPredicateWhilePerforming(IsNoUnitSelected));
-		tutoSequence.Append(new DialogueHighlightTask("Distance attack actions explenation", IsUnitSelected, m_day1TutoDialogues[7], "actionBtns")
-			.SetSkipPredicateWhilePerforming(IsNoUnitSelected));
-		tutoSequence.Append(new DialogueHighlightTask("Melee attack actions explenation", IsUnitSelected, m_day1TutoDialogues[8], "actionBtns")
-			.SetSkipPredicateWhilePerforming(IsNoUnitSelected));
-		tutoSequence.Append(new DialogueHighlightTask("Special actions explenation", IsUnitSelected, m_day1TutoDialogues[9], "actionBtns")
-			.SetSkipPredicateWhilePerforming(IsNoUnitSelected));
+		tutoSequence.Append(new DialogueHighlightTask("Movement actions explenation", IsUnitSelected, m_day1TutoDialogues[6]
+			, ActionButtonsOfType(EntityActionData.ActionType.Movement)).SetSkipPredicateWhilePerforming(IsNoUnitSelected));
+		tutoSequence.Append(new DialogueHighlightTask("Distance attack actions explenation", IsUnitSelected, m_day1TutoDialogues[7]
+			, ActionButtonsOfType(EntityActionData.ActionType.DistanceAttack)).SetSkipPredicateWhilePerforming(IsNoUnitSelected));
+		tutoSequence.Append(new DialogueHighlightTask("Melee attack actions explenation", IsUnitSelected, m_day1TutoDialogues[8]
+			, ActionButtonsOfType(EntityActionData.ActionType.MeleeAttack)).SetSkipPredicateWhilePerforming(IsNoUnitSelected));
+		tutoSequence.Append(new DialogueHighlightTask("Special actions explenation", IsUnitSelected, m_day1TutoDialogues[9]
+			, ActionButtonsOfType(EntityActionData.ActionType.Special)).SetSkipPredicateWhilePerforming(IsNoUnitSelected));
 
 		tutoSequence.Append(new HighlightLogTask("Highlight status logs", ( context ) => context.Log.Logs.ContainsKey(LogConsole.LogEventType.Status)
 		, LogConsole.LogEventType.Status, true));

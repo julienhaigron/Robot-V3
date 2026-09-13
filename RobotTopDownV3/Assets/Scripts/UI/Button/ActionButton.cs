@@ -19,6 +19,9 @@ public class ActionButton : BaseButton, IPointerExitHandler
 	[SerializeField] private TutorialHighlightZone m_zone;
 
 	protected EntityActionEnumID m_actionType;
+	public EntityActionEnumID ActionEnumID => m_actionType;
+	public string HighlightZoneID => m_zone == null ? null : m_zone.ID;
+
 	protected string m_linkedEquipmentData;
 	private bool m_isOnlyVisual = false;
 

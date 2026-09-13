@@ -83,4 +83,23 @@ public class UIEntityActionList : MonoBehaviour
 	{
 		OnEntitySelected(null);
 	}
+
+	//Each ActionButton renames its own TutorialHighlightZone in Init, so the ids only exist once a unit is selected.
+	public string[] GetHighlightZoneIDsOfType ( EntityActionData.ActionType _type )
+	{
+		List<string> zoneIDs = new();
+
+		foreach (ActionButton actionButton in m_actionButtons)
+		{
+			if (actionButton == null || !actionButton.gameObject.activeInHierarchy
+				|| string.IsNullOrEmpty(actionButton.HighlightZoneID)
+				|| !GameAssets.current.game.entityActionsData.ContainsKey(actionButton.ActionEnumID)
+				|| GameAssets.current.game.entityActionsData[actionButton.ActionEnumID].type != _type)
+				continue;
+
+			zoneIDs.Add(actionButton.HighlightZoneID);
+		}
+
+		return zoneIDs.ToArray();
+	}
 }
