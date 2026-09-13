@@ -25,7 +25,7 @@ MonoBehaviour:
     lastPlayerSaveSelectedID: 0
   playerSaves:
   - saveName: New save
-    lastSaveTimeTicks: 639249150062166689
+    lastSaveTimeTicks: 639249153287394573
     allBuiltUnits:
     - name: Start_Melee
       index: 0
@@ -145,7 +145,7 @@ MonoBehaviour:
       dataID: Occ_Broken
       isDamaged: 0
       acquisitionDateTicks: 639249077676384004
-    equipmentCounter: 157
+    equipmentCounter: 162
     currencies:
       keys: 01000000020000000300000004000000
       values: 0000000000000000000000000000000000000000000000000000000000000000

@@ -20,7 +20,7 @@ MonoBehaviour:
   neuronalMembrane: {fileID: 11400000, guid: 1b31e866f069a78408f227f4a7e6b236, type: 2}
   arms:
   - {fileID: 11400000, guid: 288ceafc06a5c444192ef480ed5571a9, type: 2}
-  - {fileID: 11400000, guid: e7a0645e05f3e024fbe860c799e2b036, type: 2}
+  - {fileID: 11400000, guid: 9876669f81bfd58419329fe95849f48c, type: 2}
   auxiliary:
   - {fileID: 11400000, guid: 3bc5f635f2642c34e92eabe5df018c72, type: 2}
   - {fileID: 11400000, guid: fc8376e620bda264a92c001ce5c29514, type: 2}
