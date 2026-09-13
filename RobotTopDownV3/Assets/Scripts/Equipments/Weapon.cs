@@ -342,7 +342,6 @@ public class Weapon : MonoBehaviour
 
 	protected virtual void ApplyEffects ( Entity _target, AEntityPassiveEffect.PassiveEffectContainer _passiveEffect )
 	{
-		//Every caller already iterates the action's effects, so applying the whole list here applied each one once per effect.
 		GameAssets.current.game.entityEffects[_passiveEffect.enumID].ApplyEffect(m_user, _target, _passiveEffect);
 	}
 

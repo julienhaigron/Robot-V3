@@ -125,7 +125,6 @@ public class TutoConsole : MonoBehaviour
 
 		StopBlink();
 
-		//Yoyo spends one loop per half cycle, so two per blink - which also lands the console back on full alpha.
 		int loops = m_newDialogueBlinkCount * 2;
 
 		m_blinkTween = m_texteCanvasGroup.DOFade(m_newDialogueBlinkAlpha, m_newDialogueBlinkDuration / loops)
@@ -226,8 +225,6 @@ public class TutoConsole : MonoBehaviour
 		return newDialogue;
 	}
 
-	//A halo belongs to the task waiting on it, not to the dialogue text. A task can complete while its dialogue is
-	//still queued, and displaying that dialogue afterwards would put a halo on screen that nobody would ever take down.
 	public void ReleaseHighlightZones ( TutoDialogueContainer _dialogueContainer )
 	{
 		if (_dialogueContainer == null)

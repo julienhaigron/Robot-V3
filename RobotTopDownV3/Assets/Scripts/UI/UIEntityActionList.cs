@@ -84,7 +84,6 @@ public class UIEntityActionList : MonoBehaviour
 		OnEntitySelected(null);
 	}
 
-	//Each ActionButton renames its own TutorialHighlightZone in Init, so the ids only exist once a unit is selected.
 	public string[] GetHighlightZoneIDsOfType ( EntityActionData.ActionType _type )
 	{
 		List<string> zoneIDs = new();

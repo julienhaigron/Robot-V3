@@ -486,8 +486,6 @@ public class EntityActionData : AParsableScriptableObject
 			amount += (GameAssets.current.game.entityEffects[EntityPassiveEffectEnumID.HitAmountBoost] as HitAmountBoostPassiveEffect).hitAmountBoost;
 		}
 
-		//Every attack loop is driven by this count, and BulletWeapon only reaches EndAttack through a projectile
-		//callback - a count of 0 spawns no bullet and hangs the tick for good.
 		return Mathf.Max(1, amount);
 	}
 

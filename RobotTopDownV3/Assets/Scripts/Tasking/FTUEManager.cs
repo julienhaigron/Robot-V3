@@ -179,8 +179,6 @@ public class FTUEManager : Singleton<FTUEManager>
 		return _context.Player.SelectedEntity == null;
 	}
 
-	//Release valve for the zones that live in the action list and the action queue: deselecting only parks them off
-	//screen and reselecting brings them back, so only the end of the input phase makes a dialogue definitively stale.
 	private static bool IsInputPhaseOver ( TaskManager.TaskContext _context )
 	{
 		return _context.Turn.currentPhase != TurnManager.TurnPhase.Recording;

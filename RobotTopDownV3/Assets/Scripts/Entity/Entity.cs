@@ -450,7 +450,6 @@ public class Entity : MonoBehaviour
 	{
 		AEntityStatus status = GameAssets.current.game.entityStatus[_statusID];
 
-		//OnRoundStart walks m_status, so a second entry would consume the duration twice per tick and fire the effect twice.
 		bool wasAlreadyActive = m_status.Contains(_statusID);
 		if (!wasAlreadyActive)
 			m_status.Add(_statusID);
@@ -461,8 +460,6 @@ public class Entity : MonoBehaviour
 		if (wasAlreadyActive)
 			return;
 
-		//The only other status log is the roll, written by AttackAction.Prepare before the shot even leaves - nothing
-		//used to say whether the status actually landed on the unit.
 		LogConsole.AddLog(string.Format(LocalizationManager.Instance.Get(LocalizationKey.log_status_affected), m_data.name, status.GetLocalizedName(), _duration)
 			, LogConsole.LogEventType.Status
 			, new LogConsole.LogDetails("status_effect_" + LogConsole.Instance.Counter, status.GetLocalizedName(), status.GetTooltip(_duration, _duration)));

@@ -28,7 +28,6 @@ public class DialogueHighlightTask : Task
         this.completeOnEntitySelected = _completeOnEntitySelected;
     }
 
-    //For zones whose id only exists at runtime, like the one each ActionButton renames for itself in Init.
     public DialogueHighlightTask ( string _description, Func<TaskManager.TaskContext, bool> _startPredicate, DialogueData _dialogue, Func<TaskManager.TaskContext, string[]> _highlightZoneIDsResolver, BaseButton _button = null, bool _completeOnEntitySelected = false )
         : this(_description, _startPredicate, _dialogue, (string[])null, _button, _completeOnEntitySelected)
     {
@@ -122,8 +121,6 @@ public class DialogueHighlightTask : Task
         if (completeOnEntitySelected)
             PlayerController.onEntitySelected -= OnEntitySelected;
 
-        //In game the console owns the halos, so the task disowns its dialogue's ids instead of hiding by reference -
-        //it can complete before that dialogue is ever displayed, and hiding now would not stop a later display.
         if (tutoConsole != null)
             tutoConsole.ReleaseHighlightZones(dialogueContainer);
         else
