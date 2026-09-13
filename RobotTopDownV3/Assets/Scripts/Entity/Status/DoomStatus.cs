@@ -22,6 +22,6 @@ public class DoomStatus : AEntityStatus
 		base.ApplyStatusEffect(_remainingDuration, _entity);
 
 		if (IsLastActiveTick(_remainingDuration))
-			_entity.Equipment.InstantDeath();
+			_entity.Equipment.InstantDeath(EntityEquipmentPlugin.DeathCause.Doom);
 	}
 }

@@ -538,7 +538,9 @@ public class EntityEquipmentPlugin : EntityPlugin
 		onHealthChangeDamage?.Invoke(_damageInfo);
 	}
 
-	public void InstantDeath ()
+	public enum DeathCause { Default, Doom }
+
+	public void InstantDeath ( DeathCause _cause = DeathCause.Default )
 	{
 		Dictionary<WeaponEquipmentData.DamageType, int> damages = new();
 		damages.Add(WeaponEquipmentData.DamageType.Bludgeoning, 999999);
@@ -554,7 +556,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 		};
 
 		onHealthChangeDamage?.Invoke(deathInfo);
-		Death(deathInfo);
+		Death(deathInfo, _cause);
 	}
 
 	private static readonly HashSet<EntityEquipmentData.SecondaryStat.StatType> m_statsHiddenInDeathTooltip = new()
@@ -608,10 +610,12 @@ public class EntityEquipmentPlugin : EntityPlugin
 	}
 
 
-	private void Death ( TakeDamageCallback _damageInfo )
+	private void Death ( TakeDamageCallback _damageInfo, DeathCause _cause = DeathCause.Default )
 	{
 		if (m_isDead)
 			return;
+
+		PlayDeathVFX(_cause);
 
 		if (m_linkedEntity.LastPerformedAction != null && m_linkedEntity.LastPerformedAction.IsPerforming)
 			m_linkedEntity.LastPerformedAction.CancelAction();
@@ -628,6 +632,19 @@ public class EntityEquipmentPlugin : EntityPlugin
 		onAnyEntityDeath?.Invoke(m_linkedEntity);
 
 		DisableWeaponCones();
+	}
+
+	private void PlayDeathVFX ( DeathCause _cause )
+	{
+		PoolData deathVFXPool = _cause == DeathCause.Doom
+			? GameAssets.current.game.doomDeathVFXPoolData
+			: GameAssets.current.game.deathVFXPoolData;
+
+		if (deathVFXPool == null)
+			return;
+
+		Transform center = m_linkedEntity.Skin == null ? null : m_linkedEntity.Skin.Center;
+		deathVFXPool.Get(center == null ? m_linkedEntity.transform.position : center.position, Quaternion.identity);
 	}
 
 	#endregion

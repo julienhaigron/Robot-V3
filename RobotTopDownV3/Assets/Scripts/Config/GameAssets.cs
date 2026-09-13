@@ -63,6 +63,8 @@ public class GameAssets : ScriptableObject
         [Title("Pools")]
         public PoolData arrowPoolData;
         public PoolData rotationHandlePoolData;
+        public PoolData deathVFXPoolData;
+        public PoolData doomDeathVFXPoolData;
     }
 
     [System.Serializable]

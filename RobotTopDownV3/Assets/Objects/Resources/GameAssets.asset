@@ -152,6 +152,8 @@ MonoBehaviour:
       - {fileID: 11400000, guid: e10dfc4daf2b9e24393e7012b171820f, type: 2}
     arrowPoolData: {fileID: 11400000, guid: 64f7846c9740e524a979a96964270b2f, type: 2}
     rotationHandlePoolData: {fileID: 0}
+    deathVFXPoolData: {fileID: 11400000, guid: b8d417f2c69e4a04b93615d7ea08c264, type: 2}
+    doomDeathVFXPoolData: {fileID: 11400000, guid: e42b90d56af34c1489a7b3f052c7d618, type: 2}
   ui:
     baseEquipmentSprite: {fileID: -1360359492, guid: b61920d2917644949a125f8a6af0e45c, type: 3}
     baseComponentDisplay: {fileID: 6816767632338375938, guid: 6e102cf7754096846b421344887ef18e, type: 3}
