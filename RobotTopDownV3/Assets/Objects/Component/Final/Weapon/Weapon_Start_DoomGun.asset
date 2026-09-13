@@ -9,12 +9,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3be6976ce71a11d45bc16b9a311a29a7, type: 3}
-  m_Name: Tool_Start_DoomGun
-  m_EditorClassIdentifier: RTD::ToolEquipmentData
-  spreadsheetId: https://docs.google.com/spreadsheets/d/1AeQujaBf6YdyVQRD2gBNWazoosesi46DpAoY5b6hrt8/export?format=csv&gid=1532817546
+  m_Script: {fileID: 11500000, guid: 377ca2099ac4b6147bf777f681302f03, type: 3}
+  m_Name: Weapon_Start_DoomGun
+  m_EditorClassIdentifier: RTD::WeaponEquipmentData
+  spreadsheetId: https://docs.google.com/spreadsheets/d/1AeQujaBf6YdyVQRD2gBNWazoosesi46DpAoY5b6hrt8/export?format=csv&gid=1562946535
   faction: 6
-  icon: {fileID: -1629911396, guid: b61920d2917644949a125f8a6af0e45c, type: 3}
+  icon: {fileID: -183017367, guid: b61920d2917644949a125f8a6af0e45c, type: 3}
   displayName: DoomGun
   energyCost: 0
   knownedActions: 2f000000
@@ -23,9 +23,9 @@ MonoBehaviour:
   creditCost: 0
   recyclingDurationAmount: 1
   reparingDurationAmount: 1
-  canDropAsRandomReward: 0
-  prefab: {fileID: 871335888112447800, guid: 385746732d1af89489d4626717c2a5e3, type: 3}
-  range: 0
+  canDropRandomly: 0
+  prefab: {fileID: 3050370552699964755, guid: dd0a64f5756259b41a3f0a0816904467, type: 3}
   attackAnimationSuccessId: 
   attackAnimationFailureId: 
   isTwoHanded: 0
+  singleAttackAnimationDuration: 0.3
