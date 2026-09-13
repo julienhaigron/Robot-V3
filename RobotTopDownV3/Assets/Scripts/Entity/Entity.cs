@@ -450,11 +450,16 @@ public class Entity : MonoBehaviour
 	{
 		AEntityStatus status = GameAssets.current.game.entityStatus[_statusID];
 
-		m_status.Add(_statusID);
+		//OnRoundStart walks m_status, so a second entry would consume the duration twice per tick and fire the effect twice.
+		bool wasAlreadyActive = m_status.Contains(_statusID);
+		if (!wasAlreadyActive)
+			m_status.Add(_statusID);
+
 		m_remainingDurationToActiveStatuses[status] = _duration;
 		m_appliedDurationToActiveStatuses[status] = _duration;
-		
-		onStatusAdded?.Invoke(_statusID);
+
+		if (!wasAlreadyActive)
+			onStatusAdded?.Invoke(_statusID);
 	}
 
 	public void RemoveStatus ( EntityStatusEnumID _statusID )

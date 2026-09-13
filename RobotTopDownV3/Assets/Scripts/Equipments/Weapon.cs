@@ -219,7 +219,7 @@ public class Weapon : MonoBehaviour
 
 	private void DamageWallsInWeaponRange ( AttackAction _attackAction, Dictionary<WeaponEquipmentData.DamageType, int> _damages )
 	{
-		int hitAmount = Mathf.Max(1, _attackAction.Data.GetHitAmount(_attackAction, m_user, null));
+		int hitAmount = _attackAction.Data.GetHitAmount(_attackAction, m_user, null);
 
 		foreach (Tile tile in m_user.Equipment.GetTilesInWeaponRange(_attackAction, true))
 		{
@@ -342,12 +342,8 @@ public class Weapon : MonoBehaviour
 
 	protected virtual void ApplyEffects ( Entity _target, AEntityPassiveEffect.PassiveEffectContainer _passiveEffect )
 	{
-		if (m_lastPerformedAction == null || m_lastPerformedAction.effects == null)
-			return;
-
-		foreach (AEntityPassiveEffect.PassiveEffectContainer passiveEffectID in m_lastPerformedAction.effects)
-			GameAssets.current.game.entityEffects[passiveEffectID.enumID].ApplyEffect(m_user, _target, passiveEffectID);
-
+		//Every caller already iterates the action's effects, so applying the whole list here applied each one once per effect.
+		GameAssets.current.game.entityEffects[_passiveEffect.enumID].ApplyEffect(m_user, _target, _passiveEffect);
 	}
 
 	#endregion

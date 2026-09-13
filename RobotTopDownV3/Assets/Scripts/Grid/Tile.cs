@@ -465,7 +465,8 @@ public class Tile : MonoBehaviour
 	{
 		AEntityStatus statusData = GameAssets.current.game.entityStatus[_statusID];
 		statusData.ApplyStatus(this);
-		m_status.Add(_statusID);
+		if (!m_status.Contains(_statusID))
+			m_status.Add(_statusID);
 		m_remainingDurationToActiveEffects[statusData] = _duration;
 
 		//spawn visual
