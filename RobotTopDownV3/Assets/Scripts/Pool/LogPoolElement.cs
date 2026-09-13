@@ -6,6 +6,7 @@ public class LogPoolElement : PoolElement
 {
 	[SerializeField] private TextMeshProUGUI m_text;
 	[SerializeField] private LayoutElement m_layoutElement;
+	[SerializeField] private GameObject m_highlight;
 	[SerializeField] private Vector2 m_preferedTextSizePrefreredValues;
 	[SerializeField] private FontStyles m_highlightFontStyle = FontStyles.Bold | FontStyles.Italic;
 
@@ -46,6 +47,9 @@ public class LogPoolElement : PoolElement
 
 		m_isHighlighted = _isHighlighted;
 		m_text.fontStyle = _isHighlighted ? m_defaultFontStyle | m_highlightFontStyle : m_defaultFontStyle;
+
+		if (m_highlight != null)
+			m_highlight.SetActive(_isHighlighted);
 	}
 
 	private void RefreshPreferredHeight ()
