@@ -458,8 +458,16 @@ public class Entity : MonoBehaviour
 		m_remainingDurationToActiveStatuses[status] = _duration;
 		m_appliedDurationToActiveStatuses[status] = _duration;
 
-		if (!wasAlreadyActive)
-			onStatusAdded?.Invoke(_statusID);
+		if (wasAlreadyActive)
+			return;
+
+		//The only other status log is the roll, written by AttackAction.Prepare before the shot even leaves - nothing
+		//used to say whether the status actually landed on the unit.
+		LogConsole.AddLog(string.Format(LocalizationManager.Instance.Get(LocalizationKey.log_status_affected), m_data.name, status.GetLocalizedName(), _duration)
+			, LogConsole.LogEventType.Status
+			, new LogConsole.LogDetails("status_effect_" + LogConsole.Instance.Counter, status.GetLocalizedName(), status.GetTooltip(_duration, _duration)));
+
+		onStatusAdded?.Invoke(_statusID);
 	}
 
 	public void RemoveStatus ( EntityStatusEnumID _statusID )

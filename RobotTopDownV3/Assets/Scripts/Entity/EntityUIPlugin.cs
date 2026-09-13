@@ -111,7 +111,7 @@ public class EntityUIPlugin : EntityPlugin
 
 	private EntityStatusDisplay AddStatusDisplay ()
 	{
-		EntityStatusDisplay statusDisplay = Instantiate(GameAssets.current.ui.statusDisplayPrefab);
+		EntityStatusDisplay statusDisplay = Instantiate(GameAssets.current.ui.statusDisplayPrefab, m_statusDisplayParent);
 		m_statusDisplays.Add(statusDisplay);
 		statusDisplay.Hide();
 
