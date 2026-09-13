@@ -170,11 +170,12 @@ public class TutoConsole : MonoBehaviour
 		m_hideBtn.SetVisible(false, true);
 	}
 
-	public void PlayDialogue ( DialogueData _dialogueData, params string[] _higlightedZoneIDs )
+	public TutoDialogueContainer PlayDialogue ( DialogueData _dialogueData, params string[] _higlightedZoneIDs )
 	{
 		bool wasCaughtUp = IsCaughtUp();
 
-		m_allDialogs.Add(new() { dialogue = _dialogueData, highlightedZoneIds = _higlightedZoneIDs });
+		TutoDialogueContainer newDialogue = new() { dialogue = _dialogueData, highlightedZoneIds = _higlightedZoneIDs };
+		m_allDialogs.Add(newDialogue);
 
 		Show(false);
 
@@ -182,6 +183,21 @@ public class TutoConsole : MonoBehaviour
 			DisplayDialogue(m_allDialogs.Count - 1);
 		else
 			RefreshButtons();
+
+		return newDialogue;
+	}
+
+	//A halo belongs to the task waiting on it, not to the dialogue text. A task can complete while its dialogue is
+	//still queued, and displaying that dialogue afterwards would put a halo on screen that nobody would ever take down.
+	public void ReleaseHighlightZones ( TutoDialogueContainer _dialogueContainer )
+	{
+		if (_dialogueContainer == null)
+			return;
+
+		_dialogueContainer.highlightedZoneIds = new string[0];
+
+		if (m_currentDialogueData == _dialogueContainer)
+			RefreshHighlightZones();
 	}
 
 	private bool IsCaughtUp ()

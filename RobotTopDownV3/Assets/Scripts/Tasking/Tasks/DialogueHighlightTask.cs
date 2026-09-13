@@ -12,6 +12,7 @@ public class DialogueHighlightTask : Task
     private readonly List<BaseButton> buttons = new();
     private readonly List<TutorialHighlightZone> shownZones = new();
     private TutoConsole tutoConsole;
+    private TutoConsole.TutoDialogueContainer dialogueContainer;
 
     public DialogueHighlightTask ( string _description, Func<TaskManager.TaskContext, bool> _startPredicate, DialogueData _dialogue, string _highlightZoneID, BaseButton _button = null, bool _completeOnEntitySelected = false )
         : this(_description, _startPredicate, _dialogue, new string[] { _highlightZoneID }, _button, _completeOnEntitySelected)
@@ -84,7 +85,7 @@ public class DialogueHighlightTask : Task
                 zoneButton.onClick += CompleteTask;
 
             tutoConsole = ((InGamePanel)_context.UI.currentPanel).TutoConsole;
-            tutoConsole.PlayDialogue(dialogue, resolvedZoneIDs);
+            dialogueContainer = tutoConsole.PlayDialogue(dialogue, resolvedZoneIDs);
 
             if (buttons.Count == 0)
                 Complete();
@@ -121,9 +122,14 @@ public class DialogueHighlightTask : Task
         if (completeOnEntitySelected)
             PlayerController.onEntitySelected -= OnEntitySelected;
 
-        foreach (TutorialHighlightZone zone in shownZones)
-            if (zone != null)
-                zone.Hide();
+        //In game the console owns the halos, so the task disowns its dialogue's ids instead of hiding by reference -
+        //it can complete before that dialogue is ever displayed, and hiding now would not stop a later display.
+        if (tutoConsole != null)
+            tutoConsole.ReleaseHighlightZones(dialogueContainer);
+        else
+            foreach (TutorialHighlightZone zone in shownZones)
+                if (zone != null)
+                    zone.Hide();
 
         base.OnComplete();
     }
