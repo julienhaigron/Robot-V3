@@ -65,15 +65,14 @@ public class DialogueHighlightTask : Task
         if (overrideButton != null)
             buttons.Add(overrideButton);
 
-        if (zonesToShow.Count > 0 && (!isInGame || buttons.Count > 0))
+        shownZones.AddRange(zonesToShow);
+
+        if (!isInGame && zonesToShow.Count > 0)
         {
             TutorialHighlightZone.HideAllActive();
 
             foreach (TutorialHighlightZone zone in zonesToShow)
-            {
                 zone.Show();
-                shownZones.Add(zone);
-            }
         }
 
         if (completeOnEntitySelected)
@@ -107,10 +106,10 @@ public class DialogueHighlightTask : Task
         if (IsCompleted)
             return;
 
+        Complete();
+
         if (tutoConsole != null)
             tutoConsole.GoToNextLineOrDialogue();
-
-        Complete();
     }
 
     protected override void OnComplete ()
