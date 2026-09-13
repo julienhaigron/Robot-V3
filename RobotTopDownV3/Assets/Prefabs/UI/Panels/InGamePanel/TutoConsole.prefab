@@ -195,9 +195,13 @@ MonoBehaviour:
   m_nextBtn: {fileID: 9150902653829654508}
   m_showBtn: {fileID: 5486821133429945270}
   m_hideBtn: {fileID: 3431862226308910105}
+  m_texteCanvasGroup: {fileID: 2018059693267644269}
   m_charactersPerSecond: 30
   m_scrollSpeed: 25
   m_scrollEdgePause: 1.5
+  m_newDialogueBlinkDuration: 1.5
+  m_newDialogueBlinkCount: 3
+  m_newDialogueBlinkAlpha: 0.3
 --- !u!1 &1583164990356954608
 GameObject:
   m_ObjectHideFlags: 0
@@ -608,6 +612,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8500415241168413177}
+  - component: {fileID: 2018059693267644269}
   - component: {fileID: 4443261088190819135}
   - component: {fileID: 6631331029855124799}
   m_Layer: 5
@@ -640,6 +645,18 @@ RectTransform:
   m_AnchoredPosition: {x: 117, y: -111}
   m_SizeDelta: {x: 557, y: 175}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!225 &2018059693267644269
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3651381051088841299}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!222 &4443261088190819135
 CanvasRenderer:
   m_ObjectHideFlags: 0

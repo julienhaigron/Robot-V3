@@ -18,11 +18,15 @@ public class TutoConsole : MonoBehaviour
 	[SerializeField] private BaseButton m_nextBtn;
 	[SerializeField] private BaseButton m_showBtn;
 	[SerializeField] private BaseButton m_hideBtn;
+	[SerializeField] private CanvasGroup m_texteCanvasGroup;
 
 	[Title("Parameters")]
 	[SerializeField] private float m_charactersPerSecond = 30f;
 	[SerializeField] private float m_scrollSpeed = 25f;
 	[SerializeField] private float m_scrollEdgePause = 1.5f;
+	[SerializeField] private float m_newDialogueBlinkDuration = 1.5f;
+	[SerializeField] private int m_newDialogueBlinkCount = 3;
+	[SerializeField] private float m_newDialogueBlinkAlpha = .3f;
 
 	private List<TutoDialogueContainer> m_allDialogs = new();
 	public List<TutoDialogueContainer> AllDialogs => m_allDialogs;
@@ -41,10 +45,12 @@ public class TutoConsole : MonoBehaviour
 	private RectTransform m_dialogueViewport;
 	private RectTransform m_dialogueTextRect;
 	private Sequence m_scrollSequence;
+	private Tween m_blinkTween;
 
 	private void Awake ()
 	{
 		BuildDialogueViewport();
+
 		m_previousBtn.onClick += GoToPreviousLineOrDialogue;
 		m_nextBtn.onClick += GoToNextLineOrDialogue;
 		m_showBtn.onClick += OnClickShow;
@@ -54,6 +60,7 @@ public class TutoConsole : MonoBehaviour
 	private void OnDestroy ()
 	{
 		m_scrollSequence?.Kill();
+		m_blinkTween?.Kill();
 		m_previousBtn.onClick -= GoToPreviousLineOrDialogue;
 		m_nextBtn.onClick -= GoToNextLineOrDialogue;
 		m_showBtn.onClick -= OnClickShow;
@@ -111,6 +118,35 @@ public class TutoConsole : MonoBehaviour
 			m_dialogueTextRect.anchoredPosition = new Vector2(0f, GetHiddenTextHeight());
 	}
 
+	private void BlinkForNewDialogue ()
+	{
+		if (m_texteCanvasGroup == null || m_newDialogueBlinkDuration <= 0f || m_newDialogueBlinkCount <= 0)
+			return;
+
+		StopBlink();
+
+		//Yoyo spends one loop per half cycle, so two per blink - which also lands the console back on full alpha.
+		int loops = m_newDialogueBlinkCount * 2;
+
+		m_blinkTween = m_texteCanvasGroup.DOFade(m_newDialogueBlinkAlpha, m_newDialogueBlinkDuration / loops)
+			.SetLoops(loops, LoopType.Yoyo)
+			.SetEase(Ease.InOutSine)
+			.OnComplete(() =>
+			{
+				m_blinkTween = null;
+				m_texteCanvasGroup.alpha = 1f;
+			});
+	}
+
+	private void StopBlink ()
+	{
+		m_blinkTween?.Kill();
+		m_blinkTween = null;
+
+		if (m_texteCanvasGroup != null)
+			m_texteCanvasGroup.alpha = 1f;
+	}
+
 	private void StartScrollLoop ()
 	{
 		ResetScroll();
@@ -165,6 +201,7 @@ public class TutoConsole : MonoBehaviour
 
 	public void Hide ( bool _isInstant )
 	{
+		StopBlink();
 		m_dialogueParent.SetActive(false);
 		m_showBtn.SetVisible(true, true);
 		m_hideBtn.SetVisible(false, true);
@@ -183,6 +220,8 @@ public class TutoConsole : MonoBehaviour
 			DisplayDialogue(m_allDialogs.Count - 1);
 		else
 			RefreshButtons();
+
+		BlinkForNewDialogue();
 
 		return newDialogue;
 	}
