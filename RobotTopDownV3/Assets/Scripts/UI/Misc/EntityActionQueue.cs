@@ -259,6 +259,11 @@ public class EntityActionQueue : MonoBehaviour
 
 	private void RefreshPriorityQueue ( int? _entityID, EntityActionData.MainActionType _mainType )
 	{
+		//TODO : remove after playtests
+		m_actionPriorityQueueTfm.gameObject.SetActive(false);
+		return;
+		//
+
 		if (_entityID == null)
 		{
 			foreach (PriorityQueueActionSlot display in m_priorityQueueActionSlots)

@@ -169,8 +169,6 @@ public class FTUEManager : Singleton<FTUEManager>
 		return tutoSequence;
 	}
 
-	//Selecting a unit slides the action list and the action queue in and collapses the log console, so which in game
-	//highlight zones are reachable depends entirely on it.
 	private static bool IsUnitSelected ( TaskManager.TaskContext _context )
 	{
 		return _context.Player.SelectedEntity != null;
