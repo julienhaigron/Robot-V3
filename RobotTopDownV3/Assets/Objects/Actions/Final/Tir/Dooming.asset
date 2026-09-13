@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a743e40aeafc0445b10e59cec8dfa98, type: 3}
   m_Name: Dooming
   m_EditorClassIdentifier: RTD::EntityActionData
-  spreadsheetId: https://docs.google.com/spreadsheets/d/1quAn64T5zuE6npFmDzjOhNFFvw4UJaXSoWxX-uvy3gI/export?format=csv&gid=1776854952
+  spreadsheetId: https://docs.google.com/spreadsheets/d/1quAn64T5zuE6npFmDzjOhNFFvw4UJaXSoWxX-uvy3gI/export?format=csv&gid=1875123267
   displayName: Dooming
   enumID: 47
   icon: {fileID: 21300000, guid: faec93ca1bdf8f14c8a95c7cffcc6bbc, type: 3}
@@ -35,9 +35,9 @@ MonoBehaviour:
   spellVfxLifetime: 1
   conditionType: 10
   previousActionAttackModificator: 0
-  type: 3
-  subType: 6
-  codeType: 5
+  type: 0
+  subType: 1
+  codeType: 1
   targetType: 1
   trajectoryType: 0
   minDistance: 1

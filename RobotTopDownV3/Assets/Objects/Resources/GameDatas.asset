@@ -25,7 +25,7 @@ MonoBehaviour:
     lastPlayerSaveSelectedID: 0
   playerSaves:
   - saveName: New save
-    lastSaveTimeTicks: 639249137881408887
+    lastSaveTimeTicks: 639249143326074293
     allBuiltUnits:
     - name: Start_Melee
       index: 0
@@ -123,9 +123,29 @@ MonoBehaviour:
       auxiliar: []
       chipsets: []
       currentHp: 100
-    squadUnitsIndex: 0000000001000000
-    equipmentInventory: []
-    equipmentCounter: 62
+    squadUnitsIndex: 000000000100000002000000
+    equipmentInventory:
+    - ID: NeurInt_Start_Thermic94
+      dataID: NeurInt_Start_Thermic
+      isDamaged: 0
+      acquisitionDateTicks: 639249066344596194
+    - ID: NeurInt_Start_Radar95
+      dataID: NeurInt_Start_Radar
+      isDamaged: 0
+      acquisitionDateTicks: 639249066344596194
+    - ID: Arm_Start_Blud134
+      dataID: Arm_Start_Blud
+      isDamaged: 0
+      acquisitionDateTicks: 639249066510936612
+    - ID: Occ_Start_Radar135
+      dataID: Occ_Start_Radar
+      isDamaged: 0
+      acquisitionDateTicks: 639249066510936612
+    - ID: Occ_Broken136
+      dataID: Occ_Broken
+      isDamaged: 0
+      acquisitionDateTicks: 639249066510936612
+    equipmentCounter: 157
     currencies:
       keys: 01000000020000000300000004000000
       values: 0000000000000000000000000000000000000000000000000000000000000000
@@ -240,6 +260,102 @@ MonoBehaviour:
           isDamaged: 0
           acquisitionDateTicks: 0
         isFrozen: 0
+      - component:
+          ID: Reactor_Com_Mel_Ult86
+          dataID: Reactor_Com_Mel_Ult
+          isDamaged: 0
+          acquisitionDateTicks: 0
+        isFrozen: 0
+      - component:
+          ID: Frame_Dummy_Base87
+          dataID: Frame_Dummy_Base
+          isDamaged: 0
+          acquisitionDateTicks: 0
+        isFrozen: 0
+      - component:
+          ID: AIM_Pal_Chi88
+          dataID: AIM_Pal_Chi
+          isDamaged: 0
+          acquisitionDateTicks: 0
+        isFrozen: 0
+      - component:
+          ID: Tool_Com_Mine_Kit89
+          dataID: Tool_Com_Mine_Kit
+          isDamaged: 0
+          acquisitionDateTicks: 0
+        isFrozen: 0
+      - component:
+          ID: Chip_Pal_Cool90
+          dataID: Chip_Pal_Cool
+          isDamaged: 0
+          acquisitionDateTicks: 0
+        isFrozen: 0
+      - component:
+          ID: Weap_Psy_Railgun91
+          dataID: Weap_Psy_Railgun
+          isDamaged: 0
+          acquisitionDateTicks: 0
+        isFrozen: 0
+      - component:
+          ID: Arm_Dum_Heat92
+          dataID: Arm_Dum_Heat
+          isDamaged: 0
+          acquisitionDateTicks: 0
+        isFrozen: 0
+      - component:
+          ID: Tool_Psy_Repulsor93
+          dataID: Tool_Psy_Repulsor
+          isDamaged: 0
+          acquisitionDateTicks: 0
+        isFrozen: 0
+      - component:
+          ID: Weap_Psy_Railgun126
+          dataID: Weap_Psy_Railgun
+          isDamaged: 0
+          acquisitionDateTicks: 0
+        isFrozen: 0
+      - component:
+          ID: Occ_Start_Thermic127
+          dataID: Occ_Start_Thermic
+          isDamaged: 0
+          acquisitionDateTicks: 0
+        isFrozen: 0
+      - component:
+          ID: Occ_Start_Thermic128
+          dataID: Occ_Start_Thermic
+          isDamaged: 0
+          acquisitionDateTicks: 0
+        isFrozen: 0
+      - component:
+          ID: Frame_Pal_TankV2129
+          dataID: Frame_Pal_TankV2
+          isDamaged: 0
+          acquisitionDateTicks: 0
+        isFrozen: 0
+      - component:
+          ID: Weap_Com_Gauntlet130
+          dataID: Weap_Com_Gauntlet
+          isDamaged: 0
+          acquisitionDateTicks: 0
+        isFrozen: 0
+      - component:
+          ID: Chip_Pal_Safe131
+          dataID: Chip_Pal_Safe
+          isDamaged: 0
+          acquisitionDateTicks: 0
+        isFrozen: 0
+      - component:
+          ID: Frame_Psy_Marksman132
+          dataID: Frame_Psy_Marksman
+          isDamaged: 0
+          acquisitionDateTicks: 0
+        isFrozen: 0
+      - component:
+          ID: AIM_Starting_Melee133
+          dataID: AIM_Starting_Melee
+          isDamaged: 0
+          acquisitionDateTicks: 0
+        isFrozen: 0
       currentlyRecyclingComponents: []
       repairingComponents: []
     cycleData:
@@ -248,15 +364,17 @@ MonoBehaviour:
       roundsDatas: 000000000000000000000000
       hasInitTournament: 0
     cycleCount: 0
-    dayCount: 0
+    dayCount: 2
     didStartTuto: 1
-    didUnlockReturnToHubPopup: 0
+    didUnlockReturnToHubPopup: 1
     didUnlockRepareStation: 0
-    didUnlockRecycler: 0
+    didUnlockRecycler: 1
     didUnlockShops: 0
     sequencesProgressions:
       keys:
       - FTUESequence
       - MicroTuto0
       - Day1Tuto
-      values: 01000000ffffffff04000000
+      - Day2Tuto
+      - Day3Tuto
+      values: 03000000ffffffffffffffffffffffff03000000
