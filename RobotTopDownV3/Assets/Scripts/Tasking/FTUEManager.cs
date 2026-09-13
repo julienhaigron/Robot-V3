@@ -169,6 +169,18 @@ public class FTUEManager : Singleton<FTUEManager>
 		return tutoSequence;
 	}
 
+	//Selecting a unit slides the action list and the action queue in and collapses the log console, so which in game
+	//highlight zones are reachable depends entirely on it.
+	private static bool IsUnitSelected ( TaskManager.TaskContext _context )
+	{
+		return _context.Player.SelectedEntity != null;
+	}
+
+	private static bool IsNoUnitSelected ( TaskManager.TaskContext _context )
+	{
+		return _context.Player.SelectedEntity == null;
+	}
+
 	private TaskSequence MicroTuto0 ()
 	{
 		int firstPlayerEntityID = 0;
@@ -180,27 +192,33 @@ public class FTUEManager : Singleton<FTUEManager>
 			&& context.UI.currentPanel is InGamePanel
 		, m_firstTutoDialogues[0]));
 		tutoSequence.Append(new DialogueHighlightTask("Select Unit", null, m_firstTutoDialogues[1], new[] { "squadUnitsMicroBtn0", "squadUnitsMicroBtn1" }, null, true));
-		tutoSequence.Append(new DialogueHighlightTask("Action explenation", null, m_firstTutoDialogues[2], "actionBtns"));
-		tutoSequence.Append(new DialogueHighlightTask("Action Queue explenation", ( context ) => context.Turn.RecordedActions.ContainsKey(firstPlayerEntityID) && context.Turn.RecordedActions[firstPlayerEntityID].Count > 0
-		, m_firstTutoDialogues[3], "actionQueue"));
+		tutoSequence.Append(new DialogueHighlightTask("Action explenation", IsUnitSelected, m_firstTutoDialogues[2], "actionBtns")
+			.SetSkipPredicateWhilePerforming(IsNoUnitSelected));
+		tutoSequence.Append(new DialogueHighlightTask("Action Queue explenation", ( context ) => IsUnitSelected(context)
+			&& context.Turn.RecordedActions.ContainsKey(firstPlayerEntityID) && context.Turn.RecordedActions[firstPlayerEntityID].Count > 0
+		, m_firstTutoDialogues[3], "actionQueue").SetSkipPredicateWhilePerforming(IsNoUnitSelected));
 
 		//play phase
-		tutoSequence.Append(new DialogueHighlightTask("Log explenation", ( context ) => context.Turn.currentPhase == TurnManager.TurnPhase.Playing
-		, m_firstTutoDialogues[4], "logs"));
+		tutoSequence.Append(new DialogueHighlightTask("Log explenation", ( context ) => context.Turn.currentPhase == TurnManager.TurnPhase.Playing && IsNoUnitSelected(context)
+		, m_firstTutoDialogues[4], "logs").SetSkipPredicateWhilePerforming(IsUnitSelected));
 
 		//input phase
 		tutoSequence.Append(new WalkOnTileTask("Wait for unit to walk on trigger tile", null, TileGroundType.Trigger));
-		tutoSequence.Append(new DialogueHighlightTask("State explenation", null, m_firstTutoDialogues[5], "stateButtons"));
-		tutoSequence.Append(new DialogueHighlightTask("State modification explenation", null, m_firstTutoDialogues[6], "stateLines"));
+		tutoSequence.Append(new DialogueHighlightTask("State explenation", IsUnitSelected, m_firstTutoDialogues[5], "stateButtons")
+			.SetSkipPredicateWhilePerforming(IsNoUnitSelected));
+		tutoSequence.Append(new DialogueHighlightTask("State modification explenation", IsUnitSelected, m_firstTutoDialogues[6], "stateLines")
+			.SetSkipPredicateWhilePerforming(IsNoUnitSelected));
 
 		tutoSequence.Append(new HighlightLogTask("Highlight attack roll logs", ( context ) => context.Log.Logs.ContainsKey(LogConsole.LogEventType.AttackRoll)
 		, LogConsole.LogEventType.AttackRoll, true));
-		tutoSequence.Append(new DialogueHighlightTask("Attack roll explenation", null, m_firstTutoDialogues[7], "logs"));
+		tutoSequence.Append(new DialogueHighlightTask("Attack roll explenation", IsNoUnitSelected, m_firstTutoDialogues[7], "logs")
+			.SetSkipPredicateWhilePerforming(IsUnitSelected));
 		tutoSequence.Append(new HighlightLogTask("Stop highlighting attack roll logs", null, LogConsole.LogEventType.AttackRoll, false));
 
 		tutoSequence.Append(new HighlightLogTask("Highlight damage logs", ( context ) => context.Log.Logs.ContainsKey(LogConsole.LogEventType.Damage)
 		, LogConsole.LogEventType.Damage, true));
-		tutoSequence.Append(new DialogueHighlightTask("Damage explenation", null, m_firstTutoDialogues[8], "logs"));
+		tutoSequence.Append(new DialogueHighlightTask("Damage explenation", IsNoUnitSelected, m_firstTutoDialogues[8], "logs")
+			.SetSkipPredicateWhilePerforming(IsUnitSelected));
 		tutoSequence.Append(new HighlightLogTask("Stop highlighting damage logs", null, LogConsole.LogEventType.Damage, false));
 
 		tutoSequence.SetSkipPredicate(( context ) => GameDatas.current.currentPlayerSave.didStartTuto && GameDatas.current.currentPlayerSave.dayCount >= 0);
@@ -228,12 +246,18 @@ public class FTUEManager : Singleton<FTUEManager>
 		//micro
 		tutoSequence.Append(new WaitEndLoadingTask("Wait for end loading", ( context ) => context.Game.CurrentMission != null && context.Game.CurrentMission.enumID == MissionDataEnumID.Day1Tuto));
 		tutoSequence.Append(new DialogueTask("Action types explenation", ( context ) => context.UI.currentPanel is InGamePanel, m_day1TutoDialogues[5]));
-		tutoSequence.Append(new DialogueHighlightTask("Movement actions explenation", null, m_day1TutoDialogues[6], "actionBtns"));
-		tutoSequence.Append(new DialogueHighlightTask("Distance attack actions explenation", null, m_day1TutoDialogues[7], "actionBtns"));
-		tutoSequence.Append(new DialogueHighlightTask("Melee attack actions explenation", null, m_day1TutoDialogues[8], "actionBtns"));
-		tutoSequence.Append(new DialogueHighlightTask("Special actions explenation", null, m_day1TutoDialogues[9], "actionBtns"));
-		tutoSequence.Append(new DialogueHighlightTask("Status roll explenation", ( context ) => context.Log.Logs.ContainsKey(LogConsole.LogEventType.Status)
-		, m_day1TutoDialogues[10], "logs"));
+		tutoSequence.Append(new DialogueHighlightTask("Movement actions explenation", IsUnitSelected, m_day1TutoDialogues[6], "actionBtns")
+			.SetSkipPredicateWhilePerforming(IsNoUnitSelected));
+		tutoSequence.Append(new DialogueHighlightTask("Distance attack actions explenation", IsUnitSelected, m_day1TutoDialogues[7], "actionBtns")
+			.SetSkipPredicateWhilePerforming(IsNoUnitSelected));
+		tutoSequence.Append(new DialogueHighlightTask("Melee attack actions explenation", IsUnitSelected, m_day1TutoDialogues[8], "actionBtns")
+			.SetSkipPredicateWhilePerforming(IsNoUnitSelected));
+		tutoSequence.Append(new DialogueHighlightTask("Special actions explenation", IsUnitSelected, m_day1TutoDialogues[9], "actionBtns")
+			.SetSkipPredicateWhilePerforming(IsNoUnitSelected));
+
+		tutoSequence.Append(new HighlightLogTask("Highlight status logs", ( context ) => context.Log.Logs.ContainsKey(LogConsole.LogEventType.Status)
+		, LogConsole.LogEventType.Status, true));
+		tutoSequence.Append(new DialogueTask("Status roll explenation", IsNoUnitSelected, m_day1TutoDialogues[10]));
 
 		tutoSequence.SetSkipPredicate(( context ) => GameDatas.current.currentPlayerSave.dayCount > 0);
 		return tutoSequence;

@@ -31,6 +31,12 @@ public abstract class Task
 		return this;
 	}
 
+	//Releases a task that already started and can no longer be completed, without preventing it from starting.
+	public Task SetSkipPredicateWhilePerforming ( Func<TaskManager.TaskContext, bool> _skipPredicate )
+	{
+		return SetSkipPredicate(( _context ) => IsPerforming && _skipPredicate(_context));
+	}
+
 	public bool TrySkip ( TaskManager.TaskContext _context )
 	{
 		if (IsCompleted || m_skipPredicate == null || !m_skipPredicate(_context))
