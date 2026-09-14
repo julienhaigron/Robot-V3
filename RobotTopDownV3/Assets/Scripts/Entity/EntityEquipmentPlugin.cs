@@ -241,7 +241,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 		m_weapons.Add(newWeapon.ID, newWeapon);
 
 		WeaponCone weaponCone = Instantiate(GameAssets.current.game.weaponCone, m_weaponConesParent);
-		m_weaponConeDictionary.Add(_data.name, weaponCone);
+		m_weaponConeDictionary.Add(newWeapon.ID, weaponCone);
 		weaponCone.Init(m_linkedEntity, _data, m_linkedEntity.Displacement.Spawn.isFirstSide);
 
 		return newWeapon;
