@@ -184,6 +184,12 @@ public class FTUEManager : Singleton<FTUEManager>
 		return _context.Turn.currentPhase != TurnManager.TurnPhase.Recording;
 	}
 
+	private static System.Func<TaskManager.TaskContext, bool> IsMissionAlreadyLoaded ( MissionDataEnumID _missionID )
+	{
+		return ( context ) => context.UI.currentPanel is InGamePanel
+			&& context.Game.CurrentMission != null && context.Game.CurrentMission.enumID == _missionID;
+	}
+
 	private static System.Func<TaskManager.TaskContext, string[]> ActionButtonsOfType ( EntityActionData.ActionType _type )
 	{
 		return ( context ) =>
@@ -258,7 +264,8 @@ public class FTUEManager : Singleton<FTUEManager>
 		tutoSequence.Append(new DialogueHighlightTask("Start match btn explenation", null, m_day1TutoDialogues[4], "startMissionBtn"));
 
 		//micro
-		tutoSequence.Append(new WaitEndLoadingTask("Wait for end loading", ( context ) => context.Game.CurrentMission != null && context.Game.CurrentMission.enumID == MissionDataEnumID.Day1Tuto));
+		tutoSequence.Append(new WaitEndLoadingTask("Wait for end loading", ( context ) => context.Game.CurrentMission != null && context.Game.CurrentMission.enumID == MissionDataEnumID.Day1Tuto)
+			.SetSkipPredicate(IsMissionAlreadyLoaded(MissionDataEnumID.Day1Tuto)));
 		tutoSequence.Append(new DialogueTask("Action types explenation", ( context ) => context.UI.currentPanel is InGamePanel, m_day1TutoDialogues[5]));
 		tutoSequence.Append(new DialogueHighlightTask("Movement actions explenation", IsUnitSelected, m_day1TutoDialogues[6]
 			, ActionButtonsOfType(EntityActionData.ActionType.Movement)).SetSkipPredicateWhilePerforming(IsInputPhaseOver));
@@ -299,7 +306,8 @@ public class FTUEManager : Singleton<FTUEManager>
 		, m_day2TutoDialogues[4]).SetSkipPredicate(( context ) => context.UI.currentPanel is InGamePanel));
 
 		//micro
-		tutoSequence.Append(new WaitEndLoadingTask("Wait for end loading", ( context ) => context.Game.CurrentMission != null && context.Game.CurrentMission.enumID == MissionDataEnumID.Day2Tuto));
+		tutoSequence.Append(new WaitEndLoadingTask("Wait for end loading", ( context ) => context.Game.CurrentMission != null && context.Game.CurrentMission.enumID == MissionDataEnumID.Day2Tuto)
+			.SetSkipPredicate(IsMissionAlreadyLoaded(MissionDataEnumID.Day2Tuto)));
 		tutoSequence.Append(new DialogueTask("Perception types explenation", ( context ) => context.UI.currentPanel is InGamePanel
 		, m_day2TutoDialogues[5]));
 
@@ -329,7 +337,8 @@ public class FTUEManager : Singleton<FTUEManager>
 		, m_day3TutoDialogues[4]).SetSkipPredicate(( context ) => context.UI.currentPanel is InGamePanel));
 
 		//micro
-		tutoSequence.Append(new WaitEndLoadingTask("Wait for end loading", ( context ) => context.Game.CurrentMission != null && context.Game.CurrentMission.enumID == MissionDataEnumID.Day3Tuto));
+		tutoSequence.Append(new WaitEndLoadingTask("Wait for end loading", ( context ) => context.Game.CurrentMission != null && context.Game.CurrentMission.enumID == MissionDataEnumID.Day3Tuto)
+			.SetSkipPredicate(IsMissionAlreadyLoaded(MissionDataEnumID.Day3Tuto)));
 		tutoSequence.Append(new DialogueTask("Nemesis presentation", ( context ) => context.UI.currentPanel is InGamePanel, m_day3TutoDialogues[5]));
 		tutoSequence.Append(new DialogueTask("Unit is gonna die to doom status", ( context ) => context.Log.Logs.ContainsKey(LogConsole.LogEventType.Status)
 		, m_day3TutoDialogues[6]));
