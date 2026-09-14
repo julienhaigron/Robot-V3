@@ -26,6 +26,11 @@ public enum LocalizationKey
     option_rebind,
     option_reset_controls,
     option_rebind_prompt,
+    option_graphics,
+    option_display_mode,
+    option_display_fullscreen,
+    option_display_windowed,
+    option_window_size,
     language_english,
     language_french,
     hub_hangar,
@@ -526,6 +531,11 @@ public static class LocalizationKeyExtensions
             case LocalizationKey.option_rebind: return "option/rebind";
             case LocalizationKey.option_reset_controls: return "option/reset_controls";
             case LocalizationKey.option_rebind_prompt: return "option/rebind_prompt";
+            case LocalizationKey.option_graphics: return "option/graphics";
+            case LocalizationKey.option_display_mode: return "option/display_mode";
+            case LocalizationKey.option_display_fullscreen: return "option/display_fullscreen";
+            case LocalizationKey.option_display_windowed: return "option/display_windowed";
+            case LocalizationKey.option_window_size: return "option/window_size";
             case LocalizationKey.language_english: return "language/english";
             case LocalizationKey.language_french: return "language/french";
             case LocalizationKey.hub_hangar: return "hub/hangar";

@@ -114,6 +114,26 @@ MonoBehaviour:
     values:
     - Press a key for {0}...
     - Appuyez sur une touche pour {0}...
+  - key: option/graphics
+    values:
+    - Graphics
+    - Graphique
+  - key: option/display_mode
+    values:
+    - Display
+    - Affichage
+  - key: option/display_fullscreen
+    values:
+    - Fullscreen
+    - "Plein \xE9cran"
+  - key: option/display_windowed
+    values:
+    - Windowed
+    - "Fen\xEAtr\xE9"
+  - key: option/window_size
+    values:
+    - Window size
+    - "Taille de la fen\xEAtre"
   - key: language/english
     values:
     - English

@@ -33,16 +33,24 @@ public class OptionPopup : AUIPopup
 	[Header("Language")]
 	[SerializeField] private TMP_Dropdown m_languageDropdown;
 
+	[Header("Graphics")]
+	[SerializeField] private TMP_Dropdown m_displayModeDropdown;
+	[SerializeField] private TMP_Dropdown m_windowSizeDropdown;
+
 	[Header("Controls")]
 	[SerializeField] private RebindEntry[] m_rebindEntries;
 	[SerializeField] private BaseButton m_resetControlsBtn;
 	[SerializeField] private TextMeshProUGUI m_rebindPromptLabel;
 
 	private const float VOLUME_PREVIEW_INTERVAL = .08f;
+	private const int MIN_WINDOW_WIDTH = 1024;
 
 	private List<SystemLanguage> m_availableLanguages;
 	private float m_lastVolumePreviewTime = float.NegativeInfinity;
 	private InputActionRebindingExtensions.RebindingOperation m_activeRebind;
+	private List<Vector2Int> m_windowSizes = new List<Vector2Int>();
+	private int m_selectedWindowSizeIndex;
+	private bool m_isFullscreen;
 
 	private void Awake ()
 	{
@@ -54,6 +62,9 @@ public class OptionPopup : AUIPopup
 
 		m_languageDropdown.onValueChanged.AddListener(OnLanguageChanged);
 		LocalizationManager.onLanguageChanged += RefreshLanguages;
+		m_displayModeDropdown.onValueChanged.AddListener(OnDisplayModeChanged);
+		m_windowSizeDropdown.onValueChanged.AddListener(OnWindowSizeChanged);
+		LocalizationManager.onLanguageChanged += RefreshGraphics;
 
 		if (m_resetControlsBtn != null)
 			m_resetControlsBtn.onClick += OnClickResetControls;
@@ -72,6 +83,9 @@ public class OptionPopup : AUIPopup
 
 		m_languageDropdown.onValueChanged.RemoveListener(OnLanguageChanged);
 		LocalizationManager.onLanguageChanged -= RefreshLanguages;
+		LocalizationManager.onLanguageChanged -= RefreshGraphics;
+		m_displayModeDropdown.onValueChanged.RemoveListener(OnDisplayModeChanged);
+		m_windowSizeDropdown.onValueChanged.RemoveListener(OnWindowSizeChanged);
 
 		if (m_resetControlsBtn != null)
 			m_resetControlsBtn.onClick -= OnClickResetControls;
@@ -85,6 +99,7 @@ public class OptionPopup : AUIPopup
 
 		RefreshVolume();
 		RefreshLanguages();
+		RefreshGraphics();
 		RefreshBindings();
 	}
 
@@ -171,6 +186,104 @@ public class OptionPopup : AUIPopup
 			return;
 
 		LocalizationManager.Instance.SetLanguage(m_availableLanguages[_index]);
+	}
+
+	#endregion
+
+	#region Graphics
+
+	private void RefreshGraphics ()
+	{
+		m_isFullscreen = Screen.fullScreen;
+
+		BuildWindowSizes();
+
+		m_displayModeDropdown.ClearOptions();
+		m_displayModeDropdown.AddOptions(new List<string>
+		{
+			LocalizationManager.Instance.Get(LocalizationKey.option_display_fullscreen),
+			LocalizationManager.Instance.Get(LocalizationKey.option_display_windowed)
+		});
+		m_displayModeDropdown.SetValueWithoutNotify(m_isFullscreen ? 0 : 1);
+		m_displayModeDropdown.RefreshShownValue();
+
+		m_windowSizeDropdown.ClearOptions();
+		m_windowSizeDropdown.AddOptions(m_windowSizes.ConvertAll(GetWindowSizeLabel));
+		m_windowSizeDropdown.SetValueWithoutNotify(m_selectedWindowSizeIndex);
+		m_windowSizeDropdown.RefreshShownValue();
+
+		RefreshWindowSizeInteractability();
+	}
+
+	private void BuildWindowSizes ()
+	{
+		m_windowSizes.Clear();
+
+		int maxWidth = Display.main.systemWidth;
+		int maxHeight = Display.main.systemHeight;
+
+		foreach (Resolution resolution in Screen.resolutions)
+		{
+			Vector2Int size = new Vector2Int(resolution.width, resolution.height);
+
+			if (size.x < MIN_WINDOW_WIDTH || size.x > maxWidth || size.y > maxHeight)
+				continue;
+
+			if (!m_windowSizes.Contains(size))
+				m_windowSizes.Add(size);
+		}
+
+		Vector2Int nativeSize = new Vector2Int(maxWidth, maxHeight);
+		if (nativeSize.x >= MIN_WINDOW_WIDTH && !m_windowSizes.Contains(nativeSize))
+			m_windowSizes.Add(nativeSize);
+
+		if (m_windowSizes.Count == 0)
+			m_windowSizes.Add(nativeSize);
+
+		m_windowSizes.Sort(( _a, _b ) => _a.x == _b.x ? _a.y.CompareTo(_b.y) : _a.x.CompareTo(_b.x));
+
+		m_selectedWindowSizeIndex = m_windowSizes.IndexOf(new Vector2Int(Screen.width, Screen.height));
+		if (m_selectedWindowSizeIndex < 0)
+			m_selectedWindowSizeIndex = m_windowSizes.Count - 1;
+	}
+
+	private string GetWindowSizeLabel ( Vector2Int _size )
+	{
+		return _size.x + " x " + _size.y;
+	}
+
+	private void OnDisplayModeChanged ( int _index )
+	{
+		m_isFullscreen = _index == 0;
+
+		if (m_isFullscreen)
+			Screen.SetResolution(Display.main.systemWidth, Display.main.systemHeight, FullScreenMode.FullScreenWindow);
+		else
+			ApplyWindowSize();
+
+		RefreshWindowSizeInteractability();
+	}
+
+	private void OnWindowSizeChanged ( int _index )
+	{
+		if (_index < 0 || _index >= m_windowSizes.Count)
+			return;
+
+		m_selectedWindowSizeIndex = _index;
+
+		if (!m_isFullscreen)
+			ApplyWindowSize();
+	}
+
+	private void ApplyWindowSize ()
+	{
+		Vector2Int size = m_windowSizes[Mathf.Clamp(m_selectedWindowSizeIndex, 0, m_windowSizes.Count - 1)];
+		Screen.SetResolution(size.x, size.y, FullScreenMode.Windowed);
+	}
+
+	private void RefreshWindowSizeInteractability ()
+	{
+		m_windowSizeDropdown.interactable = !m_isFullscreen;
 	}
 
 	#endregion
