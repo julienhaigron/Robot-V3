@@ -54,7 +54,7 @@ public class StartMenuPanel : AUIPanel
 
 	private void OnSaveListChanged ()
 	{
-		ChangeDisplayMode(GameDatas.current.playerSaves.Count > 0 ? StartMenuDisplayMode.LoadSave : StartMenuDisplayMode.Start, true);
+		ChangeDisplayMode(GameDatas.current.hasAnySave ? StartMenuDisplayMode.LoadSave : StartMenuDisplayMode.Start, true);
 	}
 
 	private void ChangeDisplayMode(StartMenuDisplayMode _displayMode, bool _isInstant )
@@ -70,7 +70,7 @@ public class StartMenuPanel : AUIPanel
 			case StartMenuDisplayMode.Start:
 				m_startModeParent.gameObject.SetActive(true);
 				m_newGameBtn.gameObject.SetActive(GameDatas.current.playerSaves.Count < m_savesBtns.Length);
-				m_loadGameBtn.gameObject.SetActive(GameDatas.current.game.lastPlayerSaveSelectedID != -1);
+				m_loadGameBtn.gameObject.SetActive(GameDatas.current.hasAnySave);
 				break;
 			case StartMenuDisplayMode.LoadSave:
 				m_saveBtnsParent.gameObject.SetActive(true);

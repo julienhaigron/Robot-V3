@@ -14,6 +14,9 @@ public partial class ApplicationManager : Singleton<ApplicationManager>
 	[SerializeField] private GameConfig m_gameConfig;
 	[SerializeField] private GameDatas m_gameDatas;
 
+	private const string m_screenSetupPrefKey = "ScreenSetupVersion";
+	private const int m_screenSetupVersion = 1;
+
 	public static GameAssets assets
 	{
 		get
@@ -67,11 +70,22 @@ public partial class ApplicationManager : Singleton<ApplicationManager>
 			return;
 		}
 
-		int newWidth = Mathf.RoundToInt(Screen.width * .75f);
-		int newHeight = Mathf.RoundToInt(Screen.height * .75f);
-		Screen.SetResolution(newWidth, newHeight, Screen.fullScreen);
+		ApplyDefaultScreenSetup();
 
 		StartCoroutine(LoadCoroutine());
+	}
+
+	private void ApplyDefaultScreenSetup ()
+	{
+#if !UNITY_EDITOR
+		if (PlayerPrefs.GetInt(m_screenSetupPrefKey, 0) >= m_screenSetupVersion)
+			return;
+
+		PlayerPrefs.SetInt(m_screenSetupPrefKey, m_screenSetupVersion);
+		PlayerPrefs.Save();
+
+		Screen.SetResolution(Display.main.systemWidth, Display.main.systemHeight, FullScreenMode.FullScreenWindow);
+#endif
 	}
 
 	IEnumerator LoadCoroutine ()

@@ -48,15 +48,22 @@ public partial class GameDatas : ScriptableObject
 	{
 		get
 		{
-			if (playerSaves == null || game.lastPlayerSaveSelectedID == -1 || playerSaves.Count <= game.lastPlayerSaveSelectedID)
+			if (playerSaves == null)
+				playerSaves = new List<PlayerSave>();
+
+			if (!IsValidSaveID(game.lastPlayerSaveSelectedID))
 			{
-				//Debug.LogError("No saves detected. Creating default save");
-				game.lastPlayerSaveSelectedID = 0;
-				CreateSave("NewSave");
-				return playerSaves[0];
+				int fallbackID = playerSaves.FindIndex(save => save != null);
+				if (fallbackID < 0)
+				{
+					CreateSave("NewSave");
+					fallbackID = playerSaves.Count - 1;
+				}
+
+				game.lastPlayerSaveSelectedID = fallbackID;
 			}
-			else
-				return playerSaves[game.lastPlayerSaveSelectedID];
+
+			return playerSaves[game.lastPlayerSaveSelectedID];
 		}
 	}
 
@@ -109,6 +116,21 @@ public partial class GameDatas : ScriptableObject
 			game.lastPlayerSaveSelectedID--;
 
 		return true;
+	}
+
+	public bool hasAnySave
+	{
+		get
+		{
+			if (playerSaves == null)
+				return false;
+
+			for (int i = 0; i < playerSaves.Count; i++)
+				if (playerSaves[i] != null)
+					return true;
+
+			return false;
+		}
 	}
 
 	public bool IsValidSaveID ( int _saveID )
