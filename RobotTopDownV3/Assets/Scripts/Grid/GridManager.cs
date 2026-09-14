@@ -37,6 +37,9 @@ public class GridManager : Singleton<GridManager>
 	private bool m_wasWallDestroyedThisRound;
 	public bool WasWallDestroyedThisRound => m_wasWallDestroyedThisRound;
 
+	private HashSet<TileGroundType> m_groundTypesWalkedOnByPlayer = new();
+	public bool WasGroundTypeWalkedOnByPlayer ( TileGroundType _groundType ) => m_groundTypesWalkedOnByPlayer.Contains(_groundType);
+
 	[SerializeField] private GridData m_gridData;
 	public GridData GridData
 	{
@@ -59,6 +62,7 @@ public class GridManager : Singleton<GridManager>
 		m_entitiesVisions.Clear();
 		m_entitiesVisions.Add(0, new(new Dictionary<Entity, HashSet<Tile>>()));
 		m_entitiesVisions.Add(1, new(new Dictionary<Entity, HashSet<Tile>>()));
+		m_groundTypesWalkedOnByPlayer.Clear();
 		if (!_isEditorMode)
 		{
 			GameManager.Instance.PlayersEntityAnchor[0].Clear();
@@ -1086,6 +1090,8 @@ public class GridManager : Singleton<GridManager>
 
 	public void OnEntityMovement ( Entity _entity )
 	{
+		RegisterGroundTypeWalkedOnByPlayer(_entity);
+
 		if (!m_entitiesVisions.ContainsKey(_entity.OwnerID) || !m_entitiesVisions[_entity.OwnerID].entitiesVisionRange.ContainsKey(_entity))
 			return;
 
@@ -1118,6 +1124,16 @@ public class GridManager : Singleton<GridManager>
 		m_entitiesVisions[_entity.OwnerID] = visionInfo;
 		RefreshLastKnownEnemyPositions();
 		FogOfWarRenderer.Instance.MarkDirty();
+	}
+
+	private void RegisterGroundTypeWalkedOnByPlayer ( Entity _entity )
+	{
+		if (_entity == null || _entity.OwnerID != GameManager.Instance.PlayerID)
+			return;
+
+		Tile currentTile = _entity.Displacement.Coordinates.GetTile();
+		if (currentTile != null)
+			m_groundTypesWalkedOnByPlayer.Add(currentTile.GroundType);
 	}
 
 	public void OnWallDestruction ()

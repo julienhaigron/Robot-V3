@@ -13,15 +13,54 @@ public class WalkOnTileTask : Task
 
     private void OnAnyEntityWalkOnTile (Entity _walkingEntity)
 	{
-        if (_walkingEntity.OwnerID == GameManager.Instance.PlayerID && _walkingEntity.Displacement.Coordinates.GetTile().GroundType == groundType)
+        if (IsPlayerEntityOnTargetGround(_walkingEntity))
 		{
             Complete();
 		}
 	}
 
+    private bool IsPlayerEntityOnTargetGround ( Entity _entity )
+	{
+        if (_entity == null || _entity.OwnerID != GameManager.Instance.PlayerID)
+            return false;
+
+        Tile currentTile = _entity.Displacement.Coordinates.GetTile();
+        return currentTile != null && currentTile.GroundType == groundType;
+	}
+
+    private bool WasTargetGroundAlreadyReached ()
+	{
+        if (GridManager.Instance != null && GridManager.Instance.WasGroundTypeWalkedOnByPlayer(groundType))
+            return true;
+
+        if (GameManager.Instance == null || GameManager.Instance.PlayersEntityAnchor == null)
+            return false;
+
+        foreach (EntityAnchor anchor in GameManager.Instance.PlayersEntityAnchor)
+		{
+            if (anchor == null)
+                continue;
+
+            foreach (Entity entity in anchor.Entities)
+			{
+                if (IsPlayerEntityOnTargetGround(entity))
+                    return true;
+			}
+		}
+
+        return false;
+	}
+
     protected override void OnStart ( TaskManager.TaskContext _context )
     {
         base.OnStart(_context);
+
+        if (WasTargetGroundAlreadyReached())
+		{
+            Complete();
+            return;
+		}
+
         EntityDisplacementPlugin.onAnyEntityMovement += OnAnyEntityWalkOnTile;
     }
 
