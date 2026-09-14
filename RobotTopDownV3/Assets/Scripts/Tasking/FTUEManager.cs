@@ -287,19 +287,21 @@ public class FTUEManager : Singleton<FTUEManager>
 		{
 			GameDatas.current.currentPlayerSave.didUnlockReturnToHubPopup = true;
 		}));
+		tutoSequence.Append(new DialogueTask("Perception types explenation", ( context ) => context.UI.currentPanel is InGamePanel
+		, m_day2TutoDialogues[0]));
 		tutoSequence.Append(new DialogueHighlightTask("Go to hangar", ( context ) => context.UI.currentPanel is SoloHubPanel
-		, m_day2TutoDialogues[0], "hangarBtn"));
+		, m_day2TutoDialogues[1], "hangarBtn"));
 		tutoSequence.Append(new DialogueHighlightTask("Go to workshop", ( context ) => context.UI.currentPanel is HangarPanel
-		, m_day2TutoDialogues[1], "squadUnit2"));
+		, m_day2TutoDialogues[2], "squadUnit2"));
 		tutoSequence.Append(new DialogueTask("Unit composition explenation", ( context ) => context.UI.currentPanel is EntityConfigPanel
-		, m_day2TutoDialogues[2]).SetSkipPredicate(( context ) => context.UI.currentPanel is InGamePanel));
-		tutoSequence.Append(new DialogueTask("Equip neuronal membranes", null
 		, m_day2TutoDialogues[3]).SetSkipPredicate(( context ) => context.UI.currentPanel is InGamePanel));
+		tutoSequence.Append(new DialogueTask("Equip neuronal membranes", null
+		, m_day2TutoDialogues[4]).SetSkipPredicate(( context ) => context.UI.currentPanel is InGamePanel));
 
 		//micro
 		tutoSequence.Append(new WaitEndLoadingTask("Wait for end loading", ( context ) => context.Game.CurrentMission != null && context.Game.CurrentMission.enumID == MissionDataEnumID.Day2Tuto));
 		tutoSequence.Append(new DialogueTask("Perception types explenation", ( context ) => context.UI.currentPanel is InGamePanel
-		, m_day2TutoDialogues[4]));
+		, m_day2TutoDialogues[5]));
 
 		tutoSequence.SetSkipPredicate(( context ) => GameDatas.current.currentPlayerSave.dayCount > 1);
 		return tutoSequence;
