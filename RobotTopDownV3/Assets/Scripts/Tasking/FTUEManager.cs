@@ -283,6 +283,10 @@ public class FTUEManager : Singleton<FTUEManager>
 
 		//macro
 		tutoSequence.Append(new WaitEndLoadingTask("Wait for end loading", ( context ) => GameDatas.current.currentPlayerSave.dayCount == 1));
+		tutoSequence.Append(new ManualTask("Unlock Return to hub", null, () =>
+		{
+			GameDatas.current.currentPlayerSave.didUnlockReturnToHubPopup = true;
+		}));
 		tutoSequence.Append(new DialogueHighlightTask("Go to hangar", ( context ) => context.UI.currentPanel is SoloHubPanel
 		, m_day2TutoDialogues[0], "hangarBtn"));
 		tutoSequence.Append(new DialogueHighlightTask("Go to workshop", ( context ) => context.UI.currentPanel is HangarPanel
@@ -310,7 +314,6 @@ public class FTUEManager : Singleton<FTUEManager>
 		tutoSequence.Append(new ManualTask("Unlock recycler", null, () =>
 		{
 			GameDatas.current.currentPlayerSave.didUnlockRecycler = true;
-			GameDatas.current.currentPlayerSave.didUnlockReturnToHubPopup = true;
 		}));
 		tutoSequence.Append(new DialogueHighlightTask("Go to hangar", ( context ) => context.UI.currentPanel is SoloHubPanel
 		, m_day3TutoDialogues[0], "hangarBtn"));
