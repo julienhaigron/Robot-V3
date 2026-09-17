@@ -10,6 +10,7 @@ public class StartMenuPanel : AUIPanel
 	[SerializeField] private Transform m_startModeParent;
 	[SerializeField] private BaseButton m_newGameBtn;
 	[SerializeField] private BaseButton m_loadGameBtn;
+	[SerializeField] private BaseButton m_continueBtn;
 	[SerializeField] private BaseButton m_optionBtn;
 	[SerializeField] private BaseButton m_quitBtn;
 
@@ -32,6 +33,7 @@ public class StartMenuPanel : AUIPanel
 	{
 		m_newGameBtn.onClick += OnClickNewSaveBtn;
 		m_loadGameBtn.onClick += OnClickLoadSaveBtn;
+		m_continueBtn.onClick += OnClickContinueBtn;
 		m_optionBtn.onClick += OnClickOptionBtn;
 		m_quitBtn.onClick += OnClickQuitBtn;
 		m_multiplayerModeBtn.onClick += OnClickMultiModeBtn;
@@ -44,6 +46,7 @@ public class StartMenuPanel : AUIPanel
 	{
 		m_newGameBtn.onClick -= OnClickNewSaveBtn;
 		m_loadGameBtn.onClick -= OnClickLoadSaveBtn;
+		m_continueBtn.onClick -= OnClickContinueBtn;
 		m_optionBtn.onClick -= OnClickOptionBtn;
 		m_quitBtn.onClick -= OnClickQuitBtn;
 		m_multiplayerModeBtn.onClick -= OnClickMultiModeBtn;
@@ -62,6 +65,7 @@ public class StartMenuPanel : AUIPanel
 		m_saveBtnsParent.gameObject.SetActive(false);
 		m_startModeParent.gameObject.SetActive(false);
 		m_newSaveModeParent.gameObject.SetActive(false);
+		m_continueBtn.gameObject.SetActive(false);
 
 		m_currentDisplayMode = _displayMode;
 
@@ -71,6 +75,7 @@ public class StartMenuPanel : AUIPanel
 				m_startModeParent.gameObject.SetActive(true);
 				m_newGameBtn.gameObject.SetActive(GameDatas.current.playerSaves.Count < m_savesBtns.Length);
 				m_loadGameBtn.gameObject.SetActive(GameDatas.current.hasAnySave);
+				m_continueBtn.gameObject.SetActive(GameDatas.current.hasAnySave);
 				break;
 			case StartMenuDisplayMode.LoadSave:
 				m_saveBtnsParent.gameObject.SetActive(true);
@@ -98,10 +103,14 @@ public class StartMenuPanel : AUIPanel
 		ChangeDisplayMode(StartMenuDisplayMode.Start, true);
 	}
 
-
 	private void OnClickLoadSaveBtn ()
 	{
 		ChangeDisplayMode(StartMenuDisplayMode.LoadSave, false);
+	}
+
+	private void OnClickContinueBtn ()
+	{
+		GameManager.Instance.LoadSaveAndGoToHub(GameDatas.current.game.lastPlayerSaveSelectedID);
 	}
 
 	private void OnClickNewSaveBtn ()

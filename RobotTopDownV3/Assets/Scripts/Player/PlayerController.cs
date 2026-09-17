@@ -10,6 +10,7 @@ using System.Linq;
 public class PlayerController : Singleton<PlayerController>
 {
 	public static Action<int?> onEntitySelected;
+	public static Action<int?> onEntityHovered;
 
 	[SerializeField] private TurnManager m_turnManager;
 	[SerializeField] private FogOfWarRenderer m_fogRenderer;
@@ -67,6 +68,8 @@ public class PlayerController : Singleton<PlayerController>
 
 	private Tile m_hoveredTile;
 	public Tile HoveredTile => m_hoveredTile;
+	private Entity m_hoveredEntity;
+	public Entity HoveredEntity => m_hoveredEntity;
 
 	private Entity m_selectedEntity;
 	public Entity SelectedEntity => m_selectedEntity;
@@ -545,12 +548,30 @@ public class PlayerController : Singleton<PlayerController>
 		}
 	}
 
+	private void RefreshHoveredEntity ( Tile _tile )
+	{
+		Entity hoveredEntity = _tile == null || m_turnManager.currentPhase == TurnManager.TurnPhase.Off
+			? null : _tile.GetCurrentEntity();
+
+		if (hoveredEntity != null && (hoveredEntity.Equipment.IsDead
+			|| (!hoveredEntity.IsAlliedTo(PlayerID) && !hoveredEntity.IsVisible)))
+			hoveredEntity = null;
+
+		if (hoveredEntity == m_hoveredEntity)
+			return;
+
+		m_hoveredEntity = hoveredEntity;
+		onEntityHovered?.Invoke(hoveredEntity == null ? null : hoveredEntity.ID);
+	}
+
 	private void OnTileHovered ( Tile _tile )
 	{
+		RefreshHoveredEntity(_tile);
+
 		AEntityAction editedAction = m_turnManager.GetSelectedDisplayAction();
 		bool isEditingTargets = editedAction != null && editedAction == m_turnManager.CurrentActionSelected;
 
-		if (m_selectedEntity == null || _tile == m_hoveredTile || !_tile.CanInteract
+		if (_tile == null || m_selectedEntity == null || _tile == m_hoveredTile || !_tile.CanInteract
 			|| (EntityActionDisplay.SelectedDisplay != null && !isEditingTargets))
 			return;
 
@@ -626,6 +647,7 @@ public class PlayerController : Singleton<PlayerController>
 
 	private void OnEndLevel ()
 	{
+		RefreshHoveredEntity(null);
 		SelectEntity(null);
 		ClearActionOnTileDisplay();
 		ClearGhostActionOnTileDisplay();

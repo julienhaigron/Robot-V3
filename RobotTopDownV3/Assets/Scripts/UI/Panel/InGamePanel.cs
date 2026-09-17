@@ -54,6 +54,7 @@ public sealed class InGamePanel : AUIPanel
 		LocalizationManager.onLanguageChanged += RefreshPhaseLabel;
 		TurnManager.onActionAdded += OnActionAdded;
 		PlayerController.onEntitySelected += OnEntitySelected;
+		PlayerController.onEntityHovered += OnEntityHovered;
 		m_endPhaseButton.onClick += OnClickEndPhaseBtn;
 	}
 
@@ -83,6 +84,7 @@ public sealed class InGamePanel : AUIPanel
 		LocalizationManager.onLanguageChanged -= RefreshPhaseLabel;
 		TurnManager.onActionAdded -= OnActionAdded;
 		PlayerController.onEntitySelected -= OnEntitySelected;
+		PlayerController.onEntityHovered -= OnEntityHovered;
 		m_endPhaseButton.onClick -= OnClickEndPhaseBtn;
 	}
 
@@ -98,12 +100,21 @@ public sealed class InGamePanel : AUIPanel
 
 	public void RefreshVisual(bool _isEntitySelected, bool _isInstant )
 	{
+		RefreshVisual(_isEntitySelected, _isEntitySelected, _isInstant);
+	}
+
+	private void RefreshVisual ( bool _isEntitySelected, bool _isEntityInfoDisplayed, bool _isInstant )
+	{
+		RectTransform actionQueueTfm = m_actionQueue.transform as RectTransform;
+
 		foreach (RectTransform tfm in m_sectionPlacementsDictionary.Keys)
 		{
+			bool isSectionShown = tfm == actionQueueTfm ? _isEntitySelected : _isEntityInfoDisplayed;
+
 			if (_isInstant)
-				tfm.anchoredPosition = m_sectionPlacementsDictionary[tfm].positions[_isEntitySelected ? 0 : 1];
+				tfm.anchoredPosition = m_sectionPlacementsDictionary[tfm].positions[isSectionShown ? 0 : 1];
 			else
-				tfm.DOAnchorPos(m_sectionPlacementsDictionary[tfm].positions[_isEntitySelected ? 0 : 1], m_animationDuration).SetEase(Ease.OutExpo);
+				tfm.DOAnchorPos(m_sectionPlacementsDictionary[tfm].positions[isSectionShown ? 0 : 1], m_animationDuration).SetEase(Ease.OutExpo);
 		}
 
 		m_logConsole.SetConsoleVisibility(!_isEntitySelected);
@@ -126,7 +137,22 @@ public sealed class InGamePanel : AUIPanel
 
 	private void OnEntitySelected ( int? _entityID )
 	{
-		RefreshVisual(_entityID.HasValue, false);
+		RefreshVisual(_entityID.HasValue, _entityID.HasValue || HasHoveredEntity(), false);
+	}
+
+	private void OnEntityHovered ( int? _entityID )
+	{
+		RefreshVisual(HasSelectedEntity(), _entityID.HasValue || HasSelectedEntity(), false);
+	}
+
+	private bool HasHoveredEntity ()
+	{
+		return PlayerController.Instance != null && PlayerController.Instance.HoveredEntity != null;
+	}
+
+	private bool HasSelectedEntity ()
+	{
+		return PlayerController.Instance != null && PlayerController.Instance.SelectedEntity != null;
 	}
 
 	private void OnStartInputPhase ()

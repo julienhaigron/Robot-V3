@@ -200,16 +200,15 @@ public class InputManager : MonoBehaviour
 	{
 		Ray ray = CameraManager.Instance.Camera.ScreenPointToRay(m_mousePosition);
 
-		if (Physics.Raycast(ray, out RaycastHit hitInfo, GameConfig.current.input.interactionRayCastLength, GameConfig.current.input.interactionRayCastLayer))
-		{
-			if (hitInfo.transform.parent.TryGetComponent(out Tile tile))
-			{
-				if (tile != m_lastHoveredTile)
-				{
-					m_lastHoveredTile = tile;
-					onTileHovered?.Invoke(tile);
-				}
-			}
-		}
+		Tile hoveredTile = null;
+		if (Physics.Raycast(ray, out RaycastHit hitInfo, GameConfig.current.input.interactionRayCastLength, GameConfig.current.input.interactionRayCastLayer)
+			&& hitInfo.transform.parent.TryGetComponent(out Tile tile))
+			hoveredTile = tile;
+
+		if (hoveredTile == m_lastHoveredTile)
+			return;
+
+		m_lastHoveredTile = hoveredTile;
+		onTileHovered?.Invoke(hoveredTile);
 	}
 }

@@ -29,16 +29,36 @@ public class SquadUnitFullMicroDisplay : MonoBehaviour
 	private void Awake ()
 	{
 		PlayerController.onEntitySelected += OnEntitySelected;
+		PlayerController.onEntityHovered += OnEntityHovered;
 	}
 
 	private void OnDestroy ()
 	{
 		PlayerController.onEntitySelected -= OnEntitySelected;
+		PlayerController.onEntityHovered -= OnEntityHovered;
 	}
 
 	private void OnEntitySelected (int? _entityID)
 	{
 		RefreshVisual(_entityID);
+	}
+
+	private void OnEntityHovered ( int? _entityID )
+	{
+		if (_entityID.HasValue)
+		{
+			RefreshVisual(_entityID);
+			return;
+		}
+
+		Entity selectedEntity = PlayerController.Instance == null ? null : PlayerController.Instance.SelectedEntity;
+		RefreshVisual(selectedEntity == null ? null : selectedEntity.ID);
+	}
+
+	private bool AreStatsVisibleOn ( Entity _entity )
+	{
+		return _entity.IsAlliedTo(GameManager.Instance.PlayerID)
+			|| (_entity.IsVisible && _entity.HowIsUnitVisible == NeuronalMembraneEquipmentData.VisionTypes.Thermic);
 	}
 
 	private void RefreshVisual ( int? _entityID )
@@ -53,6 +73,7 @@ public class SquadUnitFullMicroDisplay : MonoBehaviour
 		m_mainFactionPercentageTMP.text = (percentage*100f).ToString() + "%" ;
 		m_mainFactionIconImg.sprite = GameAssets.current.ui.corporationsIcons[mainFaction];
 
+		bool areStatsVisible = AreStatsVisibleOn(entity);
 		SerializableDictionary<EntityEquipmentData.SecondaryStat.StatType, EntityEquipmentData.StatDescription> statsDescriptions = entity.Data.GetStatsDesciptions();
 		List<EntityEquipmentData.SecondaryStat.StatType> keys = statsDescriptions.Keys.ToList();
 		List<EntityEquipmentData.SecondaryStat.StatType> order = GameConfig.current.ui.statsDisplayOrder.ToList();
@@ -60,7 +81,7 @@ public class SquadUnitFullMicroDisplay : MonoBehaviour
 
 		foreach(EntityEquipmentData.SecondaryStat.StatType statType in m_staticDisplays.Keys)
 		{
-			if (statsDescriptions.ContainsKey(statType) && (!m_conditionalStat.Contains(statType) || statsDescriptions[statType].floatValue > 0))
+			if (areStatsVisible && statsDescriptions.ContainsKey(statType) && (!m_conditionalStat.Contains(statType) || statsDescriptions[statType].floatValue > 0))
 			{
 				m_staticDisplays[statType].gameObject.SetActive(true);
 				m_staticDisplays[statType].Init(statsDescriptions[statType]);
@@ -81,21 +102,21 @@ public class SquadUnitFullMicroDisplay : MonoBehaviour
 			else if (m_statusSectionFilter.Contains(statType))
 				statusStats.Add(statsDescriptions[statType]);
 		}
-		if(damageStats.Count > 0)
+		if (areStatsVisible && damageStats.Count > 0)
 		{
 			m_damageSectionDisplay.Init(LocalizationManager.Instance.Get(LocalizationKey.stat_section_damages), damageStats);
 			m_damageSectionDisplay.gameObject.SetActive(true);
 		}
 		else
 			m_damageSectionDisplay.gameObject.SetActive(false);
-		if (resStats.Count > 0)
+		if (areStatsVisible && resStats.Count > 0)
 		{
 			m_resistanceSectionDisplay.Init(LocalizationManager.Instance.Get(LocalizationKey.stat_section_resistances), resStats);
 			m_resistanceSectionDisplay.gameObject.SetActive(true);
 		}
 		else
 			m_resistanceSectionDisplay.gameObject.SetActive(false);
-		if (statusStats.Count > 0)
+		if (areStatsVisible && statusStats.Count > 0)
 		{
 			m_statusSectionDisplay.Init(LocalizationManager.Instance.Get(LocalizationKey.stat_section_status), statusStats);
 			m_statusSectionDisplay.gameObject.SetActive(true);
