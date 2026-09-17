@@ -99,9 +99,6 @@ public class Weapon : MonoBehaviour
 		int lastSuccessfullAttackIndex = -1;
 		for (int i = 0; i < _attackAction.attacksInfos.Length; i++)
 		{
-			if (_attackAction.attacksInfos[i].isAttackSuccessfull && _attackAction.DidDesignatedTargetEscapeReach(i))
-				_attackAction.attacksInfos[i].isAttackSuccessfull = false;
-
 			if (_attackAction.attacksInfos[i].isAttackSuccessfull)
 				lastSuccessfullAttackIndex = i;
 		}

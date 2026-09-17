@@ -31,6 +31,7 @@ public abstract class AEntityAction : INetworkSerializable
 
 	public int lifetime = 0;
 	public bool doesFreeActionOwnFacing;
+	public int orientationAtPerform = -1;
 	public bool wasReplacedByAI;
 
 	public string TagLogMessage ( string _message )

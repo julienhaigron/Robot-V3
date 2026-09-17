@@ -1207,6 +1207,8 @@ public class TurnManager : Singleton<TurnManager>
 			{
 				if (!recordedAction.action.IsPerformingAtTick(currentTick))
 					continue;
+
+				recordedAction.action.orientationAtPerform = GetOrientationAtPerformOf(recordedAction);
 				recordedAction.action.Prepare(recordedAction.entityState);
 			}
 		}
@@ -1354,13 +1356,33 @@ public class TurnManager : Singleton<TurnManager>
 		}
 	}
 
-	private void PlayActionTick ( RecordedAction _recordedAction )
+	private bool DoesPlayFreeActionAtTick ( RecordedAction _recordedAction )
 	{
-		bool doesPlayFreeAction = _recordedAction.freeAction != null
+		return _recordedAction.freeAction != null
 			&& _recordedAction.freeActionType != EntityActionEnumID.Wait
 			&& _recordedAction.freeActionType != EntityActionEnumID.Unknowned
 			&& _recordedAction.freeAction.lifetime < _recordedAction.freeAction.TotalDuration
 			&& _recordedAction.action.IsPerformingAtTick(currentTick);
+	}
+
+	private int GetOrientationAtPerformOf ( RecordedAction _recordedAction )
+	{
+		Entity performingEntity = GameManager.Instance.GetEntityFromID(_recordedAction.performingEntityID);
+		int currentOrientation = performingEntity == null ? -1 : performingEntity.Displacement.CurrentOrientation;
+
+		if (!DoesPlayFreeActionAtTick(_recordedAction))
+			return currentOrientation;
+
+		return _recordedAction.freeAction is RotateEntityAction rotateAction
+			&& rotateAction.targetedOrientationID != null
+			&& rotateAction.targetedOrientationID.Length > rotateAction.lifetime
+			? rotateAction.targetedOrientationID[rotateAction.lifetime]
+			: currentOrientation;
+	}
+
+	private void PlayActionTick ( RecordedAction _recordedAction )
+	{
+		bool doesPlayFreeAction = DoesPlayFreeActionAtTick(_recordedAction);
 
 		_recordedAction.action.doesFreeActionOwnFacing = doesPlayFreeAction && IsRotationFreeAction(_recordedAction);
 

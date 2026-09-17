@@ -54,6 +54,13 @@ public class MoveThenAttackAction : AttackAction
 			PerformingEntity.Displacement.Coordinates.GetTile().SetEntity(null, _isThisTurn: true);
 	}
 
+	protected override Tile GetAttackOriginTile ()
+	{
+		return !isActionCanceled && positionAfterMovementID != -1
+			? GridManager.Instance.Tiles[positionAfterMovementID]
+			: base.GetAttackOriginTile();
+	}
+
 	public override void CancelAction ()
 	{
 		base.CancelAction();

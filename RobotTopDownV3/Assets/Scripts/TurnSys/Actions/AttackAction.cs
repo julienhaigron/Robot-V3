@@ -99,9 +99,15 @@ public class AttackAction : AEntityAction
 		if (exchangeTile == null || exchangeTile == GetTargetTileAt(_attackIndex))
 			return false;
 
-		Tile from = PerformingEntity.Displacement.Coordinates.GetTile();
-		return !PerformingEntity.Equipment.GetTilesInWeaponRange(this, true, from, PerformingEntity.Displacement.CurrentOrientation, true)
-			.Contains(exchangeTile);
+		Tile from = GetAttackOriginTile();
+		int orientation = orientationAtPerform < 0 ? PerformingEntity.Displacement.CurrentOrientation : orientationAtPerform;
+
+		return from != null && !PerformingEntity.Equipment.GetTilesInWeaponRange(this, true, from, orientation, true).Contains(exchangeTile);
+	}
+
+	protected virtual Tile GetAttackOriginTile ()
+	{
+		return PerformingEntity.Displacement.Coordinates.GetTile();
 	}
 
 	public override void ConflictCheckPrewarm ()
@@ -218,6 +224,11 @@ public class AttackAction : AEntityAction
 				}
 				else if (targetEntity == null)
 					attackInfo.isAttackSuccessfull = true;
+				else if (DidDesignatedTargetEscapeReach(attackCount))
+				{
+					attackInfo.isAttackSuccessfull = false;
+					LogConsole.AddLog(LocalizationManager.Instance.Get(LocalizationKey.log_attack_failure), LogConsole.LogEventType.AttackRoll);
+				}
 				else
 					attackInfo.isAttackSuccessfull = PerformingEntity.Equipment.AttackRoll(this, attackInfo, targetEntity, out coverHitted);
 
