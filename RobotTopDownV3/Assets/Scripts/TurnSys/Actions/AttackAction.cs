@@ -89,6 +89,21 @@ public class AttackAction : AEntityAction
 		return GridManager.Instance.Tiles[TurnManager.Instance.GetEntityPositionAtEndOfTick(_entity.ID, displacement.Coordinates.ID)];
 	}
 
+	public bool DidDesignatedTargetEscapeReach ( int _attackIndex )
+	{
+		Entity targetEntity = GetTargetEntityAt(_attackIndex);
+		if (targetEntity == null || PerformingEntity == null)
+			return false;
+
+		Tile exchangeTile = GetExchangeTileOf(targetEntity);
+		if (exchangeTile == null || exchangeTile == GetTargetTileAt(_attackIndex))
+			return false;
+
+		Tile from = PerformingEntity.Displacement.Coordinates.GetTile();
+		return !PerformingEntity.Equipment.GetTilesInWeaponRange(this, true, from, PerformingEntity.Displacement.CurrentOrientation, true)
+			.Contains(exchangeTile);
+	}
+
 	public override void ConflictCheckPrewarm ()
 	{
 		base.ConflictCheckPrewarm();
