@@ -57,6 +57,27 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 104abd066c3704a4fa54dfb22e3f68e0, type: 3}
+--- !u!95 &448075522763555946 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 2306796818782091148, guid: 104abd066c3704a4fa54dfb22e3f68e0, type: 3}
+  m_PrefabInstance: {fileID: 2752967299389420518}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &536437204319499294 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2397410233583077368, guid: 104abd066c3704a4fa54dfb22e3f68e0, type: 3}
+  m_PrefabInstance: {fileID: 2752967299389420518}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 527443afbf0514243b736c9d7cf87d31, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: RTD::HumanoidEntityIK
+--- !u!4 &1603531366985081046 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 3491523792973910832, guid: 104abd066c3704a4fa54dfb22e3f68e0, type: 3}
+  m_PrefabInstance: {fileID: 2752967299389420518}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &5825351713042947600 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8566778501812465142, guid: 104abd066c3704a4fa54dfb22e3f68e0, type: 3}
@@ -70,6 +91,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1047337403534908312, guid: facf97aac763a09489a27b119520aaff, type: 3}
+      propertyPath: m_bottomPosition
+      value: 
+      objectReference: {fileID: 5825351713042947600}
     - target: {fileID: 2413142668327609139, guid: facf97aac763a09489a27b119520aaff, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -114,6 +139,22 @@ PrefabInstance:
       propertyPath: m_Name
       value: PaladinTextFix
       objectReference: {fileID: 0}
+    - target: {fileID: 4353477765861233231, guid: facf97aac763a09489a27b119520aaff, type: 3}
+      propertyPath: m_center
+      value: 
+      objectReference: {fileID: 1603531366985081046}
+    - target: {fileID: 4353477765861233231, guid: facf97aac763a09489a27b119520aaff, type: 3}
+      propertyPath: m_animator
+      value: 
+      objectReference: {fileID: 448075522763555946}
+    - target: {fileID: 4353477765861233231, guid: facf97aac763a09489a27b119520aaff, type: 3}
+      propertyPath: m_humanoidEntityIK
+      value: 
+      objectReference: {fileID: 536437204319499294}
+    - target: {fileID: 5695719431895869441, guid: facf97aac763a09489a27b119520aaff, type: 3}
+      propertyPath: m_weaponConesParent
+      value: 
+      objectReference: {fileID: 7213318542150343858}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
@@ -125,5 +166,10 @@ PrefabInstance:
 --- !u!4 &7191302670993653830 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3846169601763104409, guid: facf97aac763a09489a27b119520aaff, type: 3}
+  m_PrefabInstance: {fileID: 6245636654877103839}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &7213318542150343858 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 3654160432149023341, guid: facf97aac763a09489a27b119520aaff, type: 3}
   m_PrefabInstance: {fileID: 6245636654877103839}
   m_PrefabAsset: {fileID: 0}

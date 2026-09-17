@@ -411,8 +411,8 @@ MonoBehaviour:
   m_continueBtn: {fileID: 6444787724276443732}
   m_optionBtn: {fileID: 5036732826758410977}
   m_quitBtn: {fileID: 5160007464585630009}
-  m_lastSaveStepTMP: {fileID: 0}
-  m_lastSaveCycleTMP: {fileID: 0}
+  m_lastSaveStepTMP: {fileID: 4264968925136545795}
+  m_lastSaveCycleTMP: {fileID: 8228954449622042820}
   m_saveBtnsParent: {fileID: 2108161829940901082}
   m_savesBtns:
   - {fileID: 6886488642085140481}

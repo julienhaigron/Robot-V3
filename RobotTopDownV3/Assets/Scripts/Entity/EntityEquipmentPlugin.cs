@@ -238,6 +238,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 	{
 		Weapon newWeapon = Instantiate(_data.prefab, m_linkedEntity.Skin.IK.handGrabSocket);
 		newWeapon.Init(m_linkedEntity, _data, _id, _isFirstSide);
+		newWeapon.transform.localScale = Vector3.one;
 		m_weapons.Add(newWeapon.ID, newWeapon);
 
 		WeaponCone weaponCone = Instantiate(GameAssets.current.game.weaponCone, m_weaponConesParent);
@@ -503,6 +504,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 	{
 		Tool newTool = Instantiate(_data.prefab, m_linkedEntity.Skin.IK.handGrabSocket);
 		newTool.Init(m_linkedEntity, _data, _id, _isFirstSide);
+		newTool.transform.localScale = Vector3.one;
 		m_tools.Add(newTool.ID, newTool);
 
 		return newTool;
