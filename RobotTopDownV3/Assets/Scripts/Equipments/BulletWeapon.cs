@@ -103,6 +103,8 @@ public class BulletWeapon : Weapon
 			List<WeaponTarget> targets = GetTargets(_attackAction, _attackIndex);
 			Dictionary<WeaponEquipmentData.DamageType, int> damages = BuildDamageDictionary(_attackInfo);
 
+			ShowAoEDodges(_attackAction, targets);
+
 			foreach (ParticleSystem ps in m_onPerformPS)
 				ps.Play();
 			SoundManager.Instance.Play(_attackAction.Data.onPerformSingleAttackSFXID);
@@ -170,7 +172,7 @@ public class BulletWeapon : Weapon
 			bool isLastBullet = i == hitAmount - 1 && _attackIndex == _lastSuccessfullAttackIndex;
 			Entity missedTarget = i == hitAmount - 1 ? _target.targetEntity : null;
 			m_bulletPool.Get<Projectile>(m_bulletPoint.position, m_bulletPoint.rotation).SetProjectileDataAndLaunch(bulletData
-				, ( impactTile ) => ApplyBulletImpact(impactTile, _attackAction, _attackInfo, isLastBullet, _target.targetEntity), () => OnProjectileDespawn(isLastBullet, missedTarget), hasTrajectoryProjectileBuff);
+				, ( impactTile ) => ApplyBulletImpact(impactTile, _attackAction, _attackInfo, isLastBullet, _target.targetEntity), () => OnProjectileDespawn(isLastBullet, missedTarget, _attackInfo.didTargetDodge), hasTrajectoryProjectileBuff);
 
 			yield return m_timeBetweenBulletsWFS;
 		}
@@ -192,6 +194,9 @@ public class BulletWeapon : Weapon
 		List<Tile> impactedTiles = _attackAction.Data.aoeType != EntityActionData.AOEType.Noone
 			? m_user.Equipment.GetTilesInAoERange(_attackAction, _impactTile, true)
 			: new List<Tile>() { _impactTile };
+
+		if (_attackAction.Data.aoeType != EntityActionData.AOEType.Noone)
+			ShowAoEDodges(_attackAction, impactedTiles);
 
 		bool wasDesignatedTargetHit = false;
 
@@ -230,10 +235,10 @@ public class BulletWeapon : Weapon
 			ApplyEffects(_entity, pe);
 	}
 
-	private void OnProjectileDespawn ( bool _isLastBullet, Entity _missedTarget )
+	private void OnProjectileDespawn ( bool _isLastBullet, Entity _missedTarget, bool _didTargetDodge )
 	{
 		//Projectile only calls this back when the bullet hit nothing at all, which is exactly a miss
-		ShowMissOn(_missedTarget);
+		ShowMissOn(_missedTarget, _didTargetDodge);
 
 		if (_isLastBullet)
 			EndAttack(m_lastPerformedAction);

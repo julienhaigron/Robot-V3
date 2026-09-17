@@ -17,6 +17,7 @@ public class AttackAction : AEntityAction
 	public class SingleAttackInfo : INetworkSerializable
 	{
 		public bool isAttackSuccessfull;
+		public bool didTargetDodge;
 		public bool[] areStatusesSuccess;
 		public short[] statusIds;
 		public short[] statusDurations;
@@ -26,6 +27,7 @@ public class AttackAction : AEntityAction
 		public void NetworkSerialize<T> ( BufferSerializer<T> serializer ) where T : IReaderWriter
 		{
 			serializer.SerializeValue(ref isAttackSuccessfull);
+			serializer.SerializeValue(ref didTargetDodge);
 			serializer.SerializeValue(ref areStatusesSuccess);
 			serializer.SerializeValue(ref statusIds);
 			serializer.SerializeValue(ref statusDurations);
@@ -76,17 +78,25 @@ public class AttackAction : AEntityAction
 		return GetExchangeResultAgainst(_entity) == EntityActionData.PFCResultType.FirstWins;
 	}
 
-	public Tile GetExchangeTileOf ( Entity _entity )
+	public Tile GetDepartureTileOf ( Entity _entity )
 	{
 		if (_entity == null)
 			return null;
 
 		EntityDisplacementPlugin displacement = _entity.Displacement;
 
-		if (DoesWinExchangeAgainst(_entity))
-			return displacement.DidMoveThisTick ? displacement.PreviousCoordinates.GetTile() : displacement.Coordinates.GetTile();
+		return displacement.DidMoveThisTick ? displacement.PreviousCoordinates.GetTile() : displacement.Coordinates.GetTile();
+	}
 
-		return GridManager.Instance.Tiles[TurnManager.Instance.GetEntityPositionAtEndOfTick(_entity.ID, displacement.Coordinates.ID)];
+	public Tile GetExchangeTileOf ( Entity _entity )
+	{
+		if (_entity == null)
+			return null;
+
+		if (DoesWinExchangeAgainst(_entity))
+			return GetDepartureTileOf(_entity);
+
+		return GridManager.Instance.Tiles[TurnManager.Instance.GetEntityPositionAtEndOfTick(_entity.ID, _entity.Displacement.Coordinates.ID)];
 	}
 
 	public bool DidDesignatedTargetEscapeReach ( int _attackIndex )
@@ -227,6 +237,7 @@ public class AttackAction : AEntityAction
 				else if (DidDesignatedTargetEscapeReach(attackCount))
 				{
 					attackInfo.isAttackSuccessfull = false;
+					attackInfo.didTargetDodge = true;
 					LogConsole.AddLog(LocalizationManager.Instance.Get(LocalizationKey.log_attack_failure), LogConsole.LogEventType.AttackRoll);
 				}
 				else

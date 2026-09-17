@@ -64,7 +64,11 @@ public abstract class AEntityAction : INetworkSerializable
 		serializer.SerializeValue(ref actualDuration);
 		serializer.SerializeValue(ref cooldownDuration);
 		serializer.SerializeValue(ref lifetime);
+		serializer.SerializeValue(ref doesFreeActionOwnFacing);
+		serializer.SerializeValue(ref orientationAtPerform);
+		serializer.SerializeValue(ref wasReplacedByAI);
 		serializer.SerializeValue(ref timeAtStart);
+		serializer.SerializeValue(ref m_isPerforming);
 	}
 
 	public virtual void Init ( EntityActionData _data, string _linkedEquipmentID, int _performingEntityID, int _positionAtActionStartID, int _timeAtStart )

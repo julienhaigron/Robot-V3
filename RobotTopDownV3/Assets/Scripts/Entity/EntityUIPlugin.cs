@@ -13,6 +13,8 @@ public class EntityUIPlugin : EntityPlugin
 	[SerializeField] private Color m_damageTextColor = Color.white;
 	[SerializeField] private string m_missText = "Miss";
 	[SerializeField] private Color m_missTextColor = Color.red;
+	[SerializeField] private string m_dodgeText = "Esquive";
+	[SerializeField] private Color m_dodgeTextColor = new(.3f, .8f, 1f);
 	[SerializeField, FormerlySerializedAs("m_immortalText")] private string m_indestructibleText = "Indestructible";
 	[SerializeField] private Color m_indestructibleTextColor = new(.65f, .2f, .95f);
 	[SerializeField] private RectTransform m_statusDisplayParent;
@@ -69,6 +71,11 @@ public class EntityUIPlugin : EntityPlugin
 	public void ShowMissText ()
 	{
 		ShowText(m_missText, m_missTextColor);
+	}
+
+	public void ShowDodgeText ()
+	{
+		ShowText(m_dodgeText, m_dodgeTextColor);
 	}
 
 	private void OnTakeDamage( EntityEquipmentPlugin.TakeDamageCallback _damageInfo )

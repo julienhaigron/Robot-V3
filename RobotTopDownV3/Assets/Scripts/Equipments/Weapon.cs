@@ -173,12 +173,14 @@ public class Weapon : MonoBehaviour
 
 		if (!_attackInfo.isAttackSuccessfull)
 		{
-			ShowMissOn(_attackAction.GetTargetEntityAt(_attackIndex));
+			ShowMissOn(_attackAction.GetTargetEntityAt(_attackIndex), _attackInfo.didTargetDodge);
 			yield break;
 		}
 
 		List<WeaponTarget> targets = GetTargets(_attackAction, _attackIndex);
 		Dictionary<WeaponEquipmentData.DamageType, int> damages = BuildDamageDictionary(_attackInfo);
+
+		ShowAoEDodges(_attackAction, targets);
 
 		foreach (ParticleSystem ps in m_onPerformPS)
 			ps.Play();
@@ -347,9 +349,41 @@ public class Weapon : MonoBehaviour
 
 	#endregion
 
-	protected void ShowMissOn ( Entity _target )
+	protected void ShowAoEDodges ( AttackAction _attackAction, List<WeaponTarget> _targets )
 	{
-		if (_target != null && !_target.Equipment.IsDead)
+		if (_attackAction.Data.aoeType == EntityActionData.AOEType.Noone)
+			return;
+
+		List<Tile> zone = new();
+		foreach (WeaponTarget target in _targets)
+			zone.Add(target.targetTile);
+
+		ShowAoEDodges(_attackAction, zone);
+	}
+
+	protected void ShowAoEDodges ( AttackAction _attackAction, List<Tile> _zone )
+	{
+		foreach (EntityAnchor anchor in GameManager.Instance.PlayersEntityAnchor)
+		{
+			foreach (Entity entity in anchor.Entities)
+			{
+				if (entity == m_user || entity.Equipment.IsDead)
+					continue;
+
+				if (_zone.Contains(_attackAction.GetDepartureTileOf(entity)) && !_zone.Contains(_attackAction.GetExchangeTileOf(entity)))
+					ShowMissOn(entity, true);
+			}
+		}
+	}
+
+	protected void ShowMissOn ( Entity _target, bool _didTargetDodge = false )
+	{
+		if (_target == null || _target.Equipment.IsDead)
+			return;
+
+		if (_didTargetDodge)
+			_target.UI.ShowDodgeText();
+		else
 			_target.UI.ShowMissText();
 	}
 
