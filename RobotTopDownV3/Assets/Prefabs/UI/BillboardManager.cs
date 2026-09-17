@@ -23,7 +23,7 @@ public class BillboardManager : MonoBehaviour
 	private void LateUpdate ()
 	{
 		Quaternion targetRot = TargetRot;
-		bool rotChanged = targetRot != m_lastTargetRot;
+		bool rotChanged = !targetRot.Equals(m_lastTargetRot);
 		m_lastTargetRot = targetRot;
 
 		if (rotChanged)
