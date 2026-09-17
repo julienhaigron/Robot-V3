@@ -124,7 +124,7 @@ public abstract class AEntityAction : INetworkSerializable
 		if (hoveredTile == null || Data.aoeType == EntityActionData.AOEType.Noone || PerformingEntity == null)
 			return;
 
-		foreach (Tile tile in PerformingEntity.Equipment.GetTilesInAoERange(this, hoveredTile, true))
+		foreach (Tile tile in PerformingEntity.Equipment.GetTilesInAoERange(this, hoveredTile, true, _usePlannedPose: true))
 			PlayerController.Instance.AddAoEPreviewOutline(tile);
 	}
 

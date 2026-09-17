@@ -407,10 +407,10 @@ public class GridManager : Singleton<GridManager>
 		return tilesInRange;
 	}
 
-	public List<Tile> GetTilesInAoERange ( EntityActionData.AOEType _type, Entity _caster, Tile _from, Tile _targetTile, int _minDistance, int _maxDistance, int _extraValue, bool _isThisTurn = false )
+	public List<Tile> GetTilesInAoERange ( EntityActionData.AOEType _type, Entity _caster, Tile _from, Tile _targetTile, int _minDistance, int _maxDistance, int _extraValue, bool _isThisTurn = false, int _orientation = -1 )
 	{
 		List<Tile> tilesInRange = new();
-		int orientation = _caster.Displacement.CurrentOrientation;
+		int orientation = _orientation < 0 ? _caster.Displacement.CurrentOrientation : _orientation;
 
 		switch (_type)
 		{

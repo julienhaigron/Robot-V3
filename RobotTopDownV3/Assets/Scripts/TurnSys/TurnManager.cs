@@ -508,7 +508,7 @@ public class TurnManager : Singleton<TurnManager>
 				foreach (Tile targetTile in m_currentActionTargetTiles)
 				{
 					if (targetTile != null)
-						zoneTiles.AddRange(_action.PerformingEntity.Equipment.GetTilesInAoERange(_action, targetTile, true));
+						zoneTiles.AddRange(_action.PerformingEntity.Equipment.GetTilesInAoERange(_action, targetTile, true, _usePlannedPose: true));
 				}
 			}
 		}
