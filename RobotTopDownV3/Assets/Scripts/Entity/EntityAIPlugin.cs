@@ -171,7 +171,10 @@ public class EntityAIPlugin : EntityPlugin
 		else if (canMove && isTargetVisible && !hasEnemyInWeaponRange)
 		{
 			Tile currentTile = m_linkedEntity.Displacement.Coordinates.GetTile();
-			int orientationTowardTarget = GridManager.Instance.GetClosestOrientation(currentTile, committedTarget.Displacement.Coordinates.GetTile());
+			Tile targetResolutionTile = GetResolutionTileOf(GetFirstAvailableAttackAction(), committedTarget);
+			int orientationTowardTarget = targetResolutionTile == null || targetResolutionTile == currentTile
+				? m_linkedEntity.Displacement.CurrentOrientation
+				: GridManager.Instance.GetClosestOrientation(currentTile, targetResolutionTile);
 			bool isAtCorrectOrientation = orientationTowardTarget == m_linkedEntity.Displacement.CurrentOrientation;
 
 			bool isTravellingThisTick = _recordedAction.action.DoesLeaveTileThisTick(currentTile.coordinates.ID);
@@ -242,8 +245,8 @@ public class EntityAIPlugin : EntityPlugin
 
 					if (tileIDs.Count == 0 && CanFireFrom(from, committedTarget, true))
 					{
-						Tile orientationTo = GridManager.Instance.Tiles[TurnManager.Instance.GetEntityPositionAtEndOfTick(committedTarget.ID, targetTile.coordinates.ID)];
-						int firingOrientation = orientationTo == from
+						Tile orientationTo = GetResolutionTileOf(GetFirstAvailableAttackAction(), committedTarget);
+						int firingOrientation = orientationTo == null || orientationTo == from
 							? m_linkedEntity.Displacement.CurrentOrientation
 							: GridManager.Instance.GetClosestOrientation(from, orientationTo);
 
@@ -327,6 +330,23 @@ public class EntityAIPlugin : EntityPlugin
 		return true;
 	}
 
+	private Tile GetResolutionTileOf ( AEntityAction _action, Entity _entity )
+	{
+		if (_entity == null)
+			return null;
+
+		return _action is AttackAction attackAction
+			? attackAction.GetExchangeTileOf(_entity)
+			: _entity.Displacement.Coordinates.GetTile();
+	}
+
+	private AEntityAction GetFirstAvailableAttackAction ()
+	{
+		System.Tuple<EntityActionData, string> pair = GetAvailableAttackAction(_ignoreRemainingTokens: true).FirstOrDefault();
+
+		return pair == null ? null : TurnManager.Instance.GetAction(pair.Item1, m_linkedEntity.ID, pair.Item2, TurnManager.currentTick);
+	}
+
 	private bool TryGetEnemiesInWeaponRangeAt ( AEntityAction _action, Tile _from, int _orientation, out List<Entity> _enemies
 		, out EntityActionEnumID _attackEnumID, out string _equipmentID, bool _isThisTurn = true )
 	{
@@ -343,12 +363,19 @@ public class EntityAIPlugin : EntityPlugin
 				? _action
 				: TurnManager.Instance.GetAction(GameAssets.current.game.entityActionsData[pair.Item1.enumID], m_linkedEntity.ID, pair.Item2, _action.timeAtStart);
 
+			HashSet<Tile> tilesInRange = m_linkedEntity.Equipment.GetTilesInWeaponRange(relatedAction, _isThisTurn, _from, _orientation, true).ToHashSet();
 			List<Entity> enemiesInCone = new();
-			foreach (Tile tile in m_linkedEntity.Equipment.GetTilesInWeaponRange(relatedAction, _isThisTurn, _from, _orientation))
+			foreach (EntityAnchor anchor in GameManager.Instance.PlayersEntityAnchor)
 			{
-				Entity entityOnTile = tile.GetEntity(_isThisTurn);
-				if (entityOnTile != null && !entityOnTile.IsAlliedTo(m_linkedEntity.OwnerID))
-					enemiesInCone.Add(entityOnTile);
+				foreach (Entity entity in anchor.Entities)
+				{
+					if (entity == m_linkedEntity || entity.Equipment.IsDead
+						|| entity.IsAlliedTo(m_linkedEntity.OwnerID) || enemiesInCone.Contains(entity))
+						continue;
+
+					if (tilesInRange.Contains(GetResolutionTileOf(relatedAction, entity)))
+						enemiesInCone.Add(entity);
+				}
 			}
 
 			if (enemiesInCone.Count == 0)
@@ -556,7 +583,7 @@ public class EntityAIPlugin : EntityPlugin
 		{
 			AEntityAction relatedAction = _action.enumID == pair.Item1.enumID ? _action : TurnManager.Instance.GetAction(GameAssets.current.game.entityActionsData[pair.Item1.enumID], m_linkedEntity.ID, pair.Item2, _action.timeAtStart);
 
-			List<Tile> tilesInWeaponCone = m_linkedEntity.Equipment.GetTilesInWeaponRange(relatedAction, _isThisTurn);
+			List<Tile> tilesInWeaponCone = m_linkedEntity.Equipment.GetTilesInWeaponRange(relatedAction, _isThisTurn, true);
 			foreach (Tile tile in tilesInWeaponCone)
 			{
 				Entity entityOnTile = tile.GetEntity(_isThisTurn);
@@ -566,6 +593,13 @@ public class EntityAIPlugin : EntityPlugin
 		}
 
 		return m_entitiesInActionRangeInfos;
+	}
+
+	private static int GetPriorityIndexIn ( List<EntityActionEnumID> _priorityQueue, EntityActionEnumID _actionID )
+	{
+		int index = _priorityQueue.IndexOf(_actionID);
+
+		return index < 0 ? int.MaxValue : index;
 	}
 
 	private bool HasEnemyInWeaponRange ( out List<Entity> _enemies, out EntityActionEnumID _attackEnumID, out string _equipmentID )
@@ -579,7 +613,8 @@ public class EntityAIPlugin : EntityPlugin
 		}
 		else
 		{
-			m_entitiesInActionRangeInfos.OrderBy(e => m_actionPriorityQueues[EntityActionData.MainActionType.Attack].priorityQueue.IndexOf(e.actionID));
+			List<EntityActionEnumID> priorityQueue = m_actionPriorityQueues[EntityActionData.MainActionType.Attack].priorityQueue;
+			m_entitiesInActionRangeInfos.Sort(( _a, _b ) => GetPriorityIndexIn(priorityQueue, _a.actionID).CompareTo(GetPriorityIndexIn(priorityQueue, _b.actionID)));
 
 			_enemies = new();
 			_attackEnumID = m_entitiesInActionRangeInfos[0].actionID;
@@ -590,7 +625,7 @@ public class EntityAIPlugin : EntityPlugin
 					_enemies.Add(info.entity);
 			}
 
-			_enemies.OrderBy(e => e.Displacement.Coordinates.GetTile().Distance);
+			SortEnemiesByStickyThenRange(_enemies, m_linkedEntity.Displacement.Coordinates.GetTile(), GetStickyTarget());
 			return _enemies.Count > 0;
 		}
 	}
@@ -686,7 +721,7 @@ public class EntityAIPlugin : EntityPlugin
 		foreach (System.Tuple<EntityActionData, string> pair in GetAvailableAttackAction(_ignoreRemainingTokens: true))
 		{
 			AEntityAction attackAction = TurnManager.Instance.GetAction(pair.Item1, m_linkedEntity.ID, pair.Item2, TurnManager.currentTick);
-			if (m_linkedEntity.Equipment.GetTilesInWeaponRange(attackAction, _isThisTurn, _from, orientation).Contains(targetTile))
+			if (m_linkedEntity.Equipment.GetTilesInWeaponRange(attackAction, _isThisTurn, _from, orientation, true).Contains(targetTile))
 				return true;
 		}
 
@@ -946,7 +981,7 @@ public class EntityAIPlugin : EntityPlugin
 		_targets = new();
 		_orientation = m_linkedEntity.Displacement.CurrentOrientation;
 
-		Entity stickyTarget = m_lastEntitiesTargeted.Count > 0 ? m_lastEntitiesTargeted[0] : null;
+		Entity stickyTarget = GetStickyTarget();
 
 		if (_action.Data.GetMainActionType() != EntityActionData.MainActionType.Attack)
 		{
@@ -961,7 +996,7 @@ public class EntityAIPlugin : EntityPlugin
 		for (int i = 0; i < 6; i++)
 		{
 			int orientation = (m_linkedEntity.Displacement.CurrentOrientation + i) % 6;
-			List<Entity> targetsInCone = GetEnemiesOn(m_linkedEntity.Equipment.GetTilesInWeaponRange(_action, true, _from, orientation), _from, stickyTarget);
+			List<Entity> targetsInCone = GetEnemiesOn(m_linkedEntity.Equipment.GetTilesInWeaponRange(_action, true, _from, orientation, true), _from, stickyTarget);
 			if (targetsInCone.Count == 0)
 				continue;
 
@@ -993,7 +1028,22 @@ public class EntityAIPlugin : EntityPlugin
 			enemies.Add(entity);
 		}
 
-		enemies.Sort(( _a, _b ) =>
+		SortEnemiesByStickyThenRange(enemies, _from, _stickyTarget);
+
+		return enemies;
+	}
+
+	private Entity GetStickyTarget ()
+	{
+		Entity committedTarget = GetCommittedTarget();
+
+		return committedTarget != null ? committedTarget
+			: m_lastEntitiesTargeted.Count > 0 ? m_lastEntitiesTargeted[0] : null;
+	}
+
+	private void SortEnemiesByStickyThenRange ( List<Entity> _enemies, Tile _from, Entity _stickyTarget )
+	{
+		_enemies.Sort(( _a, _b ) =>
 		{
 			bool isAsticky = _a == _stickyTarget;
 			bool isBsticky = _b == _stickyTarget;
@@ -1003,8 +1053,6 @@ public class EntityAIPlugin : EntityPlugin
 			return GetRangeBetween(_from, _a.Displacement.Coordinates.GetTile())
 				.CompareTo(GetRangeBetween(_from, _b.Displacement.Coordinates.GetTile()));
 		});
-
-		return enemies;
 	}
 
 	private void FillActionTargets ( AEntityAction _action, List<Entity> _targets, Tile _from, out int[] _targetTileIDs, out int[] _targetedEntityIDs )

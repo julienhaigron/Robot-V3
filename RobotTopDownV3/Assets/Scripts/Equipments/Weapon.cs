@@ -223,7 +223,7 @@ public class Weapon : MonoBehaviour
 	{
 		int hitAmount = _attackAction.Data.GetHitAmount(_attackAction, m_user, null);
 
-		foreach (Tile tile in m_user.Equipment.GetTilesInWeaponRange(_attackAction, true))
+		foreach (Tile tile in m_user.Equipment.GetTilesInWeaponRange(_attackAction, true, true))
 		{
 			if (tile == null || tile.Wall == null)
 				continue;

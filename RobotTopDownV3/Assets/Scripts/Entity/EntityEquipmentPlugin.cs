@@ -261,11 +261,11 @@ public class EntityEquipmentPlugin : EntityPlugin
 		m_linkedEntity.Displacement.Rotate(_tile, false);
 	}*/
 
-	public List<Tile> GetTilesInWeaponRange ( AEntityAction _action, bool _isThisTurn = false )
+	public List<Tile> GetTilesInWeaponRange ( AEntityAction _action, bool _isThisTurn = false, bool _ignoreVisibility = false )
 	{
 		Tile from = _isThisTurn ? m_linkedEntity.Displacement.Coordinates.GetTile() : GridManager.Instance.Tiles[_action.supposedPositionAtActionStartID];
 		int orientation = m_linkedEntity.Displacement.CurrentOrientation;
-		return GetTilesInWeaponRange(_action, _isThisTurn, from, orientation);
+		return GetTilesInWeaponRange(_action, _isThisTurn, from, orientation, _ignoreVisibility);
 	}
 
 	public List<Tile> GetTilesInWeaponRange( AEntityAction _action, bool _isThisTurn, Tile _from, int _orientation, bool _ignoreVisibility = false )
