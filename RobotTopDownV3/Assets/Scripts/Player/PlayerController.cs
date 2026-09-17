@@ -591,6 +591,9 @@ public class PlayerController : Singleton<PlayerController>
 				? (m_turnManager.hasModActionSelected ? EntityActionDisplay.SelectedDisplay.RecordedAction.freeAction : EntityActionDisplay.SelectedDisplay.RecordedAction.action)
 				: (m_turnManager.hasModActionSelected ? m_turnManager.CurrentModActionSelected : m_turnManager.CurrentActionSelected);
 
+			if (currentSelectedAction == null)
+				return;
+
 			if (!didContainTile)
 				GridManager.Instance.BFS(GridManager.Instance.Tiles[m_turnManager.GetLastRegisteredPositionOfEntity(m_selectedEntity.ID)]
 					, m_turnManager.RemainingActionToken[m_selectedEntity.ID] * currentSelectedAction.Data.movementSpeed, null, true, false);

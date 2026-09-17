@@ -128,6 +128,11 @@ public class Entity : MonoBehaviour
 		{
 			m_knownedPassiveEffectsPerAction.Add(actionID, _data.GetPassiveEffects(actionID));
 		}
+		foreach (EntityActionEnumID actionID in m_knowedModActions)
+		{
+			if (!m_knownedPassiveEffectsPerAction.ContainsKey(actionID))
+				m_knownedPassiveEffectsPerAction.Add(actionID, _data.GetPassiveEffects(actionID));
+		}
 
 		foreach (GameDatas.PlayerSave.Component eq in _data.GetAllEquipments())
 		{

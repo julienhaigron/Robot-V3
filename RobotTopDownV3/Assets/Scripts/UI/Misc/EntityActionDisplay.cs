@@ -69,8 +69,8 @@ public class EntityActionDisplay :
 		m_isLeftAngleRectangle = _isLeftAngleRectangle;
 
 		m_actionIconImg.sprite = _recordedAction.action.Data.icon;
-		m_modActionIconImg.sprite = _recordedAction.freeActionType != EntityActionEnumID.Unknowned && _recordedAction.freeActionType != EntityActionEnumID.Wait
-			? _recordedAction.freeAction.Data.icon : null;
+		AEntityAction displayedFreeAction = GetDisplayedFreeAction();
+		m_modActionIconImg.sprite = displayedFreeAction != null ? displayedFreeAction.Data.icon : null;
 		RefreshVisual(m_recordedAction.action.timeAtStart, m_recordedAction.action.TotalDuration, m_recordedAction.action.preparationDuration, m_recordedAction.action.cooldownDuration, _isLeftAngleRectangle);
 
 		Show(false);
@@ -81,10 +81,11 @@ public class EntityActionDisplay :
 
 	public void OnPointerClick ( PointerEventData eventData )
 	{
-		if (TurnManager.Instance.currentPhase != TurnManager.TurnPhase.Recording || !gameObject.activeInHierarchy)
+		if (m_recordedAction == null || TurnManager.Instance.currentPhase != TurnManager.TurnPhase.Recording || !gameObject.activeInHierarchy)
 			return;
 
 		bool clickedModAction = eventData.pointerPressRaycast.gameObject == m_modActionIconImg.gameObject;
+		bool selectModAction = clickedModAction && GetDisplayedFreeAction() != null;
 
 		if (eventData.button == PointerEventData.InputButton.Right)
 		{
@@ -117,13 +118,13 @@ public class EntityActionDisplay :
 		if (eventData.button != PointerEventData.InputButton.Left)
 			return;
 
-		if (m_selectedDisplay == this && (clickedModAction == m_hasModActionSelected))
+		if (m_selectedDisplay == this && (selectModAction == m_hasModActionSelected))
 		{
 			Deselect();
 			return;
 		}
 
-		if (clickedModAction)
+		if (selectModAction)
 			SelectModAction();
 		else
 			SelectAction();
@@ -288,7 +289,9 @@ public class EntityActionDisplay :
 
 	private AEntityAction GetDisplayedFreeAction ()
 	{
-		return m_recordedAction.freeActionType != EntityActionEnumID.Unknowned && m_recordedAction.freeActionType != EntityActionEnumID.Wait
+		return m_recordedAction.freeAction != null
+			&& m_recordedAction.freeActionType != EntityActionEnumID.Unknowned
+			&& m_recordedAction.freeActionType != EntityActionEnumID.Wait
 			? m_recordedAction.freeAction : null;
 	}
 

@@ -19,7 +19,7 @@ MonoBehaviour:
     musicVolume: 1
     sfxVolume: 1
     uiVolume: 1
-    language: 10
+    language: 14
     inputBindingOverridesJson: 
   game:
     lastPlayerSaveSelectedID: -1

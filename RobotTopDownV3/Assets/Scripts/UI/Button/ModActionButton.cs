@@ -9,12 +9,9 @@ public class ModActionButton : ActionButton
 {
 
 
-	protected override void OnClick ()
+	protected override void SelectActionInTurnManager ()
 	{
-		Select();
 		TurnManager.Instance.SetCurrentModActionSelected(m_actionType, m_linkedEquipmentData, true);
-
-		base.OnClick();
 	}
 
 

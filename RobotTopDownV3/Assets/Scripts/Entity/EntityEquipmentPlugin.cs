@@ -275,10 +275,13 @@ public class EntityEquipmentPlugin : EntityPlugin
 		int minDistance = _action.Data.minDistance;
 
 		bool ignoreObstacles = false;
-		foreach (AEntityPassiveEffect.PassiveEffectContainer passiveContainer in _action.effects)
+		if (_action.effects != null)
 		{
-			ignoreObstacles = passiveContainer.enumID == EntityPassiveEffectEnumID.TrajectoryControl;
-			break;
+			foreach (AEntityPassiveEffect.PassiveEffectContainer passiveContainer in _action.effects)
+			{
+				ignoreObstacles = passiveContainer.enumID == EntityPassiveEffectEnumID.TrajectoryControl;
+				break;
+			}
 		}
 
 		switch (_action.Data.aoeType)

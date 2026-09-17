@@ -75,7 +75,7 @@ public partial class GameDatas : ScriptableObject
 		public float musicVolume = 1f;
 		public float sfxVolume = 1f;
 		public float uiVolume = 1f;
-		public SystemLanguage language = SystemLanguage.English;
+		public SystemLanguage language = SystemLanguage.French;
 		public string inputBindingOverridesJson = "";
 	}
 

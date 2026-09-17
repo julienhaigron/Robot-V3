@@ -122,11 +122,16 @@ public class ActionButton : BaseButton, IPointerExitHandler
 			return;
 
 		Select();
-		TurnManager.Instance.SetCurrentActionSelected(m_actionType, m_linkedEquipmentData, true);
+		SelectActionInTurnManager();
 		if (TurnManager.Instance.TryRegisterActionWithoutTarget())
 			DisplayRangePreview(GameAssets.current.game.entityActionsData[m_actionType]);
 
 		base.OnClick();
+	}
+
+	protected virtual void SelectActionInTurnManager ()
+	{
+		TurnManager.Instance.SetCurrentActionSelected(m_actionType, m_linkedEquipmentData, true);
 	}
 
 	public void Select ()
