@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using Sirenix.OdinInspector;
+using TMPro;
 
 public class StartMenuPanel : AUIPanel
 {
@@ -13,6 +14,8 @@ public class StartMenuPanel : AUIPanel
 	[SerializeField] private BaseButton m_continueBtn;
 	[SerializeField] private BaseButton m_optionBtn;
 	[SerializeField] private BaseButton m_quitBtn;
+	[SerializeField] private TextMeshProUGUI m_lastSaveStepTMP;
+	[SerializeField] private TextMeshProUGUI m_lastSaveCycleTMP;
 
 	[Title("Load save")]
 	[SerializeField] private Transform m_saveBtnsParent;
@@ -76,6 +79,8 @@ public class StartMenuPanel : AUIPanel
 				m_newGameBtn.gameObject.SetActive(GameDatas.current.playerSaves.Count < m_savesBtns.Length);
 				m_loadGameBtn.gameObject.SetActive(GameDatas.current.hasAnySave);
 				m_continueBtn.gameObject.SetActive(GameDatas.current.hasAnySave);
+				m_lastSaveStepTMP.text = GameDatas.current.hasAnySave ? GameDatas.current.currentPlayerSave.saveName : "";
+				m_lastSaveCycleTMP.text = GameDatas.current.hasAnySave ? "CYCLE " + (GameDatas.current.currentPlayerSave.cycleCount+1) : "";
 				break;
 			case StartMenuDisplayMode.LoadSave:
 				m_saveBtnsParent.gameObject.SetActive(true);
