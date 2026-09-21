@@ -279,7 +279,7 @@ public class GameManager : SingletonPersistant<GameManager>
 		return null;
 	}
 
-	public Item PreSpawnItem ( AItemData _itemData, Entity _caster, Tool _invocatorTool, TileCoordinates _coordinate )
+	public Item PreSpawnItem ( AItemData _itemData, Entity _caster, ToolEquipment _invocatorTool, TileCoordinates _coordinate )
 	{
 		Tile spawnTile = _coordinate.GetTile();
 		Item newItem = Instantiate(_itemData.itemPrefab, spawnTile.transform.position + (Vector3.down * 5f), Quaternion.identity);

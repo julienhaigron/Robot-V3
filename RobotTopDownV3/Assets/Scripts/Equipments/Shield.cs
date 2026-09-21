@@ -6,7 +6,7 @@ using System;
 using System.Linq;
 using Sirenix.OdinInspector;
 
-public class Shield : Tool
+public class Shield : ToolEquipment
 {
 	public ShieldEquipmentData ShieldData => m_data as ShieldEquipmentData;
 

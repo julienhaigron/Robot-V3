@@ -11,7 +11,7 @@ public class PortalItemData : AItemData
         return new PortalItemLinkedData();
 	}
 
-	public override void OnInvokeItem ( Tool _invokingTool, Item _item )
+	public override void OnInvokeItem ( ToolEquipment _invokingTool, Item _item )
 	{
 		base.OnInvokeItem(_invokingTool, _item);
 

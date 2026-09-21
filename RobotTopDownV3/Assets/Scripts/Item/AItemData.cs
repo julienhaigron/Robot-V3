@@ -9,13 +9,13 @@ public abstract class AItemData : ScriptableObject
 
     public abstract AItemLinkedData GetNewLinkedData ();
 
-    public virtual bool InvokeItemPredicate ( Tool _invocatingTool, EntityActionData _actionData )
+    public virtual bool InvokeItemPredicate ( ToolEquipment _invocatingTool, EntityActionData _actionData )
 	{
         return !_invocatingTool.LinkedEntity.Equipment.ItemsLinkedDataDictionary.ContainsKey(_invocatingTool.ID)
             || _invocatingTool.LinkedEntity.Equipment.ItemsLinkedDataDictionary[_invocatingTool.ID].currentInvocationCount < _actionData.invocationCountLimit;
     }
 
-    public virtual void OnInvokeItem ( Tool _invokingTool, Item _item )
+    public virtual void OnInvokeItem ( ToolEquipment _invokingTool, Item _item )
 	{
         _invokingTool.LinkedEntity.Equipment.ItemsLinkedDataDictionary[_invokingTool.ID].currentInvocationCount++;
     }

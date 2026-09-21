@@ -7,7 +7,7 @@ using System.Linq;
 [CreateAssetMenu(fileName = "ToolData", menuName = "ScriptableObject/Equipment/ToolData", order = 1)]
 public class ToolEquipmentData : EntityEquipmentData
 {
-    public Tool prefab;
+    public ToolEquipment prefab;
 
     //stat
     public int range = 0;

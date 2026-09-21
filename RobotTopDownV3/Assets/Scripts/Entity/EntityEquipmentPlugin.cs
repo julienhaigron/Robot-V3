@@ -16,8 +16,8 @@ public class EntityEquipmentPlugin : EntityPlugin
 
 	private Dictionary<string, WeaponCone> m_weaponConeDictionary = new();
 
-	private Dictionary<string, Tool> m_tools = new();
-	public Dictionary<string, Tool> Tools => m_tools;
+	private Dictionary<string, ToolEquipment> m_tools = new();
+	public Dictionary<string, ToolEquipment> Tools => m_tools;
 
 	private Dictionary<string, AItemLinkedData> m_itemsLinkedDataDictionary = new();
 	public Dictionary<string, AItemLinkedData> ItemsLinkedDataDictionary => m_itemsLinkedDataDictionary;
@@ -500,9 +500,9 @@ public class EntityEquipmentPlugin : EntityPlugin
 
 	#region Tool
 
-	private Tool AddTool ( ToolEquipmentData _data, string _id, bool _isFirstSide )
+	private ToolEquipment AddTool ( ToolEquipmentData _data, string _id, bool _isFirstSide )
 	{
-		Tool newTool = Instantiate(_data.prefab, m_linkedEntity.Skin.IK.handGrabSocket);
+		ToolEquipment newTool = Instantiate(_data.prefab, m_linkedEntity.Skin.IK.handGrabSocket);
 		newTool.Init(m_linkedEntity, _data, _id, _isFirstSide);
 		newTool.transform.localScale = Vector3.one;
 		m_tools.Add(newTool.ID, newTool);
@@ -525,7 +525,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 		Dictionary<WeaponEquipmentData.DamageType, int> damages = new(_damageInfo.damages);
 		if (_damageInfo.entityAttacker != null)
 		{
-			foreach (Tool tool in m_tools.Values)
+			foreach (ToolEquipment tool in m_tools.Values)
 			{
 				if (tool is Shield shield
 					&& shield.orientation == GridManager.Instance.GetClosestOrientation(m_linkedEntity.Displacement.Coordinates.GetTile(), _damageInfo.entityAttacker.Displacement.Coordinates.GetTile()))
