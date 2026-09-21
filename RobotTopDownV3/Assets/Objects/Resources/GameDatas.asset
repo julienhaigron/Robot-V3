@@ -25,7 +25,7 @@ MonoBehaviour:
     lastPlayerSaveSelectedID: 0
   playerSaves:
   - saveName: New save
-    lastSaveTimeTicks: 639255889080869100
+    lastSaveTimeTicks: 639256162858753283
     allBuiltUnits:
     - name: Start_Melee
       index: 0
@@ -113,57 +113,57 @@ MonoBehaviour:
     dayData:
       itemsInShop:
       - component:
-          ID: Reactor_Pal_Mel_Ult0
-          dataID: Reactor_Pal_Mel_Ult
+          ID: Weap_Com_Grenade_Launcher0
+          dataID: Weap_Com_Grenade_Launcher
           isDamaged: 0
           acquisitionDateTicks: 0
         isFrozen: 0
       - component:
-          ID: Reactor_Pal_Sho_Ult1
-          dataID: Reactor_Pal_Sho_Ult
+          ID: NeurInt_Pal_Radar1
+          dataID: NeurInt_Pal_Radar
           isDamaged: 0
           acquisitionDateTicks: 0
         isFrozen: 0
       - component:
-          ID: AIM_Com_Sho2
-          dataID: AIM_Com_Sho
+          ID: Occ_Pal_Optic2
+          dataID: Occ_Pal_Optic
           isDamaged: 0
           acquisitionDateTicks: 0
         isFrozen: 0
       - component:
-          ID: Reactor_Com_Mel_Ult3
-          dataID: Reactor_Com_Mel_Ult
+          ID: NeurInt_Psy_Radar3
+          dataID: NeurInt_Psy_Radar
           isDamaged: 0
           acquisitionDateTicks: 0
         isFrozen: 0
       - component:
-          ID: Reactor_Com_Sho_En4
-          dataID: Reactor_Com_Sho_En
-          isDamaged: 0
-          acquisitionDateTicks: 0
-        isFrozen: 0
-      - component:
-          ID: AIM_Pal_Mel5
+          ID: AIM_Pal_Mel4
           dataID: AIM_Pal_Mel
           isDamaged: 0
           acquisitionDateTicks: 0
         isFrozen: 0
       - component:
-          ID: AIM_Psy_Def6
-          dataID: AIM_Psy_Def
+          ID: Reactor_Com_Mel_Ult5
+          dataID: Reactor_Com_Mel_Ult
           isDamaged: 0
           acquisitionDateTicks: 0
         isFrozen: 0
       - component:
-          ID: Chip_Pal_Safe7
-          dataID: Chip_Pal_Safe
+          ID: Weap_Psy_Railgun6
+          dataID: Weap_Psy_Railgun
+          isDamaged: 0
+          acquisitionDateTicks: 0
+        isFrozen: 0
+      - component:
+          ID: Reactor_Pal_Mel_En7
+          dataID: Reactor_Pal_Mel_En
           isDamaged: 0
           acquisitionDateTicks: 0
         isFrozen: 0
       currentlyRecyclingComponents: []
       repairingComponents: []
     cycleData:
-      availableMissionsIds: 000000000100000007000000000000000300000009000000030000000800000006000000040000000200000004000000
+      availableMissionsIds: 000000000600000008000000090000000100000003000000060000000200000008000000010000000700000001000000
       selectedMissionsIds: 03000000040000000500000006000000
       roundsDatas: 000000000000000000000000
       hasInitTournament: 0
@@ -178,4 +178,4 @@ MonoBehaviour:
       keys:
       - FTUESequence
       - MicroTuto0
-      values: 0000000002000000
+      values: 0000000003000000
