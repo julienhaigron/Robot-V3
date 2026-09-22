@@ -117,6 +117,11 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4647168923475201882, guid: 355ddf901f33f0b4c83968bbbb69faa3, type: 3}
   m_PrefabInstance: {fileID: 6979351477069121911}
   m_PrefabAsset: {fileID: 0}
+--- !u!4 &2634369640058172125 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -4299659967135204438, guid: 355ddf901f33f0b4c83968bbbb69faa3, type: 3}
+  m_PrefabInstance: {fileID: 6979351477069121911}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &5552173001586968309 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3303079014869405570, guid: 355ddf901f33f0b4c83968bbbb69faa3, type: 3}
@@ -125,6 +130,11 @@ Transform:
 --- !u!4 &5696188412737776072 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3447309931397767359, guid: 355ddf901f33f0b4c83968bbbb69faa3, type: 3}
+  m_PrefabInstance: {fileID: 6979351477069121911}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &5749487042934705187 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 3391750587180123476, guid: 355ddf901f33f0b4c83968bbbb69faa3, type: 3}
   m_PrefabInstance: {fileID: 6979351477069121911}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &6128715933532603567 stripped
@@ -400,7 +410,7 @@ MonoBehaviour:
     FootPitchOffset: 0
     BoneStart: {fileID: 2010692467729385902}
     BoneMid: {fileID: 2352476265970452013}
-    BoneEnd: {fileID: 6466734719955813452}
+    BoneEnd: {fileID: 5749487042934705187}
     Side: 1
     OppositeLegIndex: 1
     RaycastPrecision: 0
@@ -408,11 +418,11 @@ MonoBehaviour:
     BoneFeet: {fileID: 0}
     FeetSensitivity: 0.5
     InverseHint: 0
-    AnkleToHeel: {x: -0.00078419386, y: 0.0006068877, z: -0.0014397021}
-    AnkleToFeetEnd: {x: -0.00085368124, y: 0.0012807237, z: -0.0011178073}
-    AnkleRight: {x: -0.88892466, y: -0.26883307, z: 0.37086648}
-    AnkleUp: {x: 0.44858575, y: -0.34716105, z: 0.8235594}
-    AnkleForward: {x: -0.09264964, y: 0.8984477, z: 0.42919484}
+    AnkleToHeel: {x: -0.006162553, y: 0.004769147, z: -0.011313568}
+    AnkleToFeetEnd: {x: -0.022445548, y: 0.16267002, z: 0.06411665}
+    AnkleRight: {x: -0.8889244, y: -0.26883304, z: 0.37086707}
+    AnkleUp: {x: 0.4485863, y: -0.34716108, z: 0.8235591}
+    AnkleForward: {x: -0.09264932, y: 0.8984477, z: 0.4291949}
     FootMiddlePosition: 0.5
     AnkleYawCorrection: 0
   - G_CustomForceAttach: 0
@@ -431,7 +441,7 @@ MonoBehaviour:
     FootPitchOffset: 0
     BoneStart: {fileID: 5552173001586968309}
     BoneMid: {fileID: 7171460111341964106}
-    BoneEnd: {fileID: 9138327251414309182}
+    BoneEnd: {fileID: 2634369640058172125}
     Side: 2
     OppositeLegIndex: 0
     RaycastPrecision: 0
@@ -439,11 +449,11 @@ MonoBehaviour:
     BoneFeet: {fileID: 0}
     FeetSensitivity: 0.5
     InverseHint: 0
-    AnkleToHeel: {x: 0.0007841952, y: 0.0006068854, z: -0.0014397007}
-    AnkleToFeetEnd: {x: 0.0008536823, y: 0.0012807227, z: -0.0011178064}
-    AnkleRight: {x: -0.8889244, y: 0.26883242, z: -0.3708676}
-    AnkleUp: {x: -0.44858643, y: -0.34716058, z: 0.8235589}
-    AnkleForward: {x: 0.092648685, y: 0.89844805, z: 0.4291942}
+    AnkleToHeel: {x: 0.0061625075, y: 0.0047692056, z: -0.0113137355}
+    AnkleToFeetEnd: {x: 0.022445366, y: 0.16267009, z: 0.064116396}
+    AnkleRight: {x: -0.888924, y: 0.26883245, z: -0.37086853}
+    AnkleUp: {x: -0.44858733, y: -0.34716052, z: 0.82355845}
+    AnkleForward: {x: 0.09264828, y: 0.89844805, z: 0.42919427}
     FootMiddlePosition: 0.5
     AnkleYawCorrection: 0
   BaseLegAnimating:
@@ -648,7 +658,7 @@ MonoBehaviour:
     DoStepAnimationOnDistanceFactor: 0.055
   UseGluing: 1
   MainGlueBlend: 1
-  GlueRangeThreshold: 0.375
+  GlueRangeThreshold: 0.309
   GlueFadeInSpeed: 0.85
   AllowGlueBelowFoot: 0.2
   GlueFadeOutSpeed: 0.5
@@ -661,17 +671,17 @@ MonoBehaviour:
   LegElevateHeightLimit: 0.6
   FootRotationBlend: 1
   FootAlignRapidity: 0.75
-  AnimateFeet: 1
+  AnimateFeet: 0
   LimitFeetYaw: 30
   AnimationFloorLevel: 0.001
   _Editor_Foldout_Setup_LegsList: 1
   _Editor_EnsureCount: 0
   _Editor_OnValidateTrigger: 0
   _EditorAllowAutoUpdateFeetParams: 1
-  _EditorCategory: 1
-  _EditorSetupCategory: 2
+  _EditorCategory: 2
+  _EditorSetupCategory: 0
   _EditorMotionCategory: 2
-  _EditorExtraCategory: 2
+  _EditorExtraCategory: 0
   setupPose:
     MainHipsPose:
       SourceTransform: {fileID: 0}
@@ -687,7 +697,7 @@ MonoBehaviour:
   baseTransform: {fileID: 0}
   Hips: {fileID: 5696188412737776072}
   ScaleReferenceMode: 3
-  finalScaleReference: 1.1716557
+  finalScaleReference: 1.1917408
   finalScaleReferenceSqrt: 0.1
   customScaleReferenceValue: 0.5
   DelayedInitialization: 0
