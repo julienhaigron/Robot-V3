@@ -13,11 +13,35 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 8633894212831196652}
     - target: {fileID: 3894988364515184562, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
+      propertyPath: _EditorCategory
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3894988364515184562, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
       propertyPath: finalScaleReference
-      value: 0.9339652
+      value: 1.1698191
+      objectReference: {fileID: 0}
+    - target: {fileID: 3894988364515184562, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
+      propertyPath: _EditorMotionCategory
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3894988364515184562, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
+      propertyPath: StepPointsOverlapRadius
+      value: 0.61
       objectReference: {fileID: 0}
     - target: {fileID: 3894988364515184562, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
       propertyPath: _Editor_OnValidateTrigger
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3894988364515184562, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
+      propertyPath: UseStepPointsOverlapRadiusOnMoving
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3894988364515184562, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
+      propertyPath: Legs.Array.data[0].OppositeLegIndex
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3894988364515184562, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
+      propertyPath: Legs.Array.data[1].OppositeLegIndex
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7444760580523617948, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
