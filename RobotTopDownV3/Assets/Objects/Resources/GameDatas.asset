@@ -22,5 +22,160 @@ MonoBehaviour:
     language: 14
     inputBindingOverridesJson: 
   game:
-    lastPlayerSaveSelectedID: -1
-  playerSaves: []
+    lastPlayerSaveSelectedID: 0
+  playerSaves:
+  - saveName: New save
+    lastSaveTimeTicks: 639258064051565439
+    allBuiltUnits:
+    - name: Start_Melee
+      index: 0
+      isRepairing: 0
+      aiRole: 2
+      frame:
+        ID: Frame_Start8
+        dataID: Frame_Start
+        isDamaged: 0
+        acquisitionDateTicks: 0
+      reactor:
+        ID: Reactor_Start9
+        dataID: Reactor_Start
+        isDamaged: 0
+        acquisitionDateTicks: 0
+      neuronalMembrane:
+        ID: NeurInt_Start_Optic10
+        dataID: NeurInt_Start_Optic
+        isDamaged: 0
+        acquisitionDateTicks: 0
+      brain:
+        ID: AIM_Starting_Melee11
+        dataID: AIM_Starting_Melee
+        isDamaged: 0
+        acquisitionDateTicks: 0
+      arms:
+      - ID: Weap_Start_HamMag12
+        dataID: Weap_Start_HamMag
+        isDamaged: 0
+        acquisitionDateTicks: 0
+      auxiliar: []
+      chipsets: []
+      currentHp: 100
+    - name: Start_Shot
+      index: 1
+      isRepairing: 0
+      aiRole: 2
+      frame:
+        ID: Frame_Start13
+        dataID: Frame_Start
+        isDamaged: 0
+        acquisitionDateTicks: 0
+      reactor:
+        ID: Reactor_Start14
+        dataID: Reactor_Start
+        isDamaged: 0
+        acquisitionDateTicks: 0
+      neuronalMembrane:
+        ID: NeurInt_Start_Optic15
+        dataID: NeurInt_Start_Optic
+        isDamaged: 0
+        acquisitionDateTicks: 0
+      brain:
+        ID: AIM_Starting_Shoot16
+        dataID: AIM_Starting_Shoot
+        isDamaged: 0
+        acquisitionDateTicks: 0
+      arms:
+      - ID: Weap_Start_FireGun17
+        dataID: Weap_Start_FireGun
+        isDamaged: 0
+        acquisitionDateTicks: 0
+      auxiliar: []
+      chipsets: []
+      currentHp: 100
+    squadUnitsIndex: 0000000001000000
+    equipmentInventory: []
+    equipmentCounter: 44
+    currencies:
+      keys: 01000000020000000300000004000000
+      values: 0000000000000000000000000000000000000000000000000000000000000000
+    totalCurrenciesGot:
+      keys: 01000000020000000300000004000000
+      values: 0000000000000000000000000000000000000000000000000000000000000000
+    totalCurrenciesSpent:
+      keys: 01000000020000000300000004000000
+      values: 0000000000000000000000000000000000000000000000000000000000000000
+    upgradeLevels:
+      keys:
+      - hangarstructure
+      - shopstructure
+      - recyclingstructure
+      - repairstationstructure
+      values: 00000000000000000000000000000000
+    dayData:
+      itemsInShop:
+      - component:
+          ID: AIM_Pal_Sho0
+          dataID: AIM_Pal_Sho
+          isDamaged: 0
+          acquisitionDateTicks: 0
+        isFrozen: 0
+      - component:
+          ID: Chip_Psy_Travel1
+          dataID: Chip_Psy_Travel
+          isDamaged: 0
+          acquisitionDateTicks: 0
+        isFrozen: 0
+      - component:
+          ID: Weap_Com_Rapier2
+          dataID: Weap_Com_Rapier
+          isDamaged: 0
+          acquisitionDateTicks: 0
+        isFrozen: 0
+      - component:
+          ID: Tool_Com_Trap_Kit3
+          dataID: Tool_Com_Trap_Kit
+          isDamaged: 0
+          acquisitionDateTicks: 0
+        isFrozen: 0
+      - component:
+          ID: Reactor_Com_Mel_En4
+          dataID: Reactor_Com_Mel_En
+          isDamaged: 0
+          acquisitionDateTicks: 0
+        isFrozen: 0
+      - component:
+          ID: AIM_Com_Sho5
+          dataID: AIM_Com_Sho
+          isDamaged: 0
+          acquisitionDateTicks: 0
+        isFrozen: 0
+      - component:
+          ID: Reactor_Pal_Mvt_Ult6
+          dataID: Reactor_Pal_Mvt_Ult
+          isDamaged: 0
+          acquisitionDateTicks: 0
+        isFrozen: 0
+      - component:
+          ID: NeurInt_Pal_Thermic7
+          dataID: NeurInt_Pal_Thermic
+          isDamaged: 0
+          acquisitionDateTicks: 0
+        isFrozen: 0
+      currentlyRecyclingComponents: []
+      repairingComponents: []
+    cycleData:
+      availableMissionsIds: 020000000500000008000000070000000100000006000000050000000200000000000000000000000400000009000000
+      selectedMissionsIds: 03000000040000000500000006000000
+      roundsDatas: 000000000000000000000000
+      hasInitTournament: 0
+    cycleCount: 0
+    dayCount: -1
+    didStartTuto: 1
+    didUnlockReturnToHubPopup: 0
+    didUnlockRepareStation: 0
+    didUnlockRecycler: 0
+    didUnlockShops: 0
+    sequencesProgressions:
+      keys:
+      - FTUESequence
+      - MicroTuto0
+      values: 0000000004000000
