@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &4431902201629355791
+--- !u!1 &3610200682160984461
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,7 +8,7 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 788351272792780048}
+  - component: {fileID: 4835990456227817308}
   m_Layer: 0
   m_Name: GrabSocket
   m_TagString: Untagged
@@ -16,13 +16,13 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &788351272792780048
+--- !u!4 &4835990456227817308
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4431902201629355791}
+  m_GameObject: {fileID: 3610200682160984461}
   serializedVersion: 2
   m_LocalRotation: {x: -0.5, y: 0.5, z: 0.5, w: 0.5}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -92,7 +92,7 @@ PrefabInstance:
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: -7120022937912188600, guid: 355ddf901f33f0b4c83968bbbb69faa3, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 788351272792780048}
+      addedObject: {fileID: 4835990456227817308}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 355ddf901f33f0b4c83968bbbb69faa3, type: 3}
       insertIndex: -1
@@ -102,10 +102,10 @@ PrefabInstance:
       addedObject: {fileID: 5922840147552609564}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 355ddf901f33f0b4c83968bbbb69faa3, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 62156900507491107}
+      addedObject: {fileID: 3894988364515184562}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 355ddf901f33f0b4c83968bbbb69faa3, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 3894988364515184562}
+      addedObject: {fileID: 8369777290117785805}
   m_SourcePrefab: {fileID: 100100000, guid: 355ddf901f33f0b4c83968bbbb69faa3, type: 3}
 --- !u!4 &2010692467729385902 stripped
 Transform:
@@ -207,28 +207,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &62156900507491107
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7789761574637450278}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 527443afbf0514243b736c9d7cf87d31, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: RTD::HumanoidEntityIK
-  bodypartsTransform:
-    keys: 0000000001000000020000000300000004000000
-    values:
-    - {fileID: 9073411760011208767}
-    - {fileID: 6366737095462355208}
-    - {fileID: 6128715933532603567}
-    - {fileID: 9138327251414309182}
-    - {fileID: 6466734719955813452}
-  animator: {fileID: 5922840147552609564}
-  handGrabSocket: {fileID: 788351272792780048}
 --- !u!114 &3894988364515184562
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -256,13 +234,13 @@ MonoBehaviour:
   GluingFloorLevel: 0.05
   GluingFloorLevelUseOnMoving: 0
   GluingFloorLevelOnMoving: 0
-  StepPointsOverlapRadius: 0.71
+  StepPointsOverlapRadius: 0
   UseStepPointsOverlapRadiusOnMoving: 0
   StepPointsOverlapRadiusOnMoving: 0
   MotionInfluence:
     AdvancedInfluence: 0
-    AxisMotionInfluence: {x: 0, y: 1, z: 1}
-    AxisMotionInfluenceBackwards: {x: 1, y: 1, z: 1}
+    AxisMotionInfluence: {x: 0, y: 0, z: 0}
+    AxisMotionInfluenceBackwards: {x: 0, y: 0, z: 0}
   Event_OnStep:
     m_PersistentCalls:
       m_Calls: []
@@ -440,8 +418,8 @@ MonoBehaviour:
     BoneFeet: {fileID: 0}
     FeetSensitivity: 0.5
     InverseHint: 0
-    AnkleToHeel: {x: -0.00006162483, y: 0.0000476921, z: -0.00011313669}
-    AnkleToFeetEnd: {x: -0.0002244546, y: 0.0016267006, z: 0.0006411669}
+    AnkleToHeel: {x: -0.006162553, y: 0.004769147, z: -0.011313568}
+    AnkleToFeetEnd: {x: -0.022445548, y: 0.16267002, z: 0.06411665}
     AnkleRight: {x: -0.8889244, y: -0.26883304, z: 0.37086707}
     AnkleUp: {x: 0.4485863, y: -0.34716108, z: 0.8235591}
     AnkleForward: {x: -0.09264932, y: 0.8984477, z: 0.4291949}
@@ -471,8 +449,8 @@ MonoBehaviour:
     BoneFeet: {fileID: 0}
     FeetSensitivity: 0.5
     InverseHint: 0
-    AnkleToHeel: {x: 0.000061625935, y: 0.000047692563, z: -0.00011313729}
-    AnkleToFeetEnd: {x: 0.00022445379, y: 0.0016267009, z: 0.0006411633}
+    AnkleToHeel: {x: 0.0061625075, y: 0.0047692056, z: -0.0113137355}
+    AnkleToFeetEnd: {x: 0.022445366, y: 0.16267009, z: 0.064116396}
     AnkleRight: {x: -0.888924, y: 0.26883245, z: -0.37086853}
     AnkleUp: {x: -0.44858733, y: -0.34716052, z: 0.82355845}
     AnkleForward: {x: 0.09264828, y: 0.89844805, z: 0.42919427}
@@ -680,7 +658,7 @@ MonoBehaviour:
     DoStepAnimationOnDistanceFactor: 0.055
   UseGluing: 1
   MainGlueBlend: 1
-  GlueRangeThreshold: 0.375
+  GlueRangeThreshold: 0.309
   GlueFadeInSpeed: 0.85
   AllowGlueBelowFoot: 0.2
   GlueFadeOutSpeed: 0.5
@@ -693,16 +671,16 @@ MonoBehaviour:
   LegElevateHeightLimit: 0.6
   FootRotationBlend: 1
   FootAlignRapidity: 0.75
-  AnimateFeet: 1
+  AnimateFeet: 0
   LimitFeetYaw: 30
   AnimationFloorLevel: 0.001
   _Editor_Foldout_Setup_LegsList: 1
   _Editor_EnsureCount: 0
   _Editor_OnValidateTrigger: 0
   _EditorAllowAutoUpdateFeetParams: 1
-  _EditorCategory: 0
+  _EditorCategory: 2
   _EditorSetupCategory: 0
-  _EditorMotionCategory: 0
+  _EditorMotionCategory: 2
   _EditorExtraCategory: 0
   setupPose:
     MainHipsPose:
@@ -719,7 +697,7 @@ MonoBehaviour:
   baseTransform: {fileID: 0}
   Hips: {fileID: 5696188412737776072}
   ScaleReferenceMode: 3
-  finalScaleReference: 1.191741
+  finalScaleReference: 1.1917408
   finalScaleReferenceSqrt: 0.1
   customScaleReferenceValue: 0.5
   DelayedInitialization: 0
@@ -736,7 +714,7 @@ MonoBehaviour:
   CastDistance: 1
   RaycastStartHeight: 0
   RaycastStartHeightMul: 1
-  RaycastStyle: 0
+  RaycastStyle: 4
   RaycastShape: 0
   SpherecastRealign: 0
   SpherecastResize: 1
@@ -750,6 +728,28 @@ MonoBehaviour:
   LegsAnimatorBlend: 1
   _Editor_DefaultModuleOnStart: {fileID: 11400000, guid: 7d9bd86d54a7a594cb1793f9533e2e00, type: 2}
   _Editor_LegHelperModule: {fileID: 11400000, guid: 0645fbea8059aec47aa6ae9d2c93c1d4, type: 2}
+--- !u!114 &8369777290117785805
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7789761574637450278}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 527443afbf0514243b736c9d7cf87d31, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: RTD::HumanoidEntityIK
+  bodypartsTransform:
+    keys: 0000000001000000020000000300000004000000
+    values:
+    - {fileID: 9073411760011208767}
+    - {fileID: 6366737095462355208}
+    - {fileID: 6128715933532603567}
+    - {fileID: 9138327251414309182}
+    - {fileID: 6466734719955813452}
+  animator: {fileID: 5922840147552609564}
+  handGrabSocket: {fileID: 4835990456227817308}
 --- !u!4 &9073411760011208767 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -7120022937912188600, guid: 355ddf901f33f0b4c83968bbbb69faa3, type: 3}
