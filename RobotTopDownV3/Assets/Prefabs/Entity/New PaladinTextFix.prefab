@@ -9,6 +9,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 8633894212831196652}
     m_Modifications:
     - target: {fileID: 3894988364515184562, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
+      propertyPath: RaycastStyle
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 3894988364515184562, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
       propertyPath: baseTransform
       value: 
       objectReference: {fileID: 8633894212831196652}
@@ -17,32 +21,228 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3894988364515184562, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
+      propertyPath: AllowGlueBelowFoot
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3894988364515184562, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
       propertyPath: finalScaleReference
-      value: 1.1698191
+      value: 1.1716559
+      objectReference: {fileID: 0}
+    - target: {fileID: 3894988364515184562, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
+      propertyPath: _EditorExtraCategory
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3894988364515184562, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
+      propertyPath: _EditorSetupCategory
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3894988364515184562, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
       propertyPath: _EditorMotionCategory
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3894988364515184562, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
-      propertyPath: StepPointsOverlapRadius
-      value: 0.61
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 3894988364515184562, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
       propertyPath: _Editor_OnValidateTrigger
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3894988364515184562, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
-      propertyPath: UseStepPointsOverlapRadiusOnMoving
-      value: 0
+      propertyPath: Legs.Array.data[0].BoneEnd
+      value: 
+      objectReference: {fileID: 6530868299717064584}
+    - target: {fileID: 3894988364515184562, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
+      propertyPath: Legs.Array.data[1].BoneEnd
+      value: 
+      objectReference: {fileID: 9065155462450260730}
+    - target: {fileID: 3894988364515184562, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
+      propertyPath: Legs.Array.data[0].AnkleUp.x
+      value: 0.44858575
       objectReference: {fileID: 0}
     - target: {fileID: 3894988364515184562, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
-      propertyPath: Legs.Array.data[0].OppositeLegIndex
+      propertyPath: Legs.Array.data[0].AnkleUp.y
+      value: -0.34716105
+      objectReference: {fileID: 0}
+    - target: {fileID: 3894988364515184562, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
+      propertyPath: Legs.Array.data[0].AnkleUp.z
+      value: 0.8235594
+      objectReference: {fileID: 0}
+    - target: {fileID: 3894988364515184562, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
+      propertyPath: Legs.Array.data[1].AnkleUp.x
+      value: -0.44858643
+      objectReference: {fileID: 0}
+    - target: {fileID: 3894988364515184562, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
+      propertyPath: Legs.Array.data[1].AnkleUp.y
+      value: -0.34716058
+      objectReference: {fileID: 0}
+    - target: {fileID: 3894988364515184562, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
+      propertyPath: Legs.Array.data[1].AnkleUp.z
+      value: 0.8235589
+      objectReference: {fileID: 0}
+    - target: {fileID: 3894988364515184562, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
+      propertyPath: Legs.Array.data[0].AnkleRight.x
+      value: -0.88892466
+      objectReference: {fileID: 0}
+    - target: {fileID: 3894988364515184562, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
+      propertyPath: Legs.Array.data[0].AnkleRight.y
+      value: -0.26883307
+      objectReference: {fileID: 0}
+    - target: {fileID: 3894988364515184562, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
+      propertyPath: Legs.Array.data[0].AnkleRight.z
+      value: 0.37086648
+      objectReference: {fileID: 0}
+    - target: {fileID: 3894988364515184562, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
+      propertyPath: Legs.Array.data[1].AnkleRight.x
+      value: -0.8889244
+      objectReference: {fileID: 0}
+    - target: {fileID: 3894988364515184562, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
+      propertyPath: Legs.Array.data[1].AnkleRight.y
+      value: 0.26883242
+      objectReference: {fileID: 0}
+    - target: {fileID: 3894988364515184562, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
+      propertyPath: Legs.Array.data[1].AnkleRight.z
+      value: -0.3708676
+      objectReference: {fileID: 0}
+    - target: {fileID: 3894988364515184562, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
+      propertyPath: Legs.Array.data[0].AnkleToHeel.x
+      value: -0.00078419386
+      objectReference: {fileID: 0}
+    - target: {fileID: 3894988364515184562, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
+      propertyPath: Legs.Array.data[0].AnkleToHeel.y
+      value: 0.0006068877
+      objectReference: {fileID: 0}
+    - target: {fileID: 3894988364515184562, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
+      propertyPath: Legs.Array.data[0].AnkleToHeel.z
+      value: -0.0014397021
+      objectReference: {fileID: 0}
+    - target: {fileID: 3894988364515184562, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
+      propertyPath: Legs.Array.data[1].AnkleToHeel.x
+      value: 0.0007841952
+      objectReference: {fileID: 0}
+    - target: {fileID: 3894988364515184562, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
+      propertyPath: Legs.Array.data[1].AnkleToHeel.y
+      value: 0.0006068854
+      objectReference: {fileID: 0}
+    - target: {fileID: 3894988364515184562, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
+      propertyPath: Legs.Array.data[1].AnkleToHeel.z
+      value: -0.0014397007
+      objectReference: {fileID: 0}
+    - target: {fileID: 3894988364515184562, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
+      propertyPath: Legs.Array.data[0].AnkleForward.x
+      value: -0.09264964
+      objectReference: {fileID: 0}
+    - target: {fileID: 3894988364515184562, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
+      propertyPath: Legs.Array.data[0].AnkleForward.z
+      value: 0.42919484
+      objectReference: {fileID: 0}
+    - target: {fileID: 3894988364515184562, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
+      propertyPath: Legs.Array.data[1].AnkleForward.x
+      value: 0.092648685
+      objectReference: {fileID: 0}
+    - target: {fileID: 3894988364515184562, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
+      propertyPath: Legs.Array.data[1].AnkleForward.z
+      value: 0.4291942
+      objectReference: {fileID: 0}
+    - target: {fileID: 3894988364515184562, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
+      propertyPath: Legs.Array.data[0].AnkleToFeetEnd.x
+      value: -0.00094981707
+      objectReference: {fileID: 0}
+    - target: {fileID: 3894988364515184562, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
+      propertyPath: Legs.Array.data[0].AnkleToFeetEnd.y
+      value: 0.0022129633
+      objectReference: {fileID: 0}
+    - target: {fileID: 3894988364515184562, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
+      propertyPath: Legs.Array.data[0].AnkleToFeetEnd.z
+      value: -0.00067246973
+      objectReference: {fileID: 0}
+    - target: {fileID: 3894988364515184562, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
+      propertyPath: Legs.Array.data[1].AnkleToFeetEnd.x
+      value: 0.000949816
+      objectReference: {fileID: 0}
+    - target: {fileID: 3894988364515184562, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
+      propertyPath: Legs.Array.data[1].AnkleToFeetEnd.y
+      value: 0.002212963
+      objectReference: {fileID: 0}
+    - target: {fileID: 3894988364515184562, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
+      propertyPath: Legs.Array.data[1].AnkleToFeetEnd.z
+      value: -0.0006724688
+      objectReference: {fileID: 0}
+    - target: {fileID: 3894988364515184562, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
+      propertyPath: CustomModules.Array.data[0].variables.Array.data[0]._value.x
+      value: 0.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 3894988364515184562, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
+      propertyPath: CustomModules.Array.data[0].variables.Array.data[1]._value.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3894988364515184562, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
+      propertyPath: CustomModules.Array.data[0].variables.Array.data[2]._value.x
+      value: -1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3894988364515184562, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
+      propertyPath: CustomModules.Array.data[0].variables.Array.data[3]._value.x
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3894988364515184562, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
-      propertyPath: Legs.Array.data[1].OppositeLegIndex
-      value: 0
+      propertyPath: CustomModules.Array.data[0].variables.Array.data[0].VariableName
+      value: Rotation Power
+      objectReference: {fileID: 0}
+    - target: {fileID: 3894988364515184562, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
+      propertyPath: CustomModules.Array.data[0].variables.Array.data[1].VariableName
+      value: Compensate Spine
+      objectReference: {fileID: 0}
+    - target: {fileID: 3894988364515184562, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
+      propertyPath: CustomModules.Array.data[0].variables.Array.data[2].VariableName
+      value: Side Multiplier
+      objectReference: {fileID: 0}
+    - target: {fileID: 3894988364515184562, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
+      propertyPath: CustomModules.Array.data[0].variables.Array.data[3].VariableName
+      value: Forward Multiplier
+      objectReference: {fileID: 0}
+    - target: {fileID: 3894988364515184562, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
+      propertyPath: CustomModules.Array.data[0].variables.Array.data[0]._curve.m_PreInfinity
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3894988364515184562, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
+      propertyPath: CustomModules.Array.data[0].variables.Array.data[1]._curve.m_PreInfinity
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3894988364515184562, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
+      propertyPath: CustomModules.Array.data[0].variables.Array.data[2]._curve.m_PreInfinity
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3894988364515184562, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
+      propertyPath: CustomModules.Array.data[0].variables.Array.data[3]._curve.m_PreInfinity
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3894988364515184562, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
+      propertyPath: CustomModules.Array.data[0].variables.Array.data[0]._curve.m_PostInfinity
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3894988364515184562, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
+      propertyPath: CustomModules.Array.data[0].variables.Array.data[1]._curve.m_PostInfinity
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3894988364515184562, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
+      propertyPath: CustomModules.Array.data[0].variables.Array.data[2]._curve.m_PostInfinity
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3894988364515184562, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
+      propertyPath: CustomModules.Array.data[0].variables.Array.data[3]._curve.m_PostInfinity
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3894988364515184562, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
+      propertyPath: CustomModules.Array.data[0].variables.Array.data[0]._curve.m_RotationOrder
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 3894988364515184562, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
+      propertyPath: CustomModules.Array.data[0].variables.Array.data[1]._curve.m_RotationOrder
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 3894988364515184562, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
+      propertyPath: CustomModules.Array.data[0].variables.Array.data[2]._curve.m_RotationOrder
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 3894988364515184562, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
+      propertyPath: CustomModules.Array.data[0].variables.Array.data[3]._curve.m_RotationOrder
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 7444760580523617948, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
       propertyPath: m_LocalPosition.x
@@ -104,19 +304,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 527443afbf0514243b736c9d7cf87d31, type: 3}
   m_Name: 
   m_EditorClassIdentifier: RTD::HumanoidEntityIK
---- !u!4 &2450102161697299527 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 2385984237094973315, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
-  m_PrefabInstance: {fileID: 224118862333375428}
-  m_PrefabAsset: {fileID: 0}
 --- !u!95 &5849645200411186904 stripped
 Animator:
   m_CorrespondingSourceObject: {fileID: 5922840147552609564, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
   m_PrefabInstance: {fileID: 224118862333375428}
   m_PrefabAsset: {fileID: 0}
+--- !u!4 &6530868299717064584 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6466734719955813452, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
+  m_PrefabInstance: {fileID: 224118862333375428}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &7227468879556549976 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7444760580523617948, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
+  m_PrefabInstance: {fileID: 224118862333375428}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &7618966453303217340 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7683206341012881272, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
+  m_PrefabInstance: {fileID: 224118862333375428}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &9065155462450260730 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 9138327251414309182, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
   m_PrefabInstance: {fileID: 224118862333375428}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &6245636654877103839
@@ -178,7 +388,7 @@ PrefabInstance:
     - target: {fileID: 4353477765861233231, guid: facf97aac763a09489a27b119520aaff, type: 3}
       propertyPath: m_center
       value: 
-      objectReference: {fileID: 2450102161697299527}
+      objectReference: {fileID: 7618966453303217340}
     - target: {fileID: 4353477765861233231, guid: facf97aac763a09489a27b119520aaff, type: 3}
       propertyPath: m_animator
       value: 

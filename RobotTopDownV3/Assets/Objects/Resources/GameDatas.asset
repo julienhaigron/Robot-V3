@@ -25,7 +25,7 @@ MonoBehaviour:
     lastPlayerSaveSelectedID: 0
   playerSaves:
   - saveName: New save
-    lastSaveTimeTicks: 639256162858753283
+    lastSaveTimeTicks: 639257270774629244
     allBuiltUnits:
     - name: Start_Melee
       index: 0
@@ -93,7 +93,7 @@ MonoBehaviour:
       currentHp: 100
     squadUnitsIndex: 0000000001000000
     equipmentInventory: []
-    equipmentCounter: 44
+    equipmentCounter: 70
     currencies:
       keys: 01000000020000000300000004000000
       values: 0000000000000000000000000000000000000000000000000000000000000000
@@ -113,57 +113,57 @@ MonoBehaviour:
     dayData:
       itemsInShop:
       - component:
-          ID: Weap_Com_Grenade_Launcher0
-          dataID: Weap_Com_Grenade_Launcher
+          ID: Weap_Psy_Glaive0
+          dataID: Weap_Psy_Glaive
           isDamaged: 0
           acquisitionDateTicks: 0
         isFrozen: 0
       - component:
-          ID: NeurInt_Pal_Radar1
-          dataID: NeurInt_Pal_Radar
-          isDamaged: 0
-          acquisitionDateTicks: 0
-        isFrozen: 0
-      - component:
-          ID: Occ_Pal_Optic2
-          dataID: Occ_Pal_Optic
-          isDamaged: 0
-          acquisitionDateTicks: 0
-        isFrozen: 0
-      - component:
-          ID: NeurInt_Psy_Radar3
-          dataID: NeurInt_Psy_Radar
-          isDamaged: 0
-          acquisitionDateTicks: 0
-        isFrozen: 0
-      - component:
-          ID: AIM_Pal_Mel4
-          dataID: AIM_Pal_Mel
-          isDamaged: 0
-          acquisitionDateTicks: 0
-        isFrozen: 0
-      - component:
-          ID: Reactor_Com_Mel_Ult5
-          dataID: Reactor_Com_Mel_Ult
-          isDamaged: 0
-          acquisitionDateTicks: 0
-        isFrozen: 0
-      - component:
-          ID: Weap_Psy_Railgun6
-          dataID: Weap_Psy_Railgun
-          isDamaged: 0
-          acquisitionDateTicks: 0
-        isFrozen: 0
-      - component:
-          ID: Reactor_Pal_Mel_En7
+          ID: Reactor_Pal_Mel_En1
           dataID: Reactor_Pal_Mel_En
+          isDamaged: 0
+          acquisitionDateTicks: 0
+        isFrozen: 0
+      - component:
+          ID: Weap_Com_Gauntlet2
+          dataID: Weap_Com_Gauntlet
+          isDamaged: 0
+          acquisitionDateTicks: 0
+        isFrozen: 0
+      - component:
+          ID: Chip_Psy_Travel3
+          dataID: Chip_Psy_Travel
+          isDamaged: 0
+          acquisitionDateTicks: 0
+        isFrozen: 0
+      - component:
+          ID: NeurInt_Psy_Thermic4
+          dataID: NeurInt_Psy_Thermic
+          isDamaged: 0
+          acquisitionDateTicks: 0
+        isFrozen: 0
+      - component:
+          ID: AIM_Pal_Off5
+          dataID: AIM_Pal_Off
+          isDamaged: 0
+          acquisitionDateTicks: 0
+        isFrozen: 0
+      - component:
+          ID: Chip_Pal_Safe6
+          dataID: Chip_Pal_Safe
+          isDamaged: 0
+          acquisitionDateTicks: 0
+        isFrozen: 0
+      - component:
+          ID: Frame_Com_Kamikaze7
+          dataID: Frame_Com_Kamikaze
           isDamaged: 0
           acquisitionDateTicks: 0
         isFrozen: 0
       currentlyRecyclingComponents: []
       repairingComponents: []
     cycleData:
-      availableMissionsIds: 000000000600000008000000090000000100000003000000060000000200000008000000010000000700000001000000
+      availableMissionsIds: 060000000900000001000000090000000000000001000000060000000000000000000000070000000200000001000000
       selectedMissionsIds: 03000000040000000500000006000000
       roundsDatas: 000000000000000000000000
       hasInitTournament: 0
@@ -178,4 +178,4 @@ MonoBehaviour:
       keys:
       - FTUESequence
       - MicroTuto0
-      values: 0000000003000000
+      values: 0000000002000000
