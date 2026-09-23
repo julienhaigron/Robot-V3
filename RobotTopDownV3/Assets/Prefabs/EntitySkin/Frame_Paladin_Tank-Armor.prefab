@@ -182,9 +182,9 @@ CapsuleCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 0.5
-  m_Height: 1
+  m_Height: 2.59
   m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Center: {x: 0, y: 0.84, z: 0}
 --- !u!95 &5922840147552609564
 Animator:
   serializedVersion: 7
@@ -660,7 +660,7 @@ MonoBehaviour:
   MainGlueBlend: 1
   GlueRangeThreshold: 0.309
   GlueFadeInSpeed: 0.85
-  AllowGlueBelowFoot: 0.2
+  AllowGlueBelowFoot: 1
   GlueFadeOutSpeed: 0.5
   UnglueOn: 30
   AllowGlueDrag: 0.7
@@ -678,8 +678,8 @@ MonoBehaviour:
   _Editor_EnsureCount: 0
   _Editor_OnValidateTrigger: 0
   _EditorAllowAutoUpdateFeetParams: 1
-  _EditorCategory: 2
-  _EditorSetupCategory: 0
+  _EditorCategory: 1
+  _EditorSetupCategory: 1
   _EditorMotionCategory: 2
   _EditorExtraCategory: 0
   setupPose:
