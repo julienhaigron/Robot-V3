@@ -29,7 +29,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 9073411760011208767}
+  m_Father: {fileID: 7444760580523617948}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &6979351477069121911
 PrefabInstance:
@@ -90,7 +90,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
-    - targetCorrespondingSourceObject: {fileID: -7120022937912188600, guid: 355ddf901f33f0b4c83968bbbb69faa3, type: 3}
+    - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: 355ddf901f33f0b4c83968bbbb69faa3, type: 3}
       insertIndex: -1
       addedObject: {fileID: 4835990456227817308}
     m_AddedComponents:
@@ -107,54 +107,44 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 8369777290117785805}
   m_SourcePrefab: {fileID: 100100000, guid: 355ddf901f33f0b4c83968bbbb69faa3, type: 3}
---- !u!4 &2010692467729385902 stripped
+--- !u!4 &778907975337243413 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: -343178376286191399, guid: 355ddf901f33f0b4c83968bbbb69faa3, type: 3}
+  m_CorrespondingSourceObject: {fileID: 7643909966628944482, guid: 355ddf901f33f0b4c83968bbbb69faa3, type: 3}
   m_PrefabInstance: {fileID: 6979351477069121911}
   m_PrefabAsset: {fileID: 0}
---- !u!4 &2352476265970452013 stripped
+--- !u!4 &942409316327030332 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 4647168923475201882, guid: 355ddf901f33f0b4c83968bbbb69faa3, type: 3}
+  m_CorrespondingSourceObject: {fileID: 7912753588235761483, guid: 355ddf901f33f0b4c83968bbbb69faa3, type: 3}
   m_PrefabInstance: {fileID: 6979351477069121911}
   m_PrefabAsset: {fileID: 0}
---- !u!4 &2634369640058172125 stripped
+--- !u!4 &2665265315625516380 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: -4299659967135204438, guid: 355ddf901f33f0b4c83968bbbb69faa3, type: 3}
+  m_CorrespondingSourceObject: {fileID: 4910981459823211563, guid: 355ddf901f33f0b4c83968bbbb69faa3, type: 3}
   m_PrefabInstance: {fileID: 6979351477069121911}
   m_PrefabAsset: {fileID: 0}
---- !u!4 &5552173001586968309 stripped
+--- !u!4 &3882773761663061609 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 3303079014869405570, guid: 355ddf901f33f0b4c83968bbbb69faa3, type: 3}
+  m_CorrespondingSourceObject: {fileID: -3082220149752740066, guid: 355ddf901f33f0b4c83968bbbb69faa3, type: 3}
   m_PrefabInstance: {fileID: 6979351477069121911}
   m_PrefabAsset: {fileID: 0}
---- !u!4 &5696188412737776072 stripped
+--- !u!4 &5421298412398478383 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 3447309931397767359, guid: 355ddf901f33f0b4c83968bbbb69faa3, type: 3}
+  m_CorrespondingSourceObject: {fileID: -6059609660352426664, guid: 355ddf901f33f0b4c83968bbbb69faa3, type: 3}
   m_PrefabInstance: {fileID: 6979351477069121911}
   m_PrefabAsset: {fileID: 0}
---- !u!4 &5749487042934705187 stripped
+--- !u!4 &7363931943526710674 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 3391750587180123476, guid: 355ddf901f33f0b4c83968bbbb69faa3, type: 3}
+  m_CorrespondingSourceObject: {fileID: -8725071002544753435, guid: 355ddf901f33f0b4c83968bbbb69faa3, type: 3}
   m_PrefabInstance: {fileID: 6979351477069121911}
   m_PrefabAsset: {fileID: 0}
---- !u!4 &6128715933532603567 stripped
+--- !u!4 &7444760580523617948 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 3879342671389609432, guid: 355ddf901f33f0b4c83968bbbb69faa3, type: 3}
+  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 355ddf901f33f0b4c83968bbbb69faa3, type: 3}
   m_PrefabInstance: {fileID: 6979351477069121911}
   m_PrefabAsset: {fileID: 0}
---- !u!4 &6366737095462355208 stripped
+--- !u!4 &7733874168141601562 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: -5151956794995931009, guid: 355ddf901f33f0b4c83968bbbb69faa3, type: 3}
-  m_PrefabInstance: {fileID: 6979351477069121911}
-  m_PrefabAsset: {fileID: 0}
---- !u!4 &6466734719955813452 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: -5087422951680422597, guid: 355ddf901f33f0b4c83968bbbb69faa3, type: 3}
-  m_PrefabInstance: {fileID: 6979351477069121911}
-  m_PrefabAsset: {fileID: 0}
---- !u!4 &7171460111341964106 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: -8980872784143564227, guid: 355ddf901f33f0b4c83968bbbb69faa3, type: 3}
+  m_CorrespondingSourceObject: {fileID: 833058884119417453, guid: 355ddf901f33f0b4c83968bbbb69faa3, type: 3}
   m_PrefabInstance: {fileID: 6979351477069121911}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &7789761574637450278 stripped
@@ -227,7 +217,7 @@ MonoBehaviour:
   UseRigidbodyVelocityForIsMoving: 0
   UseRaycastsForIsGrounded: 0
   SlidingParameter: 
-  SpineBone: {fileID: 6128715933532603567}
+  SpineBone: {fileID: 0}
   ChestBone: {fileID: 0}
   RagdolledParameter: 
   SwingHelper: 0
@@ -408,9 +398,9 @@ MonoBehaviour:
     LegStretchMultiplier: 1
     CustomLegAnimating: {fileID: 0}
     FootPitchOffset: 0
-    BoneStart: {fileID: 2010692467729385902}
-    BoneMid: {fileID: 2352476265970452013}
-    BoneEnd: {fileID: 5749487042934705187}
+    BoneStart: {fileID: 2665265315625516380}
+    BoneMid: {fileID: 942409316327030332}
+    BoneEnd: {fileID: 7363931943526710674}
     Side: 1
     OppositeLegIndex: 1
     RaycastPrecision: 0
@@ -418,11 +408,11 @@ MonoBehaviour:
     BoneFeet: {fileID: 0}
     FeetSensitivity: 0.5
     InverseHint: 0
-    AnkleToHeel: {x: -0.006162553, y: 0.004769147, z: -0.011313568}
-    AnkleToFeetEnd: {x: -0.022445548, y: 0.16267002, z: 0.06411665}
-    AnkleRight: {x: -0.8889244, y: -0.26883304, z: 0.37086707}
-    AnkleUp: {x: 0.4485863, y: -0.34716108, z: 0.8235591}
-    AnkleForward: {x: -0.09264932, y: 0.8984477, z: 0.4291949}
+    AnkleToHeel: {x: -0.000061629275, y: 0.000047697697, z: -0.000113146016}
+    AnkleToFeetEnd: {x: -0.00022725003, y: 0.0016537728, z: 0.00065408845}
+    AnkleRight: {x: -0.8889249, y: -0.26883286, z: 0.37086666}
+    AnkleUp: {x: 0.4485859, y: -0.34716108, z: 0.8235596}
+    AnkleForward: {x: -0.09264926, y: 0.8984478, z: 0.42919445}
     FootMiddlePosition: 0.5
     AnkleYawCorrection: 0
   - G_CustomForceAttach: 0
@@ -439,9 +429,9 @@ MonoBehaviour:
     LegStretchMultiplier: 1
     CustomLegAnimating: {fileID: 0}
     FootPitchOffset: 0
-    BoneStart: {fileID: 5552173001586968309}
-    BoneMid: {fileID: 7171460111341964106}
-    BoneEnd: {fileID: 2634369640058172125}
+    BoneStart: {fileID: 7733874168141601562}
+    BoneMid: {fileID: 5421298412398478383}
+    BoneEnd: {fileID: 778907975337243413}
     Side: 2
     OppositeLegIndex: 0
     RaycastPrecision: 0
@@ -449,11 +439,11 @@ MonoBehaviour:
     BoneFeet: {fileID: 0}
     FeetSensitivity: 0.5
     InverseHint: 0
-    AnkleToHeel: {x: 0.0061625075, y: 0.0047692056, z: -0.0113137355}
-    AnkleToFeetEnd: {x: 0.022445366, y: 0.16267009, z: 0.064116396}
-    AnkleRight: {x: -0.888924, y: 0.26883245, z: -0.37086853}
-    AnkleUp: {x: -0.44858733, y: -0.34716052, z: 0.82355845}
-    AnkleForward: {x: 0.09264828, y: 0.89844805, z: 0.42919427}
+    AnkleToHeel: {x: 0.0007841996, y: 0.00060689263, z: -0.0014397077}
+    AnkleToFeetEnd: {x: 0.0009498191, y: 0.0022129663, z: -0.0006724744}
+    AnkleRight: {x: -0.8889243, y: 0.26883253, z: -0.3708679}
+    AnkleUp: {x: -0.4485869, y: -0.34716052, z: 0.823559}
+    AnkleForward: {x: 0.092648834, y: 0.8984479, z: 0.42919415}
     FootMiddlePosition: 0.5
     AnkleYawCorrection: 0
   BaseLegAnimating:
@@ -678,9 +668,9 @@ MonoBehaviour:
   _Editor_EnsureCount: 0
   _Editor_OnValidateTrigger: 0
   _EditorAllowAutoUpdateFeetParams: 1
-  _EditorCategory: 1
-  _EditorSetupCategory: 1
-  _EditorMotionCategory: 2
+  _EditorCategory: 0
+  _EditorSetupCategory: 0
+  _EditorMotionCategory: 0
   _EditorExtraCategory: 0
   setupPose:
     MainHipsPose:
@@ -695,9 +685,9 @@ MonoBehaviour:
   FeetYOffset: 0
   FeetLengthAdjust: 0
   baseTransform: {fileID: 0}
-  Hips: {fileID: 5696188412737776072}
+  Hips: {fileID: 3882773761663061609}
   ScaleReferenceMode: 3
-  finalScaleReference: 1.1917408
+  finalScaleReference: 1.1917405
   finalScaleReferenceSqrt: 0.1
   customScaleReferenceValue: 0.5
   DelayedInitialization: 0
@@ -743,20 +733,10 @@ MonoBehaviour:
   bodypartsTransform:
     keys: 0000000001000000020000000300000004000000
     values:
-    - {fileID: 9073411760011208767}
-    - {fileID: 6366737095462355208}
-    - {fileID: 6128715933532603567}
-    - {fileID: 9138327251414309182}
-    - {fileID: 6466734719955813452}
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 0}
   animator: {fileID: 5922840147552609564}
   handGrabSocket: {fileID: 4835990456227817308}
---- !u!4 &9073411760011208767 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: -7120022937912188600, guid: 355ddf901f33f0b4c83968bbbb69faa3, type: 3}
-  m_PrefabInstance: {fileID: 6979351477069121911}
-  m_PrefabAsset: {fileID: 0}
---- !u!4 &9138327251414309182 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 2164682240768856137, guid: 355ddf901f33f0b4c83968bbbb69faa3, type: 3}
-  m_PrefabInstance: {fileID: 6979351477069121911}
-  m_PrefabAsset: {fileID: 0}
