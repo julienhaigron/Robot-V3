@@ -6,7 +6,7 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 8633894212831196652}
+    m_TransformParent: {fileID: 7191302670993653830}
     m_Modifications:
     - target: {fileID: 3894988364515184562, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
       propertyPath: baseTransform
@@ -18,11 +18,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3894988364515184562, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
       propertyPath: finalScaleReference
-      value: 1.1716559
+      value: 1.1917408
       objectReference: {fileID: 0}
     - target: {fileID: 3894988364515184562, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
       propertyPath: _EditorMotionCategory
-      value: 0
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 3894988364515184562, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
       propertyPath: StepPointsOverlapRadius
@@ -30,7 +30,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3894988364515184562, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
       propertyPath: _Editor_OnValidateTrigger
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3894988364515184562, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
       propertyPath: UseStepPointsOverlapRadiusOnMoving
@@ -62,15 +62,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7444760580523617948, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 7444760580523617948, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 7444760580523617948, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 7444760580523617948, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -194,11 +194,16 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
-    - targetCorrespondingSourceObject: {fileID: 2413142668327609139, guid: facf97aac763a09489a27b119520aaff, type: 3}
-      insertIndex: 1
+    - targetCorrespondingSourceObject: {fileID: 3846169601763104409, guid: facf97aac763a09489a27b119520aaff, type: 3}
+      insertIndex: -1
       addedObject: {fileID: 7227468879556549976}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: facf97aac763a09489a27b119520aaff, type: 3}
+--- !u!4 &7191302670993653830 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 3846169601763104409, guid: facf97aac763a09489a27b119520aaff, type: 3}
+  m_PrefabInstance: {fileID: 6245636654877103839}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &7213318542150343858 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3654160432149023341, guid: facf97aac763a09489a27b119520aaff, type: 3}
