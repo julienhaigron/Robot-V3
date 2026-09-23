@@ -111,7 +111,7 @@ ModelImporter:
       humanName: LeftLowerLeg
       limit:
         min: {x: -6.6490765, y: 0, z: -80}
-        max: {x: 8.31135, y: 0, z: 80}
+        max: {x: 0, y: 0, z: 80}
         value: {x: 0, y: 0, z: 0}
         length: 0
         modified: 1
@@ -119,7 +119,7 @@ ModelImporter:
       humanName: RightLowerLeg
       limit:
         min: {x: -6.649076, y: 0, z: -80}
-        max: {x: 8.31135, y: 0, z: 80}
+        max: {x: 0, y: 0, z: 80}
         value: {x: 0, y: 0, z: 0}
         length: 0
         modified: 1
@@ -922,8 +922,8 @@ ModelImporter:
     upperLegTwist: 0.5
     legTwist: 0.5
     armStretch: 0.05
-    legStretch: 0.047
-    feetSpacing: 0
+    legStretch: 0.044
+    feetSpacing: 0.179
     globalScale: 1
     rootMotionBoneName: 
     hasTranslationDoF: 0
