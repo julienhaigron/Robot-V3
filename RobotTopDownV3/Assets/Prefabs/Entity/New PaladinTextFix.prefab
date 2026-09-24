@@ -22,7 +22,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3894988364515184562, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
       propertyPath: finalScaleReference
-      value: 1.1716558
+      value: 1.1712015
       objectReference: {fileID: 0}
     - target: {fileID: 3894988364515184562, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
       propertyPath: _EditorMotionCategory
@@ -35,6 +35,10 @@ PrefabInstance:
     - target: {fileID: 3894988364515184562, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
       propertyPath: _Editor_OnValidateTrigger
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3894988364515184562, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
+      propertyPath: BaseLegAnimating.MinFootRaise
+      value: 0.877
       objectReference: {fileID: 0}
     - target: {fileID: 3894988364515184562, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
       propertyPath: UseStepPointsOverlapRadiusOnMoving
