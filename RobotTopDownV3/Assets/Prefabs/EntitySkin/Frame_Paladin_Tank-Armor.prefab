@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &3610200682160984461
+--- !u!1 &4948325140883369774
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,7 +8,7 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 4835990456227817308}
+  - component: {fileID: 5514163981408547764}
   m_Layer: 0
   m_Name: GrabSocket
   m_TagString: Untagged
@@ -16,20 +16,20 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &4835990456227817308
+--- !u!4 &5514163981408547764
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3610200682160984461}
+  m_GameObject: {fileID: 4948325140883369774}
   serializedVersion: 2
   m_LocalRotation: {x: -0.5, y: 0.5, z: 0.5, w: 0.5}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 7444760580523617948}
+  m_Father: {fileID: 5225098867963219273}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &6979351477069121911
 PrefabInstance:
@@ -90,9 +90,9 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
-    - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: 355ddf901f33f0b4c83968bbbb69faa3, type: 3}
+    - targetCorrespondingSourceObject: {fileID: -6316047186828999618, guid: 355ddf901f33f0b4c83968bbbb69faa3, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 4835990456227817308}
+      addedObject: {fileID: 5514163981408547764}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 355ddf901f33f0b4c83968bbbb69faa3, type: 3}
       insertIndex: -1
@@ -122,9 +122,19 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4910981459823211563, guid: 355ddf901f33f0b4c83968bbbb69faa3, type: 3}
   m_PrefabInstance: {fileID: 6979351477069121911}
   m_PrefabAsset: {fileID: 0}
+--- !u!4 &2870999792693233606 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -4103777440579531087, guid: 355ddf901f33f0b4c83968bbbb69faa3, type: 3}
+  m_PrefabInstance: {fileID: 6979351477069121911}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &3882773761663061609 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -3082220149752740066, guid: 355ddf901f33f0b4c83968bbbb69faa3, type: 3}
+  m_PrefabInstance: {fileID: 6979351477069121911}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &5225098867963219273 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -6316047186828999618, guid: 355ddf901f33f0b4c83968bbbb69faa3, type: 3}
   m_PrefabInstance: {fileID: 6979351477069121911}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &5421298412398478383 stripped
@@ -132,14 +142,14 @@ Transform:
   m_CorrespondingSourceObject: {fileID: -6059609660352426664, guid: 355ddf901f33f0b4c83968bbbb69faa3, type: 3}
   m_PrefabInstance: {fileID: 6979351477069121911}
   m_PrefabAsset: {fileID: 0}
---- !u!4 &7363931943526710674 stripped
+--- !u!4 &5973939465009918233 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: -8725071002544753435, guid: 355ddf901f33f0b4c83968bbbb69faa3, type: 3}
+  m_CorrespondingSourceObject: {fileID: 3619787418210138222, guid: 355ddf901f33f0b4c83968bbbb69faa3, type: 3}
   m_PrefabInstance: {fileID: 6979351477069121911}
   m_PrefabAsset: {fileID: 0}
---- !u!4 &7444760580523617948 stripped
+--- !u!4 &6693046823628456859 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 355ddf901f33f0b4c83968bbbb69faa3, type: 3}
+  m_CorrespondingSourceObject: {fileID: 4339739062700329708, guid: 355ddf901f33f0b4c83968bbbb69faa3, type: 3}
   m_PrefabInstance: {fileID: 6979351477069121911}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &7733874168141601562 stripped
@@ -400,7 +410,7 @@ MonoBehaviour:
     FootPitchOffset: 0
     BoneStart: {fileID: 2665265315625516380}
     BoneMid: {fileID: 942409316327030332}
-    BoneEnd: {fileID: 7363931943526710674}
+    BoneEnd: {fileID: 2870999792693233606}
     Side: 1
     OppositeLegIndex: 1
     RaycastPrecision: 0
@@ -408,11 +418,11 @@ MonoBehaviour:
     BoneFeet: {fileID: 0}
     FeetSensitivity: 0.5
     InverseHint: 0
-    AnkleToHeel: {x: -0.000061629275, y: 0.000047697697, z: -0.000113146016}
-    AnkleToFeetEnd: {x: -0.00022725003, y: 0.0016537728, z: 0.00065408845}
-    AnkleRight: {x: -0.8889249, y: -0.26883286, z: 0.37086666}
-    AnkleUp: {x: 0.4485859, y: -0.34716108, z: 0.8235596}
-    AnkleForward: {x: -0.09264926, y: 0.8984478, z: 0.42919445}
+    AnkleToHeel: {x: -0.00078419904, y: 0.0006068916, z: -0.0014397094}
+    AnkleToFeetEnd: {x: -0.00094981975, y: 0.0022129666, z: -0.0006724768}
+    AnkleRight: {x: -0.88892484, y: -0.2688329, z: 0.37086672}
+    AnkleUp: {x: 0.44858596, y: -0.34716094, z: 0.82355964}
+    AnkleForward: {x: -0.09264934, y: 0.8984479, z: 0.42919433}
     FootMiddlePosition: 0.5
     AnkleYawCorrection: 0
   - G_CustomForceAttach: 0
@@ -440,7 +450,7 @@ MonoBehaviour:
     FeetSensitivity: 0.5
     InverseHint: 0
     AnkleToHeel: {x: 0.0007841996, y: 0.00060689263, z: -0.0014397077}
-    AnkleToFeetEnd: {x: 0.0009498191, y: 0.0022129663, z: -0.0006724744}
+    AnkleToFeetEnd: {x: 0.00094981963, y: 0.0022129654, z: -0.0006724758}
     AnkleRight: {x: -0.8889243, y: 0.26883253, z: -0.3708679}
     AnkleUp: {x: -0.4485869, y: -0.34716052, z: 0.823559}
     AnkleForward: {x: 0.092648834, y: 0.8984479, z: 0.42919415}
@@ -650,7 +660,7 @@ MonoBehaviour:
   MainGlueBlend: 1
   GlueRangeThreshold: 0.309
   GlueFadeInSpeed: 0.85
-  AllowGlueBelowFoot: 1
+  AllowGlueBelowFoot: 0.76
   GlueFadeOutSpeed: 0.5
   UnglueOn: 30
   AllowGlueDrag: 0.7
@@ -668,9 +678,9 @@ MonoBehaviour:
   _Editor_EnsureCount: 0
   _Editor_OnValidateTrigger: 0
   _EditorAllowAutoUpdateFeetParams: 1
-  _EditorCategory: 0
+  _EditorCategory: 1
   _EditorSetupCategory: 0
-  _EditorMotionCategory: 0
+  _EditorMotionCategory: 2
   _EditorExtraCategory: 0
   setupPose:
     MainHipsPose:
@@ -687,7 +697,7 @@ MonoBehaviour:
   baseTransform: {fileID: 0}
   Hips: {fileID: 3882773761663061609}
   ScaleReferenceMode: 3
-  finalScaleReference: 1.1917405
+  finalScaleReference: 1.1716558
   finalScaleReferenceSqrt: 0.1
   customScaleReferenceValue: 0.5
   DelayedInitialization: 0
@@ -733,10 +743,10 @@ MonoBehaviour:
   bodypartsTransform:
     keys: 0000000001000000020000000300000004000000
     values:
-    - {fileID: 0}
-    - {fileID: 0}
-    - {fileID: 0}
-    - {fileID: 0}
-    - {fileID: 0}
+    - {fileID: 5225098867963219273}
+    - {fileID: 6693046823628456859}
+    - {fileID: 5973939465009918233}
+    - {fileID: 778907975337243413}
+    - {fileID: 2870999792693233606}
   animator: {fileID: 5922840147552609564}
-  handGrabSocket: {fileID: 4835990456227817308}
+  handGrabSocket: {fileID: 5514163981408547764}

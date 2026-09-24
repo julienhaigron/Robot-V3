@@ -17,8 +17,12 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3894988364515184562, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
+      propertyPath: AllowGlueBelowFoot
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3894988364515184562, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
       propertyPath: finalScaleReference
-      value: 1.1917408
+      value: 1.1716558
       objectReference: {fileID: 0}
     - target: {fileID: 3894988364515184562, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
       propertyPath: _EditorMotionCategory
@@ -93,6 +97,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
+--- !u!4 &2450102161697299527 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2385984237094973315, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
+  m_PrefabInstance: {fileID: 224118862333375428}
+  m_PrefabAsset: {fileID: 0}
 --- !u!95 &5849645200411186904 stripped
 Animator:
   m_CorrespondingSourceObject: {fileID: 5922840147552609564, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
@@ -101,11 +110,6 @@ Animator:
 --- !u!4 &7227468879556549976 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7444760580523617948, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
-  m_PrefabInstance: {fileID: 224118862333375428}
-  m_PrefabAsset: {fileID: 0}
---- !u!4 &7618966453303217340 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 7683206341012881272, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
   m_PrefabInstance: {fileID: 224118862333375428}
   m_PrefabAsset: {fileID: 0}
 --- !u!114 &8591556317062257417 stripped
@@ -178,7 +182,7 @@ PrefabInstance:
     - target: {fileID: 4353477765861233231, guid: facf97aac763a09489a27b119520aaff, type: 3}
       propertyPath: m_center
       value: 
-      objectReference: {fileID: 7618966453303217340}
+      objectReference: {fileID: 2450102161697299527}
     - target: {fileID: 4353477765861233231, guid: facf97aac763a09489a27b119520aaff, type: 3}
       propertyPath: m_animator
       value: 
