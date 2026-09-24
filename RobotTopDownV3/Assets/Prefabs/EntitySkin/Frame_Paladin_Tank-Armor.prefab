@@ -259,7 +259,7 @@ MonoBehaviour:
   SendOnStopping: 0
   StepEventOnLanding: 0
   StepInfoReceiver: {fileID: 0}
-  ExtraPelvisOffset: {x: 0, y: 0, z: 0}
+  ExtraPelvisOffset: {x: 0, y: 0.13, z: 0}
   ReposeGluingAfter: 0
   GlueOnlyOnIdle: 0
   LocalWorldUp: 1
@@ -481,22 +481,22 @@ MonoBehaviour:
         inWeight: 0
         outWeight: 0.1842105
       - serializedVersion: 3
-        time: 0.4819279
-        value: 1.1114802
-        inSlope: 1.38764
-        outSlope: 1.38764
+        time: 0.63494813
+        value: 0.9567154
+        inSlope: 0.45902354
+        outSlope: 0.45902354
         tangentMode: 0
         weightedMode: 3
         inWeight: 0.3333333
-        outWeight: 0.3333333
+        outWeight: 0.41816205
       - serializedVersion: 3
         time: 1
         value: 1
-        inSlope: 0
-        outSlope: 0
+        inSlope: 0.22559468
+        outSlope: 0.22559468
         tangentMode: 0
         weightedMode: 3
-        inWeight: 0
+        inWeight: 0.03613896
         outWeight: 0
       m_PreInfinity: 2
       m_PostInfinity: 2
