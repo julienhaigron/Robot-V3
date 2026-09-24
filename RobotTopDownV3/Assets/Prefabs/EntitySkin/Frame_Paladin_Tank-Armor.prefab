@@ -244,7 +244,7 @@ MonoBehaviour:
   GluingFloorLevel: 0.05
   GluingFloorLevelUseOnMoving: 0
   GluingFloorLevelOnMoving: 0
-  StepPointsOverlapRadius: 0
+  StepPointsOverlapRadius: 0.3
   UseStepPointsOverlapRadiusOnMoving: 0
   StepPointsOverlapRadiusOnMoving: 0
   MotionInfluence:
@@ -429,7 +429,7 @@ MonoBehaviour:
     FeetSensitivity: 0.5
     InverseHint: 0
     AnkleToHeel: {x: -0.078012176, y: 0.060373552, z: -0.14322302}
-    AnkleToFeetEnd: {x: -0.09456814, y: 0.22091985, z: -0.06652894}
+    AnkleToFeetEnd: {x: -0.09428907, y: 0.21821314, z: -0.06782208}
     AnkleRight: {x: -0.88892454, y: -0.26883334, z: 0.37086648}
     AnkleUp: {x: 0.44858587, y: -0.3471604, z: 0.8235598}
     AnkleForward: {x: -0.092650145, y: 0.89844793, z: 0.42919415}
@@ -467,7 +467,7 @@ MonoBehaviour:
     FootMiddlePosition: 0.5
     AnkleYawCorrection: 0
   BaseLegAnimating:
-    StepMoveDuration: 0.375
+    StepMoveDuration: 0.7
     MoveToGoalCurve:
       serializedVersion: 2
       m_Curve:
@@ -481,8 +481,8 @@ MonoBehaviour:
         inWeight: 0
         outWeight: 0.1842105
       - serializedVersion: 3
-        time: 0.4885197
-        value: 0.8972011
+        time: 0.4819279
+        value: 1.1114802
         inSlope: 1.38764
         outSlope: 1.38764
         tangentMode: 0
@@ -535,8 +535,8 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
     SpherizePower: 0.3
-    MinFootRaise: 0.1
-    MaxFootRaise: 0.4
+    MinFootRaise: 0.306
+    MaxFootRaise: 0.54
     RaiseYAxisCurve:
       serializedVersion: 2
       m_Curve:
@@ -550,8 +550,8 @@ MonoBehaviour:
         inWeight: 0
         outWeight: 0.6517575
       - serializedVersion: 3
-        time: 0.2731183
-        value: 0.45
+        time: 0.27180603
+        value: 0.5309631
         inSlope: 0.9770691
         outSlope: 0.9770691
         tangentMode: 0
@@ -559,8 +559,8 @@ MonoBehaviour:
         inWeight: 0.3333333
         outWeight: 0.3387407
       - serializedVersion: 3
-        time: 0.505118
-        value: 0.5
+        time: 0.50380576
+        value: 0.55952454
         inSlope: -0.2710344
         outSlope: -0.2710344
         tangentMode: 0
@@ -579,37 +579,37 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    AllowSpeedups: 0.4
-    AllowDetachBefore: 1
+    AllowSpeedups: 0.583
+    AllowDetachBefore: 0.768
     PushHipsOnMoveCurve:
       serializedVersion: 2
       m_Curve:
       - serializedVersion: 3
         time: 0
         value: 0
-        inSlope: 5.630541
-        outSlope: 5.630541
+        inSlope: 2.1821213
+        outSlope: 2.1821213
         tangentMode: 0
         weightedMode: 3
         inWeight: 0
-        outWeight: 0.198735
+        outWeight: 0.36387333
       - serializedVersion: 3
-        time: 0.383
-        value: 0.3733972
-        inSlope: -0.1664574
-        outSlope: -0.1664574
+        time: 0.40145513
+        value: 0.25909787
+        inSlope: -0.1334957
+        outSlope: -0.1334957
         tangentMode: 0
         weightedMode: 3
-        inWeight: 0.333
-        outWeight: 0.2940554
+        inWeight: 0.3351042
+        outWeight: 0.3392125
       - serializedVersion: 3
         time: 0.7075226
         value: 0.1460427
-        inSlope: -1.565806
-        outSlope: -1.565806
+        inSlope: -0.9181042
+        outSlope: -0.9181042
         tangentMode: 0
         weightedMode: 3
-        inWeight: 0.3605607
+        inWeight: 0.34862477
         outWeight: 0.3446763
       - serializedVersion: 3
         time: 1
@@ -629,38 +629,20 @@ MonoBehaviour:
       - serializedVersion: 3
         time: 0
         value: 0
-        inSlope: 0.5764588
-        outSlope: 0.5764588
-        tangentMode: 0
-        weightedMode: 3
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 34
+        weightedMode: 0
         inWeight: 0
-        outWeight: 0.4956417
-      - serializedVersion: 3
-        time: 0.4378169
-        value: 0.2035736
-        inSlope: -0.2411275
-        outSlope: -0.2411275
-        tangentMode: 0
-        weightedMode: 3
-        inWeight: 0.3333333
-        outWeight: 0.4033037
-      - serializedVersion: 3
-        time: 0.7841034
-        value: -0.1339308
-        inSlope: 0.3331003
-        outSlope: 0.3331003
-        tangentMode: 0
-        weightedMode: 3
-        inWeight: 0.3333333
-        outWeight: 0.3333333
+        outWeight: 0.33333334
       - serializedVersion: 3
         time: 1
         value: 0
-        inSlope: 0.3498169
-        outSlope: 0.3498169
-        tangentMode: 0
-        weightedMode: 3
-        inWeight: 0.5534658
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
         outWeight: 0
       m_PreInfinity: 2
       m_PostInfinity: 2
@@ -668,7 +650,7 @@ MonoBehaviour:
     DoStepAnimationOnDistanceFactor: 0.055
   UseGluing: 1
   MainGlueBlend: 1
-  GlueRangeThreshold: 0.309
+  GlueRangeThreshold: 0.32
   GlueFadeInSpeed: 0.85
   AllowGlueBelowFoot: 0.76
   GlueFadeOutSpeed: 0.5
@@ -687,9 +669,9 @@ MonoBehaviour:
   _Editor_Foldout_Setup_LegsList: 1
   _Editor_EnsureCount: 0
   _Editor_OnValidateTrigger: 0
-  _EditorAllowAutoUpdateFeetParams: 1
-  _EditorCategory: 0
-  _EditorSetupCategory: 0
+  _EditorAllowAutoUpdateFeetParams: 0
+  _EditorCategory: 1
+  _EditorSetupCategory: 2
   _EditorMotionCategory: 2
   _EditorExtraCategory: 0
   setupPose:
