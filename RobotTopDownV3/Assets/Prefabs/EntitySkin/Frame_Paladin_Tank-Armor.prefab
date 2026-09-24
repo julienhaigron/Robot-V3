@@ -107,11 +107,6 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 8369777290117785805}
   m_SourcePrefab: {fileID: 100100000, guid: 355ddf901f33f0b4c83968bbbb69faa3, type: 3}
---- !u!4 &755170354391508788 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: -1539874422248903101, guid: 355ddf901f33f0b4c83968bbbb69faa3, type: 3}
-  m_PrefabInstance: {fileID: 6979351477069121911}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &778907975337243413 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7643909966628944482, guid: 355ddf901f33f0b4c83968bbbb69faa3, type: 3}
@@ -120,11 +115,6 @@ Transform:
 --- !u!4 &942409316327030332 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7912753588235761483, guid: 355ddf901f33f0b4c83968bbbb69faa3, type: 3}
-  m_PrefabInstance: {fileID: 6979351477069121911}
-  m_PrefabAsset: {fileID: 0}
---- !u!4 &2055897787710876686 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: -264684242262743687, guid: 355ddf901f33f0b4c83968bbbb69faa3, type: 3}
   m_PrefabInstance: {fileID: 6979351477069121911}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &2665265315625516380 stripped
@@ -430,19 +420,19 @@ MonoBehaviour:
     FootPitchOffset: 0
     BoneStart: {fileID: 2665265315625516380}
     BoneMid: {fileID: 942409316327030332}
-    BoneEnd: {fileID: 7363931943526710674}
+    BoneEnd: {fileID: 2870999792693233606}
     Side: 1
     OppositeLegIndex: 1
     RaycastPrecision: 0
     UseFeet: 1
-    BoneFeet: {fileID: 2055897787710876686}
+    BoneFeet: {fileID: 7363931943526710674}
     FeetSensitivity: 0.5
     InverseHint: 0
-    AnkleToHeel: {x: -0.0061627403, y: 0.0047693565, z: -0.0113143}
-    AnkleToFeetEnd: {x: -0.022445744, y: 0.16267008, z: 0.064115666}
-    AnkleRight: {x: -0.8889244, y: -0.26883316, z: 0.37086675}
-    AnkleUp: {x: 0.44858617, y: -0.34716082, z: 0.82355946}
-    AnkleForward: {x: -0.092649646, y: 0.89844763, z: 0.4291945}
+    AnkleToHeel: {x: -0.078012176, y: 0.060373552, z: -0.14322302}
+    AnkleToFeetEnd: {x: -0.09456814, y: 0.22091985, z: -0.06652894}
+    AnkleRight: {x: -0.88892454, y: -0.26883334, z: 0.37086648}
+    AnkleUp: {x: 0.44858587, y: -0.3471604, z: 0.8235598}
+    AnkleForward: {x: -0.092650145, y: 0.89844793, z: 0.42919415}
     FootMiddlePosition: 0.5
     AnkleYawCorrection: 0
   - G_CustomForceAttach: 0
@@ -461,19 +451,19 @@ MonoBehaviour:
     FootPitchOffset: 0
     BoneStart: {fileID: 7733874168141601562}
     BoneMid: {fileID: 5421298412398478383}
-    BoneEnd: {fileID: 4890385181561777441}
+    BoneEnd: {fileID: 778907975337243413}
     Side: 2
     OppositeLegIndex: 0
     RaycastPrecision: 0
     UseFeet: 1
-    BoneFeet: {fileID: 755170354391508788}
+    BoneFeet: {fileID: 4890385181561777441}
     FeetSensitivity: 0.5
     InverseHint: 0
-    AnkleToHeel: {x: 0.0061630774, y: 0.0047693523, z: -0.011314742}
-    AnkleToFeetEnd: {x: 0.02244608, y: 0.16267024, z: 0.064115286}
-    AnkleRight: {x: -0.8889239, y: 0.26883227, z: -0.37086818}
-    AnkleUp: {x: -0.44858685, y: -0.34715995, z: 0.82355905}
-    AnkleForward: {x: 0.09264874, y: 0.89844805, z: 0.4291936}
+    AnkleToHeel: {x: 0.07801216, y: 0.06037339, z: -0.14322244}
+    AnkleToFeetEnd: {x: 0.09456788, y: 0.22091979, z: -0.06652852}
+    AnkleRight: {x: -0.88892436, y: 0.2688323, z: -0.37086755}
+    AnkleUp: {x: -0.44858637, y: -0.34716004, z: 0.82355934}
+    AnkleForward: {x: 0.09264898, y: 0.8984481, z: 0.42919374}
     FootMiddlePosition: 0.5
     AnkleYawCorrection: 0
   BaseLegAnimating:
@@ -717,7 +707,7 @@ MonoBehaviour:
   baseTransform: {fileID: 0}
   Hips: {fileID: 3882773761663061609}
   ScaleReferenceMode: 3
-  finalScaleReference: 1.1917408
+  finalScaleReference: 1.1712015
   finalScaleReferenceSqrt: 0.1
   customScaleReferenceValue: 0.5
   DelayedInitialization: 0
