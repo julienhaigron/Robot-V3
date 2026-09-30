@@ -25,7 +25,7 @@ MonoBehaviour:
     lastPlayerSaveSelectedID: 0
   playerSaves:
   - saveName: New save
-    lastSaveTimeTicks: 639258720710981512
+    lastSaveTimeTicks: 639263324812267884
     allBuiltUnits:
     - name: Start_Melee
       index: 0
@@ -91,9 +91,41 @@ MonoBehaviour:
       auxiliar: []
       chipsets: []
       currentHp: 100
-    squadUnitsIndex: 0000000001000000
+    - name: Start_Status
+      index: 2
+      isRepairing: 0
+      aiRole: 2
+      frame:
+        ID: Frame_Start57
+        dataID: Frame_Start
+        isDamaged: 0
+        acquisitionDateTicks: 0
+      reactor:
+        ID: Reactor_Start58
+        dataID: Reactor_Start
+        isDamaged: 0
+        acquisitionDateTicks: 0
+      neuronalMembrane:
+        ID: NeurInt_Start_Optic59
+        dataID: NeurInt_Start_Optic
+        isDamaged: 0
+        acquisitionDateTicks: 0
+      brain:
+        ID: AIM_Starting_Status60
+        dataID: AIM_Starting_Status
+        isDamaged: 0
+        acquisitionDateTicks: 0
+      arms:
+      - ID: Weap_Start_PlasmaCannon61
+        dataID: Weap_Start_PlasmaCannon
+        isDamaged: 0
+        acquisitionDateTicks: 0
+      auxiliar: []
+      chipsets: []
+      currentHp: 100
+    squadUnitsIndex: 01000000
     equipmentInventory: []
-    equipmentCounter: 44
+    equipmentCounter: 62
     currencies:
       keys: 01000000020000000300000004000000
       values: 0000000000000000000000000000000000000000000000000000000000000000
@@ -113,62 +145,110 @@ MonoBehaviour:
     dayData:
       itemsInShop:
       - component:
-          ID: Weap_Pal_Hammer0
-          dataID: Weap_Pal_Hammer
+          ID: AIM_Psy_Sho0
+          dataID: AIM_Psy_Sho
           isDamaged: 0
           acquisitionDateTicks: 0
         isFrozen: 0
       - component:
-          ID: Reactor_Com_Sho_En1
-          dataID: Reactor_Com_Sho_En
+          ID: Arm_Pal_Heat1
+          dataID: Arm_Pal_Heat
           isDamaged: 0
           acquisitionDateTicks: 0
         isFrozen: 0
       - component:
-          ID: Frame_Pal_TankV22
-          dataID: Frame_Pal_TankV2
+          ID: Weap_Psy_Glaive2
+          dataID: Weap_Psy_Glaive
           isDamaged: 0
           acquisitionDateTicks: 0
         isFrozen: 0
       - component:
-          ID: Reactor_Com_Mel_En3
-          dataID: Reactor_Com_Mel_En
+          ID: Arm_Pal_Heat3
+          dataID: Arm_Pal_Heat
           isDamaged: 0
           acquisitionDateTicks: 0
         isFrozen: 0
       - component:
-          ID: Arm_Psy_Plasma4
+          ID: NeurInt_Com_Radar4
+          dataID: NeurInt_Com_Radar
+          isDamaged: 0
+          acquisitionDateTicks: 0
+        isFrozen: 0
+      - component:
+          ID: NeurInt_Psy_Optic5
+          dataID: NeurInt_Psy_Optic
+          isDamaged: 0
+          acquisitionDateTicks: 0
+        isFrozen: 0
+      - component:
+          ID: Frame_Com_Kamikaze6
+          dataID: Frame_Com_Kamikaze
+          isDamaged: 0
+          acquisitionDateTicks: 0
+        isFrozen: 0
+      - component:
+          ID: Occ_Psy_Optic7
+          dataID: Occ_Psy_Optic
+          isDamaged: 0
+          acquisitionDateTicks: 0
+        isFrozen: 0
+      - component:
+          ID: Weap_Psy_Railgun44
+          dataID: Weap_Psy_Railgun
+          isDamaged: 0
+          acquisitionDateTicks: 0
+        isFrozen: 0
+      - component:
+          ID: NeurInt_Com_Thermic45
+          dataID: NeurInt_Com_Thermic
+          isDamaged: 0
+          acquisitionDateTicks: 0
+        isFrozen: 0
+      - component:
+          ID: Arm_Psy_Plasma46
           dataID: Arm_Psy_Plasma
           isDamaged: 0
           acquisitionDateTicks: 0
         isFrozen: 0
       - component:
-          ID: Reactor_Psy_Sho_En5
-          dataID: Reactor_Psy_Sho_En
+          ID: Reactor_Pal_Sho_En47
+          dataID: Reactor_Pal_Sho_En
           isDamaged: 0
           acquisitionDateTicks: 0
         isFrozen: 0
       - component:
-          ID: Reactor_Psy_Mvt_En6
-          dataID: Reactor_Psy_Mvt_En
+          ID: NeurInt_Com_Optic48
+          dataID: NeurInt_Com_Optic
           isDamaged: 0
           acquisitionDateTicks: 0
         isFrozen: 0
       - component:
-          ID: Reactor_Com_Sho_En7
-          dataID: Reactor_Com_Sho_En
+          ID: Frame_Com_Kamikaze49
+          dataID: Frame_Com_Kamikaze
+          isDamaged: 0
+          acquisitionDateTicks: 0
+        isFrozen: 0
+      - component:
+          ID: Tool_Com_Mine_Kit50
+          dataID: Tool_Com_Mine_Kit
+          isDamaged: 0
+          acquisitionDateTicks: 0
+        isFrozen: 0
+      - component:
+          ID: Chip_Pal_Cool51
+          dataID: Chip_Pal_Cool
           isDamaged: 0
           acquisitionDateTicks: 0
         isFrozen: 0
       currentlyRecyclingComponents: []
       repairingComponents: []
     cycleData:
-      availableMissionsIds: 010000000800000009000000030000000600000005000000050000000600000000000000070000000900000007000000
+      availableMissionsIds: 010000000900000004000000000000000700000004000000060000000400000009000000030000000100000008000000
       selectedMissionsIds: 03000000040000000500000006000000
       roundsDatas: 000000000000000000000000
       hasInitTournament: 0
     cycleCount: 0
-    dayCount: -1
+    dayCount: 0
     didStartTuto: 1
     didUnlockReturnToHubPopup: 0
     didUnlockRepareStation: 0
@@ -178,4 +258,5 @@ MonoBehaviour:
       keys:
       - FTUESequence
       - MicroTuto0
-      values: 0000000003000000
+      - Day1Tuto
+      values: 01000000ffffffff04000000

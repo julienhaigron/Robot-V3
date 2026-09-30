@@ -498,6 +498,7 @@ public enum LocalizationKey
     entity_config_save_and_quit,
     entity_config_cancel,
     entity_config_disassemble,
+    menu_load,
 }
 
 public static class LocalizationKeyExtensions
@@ -1003,6 +1004,7 @@ public static class LocalizationKeyExtensions
             case LocalizationKey.entity_config_save_and_quit: return "entity_config/save_and_quit";
             case LocalizationKey.entity_config_cancel: return "entity_config/cancel";
             case LocalizationKey.entity_config_disassemble: return "entity_config/disassemble";
+            case LocalizationKey.menu_load: return "menu/load";
             default: return string.Empty;
         }
     }

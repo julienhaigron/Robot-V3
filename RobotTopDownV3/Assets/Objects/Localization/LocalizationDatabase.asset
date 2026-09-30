@@ -2010,3 +2010,7 @@ MonoBehaviour:
     values:
     - Disassemble unit
     - "D\xE9sassembler l unit\xE9"
+  - key: menu/load
+    values:
+    - Load
+    - Charger

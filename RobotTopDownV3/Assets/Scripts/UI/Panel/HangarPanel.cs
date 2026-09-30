@@ -6,7 +6,7 @@ using TMPro;
 
 public class HangarPanel : AUIPanel
 {
-	[SerializeField] private UnitMissionDisplay[] m_hangarUnits;
+	[SerializeField] private HangarEntityDisplay[] m_hangarUnits;
 	[SerializeField] private BaseButton m_addNewEntityBtn;
 
 	[SerializeField] private TextMeshProUGUI m_maxUnitInSquadTMP;

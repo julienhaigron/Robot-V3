@@ -1,14 +1,23 @@
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
 using System.Collections.Generic;
+using System.Linq;
+using DG.Tweening;
 
 public class HangarEntityDisplay : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI m_nameTMP;
     [SerializeField] private SerializableDictionary<EntityEquipmentData.EquipmentType, DamagedSlotDisplay> m_mainComponentSlots;
-    [SerializeField] private SerializableDictionary<EntityEquipmentData.EquipmentType, SubDamagedSlotContainer> m_subComponentSlots;
     [SerializeField] private BaseButton m_selectBtn;
-    [SerializeField] private GameObject m_selectGO;
+    [SerializeField] private BaseButton m_configBtn;
+    [SerializeField] private Image m_toggleBGImg;
+    [SerializeField] private Image m_toggleImg;
+
+    [SerializeField] private Color m_selectedMainColor;
+    [SerializeField] private Color m_selectedSubColor;
+    [SerializeField] private Color m_unselectedMainColor;
+    [SerializeField] private Color m_unselectedSubColor;
 
     private EntitySavedData m_savedData;
     private int m_index;
@@ -23,6 +32,7 @@ public class HangarEntityDisplay : MonoBehaviour
 	private void Awake ()
 	{
         m_selectBtn.onClick += OnClickSelect;
+        m_configBtn.onClick += OnClickConfig;
     }
 
 	public void Init( EntitySavedData _data, int _index, bool _isSelected )
@@ -31,38 +41,34 @@ public class HangarEntityDisplay : MonoBehaviour
         m_index = _index;
         m_nameTMP.text = _data.name;
         m_isSelected = _isSelected;
-        m_selectGO.SetActive(_isSelected);
 
-        InitComponentSlot(m_mainComponentSlots[EntityEquipmentData.EquipmentType.Frame], _data.frame);
-        InitComponentSlot(m_mainComponentSlots[EntityEquipmentData.EquipmentType.Brain], _data.brain);
-        InitComponentSlot(m_mainComponentSlots[EntityEquipmentData.EquipmentType.Reactor], _data.reactor);
-        InitComponentSlot(m_mainComponentSlots[EntityEquipmentData.EquipmentType.NeuronalMembrane], _data.neuronalMembrane);
+        bool hasBrokenSub = _data.auxiliar != null && _data.auxiliar.Length > 0 && _data.auxiliar.Any(e => e.isDamaged);
+        InitComponentSlot(m_mainComponentSlots[EntityEquipmentData.EquipmentType.Frame], _data.frame, hasBrokenSub);
+        hasBrokenSub = _data.chipsets != null && _data.chipsets.Length > 0 && _data.chipsets.Any(e => e.isDamaged);
+        InitComponentSlot(m_mainComponentSlots[EntityEquipmentData.EquipmentType.Brain], _data.brain, hasBrokenSub);
+        hasBrokenSub = _data.arms != null && _data.arms.Length > 0 && _data.arms.Any(e => e.isDamaged);
+        InitComponentSlot(m_mainComponentSlots[EntityEquipmentData.EquipmentType.NeuronalMembrane], _data.neuronalMembrane, hasBrokenSub);
+        InitComponentSlot(m_mainComponentSlots[EntityEquipmentData.EquipmentType.Reactor], _data.reactor, false);
 
-        for (int i = 0; i < m_subComponentSlots[EntityEquipmentData.EquipmentType.NeuronalMembrane].slots.Count; i++)
-		{
-            if (_data.arms == null || i >= _data.arms.Length)
-                m_subComponentSlots[EntityEquipmentData.EquipmentType.NeuronalMembrane].slots[i].Hide();
-            else
-                InitComponentSlot(m_subComponentSlots[EntityEquipmentData.EquipmentType.NeuronalMembrane].slots[i], _data.arms[i]);
-        }
-
-        for (int i = 0; i < m_subComponentSlots[EntityEquipmentData.EquipmentType.Frame].slots.Count; i++)
-		{
-            if (_data.auxiliar == null || i >= _data.auxiliar.Length)
-                m_subComponentSlots[EntityEquipmentData.EquipmentType.Frame].slots[i].Hide();
-            else
-                InitComponentSlot(m_subComponentSlots[EntityEquipmentData.EquipmentType.Frame].slots[i], _data.auxiliar[i]);
-		}
-
-        for (int i = 0; i < m_subComponentSlots[EntityEquipmentData.EquipmentType.Brain].slots.Count; i++)
-		{
-            if (_data.chipsets == null || i >= _data.chipsets.Length)
-                m_subComponentSlots[EntityEquipmentData.EquipmentType.Brain].slots[i].Hide();
-            else
-                InitComponentSlot(m_subComponentSlots[EntityEquipmentData.EquipmentType.Brain].slots[i], _data.chipsets[i]);
-		}
-
+        RefreshToggleVisual(true);
     }
+
+    private void RefreshToggleVisual(bool _isInstant )
+	{
+		if (_isInstant)
+        {
+            (m_selectBtn.transform as RectTransform).DOAnchorPosX(m_isSelected ? -7.5f : 7.5f, 0f);
+            m_toggleBGImg.color = m_isSelected ? m_selectedSubColor : m_unselectedSubColor;
+            m_toggleImg.color = m_isSelected ? m_selectedMainColor : m_unselectedMainColor;
+            return;
+		}
+		else
+		{
+            (m_selectBtn.transform as RectTransform).DOAnchorPosX(m_isSelected ? -7.5f : 7.5f, 1f).SetEase(Ease.OutQuart);
+            m_toggleBGImg.DOColor(m_isSelected ? m_selectedSubColor : m_unselectedSubColor, 1f);
+            m_toggleImg.DOColor(m_isSelected ? m_selectedMainColor : m_unselectedMainColor, 1f);
+        }
+	}
 
     public void Show ()
     {
@@ -86,22 +92,25 @@ public class HangarEntityDisplay : MonoBehaviour
             m_isSelected = false;
             GameDatas.current.currentPlayerSave.squadUnitsIndex.Remove(m_index);
         }
-        m_selectGO.SetActive(m_isSelected);
 
         HubManager.Instance.RefreshSquadEntities();
         UIManager.Instance.GetPanel<HangarPanel>().RefreshTexts();
 
+        RefreshToggleVisual(false);
     }
 
+    private void OnClickConfig ()
+	{
+        UIManager.Instance.OpenPanel<EntityConfigPanel>().Init(m_savedData, false);
+	}
 
-
-	private static void InitComponentSlot ( DamagedSlotDisplay _slot, GameDatas.PlayerSave.Component _component )
+	private static void InitComponentSlot ( DamagedSlotDisplay _slot, GameDatas.PlayerSave.Component _component, bool hasDamagedSub )
 	{
 		EntityEquipmentData componentData = _component == null ? null : _component.GetData<EntityEquipmentData>();
 
 		if (componentData == null)
 			_slot.Hide();
 		else
-			_slot.Init(componentData.icon, _component.isDamaged);
+			_slot.Init(componentData.icon, _component.isDamaged, hasDamagedSub);
 	}
 }
