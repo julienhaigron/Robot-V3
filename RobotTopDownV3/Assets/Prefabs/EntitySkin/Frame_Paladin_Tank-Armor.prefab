@@ -242,7 +242,7 @@ MonoBehaviour:
   RagdolledParameter: 
   SwingHelper: 0
   GluingFloorLevel: 0.05
-  GluingFloorLevelUseOnMoving: 0
+  GluingFloorLevelUseOnMoving: 1
   GluingFloorLevelOnMoving: 0
   StepPointsOverlapRadius: 0.3
   UseStepPointsOverlapRadiusOnMoving: 0
@@ -656,8 +656,8 @@ MonoBehaviour:
   GlueFadeOutSpeed: 0.5
   UnglueOn: 30
   AllowGlueDrag: 0.7
-  GlueMode: 2
-  OnlyLocalAnimation: 0
+  GlueMode: 1
+  OnlyLocalAnimation: 1
   SmoothSuddenSteps: 0.85
   LegElevateBlend: 0.7
   LegElevateHeightLimit: 0.6
