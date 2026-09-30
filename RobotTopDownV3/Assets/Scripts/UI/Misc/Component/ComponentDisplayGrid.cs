@@ -78,7 +78,7 @@ public class ComponentDisplayGrid : ComponentContainer
 
         foreach (ComponentDisplay display in m_items.ToArray())
 		{
-            if(m_predicate != null && !m_predicate(display.SavedData))
+            if(m_predicate != null && display != null && display.SavedData != null && !m_predicate(display.SavedData))
 			{
                 m_items.Remove(display);
                 Destroy(display.gameObject);

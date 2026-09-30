@@ -92,7 +92,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.RectMask2D
   m_Padding: {x: 0, y: 0, z: 0, w: 0}
-  m_Softness: {x: 0, y: 240}
+  m_Softness: {x: 0, y: 0}
 --- !u!1 &199533456297677949
 GameObject:
   m_ObjectHideFlags: 0

@@ -1380,18 +1380,6 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 2603704728659083193, guid: 3971d36e323501d4b9c8d413d4be646d, type: 3}
-      propertyPath: m_Padding.w
-      value: 27
-      objectReference: {fileID: 0}
-    - target: {fileID: 2603704728659083193, guid: 3971d36e323501d4b9c8d413d4be646d, type: 3}
-      propertyPath: m_Padding.y
-      value: 27
-      objectReference: {fileID: 0}
-    - target: {fileID: 2603704728659083193, guid: 3971d36e323501d4b9c8d413d4be646d, type: 3}
-      propertyPath: m_Softness.y
-      value: 469
-      objectReference: {fileID: 0}
     - target: {fileID: 2625802003593720666, guid: 3971d36e323501d4b9c8d413d4be646d, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0

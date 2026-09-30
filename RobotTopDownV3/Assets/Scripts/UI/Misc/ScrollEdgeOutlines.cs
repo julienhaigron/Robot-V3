@@ -15,6 +15,19 @@ public class ScrollEdgeOutlines : MonoBehaviour
 	private bool m_isEndOutlineVisible = true;
 	private bool m_hasState;
 
+	private bool m_canScrollVertically;
+	private bool m_canScrollHorizontally;
+	private bool m_isScrollable = true;
+
+	private void Awake ()
+	{
+		if (m_scrollRect == null)
+			return;
+
+		m_canScrollVertically = m_scrollRect.vertical;
+		m_canScrollHorizontally = m_scrollRect.horizontal;
+	}
+
 	private void OnEnable ()
 	{
 		if (m_scrollRect != null)
@@ -26,8 +39,11 @@ public class ScrollEdgeOutlines : MonoBehaviour
 
 	private void OnDisable ()
 	{
-		if (m_scrollRect != null)
-			m_scrollRect.onValueChanged.RemoveListener(OnScrollValueChanged);
+		if (m_scrollRect == null)
+			return;
+
+		m_scrollRect.onValueChanged.RemoveListener(OnScrollValueChanged);
+		SetScrollable(true);
 	}
 
 	private void LateUpdate ()
@@ -49,7 +65,7 @@ public class ScrollEdgeOutlines : MonoBehaviour
 		if (viewport == null)
 			return;
 
-		bool isVertical = m_scrollRect.vertical;
+		bool isVertical = m_canScrollVertically;
 		m_scrollRect.content.GetWorldCorners(s_corners);
 		Vector3 contentSizeInViewport = viewport.InverseTransformPoint(s_corners[2]) - viewport.InverseTransformPoint(s_corners[0]);
 		float contentSize = Mathf.Abs(isVertical ? contentSizeInViewport.y : contentSizeInViewport.x);
@@ -57,15 +73,37 @@ public class ScrollEdgeOutlines : MonoBehaviour
 
 		if (contentSize <= viewportSize + m_sizeTolerance)
 		{
+			SetScrollable(false);
 			ApplyVisibility(false, false);
 			return;
 		}
+
+		SetScrollable(true);
 
 		//vertical normalized position is 1 at the top and 0 at the bottom, horizontal is the other way around
 		float normalizedPosition = isVertical ? m_scrollRect.verticalNormalizedPosition : m_scrollRect.horizontalNormalizedPosition;
 		float distanceToStart = isVertical ? 1f - normalizedPosition : normalizedPosition;
 
 		ApplyVisibility(distanceToStart > m_edgeThreshold, distanceToStart < 1f - m_edgeThreshold);
+	}
+
+	private void SetScrollable ( bool _isScrollable )
+	{
+		if (m_isScrollable == _isScrollable)
+			return;
+
+		m_isScrollable = _isScrollable;
+		m_scrollRect.vertical = _isScrollable && m_canScrollVertically;
+		m_scrollRect.horizontal = _isScrollable && m_canScrollHorizontally;
+
+		if (_isScrollable)
+			return;
+
+		m_scrollRect.StopMovement();
+		if (m_canScrollVertically)
+			m_scrollRect.verticalNormalizedPosition = 1f;
+		else
+			m_scrollRect.horizontalNormalizedPosition = 0f;
 	}
 
 	private void ApplyVisibility ( bool _isStartVisible, bool _isEndVisible )
