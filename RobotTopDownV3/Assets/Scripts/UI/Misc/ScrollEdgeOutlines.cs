@@ -7,6 +7,9 @@ public class ScrollEdgeOutlines : MonoBehaviour
 	[SerializeField] private GameObject m_startOutline;
 	[SerializeField] private GameObject m_endOutline;
 	[SerializeField] private float m_edgeThreshold = .002f;
+	[SerializeField] private float m_sizeTolerance = 1f;
+
+	private static readonly Vector3[] s_corners = new Vector3[4];
 
 	private bool m_isStartOutlineVisible = true;
 	private bool m_isEndOutlineVisible = true;
@@ -47,10 +50,12 @@ public class ScrollEdgeOutlines : MonoBehaviour
 			return;
 
 		bool isVertical = m_scrollRect.vertical;
-		float contentSize = isVertical ? m_scrollRect.content.rect.height : m_scrollRect.content.rect.width;
+		m_scrollRect.content.GetWorldCorners(s_corners);
+		Vector3 contentSizeInViewport = viewport.InverseTransformPoint(s_corners[2]) - viewport.InverseTransformPoint(s_corners[0]);
+		float contentSize = Mathf.Abs(isVertical ? contentSizeInViewport.y : contentSizeInViewport.x);
 		float viewportSize = isVertical ? viewport.rect.height : viewport.rect.width;
 
-		if (contentSize <= viewportSize)
+		if (contentSize <= viewportSize + m_sizeTolerance)
 		{
 			ApplyVisibility(false, false);
 			return;

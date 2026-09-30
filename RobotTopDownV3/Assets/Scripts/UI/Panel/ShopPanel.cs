@@ -50,7 +50,7 @@ public class ShopPanel : AUIPanel
 		RefreshShopBuyableItems();
 
 		CurrencyType associatedCurrency = AssociatedCurrency;
-		m_inventoryGrid.Init(m_shopGrid, null, null, item => item.GetData<EntityEquipmentData>().GetPrice().Item2 <= GameDatas.current.currentPlayerSave.currencies[associatedCurrency]
+		m_inventoryGrid.Init(m_shopGrid, null, null, item => GameDatas.current.currentPlayerSave.currencies.ContainsKey(associatedCurrency) && item.GetData<EntityEquipmentData>().GetPrice().Item2 <= GameDatas.current.currentPlayerSave.currencies[associatedCurrency]
 			, ComponentDisplay.DisplayMode.ShopSelling);
 		m_inventoryGrid.Cleanup();
 

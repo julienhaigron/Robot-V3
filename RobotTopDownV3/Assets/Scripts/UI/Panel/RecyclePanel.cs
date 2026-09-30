@@ -39,9 +39,6 @@ public class RecyclePanel : AUIPanel
 			}
 			else
 			{
-				//slotIndex, not i: a for loop variable is a single captured variable, so every closure would read
-				//the value it holds after the loop. Reading the live entry also avoids the predicate answering
-				//from the snapshot taken at Init time, long after the slot has changed.
 				int slotIndex = i;
 
 				m_recyclingSlots[i].gameObject.SetActive(true);
@@ -55,9 +52,6 @@ public class RecyclePanel : AUIPanel
 		m_inventoryGrid.Init(null, null, null, InventoryGridPredicate, ComponentDisplay.DisplayMode.RecyclingStation);
 	}
 
-	//A recycling slot only frees up when ReturnToHubPopup pays its content out and clears the entry, so holding
-	//a component is what makes a slot busy. The old test asked Predicate(null), and every predicate here starts
-	//with "item != null", so it could never return a slot at all.
 	public ComponentSlot GetFreeContainer ()
 	{
 		for (int i = 0; i < m_recyclingSlots.Length; i++)
@@ -90,8 +84,6 @@ public class RecyclePanel : AUIPanel
 
 	private void OnItemRemovedOnSlot ( ComponentContainer _container, ComponentDisplay _display )
 	{
-		//Taking a component back out cancels its recycling, so it returns to the inventory. Guarded against a
-		//component that is somehow still listed there: the list must never hold the same one twice.
 		GameDatas.current.currentPlayerSave.dayData.currentlyRecyclingComponents[_container.Index] = new();
 
 		if (!GameDatas.current.currentPlayerSave.equipmentInventory.Contains(_display.SavedData))
