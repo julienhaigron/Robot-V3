@@ -64,10 +64,10 @@ public class DialogueManager : Singleton<DialogueManager>
 		m_characterNameTMP.text = line.characterName;
 		m_dialogueImg.sprite = line.characterSprite;
 
-		RectTransform portraitRect = m_dialogueImg.rectTransform;
+		/*RectTransform portraitRect = m_dialogueImg.rectTransform;
 		portraitRect.anchorMin = line.isSpriteOnLeft ? new Vector2(0, 0.5f) : new Vector2(1, 0.5f);
 		portraitRect.anchorMax = portraitRect.anchorMin;
-		portraitRect.anchoredPosition3D = new Vector3(0, portraitRect.localPosition.y, portraitRect.localPosition.z);
+		portraitRect.anchoredPosition3D = new Vector3(0, portraitRect.localPosition.y, portraitRect.localPosition.z);*/
 
 		m_dialogueTMP.text = "";
 		m_isTextAnimationOn = true;
