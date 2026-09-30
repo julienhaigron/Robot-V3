@@ -46,6 +46,8 @@ public class ComponentSlot : ComponentContainer
             m_currentDisplay.Init(_unitData, _componentSavedData, _displayMode);
             m_currentDisplay.CurrentContainer = this;
             m_currentDisplay.transform.SetParent(m_displayParent);
+            (m_currentDisplay.transform as RectTransform).anchorMax = new Vector2(.5f, .5f);
+            (m_currentDisplay.transform as RectTransform).anchorMin = new Vector2(.5f, .5f);
             m_currentDisplay.transform.localPosition = Vector3.zero;
             (m_currentDisplay.transform as RectTransform).sizeDelta = m_displaySize;
         }
@@ -136,6 +138,8 @@ public class ComponentSlot : ComponentContainer
         _display.CurrentContainer = this;
 
         _display.transform.SetParent(m_displayParent);
+        (_display.transform as RectTransform).anchorMax = new Vector2(.5f, .5f);
+        (_display.transform as RectTransform).anchorMin = new Vector2(.5f, .5f);
         _display.transform.localPosition = Vector3.zero;
         (m_currentDisplay.transform as RectTransform).sizeDelta = m_displaySize;
     }

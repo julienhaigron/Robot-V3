@@ -9,6 +9,7 @@ public class RepareUnitSlot : RepareUnitContainer
     [SerializeField, FormerlySerializedAs("m_timerSectionGO")] private GameObject m_priceSectionGO;
     [SerializeField, FormerlySerializedAs("m_timerTMP")] private TextMeshProUGUI m_priceTMP;
     [SerializeField] private BaseButton m_repairBtn;
+    [SerializeField] private BaseButton m_fullRepairBtn;
     [SerializeField] private SlidingDoors m_lockDoors;
     [SerializeField] private Vector2 m_displaySize = new Vector2(124f, 124f);
 

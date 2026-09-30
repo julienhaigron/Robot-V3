@@ -1090,7 +1090,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 312869076792792652, guid: 0d27d90efef196a4aa322e480e7a00b4, type: 3}
       propertyPath: m_Size
-      value: 0.59615386
+      value: 0.59160304
       objectReference: {fileID: 0}
     - target: {fileID: 312869076792792652, guid: 0d27d90efef196a4aa322e480e7a00b4, type: 3}
       propertyPath: m_Value
@@ -1126,6 +1126,22 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2912339420684345800, guid: 0d27d90efef196a4aa322e480e7a00b4, type: 3}
       propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5749233881913313740, guid: 0d27d90efef196a4aa322e480e7a00b4, type: 3}
+      propertyPath: m_Spacing.x
+      value: 14.29
+      objectReference: {fileID: 0}
+    - target: {fileID: 5749233881913313740, guid: 0d27d90efef196a4aa322e480e7a00b4, type: 3}
+      propertyPath: m_CellSize.x
+      value: 267
+      objectReference: {fileID: 0}
+    - target: {fileID: 5749233881913313740, guid: 0d27d90efef196a4aa322e480e7a00b4, type: 3}
+      propertyPath: m_CellSize.y
+      value: 126
+      objectReference: {fileID: 0}
+    - target: {fileID: 5749233881913313740, guid: 0d27d90efef196a4aa322e480e7a00b4, type: 3}
+      propertyPath: m_Padding.m_Right
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7092751322951221746, guid: 0d27d90efef196a4aa322e480e7a00b4, type: 3}
