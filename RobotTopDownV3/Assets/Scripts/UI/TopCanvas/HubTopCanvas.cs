@@ -14,6 +14,9 @@ public class HubTopCanvas : AUITopCanvas
 	[SerializeField] private SerializableDictionary<CurrencyType, CurrencyDisplay> m_currencyDisplays = new();
 	[SerializeField] private GameObject[] m_dayDisplays;
 	[SerializeField] private TextMeshProUGUI m_cycleTMP;
+	[SerializeField] private Image m_returnBtnIMG;
+	[SerializeField] private Sprite m_defaultReturnIcon;
+	[SerializeField] private Sprite m_returnToStartMenuIcon;
 
 	[Title("Shop")]
 	[SerializeField] private CurrencyDisplay m_shopFactionCurrencyDisplay;
@@ -139,6 +142,7 @@ public class HubTopCanvas : AUITopCanvas
 
 	private void Init ( bool _isInShop, ShopPanel _shopPanel )
 	{
+		m_returnBtnIMG.sprite = UIManager.Instance.currentPanel is StartMenuPanel ? m_returnToStartMenuIcon : m_defaultReturnIcon;
 		// show/hide unneeded currency displays
 		if (_isInShop)
 		{

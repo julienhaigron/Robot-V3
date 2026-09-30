@@ -16,6 +16,10 @@ public class StartMenuPanel : AUIPanel
 	[SerializeField] private BaseButton m_quitBtn;
 	[SerializeField] private TextMeshProUGUI m_lastSaveStepTMP;
 	[SerializeField] private TextMeshProUGUI m_lastSaveCycleTMP;
+	[SerializeField] private Vector3 m_firstBtnPosition;
+	[SerializeField] private Vector2 m_firstBtnSize;
+	[SerializeField] private Vector3 m_newGameBtnPosition;
+	[SerializeField] private Vector2 m_newGameBtnSize;
 
 	[Title("Load save")]
 	[SerializeField] private Transform m_saveBtnsParent;
@@ -77,8 +81,20 @@ public class StartMenuPanel : AUIPanel
 			case StartMenuDisplayMode.Start:
 				m_startModeParent.gameObject.SetActive(true);
 				m_newGameBtn.gameObject.SetActive(GameDatas.current.playerSaves.Count < m_savesBtns.Length);
-				m_loadGameBtn.gameObject.SetActive(GameDatas.current.hasAnySave);
-				m_continueBtn.gameObject.SetActive(GameDatas.current.hasAnySave);
+				if (GameDatas.current.hasAnySave)
+				{
+					m_loadGameBtn.gameObject.SetActive(true);
+					m_continueBtn.gameObject.SetActive(true);
+					(m_newGameBtn.transform as RectTransform).anchoredPosition = m_newGameBtnPosition;
+					(m_newGameBtn.transform as RectTransform).sizeDelta = m_newGameBtnSize;
+				}
+				else
+				{
+					m_loadGameBtn.gameObject.SetActive(false);
+					m_continueBtn.gameObject.SetActive(false);
+					(m_newGameBtn.transform as RectTransform).anchoredPosition = m_firstBtnPosition;
+					(m_newGameBtn.transform as RectTransform).sizeDelta = m_firstBtnSize;
+				}
 				m_lastSaveStepTMP.text = GameDatas.current.hasAnySave ? GameDatas.current.currentPlayerSave.saveName : "";
 				m_lastSaveCycleTMP.text = GameDatas.current.hasAnySave ? "CYCLE " + (GameDatas.current.currentPlayerSave.cycleCount+1) : "";
 				break;

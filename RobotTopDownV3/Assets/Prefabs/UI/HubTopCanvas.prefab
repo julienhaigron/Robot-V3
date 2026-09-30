@@ -623,6 +623,9 @@ MonoBehaviour:
   - {fileID: 5775895816088611532}
   - {fileID: 242666423488325032}
   m_cycleTMP: {fileID: 3941045232297737775}
+  m_returnBtnIMG: {fileID: 0}
+  m_defaultReturnIcon: {fileID: 2103653815, guid: c31e3a869a87af840896fadfabb217b5, type: 3}
+  m_returnToStartMenuIcon: {fileID: -1860265540, guid: c31e3a869a87af840896fadfabb217b5, type: 3}
   m_shopFactionCurrencyDisplay: {fileID: 7447395930259060901}
   m_factionProgressionTMP: {fileID: 8291462150423337209}
   m_factionProgressionFill: {fileID: 5893223915011272237}
