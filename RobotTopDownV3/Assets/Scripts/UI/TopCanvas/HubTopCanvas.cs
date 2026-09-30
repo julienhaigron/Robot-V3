@@ -142,7 +142,7 @@ public class HubTopCanvas : AUITopCanvas
 
 	private void Init ( bool _isInShop, ShopPanel _shopPanel )
 	{
-		m_returnBtnIMG.sprite = UIManager.Instance.currentPanel is StartMenuPanel ? m_returnToStartMenuIcon : m_defaultReturnIcon;
+		m_returnBtnIMG.sprite = UIManager.Instance.currentPanel is SoloHubPanel ? m_returnToStartMenuIcon : m_defaultReturnIcon;
 		// show/hide unneeded currency displays
 		if (_isInShop)
 		{

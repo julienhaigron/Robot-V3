@@ -64,9 +64,9 @@ public class HangarEntityDisplay : MonoBehaviour
 		}
 		else
 		{
-            (m_selectBtn.transform as RectTransform).DOAnchorPosX(m_isSelected ? -7.5f : 7.5f, 1f).SetEase(Ease.OutQuart);
-            m_toggleBGImg.DOColor(m_isSelected ? m_selectedSubColor : m_unselectedSubColor, 1f);
-            m_toggleImg.DOColor(m_isSelected ? m_selectedMainColor : m_unselectedMainColor, 1f);
+            (m_selectBtn.transform as RectTransform).DOAnchorPosX(m_isSelected ? -7.5f : 7.5f, .5f).SetEase(Ease.OutExpo);
+            m_toggleBGImg.DOColor(m_isSelected ? m_selectedSubColor : m_unselectedSubColor, .5f).SetEase(Ease.OutExpo);
+            m_toggleImg.DOColor(m_isSelected ? m_selectedMainColor : m_unselectedMainColor, .5f).SetEase(Ease.OutExpo);
         }
 	}
 

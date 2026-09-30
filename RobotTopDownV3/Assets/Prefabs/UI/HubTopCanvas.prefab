@@ -623,7 +623,7 @@ MonoBehaviour:
   - {fileID: 5775895816088611532}
   - {fileID: 242666423488325032}
   m_cycleTMP: {fileID: 3941045232297737775}
-  m_returnBtnIMG: {fileID: 0}
+  m_returnBtnIMG: {fileID: 2959768001351685115}
   m_defaultReturnIcon: {fileID: 2103653815, guid: c31e3a869a87af840896fadfabb217b5, type: 3}
   m_returnToStartMenuIcon: {fileID: -1860265540, guid: c31e3a869a87af840896fadfabb217b5, type: 3}
   m_shopFactionCurrencyDisplay: {fileID: 7447395930259060901}
@@ -4713,6 +4713,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 6307954751596609244, guid: 2a66ae51fe16f7f448812e35c65893b1, type: 3}
   m_PrefabInstance: {fileID: 5784947403806476986}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &2959768001351685115 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8744713201835743553, guid: 2a66ae51fe16f7f448812e35c65893b1, type: 3}
+  m_PrefabInstance: {fileID: 5784947403806476986}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
 --- !u!114 &8694318198282710935 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 2945406201454585133, guid: 2a66ae51fe16f7f448812e35c65893b1, type: 3}
