@@ -15,7 +15,7 @@ public class MissionPanel : AUIPanel
 
 	[Title("Squad")]
 	[SerializeField] private UnitMissionDisplay[] m_unitDisplays;
-	[SerializeField] private UnitMissionDisplay m_hoveredUnitDisplay;
+	[SerializeField] private HangarEntityDisplay m_hoveredUnitDisplay;
 	[SerializeField] private Image[] m_hoveredUnitComponentIcons;
 	[SerializeField] private StatDisplay[] m_hoveredUnitStatDisplays;
 

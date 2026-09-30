@@ -14,6 +14,8 @@ public class HangarEntityDisplay : MonoBehaviour
 	[SerializeField] private BaseButton m_configBtn;
 	[SerializeField] private Image m_toggleBGImg;
 	[SerializeField] private Image m_toggleImg;
+	[SerializeField] private Image m_factionIMG;
+	[SerializeField] private CanvasGroup m_alphaElements;
 
 	[SerializeField] private Color m_selectedMainColor;
 	[SerializeField] private Color m_selectedSubColor;
@@ -42,6 +44,7 @@ public class HangarEntityDisplay : MonoBehaviour
 		m_index = _index;
 		m_nameTMP.text = _data.name;
 		m_isSelected = _isSelected;
+		m_factionIMG.sprite = GameAssets.current.ui.corporationsIcons[_data.GetDominentFaction(out float percentage)];
 
 		bool hasBrokenSub = _data.auxiliar != null && _data.auxiliar.Length > 0 && _data.auxiliar.Any(e => e.isDamaged);
 		InitComponentSlot(m_mainComponentSlots[EntityEquipmentData.EquipmentType.Frame], _data.frame, hasBrokenSub);
@@ -79,13 +82,14 @@ public class HangarEntityDisplay : MonoBehaviour
 			(m_selectBtn.transform as RectTransform).DOAnchorPosX(m_isSelected ? -7.5f : 7.5f, 0f);
 			m_toggleBGImg.color = m_isSelected ? m_selectedSubColor : m_unselectedSubColor;
 			m_toggleImg.color = m_isSelected ? m_selectedMainColor : m_unselectedMainColor;
-			return;
+			m_alphaElements.alpha = m_isSelected ? 1f : .15f;
 		}
 		else
 		{
-			(m_selectBtn.transform as RectTransform).DOAnchorPosX(m_isSelected ? -7.5f : 7.5f, .5f).SetEase(Ease.OutExpo);
-			m_toggleBGImg.DOColor(m_isSelected ? m_selectedSubColor : m_unselectedSubColor, .5f).SetEase(Ease.OutExpo);
-			m_toggleImg.DOColor(m_isSelected ? m_selectedMainColor : m_unselectedMainColor, .5f).SetEase(Ease.OutExpo);
+			(m_selectBtn.transform as RectTransform).DOAnchorPosX(m_isSelected ? -7.5f : 7.5f, .3f).SetEase(Ease.OutExpo);
+			m_toggleBGImg.DOColor(m_isSelected ? m_selectedSubColor : m_unselectedSubColor, .3f).SetEase(Ease.OutExpo);
+			m_toggleImg.DOColor(m_isSelected ? m_selectedMainColor : m_unselectedMainColor, .3f).SetEase(Ease.OutExpo);
+			m_alphaElements.DOFade(m_isSelected ? 1f : .15f, .3f);
 		}
 	}
 
