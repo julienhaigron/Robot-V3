@@ -16,7 +16,6 @@ public class MissionPanel : AUIPanel
 	[Title("Squad")]
 	[SerializeField] private UnitMissionDisplay[] m_unitDisplays;
 	[SerializeField] private UnitMissionDisplay m_hoveredUnitDisplay;
-	[SerializeField] private SlidingDoors m_hoveredUnitDoors;
 	[SerializeField] private Image[] m_hoveredUnitComponentIcons;
 	[SerializeField] private StatDisplay[] m_hoveredUnitStatDisplays;
 
@@ -42,9 +41,6 @@ public class MissionPanel : AUIPanel
 	protected override void OnShowStarted ()
 	{
 		base.OnShowStarted();
-
-		if (m_hoveredUnitDoors != null)
-			m_hoveredUnitDoors.SetClosed(true, _isInstant: true);
 
 		RefreshMissionBtns();
 
@@ -180,10 +176,7 @@ public class MissionPanel : AUIPanel
 		if (_display == null || _display == m_hoveredUnitDisplay || _display.Data == null)
 			return;
 
-		if (m_hoveredUnitDoors == null)
-			RefreshHoveredUnit(_display);
-		else
-			m_hoveredUnitDoors.CloseThenOpen(() => RefreshHoveredUnit(_display));
+		RefreshHoveredUnit(_display);
 	}
 
 	private void RefreshHoveredUnit ( UnitMissionDisplay _display )
