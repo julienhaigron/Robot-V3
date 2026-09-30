@@ -6,7 +6,7 @@ using System.Linq;
 public class EndLevelEntityDisplay : MonoBehaviour
 {
 	[SerializeField] private TextMeshProUGUI m_nameTMP;
-	[SerializeField] private SerializableDictionary<EntityEquipmentData.EquipmentType, DamagedSlotDisplay> m_mainComponentSlots;
+	[SerializeField] private DamagedSlotDisplay[] m_componentDisplays;
 
 	[System.Serializable]
 	public class SubDamagedSlotContainer
@@ -14,17 +14,17 @@ public class EndLevelEntityDisplay : MonoBehaviour
 		public List<DamagedSlotDisplay> slots = new();
 	}
 
-	public void Init ( EntitySavedData _data )
+	public void Init ( EntitySavedData _data, List<GameDatas.PlayerSave.Component> _damagedComponent )
 	{
 		m_nameTMP.text = _data.name;
 
-		bool hasBrokenSub = _data.auxiliar != null && _data.auxiliar.Length > 0 && _data.auxiliar.Any(e => e.isDamaged);
-		InitComponentSlot(m_mainComponentSlots[EntityEquipmentData.EquipmentType.Frame], _data.frame, hasBrokenSub);
-		hasBrokenSub = _data.chipsets != null && _data.chipsets.Length > 0 && _data.chipsets.Any(e => e.isDamaged);
-		InitComponentSlot(m_mainComponentSlots[EntityEquipmentData.EquipmentType.Brain], _data.brain, hasBrokenSub);
-		hasBrokenSub = _data.arms != null && _data.arms.Length > 0 && _data.arms.Any(e => e.isDamaged);
-		InitComponentSlot(m_mainComponentSlots[EntityEquipmentData.EquipmentType.NeuronalMembrane], _data.neuronalMembrane, hasBrokenSub);
-		InitComponentSlot(m_mainComponentSlots[EntityEquipmentData.EquipmentType.Reactor], _data.reactor, false);
+		for(int i = 0; i < m_componentDisplays.Length; i++)
+		{
+			if (_damagedComponent.Count <= i)
+				m_componentDisplays[i].Hide();
+			else
+				m_componentDisplays[i].Init(_damagedComponent[i].GetData<EntityEquipmentData>().icon, true, false);
+		}
 
 	}
 

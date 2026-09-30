@@ -59,10 +59,11 @@ public class EndLevelPopup : AUIPopup
 				float remainingHealthPercentage = (float)entity.Equipment.CurrentHealth / (float)entity.Equipment.MaxHealth;
 				int destroiedComponentAmount = remainingHealthPercentage > .75f ? 0 : remainingHealthPercentage > .5f ? 1 : remainingHealthPercentage > .25f ? 2 : 3;
 
+				List<GameDatas.PlayerSave.Component> damagedComponent = new();
 				if (destroiedComponentAmount > 0)
-					DamageRandomComponents(GameDatas.current.currentPlayerSave.allBuiltUnits[GameDatas.current.currentPlayerSave.squadUnitsIndex[i]], destroiedComponentAmount);
+					damagedComponent = DamageRandomComponents(GameDatas.current.currentPlayerSave.allBuiltUnits[GameDatas.current.currentPlayerSave.squadUnitsIndex[i]], destroiedComponentAmount);
 
-				m_unitDisplay[i].Init(GameDatas.current.currentPlayerSave.allBuiltUnits[GameDatas.current.currentPlayerSave.squadUnitsIndex[i]]);
+				m_unitDisplay[i].Init(GameDatas.current.currentPlayerSave.allBuiltUnits[GameDatas.current.currentPlayerSave.squadUnitsIndex[i]], damagedComponent);
 				m_unitDisplay[i].Show();
 			}
 		}
@@ -149,17 +150,21 @@ public class EndLevelPopup : AUIPopup
 		m_continueButton.SetInteractability(m_allocatedRewardPoint == 5 || totalUsedRewardPoint <= m_allocatedRewardPoint);
 	}
 
-	public void DamageRandomComponents ( EntitySavedData _entity, int _count )
+	public List<GameDatas.PlayerSave.Component> DamageRandomComponents ( EntitySavedData _entity, int _count )
 	{
 		List<GameDatas.PlayerSave.Component> available = _entity.GetAllEquipments();
+		List<GameDatas.PlayerSave.Component> damagedComponents = new();
 		_count = Mathf.Min(_count, available.Count);
 
 		for (int i = 0; i < _count; i++)
 		{
 			int index = UnityEngine.Random.Range(0, available.Count);
 			available[index].isDamaged = true;
+			damagedComponents.Add(available[index]);
 			available.RemoveAt(index);
 		}
+
+		return damagedComponents;
 	}
 
 	private void OnClickContinue ()

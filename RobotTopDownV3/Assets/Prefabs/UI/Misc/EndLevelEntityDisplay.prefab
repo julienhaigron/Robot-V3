@@ -198,7 +198,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: RTD::DamagedSlotDisplay
   m_icon: {fileID: 8280738570676529085}
-  m_damagedGO: {fileID: 0}
 --- !u!114 &8280738570676529085
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -288,7 +287,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: RTD::DamagedSlotDisplay
   m_icon: {fileID: 1050089301920237219}
-  m_damagedGO: {fileID: 0}
 --- !u!114 &1050089301920237219
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -378,7 +376,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: RTD::DamagedSlotDisplay
   m_icon: {fileID: 5938219074762965618}
-  m_damagedGO: {fileID: 0}
 --- !u!114 &5938219074762965618
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -543,7 +540,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: RTD::DamagedSlotDisplay
   m_icon: {fileID: 8508425693294864346}
-  m_damagedGO: {fileID: 0}
 --- !u!114 &8508425693294864346
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -714,32 +710,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: RTD::EndLevelEntityDisplay
   m_nameTMP: {fileID: 132080405861342317}
-  m_mainComponentSlots:
-    keys: 00000000010000000400000002000000
-    values:
-    - {fileID: 7824479970505504256}
-    - {fileID: 7394213832518255278}
-    - {fileID: 3836212516833469537}
-    - {fileID: 531689755687031498}
-  m_subComponentSlots:
-    keys: 000000000100000004000000
-    values:
-    - slots:
-      - {fileID: 0}
-      - {fileID: 0}
-      - {fileID: 0}
-      - {fileID: 0}
-      - {fileID: 0}
-      - {fileID: 0}
-    - slots:
-      - {fileID: 0}
-      - {fileID: 0}
-      - {fileID: 0}
-      - {fileID: 0}
-    - slots:
-      - {fileID: 0}
-      - {fileID: 0}
-      - {fileID: 0}
-      - {fileID: 0}
-      - {fileID: 0}
-      - {fileID: 0}
+  m_componentDisplays:
+  - {fileID: 7824479970505504256}
+  - {fileID: 3836212516833469537}
+  - {fileID: 7394213832518255278}
+  - {fileID: 531689755687031498}
