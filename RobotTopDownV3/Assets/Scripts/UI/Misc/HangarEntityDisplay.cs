@@ -89,7 +89,7 @@ public class HangarEntityDisplay : MonoBehaviour
 			(m_selectBtn.transform as RectTransform).DOAnchorPosX(m_isSelected ? -7.5f : 7.5f, .3f).SetEase(Ease.OutExpo);
 			m_toggleBGImg.DOColor(m_isSelected ? m_selectedSubColor : m_unselectedSubColor, .3f).SetEase(Ease.OutExpo);
 			m_toggleImg.DOColor(m_isSelected ? m_selectedMainColor : m_unselectedMainColor, .3f).SetEase(Ease.OutExpo);
-			m_alphaElements.DOFade(m_isSelected ? 1f : .15f, .3f);
+			m_alphaElements.DOFade(m_isSelected ? 1f : .15f, .3f).SetEase(Ease.OutExpo);
 		}
 	}
 
