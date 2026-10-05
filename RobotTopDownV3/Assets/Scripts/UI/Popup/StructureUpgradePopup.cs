@@ -7,6 +7,8 @@ using TMPro;
 public class StructureUpgradePopup : AUIPopup
 {
 	[SerializeField] private TextMeshProUGUI m_titleTMP;
+	[SerializeField] private TextMeshProUGUI m_levelTMP;
+	[SerializeField] private TextMeshProUGUI m_priceTMP;
 	[SerializeField] private BaseButton m_closeBtn;
 	[SerializeField] private BaseButton m_buyUpgradeBtn;
 	[SerializeField] private StructureUpgradeAddonDisplay[] addonDisplays;
@@ -60,14 +62,15 @@ public class StructureUpgradePopup : AUIPopup
 		m_buyUpgradeBtn.SetInteractability(Upgrade.CanUpgrade());
 
 		m_titleTMP.text = Upgrade.GetLocalizedName();
-		for(int i = 0; i< addonDisplays.Length; i++)
+		m_priceTMP.text = "-" + Upgrade.GetCurrentPrice() + "r";
+		m_levelTMP.text = (Upgrade.GetCurrentLevel() + 1) + "<color=green><size=75%>+1</color></size>";
+		for (int i = 0; i < addonDisplays.Length; i++)
 		{
 			if (Upgrade.addonDescriptions.Length <= i)
 				continue;
 
 			float bonus = Upgrade.GetAddonValue(Upgrade.GetCurrentLevel() + 1, i) - Upgrade.GetAddonValue(Upgrade.GetCurrentLevel(), i);
-			string content = Upgrade.GetAddonDescription(i, bonus);
-			addonDisplays[i].Init(content);
+			addonDisplays[i].Init(Upgrade.GetAddonTitle(i), Upgrade.GetAddonValue(Upgrade.GetCurrentLevel(), i).ToString(), bonus.ToString());
 		}
 	}
 

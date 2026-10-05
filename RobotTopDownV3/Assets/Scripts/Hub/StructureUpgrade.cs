@@ -7,8 +7,8 @@ public abstract class StructureUpgrade : IncrementalUpgrade
 
 	public abstract float GetAddonValue ( int _level, int _addonID );
 
-	public string GetAddonDescription(int _addonID, float _bonus )
+	public string GetAddonTitle(int _addonID )
 	{
-		return "+" + _bonus + " " + addonDescriptions[_addonID];
+		return addonDescriptions[_addonID];
 	}
 }

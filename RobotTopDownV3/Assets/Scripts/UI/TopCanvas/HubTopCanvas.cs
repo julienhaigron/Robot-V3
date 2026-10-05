@@ -23,6 +23,8 @@ public class HubTopCanvas : AUITopCanvas
 	[SerializeField] private TextMeshProUGUI m_factionProgressionTMP;
 	[SerializeField] private MPImage m_factionProgressionFill;
 
+	private bool m_isStructureUpgradePopupOpened = false;
+
 	protected override void Awake ()
 	{
 		base.Awake();
@@ -80,7 +82,13 @@ public class HubTopCanvas : AUITopCanvas
 
 	private void OnClickUpgradeStructure ()
 	{
-		if (UIManager.Instance.currentPanel is HangarPanel)
+		if (m_isStructureUpgradePopupOpened)
+		{
+			UIManager.Instance.ClosePopup<StructureUpgradePopup>();
+			m_isStructureUpgradePopupOpened = false;
+			return;
+		}
+		else if (UIManager.Instance.currentPanel is HangarPanel)
 			UIManager.Instance.OpenPopup<StructureUpgradePopup>().Init(StructureUpgradePopup.StructureType.Hangar);
 		else if (UIManager.Instance.currentPanel is ShopPanel)
 			UIManager.Instance.OpenPopup<StructureUpgradePopup>().Init(StructureUpgradePopup.StructureType.Shop);
@@ -88,6 +96,8 @@ public class HubTopCanvas : AUITopCanvas
 			UIManager.Instance.OpenPopup<StructureUpgradePopup>().Init(StructureUpgradePopup.StructureType.Recycler);
 		else if (UIManager.Instance.currentPanel is RepairStationPanel)
 			UIManager.Instance.OpenPopup<StructureUpgradePopup>().Init(StructureUpgradePopup.StructureType.RepairStation);
+
+		m_isStructureUpgradePopupOpened = true;
 	}
 
 	private void OnClickReturn ()
