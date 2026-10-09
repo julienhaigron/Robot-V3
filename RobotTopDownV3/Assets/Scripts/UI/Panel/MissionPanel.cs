@@ -16,7 +16,6 @@ public class MissionPanel : AUIPanel
 	[Title("Squad")]
 	[SerializeField] private UnitMissionDisplay[] m_unitDisplays;
 	[SerializeField] private HangarEntityDisplay m_hoveredUnitDisplay;
-	[SerializeField] private Image[] m_hoveredUnitComponentIcons;
 	[SerializeField] private StatDisplay[] m_hoveredUnitStatDisplays;
 
 	[Title("SingleMissionDetails")]
@@ -173,7 +172,7 @@ public class MissionPanel : AUIPanel
 
 	private void OnAnyUnitHovered ( UnitMissionDisplay _display )
 	{
-		if (_display == null || _display == m_hoveredUnitDisplay || _display.Data == null)
+		if (_display == null || _display.Data == null)
 			return;
 
 		RefreshHoveredUnit(_display);
@@ -195,18 +194,6 @@ public class MissionPanel : AUIPanel
 			{
 				m_hoveredUnitStatDisplays[i].gameObject.SetActive(true);
 				m_hoveredUnitStatDisplays[i].Init(statsDescriptions[keys[i]]);
-			}
-		}
-
-		List<GameDatas.PlayerSave.Component> mainComponents = _display.Data.GetAllMainEquipments();
-		for (int i = 0; i < m_hoveredUnitComponentIcons.Length; i++)
-		{
-			if (mainComponents.Count <= i || !mainComponents[i].TryGetData(out EntityEquipmentData data))
-				m_hoveredUnitComponentIcons[i].gameObject.SetActive(false);
-			else
-			{
-				m_hoveredUnitComponentIcons[i].gameObject.SetActive(true);
-				m_hoveredUnitComponentIcons[i].sprite = data.icon;
 			}
 		}
 	}

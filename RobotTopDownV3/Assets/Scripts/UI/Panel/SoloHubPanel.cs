@@ -17,12 +17,14 @@ public class SoloHubPanel : AUIPanel
 
 	private void Awake ()
 	{
-		m_hangarBtn.Init(UIManager.Instance.GetPanel<HangarPanel>());
-		foreach (KeyValuePair<EntityEquipmentData.EntityFaction, BuildingBtn> shopBtn in m_openShopBtns)
-			shopBtn.Value.Init(UIManager.Instance.GetPanel<ShopPanel>());
-		m_recycleShopBtn.Init(UIManager.Instance.GetPanel<RecyclePanel>());
-		m_missionSelectionPanelBtn.Init(UIManager.Instance.GetPanel<SelectMissionPanel>());
-		m_repairBtn.Init(UIManager.Instance.GetPanel<RepairStationPanel>());
+		m_openShopBtns[EntityEquipmentData.EntityFaction.Psy].Init(UIManager.Instance.GetPanel<ShopPanel>(), GameAssets.current.game.PsyShopStructureUpgrade.GetCurrentLevel() + 1 );
+		m_openShopBtns[EntityEquipmentData.EntityFaction.Commando].Init(UIManager.Instance.GetPanel<ShopPanel>(), GameAssets.current.game.CommandoShopStructureUpgrade.GetCurrentLevel() + 1 );
+		m_openShopBtns[EntityEquipmentData.EntityFaction.Paladin].Init(UIManager.Instance.GetPanel<ShopPanel>(), GameAssets.current.game.PaladinShopStructureUpgrade.GetCurrentLevel() + 1 );
+
+		m_hangarBtn.Init(UIManager.Instance.GetPanel<HangarPanel>(), GameAssets.current.game.HangarStructureUpgrade.GetCurrentLevel() + 1 );
+		m_recycleShopBtn.Init(UIManager.Instance.GetPanel<RecyclePanel>(), GameAssets.current.game.RecyclerStructureUpgrade.GetCurrentLevel() + 1 );
+		m_repairBtn.Init(UIManager.Instance.GetPanel<RepairStationPanel>(), GameAssets.current.game.RepairStationStructureUpgrade.GetCurrentLevel() + 1);
+		m_missionSelectionPanelBtn.Init(UIManager.Instance.GetPanel<SelectMissionPanel>(), 0 );
 		m_missionBtn.onClick += OnClickMissionBtn;
 		m_skipDayBtn.onClick += OnClickSkipDay;
 	}

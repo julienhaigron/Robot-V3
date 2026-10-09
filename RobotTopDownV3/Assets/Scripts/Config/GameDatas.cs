@@ -288,9 +288,10 @@ public partial class GameDatas : ScriptableObject
 					data.remainingTime = 0;
 		}
 
-		public string CollectFinishedDayJobs ()
+		public string ProcessRecycledComponents (out List<DayData.RecyclingComponentData> _recycledComponent )
 		{
 			string report = "";
+			_recycledComponent = new();
 
 			for (int i = 0; i < dayData.currentlyRecyclingComponents.Count; i++)
 			{
@@ -298,6 +299,7 @@ public partial class GameDatas : ScriptableObject
 				if (data == null || data.component == null || string.IsNullOrEmpty(data.component.ID) || data.remainingTime > 0)
 					continue;
 
+				_recycledComponent.Add(data);
 				EntityEquipmentData componentData = data.component.GetData<EntityEquipmentData>();
 				report += componentData.GetLocalizedName() + " finished recycling \n";
 

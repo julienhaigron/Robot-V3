@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Linq;
+using TMPro;
 
 public class ShopPanel : AUIPanel
 {
@@ -10,6 +11,9 @@ public class ShopPanel : AUIPanel
 	[SerializeField] private ComponentDisplayGrid m_inventoryGrid;
 	[SerializeField] private ComponentFullDisplay m_hoveredComponentFullInfoDisplay;
 	[SerializeField] private Image m_corpIcon;
+	[SerializeField] BaseButton m_rerollBtn;
+	[SerializeField] private TextMeshProUGUI m_rerollTMP;
+	[SerializeField] private TextMeshProUGUI m_freezeTMP;
 
 	private EntityEquipmentData.EntityFaction m_currentFaction;
 	public EntityEquipmentData.EntityFaction CurrentFaction => m_currentFaction;
@@ -40,6 +44,7 @@ public class ShopPanel : AUIPanel
 		m_shopGrid.onItemAdded += SellItem;
 		m_inventoryGrid.onItemAdded += BuyItem;
 		GameDatas.onNewDay += OnNewDay;
+		m_rerollBtn.onClick += OnClickFreeze;
 	}
 
 	public void Init ( EntityEquipmentData.EntityFaction _faction)
@@ -64,6 +69,9 @@ public class ShopPanel : AUIPanel
 				m_inventoryGrid.CreateNewDisplay(null, null, ComponentDisplay.DisplayMode.Empty);
 			}
 		}
+
+		m_rerollTMP.text = "3/4";
+		m_freezeTMP.text = "3/4";
 
 		/*foreach (ComponentDisplay display in m_shopGrid.Items)
 		{
@@ -120,6 +128,11 @@ public class ShopPanel : AUIPanel
 	private void OnNewDay ()
 	{
 		RefreshShopBuyableItems();
+	}
+
+	private void OnClickFreeze ()
+	{
+
 	}
 
 }

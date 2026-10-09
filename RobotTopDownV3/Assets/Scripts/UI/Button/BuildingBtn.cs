@@ -8,16 +8,16 @@ using Sirenix.OdinInspector;
 public class BuildingBtn : MonoBehaviour
 {
 	[SerializeField] private BaseButton m_openPanelBtn;
-	[SerializeField] private BaseButton m_upgradeBuildingBtn;
 	[SerializeField] private EntityEquipmentData.EntityFaction m_shopFaction;
+	[SerializeField] private TextMeshProUGUI m_levelTMP;
 
 	private AUIPanel m_panel;
 
-	public void Init( AUIPanel _panel )
+	public void Init( AUIPanel _panel, int _upgradeLevel )
 	{
 		m_panel = _panel;
 		m_openPanelBtn.onClick += OnClickOpenPanel;
-		m_upgradeBuildingBtn.onClick += OnClickUpgradeBuilding;
+		m_levelTMP.text = _upgradeLevel.ToString();
 	}
 
 	private void OnClickOpenPanel ()
@@ -33,15 +33,9 @@ public class BuildingBtn : MonoBehaviour
 
 	}
 
-	private void OnClickUpgradeBuilding ()
-	{
-		//UIManager.Instance.OpenPanel(m_panel);
-	}
-
 	public void SetInteractability (bool _isInstaractable)
 	{
 		m_openPanelBtn.SetInteractability(_isInstaractable);
-		m_upgradeBuildingBtn.SetInteractability(_isInstaractable);
 	}
 
 }

@@ -110,12 +110,12 @@ public class GameManager : SingletonPersistant<GameManager>
 			{
 				UIManager.Instance.ShowTopCanvas<HubTopCanvas>();
 
-				string dayReport = GameDatas.current.currentPlayerSave.CollectFinishedDayJobs();
+				string dayReport = GameDatas.current.currentPlayerSave.ProcessRecycledComponents(out List<GameDatas.PlayerSave.DayData.RecyclingComponentData> _recycledComponent);
 
 				if (m_returnFromMatch)
 				{
 					if (GameDatas.current.currentPlayerSave.didUnlockReturnToHubPopup)
-						UIManager.Instance.OpenPopup<ReturnToHubPopup>().Init(dayReport);
+						UIManager.Instance.OpenPopup<ReturnToHubPopup>().Init(dayReport, _recycledComponent);
 					UIManager.Instance.OpenPanel<SoloHubPanel>();
 				}
 				else

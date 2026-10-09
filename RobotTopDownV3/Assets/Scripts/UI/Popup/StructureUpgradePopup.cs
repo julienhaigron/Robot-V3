@@ -20,7 +20,9 @@ public class StructureUpgradePopup : AUIPopup
 	{
 		Hangar,
 		Recycler,
-		Shop,
+		PsyShop,
+		CommandoShop,
+		PaladinShop,
 		RepairStation
 	}
 

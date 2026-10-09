@@ -2046,7 +2046,7 @@ PrefabInstance:
       objectReference: {fileID: -527731599, guid: 31cee7fbc7dacf5449ac2bd80b7b4b88, type: 3}
     - target: {fileID: 5363345034870926748, guid: f95107ad02261114f9b01b78d0785e2d, type: 3}
       propertyPath: m_text
-      value: HANGAR -
+      value: Corpo psy -
       objectReference: {fileID: 0}
     - target: {fileID: 5910819579328115761, guid: f95107ad02261114f9b01b78d0785e2d, type: 3}
       propertyPath: m_id
@@ -2054,7 +2054,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5962470052843686488, guid: f95107ad02261114f9b01b78d0785e2d, type: 3}
       propertyPath: key
-      value: hub/hangar
+      value: hub/shop_psy
+      objectReference: {fileID: 0}
+    - target: {fileID: 6522403632541793961, guid: f95107ad02261114f9b01b78d0785e2d, type: 3}
+      propertyPath: m_shopFaction
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 6737712879600233654, guid: f95107ad02261114f9b01b78d0785e2d, type: 3}
       propertyPath: m_Color.b
@@ -2360,6 +2364,10 @@ PrefabInstance:
       propertyPath: key
       value: hub/shop_comando
       objectReference: {fileID: 0}
+    - target: {fileID: 6522403632541793961, guid: f95107ad02261114f9b01b78d0785e2d, type: 3}
+      propertyPath: m_shopFaction
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 6737712879600233654, guid: f95107ad02261114f9b01b78d0785e2d, type: 3}
       propertyPath: m_Color.b
       value: 0.8862745
@@ -2652,6 +2660,10 @@ PrefabInstance:
       propertyPath: key
       value: hub/shop_paladin
       objectReference: {fileID: 0}
+    - target: {fileID: 6522403632541793961, guid: f95107ad02261114f9b01b78d0785e2d, type: 3}
+      propertyPath: m_shopFaction
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 6737712879600233654, guid: f95107ad02261114f9b01b78d0785e2d, type: 3}
       propertyPath: m_Color.b
       value: 0.36862746
@@ -2794,11 +2806,11 @@ PrefabInstance:
       objectReference: {fileID: -1742903103, guid: 31cee7fbc7dacf5449ac2bd80b7b4b88, type: 3}
     - target: {fileID: 4615272633505736663, guid: f95107ad02261114f9b01b78d0785e2d, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 301
+      value: 299
       objectReference: {fileID: 0}
     - target: {fileID: 4615272633505736663, guid: f95107ad02261114f9b01b78d0785e2d, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -25.5
+      value: -52.5
       objectReference: {fileID: 0}
     - target: {fileID: 5363345034870926748, guid: f95107ad02261114f9b01b78d0785e2d, type: 3}
       propertyPath: m_text

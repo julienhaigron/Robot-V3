@@ -12,16 +12,13 @@ public class TournamentPanel : AUIPanel
 
 	[Title("Squad")]
 	[SerializeField] private UnitMissionDisplay[] m_unitDisplays;
-	[SerializeField] private UnitMissionDisplay m_hoveredUnitDisplay;
-	[SerializeField] private Image[] m_hoveredUnitComponentIcons;
+	[SerializeField] private HangarEntityDisplay m_hoveredUnitDisplay;
 	[SerializeField] private StatDisplay[] m_hoveredUnitStatDisplays;
 
 	[Title("Other Squads")]
 	[SerializeField] private Image[] m_cursors;
 	[SerializeField] private UnitMissionDisplay[] m_round1SquadUnits;
-	[SerializeField] private UnitMissionDisplay[] m_round2SquadUnits;
-	[SerializeField] private UnitMissionDisplay[] m_round3SquadUnits;
-	[SerializeField] private Image[] m_squadsIcons;
+	[SerializeField] private Image m_squadIcon;
 
 	[Title("Rewards")]
 	[SerializeField] private ComponentRewardDisplay[] m_componentRewardDisplays;
@@ -53,12 +50,7 @@ public class TournamentPanel : AUIPanel
 		for (int i = 0; i < m_cursors.Length; i++)
 			m_cursors[i].gameObject.SetActive(i == CurrentRound);
 
-		foreach (Image image in m_squadsIcons)
-			image.gameObject.SetActive(false);
-
 		HideSquadDisplays(m_round1SquadUnits);
-		HideSquadDisplays(m_round2SquadUnits);
-		HideSquadDisplays(m_round3SquadUnits);
 
 		for (int i = 0; i < m_unitDisplays.Length; i++)
 		{
@@ -71,7 +63,7 @@ public class TournamentPanel : AUIPanel
 				m_unitDisplays[i].Hide();
 		}
 
-		if (CurrentRound >= 0)
+		if (CurrentRound == 0)
 		{
 			MissionData missiondata = GameAssets.current.game.missions[GameDatas.current.currentPlayerSave.cycleData.roundsDatas[0]];
 			for (int i = 0; i < m_round1SquadUnits.Length; i++)
@@ -86,45 +78,45 @@ public class TournamentPanel : AUIPanel
 			}
 
 			EntityEquipmentData.EntityFaction dominentCorpo = GetDominentSquadFaction(missiondata.enemies.ToList());
-			m_squadsIcons[0].gameObject.SetActive(true);
-			m_squadsIcons[0].sprite = GameAssets.current.ui.corporationsIcons[dominentCorpo];
-			m_squadsIcons[0].color = GameAssets.current.ui.corporationsColors[dominentCorpo];
+			m_squadIcon.gameObject.SetActive(true);
+			m_squadIcon.sprite = GameAssets.current.ui.corporationsIcons[dominentCorpo];
+			m_squadIcon.color = GameAssets.current.ui.corporationsColors[dominentCorpo];
 		}
-		if (CurrentRound >= 1)
+		else if (CurrentRound == 1)
 		{
 			MissionData missiondata = GameAssets.current.game.missions[GameDatas.current.currentPlayerSave.cycleData.roundsDatas[1]];
-			for (int i = 0; i < m_round2SquadUnits.Length; i++)
+			for (int i = 0; i < m_round1SquadUnits.Length; i++)
 			{
 				if (missiondata.enemies.Length > i)
 				{
-					m_round2SquadUnits[i].Init(missiondata.enemies[i].GetSavedData(), -1, false);
-					m_round2SquadUnits[i].Show();
+					m_round1SquadUnits[i].Init(missiondata.enemies[i].GetSavedData(), -1, false);
+					m_round1SquadUnits[i].Show();
 				}
 				else
-					m_round2SquadUnits[i].Hide();
+					m_round1SquadUnits[i].Hide();
 			}
 			EntityEquipmentData.EntityFaction dominentCorpo = GetDominentSquadFaction(missiondata.enemies.ToList());
-			m_squadsIcons[1].gameObject.SetActive(true);
-			m_squadsIcons[1].sprite = GameAssets.current.ui.corporationsIcons[dominentCorpo];
-			m_squadsIcons[1].color = GameAssets.current.ui.corporationsColors[dominentCorpo];
+			m_squadIcon.gameObject.SetActive(true);
+			m_squadIcon.sprite = GameAssets.current.ui.corporationsIcons[dominentCorpo];
+			m_squadIcon.color = GameAssets.current.ui.corporationsColors[dominentCorpo];
 		}
-		if (CurrentRound >= 2)
+		else if (CurrentRound == 2)
 		{
 			MissionData missiondata = GameAssets.current.game.missions[GameDatas.current.currentPlayerSave.cycleData.roundsDatas[2]];
-			for (int i = 0; i < m_round3SquadUnits.Length; i++)
+			for (int i = 0; i < m_round1SquadUnits.Length; i++)
 			{
 				if (missiondata.enemies.Length > i)
 				{
-					m_round3SquadUnits[i].Init(missiondata.enemies[i].GetSavedData(), -1, false);
-					m_round3SquadUnits[i].Show();
+					m_round1SquadUnits[i].Init(missiondata.enemies[i].GetSavedData(), -1, false);
+					m_round1SquadUnits[i].Show();
 				}
 				else
-					m_round3SquadUnits[i].Hide();
+					m_round1SquadUnits[i].Hide();
 			}
 			EntityEquipmentData.EntityFaction dominentCorpo = GetDominentSquadFaction(missiondata.enemies.ToList());
-			m_squadsIcons[2].gameObject.SetActive(true);
-			m_squadsIcons[2].sprite = GameAssets.current.ui.corporationsIcons[dominentCorpo];
-			m_squadsIcons[2].color = GameAssets.current.ui.corporationsColors[dominentCorpo];
+			m_squadIcon.gameObject.SetActive(true);
+			m_squadIcon.sprite = GameAssets.current.ui.corporationsIcons[dominentCorpo];
+			m_squadIcon.color = GameAssets.current.ui.corporationsColors[dominentCorpo];
 		}
 
 		m_startMissionBtn.SetInteractability(GameDatas.current.currentPlayerSave.squadUnitsIndex.Count > 0);
@@ -227,18 +219,6 @@ public class TournamentPanel : AUIPanel
 			{
 				m_hoveredUnitStatDisplays[i].gameObject.SetActive(true);
 				m_hoveredUnitStatDisplays[i].Init(statsDescriptions[keys[i]]);
-			}
-		}
-
-		List<GameDatas.PlayerSave.Component> mainComponents = _display.Data.GetAllMainEquipments();
-		for (int i = 0; i < m_hoveredUnitComponentIcons.Length; i++)
-		{
-			if (mainComponents.Count <= i)
-				m_hoveredUnitComponentIcons[i].gameObject.SetActive(false);
-			else
-			{
-				m_hoveredUnitComponentIcons[i].gameObject.SetActive(true);
-				m_hoveredUnitComponentIcons[i].sprite = mainComponents[i].GetData<EntityEquipmentData>().icon;
 			}
 		}
 

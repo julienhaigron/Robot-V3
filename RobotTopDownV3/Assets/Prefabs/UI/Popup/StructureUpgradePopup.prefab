@@ -171,8 +171,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -54, y: 10}
-  m_SizeDelta: {x: 252.58, y: 50}
+  m_AnchoredPosition: {x: -47, y: 10}
+  m_SizeDelta: {x: 252.58, y: 38.41}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &575817869735513052
 CanvasRenderer:
@@ -229,8 +229,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 30
-  m_fontSizeBase: 30
+  m_fontSize: 24.3
+  m_fontSizeBase: 24.3
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -906,9 +906,25 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 5389605979108685503}
     m_Modifications:
+    - target: {fileID: 297241947289342025, guid: 648a888af3280474a8664807546387ce, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 123
+      objectReference: {fileID: 0}
+    - target: {fileID: 297241947289342025, guid: 648a888af3280474a8664807546387ce, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 23.4
+      objectReference: {fileID: 0}
     - target: {fileID: 448637029870118603, guid: 648a888af3280474a8664807546387ce, type: 3}
       propertyPath: m_Name
       value: AddonDisplay (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 5219826820032848657, guid: 648a888af3280474a8664807546387ce, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 71
+      objectReference: {fileID: 0}
+    - target: {fileID: 5219826820032848657, guid: 648a888af3280474a8664807546387ce, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -140.5
       objectReference: {fileID: 0}
     - target: {fileID: 5831689949635071580, guid: 648a888af3280474a8664807546387ce, type: 3}
       propertyPath: m_Pivot.x
@@ -1011,9 +1027,25 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 5389605979108685503}
     m_Modifications:
+    - target: {fileID: 297241947289342025, guid: 648a888af3280474a8664807546387ce, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 123
+      objectReference: {fileID: 0}
+    - target: {fileID: 297241947289342025, guid: 648a888af3280474a8664807546387ce, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 23.4
+      objectReference: {fileID: 0}
     - target: {fileID: 448637029870118603, guid: 648a888af3280474a8664807546387ce, type: 3}
       propertyPath: m_Name
       value: AddonDisplay (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 5219826820032848657, guid: 648a888af3280474a8664807546387ce, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 71
+      objectReference: {fileID: 0}
+    - target: {fileID: 5219826820032848657, guid: 648a888af3280474a8664807546387ce, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -140.5
       objectReference: {fileID: 0}
     - target: {fileID: 5831689949635071580, guid: 648a888af3280474a8664807546387ce, type: 3}
       propertyPath: m_Pivot.x
@@ -1116,9 +1148,25 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 5389605979108685503}
     m_Modifications:
+    - target: {fileID: 297241947289342025, guid: 648a888af3280474a8664807546387ce, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 123
+      objectReference: {fileID: 0}
+    - target: {fileID: 297241947289342025, guid: 648a888af3280474a8664807546387ce, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 23.4
+      objectReference: {fileID: 0}
     - target: {fileID: 448637029870118603, guid: 648a888af3280474a8664807546387ce, type: 3}
       propertyPath: m_Name
       value: AddonDisplay
+      objectReference: {fileID: 0}
+    - target: {fileID: 5219826820032848657, guid: 648a888af3280474a8664807546387ce, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 71
+      objectReference: {fileID: 0}
+    - target: {fileID: 5219826820032848657, guid: 648a888af3280474a8664807546387ce, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -140.5
       objectReference: {fileID: 0}
     - target: {fileID: 5831689949635071580, guid: 648a888af3280474a8664807546387ce, type: 3}
       propertyPath: m_Pivot.x
@@ -1192,6 +1240,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7012577809797933569, guid: 648a888af3280474a8664807546387ce, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 30.2
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1221,6 +1273,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 8685159715400837432}
     m_Modifications:
+    - target: {fileID: 2019944289742387246, guid: 133513b1524ec4349abe89b3bab17a76, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 214.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2019944289742387246, guid: 133513b1524ec4349abe89b3bab17a76, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 32.7
+      objectReference: {fileID: 0}
     - target: {fileID: 5041774842980555700, guid: 133513b1524ec4349abe89b3bab17a76, type: 3}
       propertyPath: m_Name
       value: UpgrdeBtn
@@ -1231,12 +1291,16 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5628345513237879433, guid: 133513b1524ec4349abe89b3bab17a76, type: 3}
       propertyPath: m_fontSize
-      value: 24.2
+      value: 22.8
       objectReference: {fileID: 0}
     - target: {fileID: 5628345513237879433, guid: 133513b1524ec4349abe89b3bab17a76, type: 3}
       propertyPath: m_fontAsset
       value: 
       objectReference: {fileID: 11400000, guid: b5698a72fb0f50b4ca828f2b1f649314, type: 2}
+    - target: {fileID: 5628345513237879433, guid: 133513b1524ec4349abe89b3bab17a76, type: 3}
+      propertyPath: m_fontStyle
+      value: 16
+      objectReference: {fileID: 0}
     - target: {fileID: 5628345513237879433, guid: 133513b1524ec4349abe89b3bab17a76, type: 3}
       propertyPath: m_fontColor.b
       value: 1
@@ -1251,7 +1315,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5628345513237879433, guid: 133513b1524ec4349abe89b3bab17a76, type: 3}
       propertyPath: m_fontSizeBase
-      value: 24.2
+      value: 22.8
       objectReference: {fileID: 0}
     - target: {fileID: 5628345513237879433, guid: 133513b1524ec4349abe89b3bab17a76, type: 3}
       propertyPath: m_sharedMaterial
@@ -1508,9 +1572,25 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 5389605979108685503}
     m_Modifications:
+    - target: {fileID: 297241947289342025, guid: 648a888af3280474a8664807546387ce, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 123
+      objectReference: {fileID: 0}
+    - target: {fileID: 297241947289342025, guid: 648a888af3280474a8664807546387ce, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 23.4
+      objectReference: {fileID: 0}
     - target: {fileID: 448637029870118603, guid: 648a888af3280474a8664807546387ce, type: 3}
       propertyPath: m_Name
       value: AddonDisplay (3)
+      objectReference: {fileID: 0}
+    - target: {fileID: 5219826820032848657, guid: 648a888af3280474a8664807546387ce, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 71
+      objectReference: {fileID: 0}
+    - target: {fileID: 5219826820032848657, guid: 648a888af3280474a8664807546387ce, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -140.5
       objectReference: {fileID: 0}
     - target: {fileID: 5831689949635071580, guid: 648a888af3280474a8664807546387ce, type: 3}
       propertyPath: m_Pivot.x

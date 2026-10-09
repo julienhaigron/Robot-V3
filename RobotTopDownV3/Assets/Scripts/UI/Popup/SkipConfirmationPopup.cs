@@ -72,7 +72,8 @@ public class SkipConfirmationPopup : AUIPopup
 			daysAmountSkip = 7 - (GameDatas.current.currentPlayerSave.dayCount);
 		}
 		string dayReport = "";
-		for(int i = 0; i < daysAmountSkip; i++)
+		List<GameDatas.PlayerSave.DayData.RecyclingComponentData> recycledComponent = new();
+		for (int i = 0; i < daysAmountSkip; i++)
 		{
 			if (doGiveReward)
 			{
@@ -85,7 +86,7 @@ public class SkipConfirmationPopup : AUIPopup
 			}
 			GameDatas.current.currentPlayerSave.NewDay();
 
-			string finishedThisDay = GameDatas.current.currentPlayerSave.CollectFinishedDayJobs();
+			string finishedThisDay = GameDatas.current.currentPlayerSave.ProcessRecycledComponents(out recycledComponent);
 			if (!string.IsNullOrEmpty(finishedThisDay))
 				dayReport += "Day " + GameDatas.current.currentPlayerSave.dayCount + ":\n" + finishedThisDay;
 		}
@@ -94,7 +95,7 @@ public class SkipConfirmationPopup : AUIPopup
 
 		Close(_instant: true);
 
-		UIManager.Instance.OpenPopup<ReturnToHubPopup>().Init(dayReport);
+		UIManager.Instance.OpenPopup<ReturnToHubPopup>().Init(dayReport, recycledComponent);
 	}
 
 	private void OnClickClose ()

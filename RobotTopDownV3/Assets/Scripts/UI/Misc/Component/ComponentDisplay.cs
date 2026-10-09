@@ -22,7 +22,6 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 	[SerializeField] private GameObject m_damagedGO;
 
 	[Title("Shop")]
-	[SerializeField] private BaseButton m_rerollBtn;
 	[SerializeField] private BaseButton m_freezeBtn;
 	[SerializeField] private Image m_freezeImg;
 	[SerializeField] private Sprite[] m_freezeOnOffSpriteArray;
@@ -94,9 +93,6 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 			m_canvasGroup.interactable = false;
 		}
 
-		if (m_rerollBtn != null)
-			m_rerollBtn.onClick = OnClickReroll;
-
 		if (m_freezeBtn != null)
 		{
 			m_freezeBtn.onClick = OnClickFreeze;
@@ -115,8 +111,6 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 				m_priceBackground.gameObject.SetActive(false);
 				if (m_outlineImg != null)
 					m_outlineImg.enabled = true;
-				if (m_rerollBtn != null)
-					m_rerollBtn.gameObject.SetActive(false);
 				break;
 			case DisplayMode.RepairStation:
 				m_titleTMP.text = m_componentData == null ? null : m_componentData.GetLocalizedName();
@@ -130,8 +124,6 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 				if (m_outlineImg != null)
 					m_outlineImg.enabled = false;
 				m_descriptionTMP.text = LocalizationManager.Instance.Get(LocalizationKey.component_repair);
-				if (m_rerollBtn != null)
-					m_rerollBtn.gameObject.SetActive(false);
 				break;
 			case DisplayMode.RecyclingStation:
 				m_titleTMP.text = m_componentData == null ? null : m_componentData.GetLocalizedName();
@@ -145,8 +137,6 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 				if (m_outlineImg != null)
 					m_outlineImg.enabled = false;
 				m_descriptionTMP.text = LocalizationManager.Instance.Get(LocalizationKey.component_recycle);
-				if (m_rerollBtn != null)
-					m_rerollBtn.gameObject.SetActive(false);
 				break;
 			case DisplayMode.ShopBuying:
 				m_titleTMP.text = m_componentData == null ? null : m_componentData.GetLocalizedName();
@@ -160,8 +150,6 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 				if (m_outlineImg != null)
 					m_outlineImg.enabled = false;
 				m_descriptionTMP.text = LocalizationManager.Instance.Get(LocalizationKey.component_buy);
-				if (m_rerollBtn != null)
-					m_rerollBtn.gameObject.SetActive(true);
 				break;
 			case DisplayMode.ShopSelling:
 				m_titleTMP.text = m_componentData == null ? null : m_componentData.GetLocalizedName();
@@ -175,8 +163,6 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 				m_descriptionTMP.gameObject.SetActive(false);
 				if (m_outlineImg != null)
 					m_outlineImg.enabled = true;
-				if (m_rerollBtn != null)
-					m_rerollBtn.gameObject.SetActive(false);
 				break;
 			case DisplayMode.Empty:
 				m_titleTMP.gameObject.SetActive(false);
@@ -189,8 +175,6 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 				m_descriptionTMP.gameObject.SetActive(false);
 				if (m_outlineImg != null)
 					m_outlineImg.enabled = true;
-				if (m_rerollBtn != null)
-					m_rerollBtn.gameObject.SetActive(false);
 				break;
 		}
 	}

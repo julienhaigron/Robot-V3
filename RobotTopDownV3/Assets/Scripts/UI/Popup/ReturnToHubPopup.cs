@@ -6,9 +6,12 @@ using TMPro;
 
 public class ReturnToHubPopup : AUIPopup
 {
-	[SerializeField] private TextMeshProUGUI m_titleTMP;
 	[SerializeField] private BaseButton m_closeBtn;
 	[SerializeField] private TextMeshProUGUI m_contentTMP;
+	[SerializeField] private GameObject[] m_dayDisplays;
+	[SerializeField] private TextMeshProUGUI m_cycleTMP;
+	[SerializeField] private TextMeshProUGUI m_dayTMP;
+	[SerializeField] private RecyclingComponentInfoDisplay[] m_recycledComponentsDisplays;
 	private string m_dayReport;
 
 	private void Awake ()
@@ -31,10 +34,18 @@ public class ReturnToHubPopup : AUIPopup
 			UIManager.Instance.OpenPanel<SelectMissionPanel>();
 	}
 
-	public void Init ( string _dayReport )
+	public void Init ( string _dayReport, List<GameDatas.PlayerSave.DayData.RecyclingComponentData> _recycledComponent )
 	{
 		m_dayReport = _dayReport;
 		RefreshContent();
+
+		for(int i = 0; i < m_recycledComponentsDisplays.Length; i++)
+		{
+			if (_recycledComponent.Count > i)
+				m_recycledComponentsDisplays[i].Init(_recycledComponent[i]);
+			else
+				m_recycledComponentsDisplays[i].Hide();
+		}
 	}
 
 	private void RefreshContent ()
@@ -44,6 +55,14 @@ public class ReturnToHubPopup : AUIPopup
 			: m_dayReport;
 
 		m_contentTMP.text = string.Format(LocalizationManager.Instance.Get(LocalizationKey.return_hub_content), report);
+
+		m_cycleTMP.text = string.Format(LocalizationManager.Instance.Get(LocalizationKey.hub_cycle), GameDatas.current.currentPlayerSave.cycleCount + 1);
+		m_dayTMP.text = "DAY " + (GameDatas.current.currentPlayerSave.dayCount + 1).ToString();
+
+		for (int i = 0; i < m_dayDisplays.Length; i++)
+		{
+			m_dayDisplays[i].SetActive(GameDatas.current.currentPlayerSave.dayCount >= i);
+		}
 	}
 
 }
