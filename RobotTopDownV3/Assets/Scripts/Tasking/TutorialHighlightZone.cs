@@ -62,6 +62,10 @@ public class TutorialHighlightZone : MonoBehaviour
 
 	public void Show ()
 	{
+		CollapsibleFolder folder = GetComponentInParent<CollapsibleFolder>();
+		if (folder != null)
+			folder.SetCollapsed(false, false);
+
 		if (!s_activeHighlightZones.Contains(this))
 			s_activeHighlightZones.Add(this);
 

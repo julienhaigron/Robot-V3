@@ -13,6 +13,8 @@ public class SoloHubPanel : AUIPanel
 	[SerializeField] private BuildingBtn m_missionSelectionPanelBtn;
 	[SerializeField] private BaseButton m_missionBtn;
 	[SerializeField] private BaseButton m_skipDayBtn;
+	[SerializeField] private BaseButton m_shortenFolderToggleBtn;
+	[SerializeField] private CollapsibleFolder m_structureFolder;
 	[SerializeField] private TextMeshProUGUI m_missionBtnTMP;
 
 	private void Awake ()
@@ -27,6 +29,7 @@ public class SoloHubPanel : AUIPanel
 		m_missionSelectionPanelBtn.Init(UIManager.Instance.GetPanel<SelectMissionPanel>(), 0 );
 		m_missionBtn.onClick += OnClickMissionBtn;
 		m_skipDayBtn.onClick += OnClickSkipDay;
+		m_shortenFolderToggleBtn.onClick += OnClickShortenFolderToggle;
 	}
 
 	private void OnEnable ()
@@ -80,6 +83,11 @@ public class SoloHubPanel : AUIPanel
 	private void OnClickSkipDay ()
 	{
 		UIManager.Instance.OpenPopup<SkipConfirmationPopup>().Init();
+	}
+
+	private void OnClickShortenFolderToggle ()
+	{
+		m_structureFolder.Toggle();
 	}
 
 	#endregion
