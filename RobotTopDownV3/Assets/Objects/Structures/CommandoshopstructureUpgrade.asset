@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: CommandoshopstructureUpgrade
   m_EditorClassIdentifier: 
   m_saveKey: commandoshopstructure
-  m_displayName: Shopstructure
+  m_displayName: Commando Shop
   m_suffix: 
   m_prefix: 
   m_useEngineeringNotation: 0

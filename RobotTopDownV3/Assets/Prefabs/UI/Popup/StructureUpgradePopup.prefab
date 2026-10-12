@@ -229,12 +229,12 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 24.3
-  m_fontSizeBase: 24.3
+  m_fontSize: 23
+  m_fontSizeBase: 21
   m_fontWeight: 400
-  m_enableAutoSizing: 0
-  m_fontSizeMin: 18
-  m_fontSizeMax: 72
+  m_enableAutoSizing: 1
+  m_fontSizeMin: 17
+  m_fontSizeMax: 23
   m_fontStyle: 16
   m_HorizontalAlignment: 1
   m_VerticalAlignment: 512
@@ -918,13 +918,29 @@ PrefabInstance:
       propertyPath: m_Name
       value: AddonDisplay (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 4819494552338376829, guid: 648a888af3280474a8664807546387ce, type: 3}
+      propertyPath: m_fontSize
+      value: 23
+      objectReference: {fileID: 0}
+    - target: {fileID: 4819494552338376829, guid: 648a888af3280474a8664807546387ce, type: 3}
+      propertyPath: m_fontSizeMax
+      value: 23
+      objectReference: {fileID: 0}
+    - target: {fileID: 4819494552338376829, guid: 648a888af3280474a8664807546387ce, type: 3}
+      propertyPath: m_fontSizeMin
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 4819494552338376829, guid: 648a888af3280474a8664807546387ce, type: 3}
+      propertyPath: m_enableAutoSizing
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5219826820032848657, guid: 648a888af3280474a8664807546387ce, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 71
+      value: 97
       objectReference: {fileID: 0}
     - target: {fileID: 5219826820032848657, guid: 648a888af3280474a8664807546387ce, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -140.5
+      value: -127.5
       objectReference: {fileID: 0}
     - target: {fileID: 5831689949635071580, guid: 648a888af3280474a8664807546387ce, type: 3}
       propertyPath: m_Pivot.x
@@ -997,6 +1013,14 @@ PrefabInstance:
     - target: {fileID: 5831689949635071580, guid: 648a888af3280474a8664807546387ce, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8539428194273463536, guid: 648a888af3280474a8664807546387ce, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 110
+      objectReference: {fileID: 0}
+    - target: {fileID: 8539428194273463536, guid: 648a888af3280474a8664807546387ce, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 131
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1039,13 +1063,29 @@ PrefabInstance:
       propertyPath: m_Name
       value: AddonDisplay (2)
       objectReference: {fileID: 0}
+    - target: {fileID: 4819494552338376829, guid: 648a888af3280474a8664807546387ce, type: 3}
+      propertyPath: m_fontSize
+      value: 23
+      objectReference: {fileID: 0}
+    - target: {fileID: 4819494552338376829, guid: 648a888af3280474a8664807546387ce, type: 3}
+      propertyPath: m_fontSizeMax
+      value: 23
+      objectReference: {fileID: 0}
+    - target: {fileID: 4819494552338376829, guid: 648a888af3280474a8664807546387ce, type: 3}
+      propertyPath: m_fontSizeMin
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 4819494552338376829, guid: 648a888af3280474a8664807546387ce, type: 3}
+      propertyPath: m_enableAutoSizing
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5219826820032848657, guid: 648a888af3280474a8664807546387ce, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 71
+      value: 97
       objectReference: {fileID: 0}
     - target: {fileID: 5219826820032848657, guid: 648a888af3280474a8664807546387ce, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -140.5
+      value: -127.5
       objectReference: {fileID: 0}
     - target: {fileID: 5831689949635071580, guid: 648a888af3280474a8664807546387ce, type: 3}
       propertyPath: m_Pivot.x
@@ -1119,6 +1159,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8539428194273463536, guid: 648a888af3280474a8664807546387ce, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 110
+      objectReference: {fileID: 0}
+    - target: {fileID: 8539428194273463536, guid: 648a888af3280474a8664807546387ce, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 131
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1160,13 +1208,29 @@ PrefabInstance:
       propertyPath: m_Name
       value: AddonDisplay
       objectReference: {fileID: 0}
+    - target: {fileID: 4819494552338376829, guid: 648a888af3280474a8664807546387ce, type: 3}
+      propertyPath: m_fontSize
+      value: 23
+      objectReference: {fileID: 0}
+    - target: {fileID: 4819494552338376829, guid: 648a888af3280474a8664807546387ce, type: 3}
+      propertyPath: m_fontSizeMax
+      value: 23
+      objectReference: {fileID: 0}
+    - target: {fileID: 4819494552338376829, guid: 648a888af3280474a8664807546387ce, type: 3}
+      propertyPath: m_fontSizeMin
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 4819494552338376829, guid: 648a888af3280474a8664807546387ce, type: 3}
+      propertyPath: m_enableAutoSizing
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5219826820032848657, guid: 648a888af3280474a8664807546387ce, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 71
+      value: 97
       objectReference: {fileID: 0}
     - target: {fileID: 5219826820032848657, guid: 648a888af3280474a8664807546387ce, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -140.5
+      value: -127.5
       objectReference: {fileID: 0}
     - target: {fileID: 5831689949635071580, guid: 648a888af3280474a8664807546387ce, type: 3}
       propertyPath: m_Pivot.x
@@ -1243,6 +1307,14 @@ PrefabInstance:
     - target: {fileID: 7012577809797933569, guid: 648a888af3280474a8664807546387ce, type: 3}
       propertyPath: m_SizeDelta.y
       value: 30.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8539428194273463536, guid: 648a888af3280474a8664807546387ce, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 110
+      objectReference: {fileID: 0}
+    - target: {fileID: 8539428194273463536, guid: 648a888af3280474a8664807546387ce, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 131
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1584,13 +1656,29 @@ PrefabInstance:
       propertyPath: m_Name
       value: AddonDisplay (3)
       objectReference: {fileID: 0}
+    - target: {fileID: 4819494552338376829, guid: 648a888af3280474a8664807546387ce, type: 3}
+      propertyPath: m_fontSize
+      value: 23
+      objectReference: {fileID: 0}
+    - target: {fileID: 4819494552338376829, guid: 648a888af3280474a8664807546387ce, type: 3}
+      propertyPath: m_fontSizeMax
+      value: 23
+      objectReference: {fileID: 0}
+    - target: {fileID: 4819494552338376829, guid: 648a888af3280474a8664807546387ce, type: 3}
+      propertyPath: m_fontSizeMin
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 4819494552338376829, guid: 648a888af3280474a8664807546387ce, type: 3}
+      propertyPath: m_enableAutoSizing
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5219826820032848657, guid: 648a888af3280474a8664807546387ce, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 71
+      value: 97
       objectReference: {fileID: 0}
     - target: {fileID: 5219826820032848657, guid: 648a888af3280474a8664807546387ce, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -140.5
+      value: -127.5
       objectReference: {fileID: 0}
     - target: {fileID: 5831689949635071580, guid: 648a888af3280474a8664807546387ce, type: 3}
       propertyPath: m_Pivot.x
@@ -1663,6 +1751,14 @@ PrefabInstance:
     - target: {fileID: 5831689949635071580, guid: 648a888af3280474a8664807546387ce, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8539428194273463536, guid: 648a888af3280474a8664807546387ce, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 110
+      objectReference: {fileID: 0}
+    - target: {fileID: 8539428194273463536, guid: 648a888af3280474a8664807546387ce, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 131
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

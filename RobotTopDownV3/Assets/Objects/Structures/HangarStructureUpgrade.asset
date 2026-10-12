@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: HangarStructureUpgrade
   m_EditorClassIdentifier: 
   m_saveKey: hangarstructure
-  m_displayName: Hangar Structure upgrade
+  m_displayName: Hangar
   m_suffix: 
   m_prefix: 
   m_useEngineeringNotation: 0

@@ -14,7 +14,6 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 	[SerializeField] private Image m_outlineImg;
 	[SerializeField] private Image m_icon;
 	[SerializeField] private TextMeshProUGUI m_titleTMP;
-	[SerializeField] private Image m_corpIcon;
 	[SerializeField] private Image m_componentTypeIcon;
 	[SerializeField] private GameObject m_priceBackground;
 	[SerializeField] private TextMeshProUGUI m_priceTMP;
@@ -75,7 +74,6 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 		{
 			m_componentData = data;
 			m_componentTypeIcon.sprite = GameAssets.current.ui.componentIcons[m_componentData.GetEquipmentType()];
-			m_corpIcon.sprite = GameAssets.current.ui.corporationsIcons[m_componentData.faction];
 			m_icon.sprite = m_componentData.icon;
 			if(m_damagedGO != null)
 				m_damagedGO.SetActive(_componentSavedData.isDamaged);
@@ -105,7 +103,6 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 				m_titleTMP.text = m_componentData == null ? null : m_componentData.GetLocalizedName();
 				m_titleTMP.gameObject.SetActive(true);
 				m_componentTypeIcon.gameObject.SetActive(false);
-				m_corpIcon.gameObject.SetActive(false);
 				m_priceTMP.gameObject.SetActive(false);
 				m_descriptionTMP.gameObject.SetActive(false);
 				m_priceBackground.gameObject.SetActive(false);
@@ -116,7 +113,6 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 				m_titleTMP.text = m_componentData == null ? null : m_componentData.GetLocalizedName();
 				m_titleTMP.gameObject.SetActive(true);
 				m_componentTypeIcon.gameObject.SetActive(false);
-				m_corpIcon.gameObject.SetActive(true);
 				m_priceBackground.gameObject.SetActive(true);
 				m_priceTMP.gameObject.SetActive(true);
 				m_priceTMP.text = m_componentData == null ? null : GetDisplayedPrice(m_componentData, m_currentDisplayMode).Item2.ToString();
@@ -129,7 +125,6 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 				m_titleTMP.text = m_componentData == null ? null : m_componentData.GetLocalizedName();
 				m_titleTMP.gameObject.SetActive(true);
 				m_componentTypeIcon.gameObject.SetActive(false);
-				m_corpIcon.gameObject.SetActive(true);
 				m_priceBackground.gameObject.SetActive(true);
 				m_priceTMP.gameObject.SetActive(true);
 				m_priceTMP.text = m_componentData == null ? null : GetDisplayedPrice(m_componentData, m_currentDisplayMode).Item2.ToString();
@@ -142,7 +137,6 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 				m_titleTMP.text = m_componentData == null ? null : m_componentData.GetLocalizedName();
 				m_titleTMP.gameObject.SetActive(true);
 				m_componentTypeIcon.gameObject.SetActive(true);
-				m_corpIcon.gameObject.SetActive(true);
 				m_priceBackground.gameObject.SetActive(true);
 				m_priceTMP.gameObject.SetActive(true);
 				m_priceTMP.text = m_componentData == null ? null : GetDisplayedPrice(m_componentData, m_currentDisplayMode).Item2.ToString();
@@ -155,7 +149,6 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 				m_titleTMP.text = m_componentData == null ? null : m_componentData.GetLocalizedName();
 				m_titleTMP.gameObject.SetActive(false);
 				m_componentTypeIcon.gameObject.SetActive(false);
-				m_corpIcon.gameObject.SetActive(false);
 				m_priceBackground.gameObject.SetActive(true);
 				m_priceBackground.gameObject.SetActive(false);
 				m_priceTMP.gameObject.SetActive(true);
@@ -168,7 +161,6 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 				m_titleTMP.gameObject.SetActive(false);
 				m_icon.gameObject.SetActive(false);
 				m_componentTypeIcon.gameObject.SetActive(false);
-				m_corpIcon.gameObject.SetActive(false);
 				m_priceBackground.gameObject.SetActive(false);
 				m_priceBackground.gameObject.SetActive(false);
 				m_priceTMP.gameObject.SetActive(false);

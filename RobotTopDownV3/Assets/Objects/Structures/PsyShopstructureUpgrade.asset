@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: PsyShopstructureUpgrade
   m_EditorClassIdentifier: 
   m_saveKey: psyshopstructure
-  m_displayName: Shopstructure
+  m_displayName: Psy Shop
   m_suffix: 
   m_prefix: 
   m_useEngineeringNotation: 0

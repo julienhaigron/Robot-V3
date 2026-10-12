@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: PaladinshopstructureUpgrade
   m_EditorClassIdentifier: 
   m_saveKey: paladinshopstructure
-  m_displayName: Shopstructure
+  m_displayName: Paladin Shop
   m_suffix: 
   m_prefix: 
   m_useEngineeringNotation: 0

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: RecyclingstructureUpgrade
   m_EditorClassIdentifier: RTD::RecyclerStructureUpgrade
   m_saveKey: recyclingstructure
-  m_displayName: Recyclingstructure
+  m_displayName: Recycling Station
   m_suffix: 
   m_prefix: 
   m_useEngineeringNotation: 0

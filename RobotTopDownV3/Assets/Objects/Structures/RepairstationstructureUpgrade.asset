@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: RepairstationstructureUpgrade
   m_EditorClassIdentifier: RTD::RepairStationStructureUpgrade
   m_saveKey: repairstationstructure
-  m_displayName: Repairstationstructure
+  m_displayName: Repair Station
   m_suffix: 
   m_prefix: 
   m_useEngineeringNotation: 0
