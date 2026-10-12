@@ -214,6 +214,11 @@ public class EntityEquipmentData : AParsableScriptableObject
 			, ApplyTradeBonus(GetSellingPrice().Item2, GameAssets.current.game.RecyclerStructureUpgrade.GetCurrentTradeBonusAmount()));
 	}
 
+	public int GetRecyclingDuration ()
+	{
+		return Mathf.Max(0, recyclingDurationAmount - GameAssets.current.game.RecyclerStructureUpgrade.GetCurrentRecyclingTimeReduction());
+	}
+
 	private static ulong ApplyTradeBonus ( ulong _basePrice, float _bonus )
 	{
 		return (ulong)Mathf.Max(0f, _basePrice * (1f + _bonus));

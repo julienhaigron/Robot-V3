@@ -5,9 +5,10 @@ using UnityEngine.UI;
 using DG.Tweening;
 using UnityEngine.EventSystems;
 
-public class BaseButton : MonoBehaviour, IPointerEnterHandler
+public class BaseButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     public System.Action onClick;
+    public System.Action<bool> onHoverChanged;
 
     [SerializeField] protected TMPro.TMP_Text m_label;
     [SerializeField] protected Button m_button;
@@ -52,10 +53,17 @@ public class BaseButton : MonoBehaviour, IPointerEnterHandler
 
     public virtual void OnPointerEnter ( PointerEventData eventData )
     {
+        onHoverChanged?.Invoke(true);
+
         if (m_button != null && !m_button.interactable)
             return;
 
         SoundManager.PlayUISafe(m_hoverSfxOverride, _config => _config.buttonHover, m_useDefaultSfx);
+    }
+
+    public virtual void OnPointerExit ( PointerEventData eventData )
+    {
+        onHoverChanged?.Invoke(false);
     }
 
     protected void PlayClickSfx ()

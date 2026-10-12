@@ -34,7 +34,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -47, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 259.4, y: 138.5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2746449827009795792
@@ -109,7 +109,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 30.554688, y: -29.89972}
+  m_AnchoredPosition: {x: 77.55469, y: -29.89972}
   m_SizeDelta: {x: 40, y: 40}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7337505506249231312
@@ -209,7 +209,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -260,7 +260,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -106.92, y: -1.6}
+  m_AnchoredPosition: {x: -59.92, y: -1.6}
   m_SizeDelta: {x: 124, y: 107}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7081604616091364442
@@ -310,7 +310,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2858133158515167861}
-  - component: {fileID: 1825939407058582805}
+  - component: {fileID: 8665865942106838922}
+  - component: {fileID: 8518255365396741688}
+  - component: {fileID: 7005787087927381977}
   m_Layer: 0
   m_Name: RecyclerComponentSlot
   m_TagString: Untagged
@@ -343,7 +345,7 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 125, y: 125}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1825939407058582805
+--- !u!114 &8665865942106838922
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -352,14 +354,54 @@ MonoBehaviour:
   m_GameObject: {fileID: 5966097993071997657}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4aece261dd758bd4a80e5a66ffd7ca6b, type: 3}
+  m_Script: {fileID: 11500000, guid: 07def775e05a9874da5643d5cef4c701, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier: RTD::RecyclingComponentSlot
   m_displayParent: {fileID: 4135542771021347964}
   m_outline: {fileID: 2554400414525392296}
-  m_timerSectionGO: {fileID: 7591387738070810354}
-  m_timerTMP: {fileID: 3273585384842137329}
   m_displaySize: {x: 100, y: 100}
+  m_recycleBtn: {fileID: 8686309881603952647}
+  m_infoSectionGO: {fileID: 7591387738070810354}
+  m_infoTMP: {fileID: 3273585384842137329}
+  m_currencyIconGO: {fileID: 3814547188643774547}
+--- !u!222 &8518255365396741688
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5966097993071997657}
+  m_CullTransparentMesh: 1
+--- !u!114 &7005787087927381977
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5966097993071997657}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 0.1137255, g: 0.1137255, b: 0.17254902, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 21300000, guid: f2e9d90b1a258d642a272e91e96b7fd4, type: 3}
+  m_Type: 1
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1.75
 --- !u!1 &7591387738070810354
 GameObject:
   m_ObjectHideFlags: 0
@@ -394,7 +436,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -24.67041, y: -33.999695}
+  m_AnchoredPosition: {x: 22.32959, y: -29.999695}
   m_SizeDelta: {x: 74.4, y: 45.2}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7614766579948054261
@@ -575,7 +617,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 52.32959, y: 23.000305}
+  m_AnchoredPosition: {x: 99.32959, y: 23.000305}
   m_SizeDelta: {x: 185.85, y: 45.2}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2397285454986995394
@@ -686,6 +728,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 2858133158515167861}
     m_Modifications:
+    - target: {fileID: 3255975849467071082, guid: 610470f5c7e09224499375bfa2416e56, type: 3}
+      propertyPath: m_TargetGraphic
+      value: 
+      objectReference: {fileID: 1179420609104504460}
     - target: {fileID: 4646697956712014140, guid: 610470f5c7e09224499375bfa2416e56, type: 3}
       propertyPath: m_Name
       value: RecycleBtn
@@ -752,7 +798,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5909219420003501140, guid: 610470f5c7e09224499375bfa2416e56, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 3.25914
+      value: 50.25914
       objectReference: {fileID: 0}
     - target: {fileID: 5909219420003501140, guid: 610470f5c7e09224499375bfa2416e56, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -792,3 +838,14 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 4822083072303499819, guid: 610470f5c7e09224499375bfa2416e56, type: 3}
   m_PrefabInstance: {fileID: 6188032925386657698}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &8686309881603952647 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3272911831302135717, guid: 610470f5c7e09224499375bfa2416e56, type: 3}
+  m_PrefabInstance: {fileID: 6188032925386657698}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 188bed51bf7dbd84b9b789ba9bfb59f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

@@ -140,14 +140,14 @@ MonoBehaviour:
   m_hideDuration: 0.3
   m_inventoryGrid: {fileID: 6639278659787127997}
   m_recyclingSlots:
-  - {fileID: 5190471722541501205}
-  - {fileID: 4035867402673912827}
-  - {fileID: 9114837672676203861}
-  - {fileID: 1366268502670427236}
-  - {fileID: 5450123088607968338}
-  - {fileID: 3263672441622643877}
-  - {fileID: 4846326052654792560}
-  - {fileID: 4317874507050616980}
+  - {fileID: 2962277385950060938}
+  - {fileID: 6419341526274855268}
+  - {fileID: 2263680639532578762}
+  - {fileID: 8350140900991299323}
+  - {fileID: 3077901437365376717}
+  - {fileID: 5503040120100777530}
+  - {fileID: 2474102099441849839}
+  - {fileID: 6555119973961146891}
   m_hoveredComponentFullInfoDisplay: {fileID: 3252261423051667041}
 --- !u!1 &770198328676753043
 GameObject:
@@ -1000,22 +1000,22 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e4a7d2fd7cb94dd4fbc751b10226d76c, type: 3}
---- !u!114 &1366268502670427236 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1825939407058582805, guid: e4a7d2fd7cb94dd4fbc751b10226d76c, type: 3}
-  m_PrefabInstance: {fileID: 838513687359977841}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4aece261dd758bd4a80e5a66ffd7ca6b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!224 &3173031366818999044 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2858133158515167861, guid: e4a7d2fd7cb94dd4fbc751b10226d76c, type: 3}
   m_PrefabInstance: {fileID: 838513687359977841}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &8350140900991299323 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8665865942106838922, guid: e4a7d2fd7cb94dd4fbc751b10226d76c, type: 3}
+  m_PrefabInstance: {fileID: 838513687359977841}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 07def775e05a9874da5643d5cef4c701, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: RTD::RecyclingComponentSlot
 --- !u!1001 &2401898760866744046
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1118,17 +1118,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 2858133158515167861, guid: e4a7d2fd7cb94dd4fbc751b10226d76c, type: 3}
   m_PrefabInstance: {fileID: 2401898760866744046}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &4035867402673912827 stripped
+--- !u!114 &6419341526274855268 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1825939407058582805, guid: e4a7d2fd7cb94dd4fbc751b10226d76c, type: 3}
+  m_CorrespondingSourceObject: {fileID: 8665865942106838922, guid: e4a7d2fd7cb94dd4fbc751b10226d76c, type: 3}
   m_PrefabInstance: {fileID: 2401898760866744046}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4aece261dd758bd4a80e5a66ffd7ca6b, type: 3}
+  m_Script: {fileID: 11500000, guid: 07def775e05a9874da5643d5cef4c701, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier: RTD::RecyclingComponentSlot
 --- !u!1001 &2502631177360946561
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1231,17 +1231,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 2858133158515167861, guid: e4a7d2fd7cb94dd4fbc751b10226d76c, type: 3}
   m_PrefabInstance: {fileID: 2502631177360946561}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &4317874507050616980 stripped
+--- !u!114 &6555119973961146891 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1825939407058582805, guid: e4a7d2fd7cb94dd4fbc751b10226d76c, type: 3}
+  m_CorrespondingSourceObject: {fileID: 8665865942106838922, guid: e4a7d2fd7cb94dd4fbc751b10226d76c, type: 3}
   m_PrefabInstance: {fileID: 2502631177360946561}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4aece261dd758bd4a80e5a66ffd7ca6b, type: 3}
+  m_Script: {fileID: 11500000, guid: 07def775e05a9874da5643d5cef4c701, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier: RTD::RecyclingComponentSlot
 --- !u!1001 &3434725115808483636
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1300,7 +1300,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5749233881913313740, guid: 0d27d90efef196a4aa322e480e7a00b4, type: 3}
       propertyPath: m_CellSize.x
-      value: 361.9
+      value: 270.3
       objectReference: {fileID: 0}
     - target: {fileID: 5749233881913313740, guid: 0d27d90efef196a4aa322e480e7a00b4, type: 3}
       propertyPath: m_CellSize.y
@@ -1308,7 +1308,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5749233881913313740, guid: 0d27d90efef196a4aa322e480e7a00b4, type: 3}
       propertyPath: m_Padding.m_Right
-      value: -123
+      value: 11
       objectReference: {fileID: 0}
     - target: {fileID: 7092751322951221746, guid: 0d27d90efef196a4aa322e480e7a00b4, type: 3}
       propertyPath: m_AnchorMax.x
@@ -1551,17 +1551,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 2858133158515167861, guid: e4a7d2fd7cb94dd4fbc751b10226d76c, type: 3}
   m_PrefabInstance: {fileID: 3755420431087794608}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &3263672441622643877 stripped
+--- !u!114 &5503040120100777530 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1825939407058582805, guid: e4a7d2fd7cb94dd4fbc751b10226d76c, type: 3}
+  m_CorrespondingSourceObject: {fileID: 8665865942106838922, guid: e4a7d2fd7cb94dd4fbc751b10226d76c, type: 3}
   m_PrefabInstance: {fileID: 3755420431087794608}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4aece261dd758bd4a80e5a66ffd7ca6b, type: 3}
+  m_Script: {fileID: 11500000, guid: 07def775e05a9874da5643d5cef4c701, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier: RTD::RecyclingComponentSlot
 --- !u!1001 &5863485226878432768
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1659,17 +1659,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e4a7d2fd7cb94dd4fbc751b10226d76c, type: 3}
---- !u!114 &5190471722541501205 stripped
+--- !u!114 &2962277385950060938 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1825939407058582805, guid: e4a7d2fd7cb94dd4fbc751b10226d76c, type: 3}
+  m_CorrespondingSourceObject: {fileID: 8665865942106838922, guid: e4a7d2fd7cb94dd4fbc751b10226d76c, type: 3}
   m_PrefabInstance: {fileID: 5863485226878432768}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4aece261dd758bd4a80e5a66ffd7ca6b, type: 3}
+  m_Script: {fileID: 11500000, guid: 07def775e05a9874da5643d5cef4c701, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier: RTD::RecyclingComponentSlot
 --- !u!224 &8571872131193316469 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2858133158515167861, guid: e4a7d2fd7cb94dd4fbc751b10226d76c, type: 3}
@@ -1772,17 +1772,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e4a7d2fd7cb94dd4fbc751b10226d76c, type: 3}
---- !u!114 &5450123088607968338 stripped
+--- !u!114 &3077901437365376717 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1825939407058582805, guid: e4a7d2fd7cb94dd4fbc751b10226d76c, type: 3}
+  m_CorrespondingSourceObject: {fileID: 8665865942106838922, guid: e4a7d2fd7cb94dd4fbc751b10226d76c, type: 3}
   m_PrefabInstance: {fileID: 5977877757084614983}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4aece261dd758bd4a80e5a66ffd7ca6b, type: 3}
+  m_Script: {fileID: 11500000, guid: 07def775e05a9874da5643d5cef4c701, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier: RTD::RecyclingComponentSlot
 --- !u!224 &8457637861937845042 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2858133158515167861, guid: e4a7d2fd7cb94dd4fbc751b10226d76c, type: 3}
@@ -1885,17 +1885,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e4a7d2fd7cb94dd4fbc751b10226d76c, type: 3}
---- !u!114 &4846326052654792560 stripped
+--- !u!114 &2474102099441849839 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1825939407058582805, guid: e4a7d2fd7cb94dd4fbc751b10226d76c, type: 3}
+  m_CorrespondingSourceObject: {fileID: 8665865942106838922, guid: e4a7d2fd7cb94dd4fbc751b10226d76c, type: 3}
   m_PrefabInstance: {fileID: 6491536344310383205}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4aece261dd758bd4a80e5a66ffd7ca6b, type: 3}
+  m_Script: {fileID: 11500000, guid: 07def775e05a9874da5643d5cef4c701, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier: RTD::RecyclingComponentSlot
 --- !u!224 &9060311299936178192 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2858133158515167861, guid: e4a7d2fd7cb94dd4fbc751b10226d76c, type: 3}
@@ -1998,22 +1998,22 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e4a7d2fd7cb94dd4fbc751b10226d76c, type: 3}
---- !u!224 &4648632167715598901 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 2858133158515167861, guid: e4a7d2fd7cb94dd4fbc751b10226d76c, type: 3}
-  m_PrefabInstance: {fileID: 7433581122005213248}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &9114837672676203861 stripped
+--- !u!114 &2263680639532578762 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1825939407058582805, guid: e4a7d2fd7cb94dd4fbc751b10226d76c, type: 3}
+  m_CorrespondingSourceObject: {fileID: 8665865942106838922, guid: e4a7d2fd7cb94dd4fbc751b10226d76c, type: 3}
   m_PrefabInstance: {fileID: 7433581122005213248}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4aece261dd758bd4a80e5a66ffd7ca6b, type: 3}
+  m_Script: {fileID: 11500000, guid: 07def775e05a9874da5643d5cef4c701, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier: RTD::RecyclingComponentSlot
+--- !u!224 &4648632167715598901 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 2858133158515167861, guid: e4a7d2fd7cb94dd4fbc751b10226d76c, type: 3}
+  m_PrefabInstance: {fileID: 7433581122005213248}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &9001743043667549843
 PrefabInstance:
   m_ObjectHideFlags: 0

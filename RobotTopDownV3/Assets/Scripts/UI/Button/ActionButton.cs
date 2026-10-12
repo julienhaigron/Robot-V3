@@ -171,10 +171,12 @@ public class ActionButton : BaseButton, IPointerExitHandler
 		DisplayRangePreview(data);
 	}
 
-	public void OnPointerExit ( PointerEventData eventData )
+	public override void OnPointerExit ( PointerEventData eventData )
 	{
 		if (RectTransformUtility.RectangleContainsScreenPoint(transform as RectTransform, eventData.position, eventData.enterEventCamera))
 			return;
+
+		base.OnPointerExit(eventData);
 
 		ToolTipManager.Instance.Hide();
 

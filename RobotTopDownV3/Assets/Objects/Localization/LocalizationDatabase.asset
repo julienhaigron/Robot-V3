@@ -182,6 +182,10 @@ MonoBehaviour:
     values:
     - RECYCLING -
     - RECYCLAGE -
+  - key: hub/recycling_duration
+    values:
+    - '{0}d'
+    - '{0}j'
   - key: hangar/create_unit
     values:
     - Create Unit

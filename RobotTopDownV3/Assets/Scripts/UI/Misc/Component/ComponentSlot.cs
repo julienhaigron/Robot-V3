@@ -6,8 +6,6 @@ using System;
 public class ComponentSlot : ComponentContainer
 {
     [SerializeField] private Image m_outline;
-    [SerializeField] private GameObject m_timerSectionGO;
-    [SerializeField] private TextMeshProUGUI m_timerTMP;
     [SerializeField] private Vector2 m_displaySize = new Vector2(124f, 124f);
 
     protected ComponentDisplay m_currentDisplay;
@@ -53,16 +51,6 @@ public class ComponentSlot : ComponentContainer
         }
         else
             Cleanup();
-
-        /*if(_displayMode == ComponentDisplay.DisplayMode.RecyclingStation
-            || _displayMode == ComponentDisplay.DisplayMode.RepairStation)
-		{
-            m_timerSectionGO.SetActive(true);
-        }
-		else
-        {
-            m_timerSectionGO.SetActive(false);
-        }*/
     }
 
     public void SetReleasePredicate ( Func<ComponentDisplay, bool> _releasePredicate )
@@ -85,16 +73,6 @@ public class ComponentSlot : ComponentContainer
         m_outline.color = _color;
     }
 
-    public void InitRecyclingData( GameDatas.PlayerSave.DayData.RecyclingComponentData _recyclingData )
-	{
-        //The else branch dereferenced _recyclingData while the if only guarded against a null component, so an
-        //emptied slot (RecyclePanel clears the entry on removal) threw on the next panel opening.
-        if (_recyclingData == null || _recyclingData.component == null || string.IsNullOrEmpty(_recyclingData.component.ID))
-            m_timerTMP.text = "";
-        else
-            m_timerTMP.text = _recyclingData.remainingTime.ToString();
-	}
-
     public override bool IsValid ( ComponentDisplay _display )
 	{
 		return m_currentDisplay != _display && base.IsValid(_display) && m_canInteract && CanRelease(m_currentDisplay);
@@ -109,9 +87,6 @@ public class ComponentSlot : ComponentContainer
         m_equipmentData = null;
         m_equipmentSavedData = null;
         m_unitData = null;
-
-        if (m_timerTMP != null)
-            m_timerTMP.text = "";
     }
 
     #region DnD

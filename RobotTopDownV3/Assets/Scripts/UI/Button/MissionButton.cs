@@ -66,8 +66,10 @@ public class MissionButton : BaseButton, IPointerExitHandler
 		onAnyMissionHovered?.Invoke(this);
 	}
 	
-	public void OnPointerExit ( PointerEventData eventData )
+	public override void OnPointerExit ( PointerEventData eventData )
 	{
+		base.OnPointerExit(eventData);
+
 		onAnyMissionHovered?.Invoke(null);
 	}
 
