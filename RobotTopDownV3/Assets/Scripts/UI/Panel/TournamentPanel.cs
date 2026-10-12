@@ -20,6 +20,11 @@ public class TournamentPanel : AUIPanel
 	[SerializeField] private UnitMissionDisplay[] m_round1SquadUnits;
 	[SerializeField] private Image m_squadIcon;
 
+	[Title("Enemy")]
+	[SerializeField] private HangarEntityDisplay m_hoveredEnemyUnitDisplay;
+	[SerializeField] private StatDisplay[] m_hoveredEnemyUnitStatDisplays;
+	[SerializeField] private ComponentFullDisplay m_hoveredEnemyComponentDisplay;
+
 	[Title("Rewards")]
 	[SerializeField] private ComponentRewardDisplay[] m_componentRewardDisplays;
 	[SerializeField] private CurrencyRewardDisplay[] m_currencyRewardDisplays;
@@ -31,6 +36,7 @@ public class TournamentPanel : AUIPanel
 	{
 		UnitMissionDisplay.onAnyUnitHovered += OnAnyUnitHovered;
 		m_startMissionBtn.onClick += OnClickStartMission;
+		m_hoveredEnemyUnitDisplay.onComponentHovered += OnEnemyComponentHovered;
 	}
 
 	protected override void OnShowStarted ()
@@ -122,6 +128,10 @@ public class TournamentPanel : AUIPanel
 		m_startMissionBtn.SetInteractability(GameDatas.current.currentPlayerSave.squadUnitsIndex.Count > 0);
 
 		OnAnyUnitHovered(m_unitDisplays[0]);
+
+		UnitMissionDisplay firstEnemy = m_round1SquadUnits.FirstOrDefault(display => display != null && display.gameObject.activeSelf);
+		if (firstEnemy != null)
+			OnAnyUnitHovered(firstEnemy);
 	}
 
 	private void HideSquadDisplays ( UnitMissionDisplay[] _displays )
@@ -206,21 +216,37 @@ public class TournamentPanel : AUIPanel
 		if (_display == null || _display.Data == null)
 			return;
 
-		m_hoveredUnitDisplay.Init(_display.Data, _display.Index, false);
+		if (m_round1SquadUnits.Contains(_display))
+		{
+			m_hoveredEnemyUnitDisplay.Init(_display.Data, -1, true, true);
+			InitStatDisplays(m_hoveredEnemyUnitStatDisplays, _display.Data);
+			m_hoveredEnemyComponentDisplay.Init(null);
+		}
+		else if (m_unitDisplays.Contains(_display))
+		{
+			m_hoveredUnitDisplay.Init(_display.Data, _display.Index, false);
+			InitStatDisplays(m_hoveredUnitStatDisplays, _display.Data);
+		}
+	}
 
-		//set unit stats
-		SerializableDictionary<EntityEquipmentData.SecondaryStat.StatType, EntityEquipmentData.StatDescription> statsDescriptions = _display.Data.GetStatsDesciptions();
+	private void OnEnemyComponentHovered ( GameDatas.PlayerSave.Component _component )
+	{
+		m_hoveredEnemyComponentDisplay.Init(_component);
+	}
+
+	private static void InitStatDisplays ( StatDisplay[] _statDisplays, EntitySavedData _data )
+	{
+		SerializableDictionary<EntityEquipmentData.SecondaryStat.StatType, EntityEquipmentData.StatDescription> statsDescriptions = _data.GetStatsDesciptions();
 		List<EntityEquipmentData.SecondaryStat.StatType> keys = statsDescriptions.Keys.ToList();
-		for (int i = 0; i < m_hoveredUnitStatDisplays.Length; i++)
+		for (int i = 0; i < _statDisplays.Length; i++)
 		{
 			if (keys.Count <= i)
-				m_hoveredUnitStatDisplays[i].gameObject.SetActive(false);
+				_statDisplays[i].gameObject.SetActive(false);
 			else
 			{
-				m_hoveredUnitStatDisplays[i].gameObject.SetActive(true);
-				m_hoveredUnitStatDisplays[i].Init(statsDescriptions[keys[i]]);
+				_statDisplays[i].gameObject.SetActive(true);
+				_statDisplays[i].Init(statsDescriptions[keys[i]]);
 			}
 		}
-
 	}
 }
