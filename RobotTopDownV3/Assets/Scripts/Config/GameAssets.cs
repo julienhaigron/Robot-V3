@@ -47,6 +47,21 @@ public class GameAssets : ScriptableObject
         public RecyclerStructureUpgrade RecyclerStructureUpgrade => structureUpgrades[StructureUpgradePopup.StructureType.Recycler] as RecyclerStructureUpgrade;
         public RepairStationStructureUpgrade RepairStationStructureUpgrade => structureUpgrades[StructureUpgradePopup.StructureType.RepairStation] as RepairStationStructureUpgrade;
 
+        public ShopStructureUpgrade GetShopStructureUpgrade ( EntityEquipmentData.EntityFaction _faction )
+        {
+            switch (_faction)
+            {
+                case EntityEquipmentData.EntityFaction.Psy:
+                    return PsyShopStructureUpgrade;
+                case EntityEquipmentData.EntityFaction.Commando:
+                    return CommandoShopStructureUpgrade;
+                case EntityEquipmentData.EntityFaction.Paladin:
+                    return PaladinShopStructureUpgrade;
+                default:
+                    return null;
+            }
+        }
+
         [Title("Tournament")]
         public MissionData[] tournamentMissionsPool;
 

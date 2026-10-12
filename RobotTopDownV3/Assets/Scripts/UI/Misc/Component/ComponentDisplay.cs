@@ -227,15 +227,15 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 		m_tutorialHighlightSequence?.Kill();
 	}
 
-	private void OnClickReroll ()
-	{
-		UIManager.Instance.GetPanel<ShopPanel>().RerollItem(this);
-	}
-
 	private void OnClickFreeze ()
 	{
-		m_shopSavedData.isFrozen = !m_shopSavedData.isFrozen;
-		m_freezeImg.sprite = m_freezeOnOffSpriteArray[m_shopSavedData.isFrozen ? 0 : 1];
+		UIManager.Instance.GetPanel<ShopPanel>().ToggleFreeze(this);
+	}
+
+	public void SetFreezeInteractability ( bool _isInteractable )
+	{
+		if (m_freezeBtn != null)
+			m_freezeBtn.SetInteractability(_isInteractable);
 	}
 
 	#region Interactions

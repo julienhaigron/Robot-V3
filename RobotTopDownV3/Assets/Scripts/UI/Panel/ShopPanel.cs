@@ -44,8 +44,10 @@ public class ShopPanel : AUIPanel
 		m_shopGrid.onItemAdded += SellItem;
 		m_inventoryGrid.onItemAdded += BuyItem;
 		GameDatas.onNewDay += OnNewDay;
-		m_rerollBtn.onClick += OnClickFreeze;
+		m_rerollBtn.onClick += OnClickReroll;
 	}
+
+	private static GameDatas.PlayerSave.DayData CurrentDayData => GameDatas.current.currentPlayerSave.dayData;
 
 	public void Init ( EntityEquipmentData.EntityFaction _faction)
 	{
@@ -70,8 +72,7 @@ public class ShopPanel : AUIPanel
 			}
 		}
 
-		m_rerollTMP.text = "3/4";
-		m_freezeTMP.text = "3/4";
+		RefreshShopActions();
 
 		/*foreach (ComponentDisplay display in m_shopGrid.Items)
 		{
@@ -88,32 +89,117 @@ public class ShopPanel : AUIPanel
 
 		System.Tuple<CurrencyType, ulong> price = _display.ComponentData.GetShopSellingPrice();
 		GameDatas.current.currentPlayerSave.AddCurrency(price.Item1, price.Item2);
+		RefreshShopActions();
 	}
-	
+
 	private void BuyItem( ComponentContainer _container, ComponentDisplay _display )
 	{
+		RemoveFromShop(_display.ShopSavedData);
 		GameDatas.current.currentPlayerSave.AddEquipmentToInventory(_display.SavedData);
 
 		System.Tuple<CurrencyType, ulong> price = _display.ComponentData.GetPrice();
 		GameDatas.current.currentPlayerSave.RemoveCurrency(price.Item1, price.Item2, GameDatas.PlayerSave.CurrencyRemoveMode.Spent);
+		RefreshShopActions();
 	}
 
-	public void RerollItem(ComponentDisplay _display )
+	private void RemoveFromShop ( GameDatas.PlayerSave.DayData.ShopComponentData _shopData )
 	{
-		List<GameDatas.PlayerSave.DayData.ShopComponentData> itemsInShop = GameDatas.current.currentPlayerSave.dayData.itemsInShop;
-		int itemIndex = itemsInShop.IndexOf(_display.ShopSavedData);
-		if (itemIndex < 0)
+		if (_shopData != null && CurrentDayData.itemsInShop.Remove(_shopData))
+			RefundSameDayFreeze(_shopData);
+	}
+
+	private void OnClickReroll ()
+	{
+		if (GetRemainingRerolls() <= 0)
 			return;
 
-		List<EntityEquipmentData> shopPool = GameAssets.current.GetRandomlyDroppableEquipments();
-		if (shopPool.Count == 0)
+		AddUsage(CurrentDayData.shopRerollsUsed, m_currentFaction, 1);
+		GameDatas.current.currentPlayerSave.RefillShop();
+		RefreshShopBuyableItems();
+		RefreshShopActions();
+	}
+
+	public void ToggleFreeze ( ComponentDisplay _display )
+	{
+		GameDatas.PlayerSave.DayData.ShopComponentData shopData = _display.ShopSavedData;
+
+		if (shopData == null || !CurrentDayData.itemsInShop.Contains(shopData))
 			return;
 
-		EntityEquipmentData equipmentData = shopPool.RandomElement();
-		itemsInShop[itemIndex] = new() { component = new() { ID = equipmentData.name + GameDatas.current.currentPlayerSave.equipmentCounter++, dataID = equipmentData.name, isDamaged = false }, isFrozen = false };
+		if (shopData.isFrozen)
+		{
+			RefundSameDayFreeze(shopData);
+			shopData.isFrozen = false;
+		}
+		else
+		{
+			if (GetRemainingFreezes() <= 0)
+				return;
 
-		_display.Init(null, itemsInShop[itemIndex].component, ComponentDisplay.DisplayMode.ShopBuying);
-		_display.SetShopData(itemsInShop[itemIndex]);
+			AddUsage(CurrentDayData.shopFreezesUsed, m_currentFaction, 1);
+			shopData.isFrozen = true;
+			shopData.frozenTodayInShop = m_currentFaction;
+		}
+
+		_display.SetShopData(shopData);
+		RefreshShopActions();
+	}
+
+	private void RefundSameDayFreeze ( GameDatas.PlayerSave.DayData.ShopComponentData _shopData )
+	{
+		if (_shopData.frozenTodayInShop == EntityEquipmentData.EntityFaction.Noone)
+			return;
+
+		AddUsage(CurrentDayData.shopFreezesUsed, _shopData.frozenTodayInShop, -1);
+		_shopData.frozenTodayInShop = EntityEquipmentData.EntityFaction.Noone;
+	}
+
+	private int GetMaxRerolls ()
+	{
+		ShopStructureUpgrade upgrade = GameAssets.current.game.GetShopStructureUpgrade(m_currentFaction);
+		return upgrade == null ? 0 : upgrade.GetMaxRerollAmount();
+	}
+
+	private int GetMaxFreezes ()
+	{
+		ShopStructureUpgrade upgrade = GameAssets.current.game.GetShopStructureUpgrade(m_currentFaction);
+		return upgrade == null ? 0 : upgrade.GetMaxLockAmount();
+	}
+
+	private int GetRemainingRerolls ()
+	{
+		return Mathf.Max(0, GetMaxRerolls() - GetUsage(CurrentDayData.shopRerollsUsed, m_currentFaction));
+	}
+
+	private int GetRemainingFreezes ()
+	{
+		return Mathf.Max(0, GetMaxFreezes() - GetUsage(CurrentDayData.shopFreezesUsed, m_currentFaction));
+	}
+
+	private static int GetUsage ( SerializableDictionary<EntityEquipmentData.EntityFaction, int> _usages, EntityEquipmentData.EntityFaction _faction )
+	{
+		return _usages.TryGetValue(_faction, out int used) ? used : 0;
+	}
+
+	private static void AddUsage ( SerializableDictionary<EntityEquipmentData.EntityFaction, int> _usages, EntityEquipmentData.EntityFaction _faction, int _amount )
+	{
+		_usages[_faction] = Mathf.Max(0, GetUsage(_usages, _faction) + _amount);
+	}
+
+	private void RefreshShopActions ()
+	{
+		int remainingRerolls = GetRemainingRerolls();
+		int remainingFreezes = GetRemainingFreezes();
+
+		m_rerollTMP.text = remainingRerolls + "/" + GetMaxRerolls();
+		m_freezeTMP.text = remainingFreezes + "/" + GetMaxFreezes();
+		m_rerollBtn.SetInteractability(remainingRerolls > 0);
+
+		foreach (ComponentDisplay display in m_shopGrid.Items)
+		{
+			GameDatas.PlayerSave.DayData.ShopComponentData shopData = display.ShopSavedData;
+			display.SetFreezeInteractability(shopData != null && CurrentDayData.itemsInShop.Contains(shopData) && (shopData.isFrozen || remainingFreezes > 0));
+		}
 	}
 
 	private void RefreshShopBuyableItems ()
@@ -128,11 +214,7 @@ public class ShopPanel : AUIPanel
 	private void OnNewDay ()
 	{
 		RefreshShopBuyableItems();
-	}
-
-	private void OnClickFreeze ()
-	{
-
+		RefreshShopActions();
 	}
 
 }

@@ -204,6 +204,8 @@ public partial class GameDatas : ScriptableObject
 		public class DayData
 		{
 			public List<ShopComponentData> itemsInShop = new();
+			public SerializableDictionary<EntityEquipmentData.EntityFaction, int> shopRerollsUsed = new();
+			public SerializableDictionary<EntityEquipmentData.EntityFaction, int> shopFreezesUsed = new();
 			public List<RecyclingComponentData> currentlyRecyclingComponents = new();
 			public List<RepairingUnitData> repairingComponents = new();
 
@@ -212,6 +214,7 @@ public partial class GameDatas : ScriptableObject
 			{
 				public Component component;
 				public bool isFrozen = false;
+				public EntityEquipmentData.EntityFaction frozenTodayInShop = EntityEquipmentData.EntityFaction.Noone;
 			}
 
 			[Serializable]
@@ -238,12 +241,13 @@ public partial class GameDatas : ScriptableObject
 				NewCycle();
 
 			//new items in shop
-			List<EntityEquipmentData> shopPool = GameAssets.current.GetRandomlyDroppableEquipments();
-			for (int i = 0; shopPool.Count > 0 && i < GameAssets.current.game.PsyShopStructureUpgrade.GetMaxItemAmount(); i++)
-			{
-				EntityEquipmentData equipmentData = shopPool.RandomElement();
-				dayData.itemsInShop.Add(new() { component = new() { ID = equipmentData.name + current.currentPlayerSave.equipmentCounter++, dataID = equipmentData.name, isDamaged = false }, isFrozen = false });
-			}
+			foreach (DayData.ShopComponentData shopData in dayData.itemsInShop)
+				if (shopData != null)
+					shopData.frozenTodayInShop = EntityEquipmentData.EntityFaction.Noone;
+
+			RefillShop();
+			dayData.shopRerollsUsed.Clear();
+			dayData.shopFreezesUsed.Clear();
 
 			//recycling component
 			foreach (DayData.RecyclingComponentData data in dayData.currentlyRecyclingComponents)
@@ -261,6 +265,20 @@ public partial class GameDatas : ScriptableObject
 					data.wasUsedToday = false;
 
 			onNewDay?.Invoke();
+		}
+
+		public void RefillShop ()
+		{
+			dayData.itemsInShop.RemoveAll(shopData => shopData == null || !shopData.isFrozen);
+
+			List<EntityEquipmentData> shopPool = GameAssets.current.GetRandomlyDroppableEquipments();
+			int maxItemAmount = GameAssets.current.game.PsyShopStructureUpgrade.GetMaxItemAmount();
+
+			while (shopPool.Count > 0 && dayData.itemsInShop.Count < maxItemAmount)
+			{
+				EntityEquipmentData equipmentData = shopPool.RandomElement();
+				dayData.itemsInShop.Add(new() { component = new() { ID = equipmentData.name + equipmentCounter++, dataID = equipmentData.name, isDamaged = false }, isFrozen = false });
+			}
 		}
 
 		public void RepairEverything ()
