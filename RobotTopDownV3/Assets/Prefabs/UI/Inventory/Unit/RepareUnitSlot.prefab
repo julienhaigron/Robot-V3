@@ -373,7 +373,7 @@ GameObject:
   - component: {fileID: 2858133158515167861}
   - component: {fileID: 5511123605087661715}
   m_Layer: 0
-  m_Name: RepareUnitSlotWithTimer
+  m_Name: RepareUnitSlot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -415,13 +415,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef9a06fc8e605304b8e7ca24a2e9b202, type: 3}
   m_Name: 
   m_EditorClassIdentifier: RTD::RepareUnitSlot
-  m_displayParent: {fileID: 6037240441849160473}
-  m_priceSectionGO: {fileID: 0}
-  m_priceTMP: {fileID: 5310230174842204770}
-  m_repairBtn: {fileID: 1040722967109202484}
+  m_displayParent: {fileID: 648340321891174259}
+  m_singleRepairBtn: {fileID: 1040722967109202484}
+  m_singleRepairCurrencyIconGO: {fileID: 4671254678861412667}
   m_fullRepairBtn: {fileID: 1315631562689497188}
+  m_fullRepairCurrencyIconGO: {fileID: 5121350117446229501}
   m_lockDoors: {fileID: 8683538737756249571}
-  m_displaySize: {x: 124, y: 124}
+  m_displaySize: {x: 100, y: 100}
 --- !u!1 &6400997165925816492
 GameObject:
   m_ObjectHideFlags: 0
@@ -1017,7 +1017,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &3459245641545203472
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1036,7 +1036,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: -0.5, y: 1}
   m_SizeDelta: {x: 123, y: 123}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4738256968593194794

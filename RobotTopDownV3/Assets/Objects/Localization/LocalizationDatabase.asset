@@ -178,6 +178,14 @@ MonoBehaviour:
     values:
     - REPAIR -
     - "R\xC9PARATION -"
+  - key: hub/single_repair
+    values:
+    - Single Repair
+    - "R\xE9paration simple"
+  - key: hub/full_repair
+    values:
+    - Full Repair
+    - "R\xE9paration compl\xE8te"
   - key: hub/recycle
     values:
     - RECYCLING -

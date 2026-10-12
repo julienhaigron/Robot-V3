@@ -42,6 +42,8 @@ public enum LocalizationKey
     hub_shop_psy,
     hub_mission_panel,
     hub_repair,
+    hub_single_repair,
+    hub_full_repair,
     hub_recycle,
     hub_recycling_duration,
     hangar_create_unit,
@@ -549,6 +551,8 @@ public static class LocalizationKeyExtensions
             case LocalizationKey.hub_shop_psy: return "hub/shop_psy";
             case LocalizationKey.hub_mission_panel: return "hub/mission_panel";
             case LocalizationKey.hub_repair: return "hub/repair";
+            case LocalizationKey.hub_single_repair: return "hub/single_repair";
+            case LocalizationKey.hub_full_repair: return "hub/full_repair";
             case LocalizationKey.hub_recycle: return "hub/recycle";
             case LocalizationKey.hub_recycling_duration: return "hub/recycling_duration";
             case LocalizationKey.hangar_create_unit: return "hangar/create_unit";

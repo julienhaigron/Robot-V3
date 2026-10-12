@@ -149,16 +149,26 @@ public class EntitySavedData : INetworkSerializable
 		return false;
 	}
 
-	public System.Tuple<CurrencyType, ulong> GetRepairPrice ()
+	public List<GameDatas.PlayerSave.Component> GetComponentsToRepair ( bool _isFullRepair )
+	{
+		List<GameDatas.PlayerSave.Component> damagedComponents = GetAllEquipments().Where(ep => ep.isDamaged).ToList();
+
+		if (_isFullRepair || damagedComponents.Count <= 1)
+			return damagedComponents;
+
+		return new() { damagedComponents.OrderByDescending(GetBaseRepairPrice).First() };
+	}
+
+	private static ulong GetBaseRepairPrice ( GameDatas.PlayerSave.Component _component )
+	{
+		return _component.TryGetData(out EntityEquipmentData data) ? data.GetSellingPrice().Item2 : 0ul;
+	}
+
+	public System.Tuple<CurrencyType, ulong> GetRepairPrice ( bool _isFullRepair )
 	{
 		ulong price = 0ul;
-		foreach (GameDatas.PlayerSave.Component ep in GetAllEquipments())
-		{
-			if (!ep.isDamaged || !ep.TryGetData(out EntityEquipmentData data))
-				continue;
-
-			price += data.GetSellingPrice().Item2;
-		}
+		foreach (GameDatas.PlayerSave.Component ep in GetComponentsToRepair(_isFullRepair))
+			price += GetBaseRepairPrice(ep);
 
 		float discount = GameAssets.current.game.RepairStationStructureUpgrade.GetCurrentRepairPriceBonusPerLevel();
 

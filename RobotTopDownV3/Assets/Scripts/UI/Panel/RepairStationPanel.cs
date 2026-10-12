@@ -129,21 +129,21 @@ public class RepairStationPanel : AUIPanel
 		m_repairingSlots[_container.Index].RefreshRepairData();
 	}
 
-	private void OnClickRepair ( RepareUnitSlot _slot )
+	private void OnClickRepair ( RepareUnitSlot _slot, bool _isFullRepair )
 	{
 		EntitySavedData unit = _slot.CurrentDisplay == null ? null : _slot.CurrentDisplay.SavedData;
 
 		if (unit == null || !unit.IsDamaged())
 			return;
 
-		System.Tuple<CurrencyType, ulong> price = unit.GetRepairPrice();
+		System.Tuple<CurrencyType, ulong> price = unit.GetRepairPrice(_isFullRepair);
 
 		if (GameDatas.current.currentPlayerSave.currencies[price.Item1] < price.Item2)
 			return;
 
 		GameDatas.current.currentPlayerSave.RemoveCurrency(price.Item1, price.Item2, GameDatas.PlayerSave.CurrencyRemoveMode.Spent);
 
-		foreach (GameDatas.PlayerSave.Component eq in unit.GetAllEquipments())
+		foreach (GameDatas.PlayerSave.Component eq in unit.GetComponentsToRepair(_isFullRepair))
 			eq.isDamaged = false;
 
 		unit.isRepairing = false;

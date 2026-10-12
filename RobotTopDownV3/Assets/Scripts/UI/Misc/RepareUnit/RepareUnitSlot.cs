@@ -6,14 +6,17 @@ using System;
 
 public class RepareUnitSlot : RepareUnitContainer
 {
-    [SerializeField, FormerlySerializedAs("m_timerSectionGO")] private GameObject m_priceSectionGO;
-    [SerializeField, FormerlySerializedAs("m_timerTMP")] private TextMeshProUGUI m_priceTMP;
-    [SerializeField] private BaseButton m_repairBtn;
+    [SerializeField, FormerlySerializedAs("m_repairBtn")] private BaseButton m_singleRepairBtn;
+    [SerializeField] private GameObject m_singleRepairCurrencyIconGO;
     [SerializeField] private BaseButton m_fullRepairBtn;
+    [SerializeField] private GameObject m_fullRepairCurrencyIconGO;
     [SerializeField] private SlidingDoors m_lockDoors;
     [SerializeField] private Vector2 m_displaySize = new Vector2(124f, 124f);
 
-    public Action<RepareUnitSlot> onRepairClicked;
+    public Action<RepareUnitSlot, bool> onRepairClicked;
+
+    private bool m_isSingleRepairBtnHovered;
+    private bool m_isFullRepairBtnHovered;
 
     protected RepareUnitDisplay m_currentDisplay;
     public RepareUnitDisplay CurrentDisplay
@@ -69,19 +72,66 @@ public class RepareUnitSlot : RepareUnitContainer
 
     private void Awake ()
     {
-        if (m_repairBtn != null)
-            m_repairBtn.onClick += OnClickRepair;
+        if (m_singleRepairBtn != null)
+        {
+            m_singleRepairBtn.onClick += OnClickSingleRepair;
+            m_singleRepairBtn.onHoverChanged += OnSingleRepairBtnHoverChanged;
+        }
+
+        if (m_fullRepairBtn != null)
+        {
+            m_fullRepairBtn.onClick += OnClickFullRepair;
+            m_fullRepairBtn.onHoverChanged += OnFullRepairBtnHoverChanged;
+        }
     }
 
     private void OnDestroy ()
     {
-        if (m_repairBtn != null)
-            m_repairBtn.onClick -= OnClickRepair;
+        if (m_singleRepairBtn != null)
+        {
+            m_singleRepairBtn.onClick -= OnClickSingleRepair;
+            m_singleRepairBtn.onHoverChanged -= OnSingleRepairBtnHoverChanged;
+        }
+
+        if (m_fullRepairBtn != null)
+        {
+            m_fullRepairBtn.onClick -= OnClickFullRepair;
+            m_fullRepairBtn.onHoverChanged -= OnFullRepairBtnHoverChanged;
+        }
     }
 
-    private void OnClickRepair ()
+    private void OnEnable ()
     {
-        onRepairClicked?.Invoke(this);
+        LocalizationManager.onLanguageChanged += RefreshRepairData;
+    }
+
+    private void OnDisable ()
+    {
+        LocalizationManager.onLanguageChanged -= RefreshRepairData;
+        m_isSingleRepairBtnHovered = false;
+        m_isFullRepairBtnHovered = false;
+    }
+
+    private void OnClickSingleRepair ()
+    {
+        onRepairClicked?.Invoke(this, false);
+    }
+
+    private void OnClickFullRepair ()
+    {
+        onRepairClicked?.Invoke(this, true);
+    }
+
+    private void OnSingleRepairBtnHoverChanged ( bool _isHovered )
+    {
+        m_isSingleRepairBtnHovered = _isHovered;
+        RefreshRepairData();
+    }
+
+    private void OnFullRepairBtnHoverChanged ( bool _isHovered )
+    {
+        m_isFullRepairBtnHovered = _isHovered;
+        RefreshRepairData();
     }
 
     public void RefreshRepairData ()
@@ -89,24 +139,24 @@ public class RepareUnitSlot : RepareUnitContainer
         EntitySavedData unit = m_currentDisplay == null ? null : m_currentDisplay.SavedData;
         bool canRepair = m_canInteract && unit != null && !string.IsNullOrEmpty(unit.name) && unit.IsDamaged();
 
-        if (m_priceSectionGO != null)
-            m_priceSectionGO.SetActive(true);
+        RefreshRepairButton(m_singleRepairBtn, m_singleRepairCurrencyIconGO, LocalizationKey.hub_single_repair, m_isSingleRepairBtnHovered, canRepair ? unit : null, false);
+        RefreshRepairButton(m_fullRepairBtn, m_fullRepairCurrencyIconGO, LocalizationKey.hub_full_repair, m_isFullRepairBtnHovered, canRepair ? unit : null, true);
+    }
 
-        if (!canRepair)
-        {
-            m_priceTMP.text = "";
-
-            if (m_repairBtn != null)
-                m_repairBtn.SetInteractability(false);
-
+    private void RefreshRepairButton ( BaseButton _button, GameObject _currencyIconGO, LocalizationKey _labelKey, bool _isHovered, EntitySavedData _unit, bool _isFullRepair )
+    {
+        if (_button == null)
             return;
-        }
 
-        Tuple<CurrencyType, ulong> price = unit.GetRepairPrice();
-        m_priceTMP.text = price.Item2.ToString();
+        Tuple<CurrencyType, ulong> price = _unit == null ? null : _unit.GetRepairPrice(_isFullRepair);
+        bool isShowingPrice = price != null && !_isHovered;
 
-        if (m_repairBtn != null)
-            m_repairBtn.SetInteractability(GameDatas.current.currentPlayerSave.currencies[price.Item1] >= price.Item2);
+        _button.SetLabel(isShowingPrice ? price.Item2.ToString() : LocalizationManager.Instance.Get(_labelKey));
+
+        if (_currencyIconGO != null)
+            _currencyIconGO.SetActive(isShowingPrice);
+
+        _button.SetInteractability(price != null && GameDatas.current.currentPlayerSave.currencies[price.Item1] >= price.Item2);
     }
 
     public override bool IsValid ( RepareUnitDisplay _display )
