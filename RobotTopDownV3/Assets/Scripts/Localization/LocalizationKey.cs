@@ -501,6 +501,16 @@ public enum LocalizationKey
     entity_config_save_and_quit,
     entity_config_cancel,
     entity_config_disassemble,
+    entity_config_all_components,
+    component_type_frame,
+    component_type_brain,
+    component_type_reactor,
+    component_type_occultor,
+    component_type_neuronal_membrane,
+    component_type_weapon,
+    component_type_tool,
+    component_type_armor,
+    component_type_chipset,
     menu_load,
 }
 
@@ -1010,6 +1020,16 @@ public static class LocalizationKeyExtensions
             case LocalizationKey.entity_config_save_and_quit: return "entity_config/save_and_quit";
             case LocalizationKey.entity_config_cancel: return "entity_config/cancel";
             case LocalizationKey.entity_config_disassemble: return "entity_config/disassemble";
+            case LocalizationKey.entity_config_all_components: return "entity_config/all_components";
+            case LocalizationKey.component_type_frame: return "component_type/frame";
+            case LocalizationKey.component_type_brain: return "component_type/brain";
+            case LocalizationKey.component_type_reactor: return "component_type/reactor";
+            case LocalizationKey.component_type_occultor: return "component_type/occultor";
+            case LocalizationKey.component_type_neuronal_membrane: return "component_type/neuronal_membrane";
+            case LocalizationKey.component_type_weapon: return "component_type/weapon";
+            case LocalizationKey.component_type_tool: return "component_type/tool";
+            case LocalizationKey.component_type_armor: return "component_type/armor";
+            case LocalizationKey.component_type_chipset: return "component_type/chipset";
             case LocalizationKey.menu_load: return "menu/load";
             default: return string.Empty;
         }

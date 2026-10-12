@@ -18,6 +18,9 @@ public class EntityConfigPanel : AUIPanel
 	[SerializeField] private ComponentDisplayGrid m_inventoryGrid;
 	public ComponentDisplayGrid InventoryGrid => m_inventoryGrid;
 	[SerializeField] private SerializableDictionary<EntityEquipmentData.EquipmentType, BaseButton> m_componentTypeFilterBtnDictionary = new();
+	[SerializeField] private BaseButton m_allFilterTypeToggleBtn;
+	[SerializeField] private GameObject m_filterCursorFO;
+	[SerializeField] private TextMeshProUGUI m_currentFilterSelectedTMP;
 
 	[Title("Unit")]
 	[SerializeField] private TMP_InputField m_unitNameInputField;
@@ -29,7 +32,7 @@ public class EntityConfigPanel : AUIPanel
 	[SerializeField] private EntityEquipmentData.SecondaryStat.StatType[] m_displayStaticStatsFilter;
 	[SerializeField] private EntityEquipmentData.SecondaryStat.StatType[] m_displayConditionalStatsFilter;
 
-	private List<EntityEquipmentData.EquipmentType> m_displayedEquipmentTypes = new();
+	private EntityEquipmentData.EquipmentType? m_selectedFilterType;
 	private EntitySavedData m_entityData;
 	private bool m_doesComeFromMissionPanel;
 	public bool DoesComeFromMissionPanel => m_doesComeFromMissionPanel;
@@ -38,7 +41,7 @@ public class EntityConfigPanel : AUIPanel
 	private bool m_isNewUnit = false;
 
 	private System.Func<GameDatas.PlayerSave.Component, bool> InventoryGridPredicate => item => item != null && item.TryGetData(out EntityEquipmentData _data)
-		&& m_displayedEquipmentTypes.Contains(_data.GetEquipmentType());
+		&& (m_selectedFilterType == null || _data.GetEquipmentType() == m_selectedFilterType);
 
 	[System.Serializable]
 	public class SubSlotContainer
@@ -80,8 +83,8 @@ public class EntityConfigPanel : AUIPanel
 		m_inventoryGrid.onItemRemoved += ( container, item ) => { GameDatas.current.currentPlayerSave.RemoveEquipmentFromInventory(item.SavedData); RefreshVisuals(); };
 
 		foreach (KeyValuePair<EntityEquipmentData.EquipmentType, BaseButton> pair in m_componentTypeFilterBtnDictionary)
-			pair.Value.onClick = () => OnToggleComponentType(pair.Key);
-		m_displayedEquipmentTypes.AddRange(m_componentTypeFilterBtnDictionary.Keys);
+			pair.Value.onClick = () => OnClickFilterType(pair.Key);
+		m_allFilterTypeToggleBtn.onClick += OnClickAllFilterType;
 
 		InitReleaseRules();
 
@@ -90,6 +93,17 @@ public class EntityConfigPanel : AUIPanel
 
 		if (m_disassembleBtn != null)
 			m_disassembleBtn.onClick += OnClickDisassembleBtn;
+	}
+
+	private void OnEnable ()
+	{
+		LocalizationManager.onLanguageChanged += RefreshFilterVisuals;
+		RefreshFilterVisuals();
+	}
+
+	private void OnDisable ()
+	{
+		LocalizationManager.onLanguageChanged -= RefreshFilterVisuals;
 	}
 
 	protected override void OnShowStarted ()
@@ -191,7 +205,7 @@ public class EntityConfigPanel : AUIPanel
 
 		InitSubSlots(null);
 
-		m_inventoryGrid.Init(null, _entity, null, InventoryGridPredicate, ComponentDisplay.DisplayMode.Hangar);
+		m_inventoryGrid.Init(null, _entity, null, item => item != null, ComponentDisplay.DisplayMode.Hangar);
 		/*foreach(ComponentDisplay display in m_inventoryGrid.Items)
 		{
 			if(display.SavedData != null && display.SavedData.TryGetData(out EntityEquipmentData data))
@@ -662,20 +676,38 @@ public class EntityConfigPanel : AUIPanel
 		RefreshVisuals();
 	}
 
-	private void OnToggleComponentType ( EntityEquipmentData.EquipmentType _type )
+	private void OnClickFilterType ( EntityEquipmentData.EquipmentType _type )
 	{
-		if (m_displayedEquipmentTypes.Contains(_type))
-		{
-			m_componentTypeFilterBtnDictionary[_type].Image.color = Color.red;
-			m_displayedEquipmentTypes.Remove(_type);
-		}
-		else
-		{
-			m_componentTypeFilterBtnDictionary[_type].Image.color = Color.white;
-			m_displayedEquipmentTypes.Add(_type);
-		}
+		SetSelectedFilterType(m_selectedFilterType == _type ? null : _type);
+	}
 
+	private void OnClickAllFilterType ()
+	{
+		SetSelectedFilterType(null);
+	}
+
+	private void SetSelectedFilterType ( EntityEquipmentData.EquipmentType? _type )
+	{
+		m_selectedFilterType = _type;
+		RefreshFilterVisuals();
 		RefreshVisuals();
+	}
+
+	private void RefreshFilterVisuals ()
+	{
+		BaseButton selectedBtn = null;
+		if (m_selectedFilterType.HasValue)
+			m_componentTypeFilterBtnDictionary.TryGetValue(m_selectedFilterType.Value, out selectedBtn);
+
+		m_currentFilterSelectedTMP.text = m_selectedFilterType.HasValue ? EntityEquipmentData.GetLocalizedTypeName(m_selectedFilterType.Value) : "";
+		m_filterCursorFO.SetActive(selectedBtn != null);
+
+		if (selectedBtn == null)
+			return;
+
+		Vector3 cursorPosition = m_filterCursorFO.transform.position;
+		cursorPosition.x = selectedBtn.transform.position.x;
+		m_filterCursorFO.transform.position = cursorPosition;
 	}
 
 	public List<EntityEquipmentData.SecondaryStat.StatType> GetDisplayedStats ( SerializableDictionary<EntityEquipmentData.SecondaryStat.StatType, EntityEquipmentData.StatDescription> _statsDescriptions )

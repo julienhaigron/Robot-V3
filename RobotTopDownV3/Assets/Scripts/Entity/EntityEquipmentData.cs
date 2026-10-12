@@ -34,6 +34,33 @@ public class EntityEquipmentData : AParsableScriptableObject
 	[System.Serializable]
 	public enum EquipmentType { Frame, Brain, Reactor, Occultor, NeuronalMembrane, Weapon, Tool, Armor, Chipset }
 
+	public static string GetLocalizedTypeName ( EquipmentType _type )
+	{
+		switch (_type)
+		{
+			case EquipmentType.Frame:
+				return LocalizationManager.Instance.Get(LocalizationKey.component_type_frame);
+			case EquipmentType.Brain:
+				return LocalizationManager.Instance.Get(LocalizationKey.component_type_brain);
+			case EquipmentType.Reactor:
+				return LocalizationManager.Instance.Get(LocalizationKey.component_type_reactor);
+			case EquipmentType.Occultor:
+				return LocalizationManager.Instance.Get(LocalizationKey.component_type_occultor);
+			case EquipmentType.NeuronalMembrane:
+				return LocalizationManager.Instance.Get(LocalizationKey.component_type_neuronal_membrane);
+			case EquipmentType.Weapon:
+				return LocalizationManager.Instance.Get(LocalizationKey.component_type_weapon);
+			case EquipmentType.Tool:
+				return LocalizationManager.Instance.Get(LocalizationKey.component_type_tool);
+			case EquipmentType.Armor:
+				return LocalizationManager.Instance.Get(LocalizationKey.component_type_armor);
+			case EquipmentType.Chipset:
+				return LocalizationManager.Instance.Get(LocalizationKey.component_type_chipset);
+			default:
+				return _type.ToString();
+		}
+	}
+
 	protected override string GetSheetID ()
 	{
 		return GameConfig.current.parsing.componentGUIDPerPage[GetEquipmentType()];

@@ -2022,6 +2022,46 @@ MonoBehaviour:
     values:
     - Disassemble unit
     - "D\xE9sassembler l unit\xE9"
+  - key: entity_config/all_components
+    values:
+    - All components
+    - Tous les composants
+  - key: component_type/frame
+    values:
+    - Frame
+    - "Ch\xE2ssis"
+  - key: component_type/brain
+    values:
+    - Brain
+    - Cerveau
+  - key: component_type/reactor
+    values:
+    - Reactor
+    - "R\xE9acteur"
+  - key: component_type/occultor
+    values:
+    - Occultor
+    - Occulteur
+  - key: component_type/neuronal_membrane
+    values:
+    - Neuronal Membrane
+    - Membrane neuronale
+  - key: component_type/weapon
+    values:
+    - Weapon
+    - Arme
+  - key: component_type/tool
+    values:
+    - Tool
+    - Outil
+  - key: component_type/armor
+    values:
+    - Armor
+    - Blindage
+  - key: component_type/chipset
+    values:
+    - Chipset
+    - Chipset
   - key: menu/load
     values:
     - Load
