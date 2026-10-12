@@ -69,7 +69,6 @@ GameObject:
   - component: {fileID: 7848063367243168825}
   - component: {fileID: 8719069905954486641}
   - component: {fileID: 7466190269571444096}
-  - component: {fileID: 6984021171346701213}
   m_Layer: 0
   m_Name: LevelTMP
   m_TagString: Untagged
@@ -196,19 +195,6 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
---- !u!114 &6984021171346701213
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1250428500464420820}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a8e84717eb35a2141b62ffd967b6c41f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  key: hub/repair
 --- !u!1 &1309697058202465094
 GameObject:
   m_ObjectHideFlags: 0

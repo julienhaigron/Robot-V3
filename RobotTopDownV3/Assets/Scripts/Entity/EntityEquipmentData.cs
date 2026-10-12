@@ -205,7 +205,7 @@ public class EntityEquipmentData : AParsableScriptableObject
 	public System.Tuple<CurrencyType, ulong> GetShopSellingPrice ()
 	{
 		return new System.Tuple<CurrencyType, ulong>(CurrencyType.SoftCurrency
-			, ApplyTradeBonus(GetSellingPrice().Item2, GameAssets.current.game.ShopStructureUpgrade.GetPriceFactor()));
+			, ApplyTradeBonus(GetSellingPrice().Item2, GameAssets.current.game.CommandoShopStructureUpgrade.GetPriceFactor()));
 	}
 
 	public System.Tuple<CurrencyType, ulong> GetRecyclingPrice ()

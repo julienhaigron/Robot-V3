@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5437014b6a01efe458861f061ef36630, type: 3}
-  m_Name: ShopstructureUpgrade
+  m_Name: CommandoshopstructureUpgrade
   m_EditorClassIdentifier: 
-  m_saveKey: shopstructure
+  m_saveKey: commandoshopstructure
   m_displayName: Shopstructure
   m_suffix: 
   m_prefix: 

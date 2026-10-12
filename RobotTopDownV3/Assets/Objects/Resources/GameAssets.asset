@@ -47,13 +47,18 @@ MonoBehaviour:
       - {fileID: 11400000, guid: 4c89a94e7d2857c498bf0005d49fc66a, type: 2}
       - {fileID: 11400000, guid: fdc7f87acacf686458108fdeea27097e, type: 2}
     structureUpgrades:
-      keys: 00000000020000000100000003000000
+      keys: 000000000200000001000000030000000400000005000000
       values:
       - {fileID: 11400000, guid: 0d4448f120cab5c42814f6681918124f, type: 2}
       - {fileID: 11400000, guid: 8463f427f2e71a5448135f40294b8ede, type: 2}
       - {fileID: 11400000, guid: de361b9c89c15db40abe80156bcb83e8, type: 2}
+      - {fileID: 11400000, guid: 9a38502216b2dbf4bb5d434e337b29a2, type: 2}
+      - {fileID: 11400000, guid: 42e2a7c3d36d32044b02afbee6d5f6f6, type: 2}
       - {fileID: 11400000, guid: f2fde0f8f8fd985409096250c61b13b3, type: 2}
-    tournamentMissionsPool: []
+    tournamentMissionsPool:
+    - {fileID: 11400000, guid: 417b10a5886f32743823118c49c05109, type: 2}
+    - {fileID: 11400000, guid: 417b10a5886f32743823118c49c05109, type: 2}
+    - {fileID: 11400000, guid: 417b10a5886f32743823118c49c05109, type: 2}
     defaultEntity: {fileID: 4673310249167116355, guid: 206cf16509b1846479a1f553fd6add2d, type: 3}
     baseGhost: {fileID: 7839904307103858393, guid: bee3bc7545f82b54babded2b3df64c96, type: 3}
     baseItem: {fileID: 831952569120969770, guid: f125b6baae3a1ab4c9203e208c4db9f3, type: 3}
@@ -582,3 +587,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 8463f427f2e71a5448135f40294b8ede, type: 2}
   - {fileID: 11400000, guid: de361b9c89c15db40abe80156bcb83e8, type: 2}
   - {fileID: 11400000, guid: f2fde0f8f8fd985409096250c61b13b3, type: 2}
+  - {fileID: 11400000, guid: 9a38502216b2dbf4bb5d434e337b29a2, type: 2}
+  - {fileID: 11400000, guid: 42e2a7c3d36d32044b02afbee6d5f6f6, type: 2}
+  - {fileID: 11400000, guid: 8463f427f2e71a5448135f40294b8ede, type: 2}

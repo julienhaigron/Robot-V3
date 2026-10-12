@@ -91,7 +91,7 @@ public class HubTopCanvas : AUITopCanvas
 		else if (UIManager.Instance.currentPanel is HangarPanel)
 			UIManager.Instance.OpenPopup<StructureUpgradePopup>().Init(StructureUpgradePopup.StructureType.Hangar);
 		else if (UIManager.Instance.currentPanel is ShopPanel)
-			UIManager.Instance.OpenPopup<StructureUpgradePopup>().Init(StructureUpgradePopup.StructureType.Shop);
+			UIManager.Instance.OpenPopup<StructureUpgradePopup>().Init(StructureUpgradePopup.StructureType.PaladinShop);
 		else if (UIManager.Instance.currentPanel is RecyclePanel)
 			UIManager.Instance.OpenPopup<StructureUpgradePopup>().Init(StructureUpgradePopup.StructureType.Recycler);
 		else if (UIManager.Instance.currentPanel is RepairStationPanel)
