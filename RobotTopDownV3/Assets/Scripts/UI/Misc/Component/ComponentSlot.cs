@@ -26,6 +26,8 @@ public class ComponentSlot : ComponentContainer
     public GameDatas.PlayerSave.Component Equipment => m_equipmentSavedData;
     private bool m_canInteract = true;
     private Func<ComponentDisplay, bool> m_releasePredicate;
+    private bool m_isSwapping;
+    public bool IsSwapping => m_isSwapping;
 
     public override void Init ( ComponentContainer _container, EntitySavedData _unitData, GameDatas.PlayerSave.Component _componentSavedData, Func<GameDatas.PlayerSave.Component, bool> _predicate
         , ComponentDisplay.DisplayMode _displayMode, int _index = 0 )
@@ -93,15 +95,24 @@ public class ComponentSlot : ComponentContainer
 
     public override void RegisterInteraction ( ComponentDisplay _display )
     {
-        if (m_currentDisplay != null)
+        m_isSwapping = m_currentDisplay != null;
+
+        try
         {
-            Swap(_display);
+            if (m_isSwapping)
+            {
+                Swap(_display);
+            }
+            else
+            {
+                SetEquipment(_display);
+            }
+            base.RegisterInteraction(_display);
         }
-        else
+        finally
         {
-            SetEquipment(_display);
+            m_isSwapping = false;
         }
-        base.RegisterInteraction(_display);
     }
 
     public void SetEquipment ( ComponentDisplay _display )

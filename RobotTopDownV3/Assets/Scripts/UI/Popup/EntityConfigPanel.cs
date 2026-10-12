@@ -286,9 +286,10 @@ public class EntityConfigPanel : AUIPanel
 
 	private void InitSubSlots ( EntityEquipmentData.EquipmentType? _type )
 	{
-		foreach (SubSlotContainer slotContainer in m_subComponentSlotDictionary.Values)
-			foreach (ComponentSlot slot in slotContainer.slots)
-				slot.Cleanup();
+		foreach (KeyValuePair<EntityEquipmentData.EquipmentType, SubSlotContainer> pair in m_subComponentSlotDictionary)
+			if (_type == null || pair.Key == _type.Value)
+				foreach (ComponentSlot slot in pair.Value.slots)
+					slot.Cleanup();
 
 		if (_type == null || _type.Value == EntityEquipmentData.EquipmentType.Frame)
 		{
@@ -605,27 +606,76 @@ public class EntityConfigPanel : AUIPanel
 		{
 			case EntityEquipmentData.EquipmentType.Frame:
 				m_entityData.frame = _display.SavedData;
-				RefreshVisuals();
 				break;
 			case EntityEquipmentData.EquipmentType.Brain:
 				m_entityData.brain = _display.SavedData;
-				RefreshVisuals();
 				break;
 			case EntityEquipmentData.EquipmentType.NeuronalMembrane:
 				m_entityData.neuronalMembrane = _display.SavedData;
-				RefreshVisuals();
 				break;
 			case EntityEquipmentData.EquipmentType.Reactor:
 				m_entityData.reactor = _display.SavedData;
-				RefreshVisuals();
 				break;
 		}
 
+		FitSubComponentsToMain(_type);
 		InitSubSlots(_type);
+		RefreshVisuals();
+	}
+
+	private void FitSubComponentsToMain ( EntityEquipmentData.EquipmentType _mainType )
+	{
+		List<GameDatas.PlayerSave.Component> remaining;
+		List<GameDatas.PlayerSave.Component> kept;
+
+		switch (_mainType)
+		{
+			case EntityEquipmentData.EquipmentType.Frame:
+				remaining = GetEquippedComponents(m_entityData.auxiliar);
+				kept = TakeFirst(remaining, type => type == EntityEquipmentData.EquipmentType.Armor
+					, m_entityData.FrameData == null ? 0 : m_entityData.FrameData.armouringSlotAvailable);
+				kept.AddRange(TakeFirst(remaining, type => type == EntityEquipmentData.EquipmentType.Occultor
+					, m_entityData.FrameData == null ? 0 : m_entityData.FrameData.occultorSlotAvailable));
+				m_entityData.auxiliar = kept.ToArray();
+				break;
+			case EntityEquipmentData.EquipmentType.Brain:
+				remaining = GetEquippedComponents(m_entityData.chipsets);
+				kept = TakeFirst(remaining, type => type == EntityEquipmentData.EquipmentType.Chipset
+					, m_entityData.BrainData == null ? 0 : m_entityData.BrainData.chipsetSlotAvailable);
+				m_entityData.chipsets = kept.ToArray();
+				break;
+			case EntityEquipmentData.EquipmentType.NeuronalMembrane:
+				remaining = GetEquippedComponents(m_entityData.arms);
+				kept = TakeFirst(remaining, type => type == EntityEquipmentData.EquipmentType.Weapon || type == EntityEquipmentData.EquipmentType.Tool
+					, m_entityData.NeuronalMembraneData == null ? 0 : m_entityData.NeuronalMembraneData.equipmentSlotAvailable);
+				m_entityData.arms = kept.ToArray();
+				break;
+			default:
+				return;
+		}
+
+		foreach (GameDatas.PlayerSave.Component component in remaining)
+			GameDatas.current.currentPlayerSave.AddEquipmentToInventory(component);
+	}
+
+	private static List<GameDatas.PlayerSave.Component> GetEquippedComponents ( GameDatas.PlayerSave.Component[] _components )
+	{
+		return _components == null ? new() : _components.Where(component => component != null && !string.IsNullOrEmpty(component.ID)).ToList();
+	}
+
+	private static List<GameDatas.PlayerSave.Component> TakeFirst ( List<GameDatas.PlayerSave.Component> _source, System.Func<EntityEquipmentData.EquipmentType, bool> _isAccepted, int _amount )
+	{
+		List<GameDatas.PlayerSave.Component> taken = _source.Where(component => component.TryGetData(out EntityEquipmentData data) && _isAccepted(data.GetEquipmentType()))
+			.Take(Mathf.Max(0, _amount)).ToList();
+		_source.RemoveAll(taken.Contains);
+		return taken;
 	}
 
 	private void OnItemRemovedOnMainSlot ( ComponentDisplay _display, EntityEquipmentData.EquipmentType _type )
 	{
+		if (m_mainComponentSlotDictionary[_type].IsSwapping)
+			return;
+
 		switch (_type)
 		{
 			case EntityEquipmentData.EquipmentType.Frame:
