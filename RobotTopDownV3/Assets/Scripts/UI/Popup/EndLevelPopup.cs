@@ -14,6 +14,8 @@ public class EndLevelPopup : AUIPopup
 	[SerializeField] private ComponentRewardDisplay[] m_rewardComponentDisplays;
 	[SerializeField] private UnitRewardDisplay[] m_rewardUnitsDisplays;
 	[SerializeField] private EndLevelEntityDisplay[] m_unitDisplay;
+	[SerializeField] private BaseButton m_shortenFolderToggleBtn;
+	[SerializeField] private CollapsibleFolder m_structureFolder;
 
 	public enum GameResult { Win, Draw, Loose }
 
@@ -22,6 +24,7 @@ public class EndLevelPopup : AUIPopup
 	private void Awake ()
 	{
 		m_continueButton.onClick += OnClickContinue;
+		m_shortenFolderToggleBtn.onClick += OnClickShortenFolderToggle;
 	}
 
 	private void OnDestroy ()
@@ -192,6 +195,11 @@ public class EndLevelPopup : AUIPopup
 
 		GameManager.Instance.GoBackToHub();
 		Close();
+	}
+
+	private void OnClickShortenFolderToggle ()
+	{
+		m_structureFolder.Toggle();
 	}
 
 }
