@@ -84,6 +84,11 @@ public class EntitySkinPlugin : EntityPlugin
 
 	}
 
+	public void SetIsMoving(bool _isMoving )
+	{
+		m_animator.SetBool("IsMoving", _isMoving);
+	}
+
 	private void OnEntityDeath (int _entityID)
 	{
 		//TODO : actual clean death with anim and PS

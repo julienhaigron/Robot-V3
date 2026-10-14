@@ -13,8 +13,12 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 8633894212831196652}
     - target: {fileID: 3894988364515184562, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
+      propertyPath: MovingParameter
+      value: IsMoving
+      objectReference: {fileID: 0}
+    - target: {fileID: 3894988364515184562, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
       propertyPath: _EditorCategory
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 3894988364515184562, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
       propertyPath: AllowGlueBelowFoot
@@ -25,8 +29,12 @@ PrefabInstance:
       value: 1.1712015
       objectReference: {fileID: 0}
     - target: {fileID: 3894988364515184562, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
-      propertyPath: _EditorMotionCategory
+      propertyPath: _EditorExtraCategory
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3894988364515184562, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
+      propertyPath: _EditorMotionCategory
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 3894988364515184562, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
       propertyPath: StepPointsOverlapRadius

@@ -48,7 +48,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_squadEntitiesParent: {fileID: 3967864743854188152}
   m_hangarCameraPosition: {fileID: 3760803590592018951}
-  m_unitSpacing: 1.5
+  m_unitSpacing: 2
 --- !u!1 &3605053867823303492
 GameObject:
   m_ObjectHideFlags: 0

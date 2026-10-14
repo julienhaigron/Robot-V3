@@ -53,9 +53,6 @@ public class EntityDisplacementPlugin : EntityPlugin
 			m_rotationTween.Kill();
 	}
 
-	//A killed tween never fires its OnComplete, and movement actions hang their continuation on it, so the
-	//pending action is released by hand rather than with Kill(true), which would snap the entity onto the
-	//destination it is being pulled away from.
 	private void KillMovementTweenAndReleasePendingAction ()
 	{
 		if (m_movementTween.IsActive())
@@ -66,6 +63,7 @@ public class EntityDisplacementPlugin : EntityPlugin
 
 	private void ConsumePendingMovementDoneAction ()
 	{
+		m_linkedEntity.Skin.SetIsMoving(false);
 		System.Action pendingAction = m_pendingMovementDoneAction;
 		m_pendingMovementDoneAction = null;
 		pendingAction?.Invoke();
@@ -139,6 +137,7 @@ public class EntityDisplacementPlugin : EntityPlugin
 		KillMovementTweenAndReleasePendingAction();
 
 		m_pendingMovementDoneAction = onMovementDoneAction;
+		m_linkedEntity.Skin.SetIsMoving(true);
 		m_movementTween = transform.DOMove(tile.transform.position - m_bottomPosition.localPosition, movementDuration)
 			.SetEase(Ease.Linear).OnComplete(ConsumePendingMovementDoneAction);
 		tile.SetEntity(m_linkedEntity, _isThisTurn: false);
