@@ -14,7 +14,7 @@ public class MissionPanel : AUIPanel
 	[SerializeField] private BaseButton m_startMissionBtn;
 
 	[Title("Squad")]
-	[SerializeField] private UnitMissionDisplay[] m_unitDisplays;
+	[SerializeField] private List<UnitMissionDisplay> m_unitDisplays;
 	[SerializeField] private HangarEntityDisplay m_hoveredUnitDisplay;
 	[SerializeField] private StatDisplay[] m_hoveredUnitStatDisplays;
 
@@ -34,6 +34,7 @@ public class MissionPanel : AUIPanel
 		MissionButton.onAnyMissionHovered += OnAnyMissionHovered;
 		MissionButton.onAnyMissionSelected += OnAnyMissionSelected;
 		UnitMissionDisplay.onAnyUnitHovered += OnAnyUnitHovered;
+		UnitMissionDisplay.onAnySquadToggled += OnAnySquadToggled;
 		m_startMissionBtn.onClick += OnClickStartMission;
 	}
 
@@ -90,21 +91,32 @@ public class MissionPanel : AUIPanel
 			}
 		}
 
-		for (int i = 0; i < m_unitDisplays.Length; i++)
-		{
-			if (GameDatas.current.currentPlayerSave.squadUnitsIndex.Count > i)
-			{
-				m_unitDisplays[i].Show();
-				m_unitDisplays[i].Init(GameDatas.current.currentPlayerSave.allBuiltUnits[GameDatas.current.currentPlayerSave.squadUnitsIndex[i]], i, false);
-			}
-			else
-				m_unitDisplays[i].Hide();
-		}
-
-		m_startMissionBtn.SetInteractability(GameDatas.current.currentPlayerSave.squadUnitsIndex.Count > 0);
+		UnitMissionDisplay.RefreshPlayerUnits(m_unitDisplays);
+		RefreshSquadState();
 
 		OnAnyMissionHovered(m_missionBtns[0]);
-		OnAnyUnitHovered(m_unitDisplays[0]);
+
+		UnitMissionDisplay firstUnit = m_unitDisplays.FirstOrDefault(display => display.gameObject.activeSelf && display.IsInSquad);
+		if (firstUnit == null)
+			firstUnit = m_unitDisplays.FirstOrDefault(display => display.gameObject.activeSelf);
+		OnAnyUnitHovered(firstUnit);
+	}
+
+	private void RefreshSquadState ()
+	{
+		foreach (UnitMissionDisplay display in m_unitDisplays)
+			display.RefreshToggleInteractability();
+
+		m_startMissionBtn.SetInteractability(GameDatas.current.currentPlayerSave.squadUnitsIndex.Count > 0);
+	}
+
+	private void OnAnySquadToggled ( UnitMissionDisplay _display )
+	{
+		if (!m_unitDisplays.Contains(_display))
+			return;
+
+		RefreshSquadState();
+		RefreshHoveredUnit(_display);
 	}
 
 	private void OnAnyMissionHovered ( MissionButton _missionBtn )
@@ -172,7 +184,7 @@ public class MissionPanel : AUIPanel
 
 	private void OnAnyUnitHovered ( UnitMissionDisplay _display )
 	{
-		if (_display == null || _display.Data == null)
+		if (_display == null || _display.Data == null || !m_unitDisplays.Contains(_display))
 			return;
 
 		RefreshHoveredUnit(_display);
@@ -180,7 +192,7 @@ public class MissionPanel : AUIPanel
 
 	private void RefreshHoveredUnit ( UnitMissionDisplay _display )
 	{
-		m_hoveredUnitDisplay.Init(_display.Data, _display.Index, false);
+		m_hoveredUnitDisplay.Init(_display.Data, _display.Index, _display.IsInSquad);
 
 		//set unit stats
 		SerializableDictionary<EntityEquipmentData.SecondaryStat.StatType, EntityEquipmentData.StatDescription> statsDescriptions = _display.Data.GetStatsDesciptions();

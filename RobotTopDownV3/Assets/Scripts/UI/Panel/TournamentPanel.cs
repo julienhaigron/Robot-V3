@@ -11,7 +11,7 @@ public class TournamentPanel : AUIPanel
 	[SerializeField] private BaseButton m_startMissionBtn;
 
 	[Title("Squad")]
-	[SerializeField] private UnitMissionDisplay[] m_unitDisplays;
+	[SerializeField] private List<UnitMissionDisplay> m_unitDisplays;
 	[SerializeField] private HangarEntityDisplay m_hoveredUnitDisplay;
 	[SerializeField] private StatDisplay[] m_hoveredUnitStatDisplays;
 
@@ -35,6 +35,7 @@ public class TournamentPanel : AUIPanel
 	private void Awake ()
 	{
 		UnitMissionDisplay.onAnyUnitHovered += OnAnyUnitHovered;
+		UnitMissionDisplay.onAnySquadToggled += OnAnySquadToggled;
 		m_startMissionBtn.onClick += OnClickStartMission;
 		m_hoveredEnemyUnitDisplay.onComponentHovered += OnEnemyComponentHovered;
 	}
@@ -58,16 +59,7 @@ public class TournamentPanel : AUIPanel
 
 		HideSquadDisplays(m_round1SquadUnits);
 
-		for (int i = 0; i < m_unitDisplays.Length; i++)
-		{
-			if (GameDatas.current.currentPlayerSave.squadUnitsIndex.Count > i)
-			{
-				m_unitDisplays[i].Show();
-				m_unitDisplays[i].Init(GameDatas.current.currentPlayerSave.allBuiltUnits[GameDatas.current.currentPlayerSave.squadUnitsIndex[i]], i, false);
-			}
-			else
-				m_unitDisplays[i].Hide();
-		}
+		UnitMissionDisplay.RefreshPlayerUnits(m_unitDisplays);
 
 		if (CurrentRound == 0)
 		{
@@ -76,7 +68,7 @@ public class TournamentPanel : AUIPanel
 			{
 				if (missiondata.enemies.Length > i)
 				{
-					m_round1SquadUnits[i].Init(missiondata.enemies[i].GetSavedData(), -1, false);
+					m_round1SquadUnits[i].Init(missiondata.enemies[i].GetSavedData(), -1, false, false);
 					m_round1SquadUnits[i].Show();
 				}
 				else
@@ -95,7 +87,7 @@ public class TournamentPanel : AUIPanel
 			{
 				if (missiondata.enemies.Length > i)
 				{
-					m_round1SquadUnits[i].Init(missiondata.enemies[i].GetSavedData(), -1, false);
+					m_round1SquadUnits[i].Init(missiondata.enemies[i].GetSavedData(), -1, false, false);
 					m_round1SquadUnits[i].Show();
 				}
 				else
@@ -113,7 +105,7 @@ public class TournamentPanel : AUIPanel
 			{
 				if (missiondata.enemies.Length > i)
 				{
-					m_round1SquadUnits[i].Init(missiondata.enemies[i].GetSavedData(), -1, false);
+					m_round1SquadUnits[i].Init(missiondata.enemies[i].GetSavedData(), -1, false, false);
 					m_round1SquadUnits[i].Show();
 				}
 				else
@@ -125,13 +117,33 @@ public class TournamentPanel : AUIPanel
 			m_squadIcon.color = GameAssets.current.ui.corporationsColors[dominentCorpo];
 		}
 
-		m_startMissionBtn.SetInteractability(GameDatas.current.currentPlayerSave.squadUnitsIndex.Count > 0);
+		RefreshSquadState();
 
-		OnAnyUnitHovered(m_unitDisplays[0]);
+		UnitMissionDisplay firstUnit = m_unitDisplays.FirstOrDefault(display => display.gameObject.activeSelf && display.IsInSquad);
+		if (firstUnit == null)
+			firstUnit = m_unitDisplays.FirstOrDefault(display => display.gameObject.activeSelf);
+		OnAnyUnitHovered(firstUnit);
 
 		UnitMissionDisplay firstEnemy = m_round1SquadUnits.FirstOrDefault(display => display != null && display.gameObject.activeSelf);
 		if (firstEnemy != null)
 			OnAnyUnitHovered(firstEnemy);
+	}
+
+	private void RefreshSquadState ()
+	{
+		foreach (UnitMissionDisplay display in m_unitDisplays)
+			display.RefreshToggleInteractability();
+
+		m_startMissionBtn.SetInteractability(GameDatas.current.currentPlayerSave.squadUnitsIndex.Count > 0);
+	}
+
+	private void OnAnySquadToggled ( UnitMissionDisplay _display )
+	{
+		if (!m_unitDisplays.Contains(_display))
+			return;
+
+		RefreshSquadState();
+		OnAnyUnitHovered(_display);
 	}
 
 	private void HideSquadDisplays ( UnitMissionDisplay[] _displays )
@@ -224,7 +236,7 @@ public class TournamentPanel : AUIPanel
 		}
 		else if (m_unitDisplays.Contains(_display))
 		{
-			m_hoveredUnitDisplay.Init(_display.Data, _display.Index, false);
+			m_hoveredUnitDisplay.Init(_display.Data, _display.Index, _display.IsInSquad);
 			InitStatDisplays(m_hoveredUnitStatDisplays, _display.Data);
 		}
 	}

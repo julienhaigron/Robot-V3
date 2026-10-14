@@ -188,7 +188,10 @@ public class HubTopCanvas : AUITopCanvas
 				display.Show();
 			m_shopFactionCurrencyDisplay.Hide();
 
-			m_upgradeStructureBtn.gameObject.SetActive(UIManager.Instance.currentPanel is not TournamentPanel or MissionPanel);
+			if(UIManager.Instance.currentPanel is RecyclePanel or RepairStationPanel or HangarPanel)
+				m_upgradeStructureBtn.gameObject.SetActive(true);
+			else
+				m_upgradeStructureBtn.gameObject.SetActive(false);
 			m_currencyDisplays[CurrencyType.SoftCurrency].Text.text = GameDatas.current.currentPlayerSave.currencies[CurrencyType.SoftCurrency].ToString();
 
 			//int percentage = 0;
