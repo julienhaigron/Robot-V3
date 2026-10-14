@@ -24,7 +24,7 @@ MonoBehaviour:
   recyclingDurationAmount: 1
   reparingDurationAmount: 1
   canDropRandomly: 0
-  prefab: {fileID: 4673310249167116355, guid: 206cf16509b1846479a1f553fd6add2d, type: 3}
+  prefab: {fileID: 1662925485911320753, guid: 7ceb6e00f5b3233439b61d7a1b8ce1e0, type: 3}
   maxHealth: 50
   armouringSlotAvailable: 1
   occultorSlotAvailable: 0
