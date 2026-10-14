@@ -340,20 +340,8 @@ MonoBehaviour:
   m_overrideDurations: 0
   m_showDuration: 0.3
   m_hideDuration: 0.3
-  m_openShopBtns:
-    keys: 020000000300000004000000
-    values:
-    - {fileID: 6991645882892451590}
-    - {fileID: 949311643659148358}
-    - {fileID: 1211529196552024412}
-  m_hangarBtn: {fileID: 9062489296270408970}
-  m_recycleShopBtn: {fileID: 7469095842325284695}
-  m_repairBtn: {fileID: 8550029996298405855}
-  m_missionSelectionPanelBtn: {fileID: 382045186762552252}
   m_missionBtn: {fileID: 5833678879043171928}
   m_skipDayBtn: {fileID: 6919311118560250819}
-  m_shortenFolderToggleBtn: {fileID: 632413673428182973}
-  m_structureFolder: {fileID: 8716533904510143906}
   m_missionBtnTMP: {fileID: 3896705497704209948}
 --- !u!1 &534434611513562160
 GameObject:
@@ -1448,6 +1436,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4162077265328159787}
   - component: {fileID: 8295163426448553696}
+  - component: {fileID: 4101383083862589424}
   - component: {fileID: 8716533904510143906}
   m_Layer: 5
   m_Name: Structure Folder
@@ -1455,7 +1444,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &4162077265328159787
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1487,6 +1476,30 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7840793203099868706}
   m_CullTransparentMesh: 1
+--- !u!114 &4101383083862589424
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7840793203099868706}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a033571092dba334498eef229e247f6f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: RTD::StructureShortcutsFolder
+  m_openShopBtns:
+    keys: 020000000300000004000000
+    values:
+    - {fileID: 6991645882892451590}
+    - {fileID: 949311643659148358}
+    - {fileID: 1211529196552024412}
+  m_hangarBtn: {fileID: 9062489296270408970}
+  m_recycleShopBtn: {fileID: 7469095842325284695}
+  m_repairBtn: {fileID: 8550029996298405855}
+  m_missionSelectionPanelBtn: {fileID: 382045186762552252}
+  m_shortenFolderToggleBtn: {fileID: 632413673428182973}
+  m_structureFolder: {fileID: 8716533904510143906}
 --- !u!114 &8716533904510143906
 MonoBehaviour:
   m_ObjectHideFlags: 0

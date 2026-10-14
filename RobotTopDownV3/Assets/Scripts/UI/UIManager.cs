@@ -144,7 +144,10 @@ public sealed class UIManager : SingletonPersistant<UIManager>
 	private AUIPanel OpenPanel ( Type _type, float _showDelay, bool _showInstant, bool _pushHistory, bool _additive, bool _closePreviousInstant = false, bool _closeAndOpenSimultaneous = true )
 	{
 		if (currentPanel != null && currentPanel == panelsDictionary[_type])
-			return null;
+		{
+			OnFocusedWindowChanged(_showInstant);
+			return currentPanel;
+		}
 
 		if (panelsDictionary.ContainsKey(_type) == false)
 			throw new Exception(GetType().Name + " - Do not have panel [" + _type.Name + "].");

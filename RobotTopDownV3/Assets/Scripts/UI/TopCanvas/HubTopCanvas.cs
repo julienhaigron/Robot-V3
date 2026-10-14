@@ -17,6 +17,7 @@ public class HubTopCanvas : AUITopCanvas
 	[SerializeField] private Image m_returnBtnIMG;
 	[SerializeField] private Sprite m_defaultReturnIcon;
 	[SerializeField] private Sprite m_returnToStartMenuIcon;
+	[SerializeField] private StructureShortcutsFolder m_structureShortcutsFolder;
 
 	[Title("Shop")]
 	[SerializeField] private CurrencyDisplay m_shopFactionCurrencyDisplay;
@@ -46,9 +47,18 @@ public class HubTopCanvas : AUITopCanvas
 			return;
 
 		if (UIManager.Instance.currentPanel is ShopPanel shop)
+		{
 			Init(true, shop);
+			m_structureShortcutsFolder.SetVisibility(true);
+		}
 		else
+		{
+			if(UIManager.Instance.currentPanel is RepairStationPanel or RecyclePanel or SoloHubPanel)
+				m_structureShortcutsFolder.SetVisibility(true);
+			else
+				m_structureShortcutsFolder.SetVisibility(false);
 			Init(false, null);
+		}
 	}
 
 	private void OnCurrencyChange ( CurrencyType _type )
