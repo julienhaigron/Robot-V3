@@ -15,6 +15,7 @@ public class CollapsibleFolder : MonoBehaviour
 	[SerializeField] private float m_collapsedHeight = 110f;
 	[SerializeField] private float m_duration = .25f;
 	[SerializeField] private Ease m_ease = Ease.OutCubic;
+	[SerializeField] private CanvasGroup m_fadingElement;
 
 	private float m_expandedHeight;
 	private bool m_isCollapsed;
@@ -58,6 +59,8 @@ public class CollapsibleFolder : MonoBehaviour
 
 		m_sequence = DOTween.Sequence().SetUpdate(true)
 			.Join(m_viewport.DOSizeDelta(new Vector2(m_viewport.sizeDelta.x, height), m_duration).SetEase(m_ease));
+		if(m_fadingElement != null)
+			m_sequence.Join(m_fadingElement.DOFade(_isCollapsed ? 0f : 1f, m_duration).SetEase(m_ease));
 
 		if (_isCollapsed)
 			m_sequence.OnComplete(() => SetContentVisible(false));
@@ -69,8 +72,8 @@ public class CollapsibleFolder : MonoBehaviour
 	private void SetContentVisible ( bool _isVisible )
 	{
 		m_content.alpha = _isVisible ? 1f : 0f;
-		m_maximizedBg.enabled = _isVisible;
-		m_minimizedBg.enabled = !_isVisible;
+		m_maximizedBg.enabled = true;
+		m_minimizedBg.enabled = false;
 	}
 
 	private bool HasActiveHighlightZone ()
