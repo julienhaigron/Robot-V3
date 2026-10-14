@@ -1506,10 +1506,10 @@ MonoBehaviour:
   m_toggleIcon: {fileID: 5337992685942707868}
   m_minimizeSprite: {fileID: 21300000, guid: ea421f627a3c6ee48b44aaa03ae3da1e, type: 3}
   m_maximizeSprite: {fileID: 21300000, guid: c3a066d703086054d8536f2f08b95a57, type: 3}
-  m_collapsedHeight: 0
+  m_collapsedHeight: 100
   m_duration: 0.25
   m_ease: 9
-  m_fadingElement: {fileID: 0}
+  m_fadingElement: {fileID: 7014237434179766012}
 --- !u!1 &8104176250682152210
 GameObject:
   m_ObjectHideFlags: 0

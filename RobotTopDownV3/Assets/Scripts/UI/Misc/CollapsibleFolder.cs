@@ -72,8 +72,8 @@ public class CollapsibleFolder : MonoBehaviour
 	private void SetContentVisible ( bool _isVisible )
 	{
 		m_content.alpha = _isVisible ? 1f : 0f;
-		m_maximizedBg.enabled = true;
-		m_minimizedBg.enabled = false;
+		m_maximizedBg.enabled = _isVisible;
+		m_minimizedBg.enabled = !_isVisible;
 	}
 
 	private bool HasActiveHighlightZone ()
