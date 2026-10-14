@@ -77,12 +77,13 @@ public class SkipConfirmationPopup : AUIPopup
 		{
 			if (doGiveReward)
 			{
-				if(currentDay + i == -1)
+				int skippedDay = currentDay + i;
+				if(skippedDay == -1)
 					FTUEManager.Instance.Day0MissionData.GiveAllRewards();
-				else if(currentDay + i < FTUEManager.Instance.Cycle1MatchMissions.Length)
-					FTUEManager.Instance.Cycle1MatchMissions[i].GiveAllRewards();
+				else if(skippedDay < FTUEManager.Instance.Cycle1MatchMissions.Length)
+					FTUEManager.Instance.Cycle1MatchMissions[skippedDay].GiveAllRewards();
 				else
-					FTUEManager.Instance.Cycle1TournamentMissions[i - FTUEManager.Instance.Cycle1MatchMissions.Length].GiveAllRewards();
+					FTUEManager.Instance.Cycle1TournamentMissions[skippedDay - FTUEManager.Instance.Cycle1MatchMissions.Length].GiveAllRewards();
 			}
 			GameDatas.current.currentPlayerSave.NewDay();
 
