@@ -46,6 +46,12 @@ public class HubTopCanvas : AUITopCanvas
 		if (!m_visible)
 			return;
 
+		if (m_isStructureUpgradePopupOpened)
+		{
+			UIManager.Instance.ClosePopup<StructureUpgradePopup>();
+			m_isStructureUpgradePopupOpened = false;
+		}
+
 		if (UIManager.Instance.currentPanel is ShopPanel shop)
 		{
 			Init(true, shop);
@@ -142,6 +148,12 @@ public class HubTopCanvas : AUITopCanvas
 		{
 			UIManager.Instance.ClosePanel<SoloHubPanel>();
 			GameManager.Instance.GoToStartScreen();
+		}
+
+		if (m_isStructureUpgradePopupOpened)
+		{
+			UIManager.Instance.ClosePopup<StructureUpgradePopup>();
+			m_isStructureUpgradePopupOpened = false;
 		}
 	}
 

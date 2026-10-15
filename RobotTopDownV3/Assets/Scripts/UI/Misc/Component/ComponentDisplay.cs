@@ -142,7 +142,7 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 				m_priceTMP.text = m_componentData == null ? null : GetDisplayedPrice(m_componentData, m_currentDisplayMode).Item2.ToString();
 				m_descriptionTMP.gameObject.SetActive(true);
 				if (m_outlineImg != null)
-					m_outlineImg.enabled = false;
+					m_outlineImg.enabled = true;
 				m_descriptionTMP.text = LocalizationManager.Instance.Get(LocalizationKey.component_buy);
 				break;
 			case DisplayMode.ShopSelling:

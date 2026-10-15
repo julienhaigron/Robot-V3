@@ -28,6 +28,8 @@ public class AUIWindow : UICanvasParent
 	protected WaitForSecondsRealtime m_showDurationWFS;
 	protected Coroutine m_showCoroutine;
 	protected Coroutine m_hideCoroutine;
+	protected bool m_isVisible;
+	public bool IsVisible => m_isVisible;
 
 	public virtual bool CanClick
 	{
@@ -97,6 +99,7 @@ public class AUIWindow : UICanvasParent
 
 	protected virtual void OnHideStarted ()
 	{
+		m_isVisible = false;
 		if (gameObject.activeSelf)
 			SoundManager.PlayUISafe(m_closeSfxOverride, GetDefaultCloseSfx, m_useDefaultWindowSfx);
 	}
@@ -141,6 +144,7 @@ public class AUIWindow : UICanvasParent
 
 	protected virtual void OnShowStarted ()
 	{
+		m_isVisible = true;
 		SoundManager.PlayUISafe(m_openSfxOverride, GetDefaultOpenSfx, m_useDefaultWindowSfx);
 	}
 

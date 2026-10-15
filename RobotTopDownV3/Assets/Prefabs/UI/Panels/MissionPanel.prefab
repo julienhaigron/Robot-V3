@@ -516,7 +516,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 62839305199195906}
   m_Direction: 2
   m_Value: 1
-  m_Size: 0.57195723
+  m_Size: 0.5719573
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -858,7 +858,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1501933268343211578
 RectTransform:
   m_ObjectHideFlags: 0
@@ -933,7 +933,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &5108298250180636067
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1267,8 +1267,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 9169090970461017055}
   m_HandleRect: {fileID: 0}
   m_Direction: 2
-  m_Value: 1.0000001
-  m_Size: 0.2891765
+  m_Value: 0.9999999
+  m_Size: 0.28917652
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -1576,7 +1576,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: MPUIKit::MPUIKIT.MPImage
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0.007843138, a: 1}
+  m_Color: {r: 0.010914923, g: 0.012914944, b: 0.02641511, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -4055,7 +4055,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 7f44e90db103c4844802453303b9fbbf, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 39b1d6b99a05eff46b582ab3ee8239cb, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -4645,7 +4645,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: MPUIKit::MPUIKIT.MPImage
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0.007843138, a: 1}
+  m_Color: {r: 0.010914923, g: 0.012914944, b: 0.02641511, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1

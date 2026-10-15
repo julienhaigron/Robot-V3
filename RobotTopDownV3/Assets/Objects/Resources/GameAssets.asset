@@ -232,10 +232,10 @@ MonoBehaviour:
       - {fileID: 21300000, guid: 03da9b037a0d27b4db02f45130a6cb28, type: 3}
       - {fileID: 1022364126, guid: 31cee7fbc7dacf5449ac2bd80b7b4b88, type: 3}
       - {fileID: -527731599, guid: 31cee7fbc7dacf5449ac2bd80b7b4b88, type: 3}
-      - {fileID: -723296476, guid: 31cee7fbc7dacf5449ac2bd80b7b4b88, type: 3}
       - {fileID: 1717960602, guid: 31cee7fbc7dacf5449ac2bd80b7b4b88, type: 3}
-      - {fileID: -1742903103, guid: 31cee7fbc7dacf5449ac2bd80b7b4b88, type: 3}
-      - {fileID: -1742903103, guid: 31cee7fbc7dacf5449ac2bd80b7b4b88, type: 3}
+      - {fileID: 183395505, guid: 31cee7fbc7dacf5449ac2bd80b7b4b88, type: 3}
+      - {fileID: 21300000, guid: 03da9b037a0d27b4db02f45130a6cb28, type: 3}
+      - {fileID: 21300000, guid: 03da9b037a0d27b4db02f45130a6cb28, type: 3}
     mainActionTypeIcons:
       keys: 000000000100000002000000
       values:
@@ -304,11 +304,11 @@ MonoBehaviour:
     corporationsColors:
       keys: 01000000020000000300000004000000000000000600000005000000
       values:
-      - {r: 0, g: 0.6733866, b: 1, a: 1}
-      - {r: 0.39703226, g: 0, b: 1, a: 1}
-      - {r: 1, g: 0.5013487, b: 0, a: 1}
-      - {r: 1, g: 0, b: 0, a: 1}
-      - {r: 1, g: 1, b: 1, a: 0}
+      - {r: 1, g: 1, b: 1, a: 1}
+      - {r: 0.9176471, g: 0.36862746, b: 0.427451, a: 1}
+      - {r: 0.8862746, g: 0.76470596, b: 0.27450982, a: 1}
+      - {r: 0.34117648, g: 0.6666667, b: 0.8705883, a: 1}
+      - {r: 1, g: 1, b: 1, a: 1}
       - {r: 0.48235294, g: 0.48235294, b: 0.48235294, a: 1}
       - {r: 0.4811321, g: 0.4811321, b: 0.4811321, a: 1}
     componentColors:
