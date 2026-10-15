@@ -16,6 +16,9 @@ public class EndLevelPopup : AUIPopup
 	[SerializeField] private EndLevelEntityDisplay[] m_unitDisplay;
 	[SerializeField] private BaseButton m_shortenFolderToggleBtn;
 	[SerializeField] private CollapsibleFolder m_structureFolder;
+	[SerializeField] private TextMeshProUGUI m_currencyRewardTitleTMP;
+	[SerializeField] private TextMeshProUGUI m_componentRewardTitleTMP;
+	[SerializeField] private TextMeshProUGUI m_unitRewardTitleTMP;
 
 	public enum GameResult { Win, Draw, Loose }
 

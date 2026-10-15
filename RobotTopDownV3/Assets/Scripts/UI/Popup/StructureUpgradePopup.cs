@@ -71,8 +71,9 @@ public class StructureUpgradePopup : AUIPopup
 			if (Upgrade.addonDescriptions.Length <= i)
 				continue;
 
-			float bonus = Upgrade.GetAddonValue(Upgrade.GetCurrentLevel() + 1, i) - Upgrade.GetAddonValue(Upgrade.GetCurrentLevel(), i);
-			addonDisplays[i].Init(Upgrade.GetAddonTitle(i), Upgrade.GetAddonValue(Upgrade.GetCurrentLevel(), i).ToString(), bonus.ToString());
+			float newValue = Upgrade.GetAddonValue(Upgrade.GetCurrentLevel() + 1, i);
+			float bonus = newValue - Upgrade.GetAddonValue(Upgrade.GetCurrentLevel(), i);
+			addonDisplays[i].Init(Upgrade.GetAddonTitle(i), Upgrade.GetAddonValue(Upgrade.GetCurrentLevel(), i).ToString(), bonus.ToString(), newValue.ToString());
 		}
 	}
 

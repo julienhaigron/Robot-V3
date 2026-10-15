@@ -8,10 +8,10 @@ public class StructureUpgradeAddonDisplay : MonoBehaviour
     [SerializeField] private TextMeshProUGUI m_beforeValueTMP;
     [SerializeField] private TextMeshProUGUI m_afterValueTMP;
 
-    public void Init ( string _content, string _previousValue, string _difference )
+    public void Init ( string _content, string _previousValue, string _difference, string _newValue )
     {
 		m_title.text = _content;
-        m_beforeValueTMP.text = _previousValue;
-        m_afterValueTMP.text = _previousValue + "<color=green><size=75%>+" + _difference + "</size></color>";
+        m_beforeValueTMP.text = _previousValue + "<color=green><size=75%>+" + _difference + "</size></color>";
+        m_afterValueTMP.text = _newValue;
     }
 }
