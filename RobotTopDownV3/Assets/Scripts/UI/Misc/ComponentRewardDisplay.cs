@@ -26,7 +26,7 @@ public class ComponentRewardDisplay : MonoBehaviour
         m_nameTMP.text = _component.GetLocalizedName();
         m_mainIcon.sprite = _component.icon;
         System.Tuple<CurrencyType, ulong> price = _component.GetPrice();
-        m_priceTMP.text = price.Item2.ToString();
+        m_priceTMP.text = _component.IsMainComponent() ? "3" : "2";
         //m_subIcon.sprite = 
         if (_isLockedOnSelected)
         {

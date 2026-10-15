@@ -148,7 +148,8 @@ public class EndLevelPopup : AUIPopup
 			if (display.IsSelected && display.IsVisible)
 				totalUsedRewardPoint += MissionData.unitPointValue;
 
-		m_rewardPointsTMP.text = string.Format(LocalizationManager.Instance.Get(LocalizationKey.endlevel_reward_points), m_allocatedRewardPoint - totalUsedRewardPoint);
+		//m_rewardPointsTMP.text = string.Format(LocalizationManager.Instance.Get(LocalizationKey.endlevel_reward_points), m_allocatedRewardPoint - totalUsedRewardPoint);
+		m_rewardPointsTMP.text = (m_allocatedRewardPoint - totalUsedRewardPoint).ToString();
 
 		m_continueButton.SetInteractability(m_allocatedRewardPoint == 5 || totalUsedRewardPoint <= m_allocatedRewardPoint);
 	}
