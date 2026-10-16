@@ -26,7 +26,7 @@ MonoBehaviour:
   canDropRandomly: 0
   prefab: {fileID: 1662925485911320753, guid: 7ceb6e00f5b3233439b61d7a1b8ce1e0, type: 3}
   maxHealth: 100
-  armouringSlotAvailable: 1
-  occultorSlotAvailable: 1
+  armouringSlotAvailable: 2
+  occultorSlotAvailable: 3
   statBonuses: []
   isImmortal: 0

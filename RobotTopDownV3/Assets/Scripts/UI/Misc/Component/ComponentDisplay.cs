@@ -9,6 +9,10 @@ using DG.Tweening;
 public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler
 {
 	public static System.Action<ComponentDisplay> onDisplayHovered;
+	public static System.Action onDragStateChanged;
+
+	private static ComponentDisplay s_draggedDisplay;
+	public static ComponentDisplay DraggedDisplay => s_draggedDisplay;
 
 	[SerializeField] private CanvasGroup m_canvasGroup;
 	[SerializeField] private Image m_outlineImg;
@@ -47,7 +51,7 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 	private bool m_isTutorialHighlighted;
 	public bool IsTutorialHighlighted => m_isTutorialHighlighted;
 
-	public enum DisplayMode { Hangar, RepairStation, RecyclingStation, ShopBuying, ShopSelling, Empty }
+	public enum DisplayMode { Hangar, RepairStation, RecyclingStation, ShopBuying, ShopSelling, Empty, Unit }
 	private DisplayMode m_currentDisplayMode;
 	public DisplayMode CurrentDisplayMode => m_currentDisplayMode;
 
@@ -77,7 +81,13 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 			m_icon.sprite = m_componentData.icon;
 			if(m_damagedGO != null)
 				m_damagedGO.SetActive(_componentSavedData.isDamaged);
-			SetOutlineColor(GameAssets.current.ui.componentColors[data.GetEquipmentType()]);
+			if(_displayMode == DisplayMode.Hangar)
+				SetOutlineColor(GameAssets.current.ui.componentColors[data.GetEquipmentType()]);
+			else
+			{
+				SetOutlineColor(Color.white);
+				m_outlineImg.enabled = false;
+			}
 			m_canvasGroup.blocksRaycasts = true;
 			m_canvasGroup.interactable = true;
 		}
@@ -99,9 +109,18 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 		m_currentDisplayMode = _displayMode;
 		switch (m_currentDisplayMode)
 		{
+			case DisplayMode.Unit:
+				m_titleTMP.gameObject.SetActive(false);
+				m_componentTypeIcon.gameObject.SetActive(false);
+				m_priceTMP.gameObject.SetActive(false);
+				m_descriptionTMP.gameObject.SetActive(false);
+				m_priceBackground.gameObject.SetActive(false);
+				if (m_outlineImg != null)
+					m_outlineImg.enabled = false;
+				break;
 			case DisplayMode.Hangar:
 				m_titleTMP.text = m_componentData == null ? null : m_componentData.GetLocalizedName();
-				m_titleTMP.gameObject.SetActive(true);
+				m_titleTMP.gameObject.SetActive(false);
 				m_componentTypeIcon.gameObject.SetActive(false);
 				m_priceTMP.gameObject.SetActive(false);
 				m_descriptionTMP.gameObject.SetActive(false);
@@ -111,7 +130,7 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 				break;
 			case DisplayMode.RepairStation:
 				m_titleTMP.text = m_componentData == null ? null : m_componentData.GetLocalizedName();
-				m_titleTMP.gameObject.SetActive(true);
+				m_titleTMP.gameObject.SetActive(false);
 				m_componentTypeIcon.gameObject.SetActive(false);
 				m_priceBackground.gameObject.SetActive(true);
 				m_priceTMP.gameObject.SetActive(true);
@@ -123,7 +142,7 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 				break;
 			case DisplayMode.RecyclingStation:
 				m_titleTMP.text = m_componentData == null ? null : m_componentData.GetLocalizedName();
-				m_titleTMP.gameObject.SetActive(true);
+				m_titleTMP.gameObject.SetActive(false);
 				m_componentTypeIcon.gameObject.SetActive(false);
 				m_priceBackground.gameObject.SetActive(true);
 				m_priceTMP.gameObject.SetActive(true);
@@ -135,7 +154,7 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 				break;
 			case DisplayMode.ShopBuying:
 				m_titleTMP.text = m_componentData == null ? null : m_componentData.GetLocalizedName();
-				m_titleTMP.gameObject.SetActive(true);
+				m_titleTMP.gameObject.SetActive(false);
 				m_componentTypeIcon.gameObject.SetActive(true);
 				m_priceBackground.gameObject.SetActive(true);
 				m_priceTMP.gameObject.SetActive(true);
@@ -214,6 +233,11 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 		m_tutorialHighlightSequence.Join(transform.DOScale(TUTORIAL_HIGHLIGHT_SCALE, TUTORIAL_HIGHLIGHT_DURATION).SetEase(Ease.InOutSine));
 	}
 
+	private void OnDisable ()
+	{
+		SetDragged(false);
+	}
+
 	private void OnDestroy ()
 	{
 		m_tutorialHighlightSequence?.Kill();
@@ -245,6 +269,7 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 		m_canvasGroup.blocksRaycasts = false;
 
 		SoundManager.PlayUISafe(SfxId.None, _config => _config.dragPickUp);
+		SetDragged(true);
 	}
 
 	public void OnDrag ( PointerEventData eventData )
@@ -257,6 +282,8 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 
 	public void OnEndDrag ( PointerEventData eventData )
 	{
+		SetDragged(false);
+
 		if (m_isDragBlocked)
 		{
 			m_isDragBlocked = false;
@@ -326,6 +353,15 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 			appropriateContainer.RemoveFromOrigin(this);
 			appropriateContainer.LinkedContainer.RegisterInteraction(this);
 		}*/
+	}
+
+	private void SetDragged ( bool _isDragged )
+	{
+		if ((s_draggedDisplay == this) == _isDragged)
+			return;
+
+		s_draggedDisplay = _isDragged ? this : null;
+		onDragStateChanged?.Invoke();
 	}
 
 	public void ReturnToOrigin ()
