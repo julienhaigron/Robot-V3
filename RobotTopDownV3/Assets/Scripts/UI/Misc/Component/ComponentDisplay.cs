@@ -9,10 +9,6 @@ using DG.Tweening;
 public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler
 {
 	public static System.Action<ComponentDisplay> onDisplayHovered;
-	public static System.Action onDragStateChanged;
-
-	private static ComponentDisplay s_draggedDisplay;
-	public static ComponentDisplay DraggedDisplay => s_draggedDisplay;
 
 	[SerializeField] private CanvasGroup m_canvasGroup;
 	[SerializeField] private Image m_outlineImg;
@@ -233,11 +229,6 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 		m_tutorialHighlightSequence.Join(transform.DOScale(TUTORIAL_HIGHLIGHT_SCALE, TUTORIAL_HIGHLIGHT_DURATION).SetEase(Ease.InOutSine));
 	}
 
-	private void OnDisable ()
-	{
-		SetDragged(false);
-	}
-
 	private void OnDestroy ()
 	{
 		m_tutorialHighlightSequence?.Kill();
@@ -269,7 +260,6 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 		m_canvasGroup.blocksRaycasts = false;
 
 		SoundManager.PlayUISafe(SfxId.None, _config => _config.dragPickUp);
-		SetDragged(true);
 	}
 
 	public void OnDrag ( PointerEventData eventData )
@@ -282,8 +272,6 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 
 	public void OnEndDrag ( PointerEventData eventData )
 	{
-		SetDragged(false);
-
 		if (m_isDragBlocked)
 		{
 			m_isDragBlocked = false;
@@ -353,15 +341,6 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 			appropriateContainer.RemoveFromOrigin(this);
 			appropriateContainer.LinkedContainer.RegisterInteraction(this);
 		}*/
-	}
-
-	private void SetDragged ( bool _isDragged )
-	{
-		if ((s_draggedDisplay == this) == _isDragged)
-			return;
-
-		s_draggedDisplay = _isDragged ? this : null;
-		onDragStateChanged?.Invoke();
 	}
 
 	public void ReturnToOrigin ()
