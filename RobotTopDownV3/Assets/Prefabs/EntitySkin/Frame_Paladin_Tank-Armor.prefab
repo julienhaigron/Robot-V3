@@ -656,7 +656,7 @@ MonoBehaviour:
   GlueFadeOutSpeed: 0.5
   UnglueOn: 30
   AllowGlueDrag: 0.7
-  GlueMode: 1
+  GlueMode: 0
   OnlyLocalAnimation: 1
   SmoothSuddenSteps: 0.85
   LegElevateBlend: 0.7
