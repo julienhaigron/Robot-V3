@@ -34,6 +34,8 @@ public class BaseButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     protected bool m_isVisible = false;
     public bool IsVisible => m_isVisible;
 
+    private Tween m_visibilityTween;
+
     private void Start()
     {
         m_isVisible = gameObject.activeSelf;
@@ -43,6 +45,9 @@ public class BaseButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     private void OnDestroy ()
     {
         m_button.onClick.RemoveListener(OnClick);
+
+        if (m_visibilityTween.IsActive())
+            m_visibilityTween.Kill();
     }
 
     protected virtual void OnClick ()
@@ -78,13 +83,20 @@ public class BaseButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
 
         m_isVisible = _isVisible;
 
+        if (m_visibilityTween.IsActive())
+            m_visibilityTween.Kill();
+
         if (_isInstant)
+        {
+            if (_isVisible)
+                transform.localScale = Vector3.one;
             gameObject.SetActive(_isVisible);
+        }
 		else
 		{
             if (_isVisible)
                 gameObject.SetActive(_isVisible);
-            transform.DOScale(_isVisible ? 1f : 0f, 1f).OnComplete(() =>
+            m_visibilityTween = transform.DOScale(_isVisible ? 1f : 0f, 1f).OnComplete(() =>
             {
                 gameObject.SetActive(_isVisible);
             });

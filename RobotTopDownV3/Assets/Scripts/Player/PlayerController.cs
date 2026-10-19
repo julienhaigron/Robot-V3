@@ -36,28 +36,6 @@ public class PlayerController : Singleton<PlayerController>
 
 	private const float LegacyAxisPerNotch = 0.1f;
 
-	[Header("Camera Limits")]
-	private Vector2 xLimits
-	{
-		get
-		{
-			if (GridManager.Instance == null)
-				return Vector2.zero;
-
-			return new Vector2(0, GridManager.Instance.GridData.width * Tile.innerRadius * 2f);
-		}
-	}
-	private Vector2 zLimits
-	{
-		get
-		{
-			if (GridManager.Instance == null)
-				return Vector2.zero;
-
-			return new Vector2(0, GridManager.Instance.GridData.height * 1.5f);
-		}
-	}
-
 	private int PlayerID => !GameManager.Instance.IsOnline ? 0 : OnlinePlayerInstance.Self.connectionIndex;
 
 	private Tween m_cameraRotationTween;
@@ -198,7 +176,14 @@ public class PlayerController : Singleton<PlayerController>
 
 	private void HandleCameraMovement ()
 	{
-		Vector2 moveInput = Vector2.ClampMagnitude(m_moveAction.ReadValue<Vector2>() + GetEdgeScrollInput(), 1f);
+		Vector2 keyboardInput = m_moveAction.ReadValue<Vector2>();
+		if (keyboardInput.sqrMagnitude >= .0001f)
+			CameraManager.Instance.StopFollowingUnits();
+
+		if (CameraManager.Instance.IsFollowingUnits)
+			return;
+
+		Vector2 moveInput = Vector2.ClampMagnitude(keyboardInput + GetEdgeScrollInput(), 1f);
 		if (moveInput.sqrMagnitude < .0001f)
 			return;
 
@@ -242,29 +227,8 @@ public class PlayerController : Singleton<PlayerController>
 		if (m_cameraMoveTween.IsActive())
 			m_cameraMoveTween.Kill();
 
-		CameraManager.Instance.CameraParent.transform.position = ClampToCameraBounds(CameraManager.Instance.CameraParent.transform.position + _move);
+		CameraManager.Instance.CameraParent.transform.position = CameraManager.Instance.ClampToBounds(CameraManager.Instance.CameraParent.transform.position + _move);
 		m_fogRenderer.MarkDirty();
-	}
-
-	private Vector3 ClampToCameraBounds ( Vector3 _position )
-	{
-		_position.x = Mathf.Clamp(_position.x, xLimits.x - GameConfig.current.game.cameraMovementBoundsOffset.x, xLimits.y + GameConfig.current.game.cameraMovementBoundsOffset.x);
-		_position.z = Mathf.Clamp(_position.z, zLimits.x - GameConfig.current.game.cameraMovementBoundsOffset.y, zLimits.y + GameConfig.current.game.cameraMovementBoundsOffset.y);
-		return _position;
-	}
-
-	private Vector3 GetCameraFocusOffset ( float _groundHeight )
-	{
-		Ray centerRay = CameraManager.Instance.Camera.ViewportPointToRay(new Vector3(.5f, .5f, 0f));
-		Plane groundPlane = new Plane(Vector3.up, new Vector3(0f, _groundHeight, 0f));
-
-		if (!groundPlane.Raycast(centerRay, out float distance))
-			return Vector3.zero;
-
-		Vector3 focusPoint = centerRay.GetPoint(distance);
-		Vector3 parentPosition = CameraManager.Instance.CameraParent.transform.position;
-
-		return new Vector3(focusPoint.x - parentPosition.x, 0f, focusPoint.z - parentPosition.z);
 	}
 
 	private void CenterCameraOn ( Entity _entity )
@@ -274,8 +238,8 @@ public class PlayerController : Singleton<PlayerController>
 
 		Vector3 entityPosition = _entity.Displacement.Coordinates.GetTile().transform.position;
 		Vector3 cameraPosition = CameraManager.Instance.CameraParent.transform.position;
-		Vector3 focusOffset = GetCameraFocusOffset(entityPosition.y);
-		Vector3 targetPosition = ClampToCameraBounds(new Vector3(entityPosition.x - focusOffset.x, cameraPosition.y, entityPosition.z - focusOffset.z));
+		Vector3 focusOffset = CameraManager.Instance.GetFocusOffset(entityPosition.y);
+		Vector3 targetPosition = CameraManager.Instance.ClampToBounds(new Vector3(entityPosition.x - focusOffset.x, cameraPosition.y, entityPosition.z - focusOffset.z));
 
 		if (m_cameraMoveTween.IsActive())
 			m_cameraMoveTween.Kill();
@@ -364,6 +328,7 @@ public class PlayerController : Singleton<PlayerController>
 		forward.y = 0f;
 		right.y = 0f;
 
+		CameraManager.Instance.StopFollowingUnits();
 		MoveCameraBy(-(right.normalized * screenDelta.x + forward.normalized * screenDelta.y) * GameConfig.current.game.cameraPanSpeed);
 	}
 
@@ -638,6 +603,9 @@ public class PlayerController : Singleton<PlayerController>
 
 	private void OnEndInputPhase ()
 	{
+		if (m_cameraMoveTween.IsActive())
+			m_cameraMoveTween.Kill();
+
 		SetInteractableOutlinesHidden(false);
 		SelectEntity(null);
 		ClearActionOnTileDisplay();

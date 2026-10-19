@@ -19,6 +19,7 @@ public sealed class InGamePanel : AUIPanel
 	public UIEntityActionList EntityActionList => m_entityActionList;
 
 	[SerializeField] private BaseButton m_endPhaseButton;
+	[SerializeField] private BaseButton m_followUnitsButton;
 	[SerializeField] private TextMeshProUGUI m_phaseTitleTmp;
 	private bool m_isInInputPhase = true;
 
@@ -55,7 +56,9 @@ public sealed class InGamePanel : AUIPanel
 		TurnManager.onActionAdded += OnActionAdded;
 		PlayerController.onEntitySelected += OnEntitySelected;
 		PlayerController.onEntityHovered += OnEntityHovered;
+		CameraManager.onFollowUnitsChanged += OnFollowUnitsChanged;
 		m_endPhaseButton.onClick += OnClickEndPhaseBtn;
+		m_followUnitsButton.onClick += OnClickFollowUnitsBtn;
 	}
 
 	private void OnActionAdded ( TurnManager.RecordedAction _recordedAction )
@@ -85,13 +88,16 @@ public sealed class InGamePanel : AUIPanel
 		TurnManager.onActionAdded -= OnActionAdded;
 		PlayerController.onEntitySelected -= OnEntitySelected;
 		PlayerController.onEntityHovered -= OnEntityHovered;
+		CameraManager.onFollowUnitsChanged -= OnFollowUnitsChanged;
 		m_endPhaseButton.onClick -= OnClickEndPhaseBtn;
+		m_followUnitsButton.onClick -= OnClickFollowUnitsBtn;
 	}
 
 	public void Init ()
 	{
 		m_squadUnitDisplayList.Init();
 		RefreshVisual(false, true);
+		RefreshFollowUnitsButton(true);
 		m_logConsole.Init();
 		m_tutoConsole.Init();
 		m_entityActionList.Init();
@@ -174,6 +180,22 @@ public sealed class InGamePanel : AUIPanel
 		m_squadUnitDisplayList.Hide(m_animationDuration);
 		m_tutoConsole.Hide(false);
 		m_endPhaseButton.SetVisible(false, false);
+	}
+
+	private void OnFollowUnitsChanged ()
+	{
+		RefreshFollowUnitsButton(false);
+	}
+
+	private void RefreshFollowUnitsButton ( bool _isInstant )
+	{
+		CameraManager cameraManager = CameraManager.Instance;
+		m_followUnitsButton.SetVisible(cameraManager != null && cameraManager.CanFollowUnits && !cameraManager.IsFollowingUnits, _isInstant);
+	}
+
+	private void OnClickFollowUnitsBtn ()
+	{
+		CameraManager.Instance.FollowUnits();
 	}
 
 	private void OnClickEndPhaseBtn ()
