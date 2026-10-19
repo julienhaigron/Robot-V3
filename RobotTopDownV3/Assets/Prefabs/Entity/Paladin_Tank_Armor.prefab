@@ -11,7 +11,7 @@ PrefabInstance:
     - target: {fileID: 3894988364515184562, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
       propertyPath: baseTransform
       value: 
-      objectReference: {fileID: 8633894212831196652}
+      objectReference: {fileID: 7191302670993653830}
     - target: {fileID: 3894988364515184562, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
       propertyPath: MovingParameter
       value: IsMoving

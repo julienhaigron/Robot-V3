@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using FIMSpace.FProceduralAnimation;
 using UnityEngine;
 
 public class GhostEntity : MonoBehaviour
@@ -14,6 +15,9 @@ public class GhostEntity : MonoBehaviour
 		m_linkedEntity = _linkedEntity;
 
 		GameObject skin = Instantiate(_linkedEntity.Skin.IK.gameObject, m_visual);
+
+		if (skin.TryGetComponent(out LegsAnimator legsAnimator))
+			legsAnimator.Initialize_BaseTransform(m_visual);
 	}
 
 	public void ShowAtPositionAndOrientation(Tile _position, int _orientation )

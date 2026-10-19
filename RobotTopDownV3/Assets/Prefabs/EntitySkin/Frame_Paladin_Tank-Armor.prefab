@@ -391,7 +391,7 @@ MonoBehaviour:
   StabilizeCenterOfMass: 0.45
   AnimationIsStablePose: 0.75
   StabilizingSpeed: 0.375
-  PushHipsOnLegMove: 0.1
+  PushHipsOnLegMove: 0.5
   NormalizePush: 0
   PushReactionSpeed: 0.3
   PushYBlend: 1
