@@ -1023,7 +1023,7 @@ MonoBehaviour:
   m_turnManager: {fileID: 2601377726672517245}
   m_fogRenderer: {fileID: 5089135159799770867}
   m_inputActions: {fileID: -944628639613478452, guid: 2da90cdffd3702b458769b7a7a8aaf67, type: 3}
-  m_edgeScrollMargin: 12
+  m_edgeScrollScreenRatio: 0.03
   m_centerOnEntityDuration: 0.35
 --- !u!114 &2601377726672517245
 MonoBehaviour:

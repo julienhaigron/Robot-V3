@@ -70,6 +70,7 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 	public void Init ( EntitySavedData _unitData, GameDatas.PlayerSave.Component _componentSavedData, DisplayMode _displayMode )
 	{
 		m_savedData = _componentSavedData;
+		SetOutlineColor(Color.white);
 		if (_componentSavedData != null && _componentSavedData.TryGetData(out EntityEquipmentData data))
 		{
 			m_componentData = data;
@@ -77,20 +78,11 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 			m_icon.sprite = m_componentData.icon;
 			if(m_damagedGO != null)
 				m_damagedGO.SetActive(_componentSavedData.isDamaged);
-			if(_displayMode == DisplayMode.Hangar)
-				SetOutlineColor(GameAssets.current.ui.componentColors[data.GetEquipmentType()]);
-			else
-			{
-				SetOutlineColor(Color.white);
-				m_outlineImg.enabled = false;
-			}
 			m_canvasGroup.blocksRaycasts = true;
 			m_canvasGroup.interactable = true;
 		}
 		else
 		{
-			SetOutlineColor(Color.white);
-
 			if (m_damagedGO != null)
 				m_damagedGO.SetActive(false);
 			m_canvasGroup.blocksRaycasts = false;

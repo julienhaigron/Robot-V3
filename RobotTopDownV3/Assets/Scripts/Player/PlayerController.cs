@@ -28,7 +28,7 @@ public class PlayerController : Singleton<PlayerController>
 	private Vector2 m_lastPanScreenPosition;
 
 	[Header("Camera")]
-	[SerializeField] private float m_edgeScrollMargin = 12f;
+	[SerializeField, Range(0f, .2f)] private float m_edgeScrollScreenRatio = .03f;
 	[SerializeField] private float m_centerOnEntityDuration = .35f;
 
 	private Tween m_cameraMoveTween;
@@ -200,23 +200,24 @@ public class PlayerController : Singleton<PlayerController>
 
 	private Vector2 GetEdgeScrollInput ()
 	{
-		if (m_edgeScrollMargin <= 0f || !Application.isFocused)
+		if (m_edgeScrollScreenRatio <= 0f || !Application.isFocused)
 			return Vector2.zero;
 
 		Vector2 mousePosition = Input.mousePosition;
 		if (mousePosition.x < 0f || mousePosition.y < 0f || mousePosition.x > Screen.width || mousePosition.y > Screen.height)
 			return Vector2.zero;
 
+		float margin = Screen.height * m_edgeScrollScreenRatio;
 		Vector2 edgeInput = Vector2.zero;
 
-		if (mousePosition.x <= m_edgeScrollMargin)
+		if (mousePosition.x <= margin)
 			edgeInput.x = -1f;
-		else if (mousePosition.x >= Screen.width - m_edgeScrollMargin)
+		else if (mousePosition.x >= Screen.width - margin)
 			edgeInput.x = 1f;
 
-		if (mousePosition.y <= m_edgeScrollMargin)
+		if (mousePosition.y <= margin)
 			edgeInput.y = -1f;
-		else if (mousePosition.y >= Screen.height - m_edgeScrollMargin)
+		else if (mousePosition.y >= Screen.height - margin)
 			edgeInput.y = 1f;
 
 		return UIManager.Instance.HaveAnActivePopup() ? Vector2.zero : edgeInput;

@@ -81,6 +81,6 @@ public class HangarPanel : AUIPanel
 		int totalEnergyUsed = 0;
 		foreach (EntitySavedData savedEntity in GameDatas.current.currentPlayerSave.GetSquadEntitiesData())
 			totalEnergyUsed += savedEntity.GetTotalEnergyUsed();
-		m_maxEnergyCostInSquadTMP.text = (GameAssets.current.game.HangarStructureUpgrade.GetCurrentMaxSquadEnergyAmount() - totalEnergyUsed).ToString();
+		m_maxEnergyCostInSquadTMP.text = totalEnergyUsed + "/" + GameAssets.current.game.HangarStructureUpgrade.GetCurrentMaxSquadEnergyAmount();
 	}
 }
