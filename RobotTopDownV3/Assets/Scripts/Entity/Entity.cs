@@ -39,6 +39,7 @@ public class Entity : MonoBehaviour
 	[SerializeField] private EntitySavedData m_data;
 
 	public EntitySavedData Data => m_data;
+	public bool IsImmortal => m_data != null && m_data.FrameData != null && m_data.FrameData.isImmortal;
 
 	private List<EntityActionEnumID> m_knownedActions = new();
 	public List<EntityActionEnumID> KnownedActions => m_knownedActions;

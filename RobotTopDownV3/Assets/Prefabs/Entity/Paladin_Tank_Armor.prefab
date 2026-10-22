@@ -46,7 +46,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3894988364515184562, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
       propertyPath: BaseLegAnimating.MinFootRaise
-      value: 0.877
+      value: 0.2
       objectReference: {fileID: 0}
     - target: {fileID: 3894988364515184562, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
       propertyPath: UseStepPointsOverlapRadiusOnMoving

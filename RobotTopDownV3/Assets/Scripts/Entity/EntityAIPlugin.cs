@@ -791,7 +791,7 @@ public class EntityAIPlugin : EntityPlugin
 		Entity closestEntity = null;
 		foreach (Entity entity in m_entitiesInVisionRange)
 		{
-			if (entity.IsAlliedTo(m_linkedEntity.OwnerID))
+			if (entity.IsAlliedTo(m_linkedEntity.OwnerID) || entity.IsImmortal)
 				continue;
 
 			if (closestEntity == null || entity.Displacement.Coordinates.GetTile().Distance < closestEntity.Displacement.Coordinates.GetTile().Distance)
@@ -909,7 +909,7 @@ public class EntityAIPlugin : EntityPlugin
 		m_lastKnownHealth = m_linkedEntity.Equipment.CurrentHealth;
 
 		Entity attacker = _damageInfo.entityAttacker;
-		if (attacker == null || attacker == m_linkedEntity || attacker.Equipment.IsDead
+		if (attacker == null || attacker == m_linkedEntity || attacker.Equipment.IsDead || attacker.IsImmortal
 			|| attacker.IsAlliedTo(m_linkedEntity.OwnerID) || m_linkedEntity.Equipment.IsDead)
 			return;
 
@@ -1036,9 +1036,10 @@ public class EntityAIPlugin : EntityPlugin
 	private Entity GetStickyTarget ()
 	{
 		Entity committedTarget = GetCommittedTarget();
-
-		return committedTarget != null ? committedTarget
+		Entity stickyTarget = committedTarget != null ? committedTarget
 			: m_lastEntitiesTargeted.Count > 0 ? m_lastEntitiesTargeted[0] : null;
+
+		return stickyTarget != null && stickyTarget.IsImmortal ? null : stickyTarget;
 	}
 
 	private void SortEnemiesByStickyThenRange ( List<Entity> _enemies, Tile _from, Entity _stickyTarget )
