@@ -304,12 +304,6 @@ public class GameManager : SingletonPersistant<GameManager>
 
 	public void EndGame ( EndLevelPopup.GameResult _gameResult )
 	{
-		bool wasTournamentMatch = GameDatas.current.currentPlayerSave.IsTournamentDay;
-		GameDatas.current.currentPlayerSave.NewDay();
-
-		if (wasTournamentMatch && _gameResult == EndLevelPopup.GameResult.Loose
-			&& GameDatas.current.currentPlayerSave.cycleData.hasInitTournament)
-			GameDatas.current.currentPlayerSave.NewCycle();
 		//SaveMacroChanges();
 
 		if (_gameResult == EndLevelPopup.GameResult.Win)
@@ -322,6 +316,16 @@ public class GameManager : SingletonPersistant<GameManager>
 		UIManager.Instance.ClosePanel<InGamePanel>(true);
 		UIManager.Instance.OpenPopup<EndLevelPopup>().Init(_gameResult, m_currentMission);
 		m_fogCanvas.gameObject.SetActive(false);
+	}
+
+	public void ApplyMatchProgression ( EndLevelPopup.GameResult _gameResult )
+	{
+		bool wasTournamentMatch = GameDatas.current.currentPlayerSave.IsTournamentDay;
+		GameDatas.current.currentPlayerSave.NewDay();
+
+		if (wasTournamentMatch && _gameResult == EndLevelPopup.GameResult.Loose
+			&& GameDatas.current.currentPlayerSave.cycleData.hasInitTournament)
+			GameDatas.current.currentPlayerSave.NewCycle();
 	}
 
 	/*private void SaveMacroChanges ()

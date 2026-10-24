@@ -53,17 +53,18 @@ public class HangarPanel : AUIPanel
 		HubManager.Instance.HideHangar();
 	}
 
-	private void RefreshDisplay ()
+	public void RefreshDisplay ()
 	{
+		GameDatas.PlayerSave playerSave = GameDatas.current.currentPlayerSave;
+		List<int> unitIndices = playerSave.GetUnitIndicesSquadFirst();
 		for(int i = 0; i < m_hangarUnits.Length; i++)
 		{
-			if (i >= GameDatas.current.currentPlayerSave.allBuiltUnits.Count)
+			if (i >= unitIndices.Count)
 				m_hangarUnits[i].Hide();
 			else
 			{
-				EntitySavedData entityData = GameDatas.current.currentPlayerSave.allBuiltUnits[i];
-				bool isInSquad = GameDatas.current.currentPlayerSave.squadUnitsIndex.Contains(i);
-				m_hangarUnits[i].Init(entityData, i, isInSquad);
+				int unitIndex = unitIndices[i];
+				m_hangarUnits[i].Init(playerSave.allBuiltUnits[unitIndex], unitIndex, playerSave.squadUnitsIndex.Contains(unitIndex));
 				m_hangarUnits[i].Show();
 			}
 		}
@@ -73,10 +74,12 @@ public class HangarPanel : AUIPanel
 
 	public void RefreshTexts ()
 	{
-		m_addNewEntityBtn.SetInteractability(GameDatas.current.currentPlayerSave.squadUnitsIndex.Count < GameAssets.current.game.HangarStructureUpgrade.GetCurrentMaxHangarUnit());
+		int builtUnitCount = GameDatas.current.currentPlayerSave.allBuiltUnits.Count;
+		int maxHangarUnit = GameAssets.current.game.HangarStructureUpgrade.GetCurrentMaxHangarUnit();
+		m_addNewEntityBtn.SetInteractability(builtUnitCount < maxHangarUnit);
 		int squadCount = GameDatas.current.currentPlayerSave.squadUnitsIndex.Count;
 		m_maxUnitInSquadTMP.text = squadCount + "/" + GameAssets.current.game.HangarStructureUpgrade.GetCurrentMaxUnitAmount();
-		m_maxUnitInHangarTMP.text = string.Format(LocalizationManager.Instance.Get(LocalizationKey.hangar_inactive_unit), GameDatas.current.currentPlayerSave.allBuiltUnits.Count - GameDatas.current.currentPlayerSave.squadUnitsIndex.Count, GameAssets.current.game.HangarStructureUpgrade.GetCurrentMaxHangarUnit());
+		m_maxUnitInHangarTMP.text = string.Format(LocalizationManager.Instance.Get(LocalizationKey.hangar_inactive_unit), builtUnitCount, maxHangarUnit);
 
 		int totalEnergyUsed = 0;
 		foreach (EntitySavedData savedEntity in GameDatas.current.currentPlayerSave.GetSquadEntitiesData())

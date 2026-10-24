@@ -56,12 +56,14 @@ public class UnitMissionDisplay : MonoBehaviour, IPointerEnterHandler, IPointerE
 			_displays.Add(newDisplay);
 		}
 
+		List<int> unitIndices = playerSave.GetUnitIndicesSquadFirst();
 		for (int i = 0; i < _displays.Count; i++)
 		{
-			if (i < playerSave.allBuiltUnits.Count)
+			if (i < unitIndices.Count)
 			{
+				int unitIndex = unitIndices[i];
 				_displays[i].Show();
-				_displays[i].Init(playerSave.allBuiltUnits[i], i, playerSave.squadUnitsIndex.Contains(i));
+				_displays[i].Init(playerSave.allBuiltUnits[unitIndex], unitIndex, playerSave.squadUnitsIndex.Contains(unitIndex));
 			}
 			else
 				_displays[i].Hide();

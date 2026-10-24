@@ -2,11 +2,15 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System;
+using Sirenix.OdinInspector;
 
 public class ComponentSlot : ComponentContainer
 {
     [SerializeField] private Image m_outline;
     [SerializeField] private Vector2 m_displaySize = new Vector2(124f, 124f);
+
+    [Title("SubComponent")]
+    [SerializeField] private Image m_subComponentTypeIconIMG;
 
     protected ComponentDisplay m_currentDisplay;
     public ComponentDisplay CurrentDisplay
@@ -18,6 +22,7 @@ public class ComponentSlot : ComponentContainer
         set
         {
             m_currentDisplay = value;
+            RefreshSubComponentTypeIcon();
         }
     }
 
@@ -50,9 +55,22 @@ public class ComponentSlot : ComponentContainer
             (m_currentDisplay.transform as RectTransform).anchorMin = new Vector2(.5f, .5f);
             m_currentDisplay.transform.localPosition = Vector3.zero;
             (m_currentDisplay.transform as RectTransform).sizeDelta = m_displaySize;
+            RefreshSubComponentTypeIcon();
         }
         else
             Cleanup();
+    }
+
+    public void SetSubComponentType(EntityEquipmentData.EquipmentType _type )
+	{
+        m_subComponentTypeIconIMG.sprite = GameAssets.current.ui.componentIcons[_type];
+        RefreshSubComponentTypeIcon();
+    }
+
+    private void RefreshSubComponentTypeIcon ()
+    {
+        if (m_subComponentTypeIconIMG != null)
+            m_subComponentTypeIconIMG.enabled = m_currentDisplay == null;
     }
 
     public void SetReleasePredicate ( Func<ComponentDisplay, bool> _releasePredicate )
@@ -89,6 +107,7 @@ public class ComponentSlot : ComponentContainer
         m_equipmentData = null;
         m_equipmentSavedData = null;
         m_unitData = null;
+        RefreshSubComponentTypeIcon();
     }
 
     #region DnD
@@ -128,6 +147,7 @@ public class ComponentSlot : ComponentContainer
         (_display.transform as RectTransform).anchorMin = new Vector2(.5f, .5f);
         _display.transform.localPosition = Vector3.zero;
         (m_currentDisplay.transform as RectTransform).sizeDelta = m_displaySize;
+        RefreshSubComponentTypeIcon();
     }
 
     private void Swap ( ComponentDisplay _display )
@@ -149,6 +169,7 @@ public class ComponentSlot : ComponentContainer
         if (m_currentDisplay == _display && _display != null)
         {
             m_currentDisplay = null;
+            RefreshSubComponentTypeIcon();
 		    base.RemoveDisplay(_display);
         }
 	}

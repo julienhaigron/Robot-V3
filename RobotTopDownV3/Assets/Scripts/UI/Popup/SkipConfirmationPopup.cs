@@ -32,7 +32,7 @@ public class SkipConfirmationPopup : AUIPopup
 		{
 			//skip FTUE and give all FTUE missions rewards
 			daysAmountSkip = 7 - (GameDatas.current.currentPlayerSave.dayCount);
-			description = "Do you want to skip all main tutos?\n This will make you skip " + daysAmountSkip + " days. You will get all rewards given by skipped missions";
+			description = "Do you want to skip all main tutos?\n This will make you skip " + daysAmountSkip + " days. You will get all rewards given by skipped matches";
 		}
 		else if (GameDatas.current.currentPlayerSave.dayCount < 4)
 		{

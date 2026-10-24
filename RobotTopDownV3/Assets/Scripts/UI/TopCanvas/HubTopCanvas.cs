@@ -37,9 +37,16 @@ public class HubTopCanvas : AUITopCanvas
 		EntityConfigPanel.onConfigChanged += RefreshReturnBtnLabel;
 		UIManager.onFocusedWindowChanged += RefreshReturnBtnLabel;
 		UIManager.onFocusedWindowChanged += OnFocusedWindowChanged;
+		ShopPanel.onShopInitialized += OnShopInitialized;
 	}
 
 	#region Callbacks
+
+	private void OnShopInitialized ( ShopPanel _shop )
+	{
+		if (m_visible && UIManager.Instance.currentPanel == _shop)
+			Init(true, _shop);
+	}
 
 	private void OnFocusedWindowChanged ()
 	{
@@ -75,7 +82,7 @@ public class HubTopCanvas : AUITopCanvas
 		switch (_type)
 		{
 			case CurrencyType.SoftCurrency:
-				m_currencyDisplays[_type].Text.text = GameDatas.current.currentPlayerSave.currencies[_type].ToString() + " -";
+				m_currencyDisplays[_type].Text.text = GameDatas.current.currentPlayerSave.currencies[_type].ToString();
 				break;
 			case CurrencyType.PsyCredit:
 			case CurrencyType.CommandoCredit:
@@ -106,8 +113,8 @@ public class HubTopCanvas : AUITopCanvas
 		}
 		else if (UIManager.Instance.currentPanel is HangarPanel)
 			UIManager.Instance.OpenPopup<StructureUpgradePopup>().Init(StructureUpgradePopup.StructureType.Hangar);
-		else if (UIManager.Instance.currentPanel is ShopPanel)
-			UIManager.Instance.OpenPopup<StructureUpgradePopup>().Init(StructureUpgradePopup.StructureType.PaladinShop);
+		else if (UIManager.Instance.currentPanel is ShopPanel shop)
+			UIManager.Instance.OpenPopup<StructureUpgradePopup>().Init(GetShopStructureType(shop.CurrentFaction));
 		else if (UIManager.Instance.currentPanel is RecyclePanel)
 			UIManager.Instance.OpenPopup<StructureUpgradePopup>().Init(StructureUpgradePopup.StructureType.Recycler);
 		else if (UIManager.Instance.currentPanel is RepairStationPanel)
@@ -131,7 +138,7 @@ public class HubTopCanvas : AUITopCanvas
 		}
 		else if (UIManager.Instance.currentPanel is EntityConfigPanel entityConfigPanel)
 		{
-			if (!entityConfigPanel.TryCommitUnit())
+			if (entityConfigPanel.IsNewUnit)
 				entityConfigPanel.DiscardUnit();
 
 			if (entityConfigPanel.DoesComeFromMissionPanel)
@@ -159,6 +166,19 @@ public class HubTopCanvas : AUITopCanvas
 
 	#endregion
 
+	private static StructureUpgradePopup.StructureType GetShopStructureType ( EntityEquipmentData.EntityFaction _faction )
+	{
+		switch (_faction)
+		{
+			case EntityEquipmentData.EntityFaction.Psy:
+				return StructureUpgradePopup.StructureType.PsyShop;
+			case EntityEquipmentData.EntityFaction.Commando:
+				return StructureUpgradePopup.StructureType.CommandoShop;
+			default:
+				return StructureUpgradePopup.StructureType.PaladinShop;
+		}
+	}
+
 	private void RefreshReturnBtnLabel ()
 	{
 		if (UIManager.Instance.currentPanel is not EntityConfigPanel configPanel)
@@ -167,7 +187,7 @@ public class HubTopCanvas : AUITopCanvas
 			return;
 		}
 
-		m_returnBtn.SetLabel(LocalizationManager.Instance.Get(configPanel.IsCurrentUnitValid
+		m_returnBtn.SetLabel(LocalizationManager.Instance.Get(configPanel.IsCurrentUnitValid && !configPanel.IsNewUnit
 			? LocalizationKey.entity_config_save_and_quit
 			: LocalizationKey.entity_config_cancel));
 	}

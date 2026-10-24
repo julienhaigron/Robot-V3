@@ -114,7 +114,7 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 				m_descriptionTMP.gameObject.SetActive(false);
 				m_priceBackground.gameObject.SetActive(false);
 				if (m_outlineImg != null)
-					m_outlineImg.enabled = true;
+					m_outlineImg.enabled = false;
 				break;
 			case DisplayMode.RepairStation:
 				m_titleTMP.text = m_componentData == null ? null : m_componentData.GetLocalizedName();

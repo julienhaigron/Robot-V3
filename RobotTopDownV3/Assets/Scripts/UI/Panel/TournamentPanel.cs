@@ -37,7 +37,7 @@ public class TournamentPanel : AUIPanel
 		UnitMissionDisplay.onAnyUnitHovered += OnAnyUnitHovered;
 		UnitMissionDisplay.onAnySquadToggled += OnAnySquadToggled;
 		m_startMissionBtn.onClick += OnClickStartMission;
-		m_hoveredEnemyUnitDisplay.onComponentHovered += OnEnemyComponentHovered;
+		m_hoveredEnemyComponentDisplay.gameObject.SetActive(false);
 	}
 
 	protected override void OnShowStarted ()
@@ -142,8 +142,12 @@ public class TournamentPanel : AUIPanel
 		if (!m_unitDisplays.Contains(_display))
 			return;
 
+		EntitySavedData toggledUnit = _display.Data;
+		UnitMissionDisplay.RefreshPlayerUnits(m_unitDisplays);
 		RefreshSquadState();
-		OnAnyUnitHovered(_display);
+
+		UnitMissionDisplay toggledDisplay = m_unitDisplays.Find(display => display.Data == toggledUnit);
+		OnAnyUnitHovered(toggledDisplay != null ? toggledDisplay : _display);
 	}
 
 	private void HideSquadDisplays ( UnitMissionDisplay[] _displays )
@@ -230,9 +234,9 @@ public class TournamentPanel : AUIPanel
 
 		if (m_round1SquadUnits.Contains(_display))
 		{
-			m_hoveredEnemyUnitDisplay.Init(_display.Data, -1, true, true);
+			m_hoveredEnemyUnitDisplay.Init(_display.Data, -1, true);
+			m_hoveredEnemyUnitDisplay.HideComponents();
 			InitStatDisplays(m_hoveredEnemyUnitStatDisplays, _display.Data);
-			m_hoveredEnemyComponentDisplay.Init(null);
 		}
 		else if (m_unitDisplays.Contains(_display))
 		{
@@ -241,15 +245,10 @@ public class TournamentPanel : AUIPanel
 		}
 	}
 
-	private void OnEnemyComponentHovered ( GameDatas.PlayerSave.Component _component )
-	{
-		m_hoveredEnemyComponentDisplay.Init(_component);
-	}
-
 	private static void InitStatDisplays ( StatDisplay[] _statDisplays, EntitySavedData _data )
 	{
 		SerializableDictionary<EntityEquipmentData.SecondaryStat.StatType, EntityEquipmentData.StatDescription> statsDescriptions = _data.GetStatsDesciptions();
-		List<EntityEquipmentData.SecondaryStat.StatType> keys = statsDescriptions.Keys.ToList();
+		List<EntityEquipmentData.SecondaryStat.StatType> keys = UIManager.Instance.GetPanel<EntityConfigPanel>().GetUnitSummaryStats(statsDescriptions);
 		for (int i = 0; i < _statDisplays.Length; i++)
 		{
 			if (keys.Count <= i)

@@ -151,12 +151,7 @@ public class EntitySavedData : INetworkSerializable
 
 	public List<GameDatas.PlayerSave.Component> GetComponentsToRepair ( bool _isFullRepair )
 	{
-		List<GameDatas.PlayerSave.Component> damagedComponents = GetAllEquipments().Where(ep => ep.isDamaged).ToList();
-
-		if (_isFullRepair || damagedComponents.Count <= 1)
-			return damagedComponents;
-
-		return new() { damagedComponents.OrderByDescending(GetBaseRepairPrice).First() };
+		return (_isFullRepair ? GetAllEquipments() : GetAllMainEquipments()).Where(ep => ep.isDamaged).ToList();
 	}
 
 	private static ulong GetBaseRepairPrice ( GameDatas.PlayerSave.Component _component )

@@ -19,6 +19,7 @@ public class EntityConfigPanel : AUIPanel
 	[SerializeField] private ComponentDisplayGrid m_inventoryGrid;
 	public ComponentDisplayGrid InventoryGrid => m_inventoryGrid;
 	[SerializeField] private SerializableDictionary<EntityEquipmentData.EquipmentType, BaseButton> m_componentTypeFilterBtnDictionary = new();
+	[SerializeField] private BaseButton m_allFilterTypeToggleBtn;
 	[SerializeField] private GameObject m_filterCursorFO;
 	[SerializeField] private TextMeshProUGUI m_currentFilterSelectedTMP;
 
@@ -26,6 +27,10 @@ public class EntityConfigPanel : AUIPanel
 	[SerializeField] private TMP_InputField m_unitNameInputField;
 	[SerializeField] private BaseButton m_renameBtn;
 	[SerializeField] private BaseButton m_disassembleBtn;
+	[SerializeField] private BaseButton m_createUnitBtn;
+	[SerializeField] private TextMeshProUGUI m_unitCreationStatusTMP;
+	[SerializeField] private Color m_unitReadyColor = new(0.47058827f, 0.9686275f, 0.28627452f, 1f);
+	[SerializeField] private Color m_unitNotReadyColor = new(1f, 0.30980393f, 0.42745098f, 1f);
 	[SerializeField] private ActionButton[] m_actionBtns;
 	[SerializeField] private StatDisplay[] m_unitStatDisplays;
 	[SerializeField] private Image m_dominentCorpoIcon;
@@ -96,6 +101,7 @@ public class EntityConfigPanel : AUIPanel
 
 		foreach (KeyValuePair<EntityEquipmentData.EquipmentType, BaseButton> pair in m_componentTypeFilterBtnDictionary)
 			pair.Value.onClick = () => OnClickFilterType(pair.Key);
+		m_allFilterTypeToggleBtn.onClick += OnClickAllFilterType;
 
 		InitReleaseRules();
 
@@ -113,17 +119,24 @@ public class EntityConfigPanel : AUIPanel
 
 		if (m_disassembleBtn != null)
 			m_disassembleBtn.onClick += OnClickDisassembleBtn;
+		m_createUnitBtn.onClick += OnClickCreateUnitBtn;
 	}
 
 	private void OnEnable ()
 	{
-		LocalizationManager.onLanguageChanged += RefreshFilterVisuals;
+		LocalizationManager.onLanguageChanged += OnLanguageChanged;
 		RefreshFilterVisuals();
 	}
 
 	private void OnDisable ()
 	{
-		LocalizationManager.onLanguageChanged -= RefreshFilterVisuals;
+		LocalizationManager.onLanguageChanged -= OnLanguageChanged;
+	}
+
+	private void OnLanguageChanged ()
+	{
+		RefreshFilterVisuals();
+		RefreshUnitCreation();
 	}
 
 	private void OnDestroy ()
@@ -171,6 +184,12 @@ public class EntityConfigPanel : AUIPanel
 		UIManager.Instance.OpenPanel<HangarPanel>();
 	}
 
+	private void OnClickCreateUnitBtn ()
+	{
+		if (m_isNewUnit && TryCommitUnit())
+			UIManager.Instance.OpenPanel<HangarPanel>();
+	}
+
 	public bool TryCommitUnit ()
 	{
 		if (!IsCurrentUnitValid)
@@ -192,7 +211,7 @@ public class EntityConfigPanel : AUIPanel
 
 		if(m_isNewUnit)
 			GameDatas.current.currentPlayerSave.DisassembleUnit(m_entityData);
-		else
+		//else
 			//GameDatas.current.currentPlayerSave.allBuiltUnits.Remove(m_entityData);
 
 		m_isNewUnit = false;
@@ -204,6 +223,50 @@ public class EntityConfigPanel : AUIPanel
 		newUnit.name = "New Unit";
 		Init(newUnit, false);
 		m_isNewUnit = true;
+		RefreshUnitCreation();
+		onConfigChanged?.Invoke();
+	}
+
+	private void RefreshUnitCreation ()
+	{
+		if (m_disassembleBtn != null)
+			m_disassembleBtn.gameObject.SetActive(!m_isNewUnit);
+		m_createUnitBtn.gameObject.SetActive(m_isNewUnit);
+		m_unitCreationStatusTMP.gameObject.SetActive(m_isNewUnit);
+
+		if (!m_isNewUnit || m_entityData == null)
+			return;
+
+		bool isValid = IsCurrentUnitValid;
+		m_createUnitBtn.SetInteractability(isValid);
+		m_unitCreationStatusTMP.color = isValid ? m_unitReadyColor : m_unitNotReadyColor;
+		m_unitCreationStatusTMP.text = isValid ? LocalizationManager.Instance.Get(LocalizationKey.entity_config_unit_ready) : string.Join("\n", GetUnitCreationProblems());
+	}
+
+	private List<string> GetUnitCreationProblems ()
+	{
+		List<string> problems = new();
+		AddMainComponentProblem(problems, m_entityData.frame, EntityEquipmentData.EquipmentType.Frame);
+		AddMainComponentProblem(problems, m_entityData.reactor, EntityEquipmentData.EquipmentType.Reactor);
+		AddMainComponentProblem(problems, m_entityData.neuronalMembrane, EntityEquipmentData.EquipmentType.NeuronalMembrane);
+		AddMainComponentProblem(problems, m_entityData.brain, EntityEquipmentData.EquipmentType.Brain);
+
+		if (problems.Count == 0 && m_entityData.ReactorData != null)
+		{
+			int energyUsed = m_entityData.GetTotalEnergyUsed();
+			if (energyUsed > m_entityData.ReactorData.energyProduced)
+				problems.Add(string.Format(LocalizationManager.Instance.Get(LocalizationKey.entity_config_energy_exceeded), energyUsed, m_entityData.ReactorData.energyProduced));
+		}
+
+		return problems;
+	}
+
+	private static void AddMainComponentProblem ( List<string> _problems, GameDatas.PlayerSave.Component _component, EntityEquipmentData.EquipmentType _type )
+	{
+		if (_component == null || !_component.TryGetData(out EntityEquipmentData _))
+			_problems.Add(string.Format(LocalizationManager.Instance.Get(LocalizationKey.entity_config_missing_component), EntityEquipmentData.GetLocalizedTypeName(_type)));
+		else if (_component.isDamaged)
+			_problems.Add(string.Format(LocalizationManager.Instance.Get(LocalizationKey.entity_config_damaged_component), EntityEquipmentData.GetLocalizedTypeName(_type)));
 	}
 
 	public void Init ( EntitySavedData _entity, bool _doesComeFromMissionPanel )
@@ -327,6 +390,7 @@ public class EntityConfigPanel : AUIPanel
 					m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Frame].slots[i].Init(m_inventoryGrid, m_entityData, GetFrameSubComponentAt(i),
 					item => item != null && item.TryGetData(out EntityEquipmentData _data) && _data.TryGetEquipmentType(out EntityEquipmentData.EquipmentType type)
 					&& (type == EntityEquipmentData.EquipmentType.Armor), ComponentDisplay.DisplayMode.Unit);
+					m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Frame].slots[i].SetSubComponentType(EntityEquipmentData.EquipmentType.Armor);
 
 					//m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Frame].slots[i].SetInteractability(m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Frame].slots[i].Equipment != null && !m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Frame].slots[i].Equipment.isDamaged);
 					//m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Frame].slots[i].SetOutlineColor(GameAssets.current.ui.componentColors[EntityEquipmentData.EquipmentType.Armor]);
@@ -337,6 +401,7 @@ public class EntityConfigPanel : AUIPanel
 					m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Frame].slots[i].Init(m_inventoryGrid, m_entityData, GetFrameSubComponentAt(i),
 					item => item != null && item.TryGetData(out EntityEquipmentData _data) && _data.TryGetEquipmentType(out EntityEquipmentData.EquipmentType type)
 					&& (type == EntityEquipmentData.EquipmentType.Occultor), ComponentDisplay.DisplayMode.Unit);
+					m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Frame].slots[i].SetSubComponentType(EntityEquipmentData.EquipmentType.Occultor);
 					//m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Frame].slots[i].SetInteractability(m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Frame].slots[i].Equipment != null && !m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Frame].slots[i].Equipment.isDamaged);
 					//m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Frame].slots[i].SetOutlineColor(GameAssets.current.ui.componentColors[EntityEquipmentData.EquipmentType.Occultor]);
 					m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Frame].slots[i].gameObject.SetActive(true);
@@ -358,6 +423,7 @@ public class EntityConfigPanel : AUIPanel
 				m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Brain].slots[i].Init(m_inventoryGrid, m_entityData, m_entityData.chipsets != null && m_entityData.chipsets.Length > i
 					? m_entityData.chipsets[i] : null,
 					item => item != null && item.TryGetData(out EntityEquipmentData _data) && _data.GetEquipmentType() == EntityEquipmentData.EquipmentType.Chipset, ComponentDisplay.DisplayMode.Unit);
+				m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Brain].slots[i].SetSubComponentType(EntityEquipmentData.EquipmentType.Chipset);
 
 				//m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Brain].slots[i].SetOutlineColor(GameAssets.current.ui.componentColors[EntityEquipmentData.EquipmentType.Chipset]);
 				//m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Brain].slots[i].SetInteractability(m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Brain].slots[i].Equipment != null && !m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.Brain].slots[i].Equipment.isDamaged);
@@ -375,6 +441,7 @@ public class EntityConfigPanel : AUIPanel
 					? m_entityData.arms[i] : null,
 					item => item != null && item.TryGetData(out EntityEquipmentData _data) && _data.TryGetEquipmentType(out EntityEquipmentData.EquipmentType type)
 					&& (type == EntityEquipmentData.EquipmentType.Weapon || type == EntityEquipmentData.EquipmentType.Tool), ComponentDisplay.DisplayMode.Unit);
+				m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.NeuronalMembrane].slots[i].SetSubComponentType(EntityEquipmentData.EquipmentType.Weapon);
 
 				//m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.NeuronalMembrane].slots[i].SetOutlineColor(GameAssets.current.ui.componentColors[EntityEquipmentData.EquipmentType.Weapon]);
 				//m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.NeuronalMembrane].slots[i].SetInteractability(m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.NeuronalMembrane].slots[i].Equipment != null && !m_subComponentSlotDictionary[EntityEquipmentData.EquipmentType.NeuronalMembrane].slots[i].Equipment.isDamaged);
@@ -421,6 +488,7 @@ public class EntityConfigPanel : AUIPanel
 	private void RefreshVisuals ()
 	{
 		onConfigChanged?.Invoke();
+		RefreshUnitCreation();
 
 		//actions
 		List<EntityActionEnumID> actions = new();
@@ -818,6 +886,11 @@ public class EntityConfigPanel : AUIPanel
 		SetSelectedFilterType(m_selectedFilterType == _type ? null : _type);
 	}
 
+	private void OnClickAllFilterType ()
+	{
+		SetSelectedFilterType(null);
+	}
+
 	private void SetSelectedFilterType ( EntityEquipmentData.EquipmentType? _type )
 	{
 		m_selectedFilterType = _type;
@@ -858,6 +931,19 @@ public class EntityConfigPanel : AUIPanel
 
 		List<EntityEquipmentData.SecondaryStat.StatType> order = GameConfig.current.ui.statsDisplayOrder.ToList();
 		return keys.OrderBy(e => order.IndexOf(e) < 0 ? int.MaxValue : order.IndexOf(e)).ToList();
+	}
+
+	private static readonly HashSet<EntityEquipmentData.SecondaryStat.StatType> s_slotAmountStats = new()
+	{
+		EntityEquipmentData.SecondaryStat.StatType.ChipsetSlot,
+		EntityEquipmentData.SecondaryStat.StatType.EquipmentSlot,
+		EntityEquipmentData.SecondaryStat.StatType.ArmourySlot,
+		EntityEquipmentData.SecondaryStat.StatType.OccultorSlot,
+	};
+
+	public List<EntityEquipmentData.SecondaryStat.StatType> GetUnitSummaryStats ( SerializableDictionary<EntityEquipmentData.SecondaryStat.StatType, EntityEquipmentData.StatDescription> _statsDescriptions )
+	{
+		return GetDisplayedStats(_statsDescriptions).Where(stat => !s_slotAmountStats.Contains(stat)).ToList();
 	}
 
 	private void OnInputFieldChange ()

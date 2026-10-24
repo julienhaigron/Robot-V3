@@ -148,8 +148,8 @@ public class RepareUnitSlot : RepareUnitContainer
         if (_button == null)
             return;
 
-        Tuple<CurrencyType, ulong> price = _unit == null ? null : _unit.GetRepairPrice(_isFullRepair);
-        bool isShowingPrice = price != null && !_isHovered;
+        Tuple<CurrencyType, ulong> price = _unit == null || _unit.GetComponentsToRepair(_isFullRepair).Count == 0 ? null : _unit.GetRepairPrice(_isFullRepair);
+        bool isShowingPrice = price != null && _isHovered;
 
         _button.SetLabel(isShowingPrice ? price.Item2.ToString() : LocalizationManager.Instance.Get(_labelKey));
 

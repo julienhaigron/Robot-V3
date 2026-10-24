@@ -23,6 +23,7 @@ public class EndLevelPopup : AUIPopup
 	public enum GameResult { Win, Draw, Loose }
 
 	private int m_allocatedRewardPoint;
+	private readonly List<GameDatas.PlayerSave.Component> m_pendingDamagedComponents = new();
 
 	private void Awake ()
 	{
@@ -54,6 +55,7 @@ public class EndLevelPopup : AUIPopup
 		RefreshResultLabel();
 
 		//damaged units
+		m_pendingDamagedComponents.Clear();
 		for (int i = 0; i < m_unitDisplay.Length; i++)
 		{
 			if (i >= GameManager.Instance.PlayersEntityAnchor[GameManager.Instance.PlayerID].Entities.Count)
@@ -67,7 +69,8 @@ public class EndLevelPopup : AUIPopup
 
 				List<GameDatas.PlayerSave.Component> damagedComponent = new();
 				if (destroiedComponentAmount > 0)
-					damagedComponent = DamageRandomComponents(GameDatas.current.currentPlayerSave.allBuiltUnits[GameDatas.current.currentPlayerSave.squadUnitsIndex[i]], destroiedComponentAmount);
+					damagedComponent = PickRandomComponents(GameDatas.current.currentPlayerSave.allBuiltUnits[GameDatas.current.currentPlayerSave.squadUnitsIndex[i]], destroiedComponentAmount);
+				m_pendingDamagedComponents.AddRange(damagedComponent);
 
 				m_unitDisplay[i].Init(GameDatas.current.currentPlayerSave.allBuiltUnits[GameDatas.current.currentPlayerSave.squadUnitsIndex[i]], damagedComponent);
 				m_unitDisplay[i].Show();
@@ -157,25 +160,30 @@ public class EndLevelPopup : AUIPopup
 		m_continueButton.SetInteractability(m_allocatedRewardPoint == 5 || totalUsedRewardPoint <= m_allocatedRewardPoint);
 	}
 
-	public List<GameDatas.PlayerSave.Component> DamageRandomComponents ( EntitySavedData _entity, int _count )
+	public List<GameDatas.PlayerSave.Component> PickRandomComponents ( EntitySavedData _entity, int _count )
 	{
 		List<GameDatas.PlayerSave.Component> available = _entity.GetAllEquipments();
-		List<GameDatas.PlayerSave.Component> damagedComponents = new();
+		List<GameDatas.PlayerSave.Component> pickedComponents = new();
 		_count = Mathf.Min(_count, available.Count);
 
 		for (int i = 0; i < _count; i++)
 		{
 			int index = UnityEngine.Random.Range(0, available.Count);
-			available[index].isDamaged = true;
-			damagedComponents.Add(available[index]);
+			pickedComponents.Add(available[index]);
 			available.RemoveAt(index);
 		}
 
-		return damagedComponents;
+		return pickedComponents;
 	}
 
 	private void OnClickContinue ()
 	{
+		GameManager.Instance.ApplyMatchProgression(m_gameResult);
+
+		foreach (GameDatas.PlayerSave.Component component in m_pendingDamagedComponents)
+			component.isDamaged = true;
+		m_pendingDamagedComponents.Clear();
+
 		//give rewards
 		foreach (CurrencyRewardDisplay display in m_rewardCurrencyDisplays)
 			if (display.IsSelected && display.IsVisible)

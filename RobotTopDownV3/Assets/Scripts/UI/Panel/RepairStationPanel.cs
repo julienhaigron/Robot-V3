@@ -133,7 +133,7 @@ public class RepairStationPanel : AUIPanel
 	{
 		EntitySavedData unit = _slot.CurrentDisplay == null ? null : _slot.CurrentDisplay.SavedData;
 
-		if (unit == null || !unit.IsDamaged())
+		if (unit == null || unit.GetComponentsToRepair(_isFullRepair).Count == 0)
 			return;
 
 		System.Tuple<CurrencyType, ulong> price = unit.GetRepairPrice(_isFullRepair);

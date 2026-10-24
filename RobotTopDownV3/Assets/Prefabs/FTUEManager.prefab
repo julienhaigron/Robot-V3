@@ -87,7 +87,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: efbf13c0e41f48a4a9ae616fdeef851c, type: 2}
   - {fileID: 11400000, guid: 66a0a614007855b4587aba416bc9a5c0, type: 2}
   - {fileID: 11400000, guid: db79403f47986af44857b255a091ae20, type: 2}
-  - {fileID: 11400000, guid: 1383be7cc3beb504f891ffcc82d27dac, type: 2}
+  - {fileID: 11400000, guid: 872f1643ced4b034c8d3050ea6d7b601, type: 2}
   - {fileID: 11400000, guid: d546bcb85427d414c9df5891ba1bc4a8, type: 2}
   - {fileID: 11400000, guid: 764cc36b92c7b3eac14a98d408321be6, type: 2}
   m_day3TutoDialogues:

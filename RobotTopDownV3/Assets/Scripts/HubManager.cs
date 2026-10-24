@@ -15,16 +15,19 @@ public class HubManager : Singleton<HubManager>
 	[SerializeField] private float m_unitSpacing = 1.5f;
 
 	private SerializableDictionary<EntitySavedData, Entity> m_squadEntities = new();
+	private bool m_isHangarShown;
 
     public void ShowHangar ()
 	{
 		CameraManager.Instance.TeleportCameraTo(m_hangarCameraPosition);
 
+		m_isHangarShown = true;
 		RefreshSquadEntities();
 	}
 
 	public void HideHangar ()
 	{
+		m_isHangarShown = false;
 		CameraManager.Instance.ResetPosition();
 
 		foreach (Entity entity in m_squadEntities.Values)
@@ -43,6 +46,9 @@ public class HubManager : Singleton<HubManager>
 
 	public void RefreshSquadEntities ()
 	{
+		if (!m_isHangarShown)
+			return;
+
 		List<EntitySavedData> squadData = GameDatas.current.currentPlayerSave.GetSquadEntitiesData();
 		foreach (EntitySavedData entityData in m_squadEntities.Keys.ToArray())
 		{
@@ -55,7 +61,7 @@ public class HubManager : Singleton<HubManager>
 
 		for(int i = 0; i < squadData.Count; i++) 
 		{
-			if(i >= m_squadEntities.Count)
+			if(!m_squadEntities.ContainsKey(squadData[i]))
 				AddEntity(squadData[i]);
 
 			//entity.RefreshHangarVisual ?

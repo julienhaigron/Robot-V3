@@ -184,6 +184,16 @@ public class FTUEManager : Singleton<FTUEManager>
 		return _context.Turn.currentPhase != TurnManager.TurnPhase.Recording;
 	}
 
+	private static bool IsMatchLaunched ( TaskManager.TaskContext _context )
+	{
+		return _context.UI.currentPanel is InGamePanel;
+	}
+
+	private static bool IsTournamentReached ( TaskManager.TaskContext _context )
+	{
+		return _context.UI.currentPanel is TournamentPanel or InGamePanel;
+	}
+
 	private static System.Func<TaskManager.TaskContext, bool> IsMissionAlreadyLoaded ( MissionDataEnumID _missionID )
 	{
 		return ( context ) => context.UI.currentPanel is InGamePanel
@@ -294,12 +304,12 @@ public class FTUEManager : Singleton<FTUEManager>
 		{
 			GameDatas.current.currentPlayerSave.didUnlockReturnToHubPopup = true;
 		}));
-		tutoSequence.Append(new DialogueTask("Perception types explenation", ( context ) => context.UI.currentPanel is InGamePanel
+		tutoSequence.Append(new DialogueTask("Day report explenation", ( context ) => context.UI.currentPanel is SoloHubPanel
 		, m_day2TutoDialogues[0]));
 		tutoSequence.Append(new DialogueHighlightTask("Go to hangar", ( context ) => context.UI.currentPanel is SoloHubPanel
 		, m_day2TutoDialogues[1], "hangarBtn"));
 		tutoSequence.Append(new DialogueHighlightTask("Go to workshop", ( context ) => context.UI.currentPanel is HangarPanel
-		, m_day2TutoDialogues[2], "squadUnit2"));
+		, m_day2TutoDialogues[2], "squadUnit2").SetSkipPredicate(IsMatchLaunched));
 		tutoSequence.Append(new DialogueTask("Unit composition explenation", ( context ) => context.UI.currentPanel is EntityConfigPanel
 		, m_day2TutoDialogues[3]).SetSkipPredicate(( context ) => context.UI.currentPanel is InGamePanel));
 		tutoSequence.Append(new DialogueTask("Equip neuronal membranes", null
@@ -328,11 +338,11 @@ public class FTUEManager : Singleton<FTUEManager>
 		tutoSequence.Append(new DialogueHighlightTask("Go to hangar", ( context ) => context.UI.currentPanel is SoloHubPanel
 		, m_day3TutoDialogues[0], "hangarBtn"));
 		tutoSequence.Append(new DialogueHighlightTask("Go to workshop", ( context ) => context.UI.currentPanel is HangarPanel
-		, m_day3TutoDialogues[1], "squadUnit0"));
+		, m_day3TutoDialogues[1], "squadUnit0").SetSkipPredicate(IsMatchLaunched));
 		tutoSequence.Append(new DialogueTask("Secondary components explenation", ( context ) => context.UI.currentPanel is EntityConfigPanel
 		, m_day3TutoDialogues[2]).SetSkipPredicate(( context ) => context.UI.currentPanel is InGamePanel));
 		tutoSequence.Append(new DialogueHighlightTask("Recycling explenation", ( context ) => context.UI.currentPanel is SoloHubPanel
-		, m_day3TutoDialogues[3], "recycleBtn"));
+		, m_day3TutoDialogues[3], "recycleBtn").SetSkipPredicate(IsMatchLaunched));
 		tutoSequence.Append(new DialogueTask("Recycling station explenation", ( context ) => context.UI.currentPanel is RecyclePanel
 		, m_day3TutoDialogues[4]).SetSkipPredicate(( context ) => context.UI.currentPanel is InGamePanel));
 
@@ -371,14 +381,18 @@ public class FTUEManager : Singleton<FTUEManager>
 		//macro
 		tutoSequence.Append(new DialogueHighlightTask("Go to hangar to create a unit", ( context ) => context.UI.currentPanel is SoloHubPanel
 			&& GameDatas.current.currentPlayerSave.dayCount == 4, m_day5TutoDialogues[0], "hangarBtn"));
-		tutoSequence.Append(new DialogueHighlightTask("Create unit btn explenation", ( context ) => context.UI.currentPanel is HangarPanel, m_day5TutoDialogues[1], "createUnitBtn"));
-		tutoSequence.Append(new HighlightMainComponentsTask("Highlight main components", ( context ) => context.UI.currentPanel is EntityConfigPanel panel && panel.IsNewUnit, true));
+		tutoSequence.Append(new DialogueHighlightTask("Create unit btn explenation", ( context ) => context.UI.currentPanel is HangarPanel, m_day5TutoDialogues[1], "createUnitBtn")
+			.SetSkipPredicate(IsTournamentReached));
+		tutoSequence.Append(new HighlightMainComponentsTask("Highlight main components", ( context ) => context.UI.currentPanel is EntityConfigPanel panel && panel.IsNewUnit, true)
+			.SetSkipPredicate(IsTournamentReached));
 		tutoSequence.Append(new DialogueHighlightTask("Core components explenation", null, m_day5TutoDialogues[2]
-			, new[] { "frameSlot", "brainSlot", "neuronalMembraneSlot", "reactorSlot" } ));
+			, new[] { "frameSlot", "brainSlot", "neuronalMembraneSlot", "reactorSlot" } ).SetSkipPredicate(IsTournamentReached));
 		tutoSequence.Append(new HighlightMainComponentsTask("Stop highlighting main components", null, false));
-		tutoSequence.Append(new DialogueTask("Cycle explenation", ( context ) => context.UI.currentPanel is SoloHubPanel, m_day5TutoDialogues[3]));
-		tutoSequence.Append(new DialogueTask("Skip btn explenation", null, m_day5TutoDialogues[4]));
-		tutoSequence.Append(new DialogueHighlightTask("Tournament btn explenation", null, m_day5TutoDialogues[5], "missionSection"));
+		tutoSequence.Append(new DialogueTask("Cycle explenation", ( context ) => context.UI.currentPanel is SoloHubPanel, m_day5TutoDialogues[3])
+			.SetSkipPredicate(IsTournamentReached));
+		tutoSequence.Append(new DialogueTask("Skip btn explenation", null, m_day5TutoDialogues[4]).SetSkipPredicate(IsTournamentReached));
+		tutoSequence.Append(new DialogueHighlightTask("Tournament btn explenation", null, m_day5TutoDialogues[5], "missionSection")
+			.SetSkipPredicate(IsTournamentReached));
 		tutoSequence.Append(new DialogueTask("Tournament squad warning", ( context ) => context.UI.currentPanel is TournamentPanel, m_day5TutoDialogues[6]));
 
 		tutoSequence.SetSkipPredicate(( context ) => GameDatas.current.currentPlayerSave.dayCount > 4);

@@ -5417,7 +5417,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5363345034870926748, guid: f95107ad02261114f9b01b78d0785e2d, type: 3}
       propertyPath: m_text
-      value: PANNEAU DE MISSION -
+      value: PANNEAU DES MATCHS
       objectReference: {fileID: 0}
     - target: {fileID: 5910819579328115761, guid: f95107ad02261114f9b01b78d0785e2d, type: 3}
       propertyPath: m_id
@@ -6842,7 +6842,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5363345034870926748, guid: f95107ad02261114f9b01b78d0785e2d, type: 3}
       propertyPath: m_text
-      value: CORPO COMANDO
+      value: CORPO COMMANDO
       objectReference: {fileID: 0}
     - target: {fileID: 5363345034870926748, guid: f95107ad02261114f9b01b78d0785e2d, type: 3}
       propertyPath: m_HorizontalAlignment

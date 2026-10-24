@@ -51,6 +51,7 @@ public class ActionButton : BaseButton, IPointerExitHandler
 		/*m_name.text = data.displayName;
 		m_tokenCost.text = data.GetTokenTotalCost(null, null, null).ToString();*/
 		m_isOnlyVisual = false;
+		SyncSelectionWithTurnManager();
 		RefreshVisual();
 	}
 
@@ -60,7 +61,25 @@ public class ActionButton : BaseButton, IPointerExitHandler
 		EntityActionData data = GameAssets.current.game.entityActionsData[_action];
 		m_icon.sprite = data.icon;
 		m_isOnlyVisual = true;
+		if (m_selectedBtn == this)
+			m_selectedBtn = null;
+		m_selectionOutline.SetActive(false);
 		SetInteractability(true);
+	}
+
+	private void SyncSelectionWithTurnManager ()
+	{
+		AEntityAction currentAction = TurnManager.Instance == null ? null : TurnManager.Instance.CurrentActionSelected;
+		bool isCurrentAction = currentAction != null && currentAction.enumID == m_actionType && EntityActionDisplay.SelectedDisplay == null;
+
+		if (isCurrentAction)
+		{
+			if (m_selectedBtn != null && m_selectedBtn != this)
+				m_selectedBtn.Deselect();
+			m_selectedBtn = this;
+		}
+		else if (m_selectedBtn == this)
+			m_selectedBtn = null;
 	}
 
 	protected void RefreshInteractability ()
@@ -106,6 +125,9 @@ public class ActionButton : BaseButton, IPointerExitHandler
 
 	private void OnSelectAction (AEntityAction _action)
 	{
+		if (m_isOnlyVisual || !gameObject.activeInHierarchy || _action == null)
+			return;
+
 		if (m_actionType == _action.enumID)
 			Select();
 	}

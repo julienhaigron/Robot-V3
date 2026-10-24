@@ -203,6 +203,8 @@ public partial class GameDatas : ScriptableObject
 		[Serializable]
 		public class DayData
 		{
+			public static readonly EntityEquipmentData.EntityFaction[] ShopFactions = { EntityEquipmentData.EntityFaction.Psy, EntityEquipmentData.EntityFaction.Commando, EntityEquipmentData.EntityFaction.Paladin };
+
 			public List<ShopComponentData> itemsInShop = new();
 			public SerializableDictionary<EntityEquipmentData.EntityFaction, int> shopRerollsUsed = new();
 			public SerializableDictionary<EntityEquipmentData.EntityFaction, int> shopFreezesUsed = new();
@@ -213,6 +215,7 @@ public partial class GameDatas : ScriptableObject
 			public class ShopComponentData
 			{
 				public Component component;
+				public EntityEquipmentData.EntityFaction shopFaction = EntityEquipmentData.EntityFaction.Noone;
 				public bool isFrozen = false;
 				public EntityEquipmentData.EntityFaction frozenTodayInShop = EntityEquipmentData.EntityFaction.Noone;
 			}
@@ -269,15 +272,50 @@ public partial class GameDatas : ScriptableObject
 
 		public void RefillShop ()
 		{
-			dayData.itemsInShop.RemoveAll(shopData => shopData == null || !shopData.isFrozen);
+			foreach (EntityEquipmentData.EntityFaction shopFaction in DayData.ShopFactions)
+				RefillShop(shopFaction);
+		}
 
-			List<EntityEquipmentData> shopPool = GameAssets.current.GetRandomlyDroppableEquipments();
-			int maxItemAmount = GameAssets.current.game.PsyShopStructureUpgrade.GetMaxItemAmount();
+		public void RefillShop ( EntityEquipmentData.EntityFaction _shopFaction )
+		{
+			EnsureShopsAreSplit();
+			dayData.itemsInShop.RemoveAll(shopData => shopData.shopFaction == _shopFaction && !shopData.isFrozen);
+			FillShop(_shopFaction);
+		}
 
-			while (shopPool.Count > 0 && dayData.itemsInShop.Count < maxItemAmount)
+		public void EnsureShopsAreSplit ()
+		{
+			if (!dayData.itemsInShop.Any(shopData => shopData == null || shopData.shopFaction == EntityEquipmentData.EntityFaction.Noone))
+				return;
+
+			foreach (DayData.ShopComponentData shopData in dayData.itemsInShop)
+			{
+				if (shopData != null && shopData.shopFaction == EntityEquipmentData.EntityFaction.Noone && shopData.component != null
+					&& shopData.component.TryGetData(out EntityEquipmentData equipmentData))
+					shopData.shopFaction = equipmentData.faction;
+			}
+
+			dayData.itemsInShop.RemoveAll(shopData => shopData == null || !DayData.ShopFactions.Contains(shopData.shopFaction));
+
+			foreach (EntityEquipmentData.EntityFaction shopFaction in DayData.ShopFactions)
+				FillShop(shopFaction);
+		}
+
+		private void FillShop ( EntityEquipmentData.EntityFaction _shopFaction )
+		{
+			ShopStructureUpgrade shopUpgrade = GameAssets.current.game.GetShopStructureUpgrade(_shopFaction);
+			if (shopUpgrade == null)
+				return;
+
+			List<EntityEquipmentData> shopPool = GameAssets.current.GetRandomlyDroppableEquipments().Where(data => data.faction == _shopFaction).ToList();
+			int maxItemAmount = shopUpgrade.GetMaxItemAmount();
+			int itemAmount = dayData.itemsInShop.Count(shopData => shopData.shopFaction == _shopFaction);
+
+			while (shopPool.Count > 0 && itemAmount < maxItemAmount)
 			{
 				EntityEquipmentData equipmentData = shopPool.RandomElement();
-				dayData.itemsInShop.Add(new() { component = new() { ID = equipmentData.name + equipmentCounter++, dataID = equipmentData.name, isDamaged = false }, isFrozen = false });
+				dayData.itemsInShop.Add(new() { component = new() { ID = equipmentData.name + equipmentCounter++, dataID = equipmentData.name, isDamaged = false }, shopFaction = _shopFaction, isFrozen = false });
+				itemAmount++;
 			}
 		}
 
@@ -390,6 +428,18 @@ public partial class GameDatas : ScriptableObject
 				squadData.Add(allBuiltUnits[entityIndex]);
 
 			return squadData;
+		}
+
+		public List<int> GetUnitIndicesSquadFirst ()
+		{
+			List<int> orderedIndices = squadUnitsIndex.Where(index => index >= 0 && index < allBuiltUnits.Count).Distinct().ToList();
+			for (int i = 0; i < allBuiltUnits.Count; i++)
+			{
+				if (!orderedIndices.Contains(i))
+					orderedIndices.Add(i);
+			}
+
+			return orderedIndices;
 		}
 
 		public Component AddComponentToInventory ( EntityEquipmentData _data )

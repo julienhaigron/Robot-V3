@@ -7,6 +7,8 @@ using TMPro;
 
 public class ShopPanel : AUIPanel
 {
+	public static System.Action<ShopPanel> onShopInitialized;
+
 	[SerializeField] private ComponentDisplayGrid m_shopGrid;
 	[SerializeField] private ComponentDisplayGrid m_inventoryGrid;
 	[SerializeField] private ComponentFullDisplay m_hoveredComponentFullInfoDisplay;
@@ -54,6 +56,7 @@ public class ShopPanel : AUIPanel
 		m_currentFaction = _faction;
 		m_corpIcon.sprite = GameAssets.current.ui.corporationsIcons[_faction];
 		m_corpIcon.color = GameAssets.current.ui.corporationsColors[_faction];
+		GameDatas.current.currentPlayerSave.EnsureShopsAreSplit();
 		RefreshShopBuyableItems();
 
 		CurrencyType associatedCurrency = AssociatedCurrency;
@@ -73,6 +76,7 @@ public class ShopPanel : AUIPanel
 		}
 
 		RefreshShopActions();
+		onShopInitialized?.Invoke(this);
 
 		/*foreach (ComponentDisplay display in m_shopGrid.Items)
 		{
@@ -114,7 +118,7 @@ public class ShopPanel : AUIPanel
 			return;
 
 		AddUsage(CurrentDayData.shopRerollsUsed, m_currentFaction, 1);
-		GameDatas.current.currentPlayerSave.RefillShop();
+		GameDatas.current.currentPlayerSave.RefillShop(m_currentFaction);
 		RefreshShopBuyableItems();
 		RefreshShopActions();
 	}
@@ -208,7 +212,10 @@ public class ShopPanel : AUIPanel
 		m_shopGrid.Cleanup();
 
 		foreach (GameDatas.PlayerSave.DayData.ShopComponentData shopData in GameDatas.current.currentPlayerSave.dayData.itemsInShop)
-			m_shopGrid.CreateNewDisplay(null, shopData.component, ComponentDisplay.DisplayMode.ShopBuying).SetShopData(shopData);
+		{
+			if (shopData != null && shopData.shopFaction == m_currentFaction)
+				m_shopGrid.CreateNewDisplay(null, shopData.component, ComponentDisplay.DisplayMode.ShopBuying).SetShopData(shopData);
+		}
 	}
 
 	private void OnNewDay ()

@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System.Linq;
+using System.Collections.Generic;
 
 public class RepareUnitFullDisplay : MonoBehaviour
 {
@@ -32,17 +33,39 @@ public class RepareUnitFullDisplay : MonoBehaviour
 		m_titleTMP.text = _componentSavedData == null ? null : _componentSavedData.name;
 		//m_priceTMP.text = componentData == null ? null : componentData.GetSellingPrice().Item2.ToString();
 
-		EntityEquipmentData.StatDescription[] statsDescriptions = _componentSavedData.GetStatsDesciptions().Values.ToArray();
+		SerializableDictionary<EntityEquipmentData.SecondaryStat.StatType, EntityEquipmentData.StatDescription> damagedStats = GetDamagedComponentsStats(_componentSavedData);
+		List<EntityEquipmentData.SecondaryStat.StatType> keys = UIManager.Instance.GetPanel<EntityConfigPanel>().GetDisplayedStats(damagedStats);
 		for (int i = 0; i < m_statDisplays.Length; i++)
 		{
-			if (statsDescriptions.Length <= i)
+			if (keys.Count <= i)
 				m_statDisplays[i].gameObject.SetActive(false);
 			else
 			{
 				m_statDisplays[i].gameObject.SetActive(true);
-				m_statDisplays[i].Init(statsDescriptions[i]);
+				m_statDisplays[i].Init(damagedStats[keys[i]]);
 			}
 		}
+	}
+
+	private static SerializableDictionary<EntityEquipmentData.SecondaryStat.StatType, EntityEquipmentData.StatDescription> GetDamagedComponentsStats ( EntitySavedData _unit )
+	{
+		SerializableDictionary<EntityEquipmentData.SecondaryStat.StatType, EntityEquipmentData.StatDescription> stats = new();
+		foreach (GameDatas.PlayerSave.Component component in _unit.GetAllEquipments())
+		{
+			if (component == null || !component.isDamaged || !component.TryGetData(out EntityEquipmentData componentData))
+				continue;
+
+			foreach (EntityEquipmentData.StatDescription stat in componentData.GetDesciption())
+			{
+				if (stats.ContainsKey(stat.ID))
+					stats[stat.ID].Add(stat);
+				else
+					stats.Add(stat.ID, stat);
+			}
+		}
+
+		stats.Remove(EntityEquipmentData.SecondaryStat.StatType.EnergyCost);
+		return stats;
 	}
 
 	private void OnComponentHovered ( RepareUnitDisplay _display )

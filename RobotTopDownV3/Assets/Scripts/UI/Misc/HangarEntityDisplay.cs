@@ -77,6 +77,12 @@ public class HangarEntityDisplay : MonoBehaviour
 		RefreshToggleVisual(true);
 	}
 
+	public void HideComponents ()
+	{
+		foreach (DamagedSlotDisplay slot in m_mainComponentSlots.Values.Concat(m_subSlots))
+			slot.Hide();
+	}
+
 	private void RefreshToggleVisual ( bool _isInstant )
 	{
 		if (_isInstant)
@@ -119,9 +125,7 @@ public class HangarEntityDisplay : MonoBehaviour
 		}
 
 		HubManager.Instance.RefreshSquadEntities();
-		UIManager.Instance.GetPanel<HangarPanel>().RefreshTexts();
-
-		RefreshToggleVisual(false);
+		UIManager.Instance.GetPanel<HangarPanel>().RefreshDisplay();
 	}
 
 	private void OnClickConfig ()

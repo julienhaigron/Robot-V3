@@ -152,48 +152,60 @@ MonoBehaviour:
     - "PASSER LA JOURN\xC9E"
   - key: hub/mission
     values:
-    - MISSION
-    - MISSION
+    - MATCH
+    - MATCH
   - key: hub/tournament
     values:
     - TOURNAMENT
     - TOURNOI
   - key: hub/shop_comando
     values:
-    - CORPO COMANDO -
-    - CORPO COMANDO -
+    - CORPO COMMANDO
+    - CORPO COMMANDO
   - key: hub/shop_paladin
     values:
-    - CORPO PALADIN -
-    - CORPO PALADIN -
+    - CORPO PALADIN
+    - CORPO PALADIN
   - key: hub/shop_psy
     values:
-    - CORPO PSY -
-    - CORPO PSY -
+    - CORPO PSY
+    - CORPO PSY
   - key: hub/mission_panel
     values:
-    - MISSION BOARD -
-    - PANNEAU DE MISSION -
+    - MATCH BOARD
+    - PANNEAU DES MATCHS
   - key: hub/repair
     values:
-    - REPAIR -
-    - "R\xC9PARATION -"
+    - REPAIR
+    - "R\xC9PARATION"
   - key: hub/single_repair
     values:
-    - Single Repair
-    - "R\xE9paration simple"
+    - Necessary Repair
+    - "R\xE9paration n\xE9cessaire"
   - key: hub/full_repair
     values:
     - Full Repair
     - "R\xE9paration compl\xE8te"
   - key: hub/recycle
     values:
-    - RECYCLING -
-    - RECYCLAGE -
+    - RECYCLING
+    - RECYCLAGE
   - key: hub/recycling_duration
     values:
     - '{0}d'
     - '{0}j'
+  - key: hub/recycling_time_one
+    values:
+    - "Recycling: 1 day"
+    - "Recyclage : 1 jour"
+  - key: hub/recycling_time_many
+    values:
+    - "Recycling: {0} days"
+    - "Recyclage : {0} jours"
+  - key: hub/recycling_time_instant
+    values:
+    - Instant recycling
+    - "Recyclage instantan\xE9"
   - key: hangar/create_unit
     values:
     - Create Unit
@@ -448,8 +460,8 @@ MonoBehaviour:
     - Radar
   - key: entity_config/inventory
     values:
-    - INVENTORY -
-    - INVENTAIRE -
+    - INVENTORY
+    - INVENTAIRE
   - key: return_hub/title
     values:
     - Info!
@@ -508,8 +520,8 @@ MonoBehaviour:
     - "Param\xE8tres du lobby"
   - key: shop/inventory
     values:
-    - INVENTORY -
-    - INVENTAIRE -
+    - INVENTORY
+    - INVENTAIRE
   - key: shop/title
     values:
     - 
@@ -520,12 +532,16 @@ MonoBehaviour:
     - Composants
   - key: mission/start
     values:
-    - START MISSION
-    - LANCER LA MISSION
+    - START MATCH
+    - LANCER LE MATCH
   - key: mission/rewards
     values:
     - REWARDS
     - "R\xC9COMPENSES"
+  - key: mission/allied_team
+    values:
+    - Allied team
+    - "\xC9quipe alli\xE9e"
   - key: tournament/round_1
     values:
     - Round 1
@@ -1500,8 +1516,8 @@ MonoBehaviour:
     - Day6Tuto
   - key: mission/mission1
     values:
-    - Mission 1
-    - Mission 1
+    - Match 1
+    - Match 1
   - key: mission/tuto
     values:
     - Tuto
@@ -2026,6 +2042,22 @@ MonoBehaviour:
     values:
     - All components
     - Tous les composants
+  - key: entity_config/unit_ready
+    values:
+    - Unit ready
+    - "Unit\xE9 pr\xEAte"
+  - key: entity_config/missing_component
+    values:
+    - "Missing: {0}"
+    - "Il manque : {0}"
+  - key: entity_config/damaged_component
+    values:
+    - "Damaged: {0}"
+    - "\xC0 r\xE9parer : {0}"
+  - key: entity_config/energy_exceeded
+    values:
+    - "Not enough energy: {0}/{1}"
+    - "\xC9nergie insuffisante : {0}/{1}"
   - key: component_type/frame
     values:
     - Frame

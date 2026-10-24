@@ -115,8 +115,12 @@ public class MissionPanel : AUIPanel
 		if (!m_unitDisplays.Contains(_display))
 			return;
 
+		EntitySavedData toggledUnit = _display.Data;
+		UnitMissionDisplay.RefreshPlayerUnits(m_unitDisplays);
 		RefreshSquadState();
-		RefreshHoveredUnit(_display);
+
+		UnitMissionDisplay toggledDisplay = m_unitDisplays.Find(display => display.Data == toggledUnit);
+		RefreshHoveredUnit(toggledDisplay != null ? toggledDisplay : _display);
 	}
 
 	private void OnAnyMissionHovered ( MissionButton _missionBtn )
@@ -196,7 +200,7 @@ public class MissionPanel : AUIPanel
 
 		//set unit stats
 		SerializableDictionary<EntityEquipmentData.SecondaryStat.StatType, EntityEquipmentData.StatDescription> statsDescriptions = _display.Data.GetStatsDesciptions();
-		List<EntityEquipmentData.SecondaryStat.StatType> keys = UIManager.Instance.GetPanel<EntityConfigPanel>().GetDisplayedStats(statsDescriptions);
+		List<EntityEquipmentData.SecondaryStat.StatType> keys = UIManager.Instance.GetPanel<EntityConfigPanel>().GetUnitSummaryStats(statsDescriptions);
 
 		for (int i = 0; i < m_hoveredUnitStatDisplays.Length; i++)
 		{

@@ -46,6 +46,9 @@ public enum LocalizationKey
     hub_full_repair,
     hub_recycle,
     hub_recycling_duration,
+    hub_recycling_time_one,
+    hub_recycling_time_many,
+    hub_recycling_time_instant,
     hangar_create_unit,
     hangar_active_squad,
     hangar_inactive_unit,
@@ -128,6 +131,7 @@ public enum LocalizationKey
     mission_components,
     mission_start,
     mission_rewards,
+    mission_allied_team,
     tournament_round_1,
     tournament_round_2,
     tournament_final,
@@ -502,6 +506,10 @@ public enum LocalizationKey
     entity_config_cancel,
     entity_config_disassemble,
     entity_config_all_components,
+    entity_config_unit_ready,
+    entity_config_missing_component,
+    entity_config_damaged_component,
+    entity_config_energy_exceeded,
     component_type_frame,
     component_type_brain,
     component_type_reactor,
@@ -565,6 +573,9 @@ public static class LocalizationKeyExtensions
             case LocalizationKey.hub_full_repair: return "hub/full_repair";
             case LocalizationKey.hub_recycle: return "hub/recycle";
             case LocalizationKey.hub_recycling_duration: return "hub/recycling_duration";
+            case LocalizationKey.hub_recycling_time_one: return "hub/recycling_time_one";
+            case LocalizationKey.hub_recycling_time_many: return "hub/recycling_time_many";
+            case LocalizationKey.hub_recycling_time_instant: return "hub/recycling_time_instant";
             case LocalizationKey.hangar_create_unit: return "hangar/create_unit";
             case LocalizationKey.hangar_active_squad: return "hangar/active_squad";
             case LocalizationKey.hangar_inactive_unit: return "hangar/inactive_unit";
@@ -647,6 +658,7 @@ public static class LocalizationKeyExtensions
             case LocalizationKey.mission_components: return "mission/components";
             case LocalizationKey.mission_start: return "mission/start";
             case LocalizationKey.mission_rewards: return "mission/rewards";
+            case LocalizationKey.mission_allied_team: return "mission/allied_team";
             case LocalizationKey.tournament_round_1: return "tournament/round_1";
             case LocalizationKey.tournament_round_2: return "tournament/round_2";
             case LocalizationKey.tournament_final: return "tournament/final";
@@ -1021,6 +1033,10 @@ public static class LocalizationKeyExtensions
             case LocalizationKey.entity_config_cancel: return "entity_config/cancel";
             case LocalizationKey.entity_config_disassemble: return "entity_config/disassemble";
             case LocalizationKey.entity_config_all_components: return "entity_config/all_components";
+            case LocalizationKey.entity_config_unit_ready: return "entity_config/unit_ready";
+            case LocalizationKey.entity_config_missing_component: return "entity_config/missing_component";
+            case LocalizationKey.entity_config_damaged_component: return "entity_config/damaged_component";
+            case LocalizationKey.entity_config_energy_exceeded: return "entity_config/energy_exceeded";
             case LocalizationKey.component_type_frame: return "component_type/frame";
             case LocalizationKey.component_type_brain: return "component_type/brain";
             case LocalizationKey.component_type_reactor: return "component_type/reactor";
