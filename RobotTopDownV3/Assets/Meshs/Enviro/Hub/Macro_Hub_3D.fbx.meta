@@ -1,0 +1,605 @@
+fileFormatVersion: 2
+guid: 8acd75aa89e596043bbeaf25383128e2
+ModelImporter:
+  serializedVersion: 24200
+  internalIDToNameTable: []
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Arene
+    second: {fileID: 2100000, guid: 01a74d980674f3c4b85a95513289b150, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Arene-Dessous
+    second: {fileID: 2100000, guid: c74b6bdc78ff94049b56535d4f92e386, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Arene-Dessous-Gradin
+    second: {fileID: 2100000, guid: e98a4da79a2289a43aa44cfd9026b238, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Arene-Port
+    second: {fileID: 2100000, guid: f049d6ea6812b3145aca62d5ff9c1cae, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Arenne-Building
+    second: {fileID: 2100000, guid: 7e5584b777c7bef4ca6fa8a7af280e3f, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Arenne-Dessus
+    second: {fileID: 2100000, guid: 8de1c1526aff51c4e8721efdd616333c, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Back-Ring
+    second: {fileID: 2100000, guid: 5c5e19972f80fcc49be78e1a07e9898e, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Commando-QG-Base
+    second: {fileID: 2100000, guid: d11e85d089517144db40f5592a648451, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Commando-QG-Base.01
+    second: {fileID: 2100000, guid: c0cefa58bb957d94eb0404f8913e709a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Commando-QG-Base.02
+    second: {fileID: 2100000, guid: 0bb91d3d19869b74fa8065186e36e1cd, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Commando-QG-Base.03
+    second: {fileID: 2100000, guid: ba60d68375de7794698221e475b06668, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Commando-QG-Light
+    second: {fileID: 2100000, guid: 13ed210e774d295498eaed1c88e01718, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Commando-QG-metal
+    second: {fileID: 2100000, guid: 9196b01193b0b1540b7058b00db590a3, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Entry-Ring-01
+    second: {fileID: 2100000, guid: 2a8d210b0344a3241b544936542c971e, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Entry-Ring-02
+    second: {fileID: 2100000, guid: 274977a693a9b0a4cab70e3d87c0fcff, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Entry-Ring-03
+    second: {fileID: 2100000, guid: de8cd7f5c3374264fbbdd7e26490af56, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: External-Ring
+    second: {fileID: 2100000, guid: dc163674d91c7ca4f9738ac2557b6de8, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: GAZ GIANT
+    second: {fileID: 2100000, guid: 074ac363dd867424ebc44ea4dfabf96f, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Hangar
+    second: {fileID: 2100000, guid: 4e9dd630a50c1b04a99d567b7baecd7d, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Hangar-Light
+    second: {fileID: 2100000, guid: 0f1c99ca32d0360449f602465eb8cdcf, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Hangar-Top
+    second: {fileID: 2100000, guid: 4c98fd000154c31478f0be697340b889, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Intern-Ring-01-03
+    second: {fileID: 2100000, guid: b813e0a4548e58e42aa3cc7a69b20ac4, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Intern-Ring-01-Light
+    second: {fileID: 2100000, guid: efaaf003d47a62a4e8a15d6c1ef8ce92, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Intern-Ring-02
+    second: {fileID: 2100000, guid: b88a8d9fc7cb9104db5fbdab1d8bd3b3, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: LightCity
+    second: {fileID: 2100000, guid: 4b2890ea63a544b4ebfa669e71d1b936, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material.001
+    second: {fileID: 2100000, guid: cd47f23df08786a45aea501a9a69aa10, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material.002
+    second: {fileID: 2100000, guid: cdeeb5c9c7031fb4b97076927a9b4ce2, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Moon
+    second: {fileID: 2100000, guid: b8be59b1566d09c4384e36c24d970e71, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Paladin-QG-Base
+    second: {fileID: 2100000, guid: fe722c32c1fbd5440895fb583a89812b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Paladin-QG-Light-01
+    second: {fileID: 2100000, guid: 1be75ee63fa106645950caeec9b27660, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Paladin-QG.001-Light
+    second: {fileID: 2100000, guid: a58b677cb836ebb46a8c8e0bd4309f15, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Pillar-01
+    second: {fileID: 2100000, guid: 346ed10764ade604da1d7a9dbb2acb20, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Pillar-02.1
+    second: {fileID: 2100000, guid: 535c64143f1c57f44941bef81e98048a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Pillar-02.2
+    second: {fileID: 2100000, guid: 8a63b8bd3c4bcbd4d97850505b191a6a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Pillar-03
+    second: {fileID: 2100000, guid: 1f82cafe166b057448112ea905ce5860, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Psy-QG-Base
+    second: {fileID: 2100000, guid: f01dae0fc067cf44aa849a9171f05495, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Psy-QG-Base-02
+    second: {fileID: 2100000, guid: 1f98192ed3a2fa14193aaa3b8f354ec6, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Psy-QG-Light
+    second: {fileID: 2100000, guid: 38d515d811374fa4d9d99081c84cd11a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Psy-QG-Light-02
+    second: {fileID: 2100000, guid: 1515c0e9190e25647bc919e3ce7768fe, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Recycle-Light
+    second: {fileID: 2100000, guid: ef7d48c414e8cab45907805f9ab901c4, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Repar-Station
+    second: {fileID: 2100000, guid: 1eaaa6c609149ff44b8f2e01bfb0bddc, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Repar-Station-Base
+    second: {fileID: 2100000, guid: f13e2dcec50a2734c8d9b3d0e5a4bfe2, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Repar-Station-Light-02
+    second: {fileID: 2100000, guid: 20fcc75671b191b4cb4458c2c0b91631, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Repar-Station-Light.001
+    second: {fileID: 2100000, guid: 764b22c0a01b3d743ac902723e875875, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Spacio-Port
+    second: {fileID: 2100000, guid: b1def5b0609accf4f9d9909907e466a0, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: light
+    second: {fileID: 2100000, guid: 7bdb06494ff69a54b8343ec0ba7ae1cf, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: light window
+    second: {fileID: 2100000, guid: 7a318603eb9d84f4bb0d5fc7621790c4, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: metal arene
+    second: {fileID: 2100000, guid: f364c0e169199b64aa57118e7cea2ad4, type: 2}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: 6a710a6d-892c-4f56-83df-09a0b103ccac
+    second: {fileID: 2800000, guid: 0cf33721204b22742a2f04583999c334, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Arene-Dessous-Gradin_Diffuse
+    second: {fileID: 2800000, guid: d4a8e1a11b4d8704e913ddbeb0900152, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Arene-Dessous-Gradin_Normal
+    second: {fileID: 2800000, guid: cd527e61ca449b846b87e5890b269938, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Arene-Dessous_Diffuse
+    second: {fileID: 2800000, guid: b1eea23be5ae9e240b914d070754bd77, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Arene-Dessous_Normal
+    second: {fileID: 2800000, guid: 5558c1f4d11349e42860e461c82fd9da, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Arenne-Building_Diffuse
+    second: {fileID: 2800000, guid: 92b1af4bf67443b48bc1646428490841, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Arenne-Building_Normal
+    second: {fileID: 2800000, guid: d693972c817e2db459ed96f4353b6a3c, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Arenne-Dessus_Diffuse
+    second: {fileID: 2800000, guid: c7f18c1a91a66b64fa572417b4670d38, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Arenne-Dessus_Normal
+    second: {fileID: 2800000, guid: 3c1360d2c73fffb44a73ac88d3773505, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Arenne-Port_Diffuse
+    second: {fileID: 2800000, guid: b2fba51ef354c8d49994614d0136daf2, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Arenne-Port_Normal
+    second: {fileID: 2800000, guid: a911e596c4a7c21469a1b840384c5496, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Back-Ring_Diffuse
+    second: {fileID: 2800000, guid: 8ccf8443c7bf64949a9859efe56e1b5a, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Back-Ring_Normal
+    second: {fileID: 2800000, guid: b86d2a5cdefd04247bbf3ff654a2eb27, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Commando-QG-Base.01_Diffuse
+    second: {fileID: 2800000, guid: 320e424e9573de14a9c26d1d4127e82b, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Commando-QG-Base.02_Diffuse
+    second: {fileID: 2800000, guid: c507f8456868949469d5ffd63cc66849, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Commando-QG-Base_Diffuse
+    second: {fileID: 2800000, guid: 18dba27525765d34e870110eaea38e61, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Commando-QG-metal_Diffuse
+    second: {fileID: 2800000, guid: 2f2d6d6e7729abc4aad6e350216f73c7, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Entry-Ring-01_Diffuse
+    second: {fileID: 2800000, guid: 062446cfd674da348a7de23a37b4a85b, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Entry-Ring-01_Normal
+    second: {fileID: 2800000, guid: 26f0a7ac8922c894dac7d321cf5d16a9, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Entry-Ring-02_Diffuse
+    second: {fileID: 2800000, guid: 1476b30c74f0577459b4759401a7f652, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Entry-Ring-02_Normal
+    second: {fileID: 2800000, guid: 24c53918a3d143c47a98733ec9cb4375, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Entry-Ring-03_Diffuse
+    second: {fileID: 2800000, guid: 84539300368cd504db6d359f461320bf, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Entry-Ring-03_Normal
+    second: {fileID: 2800000, guid: d5d7dca4785c0384b9c89c3cd9bc2394, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: External-Ring_Diffuse
+    second: {fileID: 2800000, guid: 1380b0b21fa4f5a4b939f0c3e624bfbb, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: External-Ring_Normal
+    second: {fileID: 2800000, guid: c52dffca607c5904fa0338ce2cb499e5, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Gaz_Planet_Diffuse
+    second: {fileID: 2800000, guid: ce30c66436c30204f8d014ece13e6fe4, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Hangar-Top_Diffuse
+    second: {fileID: 2800000, guid: 30d3d83e57430d84f893aae3cacc5214, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Hangar-Top_Normal
+    second: {fileID: 2800000, guid: 0de41da63723fc04491fc28e58bffe65, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Hangar_Diffuse
+    second: {fileID: 2800000, guid: eb64bea78ffde224eaf2e1bbf91151a3, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Hangar_Normal
+    second: {fileID: 2800000, guid: 64ff0edcec05f2c4884260e6849237b7, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Intern-Ring-01-03_Diffuse
+    second: {fileID: 2800000, guid: e113b6b846acd4d44a31cc1cb0031b05, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Intern-Ring-01-03_Normal
+    second: {fileID: 2800000, guid: cd2a13ce4904c9e4592641c0ed8f3697, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Intern-Ring-02_Diffuse
+    second: {fileID: 2800000, guid: f48fae684a79b0944a486f7f5e4f6ec6, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Intern-Ring-02_Normal
+    second: {fileID: 2800000, guid: 4d2326c29d8022d41ae1eba35e5c6738, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Light-Window
+    second: {fileID: 2800000, guid: e4b71b67b16052c4ab8318634000d986, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Moon_Normal
+    second: {fileID: 2800000, guid: 61976affde7a50147922068491c13f5d, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Paladin-QG-Base_Diffuse
+    second: {fileID: 2800000, guid: 2d26f6ec405e09a488929750e56a58d5, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Pillar-01_Diffuse
+    second: {fileID: 2800000, guid: b7a9f001347c93045a71fb792ef0bc66, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Pillar-01_Normal.001
+    second: {fileID: 2800000, guid: d282c84ac5ac12842b3a82c477f6a299, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Pillar-02.1_Diffuse
+    second: {fileID: 2800000, guid: 97c464fde8d0412469c4ccb41b756744, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Pillar-02.1_Normal
+    second: {fileID: 2800000, guid: 707ff275981d9304a8bc08d0bdafb606, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Pillar-02.2_Difffuse
+    second: {fileID: 2800000, guid: aa8fb735f5da9d542bbd2628ef826e45, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Pillar-02.2_Normal
+    second: {fileID: 2800000, guid: 883ff187700fce34598db46cb482e60a, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Pillar-03_Diffuse
+    second: {fileID: 2800000, guid: f6406a2df89f1664395075b5723290b3, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Pillar-03_Normal
+    second: {fileID: 2800000, guid: cada853596123574d8e1af9507483ece, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Psy-QG-Base-02_Diffuse
+    second: {fileID: 2800000, guid: 162ff7668a84afb4c98c47a0af5d9727, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Psy-QG-Base_Diffuse
+    second: {fileID: 2800000, guid: ccd40bea8d1f6d74c9bf0fc4c3ba9a4f, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Repar-Station-Base_Diffuse
+    second: {fileID: 2800000, guid: 2c321bc394136b74895d0fc68c5ad818, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Repar-Station_Diffuse
+    second: {fileID: 2800000, guid: 8b1bf940a94185f41a0adbb93c489ac6, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Spacio-Port_Diffuse
+    second: {fileID: 2800000, guid: 5ddcd2bc514c2e74f8148409d27098b8, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: lroc_color_16bit_srgb_4k
+    second: {fileID: 2800000, guid: f9599798e77ca0940a40ca25313c83dc, type: 3}
+  materials:
+    materialImportMode: 2
+    materialName: 0
+    materialSearch: 1
+    materialLocation: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    removeConstantScaleCurves: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    importConstraints: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations: []
+    isReadable: 0
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    useSRGBMaterialColor: 1
+    sortHierarchyByName: 1
+    importPhysicalCameras: 1
+    importVisibility: 1
+    importBlendShapes: 1
+    importCameras: 1
+    importLights: 1
+    nodeNameCollisionStrategy: 1
+    fileIdsGeneration: 2
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    keepQuads: 0
+    weldVertices: 1
+    bakeAxisConversion: 0
+    preserveHierarchy: 0
+    skinWeightsMode: 0
+    maxBonesPerVertex: 4
+    minBoneWeight: 0.001
+    optimizeBones: 1
+    generateMeshLods: 0
+    meshLodGenerationFlags: 0
+    maximumMeshLod: -1
+    meshOptimizationFlags: -1
+    indexFormat: 0
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVMarginMethod: 1
+    secondaryUVMinLightmapResolution: 40
+    secondaryUVMinObjectScale: 1
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+    strictVertexDataChecks: 0
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
+    legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0
+    blendShapeNormalImportMode: 1
+    normalSmoothingSource: 0
+  referencedClips: []
+  importAnimation: 1
+  humanDescription:
+    serializedVersion: 3
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    globalScale: 1
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  autoGenerateAvatarMappingIfUnspecified: 1
+  animationType: 2
+  humanoidOversampling: 1
+  avatarSetup: 0
+  addHumanoidExtraRootOnlyWhenUsingAvatar: 1
+  importBlendShapeDeformPercent: 1
+  remapMaterialsIfMaterialImportModeIsNone: 0
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
