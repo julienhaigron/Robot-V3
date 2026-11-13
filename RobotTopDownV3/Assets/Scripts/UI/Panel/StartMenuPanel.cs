@@ -121,6 +121,7 @@ public class StartMenuPanel : AUIPanel
 	{
 		base.OnShowStarted();
 
+		CameraManager.Instance.ShowStartScreen();
 		ChangeDisplayMode(StartMenuDisplayMode.Start, true);
 	}
 

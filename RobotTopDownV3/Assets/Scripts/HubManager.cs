@@ -28,7 +28,7 @@ public class HubManager : Singleton<HubManager>
 	public void HideHangar ()
 	{
 		m_isHangarShown = false;
-		CameraManager.Instance.ResetPosition();
+		CameraManager.Instance.ShowHub();
 
 		foreach (Entity entity in m_squadEntities.Values)
 		{

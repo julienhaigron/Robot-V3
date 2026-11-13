@@ -105,7 +105,7 @@ public class GameManager : SingletonPersistant<GameManager>
 			{
 				UIManager.Instance.ClosePanel<StartMenuPanel>(true);
 			}
-			, null
+			, CameraManager.Instance.ShowHub
 			, () =>
 			{
 				UIManager.Instance.ShowTopCanvas<HubTopCanvas>();

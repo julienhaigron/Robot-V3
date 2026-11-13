@@ -15,6 +15,14 @@ public class CameraManager : Singleton<CameraManager>
     [SerializeField] private Transform m_defaultCameraPosition;
     public float DefaultZoomDistance => m_defaultCameraPosition == null ? m_cameraParent.transform.position.y : m_defaultCameraPosition.position.y;
 
+    [SerializeField] private Transform m_startScreenCameraTfm;
+    [SerializeField] private float m_startScreenFocalLength = 300f;
+    [SerializeField] private float m_startScreenFarClipPlane = 1200f;
+    [SerializeField] private Transform m_hubCameraTfm;
+
+    private float m_defaultFieldOfView;
+    private float m_defaultFarClipPlane;
+
     [Header("Follow Units")]
     [SerializeField] private float m_followSmoothTime = .35f;
 
@@ -32,6 +40,8 @@ public class CameraManager : Singleton<CameraManager>
     public override void Awake ()
     {
         base.Awake();
+        m_defaultFieldOfView = m_camera.fieldOfView;
+        m_defaultFarClipPlane = m_camera.farClipPlane;
         TurnManager.onEndInputPhase += OnEndInputPhase;
         TurnManager.onStartInputPhase += OnStartInputPhase;
         TurnManager.onEndLevel += OnEndLevel;
@@ -167,6 +177,35 @@ public class CameraManager : Singleton<CameraManager>
         TeleportCameraTo(m_defaultCameraPosition);
 	}
 
+    public void ShowStartScreen ()
+    {
+        PlaceCameraAt(m_startScreenCameraTfm);
+
+        m_camera.usePhysicalProperties = true;
+        m_camera.sensorSize = new Vector2(36f, 24f);
+        m_camera.gateFit = Camera.GateFitMode.Horizontal;
+        m_camera.focalLength = m_startScreenFocalLength;
+        m_camera.farClipPlane = m_startScreenFarClipPlane;
+    }
+
+    public void ShowHub ()
+    {
+        PlaceCameraAt(m_hubCameraTfm);
+    }
+
+    public void PlaceCameraAt ( Transform _cameraPoint )
+    {
+        Transform parent = m_cameraParent.transform;
+        Transform camera = m_camera.transform;
+
+        Quaternion parentInverseRotation = Quaternion.Inverse(parent.rotation);
+        Quaternion cameraRotationInParent = parentInverseRotation * camera.rotation;
+        Vector3 cameraOffsetInParent = parentInverseRotation * (camera.position - parent.position);
+
+        Quaternion parentRotation = _cameraPoint.rotation * Quaternion.Inverse(cameraRotationInParent);
+        TeleportCameraTo(_cameraPoint.position - parentRotation * cameraOffsetInParent, parentRotation);
+    }
+
     public void TeleportCameraTo(Transform _to )
 	{
         TeleportCameraTo(_to.position, _to.rotation);
@@ -174,8 +213,16 @@ public class CameraManager : Singleton<CameraManager>
 
     public void TeleportCameraTo(Vector3 _position, Quaternion _rotation )
 	{
+        ResetLens();
         m_cameraParent.transform.position = _position;
         m_cameraParent.transform.rotation = _rotation;
+    }
+
+    private void ResetLens ()
+    {
+        m_camera.usePhysicalProperties = false;
+        m_camera.fieldOfView = m_defaultFieldOfView;
+        m_camera.farClipPlane = m_defaultFarClipPlane;
     }
 
 }
