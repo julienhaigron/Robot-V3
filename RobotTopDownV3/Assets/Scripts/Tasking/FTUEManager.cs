@@ -261,8 +261,14 @@ public class FTUEManager : Singleton<FTUEManager>
 
 		//macro
 		tutoSequence.Append(new WaitEndLoadingTask("Wait for end loading", ( context ) => GameDatas.current.currentPlayerSave.dayCount == 0));
+		tutoSequence.Append(new ManualTask("Unlock Return to hub", null, () =>
+		{
+			GameDatas.current.currentPlayerSave.didUnlockReturnToHubPopup = true;
+		}));
+		tutoSequence.Append(new DialogueTask("Day report explenation", ( context ) => context.UI.currentPanel is SoloHubPanel
+		, m_day2TutoDialogues[0]).SetSkipPredicate(( context ) => context.UI.currentPanel is SoloHubPanel && context.UI.activePopup is not ReturnToHubPopup));
 		tutoSequence.Append(new OpenPanelTask<HangarPanel>("Send player directly to hangar", ( context ) => context.UI.currentPanel is SoloHubPanel
-			&& GameDatas.current.currentPlayerSave.dayCount == 0));
+			&& context.UI.activePopup == null && GameDatas.current.currentPlayerSave.dayCount == 0));
 		tutoSequence.Append(new DialogueHighlightTask("New unit won explenation", ( context ) => context.UI.currentPanel is HangarPanel
 		, m_day1TutoDialogues[0], "squadUnit2Select").SetSkipPredicate(( context ) => context.UI.currentPanel is SoloHubPanel));
 		tutoSequence.Append(new DialogueHighlightTask("Return btn explenation", null
@@ -304,8 +310,6 @@ public class FTUEManager : Singleton<FTUEManager>
 		{
 			GameDatas.current.currentPlayerSave.didUnlockReturnToHubPopup = true;
 		}));
-		tutoSequence.Append(new DialogueTask("Day report explenation", ( context ) => context.UI.currentPanel is SoloHubPanel
-		, m_day2TutoDialogues[0]));
 		tutoSequence.Append(new DialogueHighlightTask("Go to hangar", ( context ) => context.UI.currentPanel is SoloHubPanel
 		, m_day2TutoDialogues[1], "hangarBtn"));
 		tutoSequence.Append(new DialogueHighlightTask("Go to workshop", ( context ) => context.UI.currentPanel is HangarPanel
