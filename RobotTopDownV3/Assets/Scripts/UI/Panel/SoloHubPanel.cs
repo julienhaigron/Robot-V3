@@ -9,11 +9,17 @@ public class SoloHubPanel : AUIPanel
 	[SerializeField] private BaseButton m_missionBtn;
 	[SerializeField] private BaseButton m_skipDayBtn;
 	[SerializeField] private TextMeshProUGUI m_missionBtnTMP;
+	[SerializeField] private BaseButton m_classicMatchBtn;
+	[SerializeField] private TextMeshProUGUI m_classicMatchBtnTMP;
+
+	private static bool CanChooseClassicMatch => GameDatas.current.currentPlayerSave.CanJoinTournament && !GameDatas.current.currentPlayerSave.HasScriptedTournament;
 
 	private void Awake ()
 	{
 		m_missionBtn.onClick += OnClickMissionBtn;
 		m_skipDayBtn.onClick += OnClickSkipDay;
+		if (m_classicMatchBtn != null)
+			m_classicMatchBtn.onClick += OnClickClassicMatchBtn;
 	}
 
 	private void OnEnable ()
@@ -39,24 +45,36 @@ public class SoloHubPanel : AUIPanel
 		RefreshMissionBtnLabel();
 
 		m_missionBtn.SetInteractability(isSquadValid);
-		//m_tournamentBtn.SetInteractability(isSquadValid);
+
+		if (m_classicMatchBtn != null)
+		{
+			m_classicMatchBtn.gameObject.SetActive(CanChooseClassicMatch);
+			m_classicMatchBtn.SetInteractability(isSquadValid);
+		}
 	}
 
 	private void RefreshMissionBtnLabel ()
 	{
-		bool isTournament = GameDatas.current.currentPlayerSave.IsTournamentDay;
+		bool isTournament = GameDatas.current.currentPlayerSave.IsTournamentAvailable;
 
 		m_missionBtnTMP.text = LocalizationManager.Instance.Get(isTournament ? LocalizationKey.hub_tournament : LocalizationKey.hub_mission);
+		if (m_classicMatchBtnTMP != null)
+			m_classicMatchBtnTMP.text = LocalizationManager.Instance.Get(LocalizationKey.hub_mission);
 	}
 
 	#region Callbacks
 
 	private void OnClickMissionBtn ()
 	{
-		if (GameDatas.current.currentPlayerSave.IsTournamentDay)
+		if (GameDatas.current.currentPlayerSave.IsTournamentAvailable)
 			UIManager.Instance.OpenPanel<TournamentPanel>();
 		else
 			UIManager.Instance.OpenPanel<MissionPanel>();
+	}
+
+	private void OnClickClassicMatchBtn ()
+	{
+		UIManager.Instance.OpenPanel<MissionPanel>();
 	}
 
 	private void OnClickSkipDay ()

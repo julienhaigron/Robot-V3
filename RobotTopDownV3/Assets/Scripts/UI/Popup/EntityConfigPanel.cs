@@ -53,6 +53,9 @@ public class EntityConfigPanel : AUIPanel
 	private EntitySavedData m_entityData;
 	private bool m_doesComeFromMissionPanel;
 	public bool DoesComeFromMissionPanel => m_doesComeFromMissionPanel;
+	private bool m_doesComeFromTournamentPanel;
+	public bool DoesComeFromTournamentPanel => m_doesComeFromTournamentPanel;
+	private bool IsEditLocked => !m_isNewUnit && GameDatas.current.currentPlayerSave.IsUnitLockedByTournament(m_entityData);
 	public bool IsNewUnit => m_isNewUnit;
 	public bool IsCurrentUnitValid => m_entityData != null && m_entityData.IsUnitValid();
 	private bool m_isNewUnit = false;
@@ -172,7 +175,7 @@ public class EntityConfigPanel : AUIPanel
 
 	private void OnClickDisassembleBtn ()
 	{
-		if (m_entityData == null)
+		if (m_entityData == null || IsEditLocked)
 			return;
 
 		if (m_isNewUnit)
@@ -269,11 +272,12 @@ public class EntityConfigPanel : AUIPanel
 			_problems.Add(string.Format(LocalizationManager.Instance.Get(LocalizationKey.entity_config_damaged_component), EntityEquipmentData.GetLocalizedTypeName(_type)));
 	}
 
-	public void Init ( EntitySavedData _entity, bool _doesComeFromMissionPanel )
+	public void Init ( EntitySavedData _entity, bool _doesComeFromMissionPanel, bool _doesComeFromTournamentPanel = false )
 	{
 		m_isNewUnit = false;
 		m_entityData = _entity;
 		m_doesComeFromMissionPanel = _doesComeFromMissionPanel;
+		m_doesComeFromTournamentPanel = _doesComeFromTournamentPanel;
 		m_unitNameInputField.text = _entity.name;
 
 		m_mainComponentSlotDictionary[EntityEquipmentData.EquipmentType.Frame].Init(m_inventoryGrid, _entity, _entity.frame
@@ -304,6 +308,21 @@ public class EntityConfigPanel : AUIPanel
 		m_hoveredComponentFullInfoDisplay.Init(null);
 		RefreshVisuals();
 		RefreshSections(true);
+		RefreshEditLock();
+	}
+
+	private void RefreshEditLock ()
+	{
+		bool canEdit = !IsEditLocked;
+		foreach (ComponentSlot slot in m_mainComponentSlotDictionary.Values)
+			slot.SetInteractability(canEdit);
+
+		foreach (SubSlotContainer slotContainer in m_subComponentSlotDictionary.Values)
+			foreach (ComponentSlot slot in slotContainer.slots)
+				slot.SetInteractability(canEdit);
+
+		if (m_disassembleBtn != null)
+			m_disassembleBtn.SetInteractability(canEdit);
 	}
 
 	private GameDatas.PlayerSave.Component GetFrameSubComponentAt ( int _slotIndex )
@@ -366,12 +385,12 @@ public class EntityConfigPanel : AUIPanel
 		foreach (KeyValuePair<EntityEquipmentData.EquipmentType, ComponentSlot> pair in m_mainComponentSlotDictionary)
 		{
 			EntityEquipmentData.EquipmentType mainType = pair.Key;
-			pair.Value.SetReleasePredicate(display => IsUndamaged(display) && !HasDamagedSubComponent(mainType));
+			pair.Value.SetReleasePredicate(display => !IsEditLocked && IsUndamaged(display) && !HasDamagedSubComponent(mainType));
 		}
 
 		foreach (SubSlotContainer slotContainer in m_subComponentSlotDictionary.Values)
 			foreach (ComponentSlot slot in slotContainer.slots)
-				slot.SetReleasePredicate(IsUndamaged);
+				slot.SetReleasePredicate(display => !IsEditLocked && IsUndamaged(display));
 	}
 
 	private void InitSubSlots ( EntityEquipmentData.EquipmentType? _type )

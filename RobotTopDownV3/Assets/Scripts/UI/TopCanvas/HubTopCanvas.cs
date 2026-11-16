@@ -143,10 +143,10 @@ public class HubTopCanvas : AUITopCanvas
 
 			if (entityConfigPanel.DoesComeFromMissionPanel)
 			{
-				if (GameDatas.current.currentPlayerSave.dayCount <= 3)
-					UIManager.Instance.OpenPanel<MissionPanel>();
-				else
+				if (entityConfigPanel.DoesComeFromTournamentPanel)
 					UIManager.Instance.OpenPanel<TournamentPanel>();
+				else
+					UIManager.Instance.OpenPanel<MissionPanel>();
 			}
 			else
 				UIManager.Instance.OpenPanel<HangarPanel>();

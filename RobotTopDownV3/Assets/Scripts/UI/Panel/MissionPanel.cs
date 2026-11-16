@@ -53,6 +53,9 @@ public class MissionPanel : AUIPanel
 		if (m_currentMissionSelected == null || GameDatas.current.currentPlayerSave.squadUnitsIndex.Count == 0)
 			return;
 
+		if (GameDatas.current.currentPlayerSave.CanJoinTournament)
+			GameDatas.current.currentPlayerSave.cycleData.hasDeclinedTournament = true;
+
 		if (m_currentMissionSelected.MissionData.preMissionDialogue != null)
 			DialogueManager.Instance.PlayDialogue(m_currentMissionSelected.MissionData.preMissionDialogue, () => GameManager.Instance.SetupLevel(m_currentMissionSelected.MissionData));
 		else

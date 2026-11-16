@@ -79,11 +79,8 @@ public class EndLevelPopup : AUIPopup
 		}
 
 		//rewards
-		MissionData.RewardSet rewardSet = _missionData.GetRewardSet();
+		MissionData.RewardSet rewardSet = GetRewardSet(_gameResult, _missionData, out m_allocatedRewardPoint);
 		bool isWin = _gameResult == GameResult.Win;
-		m_allocatedRewardPoint = isWin
-			? rewardSet.GetTotalPoints()
-			: _gameResult == GameResult.Draw ? MissionData.drawRewardPoints : MissionData.defeatRewardPoints;
 
 		for (int i = 0; i < m_rewardCurrencyDisplays.Length; i++)
 		{
@@ -99,10 +96,12 @@ public class EndLevelPopup : AUIPopup
 
 		for (int i = 0; i < m_rewardComponentDisplays.Length; i++)
 		{
-			if (rewardSet.components.Count > i)
+			int blueprintIndex = i - rewardSet.components.Count;
+			if (rewardSet.components.Count > i || rewardSet.blueprints.Count > blueprintIndex)
 			{
+				bool isBlueprint = blueprintIndex >= 0;
 				m_rewardComponentDisplays[i].Show();
-				m_rewardComponentDisplays[i].Init(rewardSet.components[i], OnInterractWithRewardBtn);
+				m_rewardComponentDisplays[i].Init(isBlueprint ? rewardSet.blueprints[blueprintIndex] : rewardSet.components[i], OnInterractWithRewardBtn, false, isBlueprint);
 				m_rewardComponentDisplays[i].SetIsSelected(isWin);
 			}
 			else
@@ -123,6 +122,32 @@ public class EndLevelPopup : AUIPopup
 
 		OnInterractWithRewardBtn();
 
+	}
+
+	private static MissionData.RewardSet GetRewardSet ( GameResult _gameResult, MissionData _missionData, out int _allocatedRewardPoint )
+	{
+		GameDatas.PlayerSave save = GameDatas.current.currentPlayerSave;
+		bool isWin = _gameResult == GameResult.Win;
+
+		if (!save.IsInTournament)
+		{
+			MissionData.RewardSet rewardSet = _missionData.GetRewardSet();
+			_allocatedRewardPoint = isWin
+				? rewardSet.GetTotalPoints()
+				: _gameResult == GameResult.Draw ? MissionData.drawRewardPoints : MissionData.defeatRewardPoints;
+			return rewardSet;
+		}
+
+		int round = save.TournamentRound;
+		bool isFinal = round >= 2;
+		MissionData.RewardSet tournamentReward = save.cycleData.GetTournamentRewardSet();
+		if (isWin)
+			_allocatedRewardPoint = isFinal ? tournamentReward.GetTotalPoints() : 0;
+		else
+			_allocatedRewardPoint = isFinal ? MissionData.tournamentFinalLossRewardPoints
+				: round == 1 ? MissionData.tournamentSecondMatchLossRewardPoints : 0;
+
+		return _allocatedRewardPoint > 0 ? tournamentReward : new MissionData.RewardSet();
 	}
 
 	private void OnInterractWithRewardBtn ()
@@ -179,6 +204,12 @@ public class EndLevelPopup : AUIPopup
 
 	private void OnClickContinue ()
 	{
+		foreach (ComponentRewardDisplay display in m_rewardComponentDisplays)
+		{
+			if (display.IsSelected && display.IsVisible && display.IsBlueprint)
+				GameDatas.current.currentPlayerSave.UnlockBlueprint(display.Component.name);
+		}
+
 		GameManager.Instance.ApplyMatchProgression(m_gameResult);
 
 		foreach (GameDatas.PlayerSave.Component component in m_pendingDamagedComponents)
@@ -192,7 +223,7 @@ public class EndLevelPopup : AUIPopup
 
 		foreach (ComponentRewardDisplay display in m_rewardComponentDisplays)
 		{
-			if (display.IsSelected && display.IsVisible)
+			if (display.IsSelected && display.IsVisible && !display.IsBlueprint)
 				GameDatas.current.currentPlayerSave.AddComponentToInventory(display.Component);
 		}
 

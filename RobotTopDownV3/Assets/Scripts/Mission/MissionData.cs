@@ -72,6 +72,9 @@ public class MissionData : ScriptableEnum<MissionDataEnumID>
     public const int drawRewardPoints = 3;
     public const int defeatRewardPoints = 2;
 
+    public const int tournamentFinalLossRewardPoints = 3;
+    public const int tournamentSecondMatchLossRewardPoints = 2;
+
     public class RewardTemplate
     {
         public int creditCount;
@@ -81,8 +84,8 @@ public class MissionData : ScriptableEnum<MissionDataEnumID>
         public bool isScriptedOnly;
     }
 
-    //Every template is worth 6 points. The scripted ones never come out of the random roll:
-    //they can only be handed out by authoring the reward on a specific mission.
+    //The scripted ones never come out of the random roll: they can only be handed out by
+    //authoring the reward on a specific mission.
     public static readonly RewardTemplate[] rewardTemplates =
     {
         new() { creditCount = 6 },
@@ -92,6 +95,7 @@ public class MissionData : ScriptableEnum<MissionDataEnumID>
         new() { mainComponentCount = 1, creditCount = 3 },
         new() { mainComponentCount = 1, secondaryComponentCount = 1, creditCount = 1 },
         new() { mainComponentCount = 2, isScriptedOnly = true },
+        new() { secondaryComponentCount = 1, isScriptedOnly = true },
         new() { unitCount = 1, isScriptedOnly = true },
     };
 
@@ -99,6 +103,7 @@ public class MissionData : ScriptableEnum<MissionDataEnumID>
     {
         public List<ulong> creditAmounts = new();
         public List<EntityEquipmentData> components = new();
+        public List<EntityEquipmentData> blueprints = new();
         public List<UnitPreset> units = new();
 
         public int GetTotalPoints ()
@@ -106,6 +111,8 @@ public class MissionData : ScriptableEnum<MissionDataEnumID>
             int total = creditAmounts.Count * creditPointValue + units.Count * unitPointValue;
             foreach (EntityEquipmentData component in components)
                 total += GetPointValueOf(component);
+            foreach (EntityEquipmentData blueprint in blueprints)
+                total += GetPointValueOf(blueprint);
 
             return total;
         }
@@ -168,7 +175,7 @@ public class MissionData : ScriptableEnum<MissionDataEnumID>
     }
 
     //An authored reward wins over the random roll: that is how the scripted-only templates
-    //(3 secondary components, 2 main components, a unit) are handed out.
+    //are handed out.
     public void SetFixedRewardSet ( RewardSet _rewardSet )
     {
         m_fixedRewardSet = _rewardSet;

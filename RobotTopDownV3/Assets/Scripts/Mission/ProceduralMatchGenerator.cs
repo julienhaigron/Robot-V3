@@ -32,6 +32,16 @@ public class UnitPresetList
 	public List<UnitPreset> presets = new();
 }
 
+[Serializable]
+public class ChallengerData
+{
+	public string id;
+	public MissionData.MissionType type;
+	public List<UnitPreset> team = new();
+
+	public string NameKey => "challenger/" + id;
+}
+
 public static class ProceduralMatchGenerator
 {
 	public static List<GameDatas.ProceduralMatchData> Generate ( int _count, int _cycleCount )
@@ -158,7 +168,94 @@ public static class ProceduralMatchGenerator
 				return preset;
 		}
 
+		foreach (ChallengerData challenger in GameAssets.current.game.challengers)
+		{
+			UnitPreset preset = challenger?.team.FirstOrDefault(candidate => candidate != null && candidate.name == _presetName);
+			if (preset != null)
+				return preset;
+		}
+
 		return null;
+	}
+
+	public static List<GridData> GetMaps ( MissionData.MissionType _type )
+	{
+		return GameAssets.current.game.mapsPerMissionType.TryGetValue(_type, out MapList mapList) && mapList != null
+			? mapList.maps.Where(map => map != null).ToList()
+			: new List<GridData>();
+	}
+
+	public static ChallengerData RollChallenger ( int _cycleCount )
+	{
+		int interval = GameConfig.current.game.challengerTournamentInterval;
+		if (interval <= 0 || _cycleCount <= 0 || _cycleCount % interval != 0)
+			return null;
+
+		List<string> beatenChallengers = GameDatas.current.currentPlayerSave.beatenChallengers;
+		List<ChallengerData> pool = GameAssets.current.game.challengers
+			.Where(challenger => challenger != null && !string.IsNullOrEmpty(challenger.id) && !beatenChallengers.Contains(challenger.id)
+				&& challenger.team.Any(preset => preset != null) && GetMaps(challenger.type).Count > 0)
+			.ToList();
+
+		return pool.Count == 0 ? null : pool[UnityEngine.Random.Range(0, pool.Count)];
+	}
+
+	public static GameDatas.ProceduralMatchData GenerateChallengerMatch ( ChallengerData _challenger, int _cycleCount )
+	{
+		List<GridData> maps = GetMaps(_challenger.type);
+		if (maps.Count == 0)
+			return null;
+
+		GameDatas.ProceduralMatchData match = new();
+		match.phase = GetPhase(_cycleCount);
+		match.type = _challenger.type;
+		match.mapName = maps[UnityEngine.Random.Range(0, maps.Count)].name;
+		match.challengerId = _challenger.id;
+		match.enemyPresetNames = _challenger.team.Where(preset => preset != null).Select(preset => preset.name).ToList();
+		return match;
+	}
+
+	public static ChallengerData FindChallenger ( string _id )
+	{
+		return string.IsNullOrEmpty(_id) ? null : GameAssets.current.game.challengers.FirstOrDefault(challenger => challenger != null && challenger.id == _id);
+	}
+
+	public static void RollTournamentReward ( List<ulong> _credits, List<string> _blueprints )
+	{
+		_credits.Clear();
+		_blueprints.Clear();
+
+		MissionData.RewardTemplate template = MissionData.RollRewardTemplate();
+		for (int i = 0; i < template.creditCount; i++)
+			_credits.Add(MissionData.RollCreditAmount());
+
+		AddBlueprints(template.mainComponentCount, true, _credits, _blueprints);
+		AddBlueprints(template.secondaryComponentCount, false, _credits, _blueprints);
+	}
+
+	private static void AddBlueprints ( int _count, bool _isMain, List<ulong> _credits, List<string> _blueprints )
+	{
+		for (int i = 0; i < _count; i++)
+		{
+			List<EntityEquipmentData> pool = GetLockedBlueprints(_isMain).Where(data => !_blueprints.Contains(data.name)).ToList();
+			if (pool.Count > 0)
+			{
+				_blueprints.Add(pool[UnityEngine.Random.Range(0, pool.Count)].name);
+				continue;
+			}
+
+			int creditCount = (_isMain ? MissionData.mainComponentPointValue : MissionData.secondaryComponentPointValue) / MissionData.creditPointValue;
+			for (int j = 0; j < creditCount; j++)
+				_credits.Add(MissionData.RollCreditAmount());
+		}
+	}
+
+	public static List<EntityEquipmentData> GetLockedBlueprints ( bool _isMain )
+	{
+		GameDatas.PlayerSave save = GameDatas.current.currentPlayerSave;
+		return GameAssets.current.equipments.Values
+			.Where(data => data != null && data.canDropRandomly && data.requiresBlueprint && !save.IsBlueprintUnlocked(data.name) && data.IsMainComponent() == _isMain)
+			.ToList();
 	}
 
 	public static UnitPreset[] GetAllies ( MissionData.MissionType _type )

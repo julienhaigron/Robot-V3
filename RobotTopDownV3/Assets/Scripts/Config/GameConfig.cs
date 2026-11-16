@@ -83,6 +83,9 @@ public partial class GameConfig : ScriptableObject
 		public EnemySquadRules[] enemySquadRules;
 		public StrategyArchetypes[] strategyArchetypes;
 
+		[Title("Tournament")]
+		public int challengerTournamentInterval = 2;
+
 	}
 
 	[System.Serializable]

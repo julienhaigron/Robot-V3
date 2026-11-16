@@ -23,9 +23,10 @@ public class GameAssets : ScriptableObject
 
     public List<EntityEquipmentData> GetRandomlyDroppableEquipments ()
     {
+        GameDatas.PlayerSave save = GameDatas.current != null ? GameDatas.current.currentPlayerSave : null;
         List<EntityEquipmentData> pool = new();
         foreach (EntityEquipmentData data in equipments.Values)
-            if (data != null && data.canDropRandomly)
+            if (data != null && data.canDropRandomly && (!data.requiresBlueprint || (save != null && save.IsBlueprintUnlocked(data.name))))
                 pool.Add(data);
 
         return pool;
@@ -66,6 +67,9 @@ public class GameAssets : ScriptableObject
         public SerializableDictionary<MissionData.MissionType, MapList> mapsPerMissionType = new();
         public SerializableDictionary<PlaythroughPhase, UnitPresetList> enemyPresetsPerPhase = new();
         public SerializableDictionary<MissionData.MissionType, UnitPresetList> alliesPerMissionType = new();
+
+        [Title("Tournament")]
+        public List<ChallengerData> challengers = new();
 
         [Title("Entity")]
         public Entity defaultEntity;

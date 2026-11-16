@@ -24,6 +24,7 @@ MonoBehaviour:
   recyclingDurationAmount: 1
   reparingDurationAmount: 1
   canDropRandomly: 1
+  requiresBlueprint: 0
   soundCamo: 0
   visualCamo: 0.25
   thermicCamo: 0

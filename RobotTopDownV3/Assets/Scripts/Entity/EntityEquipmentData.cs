@@ -30,6 +30,8 @@ public class EntityEquipmentData : AParsableScriptableObject
 	public int reparingDurationAmount = 1;
 	[Parsing("Can Drop")]
 	public bool canDropRandomly = true;
+	[Parsing("Blueprint")]
+	public bool requiresBlueprint = true;
 
 	[System.Serializable]
 	public enum EquipmentType { Frame, Brain, Reactor, Occultor, NeuronalMembrane, Weapon, Tool, Armor, Chipset }

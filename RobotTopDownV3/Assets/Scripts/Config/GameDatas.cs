@@ -184,12 +184,54 @@ public partial class GameDatas : ScriptableObject
 
 		public SerializableDictionary<string, int> upgradeLevels = new SerializableDictionary<string, int>();
 
+		public List<string> unlockedBlueprints = new();
+		public List<string> beatenChallengers = new();
+
 		public DayData dayData = new();
 		public CycleData cycleData = new();
 		public int cycleCount = 0;
 		public int dayCount = 0;
 
 		public bool IsTournamentDay => dayCount > 3;
+		public int TournamentRound => dayCount - 4;
+		public bool IsInTournament => IsTournamentDay && !cycleData.hasDeclinedTournament && (cycleData.hasJoinedTournament || dayCount > 4);
+		public bool CanJoinTournament => dayCount == 4 && !cycleData.hasJoinedTournament && !cycleData.hasDeclinedTournament;
+		public bool IsTournamentAvailable => IsInTournament || CanJoinTournament;
+
+		public bool HasScriptedTournament
+		{
+			get
+			{
+#if UNITY_EDITOR
+				if (GameConfig.current.debug.skipFTUE)
+					return false;
+#endif
+				return cycleCount == 0;
+			}
+		}
+
+		public bool IsUnitLockedByTournament ( EntitySavedData _unit )
+		{
+			return IsInTournament && _unit != null && _unit.index >= 0 && _unit.index < allBuiltUnits.Count
+				&& allBuiltUnits[_unit.index] == _unit && squadUnitsIndex.Contains(_unit.index);
+		}
+
+		public bool IsBlueprintUnlocked ( string _componentName )
+		{
+			return unlockedBlueprints.Contains(_componentName);
+		}
+
+		public void UnlockBlueprint ( string _componentName )
+		{
+			if (!string.IsNullOrEmpty(_componentName) && !unlockedBlueprints.Contains(_componentName))
+				unlockedBlueprints.Add(_componentName);
+		}
+
+		public void MarkChallengerBeaten ( string _challengerId )
+		{
+			if (!string.IsNullOrEmpty(_challengerId) && !beatenChallengers.Contains(_challengerId))
+				beatenChallengers.Add(_challengerId);
+		}
 
 		//tutos
 		public bool didStartTuto = false;
@@ -378,6 +420,30 @@ public partial class GameDatas : ScriptableObject
 
 			public bool didSelectMissions => selectedMissionsIds.Count > 0 || selectedMatchIndexes.Count > 0;
 			public bool hasInitTournament = false;
+			public bool hasJoinedTournament = false;
+			public bool hasDeclinedTournament = false;
+			public string tournamentChallengerId = "";
+			public List<ulong> tournamentRewardCredits = new();
+			public List<string> tournamentRewardBlueprints = new();
+
+			public MissionData.RewardSet GetTournamentRewardSet ()
+			{
+				MissionData.RewardSet rewardSet = new();
+				rewardSet.creditAmounts.AddRange(tournamentRewardCredits);
+				foreach (string blueprintName in tournamentRewardBlueprints)
+				{
+					if (GameAssets.current.equipments.TryGetValue(blueprintName, out EntityEquipmentData blueprint))
+						rewardSet.blueprints.Add(blueprint);
+				}
+
+				return rewardSet;
+			}
+
+			public void EnsureTournamentReward ()
+			{
+				if (hasInitTournament && tournamentRewardCredits.Count == 0 && tournamentRewardBlueprints.Count == 0)
+					ProceduralMatchGenerator.RollTournamentReward(tournamentRewardCredits, tournamentRewardBlueprints);
+			}
 
 			public List<ProceduralMatchData> GetSelectedMatches ()
 			{
@@ -395,20 +461,32 @@ public partial class GameDatas : ScriptableObject
 				hasInitTournament = true;
 				roundsDatas = new MissionDataEnumID[3];
 				tournamentMatches.Clear();
+				tournamentChallengerId = "";
 
-				bool hasScriptedTournament = current.currentPlayerSave.cycleCount == 0;
-#if UNITY_EDITOR
-				if (GameConfig.current.debug.skipFTUE)
-					hasScriptedTournament = false;
-#endif
-				if (hasScriptedTournament)
+				PlayerSave save = current.currentPlayerSave;
+				if (save.HasScriptedTournament)
 				{
 					roundsDatas[0] = FTUEManager.Instance.Cycle1TournamentMissions[0].enumID;
 					roundsDatas[1] = FTUEManager.Instance.Cycle1TournamentMissions[1].enumID;
 					roundsDatas[2] = FTUEManager.Instance.Cycle1TournamentMissions[2].enumID;
 				}
 				else
-					tournamentMatches = ProceduralMatchGenerator.Generate(roundsDatas.Length, current.currentPlayerSave.cycleCount);
+				{
+					tournamentMatches = ProceduralMatchGenerator.Generate(roundsDatas.Length, save.cycleCount);
+
+					ChallengerData challenger = ProceduralMatchGenerator.RollChallenger(save.cycleCount);
+					ProceduralMatchData challengerMatch = challenger == null ? null : ProceduralMatchGenerator.GenerateChallengerMatch(challenger, save.cycleCount);
+					if (challengerMatch != null && tournamentMatches.Count == roundsDatas.Length)
+					{
+						tournamentMatches[roundsDatas.Length - 1] = challengerMatch;
+						tournamentChallengerId = challenger.id;
+					}
+
+					foreach (ProceduralMatchData match in tournamentMatches)
+						match.ClearRewards();
+				}
+
+				ProceduralMatchGenerator.RollTournamentReward(tournamentRewardCredits, tournamentRewardBlueprints);
 			}
 		}
 
@@ -416,6 +494,11 @@ public partial class GameDatas : ScriptableObject
 		public void NewCycle ()
 		{
 			cycleData.hasInitTournament = false;
+			cycleData.hasJoinedTournament = false;
+			cycleData.hasDeclinedTournament = false;
+			cycleData.tournamentChallengerId = "";
+			cycleData.tournamentRewardCredits.Clear();
+			cycleData.tournamentRewardBlueprints.Clear();
 			cycleData.roundsDatas = new MissionDataEnumID[3];
 
 			cycleData.selectedMissionsIds.Clear();

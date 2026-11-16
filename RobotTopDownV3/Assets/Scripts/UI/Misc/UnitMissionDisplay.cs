@@ -89,7 +89,7 @@ public class UnitMissionDisplay : MonoBehaviour, IPointerEnterHandler, IPointerE
 		if (m_data == null)
 			return;
 
-		m_toggleSquadBtn.SetInteractability(m_isInSquad || m_data.CanAddToSquad());
+		m_toggleSquadBtn.SetInteractability(!GameDatas.current.currentPlayerSave.IsInTournament && (m_isInSquad || m_data.CanAddToSquad()));
 	}
 
 	private void RefreshToggleVisual ( bool _isInstant )
@@ -137,6 +137,9 @@ public class UnitMissionDisplay : MonoBehaviour, IPointerEnterHandler, IPointerE
 
 	private void OnClickToggleSquad ()
 	{
+		if (GameDatas.current.currentPlayerSave.IsInTournament)
+			return;
+
 		if (m_isInSquad)
 		{
 			m_isInSquad = false;
@@ -157,8 +160,9 @@ public class UnitMissionDisplay : MonoBehaviour, IPointerEnterHandler, IPointerE
 
 	private void OnClickOpenConfigPanel ()
 	{
-		bool isInMissionPanel = UIManager.Instance.currentPanel is MissionPanel or TournamentPanel;
-		UIManager.Instance.OpenPanel<EntityConfigPanel>().Init(m_data, isInMissionPanel);
+		bool isInTournamentPanel = UIManager.Instance.currentPanel is TournamentPanel;
+		bool isInMissionPanel = isInTournamentPanel || UIManager.Instance.currentPanel is MissionPanel;
+		UIManager.Instance.OpenPanel<EntityConfigPanel>().Init(m_data, isInMissionPanel, isInTournamentPanel);
 	}
 
 	public void OnPointerEnter ( PointerEventData eventData )

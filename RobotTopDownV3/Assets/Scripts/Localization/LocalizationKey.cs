@@ -544,6 +544,14 @@ public enum LocalizationKey
     match_type_construction,
     match_type_sabotage,
     match_type_assassinat,
+    reward_blueprint,
+    tournament_final_challenger,
+    challenger_controle,
+    challenger_sniper,
+    challenger_slug,
+    challenger_assassins,
+    challenger_aoe,
+    challenger_pieges,
 }
 
 public static class LocalizationKeyExtensions
@@ -1095,6 +1103,14 @@ public static class LocalizationKeyExtensions
             case LocalizationKey.match_type_construction: return "match_type/construction";
             case LocalizationKey.match_type_sabotage: return "match_type/sabotage";
             case LocalizationKey.match_type_assassinat: return "match_type/assassinat";
+            case LocalizationKey.reward_blueprint: return "reward/blueprint";
+            case LocalizationKey.tournament_final_challenger: return "tournament/final_challenger";
+            case LocalizationKey.challenger_controle: return "challenger/controle";
+            case LocalizationKey.challenger_sniper: return "challenger/sniper";
+            case LocalizationKey.challenger_slug: return "challenger/slug";
+            case LocalizationKey.challenger_assassins: return "challenger/assassins";
+            case LocalizationKey.challenger_aoe: return "challenger/aoe";
+            case LocalizationKey.challenger_pieges: return "challenger/pieges";
             default: return string.Empty;
         }
     }

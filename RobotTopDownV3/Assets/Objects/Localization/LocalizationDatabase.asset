@@ -2194,3 +2194,35 @@ MonoBehaviour:
     values:
     - Assassination
     - Assassinat
+  - key: reward/blueprint
+    values:
+    - "Blueprint: {0}"
+    - "Blueprint : {0}"
+  - key: tournament/final_challenger
+    values:
+    - "Challenger: {0}"
+    - "Challenger : {0}"
+  - key: challenger/controle
+    values:
+    - Control
+    - "Contr\xF4le"
+  - key: challenger/sniper
+    values:
+    - Sniper
+    - Sniper
+  - key: challenger/slug
+    values:
+    - Slug
+    - Slug
+  - key: challenger/assassins
+    values:
+    - Assassins
+    - Assassins
+  - key: challenger/aoe
+    values:
+    - AoE
+    - AoE
+  - key: challenger/pieges
+    values:
+    - Traps
+    - "Pi\xE8ges"

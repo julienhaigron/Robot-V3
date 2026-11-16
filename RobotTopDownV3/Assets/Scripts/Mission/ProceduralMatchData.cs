@@ -15,8 +15,16 @@ public partial class GameDatas
 		public List<string> enemyPresetNames = new();
 		public List<ulong> rewardCredits = new();
 		public List<string> rewardComponentNames = new();
+		public string challengerId;
 
 		[NonSerialized] private MissionData m_missionData;
+
+		public void ClearRewards ()
+		{
+			rewardCredits.Clear();
+			rewardComponentNames.Clear();
+			m_missionData = null;
+		}
 
 		public MissionData GetMissionData ()
 		{

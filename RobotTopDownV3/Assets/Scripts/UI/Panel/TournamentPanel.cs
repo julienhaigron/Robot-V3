@@ -16,6 +16,7 @@ public class TournamentPanel : AUIPanel
 	[SerializeField] private StatDisplay[] m_hoveredUnitStatDisplays;
 
 	[Title("Other Squads")]
+	[SerializeField] private LocalizationText m_finalRoundLabel;
 	[SerializeField] private Image[] m_cursors;
 	[SerializeField] private UnitMissionDisplay[] m_round1SquadUnits;
 	[SerializeField] private Image m_squadIcon;
@@ -54,13 +55,16 @@ public class TournamentPanel : AUIPanel
 
 		RefreshSquads();
 
-		SetCurrentMatchInfo(GetRoundMission(CurrentRound));
+		SetRewardInfo(GameDatas.current.currentPlayerSave.cycleData.GetTournamentRewardSet());
 	}
 
 	private void RefreshSquads ()
 	{
-		if (!GameDatas.current.currentPlayerSave.cycleData.hasInitTournament)
-			GameDatas.current.currentPlayerSave.cycleData.StartTournament();
+		GameDatas.PlayerSave.CycleData cycleData = GameDatas.current.currentPlayerSave.cycleData;
+		if (!cycleData.hasInitTournament)
+			cycleData.StartTournament();
+		cycleData.EnsureTournamentReward();
+		RefreshFinalRoundLabel(cycleData);
 
 		for (int i = 0; i < m_cursors.Length; i++)
 			m_cursors[i].gameObject.SetActive(i == CurrentRound);
@@ -168,16 +172,28 @@ public class TournamentPanel : AUIPanel
 				display.Hide();
 	}
 
-	private void SetCurrentMatchInfo ( MissionData _data )
+	private void RefreshFinalRoundLabel ( GameDatas.PlayerSave.CycleData _cycleData )
 	{
-		MissionData.RewardSet rewardSet = _data.GetRewardSet();
+		if (m_finalRoundLabel == null)
+			return;
 
+		ChallengerData challenger = ProceduralMatchGenerator.FindChallenger(_cycleData.tournamentChallengerId);
+		if (challenger != null)
+			m_finalRoundLabel.SetKey(LocalizationKey.tournament_final_challenger.ToKey(), challenger.NameKey);
+		else
+			m_finalRoundLabel.SetKey(LocalizationKey.tournament_final.ToKey());
+	}
+
+	private void SetRewardInfo ( MissionData.RewardSet _rewardSet )
+	{
 		for (int i = 0; i < m_componentRewardDisplays.Length; i++)
 		{
-			if (rewardSet.components.Count > i)
+			int blueprintIndex = i - _rewardSet.components.Count;
+			if (_rewardSet.components.Count > i || _rewardSet.blueprints.Count > blueprintIndex)
 			{
+				bool isBlueprint = blueprintIndex >= 0;
 				m_componentRewardDisplays[i].Show();
-				m_componentRewardDisplays[i].Init(rewardSet.components[i], null);
+				m_componentRewardDisplays[i].Init(isBlueprint ? _rewardSet.blueprints[blueprintIndex] : _rewardSet.components[i], null, false, isBlueprint);
 			}
 			else
 				m_componentRewardDisplays[i].Hide();
@@ -185,16 +201,16 @@ public class TournamentPanel : AUIPanel
 
 		for (int i = 0; i < m_currencyRewardDisplays.Length; i++)
 		{
-			if (rewardSet.creditAmounts.Count > i)
+			if (_rewardSet.creditAmounts.Count > i)
 			{
 				m_currencyRewardDisplays[i].Show();
-				m_currencyRewardDisplays[i].Init(CurrencyType.SoftCurrency, rewardSet.creditAmounts[i], true, null);
+				m_currencyRewardDisplays[i].Init(CurrencyType.SoftCurrency, _rewardSet.creditAmounts[i], true, null);
 			}
 			else
 				m_currencyRewardDisplays[i].Hide();
 		}
 
-		UnitRewardDisplay.RefreshPreview(m_unitRewardDisplays, rewardSet);
+		UnitRewardDisplay.RefreshPreview(m_unitRewardDisplays, _rewardSet);
 	}
 
 	private EntityEquipmentData.EntityFaction GetDominentSquadFaction ( List<UnitPreset> _units )
@@ -225,8 +241,12 @@ public class TournamentPanel : AUIPanel
 
 	private void OnClickStartMission ()
 	{
-		if (GameDatas.current.currentPlayerSave.squadUnitsIndex.Count == 0)
+		GameDatas.PlayerSave save = GameDatas.current.currentPlayerSave;
+		if (save.squadUnitsIndex.Count == 0)
 			return;
+
+		if (save.CanJoinTournament)
+			save.cycleData.hasJoinedTournament = true;
 
 		MissionData missionData = GetRoundMission(CurrentRound);
 		if (missionData.preMissionDialogue != null)

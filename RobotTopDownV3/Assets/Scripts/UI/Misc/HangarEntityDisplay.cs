@@ -74,6 +74,7 @@ public class HangarEntityDisplay : MonoBehaviour
 				m_subSlots[i].Hide();
 		}
 
+		m_selectBtn.SetInteractability(!GameDatas.current.currentPlayerSave.IsInTournament);
 		RefreshToggleVisual(true);
 	}
 
@@ -113,6 +114,9 @@ public class HangarEntityDisplay : MonoBehaviour
 
 	private void OnClickSelect ()
 	{
+		if (GameDatas.current.currentPlayerSave.IsInTournament)
+			return;
+
 		if (!m_isSelected && m_savedData.CanAddToSquad())
 		{
 			m_isSelected = true;

@@ -125,7 +125,8 @@ public class RepairStationPanel : AUIPanel
 	{
 		SetSlotData(_container.Index, _display.SavedData);
 		_display.SavedData.isRepairing = true;
-		GameDatas.current.currentPlayerSave.squadUnitsIndex.Remove(_display.SavedData.index);
+		if (!GameDatas.current.currentPlayerSave.IsInTournament)
+			GameDatas.current.currentPlayerSave.squadUnitsIndex.Remove(_display.SavedData.index);
 		m_repairingSlots[_container.Index].RefreshRepairData();
 	}
 

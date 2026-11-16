@@ -414,12 +414,23 @@ public class GameManager : SingletonPersistant<GameManager>
 
 	public void ApplyMatchProgression ( EndLevelPopup.GameResult _gameResult )
 	{
-		bool wasTournamentMatch = GameDatas.current.currentPlayerSave.IsTournamentDay;
-		GameDatas.current.currentPlayerSave.NewDay();
+		GameDatas.PlayerSave save = GameDatas.current.currentPlayerSave;
+		bool wasTournamentMatch = save.IsInTournament;
+		bool wasFinal = save.TournamentRound >= 2;
+		string challengerId = save.cycleData.tournamentChallengerId;
+		int cycleBeforeMatch = save.cycleCount;
+		save.NewDay();
 
-		if (wasTournamentMatch && _gameResult == EndLevelPopup.GameResult.Loose
-			&& GameDatas.current.currentPlayerSave.cycleData.hasInitTournament)
-			GameDatas.current.currentPlayerSave.NewCycle();
+		if (!wasTournamentMatch)
+			return;
+
+		if (_gameResult == EndLevelPopup.GameResult.Win)
+		{
+			if (wasFinal)
+				save.MarkChallengerBeaten(challengerId);
+		}
+		else if (save.cycleCount == cycleBeforeMatch)
+			save.NewCycle();
 	}
 
 	/*private void SaveMacroChanges ()

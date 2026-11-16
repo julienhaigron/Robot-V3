@@ -24,5 +24,6 @@ MonoBehaviour:
   recyclingDurationAmount: 1
   reparingDurationAmount: 1
   canDropRandomly: 1
+  requiresBlueprint: 0
   equipmentSlotAvailable: 2
   visionType: 0

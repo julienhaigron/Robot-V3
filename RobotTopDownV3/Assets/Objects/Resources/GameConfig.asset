@@ -98,6 +98,7 @@ MonoBehaviour:
       archetypes: 0500000004000000
     - strategy: 3
       archetypes: 0600000002000000
+    challengerTournamentInterval: 2
   input:
     interactionRayCastLength: 100
     uiLayer:
