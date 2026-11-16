@@ -25,7 +25,7 @@ MonoBehaviour:
     lastPlayerSaveSelectedID: 0
   playerSaves:
   - saveName: New save
-    lastSaveTimeTicks: 639304496177032961
+    lastSaveTimeTicks: 639304500042854763
     allBuiltUnits:
     - name: Start_Melee
       index: 0
@@ -34,17 +34,17 @@ MonoBehaviour:
       frame:
         ID: Frame_Start24
         dataID: Frame_Start
-        isDamaged: 1
+        isDamaged: 0
         acquisitionDateTicks: 0
       reactor:
         ID: Reactor_Start25
         dataID: Reactor_Start
-        isDamaged: 1
+        isDamaged: 0
         acquisitionDateTicks: 0
       neuronalMembrane:
         ID: NeurInt_Start_Optic26
         dataID: NeurInt_Start_Optic
-        isDamaged: 1
+        isDamaged: 0
         acquisitionDateTicks: 0
       brain:
         ID: AIM_Starting_Melee27
@@ -71,12 +71,12 @@ MonoBehaviour:
       reactor:
         ID: Reactor_Start30
         dataID: Reactor_Start
-        isDamaged: 1
+        isDamaged: 0
         acquisitionDateTicks: 0
       neuronalMembrane:
         ID: NeurInt_Start_Optic31
         dataID: NeurInt_Start_Optic
-        isDamaged: 1
+        isDamaged: 0
         acquisitionDateTicks: 0
       brain:
         ID: AIM_Starting_Shoot32
@@ -86,7 +86,7 @@ MonoBehaviour:
       arms:
       - ID: Weap_Start_FireGun33
         dataID: Weap_Start_FireGun
-        isDamaged: 1
+        isDamaged: 0
         acquisitionDateTicks: 0
       auxiliar: []
       chipsets: []
@@ -113,12 +113,12 @@ MonoBehaviour:
       brain:
         ID: AIM_Starting_Status92
         dataID: AIM_Starting_Status
-        isDamaged: 1
+        isDamaged: 0
         acquisitionDateTicks: 0
       arms:
       - ID: Weap_Start_PlasmaCannon93
         dataID: Weap_Start_PlasmaCannon
-        isDamaged: 1
+        isDamaged: 0
         acquisitionDateTicks: 0
       auxiliar: []
       chipsets: []
@@ -128,46 +128,46 @@ MonoBehaviour:
     - ID: NeurInt_Start_Thermic94
       dataID: NeurInt_Start_Thermic
       isDamaged: 0
-      acquisitionDateTicks: 639304456669762127
+      acquisitionDateTicks: 639304463733602801
     - ID: NeurInt_Start_Radar95
       dataID: NeurInt_Start_Radar
       isDamaged: 0
-      acquisitionDateTicks: 639304456669762127
+      acquisitionDateTicks: 639304463733612924
     - ID: Arm_Start_Blud120
       dataID: Arm_Start_Blud
       isDamaged: 0
-      acquisitionDateTicks: 639304456669762127
+      acquisitionDateTicks: 639304463733612924
     - ID: Occ_Start_Radar121
       dataID: Occ_Start_Radar
       isDamaged: 0
-      acquisitionDateTicks: 639304456669762127
+      acquisitionDateTicks: 639304463733612924
     - ID: Occ_Broken122
       dataID: Occ_Broken
       isDamaged: 0
-      acquisitionDateTicks: 639304456669762127
+      acquisitionDateTicks: 639304463733612924
     - ID: Reactor_Start147
       dataID: Reactor_Start
       isDamaged: 0
-      acquisitionDateTicks: 639304456669772078
+      acquisitionDateTicks: 639304463733622864
     - ID: Weap_Start_HamMag148
       dataID: Weap_Start_HamMag
       isDamaged: 0
-      acquisitionDateTicks: 639304456669772078
+      acquisitionDateTicks: 639304463733622864
     - ID: AIM_Starting_Melee173
       dataID: AIM_Starting_Melee
       isDamaged: 0
-      acquisitionDateTicks: 639304456669772078
+      acquisitionDateTicks: 639304463733622864
     - ID: Frame_Start174
       dataID: Frame_Start
       isDamaged: 0
-      acquisitionDateTicks: 639304456669772078
-    equipmentCounter: 477
+      acquisitionDateTicks: 639304463733622864
+    equipmentCounter: 271
     currencies:
       keys: 01000000020000000300000004000000
-      values: 9301000000000000000000000000000000000000000000000000000000000000
+      values: 6400000000000000000000000000000000000000000000000000000000000000
     totalCurrenciesGot:
       keys: 01000000020000000300000004000000
-      values: 9301000000000000000000000000000000000000000000000000000000000000
+      values: 6400000000000000000000000000000000000000000000000000000000000000
     totalCurrenciesSpent:
       keys: 01000000020000000300000004000000
       values: 0000000000000000000000000000000000000000000000000000000000000000
@@ -183,7 +183,7 @@ MonoBehaviour:
     dayData:
       itemsInShop:
       - component:
-          ID: Reactor_Psy_Mvt_En453
+          ID: Reactor_Psy_Mvt_En247
           dataID: Reactor_Psy_Mvt_En
           isDamaged: 0
           acquisitionDateTicks: 0
@@ -191,7 +191,7 @@ MonoBehaviour:
         isFrozen: 0
         frozenTodayInShop: 0
       - component:
-          ID: AIM_Psy_Mel454
+          ID: AIM_Psy_Mel248
           dataID: AIM_Psy_Mel
           isDamaged: 0
           acquisitionDateTicks: 0
@@ -199,31 +199,23 @@ MonoBehaviour:
         isFrozen: 0
         frozenTodayInShop: 0
       - component:
-          ID: Arm_Psy_Rad455
-          dataID: Arm_Psy_Rad
+          ID: Arm_Psy_Plasma249
+          dataID: Arm_Psy_Plasma
           isDamaged: 0
           acquisitionDateTicks: 0
         shopFaction: 2
         isFrozen: 0
         frozenTodayInShop: 0
       - component:
-          ID: Reactor_Psy_Mvt_En456
-          dataID: Reactor_Psy_Mvt_En
+          ID: NeurInt_Psy_Thermic250
+          dataID: NeurInt_Psy_Thermic
           isDamaged: 0
           acquisitionDateTicks: 0
         shopFaction: 2
         isFrozen: 0
         frozenTodayInShop: 0
       - component:
-          ID: Frame_Psy_Armoured457
-          dataID: Frame_Psy_Armoured
-          isDamaged: 0
-          acquisitionDateTicks: 0
-        shopFaction: 2
-        isFrozen: 0
-        frozenTodayInShop: 0
-      - component:
-          ID: Reactor_Psy_Sho_En458
+          ID: Reactor_Psy_Sho_En251
           dataID: Reactor_Psy_Sho_En
           isDamaged: 0
           acquisitionDateTicks: 0
@@ -231,63 +223,31 @@ MonoBehaviour:
         isFrozen: 0
         frozenTodayInShop: 0
       - component:
-          ID: Chip_Psy_Travel459
-          dataID: Chip_Psy_Travel
+          ID: Weap_Psy_Spear252
+          dataID: Weap_Psy_Spear
           isDamaged: 0
           acquisitionDateTicks: 0
         shopFaction: 2
         isFrozen: 0
         frozenTodayInShop: 0
       - component:
-          ID: Chip_Psy_Prep460
-          dataID: Chip_Psy_Prep
+          ID: NeurInt_Psy_Optic253
+          dataID: NeurInt_Psy_Optic
           isDamaged: 0
           acquisitionDateTicks: 0
         shopFaction: 2
         isFrozen: 0
         frozenTodayInShop: 0
       - component:
-          ID: Arm_Com_Reflecting461
-          dataID: Arm_Com_Reflecting
+          ID: Reactor_Psy_Mvt_Ult254
+          dataID: Reactor_Psy_Mvt_Ult
           isDamaged: 0
           acquisitionDateTicks: 0
-        shopFaction: 4
+        shopFaction: 2
         isFrozen: 0
         frozenTodayInShop: 0
       - component:
-          ID: Reactor_Com_Sho_En462
-          dataID: Reactor_Com_Sho_En
-          isDamaged: 0
-          acquisitionDateTicks: 0
-        shopFaction: 4
-        isFrozen: 0
-        frozenTodayInShop: 0
-      - component:
-          ID: Frame_Com_Goliath463
-          dataID: Frame_Com_Goliath
-          isDamaged: 0
-          acquisitionDateTicks: 0
-        shopFaction: 4
-        isFrozen: 0
-        frozenTodayInShop: 0
-      - component:
-          ID: AIM_Com_Off464
-          dataID: AIM_Com_Off
-          isDamaged: 0
-          acquisitionDateTicks: 0
-        shopFaction: 4
-        isFrozen: 0
-        frozenTodayInShop: 0
-      - component:
-          ID: Chip_Com_Run465
-          dataID: Chip_Com_Run
-          isDamaged: 0
-          acquisitionDateTicks: 0
-        shopFaction: 4
-        isFrozen: 0
-        frozenTodayInShop: 0
-      - component:
-          ID: Frame_Com_Kamikaze466
+          ID: Frame_Com_Kamikaze255
           dataID: Frame_Com_Kamikaze
           isDamaged: 0
           acquisitionDateTicks: 0
@@ -295,55 +255,111 @@ MonoBehaviour:
         isFrozen: 0
         frozenTodayInShop: 0
       - component:
-          ID: Reactor_Com_Sho_Ult467
-          dataID: Reactor_Com_Sho_Ult
+          ID: NeurInt_Com_Thermic256
+          dataID: NeurInt_Com_Thermic
           isDamaged: 0
           acquisitionDateTicks: 0
         shopFaction: 4
         isFrozen: 0
         frozenTodayInShop: 0
       - component:
-          ID: Reactor_Com_Sho_En468
-          dataID: Reactor_Com_Sho_En
+          ID: Frame_Com_Kamikaze257
+          dataID: Frame_Com_Kamikaze
           isDamaged: 0
           acquisitionDateTicks: 0
         shopFaction: 4
         isFrozen: 0
         frozenTodayInShop: 0
       - component:
-          ID: Occ_Pal_Thermic469
-          dataID: Occ_Pal_Thermic
+          ID: Frame_Com_Assault258
+          dataID: Frame_Com_Assault
+          isDamaged: 0
+          acquisitionDateTicks: 0
+        shopFaction: 4
+        isFrozen: 0
+        frozenTodayInShop: 0
+      - component:
+          ID: AIM_Com_Chi259
+          dataID: AIM_Com_Chi
+          isDamaged: 0
+          acquisitionDateTicks: 0
+        shopFaction: 4
+        isFrozen: 0
+        frozenTodayInShop: 0
+      - component:
+          ID: Tool_Com_Trap_Kit260
+          dataID: Tool_Com_Trap_Kit
+          isDamaged: 0
+          acquisitionDateTicks: 0
+        shopFaction: 4
+        isFrozen: 0
+        frozenTodayInShop: 0
+      - component:
+          ID: AIM_Com_Chi261
+          dataID: AIM_Com_Chi
+          isDamaged: 0
+          acquisitionDateTicks: 0
+        shopFaction: 4
+        isFrozen: 0
+        frozenTodayInShop: 0
+      - component:
+          ID: Weap_Com_Rapier262
+          dataID: Weap_Com_Rapier
+          isDamaged: 0
+          acquisitionDateTicks: 0
+        shopFaction: 4
+        isFrozen: 0
+        frozenTodayInShop: 0
+      - component:
+          ID: Arm_Pal_Insulating263
+          dataID: Arm_Pal_Insulating
           isDamaged: 0
           acquisitionDateTicks: 0
         shopFaction: 3
         isFrozen: 0
         frozenTodayInShop: 0
       - component:
-          ID: Occ_Pal_Optic470
-          dataID: Occ_Pal_Optic
+          ID: Reactor_Pal_Mel_En264
+          dataID: Reactor_Pal_Mel_En
           isDamaged: 0
           acquisitionDateTicks: 0
         shopFaction: 3
         isFrozen: 0
         frozenTodayInShop: 0
       - component:
-          ID: AIM_Pal_Off471
-          dataID: AIM_Pal_Off
+          ID: Frame_Pal_Knight265
+          dataID: Frame_Pal_Knight
           isDamaged: 0
           acquisitionDateTicks: 0
         shopFaction: 3
         isFrozen: 0
         frozenTodayInShop: 0
       - component:
-          ID: Tool_Pal_Defense Amplifier472
-          dataID: Tool_Pal_Defense Amplifier
+          ID: Reactor_Pal_Sho_Ult266
+          dataID: Reactor_Pal_Sho_Ult
           isDamaged: 0
           acquisitionDateTicks: 0
         shopFaction: 3
         isFrozen: 0
         frozenTodayInShop: 0
       - component:
-          ID: NeurInt_Pal_Optic473
+          ID: Arm_Pal_Insulating267
+          dataID: Arm_Pal_Insulating
+          isDamaged: 0
+          acquisitionDateTicks: 0
+        shopFaction: 3
+        isFrozen: 0
+        frozenTodayInShop: 0
+      - component:
+          ID: Reactor_Pal_Mvt_Ult268
+          dataID: Reactor_Pal_Mvt_Ult
+          isDamaged: 0
+          acquisitionDateTicks: 0
+        shopFaction: 3
+        isFrozen: 0
+        frozenTodayInShop: 0
+      - component:
+          ID: NeurInt_Pal_Optic269
           dataID: NeurInt_Pal_Optic
           isDamaged: 0
           acquisitionDateTicks: 0
@@ -351,24 +367,8 @@ MonoBehaviour:
         isFrozen: 0
         frozenTodayInShop: 0
       - component:
-          ID: Tool_Pal_Shield474
-          dataID: Tool_Pal_Shield
-          isDamaged: 0
-          acquisitionDateTicks: 0
-        shopFaction: 3
-        isFrozen: 0
-        frozenTodayInShop: 0
-      - component:
-          ID: AIM_Pal_Def475
-          dataID: AIM_Pal_Def
-          isDamaged: 0
-          acquisitionDateTicks: 0
-        shopFaction: 3
-        isFrozen: 0
-        frozenTodayInShop: 0
-      - component:
-          ID: Weap_Pal_Minigun476
-          dataID: Weap_Pal_Minigun
+          ID: AIM_Pal_Off270
+          dataID: AIM_Pal_Off
           isDamaged: 0
           acquisitionDateTicks: 0
         shopFaction: 3
@@ -386,155 +386,156 @@ MonoBehaviour:
       selectedMissionsIds: 
       roundsDatas: 000000000000000000000000
       availableMatches:
-      - type: 4
-        strategy: 2
-        phase: 0
-        mapName: Day5Tuto
-        enemyPresetNames:
-        - Psy Snper Smal
-        - Pal tank Small
-        - Pal shooting Small
-        - Psy Mel Small
-        rewardCredits: 18000000000000001b000000000000001e000000000000001b000000000000001d000000000000001600000000000000
-        rewardComponentNames: []
       - type: 5
-        strategy: 1
-        phase: 0
-        mapName: Day6Tuto
-        enemyPresetNames:
-        - Pal shooting Small
-        - Pal tank Small
-        - Com Ass Small
-        - Psy Snper Smal
-        rewardCredits: 1a000000000000001600000000000000
-        rewardComponentNames:
-        - Weap_Psy_Spear
-        - Weap_Com_Rapier
-      - type: 2
-        strategy: 3
-        phase: 0
-        mapName: Day6Tuto
-        enemyPresetNames:
-        - Pal shooting Small
-        - Psy Tank Small
-        - Pal shooting Small
-        - Com Ass Small
-        rewardCredits: 15000000000000001b000000000000001c000000000000001600000000000000
-        rewardComponentNames:
-        - Weap_Psy_Sniper
-      - type: 1
-        strategy: 3
-        phase: 0
-        mapName: Day6Tuto
-        enemyPresetNames:
-        - Psy Mel Small
-        - Psy Mel Small
-        - Pal shooting Small
-        - Psy Mel Small
-        rewardCredits: 160000000000000015000000000000001c000000000000001c00000000000000
-        rewardComponentNames:
-        - Weap_Pal_Minigun
-      - type: 2
         strategy: 0
         phase: 0
         mapName: Day6Tuto
         enemyPresetNames:
-        - Psy Mel Small
-        - Psy Snper Smal
-        - Psy Mel Small
-        - Pal tank Small
-        rewardCredits: 17000000000000001b00000000000000
-        rewardComponentNames:
-        - Occ_Psy_Optic
-        - Weap_Pal_Missil_Array
-      - type: 4
-        strategy: 1
-        phase: 0
-        mapName: Day6Tuto
-        enemyPresetNames:
-        - Pal tank Small
         - Pal shooting Small
-        - Com Ass Small
+        - Psy Snper Smal
         - Psy Tank Small
-        rewardCredits: 16000000000000001600000000000000150000000000000016000000000000001d000000000000001a00000000000000
+        - Psy Snper Smal
+        rewardCredits: 150000000000000016000000000000001500000000000000190000000000000019000000000000001a00000000000000
         rewardComponentNames: []
       - type: 0
-        strategy: 1
+        strategy: 3
         phase: 0
-        mapName: Day6Tuto
+        mapName: Day5Tuto
         enemyPresetNames:
-        - Psy Tank Small
+        - Pal shooting Small
+        - Com Ass Small
         - Pal tank Small
-        - Psy Snper Smal
         - Psy Mel Small
-        rewardCredits: 150000000000000019000000000000001e00000000000000180000000000000018000000000000001400000000000000
-        rewardComponentNames: []
+        rewardCredits: 160000000000000014000000000000001500000000000000
+        rewardComponentNames:
+        - Reactor_Pal_Mel_En
+      - type: 4
+        strategy: 0
+        phase: 0
+        mapName: Day5Tuto
+        enemyPresetNames:
+        - Pal shooting Small
+        - Psy Snper Smal
+        - Com Ass Small
+        - Pal tank Small
+        rewardCredits: 1900000000000000
+        rewardComponentNames:
+        - NeurInt_Pal_Thermic
+        - Weap_Psy_Glaive
       - type: 0
         strategy: 2
         phase: 0
         mapName: Day6Tuto
         enemyPresetNames:
-        - Psy Tank Small
-        - Pal tank Small
+        - Psy Mel Small
         - Com Ass Small
+        - Pal shooting Small
         - Pal tank Small
-        rewardCredits: 16000000000000001b00000000000000
+        rewardCredits: 1c000000000000001b00000000000000
+        rewardComponentNames:
+        - Tool_Psy_Repulsor
+        - Tool_Psy_Teleporter
+      - type: 2
+        strategy: 1
+        phase: 0
+        mapName: Day6Tuto
+        enemyPresetNames:
+        - Com Ass Small
+        - Com Ass Small
+        - Com Ass Small
+        - Com Ass Small
+        rewardCredits: 1a0000000000000018000000000000001a0000000000000018000000000000001b000000000000001e00000000000000
+        rewardComponentNames: []
+      - type: 0
+        strategy: 3
+        phase: 0
+        mapName: Day6Tuto
+        enemyPresetNames:
+        - Pal shooting Small
+        - Psy Tank Small
+        - Psy Tank Small
+        - Pal shooting Small
+        rewardCredits: 1400000000000000150000000000000018000000000000001e00000000000000
         rewardComponentNames:
         - Tool_Com_Mine_Kit
-        - Weap_Psy_Railgun
       - type: 5
+        strategy: 0
+        phase: 0
+        mapName: Day5Tuto
+        enemyPresetNames:
+        - Psy Tank Small
+        - Psy Mel Small
+        - Com Ass Small
+        - Psy Snper Smal
+        rewardCredits: 1b00000000000000
+        rewardComponentNames:
+        - AIM_Pal_Chi
+        - Weap_Pal_Minigun
+      - type: 0
         strategy: 2
         phase: 0
         mapName: Day5Tuto
         enemyPresetNames:
+        - Pal shooting Small
+        - Com Ass Small
         - Psy Mel Small
-        - Psy Tank Small
         - Psy Mel Small
-        - Psy Tank Small
-        rewardCredits: 1e000000000000001e000000000000001a000000000000001a0000000000000017000000000000001a00000000000000
+        rewardCredits: 1500000000000000180000000000000016000000000000001b0000000000000019000000000000001d00000000000000
         rewardComponentNames: []
       - type: 2
-        strategy: 0
+        strategy: 1
+        phase: 0
+        mapName: Day6Tuto
+        enemyPresetNames:
+        - Psy Snper Smal
+        - Com Ass Small
+        - Pal tank Small
+        - Com Ass Small
+        rewardCredits: 1700000000000000
+        rewardComponentNames:
+        - NeurInt_Psy_Thermic
+        - Arm_Psy_Plasma
+      - type: 2
+        strategy: 1
+        phase: 0
+        mapName: Day6Tuto
+        enemyPresetNames:
+        - Psy Mel Small
+        - Com Ass Small
+        - Psy Tank Small
+        - Com Ass Small
+        rewardCredits: 17000000000000001a00000000000000
+        rewardComponentNames:
+        - Tool_Pal_Shield
+        - Arm_Pal_Heat
+      - type: 1
+        strategy: 2
         phase: 0
         mapName: Day6Tuto
         enemyPresetNames:
         - Pal tank Small
-        - Psy Tank Small
-        - Com Ass Small
-        - Psy Tank Small
-        rewardCredits: 180000000000000017000000000000001d00000000000000
-        rewardComponentNames:
-        - Reactor_Pal_Mel_Ult
-      - type: 3
-        strategy: 3
-        phase: 0
-        mapName: Day5Tuto
-        enemyPresetNames:
-        - Pal shooting Small
-        - Pal shooting Small
-        - Psy Snper Smal
+        - Psy Mel Small
+        - Psy Mel Small
         - Pal tank Small
-        rewardCredits: 1800000000000000
-        rewardComponentNames:
-        - Reactor_Psy_Sho_Ult
-        - Weap_Psy_Railgun
-      - type: 4
-        strategy: 0
-        phase: 0
-        mapName: Day5Tuto
-        enemyPresetNames:
-        - Com Ass Small
-        - Com Ass Small
-        - Pal shooting Small
-        - Com Ass Small
-        rewardCredits: 1e000000000000001a000000000000001b000000000000001c00000000000000
+        rewardCredits: 170000000000000019000000000000001e000000000000001700000000000000
         rewardComponentNames:
         - Occ_Com_Radar
-      selectedMatchIndexes: 0000000006000000080000000a000000090000000700000005000000
+      - type: 2
+        strategy: 2
+        phase: 0
+        mapName: Day6Tuto
+        enemyPresetNames:
+        - Pal shooting Small
+        - Com Ass Small
+        - Pal shooting Small
+        - Pal tank Small
+        rewardCredits: 190000000000000017000000000000001b00000000000000160000000000000017000000000000001600000000000000
+        rewardComponentNames: []
+      selectedMatchIndexes: 00000000020000000400000006000000
       tournamentMatches: []
       hasInitTournament: 0
     cycleCount: 1
-    dayCount: 2
+    dayCount: 0
     didStartTuto: 1
     didUnlockReturnToHubPopup: 1
     didUnlockRepareStation: 1

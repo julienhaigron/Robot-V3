@@ -186,12 +186,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9bb1bd3d393c7ce408d126bb6f355b1e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: RTD::MissionButton
+  m_label: {fileID: 0}
   m_button: {fileID: 3136753431461068814}
   m_image: {fileID: 0}
   m_useDefaultSfx: 1
   m_clickSfxOverride: 0
   m_hoverSfxOverride: 0
-  m_icon: {fileID: 0}
   m_name: {fileID: 7644138648904935613}
   m_description: {fileID: 8768785578248626509}
   m_outlineImg: {fileID: 5922090998311467327}
@@ -351,7 +351,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -82, y: 33}
+  m_AnchoredPosition: {x: -82, y: 28.977654}
   m_SizeDelta: {x: 297.84, y: 38}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5206381216573013887
@@ -417,7 +417,7 @@ MonoBehaviour:
   m_fontSizeMax: 72
   m_fontStyle: 17
   m_HorizontalAlignment: 1
-  m_VerticalAlignment: 512
+  m_VerticalAlignment: 256
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_characterHorizontalScale: 1
@@ -448,7 +448,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: -0.8328247, y: 0, z: 45.819885, w: 5.198242}
+  m_margin: {x: -0.8328247, y: 0, z: -163.5733, w: 5.198242}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
