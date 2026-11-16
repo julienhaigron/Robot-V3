@@ -67,6 +67,7 @@ public class MissionPanel : AUIPanel
 		bool doTutoMission = FTUEManager.Instance.IsFTUERunning
 			&& GameDatas.current.currentPlayerSave.dayCount >= 0
 			&& GameDatas.current.currentPlayerSave.cycleData.selectedMissionsIds.Count > GameDatas.current.currentPlayerSave.dayCount;
+		List<GameDatas.ProceduralMatchData> selectedMatches = GameDatas.current.currentPlayerSave.cycleData.GetSelectedMatches();
 		for (int i = 0; i < m_missionBtns.Length; i++)
 		{
 			if (doTutoMission)
@@ -75,6 +76,16 @@ public class MissionPanel : AUIPanel
 				{
 					m_missionBtns[i].SetVisible(true, true);
 					m_missionBtns[i].Init(GameDatas.current.currentPlayerSave.cycleData.selectedMissionsIds[GameDatas.current.currentPlayerSave.dayCount]);
+				}
+				else
+					m_missionBtns[i].SetVisible(false, true);
+			}
+			else if (selectedMatches.Count > 0)
+			{
+				if (selectedMatches.Count > i)
+				{
+					m_missionBtns[i].SetVisible(true, true);
+					m_missionBtns[i].Init(selectedMatches[i]);
 				}
 				else
 					m_missionBtns[i].SetVisible(false, true);

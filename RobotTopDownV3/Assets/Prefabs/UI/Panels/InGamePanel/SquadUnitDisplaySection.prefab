@@ -175,7 +175,7 @@ MonoBehaviour:
   - {fileID: 6628605828414924919}
   - {fileID: 6146767615238377305}
   - {fileID: 8557492398686416626}
-  m_hiddenPosition: {x: 0, y: 106.72, z: 0}
+  m_hiddenPosition: {x: 0, y: 67.3, z: 0}
   m_visiblePosition: {x: 0, y: -56.5, z: 0}
 --- !u!222 &4940046296373144705
 CanvasRenderer:

@@ -62,8 +62,10 @@ public class GameAssets : ScriptableObject
             }
         }
 
-        [Title("Tournament")]
-        public MissionData[] tournamentMissionsPool;
+        [Title("Procedural matches")]
+        public SerializableDictionary<MissionData.MissionType, MapList> mapsPerMissionType = new();
+        public SerializableDictionary<PlaythroughPhase, UnitPresetList> enemyPresetsPerPhase = new();
+        public SerializableDictionary<MissionData.MissionType, UnitPresetList> alliesPerMissionType = new();
 
         [Title("Entity")]
         public Entity defaultEntity;

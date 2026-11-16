@@ -370,17 +370,31 @@ public partial class GameDatas : ScriptableObject
 		[Serializable]
 		public class CycleData
 		{
-			public List<MissionDataEnumID> availableMissionsIds = new();
 			public List<MissionDataEnumID> selectedMissionsIds = new();
 			public MissionDataEnumID[] roundsDatas;
+			public List<ProceduralMatchData> availableMatches = new();
+			public List<int> selectedMatchIndexes = new();
+			public List<ProceduralMatchData> tournamentMatches = new();
 
-			public bool didSelectMissions => GameDatas.current.currentPlayerSave.cycleData.selectedMissionsIds.Count > 0;
+			public bool didSelectMissions => selectedMissionsIds.Count > 0 || selectedMatchIndexes.Count > 0;
 			public bool hasInitTournament = false;
+
+			public List<ProceduralMatchData> GetSelectedMatches ()
+			{
+				return selectedMatchIndexes.Where(index => index >= 0 && index < availableMatches.Count).Select(index => availableMatches[index]).ToList();
+			}
+
+			public void EnsureAvailableMatches ()
+			{
+				if (availableMatches.Count == 0)
+					availableMatches = ProceduralMatchGenerator.Generate(GameConfig.current.game.missionAmountInMissionSelectionPanel, current.currentPlayerSave.cycleCount);
+			}
 
 			public void StartTournament ()
 			{
 				hasInitTournament = true;
 				roundsDatas = new MissionDataEnumID[3];
+				tournamentMatches.Clear();
 
 				bool hasScriptedTournament = current.currentPlayerSave.cycleCount == 0;
 #if UNITY_EDITOR
@@ -394,11 +408,7 @@ public partial class GameDatas : ScriptableObject
 					roundsDatas[2] = FTUEManager.Instance.Cycle1TournamentMissions[2].enumID;
 				}
 				else
-				{
-					roundsDatas[0] = GameAssets.current.game.tournamentMissionsPool.ToList().RandomElement().enumID;
-					roundsDatas[1] = GameAssets.current.game.tournamentMissionsPool.ToList().RandomElement().enumID;
-					roundsDatas[2] = GameAssets.current.game.tournamentMissionsPool.ToList().RandomElement().enumID;
-				}
+					tournamentMatches = ProceduralMatchGenerator.Generate(roundsDatas.Length, current.currentPlayerSave.cycleCount);
 			}
 		}
 
@@ -409,15 +419,12 @@ public partial class GameDatas : ScriptableObject
 			cycleData.roundsDatas = new MissionDataEnumID[3];
 
 			cycleData.selectedMissionsIds.Clear();
-			//missions
-			cycleData.availableMissionsIds.Clear();
-			for (int i = 0; i < GameConfig.current.game.missionAmountInMissionSelectionPanel; i++)
-			{
-				cycleData.availableMissionsIds.Add(GameAssets.current.game.missions.Keys.ToList().RandomElement());
-			}
+			cycleData.selectedMatchIndexes.Clear();
+			cycleData.tournamentMatches.Clear();
 
 			cycleCount++;
 			dayCount = 0;
+			cycleData.availableMatches = ProceduralMatchGenerator.Generate(GameConfig.current.game.missionAmountInMissionSelectionPanel, cycleCount);
 			onNewCycle?.Invoke();
 		}
 

@@ -36,24 +36,20 @@ public class SelectMissionPanel : AUIPanel
 	{
 		m_currentMissionHovered = null;
 
+		GameDatas.PlayerSave.CycleData cycleData = GameDatas.current.currentPlayerSave.cycleData;
+		cycleData.EnsureAvailableMatches();
+
 		for (int i = 0; i < m_missionBtns.Length; i++)
 		{
-			if (GameDatas.current.currentPlayerSave.cycleData.availableMissionsIds.Count > i)
+			if (cycleData.availableMatches.Count > i)
 			{
 				m_missionBtns[i].SetVisible(true, true);
-				m_missionBtns[i].Init(GameDatas.current.currentPlayerSave.cycleData.availableMissionsIds[i]);
+				m_missionBtns[i].Init(cycleData.availableMatches[i]);
+				if (cycleData.selectedMatchIndexes.Contains(i))
+					m_missionBtns[i].SetHasSelected();
 			}
 			else
 				m_missionBtns[i].SetVisible(false, true);
-		}
-
-		foreach(MissionDataEnumID enumID in GameDatas.current.currentPlayerSave.cycleData.selectedMissionsIds)
-		{
-			foreach(MissionButton btn in m_missionBtns)
-			{
-				if (!btn.IsSelected && btn.IsVisible && btn.MissionData.enumID == enumID)
-					btn.SetHasSelected();
-			}
 		}
 	}
 
@@ -99,9 +95,14 @@ public class SelectMissionPanel : AUIPanel
 		if (!gameObject.activeInHierarchy)
 			return;
 
-		if (_missionBtn.IsSelected)
-			GameDatas.current.currentPlayerSave.cycleData.selectedMissionsIds.Add(_missionBtn.MissionData.enumID);
-		else
-			GameDatas.current.currentPlayerSave.cycleData.selectedMissionsIds.Remove(_missionBtn.MissionData.enumID);
+		int matchIndex = System.Array.IndexOf(m_missionBtns, _missionBtn);
+		if (matchIndex < 0)
+			return;
+
+		List<int> selectedMatchIndexes = GameDatas.current.currentPlayerSave.cycleData.selectedMatchIndexes;
+		if (_missionBtn.IsSelected && !selectedMatchIndexes.Contains(matchIndex))
+			selectedMatchIndexes.Add(matchIndex);
+		else if (!_missionBtn.IsSelected)
+			selectedMatchIndexes.Remove(matchIndex);
 	}
 }

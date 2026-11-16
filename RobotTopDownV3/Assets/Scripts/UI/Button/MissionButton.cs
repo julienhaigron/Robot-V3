@@ -20,13 +20,27 @@ public class MissionButton : BaseButton, IPointerExitHandler
 
 	private MissionData m_missionData;
 	public MissionData MissionData => m_missionData;
+	private GameDatas.ProceduralMatchData m_proceduralMatch;
+	public GameDatas.ProceduralMatchData ProceduralMatch => m_proceduralMatch;
 
 	private bool m_isSelected = false;
 	public bool IsSelected => m_isSelected;
 
 	public void Init( MissionDataEnumID _missionID )
 	{
-		m_missionData = GameAssets.current.game.missions[_missionID];
+		m_proceduralMatch = null;
+		Init(GameAssets.current.game.missions[_missionID]);
+	}
+
+	public void Init ( GameDatas.ProceduralMatchData _match )
+	{
+		m_proceduralMatch = _match;
+		Init(_match.GetMissionData());
+	}
+
+	private void Init ( MissionData _missionData )
+	{
+		m_missionData = _missionData;
 		string title = m_missionData.GetLocalizedName();
 		string description = m_missionData.GetDescription();
 		m_name.text = title;

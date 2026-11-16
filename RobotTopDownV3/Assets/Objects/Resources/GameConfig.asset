@@ -76,6 +76,28 @@ MonoBehaviour:
     startScreenSceneName: MainScene
     missionAmountInMissionSelectionPanel: 12
     selectableMissionAmount: 8
+    enemySquadRules:
+    - phase: 0
+      startCycle: 0
+      maxUnitCount: 4
+      maxEnergy: 800
+    - phase: 1
+      startCycle: 3
+      maxUnitCount: 6
+      maxEnergy: 1200
+    - phase: 2
+      startCycle: 6
+      maxUnitCount: 8
+      maxEnergy: 1600
+    strategyArchetypes:
+    - strategy: 0
+      archetypes: 0000000002000000
+    - strategy: 1
+      archetypes: 0100000003000000
+    - strategy: 2
+      archetypes: 0500000004000000
+    - strategy: 3
+      archetypes: 0600000002000000
   input:
     interactionRayCastLength: 100
     uiLayer:

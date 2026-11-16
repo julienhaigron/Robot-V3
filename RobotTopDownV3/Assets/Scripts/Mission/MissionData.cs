@@ -44,6 +44,7 @@ public class MissionData : ScriptableEnum<MissionDataEnumID>
     public List<EntityEquipmentData> equipmentRewards;
     public List<UnitPreset> unitReward;
     [System.NonSerialized] private RewardSet m_rewardSet;
+    [System.NonSerialized] private RewardSet m_fixedRewardSet;
 
 	protected override void OnValidate ()
 	{
@@ -168,8 +169,16 @@ public class MissionData : ScriptableEnum<MissionDataEnumID>
 
     //An authored reward wins over the random roll: that is how the scripted-only templates
     //(3 secondary components, 2 main components, a unit) are handed out.
+    public void SetFixedRewardSet ( RewardSet _rewardSet )
+    {
+        m_fixedRewardSet = _rewardSet;
+    }
+
     public RewardSet GetRewardSet ()
     {
+        if (m_fixedRewardSet != null)
+            return m_fixedRewardSet;
+
         if (m_rewardSet != null)
             return m_rewardSet;
 
@@ -218,6 +227,6 @@ public class MissionData : ScriptableEnum<MissionDataEnumID>
 
     public string GetDescription ()
 	{
-        return "Description";
+        return type.GetLocalizedTitle();
 	}
 }

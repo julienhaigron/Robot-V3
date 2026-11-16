@@ -2170,3 +2170,27 @@ MonoBehaviour:
     values:
     - Technician
     - Technicien
+  - key: match_type/extermination
+    values:
+    - Extermination
+    - Extermination
+  - key: match_type/defense_de_zone
+    values:
+    - Zone defense
+    - "D\xE9fense de zone"
+  - key: match_type/controle_de_point
+    values:
+    - Point control
+    - "Contr\xF4le de points"
+  - key: match_type/construction
+    values:
+    - Construction
+    - Construction
+  - key: match_type/sabotage
+    values:
+    - Sabotage
+    - Sabotage
+  - key: match_type/assassinat
+    values:
+    - Assassination
+    - Assassinat

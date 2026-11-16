@@ -55,10 +55,68 @@ MonoBehaviour:
       - {fileID: 11400000, guid: 9a38502216b2dbf4bb5d434e337b29a2, type: 2}
       - {fileID: 11400000, guid: 42e2a7c3d36d32044b02afbee6d5f6f6, type: 2}
       - {fileID: 11400000, guid: f2fde0f8f8fd985409096250c61b13b3, type: 2}
-    tournamentMissionsPool:
-    - {fileID: 11400000, guid: 417b10a5886f32743823118c49c05109, type: 2}
-    - {fileID: 11400000, guid: 417b10a5886f32743823118c49c05109, type: 2}
-    - {fileID: 11400000, guid: 417b10a5886f32743823118c49c05109, type: 2}
+    mapsPerMissionType:
+      keys: 000000000100000002000000030000000400000005000000
+      values:
+      - maps:
+        - {fileID: 11400000, guid: 454b040d02ec9424d83e130d512ab9f8, type: 2}
+        - {fileID: 11400000, guid: 64ecda1cd3f80754ea1b80f6e59aa196, type: 2}
+      - maps:
+        - {fileID: 11400000, guid: 454b040d02ec9424d83e130d512ab9f8, type: 2}
+        - {fileID: 11400000, guid: 64ecda1cd3f80754ea1b80f6e59aa196, type: 2}
+      - maps:
+        - {fileID: 11400000, guid: 454b040d02ec9424d83e130d512ab9f8, type: 2}
+        - {fileID: 11400000, guid: 64ecda1cd3f80754ea1b80f6e59aa196, type: 2}
+      - maps:
+        - {fileID: 11400000, guid: 454b040d02ec9424d83e130d512ab9f8, type: 2}
+        - {fileID: 11400000, guid: 64ecda1cd3f80754ea1b80f6e59aa196, type: 2}
+      - maps:
+        - {fileID: 11400000, guid: 454b040d02ec9424d83e130d512ab9f8, type: 2}
+        - {fileID: 11400000, guid: 64ecda1cd3f80754ea1b80f6e59aa196, type: 2}
+      - maps:
+        - {fileID: 11400000, guid: 454b040d02ec9424d83e130d512ab9f8, type: 2}
+        - {fileID: 11400000, guid: 64ecda1cd3f80754ea1b80f6e59aa196, type: 2}
+    enemyPresetsPerPhase:
+      keys: 000000000100000002000000
+      values:
+      - presets:
+        - {fileID: 11400000, guid: f76e49f9866afef4d800cec1662550e1, type: 2}
+        - {fileID: 11400000, guid: 5acf15fd2fbb4ad4fba5f4bfb20333d9, type: 2}
+        - {fileID: 11400000, guid: 93989db41f05ade4498eff25668ecbe0, type: 2}
+        - {fileID: 11400000, guid: b4528eff17a1a584295d0dc3cdc99b0d, type: 2}
+        - {fileID: 11400000, guid: 341296f28d500e443beffb0d69eb0750, type: 2}
+        - {fileID: 11400000, guid: d8bdb286ad2909b47976ad72890ca9c4, type: 2}
+      - presets:
+        - {fileID: 11400000, guid: f76e49f9866afef4d800cec1662550e1, type: 2}
+        - {fileID: 11400000, guid: 5acf15fd2fbb4ad4fba5f4bfb20333d9, type: 2}
+        - {fileID: 11400000, guid: 93989db41f05ade4498eff25668ecbe0, type: 2}
+        - {fileID: 11400000, guid: b4528eff17a1a584295d0dc3cdc99b0d, type: 2}
+        - {fileID: 11400000, guid: 341296f28d500e443beffb0d69eb0750, type: 2}
+        - {fileID: 11400000, guid: d8bdb286ad2909b47976ad72890ca9c4, type: 2}
+        - {fileID: 11400000, guid: 12ee456860adf6743bbcf51851492837, type: 2}
+        - {fileID: 11400000, guid: c5c1ae9dcc6bdc94991d2ffd8521ce56, type: 2}
+        - {fileID: 11400000, guid: d28947dc83a7a1443b4921b154669294, type: 2}
+        - {fileID: 11400000, guid: c92ee65d97d70a64aa6fabe82a6c54b1, type: 2}
+        - {fileID: 11400000, guid: 51718069453269f48b37aa23b67dce55, type: 2}
+        - {fileID: 11400000, guid: 5caf82f82373baa47976b993ffeb0d41, type: 2}
+        - {fileID: 11400000, guid: a95c547ad2d1a3140bced7b7fd91c38f, type: 2}
+        - {fileID: 11400000, guid: 7ea2f04262f7d104697957411bf99a25, type: 2}
+        - {fileID: 11400000, guid: c6f6c268bc7de6a49a40ebe80018dd13, type: 2}
+      - presets:
+        - {fileID: 11400000, guid: 12ee456860adf6743bbcf51851492837, type: 2}
+        - {fileID: 11400000, guid: c5c1ae9dcc6bdc94991d2ffd8521ce56, type: 2}
+        - {fileID: 11400000, guid: d28947dc83a7a1443b4921b154669294, type: 2}
+        - {fileID: 11400000, guid: c92ee65d97d70a64aa6fabe82a6c54b1, type: 2}
+        - {fileID: 11400000, guid: 51718069453269f48b37aa23b67dce55, type: 2}
+        - {fileID: 11400000, guid: 5caf82f82373baa47976b993ffeb0d41, type: 2}
+        - {fileID: 11400000, guid: a95c547ad2d1a3140bced7b7fd91c38f, type: 2}
+        - {fileID: 11400000, guid: 7ea2f04262f7d104697957411bf99a25, type: 2}
+        - {fileID: 11400000, guid: c6f6c268bc7de6a49a40ebe80018dd13, type: 2}
+    alliesPerMissionType:
+      keys: 03000000
+      values:
+      - presets:
+        - {fileID: 11400000, guid: 2efe7bdbef7f47e497cf11d69bad3b2f, type: 2}
     defaultEntity: {fileID: 4673310249167116355, guid: 206cf16509b1846479a1f553fd6add2d, type: 3}
     baseGhost: {fileID: 7839904307103858393, guid: bee3bc7545f82b54babded2b3df64c96, type: 3}
     baseItem: {fileID: 831952569120969770, guid: f125b6baae3a1ab4c9203e208c4db9f3, type: 3}

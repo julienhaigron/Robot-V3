@@ -538,6 +538,12 @@ public enum LocalizationKey
     action_set_cable,
     component_tool_cable_kit,
     unit_technician,
+    match_type_extermination,
+    match_type_defense_de_zone,
+    match_type_controle_de_point,
+    match_type_construction,
+    match_type_sabotage,
+    match_type_assassinat,
 }
 
 public static class LocalizationKeyExtensions
@@ -1083,6 +1089,12 @@ public static class LocalizationKeyExtensions
             case LocalizationKey.action_set_cable: return "action/set_cable";
             case LocalizationKey.component_tool_cable_kit: return "component/tool_cable_kit";
             case LocalizationKey.unit_technician: return "unit/technician";
+            case LocalizationKey.match_type_extermination: return "match_type/extermination";
+            case LocalizationKey.match_type_defense_de_zone: return "match_type/defense_de_zone";
+            case LocalizationKey.match_type_controle_de_point: return "match_type/controle_de_point";
+            case LocalizationKey.match_type_construction: return "match_type/construction";
+            case LocalizationKey.match_type_sabotage: return "match_type/sabotage";
+            case LocalizationKey.match_type_assassinat: return "match_type/assassinat";
             default: return string.Empty;
         }
     }

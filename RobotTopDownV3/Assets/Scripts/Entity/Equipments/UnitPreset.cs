@@ -32,6 +32,9 @@ public class UnitPreset : AParsableScriptableObject
     [Parsing("Role")]
     public EnnemiAIRole aiRole = EnnemiAIRole.PatrolPath;
 
+    [Parsing("Archetype")]
+    public Archetype archetype = Archetype.Mobility;
+
     [ReadOnly, SerializeField]
     private int m_totalEnergyCostRemaining;
     public int TotalEnergyCostRemaining => m_totalEnergyCostRemaining;
@@ -53,6 +56,26 @@ public class UnitPreset : AParsableScriptableObject
             m_totalEnergyCostRemaining -= equipment.energyCost;
         foreach (EntityEquipmentData equipment in chipsets)
             m_totalEnergyCostRemaining -= equipment.energyCost;
+    }
+
+    public int GetEnergyCost ()
+	{
+        int energyCost = 0;
+        foreach (EntityEquipmentData component in new EntityEquipmentData[] { frame, brain, neuronalMembrane })
+            if (component != null)
+                energyCost += component.energyCost;
+
+        foreach (EntityEquipmentData[] components in new EntityEquipmentData[][] { arms, auxiliary, chipsets })
+        {
+            if (components == null)
+                continue;
+
+            foreach (EntityEquipmentData component in components)
+                if (component != null)
+                    energyCost += component.energyCost;
+        }
+
+        return energyCost;
     }
 
     public EntitySavedData GetSavedData ()
@@ -115,6 +138,18 @@ public class UnitPreset : AParsableScriptableObject
         auxiliary = newAux.ToArray();
 #endif
     }
+}
+
+[System.Serializable]
+public enum Archetype
+{
+    Mobility,
+    Tank,
+    DirectDamage,
+    DiluatedDamage,
+    IndirectDamage,
+    Control,
+    Support,
 }
 
 [System.Serializable]

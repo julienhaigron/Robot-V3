@@ -32,6 +32,14 @@ public class TournamentPanel : AUIPanel
 
 	private int CurrentRound => GameDatas.current.currentPlayerSave.dayCount - 4;
 
+	private MissionData GetRoundMission ( int _round )
+	{
+		GameDatas.PlayerSave.CycleData cycleData = GameDatas.current.currentPlayerSave.cycleData;
+		return cycleData.tournamentMatches.Count > _round
+			? cycleData.tournamentMatches[_round].GetMissionData()
+			: GameAssets.current.game.missions[cycleData.roundsDatas[_round]];
+	}
+
 	private void Awake ()
 	{
 		UnitMissionDisplay.onAnyUnitHovered += OnAnyUnitHovered;
@@ -46,7 +54,7 @@ public class TournamentPanel : AUIPanel
 
 		RefreshSquads();
 
-		SetCurrentMatchInfo(GameAssets.current.game.missions[GameDatas.current.currentPlayerSave.cycleData.roundsDatas[CurrentRound]]);
+		SetCurrentMatchInfo(GetRoundMission(CurrentRound));
 	}
 
 	private void RefreshSquads ()
@@ -63,7 +71,7 @@ public class TournamentPanel : AUIPanel
 
 		if (CurrentRound == 0)
 		{
-			MissionData missiondata = GameAssets.current.game.missions[GameDatas.current.currentPlayerSave.cycleData.roundsDatas[0]];
+			MissionData missiondata = GetRoundMission(0);
 			for (int i = 0; i < m_round1SquadUnits.Length; i++)
 			{
 				if (missiondata.enemies.Length > i)
@@ -82,7 +90,7 @@ public class TournamentPanel : AUIPanel
 		}
 		else if (CurrentRound == 1)
 		{
-			MissionData missiondata = GameAssets.current.game.missions[GameDatas.current.currentPlayerSave.cycleData.roundsDatas[1]];
+			MissionData missiondata = GetRoundMission(1);
 			for (int i = 0; i < m_round1SquadUnits.Length; i++)
 			{
 				if (missiondata.enemies.Length > i)
@@ -100,7 +108,7 @@ public class TournamentPanel : AUIPanel
 		}
 		else if (CurrentRound == 2)
 		{
-			MissionData missiondata = GameAssets.current.game.missions[GameDatas.current.currentPlayerSave.cycleData.roundsDatas[2]];
+			MissionData missiondata = GetRoundMission(2);
 			for (int i = 0; i < m_round1SquadUnits.Length; i++)
 			{
 				if (missiondata.enemies.Length > i)
@@ -220,7 +228,7 @@ public class TournamentPanel : AUIPanel
 		if (GameDatas.current.currentPlayerSave.squadUnitsIndex.Count == 0)
 			return;
 
-		MissionData missionData = GameAssets.current.game.missions[GameDatas.current.currentPlayerSave.cycleData.roundsDatas[CurrentRound]];
+		MissionData missionData = GetRoundMission(CurrentRound);
 		if (missionData.preMissionDialogue != null)
 			DialogueManager.Instance.PlayDialogue(missionData.preMissionDialogue, () => GameManager.Instance.SetupLevel(missionData));
 		else

@@ -47,6 +47,11 @@ public static class LocalizedEnumExtensions
 		return LocalizationManager.Instance.Get("aoe_type/" + ToSnakeCase(_type.ToString()));
 	}
 
+	public static string GetLocalizedTitle ( this MissionData.MissionType _type )
+	{
+		return LocalizationManager.Instance.Get("match_type/" + ToSnakeCase(_type.ToString()));
+	}
+
 	public static string GetLocalizedTitle ( this WeaponEquipmentData.DamageType _type )
 	{
 		return LocalizationManager.Instance.Get("damage_type/" + ToSnakeCase(_type.ToString()));

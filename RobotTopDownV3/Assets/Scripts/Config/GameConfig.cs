@@ -79,6 +79,26 @@ public partial class GameConfig : ScriptableObject
 		public int missionAmountInMissionSelectionPanel = 12;
 		public int selectableMissionAmount = 8;
 
+		[Title("Procedural matches")]
+		public EnemySquadRules[] enemySquadRules;
+		public StrategyArchetypes[] strategyArchetypes;
+
+	}
+
+	[System.Serializable]
+	public class EnemySquadRules
+	{
+		public PlaythroughPhase phase;
+		public int startCycle;
+		public int maxUnitCount;
+		public int maxEnergy;
+	}
+
+	[System.Serializable]
+	public class StrategyArchetypes
+	{
+		public MatchStrategy strategy;
+		public Archetype[] archetypes;
 	}
 
 	[System.Serializable]
