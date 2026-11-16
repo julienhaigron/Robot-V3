@@ -78,17 +78,17 @@ public class Wall : MonoBehaviour
 		Rotate(_orientation);
 	}
 
-	public void InitStructure(Tile _tile )
-	{
-		m_registeredHealth = m_hp;
-		LinkWithTile(_tile);
-		SetWallType(WallType.VerticalStrait, false);
-	}
 #endif
 
 	public void LinkWithTile ( Tile _tile )
 	{
 		m_linkedTile = _tile;
+	}
+
+	public void SetHealth ( int _health )
+	{
+		m_hp = _health;
+		m_registeredHealth = _health;
 	}
 
 	public void RegisterDamage( Dictionary<WeaponEquipmentData.DamageType, int> _damages )
@@ -101,6 +101,7 @@ public class Wall : MonoBehaviour
 
 	public void TakeDamage(Dictionary<WeaponEquipmentData.DamageType, int> _damages )
 	{
+		bool wasStanding = m_hp > 0;
 		foreach(KeyValuePair<WeaponEquipmentData.DamageType, int> pair in _damages)
 		{
 			m_hp -= pair.Value;
@@ -109,6 +110,9 @@ public class Wall : MonoBehaviour
 			m_registeredHealth = m_hp;
 		if (m_hp <= 0)
 			Destroy();
+
+		if (wasStanding)
+			SabotagePoints.OnWallDamaged(this);
 	}
 
 	private void Destroy ()

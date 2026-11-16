@@ -18,7 +18,9 @@ MonoBehaviour:
   game:
     nbOfDayInCycle: 7
     maxInventoryCapacity: 80
-    zoneRange: 2
+    zonePointsToWin: 5
+    sabotagePointHealth: 10
+    demolisherSabotageHitBonus: 1
     defaultStartAction: {fileID: 0}
     actionDuration: 1
     entityRotationDuration: 0.5

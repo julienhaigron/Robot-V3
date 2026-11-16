@@ -21,6 +21,8 @@ public sealed class InGamePanel : AUIPanel
 	[SerializeField] private BaseButton m_endPhaseButton;
 	[SerializeField] private BaseButton m_followUnitsButton;
 	[SerializeField] private TextMeshProUGUI m_phaseTitleTmp;
+	[SerializeField] private GameObject m_objectiveDisplay;
+	[SerializeField] private TextMeshProUGUI m_objectiveTmp;
 	private bool m_isInInputPhase = true;
 
 	[Title("Console")]
@@ -53,6 +55,11 @@ public sealed class InGamePanel : AUIPanel
 		TurnManager.onStartInputPhase += OnStartInputPhase;
 		TurnManager.onEndInputPhase += OnEndInputPhase;
 		LocalizationManager.onLanguageChanged += RefreshPhaseLabel;
+		LocalizationManager.onLanguageChanged += RefreshObjectiveDisplay;
+		GameManager.onPlayersPointsChanged += RefreshObjectiveDisplay;
+		SabotagePoints.onAnyChanged += RefreshObjectiveDisplay;
+		Item.onAnyItemPlaced += OnAnyItemPlaced;
+		GameManager.onMatchUnitRespawned += OnMatchUnitRespawned;
 		TurnManager.onActionAdded += OnActionAdded;
 		PlayerController.onEntitySelected += OnEntitySelected;
 		PlayerController.onEntityHovered += OnEntityHovered;
@@ -80,11 +87,64 @@ public sealed class InGamePanel : AUIPanel
 		m_phaseTitleTmp.text = LocalizationManager.Instance.Get(m_isInInputPhase ? LocalizationKey.ingame_input_phase : LocalizationKey.ingame_play_phase);
 	}
 
+	private void OnAnyItemPlaced ( Item _item )
+	{
+		RefreshObjectiveDisplay();
+	}
+
+	private void OnMatchUnitRespawned ()
+	{
+		m_squadUnitDisplayList.Init();
+	}
+
+	private void RefreshObjectiveDisplay ()
+	{
+		string objectiveText = GetObjectiveText();
+		m_objectiveDisplay.SetActive(objectiveText != null);
+		if (objectiveText != null)
+			m_objectiveTmp.text = objectiveText;
+	}
+
+	private string GetObjectiveText ()
+	{
+		GameManager gameManager = GameManager.Instance;
+		MissionData mission = gameManager != null ? gameManager.CurrentMission : null;
+		if (mission == null)
+			return null;
+
+		int playerID = gameManager.PlayerID;
+		int enemyID = 1 - playerID;
+		LocalizationManager localization = LocalizationManager.Instance;
+
+		switch (mission.type)
+		{
+			case MissionData.MissionType.DefenseDeZone:
+				return string.Format(localization.Get(LocalizationKey.ingame_zone_score)
+					, gameManager.GetPlayerPoints(playerID), gameManager.GetPlayerPoints(enemyID), GameConfig.current.game.zonePointsToWin);
+			case MissionData.MissionType.ControleDePoint:
+				return string.Format(localization.Get(LocalizationKey.ingame_control_points_score)
+					, gameManager.GetPlayerPoints(playerID), gameManager.GetPlayerPoints(enemyID), GridManager.Instance != null ? GridManager.Instance.ControlPoints.Count : 0);
+			case MissionData.MissionType.Construction:
+				return string.Format(localization.Get(LocalizationKey.ingame_construction_score), CableItemData.GetPlacedCableTiles(playerID).Count);
+			case MissionData.MissionType.Sabotage:
+				return string.Format(localization.Get(LocalizationKey.ingame_sabotage_score)
+					, gameManager.GetSabotagePointCount(playerID, true), gameManager.GetSabotagePointCount(playerID, false)
+					, gameManager.GetSabotagePointCount(enemyID, true), gameManager.GetSabotagePointCount(enemyID, false));
+			default:
+				return null;
+		}
+	}
+
 	private void OnDestroy ()
 	{
 		TurnManager.onStartInputPhase -= OnStartInputPhase;
 		TurnManager.onEndInputPhase -= OnEndInputPhase;
 		LocalizationManager.onLanguageChanged -= RefreshPhaseLabel;
+		LocalizationManager.onLanguageChanged -= RefreshObjectiveDisplay;
+		GameManager.onPlayersPointsChanged -= RefreshObjectiveDisplay;
+		SabotagePoints.onAnyChanged -= RefreshObjectiveDisplay;
+		Item.onAnyItemPlaced -= OnAnyItemPlaced;
+		GameManager.onMatchUnitRespawned -= OnMatchUnitRespawned;
 		TurnManager.onActionAdded -= OnActionAdded;
 		PlayerController.onEntitySelected -= OnEntitySelected;
 		PlayerController.onEntityHovered -= OnEntityHovered;
@@ -96,6 +156,7 @@ public sealed class InGamePanel : AUIPanel
 	public void Init ()
 	{
 		m_squadUnitDisplayList.Init();
+		RefreshObjectiveDisplay();
 		RefreshVisual(false, true);
 		RefreshFollowUnitsButton(true);
 		m_logConsole.Init();

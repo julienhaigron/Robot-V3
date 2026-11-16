@@ -1002,6 +1002,8 @@ public class TurnManager : Singleton<TurnManager>
 	{
 		currentTick = 0;
 		currentPhase = TurnPhase.Recording;
+		if (!GameManager.Instance.IsOnline)
+			GameManager.Instance.RespawnDeadMatchUnits();
 		//UIManager.Instance.OpenPanel<InGamePanel>();
 		LogConsole.AddLog("Start Input phase", LogConsole.LogEventType.DebugSys);
 
@@ -1519,11 +1521,15 @@ public class TurnManager : Singleton<TurnManager>
 
 		LogConsole.AddLog("Server ended tick " + currentTick, LogConsole.LogEventType.DebugSys);
 
+		bool isRoundOver = m_recordedActionInput.Keys.Count == 0 || currentTick >= GameConfig.current.game.actionTokenPerRound - 1;
+		if (isRoundOver)
+			ScoreObjectivesAtRoundEnd();
+
 		bool isGameFinished = IsGameFinished(out bool _playerOneWin, out bool _playerTwoWin);
 
 		if (isGameFinished)
 			EndTurn(true, _playerOneWin, _playerTwoWin);
-		else if (m_recordedActionInput.Keys.Count == 0 || currentTick >= GameConfig.current.game.actionTokenPerRound - 1)
+		else if (isRoundOver)
 			EndTurn(false, _playerOneWin, _playerTwoWin); //end turn
 		else
 		{
@@ -1603,93 +1609,111 @@ public class TurnManager : Singleton<TurnManager>
 				//nothing else to check
 				break;
 			case MissionData.MissionType.DefenseDeZone:
-				foreach (Tile zoneCenterTile in GameManager.Instance.PlayersEntityAnchor[0].Zones)
-				{
-					bool areAllEntityOfSameTeam1 = true;
-					int teamID1 = -1;
-					foreach (Tile tile in GridManager.Instance.GetTilesInVisionRange(zoneCenterTile, 0, GameConfig.current.game.zoneRange, true, false, false))
-					{
-						if (!tile.TryGetEntity(true, out Entity entity))
-							continue;
-
-						if (teamID1 != -1 && entity.OwnerID != teamID1)
-						{
-							areAllEntityOfSameTeam1 = false;
-							break;
-						}
-						else
-							teamID1 = entity.OwnerID;
-					}
-					if (areAllEntityOfSameTeam1)
-						GameManager.Instance.AddPointsToPlayer(teamID1, 1);
-				}
-				if (GameManager.Instance.PlayersPoints[0] >= 5)
+				if (GameManager.Instance.GetPlayerPoints(0) >= GameConfig.current.game.zonePointsToWin)
 					_playerOneWin = true;
-				if (GameManager.Instance.PlayersPoints[1] >= 5)
+				if (GameManager.Instance.GetPlayerPoints(1) >= GameConfig.current.game.zonePointsToWin)
 					_playerTwoWin = true;
 				break;
 			case MissionData.MissionType.ControleDePoint:
-
-				bool areAllEntityOfSameTeam2 = true;
-				int teamID2 = -1;
-				foreach (Tile zoneCenterTile in GameManager.Instance.PlayersEntityAnchor[0].Zones)
-				{
-					foreach (Tile tile in GridManager.Instance.GetTilesInVisionRange(zoneCenterTile, 0, GameConfig.current.game.zoneRange, true, false, false))
-					{
-						if (!tile.TryGetEntity(true, out Entity entity))
-							continue;
-
-						if (teamID2 != -1 && entity.OwnerID != teamID2)
-						{
-							areAllEntityOfSameTeam2 = false;
-							break;
-						}
-						else
-							teamID2 = entity.OwnerID;
-					}
-					if (!areAllEntityOfSameTeam2)
-						break;
-				}
-				if (areAllEntityOfSameTeam2)
-				{
-					if (teamID2 == 0)
-						_playerOneWin = true;
-					else
-						_playerTwoWin = true;
-				}
+				int controlPointCount = GridManager.Instance.ControlPoints.Count;
+				if (controlPointCount > 0 && GameManager.Instance.GetPlayerPoints(0) == controlPointCount)
+					_playerOneWin = true;
+				if (controlPointCount > 0 && GameManager.Instance.GetPlayerPoints(1) == controlPointCount)
+					_playerTwoWin = true;
 				break;
 			case MissionData.MissionType.Construction:
-				//TBD
+				if (GridManager.Instance.AreCommPointsLinked(0, CableItemData.GetPlacedCableTiles(0)))
+					_playerOneWin = true;
+				if (GridManager.Instance.AreCommPointsLinked(1, CableItemData.GetPlacedCableTiles(1)))
+					_playerTwoWin = true;
 				break;
 			case MissionData.MissionType.Sabotage:
-				bool areAllPlayerOneStructureDead = true;
-				bool areAllPlayerTwoStructureDead = true;
-				foreach (Tile structureTile in GameManager.Instance.PlayersEntityAnchor[0].Structures)
-				{
-					if (structureTile.Structure.Health > 0)
-						areAllPlayerOneStructureDead = false;
-				}
-				foreach (Tile structureTile in GameManager.Instance.PlayersEntityAnchor[1].Structures)
-				{
-					if (structureTile.Structure.Health > 0)
-						areAllPlayerTwoStructureDead = false;
-				}
-				if (areAllPlayerOneStructureDead)
+				if (GameManager.Instance.GetSabotagePointCount(0, false) > 0 && GameManager.Instance.GetSabotagePointCount(0, true) == 0)
 					_playerTwoWin = true;
-				if (areAllPlayerTwoStructureDead)
+				if (GameManager.Instance.GetSabotagePointCount(1, false) > 0 && GameManager.Instance.GetSabotagePointCount(1, true) == 0)
 					_playerOneWin = true;
-
 				break;
 			case MissionData.MissionType.Assassinat:
-				if (GameManager.Instance.PlayersEntityAnchor[0].King.Equipment.IsDead)
+				if (GameManager.Instance.PlayersEntityAnchor[0].IsKingDead)
 					_playerTwoWin = true;
-				if (GameManager.Instance.PlayersEntityAnchor[1].King.Equipment.IsDead)
+				if (GameManager.Instance.PlayersEntityAnchor[1].IsKingDead)
 					_playerOneWin = true;
 
 				break;
 		}
 
 		return _playerOneWin || _playerTwoWin;
+	}
+
+	private void ScoreObjectivesAtRoundEnd ()
+	{
+		MissionData mission = GameManager.Instance.CurrentMission;
+		if (mission == null)
+			return;
+
+		switch (mission.type)
+		{
+			case MissionData.MissionType.DefenseDeZone:
+				int controllingPlayer = GetControllingPlayer(GameManager.Instance.PlayersEntityAnchor[0].Zones);
+				if (controllingPlayer != -1)
+					GameManager.Instance.AddPointsToPlayer(controllingPlayer, 1);
+				LogZoneControl(controllingPlayer);
+				break;
+			case MissionData.MissionType.ControleDePoint:
+				if (GridManager.Instance.ControlPoints.Count == 0)
+					break;
+
+				int[] heldControlPoints = new int[GameManager.Instance.PlayersEntityAnchor.Length];
+				foreach (HashSet<Tile> controlPoint in GridManager.Instance.ControlPoints)
+				{
+					int owner = GetControllingPlayer(controlPoint);
+					if (owner != -1)
+						heldControlPoints[owner]++;
+				}
+
+				for (int i = 0; i < heldControlPoints.Length; i++)
+					GameManager.Instance.SetPlayerPoints(i, heldControlPoints[i]);
+				LogControlPoints();
+				break;
+		}
+	}
+
+	private void LogControlPoints ()
+	{
+		int playerID = GameManager.Instance.PlayerID;
+		LogConsole.AddLog(string.Format(LocalizationManager.Instance.Get(LocalizationKey.log_control_points)
+			, GameManager.Instance.GetPlayerPoints(playerID), GameManager.Instance.GetPlayerPoints(1 - playerID), GridManager.Instance.ControlPoints.Count)
+			, LogConsole.LogEventType.Round);
+	}
+
+	private void LogZoneControl ( int _controllingPlayer )
+	{
+		int playerID = GameManager.Instance.PlayerID;
+		LocalizationKey key = _controllingPlayer == -1 ? LocalizationKey.log_zone_point_none
+			: _controllingPlayer == playerID ? LocalizationKey.log_zone_point_ally : LocalizationKey.log_zone_point_enemy;
+
+		LogConsole.AddLog(string.Format(LocalizationManager.Instance.Get(key), GameManager.Instance.GetPlayerPoints(playerID), GameManager.Instance.GetPlayerPoints(1 - playerID))
+			, LogConsole.LogEventType.Round);
+	}
+
+	private int GetControllingPlayer ( HashSet<Tile> _tiles )
+	{
+		int controllingPlayer = -1;
+		foreach (EntityAnchor anchor in GameManager.Instance.PlayersEntityAnchor)
+		{
+			foreach (Entity entity in anchor.Entities)
+			{
+				if (entity.Equipment.IsDead || !_tiles.Contains(entity.Displacement.Coordinates.GetTile()))
+					continue;
+
+				if (controllingPlayer == -1)
+					controllingPlayer = entity.OwnerID;
+				else if (controllingPlayer != entity.OwnerID)
+					return -1;
+			}
+		}
+
+		return controllingPlayer;
 	}
 
 	[Button]

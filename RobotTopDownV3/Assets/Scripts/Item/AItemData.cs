@@ -15,6 +15,11 @@ public abstract class AItemData : ScriptableObject
             || _invocatingTool.LinkedEntity.Equipment.ItemsLinkedDataDictionary[_invocatingTool.ID].currentInvocationCount < _actionData.invocationCountLimit;
     }
 
+    public virtual bool CanBePlacedOn ( Tile _tile )
+	{
+        return true;
+	}
+
     public virtual void OnInvokeItem ( ToolEquipment _invokingTool, Item _item )
 	{
         _invokingTool.LinkedEntity.Equipment.ItemsLinkedDataDictionary[_invokingTool.ID].currentInvocationCount++;

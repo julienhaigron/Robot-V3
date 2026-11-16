@@ -19,7 +19,8 @@ public class InvokeItemAction : SpecialAction
 
 	public override bool TileInteractPredicate ( Tile _tile )
 	{
-		return Data.invocatedItem.InvokeItemPredicate(PerformingEntity.Equipment.Tools[linkedEquipmentId], Data) && _tile.GetItem(true) == null && _tile.GetPlannedItemAt(timeAtStart) == null && base.TileInteractPredicate(_tile);
+		return Data.invocatedItem.InvokeItemPredicate(PerformingEntity.Equipment.Tools[linkedEquipmentId], Data) && _tile.GetItem(true) == null && _tile.GetPlannedItemAt(timeAtStart) == null
+			&& Data.invocatedItem.CanBePlacedOn(_tile) && base.TileInteractPredicate(_tile);
 	}
 
 	public override void RegisterInteraction ( Tile _tile )
@@ -110,6 +111,7 @@ public class InvokeItemAction : SpecialAction
 			Item item = targetTile.GetPlannedItemAt(timeAtStart);
 			targetTile.SetItem(item, true);
 			item.transform.position = targetTile.transform.position;
+			item.SetPlaced();
 		}
 
 		base.Perform(_state);

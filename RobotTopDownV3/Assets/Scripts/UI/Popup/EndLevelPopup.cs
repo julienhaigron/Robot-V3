@@ -58,7 +58,8 @@ public class EndLevelPopup : AUIPopup
 		m_pendingDamagedComponents.Clear();
 		for (int i = 0; i < m_unitDisplay.Length; i++)
 		{
-			if (i >= GameManager.Instance.PlayersEntityAnchor[GameManager.Instance.PlayerID].Entities.Count)
+			if (i >= GameManager.Instance.PlayersEntityAnchor[GameManager.Instance.PlayerID].Entities.Count
+				|| i >= GameDatas.current.currentPlayerSave.squadUnitsIndex.Count)
 				m_unitDisplay[i].Hide();
 			else
 			{

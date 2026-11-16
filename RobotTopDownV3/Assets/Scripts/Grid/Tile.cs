@@ -37,8 +37,7 @@ public class Tile : MonoBehaviour
 
 	[SerializeField] private Wall m_wall;
 	public Wall Wall { get { return m_wall; } set { m_wall = value; } }
-	[SerializeField] private Wall m_structure;
-	public Wall Structure { get { return m_structure; } set { m_structure = value; } }
+	public bool IsSabotagePoint => (m_groundType == TileGroundType.PlayerStructure || m_groundType == TileGroundType.EnemyStructure) && m_wall != null;
 
 	private List<EntityStatusEnumID> m_status = new();
 	public List<EntityStatusEnumID> Status => m_status;
@@ -147,13 +146,8 @@ public class Tile : MonoBehaviour
 			SetGroundType(_data.groundType);
 			if (_data.groundType == TileGroundType.Wall || _data.groundType == TileGroundType.Cover)
 				SetupWall(_data.wallType, _data.orientation, _data.groundType == TileGroundType.Cover);
-			else if (_data.groundType == TileGroundType.PlayerStructure || _data.groundType == TileGroundType.EnemyStructure)
-				SetupStructure();
 			else
-			{
 				RemoveWall();
-				RemoveStructure();
-			}
 		}
 
 		//SetActiveFOW(NeuronalMembraneEquipmentData.VisionTypes.Optical, false, true);
@@ -191,28 +185,6 @@ public class Tile : MonoBehaviour
 		}
 	}
 
-	public void SetupStructure ()
-	{
-		if (m_wall == null)
-			m_wall = gameObject.AddComponent<Wall>();
-		//m_wall = UnityEditor.Undo.AddComponent<Wall>(gameObject);
-
-		m_wall.InitStructure(this);
-	}
-
-	public void RemoveStructure ()
-	{
-		if (m_wall != null)
-		{
-			foreach (GameObject wallPart in m_wall.WallParts)
-				DestroyImmediate(wallPart);
-			m_wall.WallParts.Clear();
-
-			DestroyImmediate(m_wall);
-			m_wall = null;
-		}
-	}
-
 	[Button]
 	private void PrintSavedData ()
 	{
@@ -233,10 +205,21 @@ public class Tile : MonoBehaviour
 		_tile.Neighbors[(int)_direction.Opposite()] = this;
 	}
 
+	public void SetupSabotagePoint ( int _health, GameObject _visualPrefab )
+	{
+		if (m_wall == null)
+			m_wall = gameObject.AddComponent<Wall>();
+
+		m_wall.LinkWithTile(this);
+		m_wall.SetHealth(_health);
+		if (_visualPrefab != null)
+			m_wall.WallParts.Add(Instantiate(_visualPrefab, transform));
+	}
+
 	public bool IsObstacle ( bool _isThisTurn )
 	{
 		int currentTick = TurnManager.currentTick;
-		if ((m_groundType == TileGroundType.Wall || m_groundType == TileGroundType.Cover) && (_isThisTurn ? m_wall.RegisteredHealth > 0 : m_wall.Health > 0))
+		if ((m_groundType == TileGroundType.Wall || m_groundType == TileGroundType.Cover || IsSabotagePoint) && (_isThisTurn ? m_wall.RegisteredHealth > 0 : m_wall.Health > 0))
 			return true;
 		else if (m_groundType == TileGroundType.Void)
 			return true;
@@ -250,7 +233,7 @@ public class Tile : MonoBehaviour
 
 	public bool CanSeeThrough ()
 	{
-		if (m_groundType == TileGroundType.Wall && m_wall.Health > 0)
+		if ((m_groundType == TileGroundType.Wall || IsSabotagePoint) && m_wall.Health > 0)
 			return false;
 
 		if (m_status.Contains(EntityStatusEnumID.Smoked))

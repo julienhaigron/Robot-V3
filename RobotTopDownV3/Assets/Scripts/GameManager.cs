@@ -54,6 +54,16 @@ public class GameManager : SingletonPersistant<GameManager>
 	public List<Item> Items => m_items;
 	private Dictionary<int, int> m_playersPoints = new();
 	public Dictionary<int, int> PlayersPoints => m_playersPoints;
+	public static Action onPlayersPointsChanged;
+
+	public static Action onMatchUnitRespawned;
+	private class RespawningUnit
+	{
+		public UnitPreset preset;
+		public int playerID;
+		public Entity entity;
+	}
+	private List<RespawningUnit> m_respawningUnits = new();
 
 	private void Start ()
 	{
@@ -135,7 +145,6 @@ public class GameManager : SingletonPersistant<GameManager>
 	{
 		m_currentMission = _mission;
 		m_playerTwoEntityDatas = new();
-		m_playersPoints.Clear();
 		foreach (UnitPreset ennemi in _mission.enemies)
 		{
 			m_playerTwoEntityDatas.Add(ennemi.GetSavedData());
@@ -206,6 +215,36 @@ public class GameManager : SingletonPersistant<GameManager>
 	{
 		TurnManager.Instance.Init();
 		GridManager.Instance.LoadGrid();
+		m_playersPoints.Clear();
+		m_items.Clear();
+		m_respawningUnits.Clear();
+
+		if (m_currentMission != null && m_currentMission.type == MissionData.MissionType.Construction)
+		{
+			for (int playerID = 0; playerID < m_playersEntityAnchor.Length; playerID++)
+			{
+				int commPointCount = GridManager.Instance.GetCommPoints(playerID).Count;
+				if (commPointCount != 2)
+					Debug.LogWarning("Construction match: player " + playerID + " has " + commPointCount + " communication points instead of 2.");
+			}
+		}
+
+		if (m_currentMission != null && m_currentMission.type == MissionData.MissionType.Sabotage)
+		{
+			if (GameAssets.current.game.sabotagePointVisual == null)
+				Debug.LogWarning("GameAssets.game.sabotagePointVisual is not set: sabotage points work but are invisible.");
+
+			for (int playerID = 0; playerID < m_playersEntityAnchor.Length; playerID++)
+			{
+				if (GetSabotagePointCount(playerID, false) == 0)
+					Debug.LogWarning("Sabotage match without any sabotage point for player " + playerID + ": that side cannot lose by sabotage.");
+			}
+		}
+
+		if (m_currentMission != null && m_currentMission.type == MissionData.MissionType.DefenseDeZone && m_playersEntityAnchor[0].Zones.Count == 0)
+			Debug.LogWarning("DefenseDeZone match on a map without any Zone tile: only extermination can end it.");
+		if (m_currentMission != null && m_currentMission.type == MissionData.MissionType.ControleDePoint && GridManager.Instance.ControlPoints.Count == 0)
+			Debug.LogWarning("ControleDePoint match on a map without any ControlPoint tile: only extermination can end it.");
 
 		if (m_currentGameMode == GameMode.Offline)
 		{
@@ -219,15 +258,24 @@ public class GameManager : SingletonPersistant<GameManager>
 			m_playersEntityAnchor[1].Init(ennemies, 1);
 			if (m_currentMission.type == MissionData.MissionType.Assassinat)
 			{
-				m_playersEntityAnchor[0].SpawnEntity(m_currentMission.kingUnit.GetSavedData(), 0);
-				m_playersEntityAnchor[1].SpawnEntity(m_currentMission.kingUnit.GetSavedData(), 1);
+				m_playersEntityAnchor[0].DesignateRandomKing();
+				m_playersEntityAnchor[1].DesignateRandomKing();
 			}
 			if (m_currentMission.type == MissionData.MissionType.Construction || m_currentMission.type == MissionData.MissionType.Sabotage)
 			{
 				foreach (UnitPreset preset in m_currentMission.allies)
 				{
-					m_playersEntityAnchor[0].SpawnEntity(preset.GetSavedData(), 0);
-					m_playersEntityAnchor[1].SpawnEntity(preset.GetSavedData(), 1);
+					for (int playerID = 0; playerID < m_playersEntityAnchor.Length; playerID++)
+					{
+						Entity ally = m_playersEntityAnchor[playerID].SpawnEntity(preset.GetSavedData(), playerID);
+						if (m_currentMission.type == MissionData.MissionType.Sabotage)
+							ally.SetMatchRole(Entity.MatchRoleType.Demolisher);
+						else
+						{
+							ally.SetMatchRole(Entity.MatchRoleType.Technician);
+							m_respawningUnits.Add(new RespawningUnit() { preset = preset, playerID = playerID, entity = ally });
+						}
+					}
 				}
 			}
 		}
@@ -294,12 +342,58 @@ public class GameManager : SingletonPersistant<GameManager>
 		return newItem;
 	}
 
+	public void RespawnDeadMatchUnits ()
+	{
+		bool didRespawn = false;
+		foreach (RespawningUnit unit in m_respawningUnits)
+		{
+			if (unit.entity != null && !unit.entity.Equipment.IsDead)
+				continue;
+
+			if (!m_playersEntityAnchor[unit.playerID].TryGetFreeSpawn(out EntityAnchor.Spawn spawn))
+			{
+				Debug.LogWarning("No free spawn tile to bring back " + unit.preset.name + " for player " + unit.playerID + " this round.");
+				continue;
+			}
+
+			unit.entity = m_playersEntityAnchor[unit.playerID].SpawnEntity(unit.preset.GetSavedData(), unit.playerID, spawn);
+			unit.entity.SetMatchRole(Entity.MatchRoleType.Technician);
+			didRespawn = true;
+
+			if (unit.playerID == PlayerID)
+				LogConsole.AddLog(LocalizationManager.Instance.Get(LocalizationKey.log_technician_respawn), LogConsole.LogEventType.Round);
+		}
+
+		if (didRespawn)
+			onMatchUnitRespawned?.Invoke();
+	}
+
+	public int GetSabotagePointCount ( int _ownerID, bool _isAliveOnly )
+	{
+		int count = 0;
+		foreach (Tile tile in m_playersEntityAnchor[_ownerID].Structures)
+		{
+			if (tile.IsSabotagePoint && (!_isAliveOnly || tile.Wall.Health > 0))
+				count++;
+		}
+
+		return count;
+	}
+
+	public int GetPlayerPoints ( int _playerID )
+	{
+		return m_playersPoints.TryGetValue(_playerID, out int points) ? points : 0;
+	}
+
 	public void AddPointsToPlayer ( int _playerID, int _amount )
 	{
-		if (m_playersPoints.ContainsKey(_playerID))
-			m_playersPoints[_playerID] += _amount;
-		else
-			m_playersPoints.Add(_playerID, _amount);
+		SetPlayerPoints(_playerID, GetPlayerPoints(_playerID) + _amount);
+	}
+
+	public void SetPlayerPoints ( int _playerID, int _points )
+	{
+		m_playersPoints[_playerID] = _points;
+		onPlayersPointsChanged?.Invoke();
 	}
 
 	public void EndGame ( EndLevelPopup.GameResult _gameResult )

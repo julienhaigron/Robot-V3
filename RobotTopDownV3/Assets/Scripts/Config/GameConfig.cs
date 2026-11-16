@@ -39,7 +39,9 @@ public partial class GameConfig : ScriptableObject
 		public int maxInventoryCapacity = 80;
 
 		[Title("Micro")]
-		public int zoneRange = 2;
+		public int zonePointsToWin = 5;
+		public int sabotagePointHealth = 10;
+		public float demolisherSabotageHitBonus = 1f;
 
 		[Title("Actions")]
 		public EntityActionData defaultStartAction;

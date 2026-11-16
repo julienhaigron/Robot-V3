@@ -520,6 +520,24 @@ public enum LocalizationKey
     component_type_armor,
     component_type_chipset,
     menu_load,
+    ingame_zone_score,
+    log_zone_point_ally,
+    log_zone_point_enemy,
+    log_zone_point_none,
+    ingame_control_points_score,
+    log_control_points,
+    ingame_sabotage_score,
+    sabotage_point_ally,
+    sabotage_point_enemy,
+    roll_demolisher_bonus,
+    log_sabotage_point_damaged,
+    log_sabotage_point_destroyed_ally,
+    log_sabotage_point_destroyed_enemy,
+    ingame_construction_score,
+    log_technician_respawn,
+    action_set_cable,
+    component_tool_cable_kit,
+    unit_technician,
 }
 
 public static class LocalizationKeyExtensions
@@ -1047,6 +1065,24 @@ public static class LocalizationKeyExtensions
             case LocalizationKey.component_type_armor: return "component_type/armor";
             case LocalizationKey.component_type_chipset: return "component_type/chipset";
             case LocalizationKey.menu_load: return "menu/load";
+            case LocalizationKey.ingame_zone_score: return "ingame/zone_score";
+            case LocalizationKey.log_zone_point_ally: return "log/zone_point_ally";
+            case LocalizationKey.log_zone_point_enemy: return "log/zone_point_enemy";
+            case LocalizationKey.log_zone_point_none: return "log/zone_point_none";
+            case LocalizationKey.ingame_control_points_score: return "ingame/control_points_score";
+            case LocalizationKey.log_control_points: return "log/control_points";
+            case LocalizationKey.ingame_sabotage_score: return "ingame/sabotage_score";
+            case LocalizationKey.sabotage_point_ally: return "sabotage/point_ally";
+            case LocalizationKey.sabotage_point_enemy: return "sabotage/point_enemy";
+            case LocalizationKey.roll_demolisher_bonus: return "roll/demolisher_bonus";
+            case LocalizationKey.log_sabotage_point_damaged: return "log/sabotage_point_damaged";
+            case LocalizationKey.log_sabotage_point_destroyed_ally: return "log/sabotage_point_destroyed_ally";
+            case LocalizationKey.log_sabotage_point_destroyed_enemy: return "log/sabotage_point_destroyed_enemy";
+            case LocalizationKey.ingame_construction_score: return "ingame/construction_score";
+            case LocalizationKey.log_technician_respawn: return "log/technician_respawn";
+            case LocalizationKey.action_set_cable: return "action/set_cable";
+            case LocalizationKey.component_tool_cable_kit: return "component/tool_cable_kit";
+            case LocalizationKey.unit_technician: return "unit/technician";
             default: return string.Empty;
         }
     }

@@ -10,9 +10,11 @@ public class EntityAnchor : MonoBehaviour
     public List<Entity> Entities => m_entities;
 	private Entity m_king;
     public Entity King => m_king;
+	public bool IsKingDead => m_king != null && m_king.Equipment.IsDead;
 
 	[SerializeField] private List<Spawn> m_staticSpawnCoordinates = new();
-	[SerializeField] private List<Spawn> m_dynamicSpawnCoordinates = new(); 
+	[SerializeField] private List<Spawn> m_dynamicSpawnCoordinates = new();
+	private List<Spawn> m_allSpawnCoordinates = new();
 	private HashSet<Tile> m_zones = new();
 	public HashSet<Tile> Zones => m_zones;
 	private HashSet<Tile> m_structures = new();
@@ -48,6 +50,7 @@ public class EntityAnchor : MonoBehaviour
 	public void AddSpawn( TileCoordinates _coordinates, bool _isFirstSide, bool _isStatic )
 	{
 		Spawn newSpawn = new Spawn(_coordinates, _isFirstSide, _isStatic);
+		m_allSpawnCoordinates.Add(newSpawn);
 		if(_isStatic)
 			m_staticSpawnCoordinates.Add(newSpawn);
 		else
@@ -58,8 +61,10 @@ public class EntityAnchor : MonoBehaviour
 	{
 		m_staticSpawnCoordinates.Clear();
 		m_dynamicSpawnCoordinates.Clear();
+		m_allSpawnCoordinates.Clear();
 		m_zones.Clear();
 		m_structures.Clear();
+		m_king = null;
 	}
 
 	public void Init (List<EntitySavedData> _robots, int _playerID)
@@ -98,18 +103,48 @@ public class EntityAnchor : MonoBehaviour
 		return new Spawn(new TileCoordinates(0, 0, 0), Spawn.InitializationState.Failure, true, false);
 	}
 
-	public void SpawnEntity ( EntitySavedData _entityData, int _playerID)
+	public bool TryGetFreeSpawn ( out Spawn _spawn )
+	{
+		List<Spawn> freeSpawns = m_allSpawnCoordinates.FindAll(spawn => spawn.coordinates.IsOccupied(true) == null);
+		_spawn = freeSpawns.Count > 0 ? freeSpawns[Random.Range(0, freeSpawns.Count)] : default;
+		return freeSpawns.Count > 0;
+	}
+
+	public Entity SpawnEntity ( EntitySavedData _entityData, int _playerID)
+	{
+		Spawn spawn = GetRandomAvailableSpawnPosition();
+		if (spawn.initializationState == Spawn.InitializationState.Failure)
+			Debug.LogWarning("No free spawn tile left for " + _entityData.name + " (player " + _playerID + "): it spawns on tile 0.", this);
+
+		return SpawnEntity(_entityData, _playerID, spawn);
+	}
+
+	public Entity SpawnEntity ( EntitySavedData _entityData, int _playerID, Spawn _spawn )
 	{
 		int entityID = (100 * _playerID) + m_entities.Count; //0 - 99 id slots for units per player
 		Entity entity = Instantiate(_entityData.FrameData.prefab, transform);
 		m_entities.Add(entity);
-		entity.Init(_entityData, GetRandomAvailableSpawnPosition(), entityID, _playerID);
+		entity.Init(_entityData, _spawn, entityID, _playerID);
 		onEntityAdded?.Invoke(entity);
+		return entity;
 	}
 
-	private void RegisterEntityAsKing(Entity _kingEntity )
+	public void DesignateRandomKing ()
 	{
-		m_king = _kingEntity;
+		List<Entity> candidates = new();
+		foreach (Entity entity in m_entities)
+		{
+			if (!entity.Equipment.IsDead && !entity.IsImmortal)
+				candidates.Add(entity);
+		}
+
+		if (m_king != null)
+			m_king.UI.SetKingMarker(false);
+
+		m_king = candidates.Count > 0 ? candidates[Random.Range(0, candidates.Count)] : null;
+
+		if (m_king != null)
+			m_king.UI.SetKingMarker(true);
 	}
 
 	public void SpawnEntityDuringPlay ( EntitySavedData _entityData, int _entityID, int _playerID, int _tileID, System.Action _onEndSpawn = null )

@@ -20,6 +20,7 @@ public class EntityUIPlugin : EntityPlugin
 	[SerializeField] private RectTransform m_statusDisplayParent;
 	[SerializeField] private int m_statusPrefabSpawnAtInitCount;
 	[SerializeField] private List<EntityStatusDisplay> m_statusDisplays;
+	[SerializeField] private GameObject m_kingMarker;
 
 	private void Awake ()
 	{
@@ -41,6 +42,7 @@ public class EntityUIPlugin : EntityPlugin
 
 		m_healthBar.gameObject.SetActive(true);
 		m_healthBar.SetHealth(m_linkedEntity.Equipment.CurrentHealth, m_linkedEntity.Equipment.MaxHealth);
+		SetKingMarker(false);
 
 		foreach (EntityStatusDisplay display in m_statusDisplays)
 			display.Hide();
@@ -61,6 +63,12 @@ public class EntityUIPlugin : EntityPlugin
 	public void HideUI ()
 	{
 		gameObject.SetActive(false);
+	}
+
+	public void SetKingMarker ( bool _isKing )
+	{
+		if (m_kingMarker != null)
+			m_kingMarker.SetActive(_isKing);
 	}
 
 	public void ShowText ( string _text, Color? _colorOverride = null )

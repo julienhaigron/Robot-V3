@@ -31,9 +31,6 @@ public class MissionData : ScriptableEnum<MissionDataEnumID>
     [ShowIf("@type == MissionType.Construction || type == MissionType.Sabotage ")]
     public UnitPreset[] allies;
 
-    [ShowIf("@type == MissionType.Assassinat ")]
-    public UnitPreset kingUnit;
-
     //public bool areRewardsRandom = false;
     public CurrencyReward[] currencyRewards;
 

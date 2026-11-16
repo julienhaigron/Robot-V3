@@ -40,6 +40,11 @@ public class GridManager : Singleton<GridManager>
 	private HashSet<TileGroundType> m_groundTypesWalkedOnByPlayer = new();
 	public bool WasGroundTypeWalkedOnByPlayer ( TileGroundType _groundType ) => m_groundTypesWalkedOnByPlayer.Contains(_groundType);
 
+	private List<HashSet<Tile>> m_controlPoints = new();
+	public List<HashSet<Tile>> ControlPoints => m_controlPoints;
+	private List<HashSet<Tile>>[] m_commPoints = { new(), new() };
+	public List<HashSet<Tile>> GetCommPoints ( int _playerID ) => m_commPoints[_playerID];
+
 	[SerializeField] private GridData m_gridData;
 	public GridData GridData
 	{
@@ -63,10 +68,14 @@ public class GridManager : Singleton<GridManager>
 		m_entitiesVisions.Add(0, new(new Dictionary<Entity, HashSet<Tile>>()));
 		m_entitiesVisions.Add(1, new(new Dictionary<Entity, HashSet<Tile>>()));
 		m_groundTypesWalkedOnByPlayer.Clear();
+		HashSet<Tile> controlPointTiles = new();
+		HashSet<Tile>[] commPointTiles = { new(), new() };
+		bool isSabotageMatch = false;
 		if (!_isEditorMode)
 		{
 			GameManager.Instance.PlayersEntityAnchor[0].Clear();
 			GameManager.Instance.PlayersEntityAnchor[1].Clear();
+			isSabotageMatch = GameManager.Instance.CurrentMission != null && GameManager.Instance.CurrentMission.type == MissionData.MissionType.Sabotage;
 		}
 
 		for (int i = 0; i < m_tiles.Length; i++)
@@ -95,19 +104,77 @@ public class GridManager : Singleton<GridManager>
 					GameManager.Instance.PlayersEntityAnchor[0].AddSpawn(m_tiles[i].coordinates, true, groundType == TileGroundType.StaticPlayerSpawn);
 				else if (groundType == TileGroundType.StaticEnemySpawn || groundType == TileGroundType.DynamicEnemySpawn)
 					GameManager.Instance.PlayersEntityAnchor[1].AddSpawn(m_tiles[i].coordinates, false, groundType == TileGroundType.StaticEnemySpawn);
-				else if (groundType == TileGroundType.PlayerStructure)
-					GameManager.Instance.PlayersEntityAnchor[0].AddStructure(m_tiles[i]);
-				else if (groundType == TileGroundType.EnemyStructure)
-					GameManager.Instance.PlayersEntityAnchor[1].AddStructure(m_tiles[i]);
+				else if (groundType == TileGroundType.PlayerStructure || groundType == TileGroundType.EnemyStructure)
+				{
+					GameManager.Instance.PlayersEntityAnchor[groundType == TileGroundType.PlayerStructure ? 0 : 1].AddStructure(m_tiles[i]);
+					if (isSabotageMatch)
+						m_tiles[i].SetupSabotagePoint(GameConfig.current.game.sabotagePointHealth, GameAssets.current.game.sabotagePointVisual);
+				}
 				else if (groundType == TileGroundType.Zone)
 					GameManager.Instance.PlayersEntityAnchor[0].AddZone(m_tiles[i]);
 				/*else if (groundType == TileGroundType.EnemyZone)
 					GameManager.Instance.PlayersEntityAnchor[1].AddZone(m_tiles[i]);*/
+				else if (groundType == TileGroundType.ControlPoint)
+					controlPointTiles.Add(m_tiles[i]);
+				else if (groundType == TileGroundType.PlayerCommPoint)
+					commPointTiles[0].Add(m_tiles[i]);
+				else if (groundType == TileGroundType.EnemyCommPoint)
+					commPointTiles[1].Add(m_tiles[i]);
 			}
 
 		}
 
+		m_controlPoints = GroupAdjacentTiles(controlPointTiles);
+		m_commPoints = new[] { GroupAdjacentTiles(commPointTiles[0]), GroupAdjacentTiles(commPointTiles[1]) };
+
 		FogOfWarRenderer.Instance.ConfigureTopDownFogCamera();
+	}
+
+	private static List<HashSet<Tile>> GroupAdjacentTiles ( HashSet<Tile> _tiles )
+	{
+		List<HashSet<Tile>> groups = new();
+		HashSet<Tile> grouped = new();
+		foreach (Tile start in _tiles)
+		{
+			if (grouped.Contains(start))
+				continue;
+
+			HashSet<Tile> group = GetConnectedTiles(new[] { start }, _tiles);
+			grouped.UnionWith(group);
+			groups.Add(group);
+		}
+
+		return groups;
+	}
+
+	private static HashSet<Tile> GetConnectedTiles ( IEnumerable<Tile> _starts, HashSet<Tile> _allowedTiles )
+	{
+		HashSet<Tile> reached = new(_starts);
+		Queue<Tile> frontier = new(reached);
+		while (frontier.Count > 0)
+		{
+			foreach (Tile neighbor in frontier.Dequeue().Neighbors)
+			{
+				if (neighbor != null && _allowedTiles.Contains(neighbor) && reached.Add(neighbor))
+					frontier.Enqueue(neighbor);
+			}
+		}
+
+		return reached;
+	}
+
+	public bool AreCommPointsLinked ( int _playerID, IEnumerable<Tile> _cableTiles )
+	{
+		List<HashSet<Tile>> commPoints = m_commPoints[_playerID];
+		if (commPoints.Count < 2)
+			return false;
+
+		HashSet<Tile> network = new(_cableTiles);
+		foreach (HashSet<Tile> commPoint in commPoints)
+			network.UnionWith(commPoint);
+
+		HashSet<Tile> reached = GetConnectedTiles(commPoints[0], network);
+		return commPoints.All(commPoint => commPoint.Overlaps(reached));
 	}
 
 	#region Editor
@@ -775,7 +842,7 @@ public class GridManager : Singleton<GridManager>
 
 		foreach (Tile tile in GetLineOfSightPath(_from, _to))
 		{
-			if (tile.GroundType != TileGroundType.Wall || tile.Wall == null || tile.Wall.Health <= 0)
+			if ((tile.GroundType != TileGroundType.Wall && !tile.IsSabotagePoint) || tile.Wall == null || tile.Wall.Health <= 0)
 				continue;
 
 			_wallTile = tile;
@@ -828,7 +895,7 @@ public class GridManager : Singleton<GridManager>
 		List<Tile> tilesInLine = GetLineOfSightPath(Tiles[attackerPosition], Tiles[defenderPosition]);
 		foreach (Tile tile in tilesInLine)
 		{
-			if (GameConfig.current.game.coverBonusPerGroundType.ContainsKey(tile.GroundType))
+			if (GameConfig.current.game.coverBonusPerGroundType.ContainsKey(tile.GroundType) && tile.Wall != null)
 			{
 				if (tile.Wall.RegisteredHealth > 0 && GameConfig.current.game.coverBonusPerGroundType[tile.GroundType] > highestCoverValue)
 					highestCoverValue = GameConfig.current.game.coverBonusPerGroundType[tile.GroundType];
@@ -1415,7 +1482,10 @@ public enum TileGroundType
 	DynamicEnemySpawn,
 	PlayerStructure,
 	EnemyStructure,
-	Zone
+	Zone,
+	ControlPoint,
+	PlayerCommPoint,
+	EnemyCommPoint
 }
 
 public static class HexDirectionExtensions

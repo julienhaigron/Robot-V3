@@ -439,6 +439,50 @@ public class EntityEquipmentPlugin : EntityPlugin
 		return isAttackSuccessful;
 	}
 
+	public bool SabotagePointAttackRoll ( AttackAction _attackAction, Tile _from, Tile _pointTile, out Tile _coverTile )
+	{
+		SabotagePoints.TryGetLivingPoint(_pointTile, out int ownerID);
+		string pointName = SabotagePoints.GetLocalizedName(ownerID);
+		LocalizationManager localization = LocalizationManager.Instance;
+
+		if (GridManager.Instance.IsThereBlockingWallBetween(_from, _pointTile, true, out _coverTile))
+		{
+			LogConsole.AddLog(string.Format(localization.Get(LocalizationKey.log_wall_blocks), m_linkedEntity.Data.name, pointName), LogConsole.LogEventType.AttackRoll);
+			return false;
+		}
+
+		float userAim = _attackAction.Data.type == EntityActionData.ActionType.DistanceAttack
+				? m_linkedEntity.Data.BrainData.distanceAccuracy + m_linkedEntity.GetAdditionaryStatBonus(EntityEquipmentData.SecondaryStat.StatType.DistanceAccuracy, _attackAction)
+				: m_linkedEntity.Data.BrainData.agility + m_linkedEntity.GetAdditionaryStatBonus(EntityEquipmentData.SecondaryStat.StatType.MeleeAccuracy, _attackAction);
+		float modAction = m_linkedEntity.LastActionPerformedData.previousActionAttackModificator;
+		float demolisherBonus = m_linkedEntity.MatchRole == Entity.MatchRoleType.Demolisher ? GameConfig.current.game.demolisherSabotageHitBonus : 0f;
+		float finalScore = userAim + modAction + demolisherBonus;
+
+		float roll = Random.Range(0f, 1f);
+		bool isAttackSuccessful = finalScore >= 1f || finalScore >= roll;
+
+		StringBuilder detailsBuilder = new();
+		detailsBuilder.AppendLine(string.Format(localization.Get(LocalizationKey.roll_header), m_linkedEntity.Data.name, pointName));
+		detailsBuilder.AppendLine();
+		detailsBuilder.AppendLine(string.Format(localization.Get(LocalizationKey.roll_attacker_section), finalScore.ToPercent()));
+		detailsBuilder.AppendPercentLine(LocalizationKey.roll_aim, userAim);
+		detailsBuilder.AppendPercentLine(LocalizationKey.roll_action_modifier, modAction);
+		detailsBuilder.AppendPercentLine(LocalizationKey.roll_demolisher_bonus, demolisherBonus);
+		detailsBuilder.AppendLine();
+
+		if (finalScore >= 1f)
+			detailsBuilder.AppendLine(localization.Get(LocalizationKey.roll_guaranteed_hit));
+		else
+		{
+			detailsBuilder.AppendLine(string.Format(localization.Get(LocalizationKey.roll_roll), roll.ToPercent()));
+			detailsBuilder.AppendLine(localization.Get(isAttackSuccessful ? LocalizationKey.roll_hit_success : LocalizationKey.roll_hit_failed));
+		}
+
+		LogConsole.LogDetails details = new("attack_" + LogConsole.Instance.Counter, localization.Get(LocalizationKey.roll_title), detailsBuilder.ToString());
+		LogConsole.AddLog(localization.Get(isAttackSuccessful ? LocalizationKey.log_attack_success : LocalizationKey.log_attack_failure), LogConsole.LogEventType.AttackRoll, details);
+		return isAttackSuccessful;
+	}
+
 	public WeaponEquipmentData.DistanceType GetWeaponDistanceTypeFrom ( Entity _target, AEntityAction _action, bool _didAttackerWinPFC )
 	{
 		int attackerPosition = _didAttackerWinPFC ? TurnManager.Instance.GetPositionOfEntityAtEndOfRound(_target.ID) : TurnManager.Instance.GetPositionOfEntityAtEndOfRound(_target.ID);

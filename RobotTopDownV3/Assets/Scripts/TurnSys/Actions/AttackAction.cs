@@ -155,8 +155,11 @@ public class AttackAction : AEntityAction
 		}
 
 		LocalizationManager localization = LocalizationManager.Instance;
+		string targetLabel = targetNames.Count > 0 ? string.Join(", ", targetNames)
+			: SabotagePoints.TryGetLivingPoint(GetTargetTileAt(0), out int sabotagePointOwnerID) ? SabotagePoints.GetLocalizedName(sabotagePointOwnerID)
+			: localization.Get(LocalizationKey.log_use_weapon_ground);
 		LogConsole.AddLog(TagLogMessage(string.Format(localization.Get(LocalizationKey.log_use_weapon), PerformingEntity.Data.name
-				, targetNames.Count == 0 ? localization.Get(LocalizationKey.log_use_weapon_ground) : string.Join(", ", targetNames)
+				, targetLabel
 				, Data.GetLocalizedName()))
 			, LogConsole.LogEventType.UseWeapon
 			, new LogConsole.LogDetails("useweapon_" + LogConsole.Instance.Counter, Data.GetLocalizedName(), Data.GetDescription()));
@@ -233,7 +236,12 @@ public class AttackAction : AEntityAction
 						targetTileIDs[attackCount * ActiveLifetime] = coverHitted.coordinates.ID;
 				}
 				else if (targetEntity == null)
-					attackInfo.isAttackSuccessfull = true;
+				{
+					Tile targetTile = GetTargetTileAt(attackCount);
+					attackInfo.isAttackSuccessfull = SabotagePoints.TryGetLivingPoint(targetTile, out _)
+						? PerformingEntity.Equipment.SabotagePointAttackRoll(this, GetAttackOriginTile(), targetTile, out coverHitted)
+						: true;
+				}
 				else if (DidDesignatedTargetEscapeReach(attackCount))
 				{
 					attackInfo.isAttackSuccessfull = false;

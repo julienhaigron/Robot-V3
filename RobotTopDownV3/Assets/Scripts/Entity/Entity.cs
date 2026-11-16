@@ -74,6 +74,11 @@ public class Entity : MonoBehaviour
 
 	private int m_ownerID;
 	public int OwnerID => m_ownerID;
+
+	public enum MatchRoleType { None, Demolisher, Technician }
+	private MatchRoleType m_matchRole = MatchRoleType.None;
+	public MatchRoleType MatchRole => m_matchRole;
+	public void SetMatchRole ( MatchRoleType _matchRole ) => m_matchRole = _matchRole;
 	//public EntityFaction Faction => m_data.FrameData.faction;
 
 	[SerializeField, ReadOnly] private EntityActionData m_lastActionPerformed;

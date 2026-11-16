@@ -26,6 +26,7 @@ public class EntityAIPlugin : EntityPlugin
 
 	private List<Entity> m_lastEntitiesTargeted = new();
 	public List<Entity> LastTargetedEntities => m_lastEntitiesTargeted;
+	private Tile m_lastTargetedSabotagePoint;
 
 	private Entity m_committedTarget;
 	private int m_committedDestinationID = -1;
@@ -941,19 +942,20 @@ public class EntityAIPlugin : EntityPlugin
 		AEntityAction action = _recordedAction.action;
 		Tile from = m_linkedEntity.Displacement.Coordinates.GetTile();
 
-		if (!TryGetTargetsInReach(action, from, out List<Entity> targets, out int orientation))
+		if (!TryGetTargetsInReach(action, from, out List<Entity> targets, out Tile sabotagePointTarget, out int orientation))
 			return false;
 
 		m_lastEntitiesTargeted = targets;
+		m_lastTargetedSabotagePoint = sabotagePointTarget;
 
 		AEntityAction targetedAction = TurnManager.Instance.GetAction(action.enumID, m_linkedEntity.ID, action.linkedEquipmentId, TurnManager.currentTick);
 		if (targetedAction == null)
 			return false;
 
 		targetedAction.Init(action.Data, action.linkedEquipmentId, m_linkedEntity.ID, action.supposedPositionAtActionStartID, TurnManager.currentTick);
-		FillActionTargets(targetedAction, targets, from, out int[] targetTileIDs, out int[] targetedEntityIDs);
+		FillActionTargets(targetedAction, targets, sabotagePointTarget, from, out int[] targetTileIDs, out int[] targetedEntityIDs);
 		targetedAction.SetResolvedTargets(targetTileIDs, targetedEntityIDs);
-		_resultInfo.ReplaceAction(targetedAction, action.enumID + " targets " + targets[0].Data.name);
+		_resultInfo.ReplaceAction(targetedAction, action.enumID + " targets " + (sabotagePointTarget != null ? "a sabotage point" : targets[0].Data.name));
 
 		if (orientation != m_linkedEntity.Displacement.CurrentOrientation)
 		{
@@ -976,9 +978,10 @@ public class EntityAIPlugin : EntityPlugin
 		return true;
 	}
 
-	private bool TryGetTargetsInReach ( AEntityAction _action, Tile _from, out List<Entity> _targets, out int _orientation )
+	private bool TryGetTargetsInReach ( AEntityAction _action, Tile _from, out List<Entity> _targets, out Tile _sabotagePoint, out int _orientation )
 	{
 		_targets = new();
+		_sabotagePoint = null;
 		_orientation = m_linkedEntity.Displacement.CurrentOrientation;
 
 		Entity stickyTarget = GetStickyTarget();
@@ -990,29 +993,64 @@ public class EntityAIPlugin : EntityPlugin
 			return _targets.Count > 0;
 		}
 
+		Tile stickySabotagePoint = stickyTarget == null && m_lastEntitiesTargeted.Count == 0 ? m_lastTargetedSabotagePoint : null;
 		int bestRange = int.MaxValue;
-		bool bestHoldsSticky = false;
+		int bestPriority = -1;
 
 		for (int i = 0; i < 6; i++)
 		{
 			int orientation = (m_linkedEntity.Displacement.CurrentOrientation + i) % 6;
-			List<Entity> targetsInCone = GetEnemiesOn(m_linkedEntity.Equipment.GetTilesInWeaponRange(_action, true, _from, orientation, true), _from, stickyTarget);
-			if (targetsInCone.Count == 0)
+			List<Tile> cone = m_linkedEntity.Equipment.GetTilesInWeaponRange(_action, true, _from, orientation, true);
+			List<Entity> targetsInCone = GetEnemiesOn(cone, _from, stickyTarget);
+			Tile sabotagePointInCone = GetEnemySabotagePointOn(cone, _from, stickySabotagePoint);
+			if (targetsInCone.Count == 0 && sabotagePointInCone == null)
 				continue;
 
-			bool holdsSticky = stickyTarget != null && targetsInCone[0] == stickyTarget;
-			int range = GetRangeBetween(_from, targetsInCone[0].Displacement.Coordinates.GetTile());
+			bool isEntitySticky = targetsInCone.Count > 0 && stickyTarget != null && targetsInCone[0] == stickyTarget;
+			bool isSabotagePointSticky = sabotagePointInCone != null && sabotagePointInCone == stickySabotagePoint;
+			int entityRange = targetsInCone.Count > 0 ? GetRangeBetween(_from, targetsInCone[0].Displacement.Coordinates.GetTile()) : int.MaxValue;
+			int sabotagePointRange = sabotagePointInCone != null ? GetRangeBetween(_from, sabotagePointInCone) : int.MaxValue;
 
-			if (_targets.Count > 0 && (bestHoldsSticky || (!holdsSticky && range >= bestRange)))
+			bool targetsSabotagePoint = targetsInCone.Count == 0
+				|| (sabotagePointInCone != null && !isEntitySticky && (isSabotagePointSticky || sabotagePointRange < entityRange));
+
+			int priority = targetsSabotagePoint ? (isSabotagePointSticky ? 1 : 0) : (isEntitySticky ? 2 : 0);
+			int range = targetsSabotagePoint ? sabotagePointRange : entityRange;
+
+			if (bestPriority >= 0 && (priority < bestPriority || (priority == bestPriority && range >= bestRange)))
 				continue;
 
-			_targets = targetsInCone;
+			_targets = targetsSabotagePoint ? new() : targetsInCone;
+			_sabotagePoint = targetsSabotagePoint ? sabotagePointInCone : null;
 			_orientation = orientation;
 			bestRange = range;
-			bestHoldsSticky = holdsSticky;
+			bestPriority = priority;
 		}
 
-		return _targets.Count > 0;
+		return _targets.Count > 0 || _sabotagePoint != null;
+	}
+
+	private Tile GetEnemySabotagePointOn ( IEnumerable<Tile> _tiles, Tile _from, Tile _stickySabotagePoint )
+	{
+		Tile closest = null;
+		int closestRange = int.MaxValue;
+		foreach (Tile tile in _tiles)
+		{
+			if (!SabotagePoints.TryGetLivingPoint(tile, out int ownerID) || ownerID == m_linkedEntity.OwnerID)
+				continue;
+
+			if (tile == _stickySabotagePoint)
+				return tile;
+
+			int range = GetRangeBetween(_from, tile);
+			if (range < closestRange)
+			{
+				closest = tile;
+				closestRange = range;
+			}
+		}
+
+		return closest;
 	}
 
 	private List<Entity> GetEnemiesOn ( IEnumerable<Tile> _tiles, Tile _from, Entity _stickyTarget )
@@ -1056,7 +1094,7 @@ public class EntityAIPlugin : EntityPlugin
 		});
 	}
 
-	private void FillActionTargets ( AEntityAction _action, List<Entity> _targets, Tile _from, out int[] _targetTileIDs, out int[] _targetedEntityIDs )
+	private void FillActionTargets ( AEntityAction _action, List<Entity> _targets, Tile _sabotagePoint, Tile _from, out int[] _targetTileIDs, out int[] _targetedEntityIDs )
 	{
 		bool shouldAddTileInDirectionToTarget = _action.Data.aoeType != EntityActionData.AOEType.Noone
 			&& _action.Data.aoECenterType == EntityActionData.AOECenterType.Self;
@@ -1066,11 +1104,12 @@ public class EntityAIPlugin : EntityPlugin
 		_targetedEntityIDs = new int[maxAmount];
 		for (int i = 0; i < maxAmount; i++)
 		{
-			Entity target = _targets[i % _targets.Count];
+			Entity target = _sabotagePoint == null ? _targets[i % _targets.Count] : null;
+			Tile targetTile = target != null ? target.Displacement.Coordinates.GetTile() : _sabotagePoint;
 			_targetTileIDs[i] = shouldAddTileInDirectionToTarget
-				? _from.GetNeighbor((HexDirection)GridManager.Instance.GetClosestOrientation(_from, target.Displacement.Coordinates.GetTile())).coordinates.ID
-				: target.Displacement.Coordinates.ID;
-			_targetedEntityIDs[i] = target.ID;
+				? _from.GetNeighbor((HexDirection)GridManager.Instance.GetClosestOrientation(_from, targetTile)).coordinates.ID
+				: targetTile.coordinates.ID;
+			_targetedEntityIDs[i] = target != null ? target.ID : -1;
 		}
 	}
 

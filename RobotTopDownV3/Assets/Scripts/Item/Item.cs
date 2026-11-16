@@ -9,9 +9,15 @@ public class Item : MonoBehaviour
     private AItemLinkedData m_linkedData;
     public AItemLinkedData LinkedData => m_linkedData;
 
+    public static System.Action<Item> onAnyItemPlaced;
+
     private Entity m_invocator;
+    public Entity Invocator => m_invocator;
     private Tile m_currentPosition;
     public Tile CurrentPosition => m_currentPosition;
+
+    private bool m_isPlaced;
+    public bool IsPlaced => m_isPlaced;
 
     private int m_id;
     public int ID => m_id;
@@ -23,6 +29,12 @@ public class Item : MonoBehaviour
         m_linkedData = _linkedData;
         m_invocator = _invocatorEntity;
         m_currentPosition = _position;
+    }
+
+    public void SetPlaced ()
+    {
+        m_isPlaced = true;
+        onAnyItemPlaced?.Invoke(this);
     }
 
     public void OnTileEnter(Entity _enteringEntity, bool _isFromTeleportation )

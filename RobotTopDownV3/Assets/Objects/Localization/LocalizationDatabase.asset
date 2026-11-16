@@ -2098,3 +2098,75 @@ MonoBehaviour:
     values:
     - Load
     - Charger
+  - key: ingame/zone_score
+    values:
+    - 'Zone: {0} - {1} (first to {2})'
+    - "Zone : {0} - {1} (premier \xE0 {2})"
+  - key: log/zone_point_ally
+    values:
+    - 'Your squad holds the zone: +1 point ({0} - {1})'
+    - 'Votre escouade tient la zone : +1 point ({0} - {1})'
+  - key: log/zone_point_enemy
+    values:
+    - 'The enemy holds the zone: +1 point ({0} - {1})'
+    - "L'ennemi tient la zone : +1 point ({0} - {1})"
+  - key: log/zone_point_none
+    values:
+    - 'Nobody holds the zone: no point ({0} - {1})'
+    - 'Personne ne tient la zone : aucun point ({0} - {1})'
+  - key: ingame/control_points_score
+    values:
+    - 'Control points: {0} - {1} (of {2})'
+    - "Points de contr\xF4le : {0} - {1} (sur {2})"
+  - key: log/control_points
+    values:
+    - 'Control points held at end of round: you {0}, enemy {1} (of {2})'
+    - "Points de contr\xF4le tenus en fin de tour : vous {0}, ennemi {1} (sur {2})"
+  - key: ingame/sabotage_score
+    values:
+    - 'Sabotage points: you {0}/{1} - enemy {2}/{3}'
+    - 'Points de sabotage : vous {0}/{1} - ennemi {2}/{3}'
+  - key: sabotage/point_ally
+    values:
+    - your sabotage point
+    - votre point de sabotage
+  - key: sabotage/point_enemy
+    values:
+    - the enemy sabotage point
+    - le point de sabotage ennemi
+  - key: roll/demolisher_bonus
+    values:
+    - 'Demolisher Bonus: {0}%'
+    - "Bonus de d\xE9molisseur : {0} %"
+  - key: log/sabotage_point_damaged
+    values:
+    - '-> {0}: {1}/{2} HP'
+    - '-> {0} : {1}/{2} PV'
+  - key: log/sabotage_point_destroyed_ally
+    values:
+    - Your sabotage point is destroyed ({0} left)
+    - "Votre point de sabotage est d\xE9truit (encore {0})"
+  - key: log/sabotage_point_destroyed_enemy
+    values:
+    - Enemy sabotage point destroyed ({0} left)
+    - "Point de sabotage ennemi d\xE9truit (encore {0})"
+  - key: ingame/construction_score
+    values:
+    - 'Link your communication points: {0} cables laid'
+    - "Reliez vos points de communication : {0} c\xE2bles pos\xE9s"
+  - key: log/technician_respawn
+    values:
+    - Your technician is back on the field
+    - Votre technicien revient sur le terrain
+  - key: action/set_cable
+    values:
+    - Lay cable
+    - "Poser un c\xE2ble"
+  - key: component/tool_cable_kit
+    values:
+    - Cable kit
+    - "Kit de c\xE2blage"
+  - key: unit/technician
+    values:
+    - Technician
+    - Technicien

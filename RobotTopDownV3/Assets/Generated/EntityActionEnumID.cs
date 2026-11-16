@@ -57,5 +57,6 @@ public enum EntityActionEnumID
 	Push_Plasma,
 	Dooming,
 	RotateToEntity,
+	Set_Cable,
 	//#END#ENTITYACTIONENUMID#//
 }
