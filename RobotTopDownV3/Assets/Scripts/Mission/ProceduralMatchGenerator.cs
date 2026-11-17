@@ -37,6 +37,7 @@ public class ChallengerData
 {
 	public string id;
 	public MissionData.MissionType type;
+	public MatchStrategy strategy;
 	public List<UnitPreset> team = new();
 
 	public string NameKey => "challenger/" + id;
@@ -209,6 +210,7 @@ public static class ProceduralMatchGenerator
 		GameDatas.ProceduralMatchData match = new();
 		match.phase = GetPhase(_cycleCount);
 		match.type = _challenger.type;
+		match.strategy = _challenger.strategy;
 		match.mapName = maps[UnityEngine.Random.Range(0, maps.Count)].name;
 		match.challengerId = _challenger.id;
 		match.enemyPresetNames = _challenger.team.Where(preset => preset != null).Select(preset => preset.name).ToList();

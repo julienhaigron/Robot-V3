@@ -42,6 +42,7 @@ public partial class GameDatas
 			missionData.equipmentRewards = new();
 			missionData.unitReward = new();
 			missionData.SetFixedRewardSet(BuildRewardSet());
+			missionData.SetTeamStrategy(strategy);
 
 			if (missionData.map == null)
 				Debug.LogError("Procedural match map " + mapName + " is no longer in GameAssets.game.mapsPerMissionType.");

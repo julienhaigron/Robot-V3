@@ -13,6 +13,7 @@ public class Shield : ToolEquipment
 	public int orientation = 0;
 
 	private int m_currentHp;
+	public int CurrentHp => m_currentHp;
 
 	public override void Init ( Entity _user, ToolEquipmentData _data, string _id, bool _isFirstSide )
 	{

@@ -65,7 +65,7 @@ public class ApplyEffectItemData : AItemData
 	{
 		base.OnActionTickStart(_actionTick, _linkedData, _usedItem);
 
-		List<Entity> entities = GridManager.Instance.GetEntitiesInRange(_usedItem.CurrentPosition, range, false);
+		List<Entity> entities = GridManager.Instance.GetEntitiesInRange(_usedItem.CurrentPosition, range);
 
 		foreach (Entity entity in entities)
 		{

@@ -17,20 +17,23 @@ public class DamageOnDeathPassiveEffect : AEntityPassiveEffect
 	public override void OnDeathTrigger ( Entity _deadEntity )
 	{
 		base.OnDeathTrigger(_deadEntity);
-		List<Tile> tilesInRange = GridManager.Instance.GetTilesInVisionRange(_deadEntity.Displacement.Coordinates.GetTile(), 1, explosionRange, false, true, false);
+		List<Tile> tilesInRange = GridManager.Instance.GetTilesInVisionRange(_deadEntity.Displacement.Coordinates.GetTile(), 1, explosionRange, false, true, true);
 
 		foreach(Tile tile in tilesInRange)
 		{
-			if (tile.GetEntity(true) != null)
-				tile.GetEntity(true).Equipment.TakeDamage(new EntityEquipmentPlugin.TakeDamageCallback()
-				{
-					critical = false,
-					damages = damages,
-					entityAttacker = _deadEntity,
-					entityTargeted = tile.GetEntity(true),
-					hitNormal = Vector3.zero,
-					hitPos = Vector3.zero
-				});
+			Entity victim = tile.GetCurrentEntity();
+			if (victim == null || victim == _deadEntity || victim.Equipment.IsDead)
+				continue;
+
+			victim.Equipment.TakeDamage(new EntityEquipmentPlugin.TakeDamageCallback()
+			{
+				critical = false,
+				damages = damages,
+				entityAttacker = _deadEntity,
+				entityTargeted = victim,
+				hitNormal = Vector3.zero,
+				hitPos = Vector3.zero
+			});
 		}
 	}
 }

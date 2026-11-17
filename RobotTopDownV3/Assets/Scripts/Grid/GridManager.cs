@@ -152,7 +152,7 @@ public class GridManager : Singleton<GridManager>
 		return groups;
 	}
 
-	private static HashSet<Tile> GetConnectedTiles ( IEnumerable<Tile> _starts, HashSet<Tile> _allowedTiles )
+	public static HashSet<Tile> GetConnectedTiles ( IEnumerable<Tile> _starts, HashSet<Tile> _allowedTiles )
 	{
 		HashSet<Tile> reached = new(_starts);
 		Queue<Tile> frontier = new(reached);
@@ -381,20 +381,51 @@ public class GridManager : Singleton<GridManager>
 		return path;
 	}
 
-	public List<Entity> GetEntitiesInRange ( Tile _from, int _maxDist, bool _isThisTurn )
+	public List<Entity> GetEntitiesInRange ( Tile _from, int _maxDist )
 	{
 		List<Entity> entitiesInRange = new();
-
-		//List<Tile> tilesInRange = GetTilesInVisionRange(_from, _maxDist, false, _isThisTurn);
-		List<Tile> tilesInRange = GetTilesInVisionRange(_from, 1, _maxDist, false, _isThisTurn, false);
-		foreach (Tile tile in tilesInRange)
+		foreach (Tile tile in GetTilesInVisionRange(_from, 0, _maxDist, false, true, true))
 		{
-			Entity entity = tile.GetEntity(_isThisTurn);
-			if (entity != null && !entitiesInRange.Contains(entity))
+			Entity entity = tile.GetCurrentEntity();
+			if (entity != null && !entity.Equipment.IsDead && !entitiesInRange.Contains(entity))
 				entitiesInRange.Add(entity);
 		}
 
 		return entitiesInRange;
+	}
+
+	public int[] GetWalkDistances ( Tile _from, int _ownerID, int _maxSteps = -1 )
+	{
+		int[] distances = new int[m_tiles.Length];
+		for (int i = 0; i < distances.Length; i++)
+			distances[i] = -1;
+
+		if (_from == null)
+			return distances;
+
+		distances[_from.coordinates.ID] = 0;
+		Queue<Tile> frontier = new();
+		frontier.Enqueue(_from);
+		while (frontier.Count > 0)
+		{
+			Tile current = frontier.Dequeue();
+			int next = distances[current.coordinates.ID] + 1;
+			if (_maxSteps >= 0 && next > _maxSteps)
+				continue;
+
+			foreach (Tile neighbor in current.Neighbors)
+			{
+				if (neighbor == null || distances[neighbor.coordinates.ID] >= 0 || neighbor.IsObstacle(true))
+					continue;
+
+				distances[neighbor.coordinates.ID] = next;
+				Entity occupant = neighbor.GetEntity(true);
+				if (occupant == null || occupant.IsAlliedTo(_ownerID))
+					frontier.Enqueue(neighbor);
+			}
+		}
+
+		return distances;
 	}
 
 	/*public List<Tile> GetTilesInVisionRange ( Tile _from, int _minDist, int _maxDist, bool _ignoreObstacles, bool _isThisTurn, bool _applyVisibilityChanges )
@@ -904,7 +935,7 @@ public class GridManager : Singleton<GridManager>
 		return path;
 	}
 
-	public bool IsInLineOfSight ( Tile _from, Tile _to )
+	public bool IsInLineOfSight ( Tile _from, Tile _to, HashSet<Tile> _extraBlockers = null )
 	{
 		if (_from == null || _to == null)
 			return false;
@@ -916,7 +947,8 @@ public class GridManager : Singleton<GridManager>
 		while (distance > 1)
 		{
 			Tile parent = CubeRound(CubeLerp(origin, current.coordinates, (distance - 1f) / distance)).GetTile();
-			if (parent == null || !parent.CanSeeThrough() || origin.DistanceTo(parent.coordinates) != distance - 1)
+			if (parent == null || !parent.CanSeeThrough() || origin.DistanceTo(parent.coordinates) != distance - 1
+				|| (_extraBlockers != null && _extraBlockers.Contains(parent)))
 				return false;
 
 			current = parent;

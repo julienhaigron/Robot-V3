@@ -35,6 +35,15 @@ public class EntityAIPlugin : EntityPlugin
 	private bool m_hasEngagedTarget;
 	public bool HasEngagedTarget => m_hasEngagedTarget;
 	private int m_lastKnownHealth;
+	private Tile m_leashCenter;
+	private int m_leashRadius = -1;
+	private bool HasLeash => m_leashCenter != null && m_leashRadius >= 0;
+	private bool m_usesTeamTactics;
+	private MatchStrategy m_teamStrategy;
+	private Entity m_teamFocus;
+	private Tile m_orderDestination;
+	private readonly Dictionary<EntityActionEnumID, int> m_specialUseRound = new();
+	private readonly List<EntityActionEnumID> m_specialActionIDs = new();
 
 	public struct CheckActionResultInfo
 	{
@@ -76,6 +85,13 @@ public class EntityAIPlugin : EntityPlugin
 		m_hasEngagedTarget = false;
 		m_committedDestinationID = -1;
 		m_patrolNode = null;
+		SetLeash(null, -1);
+		m_usesTeamTactics = false;
+		m_teamFocus = null;
+		m_orderDestination = null;
+		m_specialUseRound.Clear();
+		m_specialActionIDs.Clear();
+		m_specialActionIDs.AddRange(m_linkedEntity.KnownedActions.Where(actionID => AISpecialEvaluator.IsUsableSpecial(GameAssets.current.game.entityActionsData[actionID])));
 		m_lastKnownHealth = m_linkedEntity.Equipment.CurrentHealth;
 
 		foreach (EntityActionEnumID actionID in m_linkedEntity.KnownedActions)
@@ -134,6 +150,11 @@ public class EntityAIPlugin : EntityPlugin
 		if (isFleeing && TryFlee(_recordedAction, ref resultInfo))
 			return resultInfo;
 
+		bool isPrewarmed = false;
+		if (m_usesTeamTactics && _recordedAction.entityState == Entity.EntityState.Patroling
+			&& TryReplaceActionWithSpecial(_recordedAction, ref resultInfo, out isPrewarmed))
+			return resultInfo;
+
 		bool isExecutingOrders = _recordedAction.entityState == Entity.EntityState.NoAIChange || isFleeing;
 		bool needsTarget = _recordedAction.action.Data.DoesResolveItsOwnTarget();
 		if (needsTarget)
@@ -153,7 +174,8 @@ public class EntityAIPlugin : EntityPlugin
 
 		DropStaleFacing(_recordedAction, ref resultInfo);
 
-		DOAllPrewarmCheck(_recordedAction.action, _recordedAction.entityState == Entity.EntityState.Patroling);
+		if (!isPrewarmed)
+			DOAllPrewarmCheck(_recordedAction.action, _recordedAction.entityState == Entity.EntityState.Patroling);
 
 		EntityActionData movementAction = GetWalkingAction();
 		bool canMove = !m_linkedEntity.Status.Contains(EntityStatusEnumID.Stun) && !m_linkedEntity.Status.Contains(EntityStatusEnumID.Rooted) && GetMovementAction() != null;
@@ -181,7 +203,7 @@ public class EntityAIPlugin : EntityPlugin
 				return resultInfo;
 		}
 		else if (canMove && !isTargetVisible && !keepsPlannedMovement && committedTarget != null
-			&& TryGetLastKnownTileOf(committedTarget, out Tile lastKnownTargetTile))
+			&& TryGetLastKnownTileOf(committedTarget, out Tile lastKnownTargetTile) && IsWithinLeash(lastKnownTargetTile))
 		{
 			TryMoveTowardTile(_recordedAction, movementAction, lastKnownTargetTile, "Keeps hunting " + committedTarget.Data.name + " at its last known position", ref resultInfo);
 		}
@@ -224,9 +246,14 @@ public class EntityAIPlugin : EntityPlugin
 					Tile from = m_linkedEntity.Displacement.Coordinates.GetTile();
 					Tile targetTile = committedTarget.Displacement.Coordinates.GetTile();
 					Tile firingTile = GetStickyFiringTile(_recordedAction.action, committedTarget, true);
+					if (firingTile != null && firingTile != from && !IsWithinLeash(firingTile))
+						firingTile = GetClosestFiringTileWithinLeash(committedTarget);
 
 					if (firingTile == null)
 					{
+						if (HasLeash)
+							return resultInfo;
+
 						firingTile = GetClosestFreeNeighborOf(targetTile, true);
 						if (firingTile == null)
 							return resultInfo;
@@ -310,6 +337,91 @@ public class EntityAIPlugin : EntityPlugin
 			resultInfo.ReplaceAction(GetWaitActionFor(_recordedAction), "No target in reach for " + _recordedAction.type);
 
 		return resultInfo;
+	}
+
+	public void SetTeamTactics ( MatchStrategy _strategy, Entity _focus, Tile _orderDestination )
+	{
+		m_usesTeamTactics = true;
+		m_teamStrategy = _strategy;
+		m_teamFocus = _focus;
+		m_orderDestination = _orderDestination;
+	}
+
+	private bool TryReplaceActionWithSpecial ( TurnManager.RecordedAction _recordedAction, ref CheckActionResultInfo _resultInfo, out bool _isPrewarmed )
+	{
+		_isPrewarmed = false;
+		EntityActionData currentData = _recordedAction.action.Data;
+		if (m_specialActionIDs.Count == 0 || currentData.GetMainActionType() == EntityActionData.MainActionType.Special
+			|| currentData.codeType == EntityActionData.ActionCodeType.InvokeItem)
+			return false;
+
+		int remainingTokens = GameConfig.current.game.actionTokenPerRound - TurnManager.currentTick;
+		int round = TurnManager.Instance.RoundCount;
+		List<EntityActionEnumID> candidates = new();
+		foreach (EntityActionEnumID actionID in m_specialActionIDs)
+		{
+			if ((!m_specialUseRound.TryGetValue(actionID, out int usedRound) || usedRound != round)
+				&& GameAssets.current.game.entityActionsData[actionID].GetTokenTotalCost(null, m_linkedEntity, null) <= remainingTokens)
+				candidates.Add(actionID);
+		}
+
+		if (candidates.Count == 0)
+			return false;
+
+		DOAllPrewarmCheck(_recordedAction.action, true);
+		_isPrewarmed = true;
+		AISpecialEvaluator.Context context = new()
+		{
+			caster = m_linkedEntity,
+			casterTile = m_linkedEntity.Displacement.Coordinates.GetTile(),
+			visibleEnemies = new HashSet<Entity>(m_entitiesInVisionRange.Where(enemy => !enemy.Equipment.IsDead && !enemy.IsImmortal)),
+			strategy = m_teamStrategy,
+			focus = m_teamFocus,
+			orderDestination = m_orderDestination
+		};
+
+		if (context.visibleEnemies.Count == 0)
+			return false;
+
+		AEntityAction bestAction = null;
+		AISpecialEvaluator.SpecialChoice bestChoice = default;
+		foreach (EntityActionEnumID actionID in candidates)
+		{
+			EntityActionData data = GameAssets.current.game.entityActionsData[actionID];
+			AEntityAction action = TurnManager.Instance.GetAction(data, m_linkedEntity.ID, m_linkedEntity.ComponentLinkedToAction[actionID][0], TurnManager.currentTick);
+			if (action == null || !Condition.UseConditionPredicate(action, m_linkedEntity, null, data.conditionType))
+				continue;
+
+			if (!AISpecialEvaluator.TryGetBestUse(context, action, out AISpecialEvaluator.SpecialChoice choice)
+				|| (bestAction != null && choice.score <= bestChoice.score))
+				continue;
+
+			bestAction = action;
+			bestChoice = choice;
+		}
+
+		if (bestAction == null || bestChoice.score < AISpecialEvaluator.c_minScore)
+			return false;
+
+		if (bestAction is TurnShieldAction && currentData.codeType != EntityActionData.ActionCodeType.Wait)
+			return false;
+
+		bool isAttackPlanned = currentData.GetMainActionType() == EntityActionData.MainActionType.Attack;
+		if (bestChoice.score < AISpecialEvaluator.c_overAttackScore && (isAttackPlanned || HasEnemyInWeaponRange(out _, out _, out _)))
+			return false;
+
+		DropStaleFacing(_recordedAction, ref _resultInfo);
+		bestAction.Init(bestAction.Data, bestAction.linkedEquipmentId, m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID, TurnManager.currentTick);
+		if (bestAction is TurnShieldAction shieldAction)
+			shieldAction.targetedOrientation = bestChoice.shieldOrientation;
+
+		if (bestAction is InvokeItemAction itemAction)
+			itemAction.PlaceItemOn(bestChoice.targetTile);
+		else
+			bestAction.SetResolvedTargets(new int[] { bestChoice.targetTile.coordinates.ID }, bestChoice.affectedEnemies.Select(enemy => enemy.ID).ToArray());
+		_resultInfo.ReplaceAction(bestAction, "Uses " + bestAction.Data.name);
+		m_specialUseRound[bestAction.enumID] = round;
+		return true;
 	}
 
 	private bool TryReplaceActionWithAttack ( TurnManager.RecordedAction _recordedAction, List<Entity> _enemies, EntityActionEnumID _attackEnumID
@@ -742,16 +854,19 @@ public class EntityAIPlugin : EntityPlugin
 
 	public bool CanFireFrom ( Tile _from, Entity _target, bool _isThisTurn = true )
 	{
-		if (_from == null || _target == null)
+		return _target != null && CanFireAtTileFrom(_from, _target.Displacement.Coordinates.GetTile(), _isThisTurn);
+	}
+
+	public bool CanFireAtTileFrom ( Tile _from, Tile _targetTile, bool _isThisTurn = true )
+	{
+		if (_from == null || _targetTile == null)
 			return false;
 
-		Tile targetTile = _target.Displacement.Coordinates.GetTile();
-		int orientation = GridManager.Instance.GetClosestOrientation(_from, targetTile);
-
+		int orientation = GridManager.Instance.GetClosestOrientation(_from, _targetTile);
 		foreach (System.Tuple<EntityActionData, string> pair in GetAvailableAttackAction(_ignoreRemainingTokens: true))
 		{
 			AEntityAction attackAction = TurnManager.Instance.GetAction(pair.Item1, m_linkedEntity.ID, pair.Item2, TurnManager.currentTick);
-			if (m_linkedEntity.Equipment.IsTileInWeaponRange(attackAction, _isThisTurn, _from, orientation, targetTile, true))
+			if (m_linkedEntity.Equipment.IsTileInWeaponRange(attackAction, _isThisTurn, _from, orientation, _targetTile, true))
 				return true;
 		}
 
@@ -760,53 +875,109 @@ public class EntityAIPlugin : EntityPlugin
 
 	public Tile GetClosestFiringTile ( Entity _target, bool _isThisTurn = true )
 	{
-		if (_target == null)
+		return _target == null ? null : GetClosestFiringTileAt(_target.Displacement.Coordinates.GetTile(), _isThisTurn, _target);
+	}
+
+	public Tile GetClosestFiringTileAt ( Tile _targetTile, bool _isThisTurn = true, Entity _targetEntity = null )
+	{
+		if (_targetTile == null)
 			return null;
 
 		Tile from = m_linkedEntity.Displacement.Coordinates.GetTile();
-		Tile targetTile = _target.Displacement.Coordinates.GetTile();
-
-		if (CanFireFrom(from, _target, _isThisTurn))
+		if (CanFireAtTileFrom(from, _targetTile, _isThisTurn))
 			return from;
 
+		return GetBestFiringTileAt(_targetTile, _targetEntity, ( candidate, walkDistance ) => walkDistance * 1000 + GetRangeBetween(candidate, _targetTile), _isThisTurn);
+	}
+
+	public Tile GetBestFiringTile ( Entity _target, System.Func<Tile, int, int> _costOf, bool _isThisTurn = true )
+	{
+		return _target == null ? null : GetBestFiringTileAt(_target.Displacement.Coordinates.GetTile(), _target, _costOf, _isThisTurn);
+	}
+
+	public void SetSabotageTarget ( Tile _point )
+	{
+		CommitTo(null);
+		TargetEntity(null);
+		m_lastTargetedSabotagePoint = _point;
+	}
+
+	private Tile GetBestFiringTileAt ( Tile _targetTile, Entity _target, System.Func<Tile, int, int> _costOf, bool _isThisTurn )
+	{
+		if (_targetTile == null)
+			return null;
+
+		Tile from = m_linkedEntity.Displacement.Coordinates.GetTile();
 		GridManager.Instance.BFS(from, -1, null, _isThisTurn);
 
-		Tile closestTile = null;
-		int closestDistance = int.MaxValue;
-		int closestRange = int.MaxValue;
+		Tile bestTile = null;
+		int bestCost = int.MaxValue;
 
 		foreach (System.Tuple<EntityActionData, string> pair in GetAvailableAttackAction(_ignoreRemainingTokens: true))
 		{
 			AEntityAction rangeAction = TurnManager.Instance.GetAction(pair.Item1, m_linkedEntity.ID, pair.Item2, TurnManager.currentTick);
 			int maxRange = pair.Item1.GetMaxRange(rangeAction, m_linkedEntity, _target);
 			IEnumerable<Tile> candidates = m_linkedEntity.Equipment.CanCurveShot(rangeAction)
-				? GridManager.Instance.GetTilesInCurvedShotReach(targetTile, pair.Item1.minDistance, maxRange)
-				: GridManager.Instance.GetTilesInVisionRange(targetTile, pair.Item1.minDistance, maxRange, false, _isThisTurn, true);
+				? GridManager.Instance.GetTilesInCurvedShotReach(_targetTile, pair.Item1.minDistance, maxRange)
+				: GridManager.Instance.GetTilesInVisionRange(_targetTile, pair.Item1.minDistance, maxRange, false, _isThisTurn, true);
 
 			foreach (Tile candidate in candidates)
 			{
-				if (candidate.Distance == int.MaxValue || candidate.Distance > closestDistance || candidate.IsObstacle(_isThisTurn))
+				if (candidate.Distance == int.MaxValue || candidate.IsObstacle(_isThisTurn))
 					continue;
 
 				if (candidate != from && candidate.GetEntity(_isThisTurn) != null)
 					continue;
 
-				int candidateRange = Mathf.Max(Mathf.Abs(candidate.coordinates.X - targetTile.coordinates.X)
-					, Mathf.Abs(candidate.coordinates.Y - targetTile.coordinates.Y)
-					, Mathf.Abs(candidate.coordinates.Z - targetTile.coordinates.Z));
-				if (candidate.Distance == closestDistance && candidateRange >= closestRange)
+				int cost = _costOf(candidate, candidate.Distance);
+				if (cost >= bestCost || !CanFireAtTileFrom(candidate, _targetTile, _isThisTurn))
 					continue;
 
-				if (!CanFireFrom(candidate, _target, _isThisTurn))
-					continue;
-
-				closestTile = candidate;
-				closestDistance = candidate.Distance;
-				closestRange = candidateRange;
+				bestTile = candidate;
+				bestCost = cost;
 			}
 		}
 
+		return bestTile;
+	}
+
+	public void SetLeash ( Tile _center, int _radius )
+	{
+		m_leashCenter = _radius < 0 ? null : _center;
+		m_leashRadius = m_leashCenter == null ? -1 : _radius;
+	}
+
+	private bool IsWithinLeash ( Tile _tile )
+	{
+		return !HasLeash || (_tile != null && GetRangeBetween(_tile, m_leashCenter) <= m_leashRadius);
+	}
+
+	private Tile GetClosestFiringTileWithinLeash ( Entity _target )
+	{
+		Tile from = m_linkedEntity.Displacement.Coordinates.GetTile();
+		Tile closestTile = null;
+		int closestRange = int.MaxValue;
+
+		foreach (Tile tile in GridManager.Instance.GetTilesInVisionRange(m_leashCenter, 0, m_leashRadius, true, true, false))
+		{
+			int range = GetRangeBetween(from, tile);
+			if (range >= closestRange || !IsUsableFiringTile(tile, _target, true))
+				continue;
+
+			closestTile = tile;
+			closestRange = range;
+		}
+
+		m_committedDestinationID = closestTile == null ? -1 : closestTile.coordinates.ID;
 		return closestTile;
+	}
+
+	public bool TryGetMainWeaponRange ( out int _minRange, out int _maxRange )
+	{
+		AEntityAction attackAction = GetFirstAvailableAttackAction();
+		_minRange = attackAction == null ? 0 : attackAction.Data.minDistance;
+		_maxRange = attackAction == null ? 0 : attackAction.Data.GetMaxRange(attackAction, m_linkedEntity, null);
+		return attackAction != null;
 	}
 
 	public Entity GetClosestEnemyInVisionRange ( bool _isThisTurn = true )
@@ -928,10 +1099,15 @@ public class EntityAIPlugin : EntityPlugin
 		int bestThreatRange = -1;
 		int bestSteps = int.MaxValue;
 
-		foreach (KeyValuePair<Tile, int> reached in GetTilesReachableWithin(from, _movementSpeed))
+		int[] stepsPerTile = GridManager.Instance.GetWalkDistances(from, m_linkedEntity.OwnerID, _movementSpeed);
+		foreach (Tile tile in GridManager.Instance.Tiles)
 		{
-			Tile tile = reached.Key;
-			if (tile == from || (tile.GetEntity(true) != null && tile.GetEntity(true) != m_linkedEntity))
+			int steps = tile == null ? -1 : stepsPerTile[tile.coordinates.ID];
+			if (steps <= 0)
+				continue;
+
+			Entity occupant = tile.GetEntity(true);
+			if (occupant != null && occupant != m_linkedEntity)
 				continue;
 
 			int threatRange = GetRangeToClosestVisibleEnemy(tile);
@@ -943,46 +1119,16 @@ public class EntityAIPlugin : EntityPlugin
 				continue;
 
 			if (destinationRange == bestDestinationRange
-				&& (threatRange < bestThreatRange || (threatRange == bestThreatRange && reached.Value >= bestSteps)))
+				&& (threatRange < bestThreatRange || (threatRange == bestThreatRange && steps >= bestSteps)))
 				continue;
 
 			bestTile = tile;
 			bestDestinationRange = destinationRange;
 			bestThreatRange = threatRange;
-			bestSteps = reached.Value;
+			bestSteps = steps;
 		}
 
 		return bestTile;
-	}
-
-	private Dictionary<Tile, int> GetTilesReachableWithin ( Tile _from, int _steps )
-	{
-		Dictionary<Tile, int> stepsPerTile = new() { [_from] = 0 };
-		Queue<Tile> frontier = new();
-		frontier.Enqueue(_from);
-
-		while (frontier.Count > 0)
-		{
-			Tile current = frontier.Dequeue();
-			int steps = stepsPerTile[current];
-			if (steps >= _steps)
-				continue;
-
-			foreach (Tile neighbor in current.Neighbors)
-			{
-				if (neighbor == null || stepsPerTile.ContainsKey(neighbor) || neighbor.IsObstacle(true))
-					continue;
-
-				Entity occupant = neighbor.GetEntity(true);
-				if (occupant != null && occupant != m_linkedEntity && !occupant.IsAlliedTo(m_linkedEntity.OwnerID))
-					continue;
-
-				stepsPerTile.Add(neighbor, steps + 1);
-				frontier.Enqueue(neighbor);
-			}
-		}
-
-		return stepsPerTile;
 	}
 
 	private int GetRangeToClosestVisibleEnemy ( Tile _tile )
@@ -1295,9 +1441,7 @@ public class EntityAIPlugin : EntityPlugin
 
 	private static int GetRangeBetween ( Tile _from, Tile _to )
 	{
-		return Mathf.Max(Mathf.Abs(_from.coordinates.X - _to.coordinates.X)
-			, Mathf.Abs(_from.coordinates.Y - _to.coordinates.Y)
-			, Mathf.Abs(_from.coordinates.Z - _to.coordinates.Z));
+		return _from.coordinates.DistanceTo(_to.coordinates);
 	}
 
 	#endregion

@@ -25,11 +25,21 @@ public class InvokeItemAction : SpecialAction
 
 	public override void RegisterInteraction ( Tile _tile )
 	{
+		PlanItemOn(_tile);
+		base.RegisterInteraction(_tile);
+	}
+
+	public void PlaceItemOn ( Tile _tile )
+	{
+		PlanItemOn(_tile);
+		targetTileIDs = new int[] { _tile.coordinates.ID };
+	}
+
+	private void PlanItemOn ( Tile _tile )
+	{
 		Item invokedItem = GameManager.Instance.PreSpawnItem(Data.invocatedItem, PerformingEntity, PerformingEntity.Equipment.Tools[linkedEquipmentId], _tile.coordinates);
 		_tile.SetPlannedItemAt(invokedItem, timeAtStart);
 		itemID = invokedItem.ID;
-
-		base.RegisterInteraction(_tile);
 	}
 
 	public override void CancelAction ()

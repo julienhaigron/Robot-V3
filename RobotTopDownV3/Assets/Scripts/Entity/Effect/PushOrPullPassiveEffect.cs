@@ -13,55 +13,69 @@ public class PushOrPullPassiveEffect : AEntityPassiveEffect
 		ApplyEffect(_entity, _targetEntity, _effectContainer, null);
 	}
 
-	public override void ApplyEffect ( Entity _entity, Entity _targetEntity, PassiveEffectContainer _effectContainer, Tile _originTile )
+	public struct PushPrediction
+	{
+		public Tile destination;
+		public Entity blockingEntity;
+		public Tile blockingTile;
+		public bool didCollide;
+		public bool fallsIntoVoid;
+	}
+
+	public PushPrediction PredictPush ( Entity _targetEntity, Tile _originTile, Tile _casterTile )
 	{
 		Tile origin = _targetEntity.Displacement.Coordinates.GetTile();
+		PushPrediction prediction = new() { destination = origin };
 
-		Tile from = _originTile == null || _originTile == origin ? _entity.Displacement.Coordinates.GetTile() : _originTile;
-		if (from == origin)
-		{
-			base.ApplyEffect(_entity, _targetEntity, _effectContainer);
-			return;
-		}
+		Tile from = _originTile == null || _originTile == origin ? _casterTile : _originTile;
+		if (origin == null || from == null || from == origin)
+			return prediction;
 
 		int direction = GridManager.Instance.GetClosestOrientation(origin, from);
 		if (movementStrength > 0)
 			direction = (direction + 3) % HexDirectionCount;
 
-		Tile destination = origin;
-		Entity blockingEntity = null;
-		Tile blockingTile = null;
-		bool didCollide = false;
 		int stepAmount = Mathf.Abs(movementStrength);
-
 		for (int i = 0; i < stepAmount; i++)
 		{
-			Tile nextTile = destination.Neighbors[direction];
+			Tile nextTile = prediction.destination.Neighbors[direction];
 			bool isVoid = nextTile != null && nextTile.GroundType == TileGroundType.Void;
 
 			if (nextTile == null || (!isVoid && nextTile.IsObstacle(false)))
 			{
-				blockingTile = nextTile;
-				didCollide = true;
+				prediction.blockingTile = nextTile;
+				prediction.didCollide = true;
 				break;
 			}
 
 			Entity occupant = nextTile.GetBlockingEntityFor(_targetEntity);
 			if (occupant != null)
 			{
-				blockingEntity = occupant;
-				didCollide = true;
+				prediction.blockingEntity = occupant;
+				prediction.didCollide = true;
 				break;
 			}
 
-			destination = nextTile;
+			prediction.destination = nextTile;
 
 			if (isVoid && !_targetEntity.Status.Contains(EntityStatusEnumID.Flying))
+			{
+				prediction.fallsIntoVoid = true;
 				break;
+			}
 		}
 
-		if (didCollide)
-			ApplyCollisionDamage(_targetEntity, blockingEntity, blockingTile);
+		return prediction;
+	}
+
+	public override void ApplyEffect ( Entity _entity, Entity _targetEntity, PassiveEffectContainer _effectContainer, Tile _originTile )
+	{
+		Tile origin = _targetEntity.Displacement.Coordinates.GetTile();
+		PushPrediction push = PredictPush(_targetEntity, _originTile, _entity.Displacement.Coordinates.GetTile());
+		Tile destination = push.destination;
+
+		if (push.didCollide)
+			ApplyCollisionDamage(_targetEntity, push.blockingEntity, push.blockingTile);
 
 		if (destination != origin && !_targetEntity.Equipment.IsDead)
 		{

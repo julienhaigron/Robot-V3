@@ -7,6 +7,10 @@ public class BotEnnemiPlayer : MonoBehaviour
 {
 	[SerializeField, Min(1)] private int m_supportFollowDistance = 2;
 
+	private const int c_botOwnerID = 1;
+	private TeamBrain m_teamBrain;
+	private MissionData m_teamBrainMission;
+
 	private void Awake ()
 	{
 		TurnManager.onEndInputPhase += InputPhase;
@@ -22,13 +26,268 @@ public class BotEnnemiPlayer : MonoBehaviour
 		if (GameManager.Instance.IsOnline)
 			return;
 
-		foreach (Entity entity in GameManager.Instance.PlayersEntityAnchor[1].Entities)
+		MissionData mission = GameManager.Instance.CurrentMission;
+		if (mission != null && mission.TryGetTeamStrategy(out MatchStrategy strategy))
+		{
+			PlanTeamRound(mission, strategy);
+			return;
+		}
+
+		foreach (Entity entity in GameManager.Instance.PlayersEntityAnchor[c_botOwnerID].Entities)
 		{
 			if (entity.Equipment.IsDead)
 				continue;
 
 			DetermineEntityActions(entity);
 		}
+	}
+
+	private void PlanTeamRound ( MissionData _mission, MatchStrategy _strategy )
+	{
+		if (m_teamBrain == null || m_teamBrainMission != _mission || TurnManager.Instance.RoundCount <= 1)
+		{
+			m_teamBrain = new TeamBrain(c_botOwnerID);
+			m_teamBrainMission = _mission;
+		}
+
+		List<Entity> units = new();
+		foreach (Entity entity in GameManager.Instance.PlayersEntityAnchor[c_botOwnerID].Entities)
+		{
+			if (entity.Equipment.IsDead)
+				continue;
+
+			if (entity.MatchRole != Entity.MatchRoleType.None)
+			{
+				entity.AI.SetLeash(null, -1);
+				PlanMatchRoleRound(entity);
+				continue;
+			}
+
+			units.Add(entity);
+		}
+
+		Dictionary<Entity, TeamBrain.Order> orders = m_teamBrain.PlanRound(_strategy, units);
+		foreach (Entity unit in units)
+		{
+			TeamBrain.Order order = orders.TryGetValue(unit, out TeamBrain.Order unitOrder) ? unitOrder : null;
+			unit.AI.SetTeamTactics(_strategy, m_teamBrain.FocusTarget, order?.destination);
+			ExecuteOrder(unit, order);
+		}
+	}
+
+	private void PlanMatchRoleRound ( Entity _entity )
+	{
+		switch (_entity.MatchRole)
+		{
+			case Entity.MatchRoleType.Technician:
+				PlanTechnicianRound(_entity);
+				break;
+			case Entity.MatchRoleType.Demolisher:
+				PlanDemolisherRound(_entity);
+				break;
+			default:
+				DetermineEntityActions(_entity);
+				break;
+		}
+	}
+
+	private void PlanDemolisherRound ( Entity _entity )
+	{
+		Tile point = m_teamBrain.GetClosestEnemySabotagePoint(_entity.Displacement.Coordinates.GetTile());
+		if (point == null || !_entity.AI.CanEngageATarget())
+		{
+			DetermineEntityActions(_entity);
+			return;
+		}
+
+		_entity.AI.SetSabotageTarget(point);
+		Tile firingTile = _entity.AI.GetClosestFiringTileAt(point);
+		if (firingTile == null)
+		{
+			AddWaitActionsFrom(_entity, 0, Entity.EntityState.NoAIChange);
+			return;
+		}
+
+		int spentTokens = PlanPathTo(_entity, firingTile, Entity.EntityState.NoAIChange, out bool didReachDestination);
+		if (didReachDestination)
+			AddAttackActionsFrom(_entity, spentTokens, null, Entity.EntityState.NoAIChange);
+		else
+			AddWaitActionsFrom(_entity, spentTokens, Entity.EntityState.NoAIChange);
+	}
+
+	private void PlanTechnicianRound ( Entity _entity )
+	{
+		EntityActionData cableData = GetCableActionOf(_entity);
+		EntityActionData walkingData = _entity.AI.GetWalkingAction();
+		List<Tile> cableTiles = cableData == null ? null : GetCableTilesToLay(_entity.OwnerID, _entity.Displacement.Coordinates.GetTile());
+		if (cableTiles == null || cableTiles.Count == 0)
+		{
+			AddWaitActionsFrom(_entity, 0, Entity.EntityState.NoAIChange);
+			return;
+		}
+
+		string cableEquipmentID = _entity.ComponentLinkedToAction[cableData.enumID][0];
+		int cableReach = cableData.GetMaxRange(null, _entity, null);
+		int tokenPerRound = GameConfig.current.game.actionTokenPerRound;
+		Tile position = _entity.Displacement.Coordinates.GetTile();
+		int token = 0;
+		int index = 0;
+
+		while (token < tokenPerRound && index < cableTiles.Count)
+		{
+			Tile next = cableTiles[index];
+			if (position.coordinates.DistanceTo(next.coordinates) <= cableReach)
+			{
+				if (next.IsObstacle(true) || next.GetItem(true) != null || next.GetPlannedItemAt(token) != null)
+					break;
+
+				InvokeItemAction cableAction = TurnManager.Instance.GetAction(cableData, _entity.ID, cableEquipmentID, token) as InvokeItemAction;
+				if (cableAction == null)
+					break;
+
+				cableAction.PlaceItemOn(next);
+				if (!TurnManager.Instance.AddAction(_entity.ID, cableAction, Entity.EntityState.NoAIChange))
+				{
+					cableAction.CancelAction();
+					break;
+				}
+
+				token += Mathf.Max(1, cableAction.TotalDuration);
+				index++;
+				continue;
+			}
+
+			if (walkingData == null)
+				break;
+
+			List<Tile> path = GridManager.Instance.GetPath(position, next, true, _movingEntity: _entity, _canTraverseAllies: true);
+			if (path == null || path.Count < 2)
+				break;
+
+			path.Reverse();
+			Tile step = path[1];
+			MoveToTargetAction moveAction = TurnManager.Instance.GetAction(walkingData, _entity.ID, _entity.ComponentLinkedToAction[walkingData.enumID][0], token) as MoveToTargetAction;
+			if (moveAction == null)
+				break;
+
+			moveAction.targetTileIDs = new int[] { step.coordinates.ID };
+			moveAction.mode = MoveToTargetAction.MoveActionMode.Coordinate;
+			moveAction.targetTileID = next.coordinates.ID;
+			moveAction.Init(walkingData, moveAction.linkedEquipmentId, _entity.ID, moveAction.supposedPositionAtActionStartID, token);
+			if (!TurnManager.Instance.AddAction(_entity.ID, moveAction, Entity.EntityState.NoAIChange))
+				break;
+
+			position = step;
+			token += Mathf.Max(1, moveAction.TotalDuration);
+		}
+
+		AddWaitActionsFrom(_entity, token, Entity.EntityState.NoAIChange);
+	}
+
+	private static EntityActionData GetCableActionOf ( Entity _entity )
+	{
+		foreach (EntityActionEnumID actionID in _entity.KnownedActions)
+		{
+			EntityActionData data = GameAssets.current.game.entityActionsData[actionID];
+			if (data.codeType == EntityActionData.ActionCodeType.InvokeItem && data.invocatedItem is CableItemData)
+				return data;
+		}
+
+		return null;
+	}
+
+	private static List<Tile> GetCableTilesToLay ( int _ownerID, Tile _from )
+	{
+		List<HashSet<Tile>> commPoints = GridManager.Instance.GetCommPoints(_ownerID);
+		if (commPoints == null || commPoints.Count < 2)
+			return null;
+
+		HashSet<Tile> network = new(CableItemData.GetPlacedCableTiles(_ownerID));
+		foreach (HashSet<Tile> commPoint in commPoints)
+			network.UnionWith(commPoint);
+
+		HashSet<Tile> connected = GridManager.GetConnectedTiles(commPoints[0], network);
+		HashSet<Tile> targets = new(commPoints.Where(commPoint => !commPoint.Overlaps(connected)).SelectMany(commPoint => commPoint));
+		if (targets.Count == 0)
+			return new List<Tile>();
+
+		Dictionary<Tile, int> costs = new();
+		Dictionary<Tile, Tile> parents = new();
+		LinkedList<Tile> frontier = new();
+		foreach (Tile tile in connected)
+		{
+			costs[tile] = 0;
+			frontier.AddLast(tile);
+		}
+
+		Tile reached = null;
+		while (frontier.Count > 0)
+		{
+			Tile current = frontier.First.Value;
+			frontier.RemoveFirst();
+			if (targets.Contains(current))
+			{
+				reached = current;
+				break;
+			}
+
+			foreach (Tile neighbor in current.Neighbors)
+			{
+				if (neighbor == null)
+					continue;
+
+				bool isNetwork = network.Contains(neighbor);
+				if (!isNetwork && (neighbor.IsObstacle(true) || neighbor.GetItem(true) != null))
+					continue;
+
+				int cost = costs[current] + (isNetwork ? 0 : 1);
+				if (costs.TryGetValue(neighbor, out int knownCost) && knownCost <= cost)
+					continue;
+
+				costs[neighbor] = cost;
+				parents[neighbor] = current;
+				if (isNetwork)
+					frontier.AddFirst(neighbor);
+				else
+					frontier.AddLast(neighbor);
+			}
+		}
+
+		if (reached == null)
+			return null;
+
+		List<Tile> tilesToLay = new();
+		for (Tile tile = reached; tile != null && !connected.Contains(tile); tile = parents.TryGetValue(tile, out Tile parent) ? parent : null)
+		{
+			if (!network.Contains(tile))
+				tilesToLay.Add(tile);
+		}
+
+		if (_from != null && tilesToLay.Count > 1
+			&& _from.coordinates.DistanceTo(tilesToLay[0].coordinates) < _from.coordinates.DistanceTo(tilesToLay[^1].coordinates))
+			return tilesToLay;
+
+		tilesToLay.Reverse();
+		return tilesToLay;
+	}
+
+	private void ExecuteOrder ( Entity _entity, TeamBrain.Order _order )
+	{
+		_entity.AI.SetLeash(_order?.leashCenter, _order == null ? -1 : _order.leashRadius);
+		if (_order == null || _order.destination == null)
+		{
+			AddWaitActionsFrom(_entity, 0, Entity.EntityState.Patroling);
+			return;
+		}
+
+		if (_order.target != null)
+			_entity.AI.CommitTo(_order.target);
+
+		int spentTokens = PlanPathTo(_entity, _order.destination, Entity.EntityState.Patroling, out bool didReachDestination);
+		if (didReachDestination && _order.fireTarget != null)
+			AddAttackActionsFrom(_entity, spentTokens, _order.fireTarget);
+		else
+			AddWaitActionsFrom(_entity, spentTokens, Entity.EntityState.Patroling);
 	}
 
 	private void DetermineEntityActions ( Entity _entity )
@@ -369,16 +628,16 @@ public class BotEnnemiPlayer : MonoBehaviour
 			TurnManager.Instance.AddAction(_entity.ID, EntityActionEnumID.Wait, _state, null);
 	}
 
-	private void AddAttackActionsFrom ( Entity _entity, int _fromToken, Entity _target )
+	private void AddAttackActionsFrom ( Entity _entity, int _fromToken, Entity _target, Entity.EntityState _state = Entity.EntityState.Patroling )
 	{
 		int tokenPerRound = GameConfig.current.game.actionTokenPerRound;
 		for (int i = _fromToken; i < tokenPerRound;)
 		{
 			EntityActionData attackData = _entity.AI.GetAttackOrSpecialAction(tokenPerRound - i, _target);
-			if (attackData == null || !TurnManager.Instance.AddAction(_entity.ID, attackData.enumID, Entity.EntityState.Patroling
+			if (attackData == null || !TurnManager.Instance.AddAction(_entity.ID, attackData.enumID, _state
 					, _entity.ComponentLinkedToAction[attackData.enumID][0]))
 			{
-				AddWaitActionsFrom(_entity, i, Entity.EntityState.Patroling);
+				AddWaitActionsFrom(_entity, i, _state);
 				return;
 			}
 

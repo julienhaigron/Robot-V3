@@ -15,6 +15,7 @@ public class EntityAnchor : MonoBehaviour
 	[SerializeField] private List<Spawn> m_staticSpawnCoordinates = new();
 	[SerializeField] private List<Spawn> m_dynamicSpawnCoordinates = new();
 	private List<Spawn> m_allSpawnCoordinates = new();
+	public List<Spawn> AllSpawns => m_allSpawnCoordinates;
 	private HashSet<Tile> m_zones = new();
 	public HashSet<Tile> Zones => m_zones;
 	private HashSet<Tile> m_structures = new();

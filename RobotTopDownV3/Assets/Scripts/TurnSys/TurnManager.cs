@@ -39,7 +39,7 @@ public class TurnManager : Singleton<TurnManager>
 	private SerializableDictionary<int, int> m_remainingActionToken = new();
 	public SerializableDictionary<int, int> RemainingActionToken => m_remainingActionToken;
 
-	private Dictionary<int, Entity.EntityState> m_stateOfLastPlayedAction = new();
+	private readonly Dictionary<int, Entity.EntityState> m_stateOfLastPlayedAction = new();
 
 	private List<RecordedAction> m_recordedConflict;
 
@@ -1707,7 +1707,7 @@ public class TurnManager : Singleton<TurnManager>
 			, LogConsole.LogEventType.Round);
 	}
 
-	private int GetControllingPlayer ( HashSet<Tile> _tiles )
+	public int GetControllingPlayer ( HashSet<Tile> _tiles )
 	{
 		int controllingPlayer = -1;
 		foreach (EntityAnchor anchor in GameManager.Instance.PlayersEntityAnchor)

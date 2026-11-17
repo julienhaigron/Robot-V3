@@ -45,6 +45,20 @@ public class MissionData : ScriptableEnum<MissionDataEnumID>
     public List<UnitPreset> unitReward;
     [System.NonSerialized] private RewardSet m_rewardSet;
     [System.NonSerialized] private RewardSet m_fixedRewardSet;
+    [System.NonSerialized] private bool m_hasTeamStrategy;
+    [System.NonSerialized] private MatchStrategy m_teamStrategy;
+
+    public void SetTeamStrategy ( MatchStrategy _strategy )
+    {
+        m_teamStrategy = _strategy;
+        m_hasTeamStrategy = true;
+    }
+
+    public bool TryGetTeamStrategy ( out MatchStrategy _strategy )
+    {
+        _strategy = m_teamStrategy;
+        return m_hasTeamStrategy;
+    }
 
 	protected override void OnValidate ()
 	{

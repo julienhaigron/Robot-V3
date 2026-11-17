@@ -35,7 +35,7 @@ public class MineItemData : AItemData
 
 	public override void OnWalkThrough ( Entity _walkingEntity, AItemLinkedData _linkedData, Item _usedItem, bool _isFromTeleportation )
 	{
-		List<Entity> entities = GridManager.Instance.GetEntitiesInRange(_usedItem.CurrentPosition, range, false);
+		List<Entity> entities = GridManager.Instance.GetEntitiesInRange(_usedItem.CurrentPosition, range);
 
 		foreach (Entity entity in entities)
 		{

@@ -63,6 +63,112 @@ public class SpecialAction : AEntityAction
 
 	protected virtual void ApplyActionEffect ()
 	{
+		Entity user = PerformingEntity;
+		if (user == null || Data.passiveEffects == null || Data.passiveEffects.Length == 0)
+			return;
+
+		if (HasEffectOnOthers())
+		{
+			if (Data.aoeType != EntityActionData.AOEType.Noone)
+				ApplyOnAoEZone(user);
+			else
+				ApplyOnRecordedTargets(user);
+		}
+
+		foreach (AEntityPassiveEffect.PassiveEffectContainer effect in Data.passiveEffects)
+		{
+			if (effect.targetType == EntityActionData.TargetType.Self)
+				GameAssets.current.game.entityEffects[effect.enumID].ApplyEffect(user, user, effect, null);
+		}
+	}
+
+	private bool HasEffectOnOthers ()
+	{
+		foreach (AEntityPassiveEffect.PassiveEffectContainer effect in Data.passiveEffects)
+		{
+			if (effect.targetType != EntityActionData.TargetType.Self)
+				return true;
+		}
+
+		return false;
+	}
+
+	private void ApplyOnAoEZone ( Entity _user )
+	{
+		HashSet<Tile> affectedTiles = new();
+		List<Entity> affectedEntities = new();
+		List<Tile> effectOrigins = new();
+
+		foreach (Tile center in GetAoECenterTiles())
+		{
+			foreach (Tile tile in _user.Equipment.GetTilesInAoERange(this, center))
+			{
+				if (!affectedTiles.Add(tile))
+					continue;
+
+				if (Data.doesAffectTile)
+				{
+					foreach (AEntityPassiveEffect.PassiveEffectContainer effect in Data.passiveEffects)
+					{
+						if (effect.targetType != EntityActionData.TargetType.Self)
+							GameAssets.current.game.entityEffects[effect.enumID].ApplyEffect(tile);
+					}
+				}
+
+				Entity hitEntity = tile.GetCurrentEntity();
+				if (hitEntity == null || affectedEntities.Contains(hitEntity))
+					continue;
+
+				affectedEntities.Add(hitEntity);
+				effectOrigins.Add(center);
+			}
+		}
+
+		for (int i = 0; i < affectedEntities.Count; i++)
+			ApplyEffectsOnTarget(_user, affectedEntities[i], effectOrigins[i]);
+	}
+
+	private void ApplyOnRecordedTargets ( Entity _user )
+	{
+		int targetAmount = targetedEntityIDs == null ? 0 : targetedEntityIDs.Length;
+		for (int targetCount = 0; targetCount < targetAmount; targetCount++)
+		{
+			Entity target = GameManager.Instance.GetEntityFromID(targetedEntityIDs[targetCount]);
+			if (target != null)
+				ApplyEffectsOnTarget(_user, target, null);
+		}
+	}
+
+	private void ApplyEffectsOnTarget ( Entity _user, Entity _target, Tile _originTile )
+	{
+		foreach (AEntityPassiveEffect.PassiveEffectContainer effect in Data.passiveEffects)
+		{
+			if (effect.targetType != EntityActionData.TargetType.Self)
+				GameAssets.current.game.entityEffects[effect.enumID].ApplyEffect(_user, _target, effect, _originTile);
+		}
+	}
+
+	private List<Tile> GetAoECenterTiles ()
+	{
+		List<Tile> centers = new();
+
+		if (Data.aoECenterType == EntityActionData.AOECenterType.Target && targetTileIDs != null)
+		{
+			foreach (int tileID in targetTileIDs)
+			{
+				if (tileID < 0 || tileID >= GridManager.Instance.Tiles.Length)
+					continue;
+
+				Tile tile = GridManager.Instance.Tiles[tileID];
+				if (!centers.Contains(tile))
+					centers.Add(tile);
+			}
+		}
+
+		if (centers.Count == 0)
+			centers.Add(GridManager.Instance.Tiles[TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntityID)]);
+
+		return centers;
 	}
 
 	protected override void Perform ( Entity.EntityState _state )
