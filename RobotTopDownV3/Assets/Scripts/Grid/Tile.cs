@@ -112,6 +112,7 @@ public class Tile : MonoBehaviour
 		PlayerController.onEntitySelected += OnEntitySelected;
 
 		m_ui.ClearPositionText();
+		m_ui.ResetOutline();
 
 		if (m_plannedContentsPerTick == null || m_plannedContentsPerTick.Length == 0)
 		{
