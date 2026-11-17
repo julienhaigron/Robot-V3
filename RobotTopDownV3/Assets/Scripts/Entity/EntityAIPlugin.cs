@@ -90,11 +90,25 @@ public class EntityAIPlugin : EntityPlugin
 
 			m_actionPriorityQueues[mainType].priorityQueue.Add(actionID);
 		}
+
+		foreach (KeyValuePair<EntityActionData.MainActionType, ActionReplacements> queue in m_actionPriorityQueues)
+			queue.Value.priorityQueue = ApplySavedOrder(queue.Value.priorityQueue, _entityData.GetActionPriorityOrder(queue.Key));
+	}
+
+	private static List<EntityActionEnumID> ApplySavedOrder ( List<EntityActionEnumID> _defaultOrder, List<EntityActionEnumID> _savedOrder )
+	{
+		if (_savedOrder == null || _savedOrder.Count == 0)
+			return _defaultOrder;
+
+		List<EntityActionEnumID> order = _savedOrder.Where(_defaultOrder.Contains).Distinct().ToList();
+		order.AddRange(_defaultOrder.Where(actionID => !order.Contains(actionID)));
+		return order;
 	}
 
 	public void SetActionPriorityQueue ( EntityActionData.MainActionType _mainType, List<EntityActionEnumID> _actionsInOrder )
 	{
 		m_actionPriorityQueues[_mainType].priorityQueue = new(_actionsInOrder);
+		m_linkedEntity.Data.SetActionPriorityOrder(_mainType, _actionsInOrder);
 	}
 
 	public CheckActionResultInfo CheckAction ( TurnManager.RecordedAction _recordedAction )
@@ -116,31 +130,33 @@ public class EntityAIPlugin : EntityPlugin
 			return resultInfo;
 		}
 
+		bool isFleeing = _recordedAction.entityState == Entity.EntityState.Fleeing;
+		if (isFleeing && TryFlee(_recordedAction, ref resultInfo))
+			return resultInfo;
+
+		bool isExecutingOrders = _recordedAction.entityState == Entity.EntityState.NoAIChange || isFleeing;
 		bool needsTarget = _recordedAction.action.Data.DoesResolveItsOwnTarget();
 		if (needsTarget)
 		{
 			if (TryResolveEntityTarget(_recordedAction, ref resultInfo))
 				return resultInfo;
 
-			if (_recordedAction.entityState == Entity.EntityState.NoAIChange)
+			if (isExecutingOrders)
 			{
 				resultInfo.ReplaceAction(GetWaitActionFor(_recordedAction), "No target in reach for " + _recordedAction.type);
 				return resultInfo;
 			}
 		}
 
-		if (_recordedAction.entityState == Entity.EntityState.NoAIChange)
-		{
-			//no action change if in NoAIChange
+		if (isExecutingOrders)
 			return resultInfo;
-		}
 
 		DropStaleFacing(_recordedAction, ref resultInfo);
 
 		DOAllPrewarmCheck(_recordedAction.action, _recordedAction.entityState == Entity.EntityState.Patroling);
 
-		EntityActionData movementAction = GetMovementAction();
-		bool canMove = !m_linkedEntity.Status.Contains(EntityStatusEnumID.Stun) && !m_linkedEntity.Status.Contains(EntityStatusEnumID.Rooted) && movementAction != null;
+		EntityActionData movementAction = GetWalkingAction();
+		bool canMove = !m_linkedEntity.Status.Contains(EntityStatusEnumID.Stun) && !m_linkedEntity.Status.Contains(EntityStatusEnumID.Rooted) && GetMovementAction() != null;
 		bool hasEnemyInWeaponRange = HasEnemyInWeaponRange(out List<Entity> enemies, out EntityActionEnumID attackEnumID, out string equipmentID);
 		bool hasEnemyInVisionRange = HasEnemyInVisionRange();
 		EntityActionData.MainActionType currentActionMainType = _recordedAction.action.Data.GetMainActionType();
@@ -169,7 +185,7 @@ public class EntityAIPlugin : EntityPlugin
 		{
 			TryMoveTowardTile(_recordedAction, movementAction, lastKnownTargetTile, "Keeps hunting " + committedTarget.Data.name + " at its last known position", ref resultInfo);
 		}
-		else if (canMove && isTargetVisible && !hasEnemyInWeaponRange)
+		else if (canMove && movementAction != null && isTargetVisible && !hasEnemyInWeaponRange)
 		{
 			Tile currentTile = m_linkedEntity.Displacement.Coordinates.GetTile();
 			Tile targetResolutionTile = GetResolutionTileOf(GetFirstAvailableAttackAction(), committedTarget);
@@ -476,12 +492,25 @@ public class EntityAIPlugin : EntityPlugin
 
 	public EntityActionData GetMovementAction ()
 	{
+		return GetFirstMovementAction(false);
+	}
+
+	public EntityActionData GetWalkingAction ()
+	{
+		return GetFirstMovementAction(true);
+	}
+
+	private EntityActionData GetFirstMovementAction ( bool _isWalkingOnly )
+	{
 		if (!m_actionPriorityQueues.ContainsKey(EntityActionData.MainActionType.Movement))
 			return null;
 
 		foreach (EntityActionEnumID actionEnumID in m_actionPriorityQueues[EntityActionData.MainActionType.Movement].priorityQueue)
 		{
 			EntityActionData data = GameAssets.current.game.entityActionsData[actionEnumID];
+			if (_isWalkingOnly && data.codeType != EntityActionData.ActionCodeType.TargetTileMove)
+				continue;
+
 			if (Condition.UseConditionPredicate(TurnManager.Instance.GetAction(actionEnumID, m_linkedEntity.ID, m_linkedEntity.ComponentLinkedToAction[actionEnumID][0], TurnManager.currentTick)
 					, m_linkedEntity, m_lastEntitiesTargeted.Count > 0 ? m_lastEntitiesTargeted[0] : null, data.conditionType))
 			{
@@ -867,6 +896,154 @@ public class EntityAIPlugin : EntityPlugin
 		_resultInfo.ReplaceAction(moveToAction, _reasonTxt);
 
 		return true;
+	}
+
+	private bool TryFlee ( TurnManager.RecordedAction _recordedAction, ref CheckActionResultInfo _resultInfo )
+	{
+		RefreshEnemiesInVisionRange(true, true);
+		if (!HasEnemyInVisionRange())
+			return false;
+
+		EntityActionData movementAction = GetWalkingAction();
+		if (movementAction == null || m_linkedEntity.Status.Contains(EntityStatusEnumID.Rooted))
+			return false;
+
+		DropStaleFacing(_recordedAction, ref _resultInfo);
+
+		Tile fleeTile = GetFleeTile(movementAction.movementSpeed, GetActionDestination(_recordedAction.action));
+		if (fleeTile != null && TryMoveTowardTile(_recordedAction, movementAction, fleeTile, "Flees from enemies", ref _resultInfo))
+			return true;
+
+		_resultInfo.ReplaceAction(GetWaitActionFor(_recordedAction), "Cannot flee further, holds position");
+		return true;
+	}
+
+	private Tile GetFleeTile ( int _movementSpeed, Tile _destination )
+	{
+		Tile from = m_linkedEntity.Displacement.Coordinates.GetTile();
+		int currentThreatRange = GetRangeToClosestVisibleEnemy(from);
+
+		Tile bestTile = null;
+		int bestDestinationRange = int.MaxValue;
+		int bestThreatRange = -1;
+		int bestSteps = int.MaxValue;
+
+		foreach (KeyValuePair<Tile, int> reached in GetTilesReachableWithin(from, _movementSpeed))
+		{
+			Tile tile = reached.Key;
+			if (tile == from || (tile.GetEntity(true) != null && tile.GetEntity(true) != m_linkedEntity))
+				continue;
+
+			int threatRange = GetRangeToClosestVisibleEnemy(tile);
+			if (threatRange <= currentThreatRange)
+				continue;
+
+			int destinationRange = GetRangeBetween(tile, _destination);
+			if (destinationRange > bestDestinationRange)
+				continue;
+
+			if (destinationRange == bestDestinationRange
+				&& (threatRange < bestThreatRange || (threatRange == bestThreatRange && reached.Value >= bestSteps)))
+				continue;
+
+			bestTile = tile;
+			bestDestinationRange = destinationRange;
+			bestThreatRange = threatRange;
+			bestSteps = reached.Value;
+		}
+
+		return bestTile;
+	}
+
+	private Dictionary<Tile, int> GetTilesReachableWithin ( Tile _from, int _steps )
+	{
+		Dictionary<Tile, int> stepsPerTile = new() { [_from] = 0 };
+		Queue<Tile> frontier = new();
+		frontier.Enqueue(_from);
+
+		while (frontier.Count > 0)
+		{
+			Tile current = frontier.Dequeue();
+			int steps = stepsPerTile[current];
+			if (steps >= _steps)
+				continue;
+
+			foreach (Tile neighbor in current.Neighbors)
+			{
+				if (neighbor == null || stepsPerTile.ContainsKey(neighbor) || neighbor.IsObstacle(true))
+					continue;
+
+				Entity occupant = neighbor.GetEntity(true);
+				if (occupant != null && occupant != m_linkedEntity && !occupant.IsAlliedTo(m_linkedEntity.OwnerID))
+					continue;
+
+				stepsPerTile.Add(neighbor, steps + 1);
+				frontier.Enqueue(neighbor);
+			}
+		}
+
+		return stepsPerTile;
+	}
+
+	private int GetRangeToClosestVisibleEnemy ( Tile _tile )
+	{
+		int closestRange = int.MaxValue;
+		foreach (Entity enemy in m_entitiesInVisionRange)
+		{
+			if (enemy.Equipment.IsDead)
+				continue;
+
+			closestRange = Mathf.Min(closestRange, GetRangeBetween(_tile, enemy.Displacement.Coordinates.GetTile()));
+		}
+
+		return closestRange;
+	}
+
+	public void FaceClosestVisibleEnemy ()
+	{
+		if (m_linkedEntity.Equipment.IsDead || m_linkedEntity.Status.Contains(EntityStatusEnumID.Stun))
+			return;
+
+		Tile from = m_linkedEntity.Displacement.Coordinates.GetTile();
+		int currentOrientation = m_linkedEntity.Displacement.CurrentOrientation;
+		Entity closestEnemy = null;
+		int closestRange = int.MaxValue;
+		int smallestTurn = int.MaxValue;
+		int bestOrientation = currentOrientation;
+
+		foreach (EntityAnchor anchor in GameManager.Instance.PlayersEntityAnchor)
+		{
+			foreach (Entity enemy in anchor.Entities)
+			{
+				if (enemy == null || enemy.Equipment.IsDead || enemy.IsImmortal || enemy.IsAlliedTo(m_linkedEntity.OwnerID))
+					continue;
+
+				Tile enemyTile = enemy.Displacement.Coordinates.GetTile();
+				if (enemyTile == null || enemyTile == from || !GridManager.Instance.IsTileSeenByTeam(m_linkedEntity.OwnerID, enemyTile))
+					continue;
+
+				int range = GetRangeBetween(from, enemyTile);
+				int orientation = GridManager.Instance.GetClosestOrientation(from, enemyTile);
+				int turn = GetTurnStepsBetween(currentOrientation, orientation);
+				if (closestEnemy != null && (range > closestRange
+					|| (range == closestRange && (turn > smallestTurn || (turn == smallestTurn && enemy.ID > closestEnemy.ID)))))
+					continue;
+
+				closestEnemy = enemy;
+				closestRange = range;
+				smallestTurn = turn;
+				bestOrientation = orientation;
+			}
+		}
+
+		if (closestEnemy != null)
+			m_linkedEntity.Displacement.Rotate(bestOrientation, GameConfig.current.game.entityRotationDuration);
+	}
+
+	private static int GetTurnStepsBetween ( int _fromOrientation, int _toOrientation )
+	{
+		int steps = Mathf.Abs(_toOrientation - _fromOrientation) % 6;
+		return Mathf.Min(steps, 6 - steps);
 	}
 
 	public void TargetEntity ( Entity _targetedEntity )

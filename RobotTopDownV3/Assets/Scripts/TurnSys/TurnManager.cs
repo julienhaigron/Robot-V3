@@ -39,6 +39,8 @@ public class TurnManager : Singleton<TurnManager>
 	private SerializableDictionary<int, int> m_remainingActionToken = new();
 	public SerializableDictionary<int, int> RemainingActionToken => m_remainingActionToken;
 
+	private Dictionary<int, Entity.EntityState> m_stateOfLastPlayedAction = new();
+
 	private List<RecordedAction> m_recordedConflict;
 
 	private AEntityAction m_currentEntityAction;
@@ -312,6 +314,7 @@ public class TurnManager : Singleton<TurnManager>
 		m_roundCount = 0;
 		m_trackedEventsPerEntity.Clear();
 		m_entireGameTrackedEventsPerEntity.Clear();
+		m_stateOfLastPlayedAction.Clear();
 	}
 
 	public void TrackEntireGameAction ( int _entityID, EntityActionEnumID _actionType )
@@ -994,6 +997,7 @@ public class TurnManager : Singleton<TurnManager>
 	{
 		currentTick = 0;
 		currentPhase = TurnPhase.Recording;
+		FaceClosestEnemiesAfterRound();
 		if (!GameManager.Instance.IsOnline)
 			GameManager.Instance.RespawnDeadMatchUnits();
 		//UIManager.Instance.OpenPanel<InGamePanel>();
@@ -1021,6 +1025,20 @@ public class TurnManager : Singleton<TurnManager>
 
 		if (GameManager.Instance.IsOnline && GameManager.Instance.Lobby.IsServer)
 			NetworkTaskOrchestrator.Instance.LaunchClientTask("InputPhase", EndInputPhase);
+	}
+
+	private void FaceClosestEnemiesAfterRound ()
+	{
+		foreach (KeyValuePair<int, Entity.EntityState> lastState in m_stateOfLastPlayedAction)
+		{
+			if (lastState.Value != Entity.EntityState.Patroling && lastState.Value != Entity.EntityState.Fleeing)
+				continue;
+
+			if (GameManager.Instance.GetEntityFromID(out Entity entity, lastState.Key))
+				entity.AI.FaceClosestVisibleEnemy();
+		}
+
+		m_stateOfLastPlayedAction.Clear();
 	}
 
 	[Button]
@@ -1376,6 +1394,7 @@ public class TurnManager : Singleton<TurnManager>
 
 	private void PlayActionTick ( RecordedAction _recordedAction )
 	{
+		m_stateOfLastPlayedAction[_recordedAction.performingEntityID] = _recordedAction.entityState;
 		bool doesPlayFreeAction = DoesPlayFreeActionAtTick(_recordedAction);
 
 		_recordedAction.action.doesFreeActionOwnFacing = doesPlayFreeAction && IsRotationFreeAction(_recordedAction);

@@ -1467,6 +1467,11 @@ public class GridManager : Singleton<GridManager>
 			ownerVision.lastKnownEnemyPositions.Remove(_entity);
 	}
 
+	public bool IsTileSeenByTeam ( int _ownerID, Tile _tile )
+	{
+		return m_entitiesVisions.TryGetValue(_ownerID, out PlayerVisionRangeInfo visionInfo) && IsTileSeenBy(visionInfo, _tile);
+	}
+
 	private bool IsTileSeenBy ( PlayerVisionRangeInfo _visionInfo, Tile _tile )
 	{
 		if (_tile == null)

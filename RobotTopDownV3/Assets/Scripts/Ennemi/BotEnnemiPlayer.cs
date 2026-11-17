@@ -213,7 +213,7 @@ public class BotEnnemiPlayer : MonoBehaviour
 
 		for (int i = 0; i < GameConfig.current.game.actionTokenPerRound;)
 		{
-			EntityActionData movementActionData = _entity.AI.GetMovementAction();
+			EntityActionData movementActionData = _entity.AI.GetWalkingAction();
 			if (movementActionData == null)
 			{
 				AddWaitActionsFrom(_entity, i, _idleState);
@@ -332,7 +332,7 @@ public class BotEnnemiPlayer : MonoBehaviour
 		int walkedTiles = 0;
 		while (spentTokens < GameConfig.current.game.actionTokenPerRound)
 		{
-			EntityActionData movementActionData = _entity.AI.GetMovementAction();
+			EntityActionData movementActionData = _entity.AI.GetWalkingAction();
 			if (movementActionData == null)
 				return spentTokens;
 

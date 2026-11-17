@@ -54,6 +54,15 @@ public class EntitySavedData : INetworkSerializable
 
 	public int currentHp;
 
+	public List<ActionPriorityOrder> actionPriorityOrders = new();
+
+	[System.Serializable]
+	public class ActionPriorityOrder
+	{
+		public EntityActionData.MainActionType mainType;
+		public List<EntityActionEnumID> actions = new();
+	}
+
 	public FrameEquipmentData FrameData => frame == null ? null : frame.GetData<FrameEquipmentData>();
 	public ReactorEquipmentData ReactorData => reactor == null ? null : reactor.GetData<ReactorEquipmentData>();
 	public NeuronalMembraneEquipmentData NeuronalMembraneData => neuronalMembrane == null ? null : neuronalMembrane.GetData<NeuronalMembraneEquipmentData>();
@@ -73,6 +82,25 @@ public class EntitySavedData : INetworkSerializable
 		serializer.SerializeValue(ref auxiliar);
 		serializer.SerializeValue(ref chipsets);
 		serializer.SerializeValue(ref currentHp);
+	}
+
+	public List<EntityActionEnumID> GetActionPriorityOrder ( EntityActionData.MainActionType _mainType )
+	{
+		ActionPriorityOrder order = actionPriorityOrders?.Find(savedOrder => savedOrder != null && savedOrder.mainType == _mainType);
+		return order?.actions;
+	}
+
+	public void SetActionPriorityOrder ( EntityActionData.MainActionType _mainType, List<EntityActionEnumID> _actionsInOrder )
+	{
+		actionPriorityOrders ??= new();
+		ActionPriorityOrder order = actionPriorityOrders.Find(savedOrder => savedOrder != null && savedOrder.mainType == _mainType);
+		if (order == null)
+		{
+			order = new() { mainType = _mainType };
+			actionPriorityOrders.Add(order);
+		}
+
+		order.actions = new(_actionsInOrder);
 	}
 
 	public bool CanAddToSquad ()
