@@ -41,7 +41,12 @@ public class BulletWeapon : Weapon
 			Vector3 targetPosition = _attackAction.Data.targetType == EntityActionData.TargetType.Tile || targetEntity == null
 				? targetTile.transform.position
 				: targetEntity.Skin.Center.position;
-			yield return AimSingleTargetAnim(_attackAction, _attackInfo, targetPosition);
+
+			Tile curveTile = _attackInfo.CurveTile;
+			if (curveTile != null)
+				targetPosition = curveTile.transform.position + Vector3.up * (targetPosition.y - targetTile.transform.position.y);
+
+			yield return AimSingleTargetAnim(_attackAction, _attackInfo, targetPosition, curveTile != null);
 		}
 		else
 		{
@@ -52,9 +57,9 @@ public class BulletWeapon : Weapon
 
 	#region Aim Animations
 
-	private IEnumerator AimSingleTargetAnim ( AttackAction _attackAction, AttackAction.SingleAttackInfo _attackInfo, Vector3 _targetPosition )
+	private IEnumerator AimSingleTargetAnim ( AttackAction _attackAction, AttackAction.SingleAttackInfo _attackInfo, Vector3 _targetPosition, bool _isCurvedShot )
 	{
-		if (_attackInfo.isAttackSuccessfull)
+		if (_attackInfo.isAttackSuccessfull || _isCurvedShot)
 			m_user.Skin.VisualyAimAt(_attackAction.linkedEquipmentId, _targetPosition);
 		else
 		{
@@ -141,7 +146,6 @@ public class BulletWeapon : Weapon
 
 	private IEnumerator ShootAtEntityAnim ( AttackAction _attackAction, int _attackIndex, AttackAction.SingleAttackInfo _attackInfo, int _lastSuccessfullAttackIndex, WeaponTarget _target )
 	{
-		bool hasTrajectoryProjectileBuff = m_lastPerformedAction.effects.Any(e => e.enumID == EntityPassiveEffectEnumID.TrajectoryControl);
 		int hitAmount = _attackAction.Data.GetHitAmount(_attackAction, m_user, _target.targetEntity != null ? _target.targetEntity : _target.targetTile.GetCurrentEntity());
 		ProjectileData bulletData = new()
 		{
@@ -162,6 +166,7 @@ public class BulletWeapon : Weapon
 		bulletData.SetTarget(targetType, targetType == ProjectileData.TargetType.Tile ? _target.targetTile : null
 			, targetType == ProjectileData.TargetType.Entity ? _target.targetEntity : null
 			, targetType == ProjectileData.TargetType.Wall ? GridManager.Instance.Tiles[_attackInfo.hittedTileID].Wall : null);
+		Tile curveTile = GetFlightCurveTile(_attackInfo, targetType);
 
 		for (int i = 0; i < hitAmount; i++)
 		{
@@ -172,10 +177,20 @@ public class BulletWeapon : Weapon
 			bool isLastBullet = i == hitAmount - 1 && _attackIndex == _lastSuccessfullAttackIndex;
 			Entity missedTarget = i == hitAmount - 1 ? _target.targetEntity : null;
 			m_bulletPool.Get<Projectile>(m_bulletPoint.position, m_bulletPoint.rotation).SetProjectileDataAndLaunch(bulletData
-				, ( impactTile ) => ApplyBulletImpact(impactTile, _attackAction, _attackInfo, isLastBullet, _target.targetEntity), () => OnProjectileDespawn(isLastBullet, missedTarget, _attackInfo.didTargetDodge), hasTrajectoryProjectileBuff);
+				, ( impactTile ) => ApplyBulletImpact(impactTile, _attackAction, _attackInfo, isLastBullet, _target.targetEntity), () => OnProjectileDespawn(isLastBullet, missedTarget, _attackInfo.didTargetDodge), curveTile);
 
 			yield return m_timeBetweenBulletsWFS;
 		}
+	}
+
+	private Tile GetFlightCurveTile ( AttackAction.SingleAttackInfo _attackInfo, ProjectileData.TargetType _targetType )
+	{
+		Tile curveTile = _attackInfo.CurveTile;
+		if (curveTile == null || _targetType != ProjectileData.TargetType.Wall)
+			return curveTile;
+
+		Tile hitTile = GridManager.Instance.Tiles[_attackInfo.hittedTileID];
+		return GridManager.Instance.GetLineOfSightPath(m_user.Displacement.Coordinates.GetTile(), curveTile).Contains(hitTile) ? null : curveTile;
 	}
 
 	#endregion

@@ -266,35 +266,35 @@ public class FTUEManager : Singleton<FTUEManager>
 			GameDatas.current.currentPlayerSave.didUnlockReturnToHubPopup = true;
 		}));
 		tutoSequence.Append(new DialogueTask("Day report explenation", ( context ) => context.UI.currentPanel is SoloHubPanel
-		, m_day2TutoDialogues[0]).SetSkipPredicate(( context ) => context.UI.currentPanel is SoloHubPanel && context.UI.activePopup is not ReturnToHubPopup));
+		, m_day1TutoDialogues[0]).SetSkipPredicate(( context ) => context.UI.currentPanel is SoloHubPanel && context.UI.activePopup is not ReturnToHubPopup));
 		tutoSequence.Append(new OpenPanelTask<HangarPanel>("Send player directly to hangar", ( context ) => context.UI.currentPanel is SoloHubPanel
 			&& context.UI.activePopup == null && GameDatas.current.currentPlayerSave.dayCount == 0));
 		tutoSequence.Append(new DialogueHighlightTask("New unit won explenation", ( context ) => context.UI.currentPanel is HangarPanel
-		, m_day1TutoDialogues[0], "squadUnit2Select").SetSkipPredicate(( context ) => context.UI.currentPanel is SoloHubPanel));
+		, m_day1TutoDialogues[1], "squadUnit2Select").SetSkipPredicate(( context ) => context.UI.currentPanel is SoloHubPanel));
 		tutoSequence.Append(new DialogueHighlightTask("Return btn explenation", null
-		, m_day1TutoDialogues[1], "topCanvasReturnBtn").SetSkipPredicate(( context ) => context.UI.currentPanel is SoloHubPanel));
+		, m_day1TutoDialogues[2], "topCanvasReturnBtn").SetSkipPredicate(( context ) => context.UI.currentPanel is SoloHubPanel));
 		tutoSequence.Append(new DialogueHighlightTask("Hub presentation", ( context ) => context.UI.currentPanel is SoloHubPanel
-		, m_day1TutoDialogues[2], "missionSection"));
+		, m_day1TutoDialogues[3], "missionSection"));
 		tutoSequence.Append(new DialogueHighlightTask("Available matches explenation", ( context ) => context.UI.currentPanel is MissionPanel
-		, m_day1TutoDialogues[3], "missionSelectionBtn"));
-		tutoSequence.Append(new DialogueHighlightTask("Start match btn explenation", null, m_day1TutoDialogues[4], "startMissionBtn"));
+		, m_day1TutoDialogues[4], "missionSelectionBtn"));
+		tutoSequence.Append(new DialogueHighlightTask("Start match btn explenation", null, m_day1TutoDialogues[5], "startMissionBtn"));
 
 		//micro
 		tutoSequence.Append(new WaitEndLoadingTask("Wait for end loading", ( context ) => context.Game.CurrentMission != null && context.Game.CurrentMission.enumID == MissionDataEnumID.Day1Tuto)
 			.SetSkipPredicate(IsMissionAlreadyLoaded(MissionDataEnumID.Day1Tuto)));
-		tutoSequence.Append(new DialogueTask("Action types explenation", ( context ) => context.UI.currentPanel is InGamePanel, m_day1TutoDialogues[5]));
-		tutoSequence.Append(new DialogueHighlightTask("Movement actions explenation", IsUnitSelected, m_day1TutoDialogues[6]
+		tutoSequence.Append(new DialogueTask("Action types explenation", ( context ) => context.UI.currentPanel is InGamePanel, m_day1TutoDialogues[6]));
+		tutoSequence.Append(new DialogueHighlightTask("Movement actions explenation", IsUnitSelected, m_day1TutoDialogues[7]
 			, ActionButtonsOfType(EntityActionData.ActionType.Movement)).SetSkipPredicateWhilePerforming(IsInputPhaseOver));
-		tutoSequence.Append(new DialogueHighlightTask("Distance attack actions explenation", IsUnitSelected, m_day1TutoDialogues[7]
+		tutoSequence.Append(new DialogueHighlightTask("Distance attack actions explenation", IsUnitSelected, m_day1TutoDialogues[8]
 			, ActionButtonsOfType(EntityActionData.ActionType.DistanceAttack)).SetSkipPredicateWhilePerforming(IsInputPhaseOver));
-		tutoSequence.Append(new DialogueHighlightTask("Melee attack actions explenation", IsUnitSelected, m_day1TutoDialogues[8]
+		tutoSequence.Append(new DialogueHighlightTask("Melee attack actions explenation", IsUnitSelected, m_day1TutoDialogues[9]
 			, ActionButtonsOfType(EntityActionData.ActionType.MeleeAttack)).SetSkipPredicateWhilePerforming(IsInputPhaseOver));
-		tutoSequence.Append(new DialogueHighlightTask("Special actions explenation", IsUnitSelected, m_day1TutoDialogues[9]
+		tutoSequence.Append(new DialogueHighlightTask("Special actions explenation", IsUnitSelected, m_day1TutoDialogues[10]
 			, ActionButtonsOfType(EntityActionData.ActionType.Special)).SetSkipPredicateWhilePerforming(IsInputPhaseOver));
 
 		tutoSequence.Append(new HighlightLogTask("Highlight status logs", ( context ) => context.Log.Logs.ContainsKey(LogConsole.LogEventType.Status)
 		, LogConsole.LogEventType.Status, true));
-		tutoSequence.Append(new DialogueTask("Status roll explenation", IsNoUnitSelected, m_day1TutoDialogues[10]));
+		tutoSequence.Append(new DialogueTask("Status roll explenation", IsNoUnitSelected, m_day1TutoDialogues[11]));
 
 		tutoSequence.SetSkipPredicate(( context ) => GameDatas.current.currentPlayerSave.dayCount > 0);
 		return tutoSequence;
@@ -311,19 +311,19 @@ public class FTUEManager : Singleton<FTUEManager>
 			GameDatas.current.currentPlayerSave.didUnlockReturnToHubPopup = true;
 		}));
 		tutoSequence.Append(new DialogueHighlightTask("Go to hangar", ( context ) => context.UI.currentPanel is SoloHubPanel
-		, m_day2TutoDialogues[1], "hangarBtn"));
+		, m_day2TutoDialogues[0], "hangarBtn"));
 		tutoSequence.Append(new DialogueHighlightTask("Go to workshop", ( context ) => context.UI.currentPanel is HangarPanel
-		, m_day2TutoDialogues[2], "squadUnit2").SetSkipPredicate(IsMatchLaunched));
+		, m_day2TutoDialogues[1], "squadUnit2").SetSkipPredicate(IsMatchLaunched));
 		tutoSequence.Append(new DialogueTask("Unit composition explenation", ( context ) => context.UI.currentPanel is EntityConfigPanel
-		, m_day2TutoDialogues[3]).SetSkipPredicate(( context ) => context.UI.currentPanel is InGamePanel));
+		, m_day2TutoDialogues[2]).SetSkipPredicate(( context ) => context.UI.currentPanel is InGamePanel));
 		tutoSequence.Append(new DialogueTask("Equip neuronal membranes", null
-		, m_day2TutoDialogues[4]).SetSkipPredicate(( context ) => context.UI.currentPanel is InGamePanel));
+		, m_day2TutoDialogues[3]).SetSkipPredicate(( context ) => context.UI.currentPanel is InGamePanel));
 
 		//micro
 		tutoSequence.Append(new WaitEndLoadingTask("Wait for end loading", ( context ) => context.Game.CurrentMission != null && context.Game.CurrentMission.enumID == MissionDataEnumID.Day2Tuto)
 			.SetSkipPredicate(IsMissionAlreadyLoaded(MissionDataEnumID.Day2Tuto)));
 		tutoSequence.Append(new DialogueTask("Perception types explenation", ( context ) => context.UI.currentPanel is InGamePanel
-		, m_day2TutoDialogues[5]));
+		, m_day2TutoDialogues[4]));
 
 		tutoSequence.SetSkipPredicate(( context ) => GameDatas.current.currentPlayerSave.dayCount > 1);
 		return tutoSequence;

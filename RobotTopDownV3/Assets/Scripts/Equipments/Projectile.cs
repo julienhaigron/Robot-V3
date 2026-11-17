@@ -220,13 +220,13 @@ public class Projectile : PoolElement
 		}
 	}
 
-	public void SetProjectileDataAndLaunch ( ProjectileData _projectileData, Action<Tile> _onImpact, Action _onProjectileDespawn, bool _hasTrajectoryControl )
+	public void SetProjectileDataAndLaunch ( ProjectileData _projectileData, Action<Tile> _onImpact, Action _onProjectileDespawn, Tile _curveTile = null )
 	{
 		SetProjectileData(_projectileData);
 
-		if (_hasTrajectoryControl)
+		if (_curveTile != null)
 		{
-			LaunchMortar(_onImpact, _onProjectileDespawn);
+			LaunchCurved(_curveTile, _onImpact, _onProjectileDespawn);
 			return;
 		}
 
@@ -329,6 +329,51 @@ public class Projectile : PoolElement
 
 		transform.LookAt(destination);
 		transform.DOMove(destination, duration).SetEase(Ease.Linear).OnComplete(() => Impact(GetTargetTile()));
+	}
+
+	private void LaunchCurved ( Tile _curveTile, Action<Tile> _onImpact, Action _onProjectileDespawn )
+	{
+		m_didHitSomething = false;
+		m_rb.isKinematic = true;
+		m_onImpact = _onImpact;
+		m_onDespawnNoEntityHit = _onProjectileDespawn;
+
+		float speed = Mathf.Max(m_projectileData.speed.x, 0.01f);
+		Vector3 start = transform.position;
+		Vector3 curvePoint = _curveTile.transform.position;
+		Vector3 destination = GetCurvedFlightDestination(curvePoint);
+		float firstLeg = Vector2.Distance(new Vector2(start.x, start.z), new Vector2(curvePoint.x, curvePoint.z));
+		float secondLeg = Vector2.Distance(new Vector2(curvePoint.x, curvePoint.z), new Vector2(destination.x, destination.z));
+		curvePoint.y = Mathf.Lerp(start.y, destination.y, firstLeg / Mathf.Max(firstLeg + secondLeg, 0.001f));
+
+		transform.LookAt(curvePoint);
+		transform.DOMove(curvePoint, Vector3.Distance(start, curvePoint) / speed).SetEase(Ease.Linear).OnComplete(() =>
+		{
+			if (!m_isInit)
+				return;
+
+			Vector3 finalDestination = GetCurvedFlightDestination(curvePoint);
+			transform.LookAt(finalDestination);
+			transform.DOMove(finalDestination, Vector3.Distance(transform.position, finalDestination) / speed).SetEase(Ease.Linear)
+				.OnComplete(() => Impact(GetTargetTile()));
+		});
+	}
+
+	private Vector3 GetCurvedFlightDestination ( Vector3 _curvePoint )
+	{
+		Vector3 destination = m_projectileData.HasValidTarget ? m_projectileData.Destination : m_launchDestination;
+		if (m_projectileData.isAttackSuccessful || m_projectileData.targetType == ProjectileData.TargetType.Wall)
+			return destination;
+
+		Vector3 direction = destination - _curvePoint;
+		direction.y = 0f;
+		if (direction.sqrMagnitude < 0.0001f)
+			return destination;
+
+		Vector3 besideTarget = destination + Vector3.Cross(Vector3.up, direction.normalized);
+		Vector3 flight = besideTarget - _curvePoint;
+		flight.y = 0f;
+		return besideTarget + flight.normalized * (Tile.innerRadius * 2f);
 	}
 
 	#endregion

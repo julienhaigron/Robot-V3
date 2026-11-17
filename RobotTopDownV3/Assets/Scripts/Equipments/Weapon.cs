@@ -395,14 +395,14 @@ public class Weapon : MonoBehaviour
 		m_targetedTiles.Clear();
 	}
 
-	public virtual Dictionary<WeaponEquipmentData.DamageType, int> GetDamages ( Entity _user, Entity _target, AEntityAction _action, EntityActionData.PFCResultType _pfcResultType, out LogConsole.LogDetails _details )
+	public virtual Dictionary<WeaponEquipmentData.DamageType, int> GetDamages ( Entity _user, Entity _target, AEntityAction _action, EntityActionData.PFCResultType _pfcResultType, out LogConsole.LogDetails _details, Tile _shotOrigin = null )
 	{
 		Dictionary<WeaponEquipmentData.DamageType, int> damages = new();
 		bool didWinPFC = _pfcResultType == EntityActionData.PFCResultType.FirstWins;
 		bool hasTarget = _target != null;
 		string targetName = hasTarget ? _target.Data.name : "tile";
 		float flankMod = GameConfig.current.game.entityFlankRatio[hasTarget
-			? GridManager.Instance.GetHitTileSide(_user, _target, didWinPFC)
+			? GridManager.Instance.GetHitTileSide(_user, _target, didWinPFC, _shotOrigin)
 			: Tile.TileDirectionType.Front];
 		StringBuilder detailsBuilder = new();
 

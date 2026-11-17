@@ -271,11 +271,7 @@ public class Tile : MonoBehaviour
 
 	private void OnActionSelected ( AEntityAction _action )
 	{
-		bool canInteract = _action.TileInteractPredicate(this);
-		m_canInteract = canInteract;
-
-		bool areOutlinesHidden = PlayerController.Instance != null && PlayerController.Instance.AreInteractableOutlinesHidden;
-		UI.SetAsInteractable(m_canInteract && !areOutlinesHidden, GameAssets.current.ui.GetActionRangeColor(_action.Data.GetMainActionType(), false));
+		m_canInteract = _action.TileInteractPredicate(this);
 	}
 
 	private void OnActionAdded ( TurnManager.RecordedAction _recordedAction )
@@ -451,6 +447,7 @@ public class Tile : MonoBehaviour
 		if (!m_status.Contains(_statusID))
 			m_status.Add(_statusID);
 		m_remainingDurationToActiveEffects[statusData] = _duration;
+		GridManager.Instance.MarkLineOfSightDirty();
 
 		//spawn visual
 		if (statusData.groundPrefab != null && !m_statusVisuals.ContainsKey(_statusID))
@@ -462,6 +459,7 @@ public class Tile : MonoBehaviour
 		GameAssets.current.game.entityStatus[_statusID].RemoveStatus(this);
 		m_status.Remove(_statusID);
 		m_remainingDurationToActiveEffects.Remove(GameAssets.current.game.entityStatus[_statusID]);
+		GridManager.Instance.MarkLineOfSightDirty();
 
 		if (m_statusVisuals.ContainsKey(_statusID))
 		{

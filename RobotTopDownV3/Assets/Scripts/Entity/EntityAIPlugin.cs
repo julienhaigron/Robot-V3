@@ -722,7 +722,7 @@ public class EntityAIPlugin : EntityPlugin
 		foreach (System.Tuple<EntityActionData, string> pair in GetAvailableAttackAction(_ignoreRemainingTokens: true))
 		{
 			AEntityAction attackAction = TurnManager.Instance.GetAction(pair.Item1, m_linkedEntity.ID, pair.Item2, TurnManager.currentTick);
-			if (m_linkedEntity.Equipment.GetTilesInWeaponRange(attackAction, _isThisTurn, _from, orientation, true).Contains(targetTile))
+			if (m_linkedEntity.Equipment.IsTileInWeaponRange(attackAction, _isThisTurn, _from, orientation, targetTile, true))
 				return true;
 		}
 
@@ -750,8 +750,11 @@ public class EntityAIPlugin : EntityPlugin
 		{
 			AEntityAction rangeAction = TurnManager.Instance.GetAction(pair.Item1, m_linkedEntity.ID, pair.Item2, TurnManager.currentTick);
 			int maxRange = pair.Item1.GetMaxRange(rangeAction, m_linkedEntity, _target);
+			IEnumerable<Tile> candidates = m_linkedEntity.Equipment.CanCurveShot(rangeAction)
+				? GridManager.Instance.GetTilesInCurvedShotReach(targetTile, pair.Item1.minDistance, maxRange)
+				: GridManager.Instance.GetTilesInVisionRange(targetTile, pair.Item1.minDistance, maxRange, false, _isThisTurn, true);
 
-			foreach (Tile candidate in GridManager.Instance.GetTilesInVisionRange(targetTile, pair.Item1.minDistance, maxRange, false, _isThisTurn, true))
+			foreach (Tile candidate in candidates)
 			{
 				if (candidate.Distance == int.MaxValue || candidate.Distance > closestDistance || candidate.IsObstacle(_isThisTurn))
 					continue;

@@ -192,6 +192,12 @@ public class EntityActionData : AParsableScriptableObject
 			&& (mainType == MainActionType.Attack || mainType == MainActionType.Special);
 	}
 
+	public bool FiresProjectileAtTarget ()
+	{
+		return type == ActionType.DistanceAttack
+			&& (aoeType == AOEType.Noone || (aoeType == AOEType.Circle && aoECenterType == AOECenterType.Target && targetType != TargetType.Self));
+	}
+
 	public bool DoesNeedATargetTile ()
 	{
 		return targetType != TargetType.Self

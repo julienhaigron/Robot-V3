@@ -496,20 +496,12 @@ public class TurnManager : Singleton<TurnManager>
 	{
 		List<Tile> zoneTiles = new();
 
-		if (_action.PerformingEntity != null)
+		if (_action.PerformingEntity != null && !_action.Data.DoesResolveItsOwnTarget() && _action.Data.aoeType != EntityActionData.AOEType.Noone)
 		{
-			if (_action.Data.DoesResolveItsOwnTarget())
+			foreach (Tile targetTile in m_currentActionTargetTiles)
 			{
-				Tile from = GridManager.Instance.Tiles[_action.supposedPositionAtActionStartID];
-				zoneTiles.AddRange(_action.PerformingEntity.Equipment.GetTilesInReach(_action, from, false, true));
-			}
-			else if (_action.Data.aoeType != EntityActionData.AOEType.Noone)
-			{
-				foreach (Tile targetTile in m_currentActionTargetTiles)
-				{
-					if (targetTile != null)
-						zoneTiles.AddRange(_action.PerformingEntity.Equipment.GetTilesInAoERange(_action, targetTile, true, _usePlannedPose: true));
-				}
+				if (targetTile != null)
+					zoneTiles.AddRange(_action.PerformingEntity.Equipment.GetTilesInAoERange(_action, targetTile, true, _usePlannedPose: true));
 			}
 		}
 

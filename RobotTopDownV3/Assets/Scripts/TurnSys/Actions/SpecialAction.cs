@@ -178,7 +178,7 @@ public class SpecialAction : AEntityAction
 			projectileData.SetTarget(_targetEntity != null ? ProjectileData.TargetType.Entity : ProjectileData.TargetType.Tile
 				, _targetEntity != null ? null : _targetTile, _targetEntity, null);
 
-			projectile.SetProjectileDataAndLaunch(projectileData, ( impactTile ) => _onImpact(), _onDespawn, false);
+			projectile.SetProjectileDataAndLaunch(projectileData, ( impactTile ) => _onImpact(), _onDespawn);
 			return true;
 		}
 		catch (Exception ex)
@@ -243,17 +243,6 @@ public class SpecialAction : AEntityAction
 
 	public override void GhostDisplay ( Entity.EntityState _state )
 	{
-		if (targetTileIDs == null)
-			return;
-
-		foreach (int tileID in targetTileIDs)
-		{
-			if (tileID == -1 || GridManager.Instance.Tiles.Length <= tileID)
-				continue;
-
-			Tile tile = GridManager.Instance.Tiles[tileID];
-			tile.UI.SetOutlineColor(Color.yellow);
-		}
 	}
 
 	public override bool TileInteractPredicate ( Tile _tile )

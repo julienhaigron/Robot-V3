@@ -24,6 +24,10 @@ public class AttackAction : AEntityAction
 		public int[] damages;
 		public short[] damageTypes;
 		public int hittedTileID;
+		public int curveTileID = -1;
+
+		public Tile CurveTile => curveTileID >= 0 && curveTileID < GridManager.Instance.Tiles.Length ? GridManager.Instance.Tiles[curveTileID] : null;
+
 		public void NetworkSerialize<T> ( BufferSerializer<T> serializer ) where T : IReaderWriter
 		{
 			serializer.SerializeValue(ref isAttackSuccessfull);
@@ -34,6 +38,7 @@ public class AttackAction : AEntityAction
 			serializer.SerializeValue(ref damages);
 			serializer.SerializeValue(ref damageTypes);
 			serializer.SerializeValue(ref hittedTileID);
+			serializer.SerializeValue(ref curveTileID);
 		}
 	}
 
@@ -112,7 +117,7 @@ public class AttackAction : AEntityAction
 		Tile from = GetAttackOriginTile();
 		int orientation = orientationAtPerform < 0 ? PerformingEntity.Displacement.CurrentOrientation : orientationAtPerform;
 
-		return from != null && !PerformingEntity.Equipment.GetTilesInWeaponRange(this, true, from, orientation, true).Contains(exchangeTile);
+		return from != null && !PerformingEntity.Equipment.IsTileInWeaponRange(this, true, from, orientation, exchangeTile, true);
 	}
 
 	protected virtual Tile GetAttackOriginTile ()
@@ -221,6 +226,7 @@ public class AttackAction : AEntityAction
 			for (int attackCount = 0; attackCount < attacksInfos.Length; attackCount++)
 			{
 				SingleAttackInfo attackInfo = attacksInfos[attackCount];
+				attackInfo.curveTileID = -1;
 
 				Entity targetEntity = GetTargetEntityAt(attackCount);
 				Tile coverHitted = null;
@@ -232,14 +238,19 @@ public class AttackAction : AEntityAction
 					Tile aoeCenter = GridManager.Instance.Tiles[targetTileIDs[attackCount * ActiveLifetime]];
 					bool isBlockedByWall = GridManager.Instance.IsThereBlockingWallBetween(shooterTile, aoeCenter, true, out coverHitted);
 
-					if (isBlockedByWall)
+					if (isBlockedByWall && PerformingEntity.Equipment.TryCurveShot(this, shooterTile, aoeCenter, out Tile curveTile))
+					{
+						attackInfo.curveTileID = curveTile.coordinates.ID;
+						coverHitted = null;
+					}
+					else if (isBlockedByWall)
 						targetTileIDs[attackCount * ActiveLifetime] = coverHitted.coordinates.ID;
 				}
 				else if (targetEntity == null)
 				{
 					Tile targetTile = GetTargetTileAt(attackCount);
 					attackInfo.isAttackSuccessfull = SabotagePoints.TryGetLivingPoint(targetTile, out _)
-						? PerformingEntity.Equipment.SabotagePointAttackRoll(this, GetAttackOriginTile(), targetTile, out coverHitted)
+						? PerformingEntity.Equipment.SabotagePointAttackRoll(this, attackInfo, GetAttackOriginTile(), targetTile, out coverHitted)
 						: true;
 				}
 				else if (DidDesignatedTargetEscapeReach(attackCount))
@@ -277,7 +288,7 @@ public class AttackAction : AEntityAction
 
 				Dictionary<WeaponEquipmentData.DamageType, int> damagesDealt =
 					PerformingEntity.Equipment.Weapons[linkedEquipmentId].GetDamages(PerformingEntity, targetEntity, this
-						, GetExchangeResultAgainst(targetEntity), out LogConsole.LogDetails damageDetails);
+						, GetExchangeResultAgainst(targetEntity), out LogConsole.LogDetails damageDetails, attackInfo.CurveTile);
 
 				if (attackInfo.isAttackSuccessfull)
 					LogDamages(damagesDealt, damageDetails, targetEntity, attackCount);

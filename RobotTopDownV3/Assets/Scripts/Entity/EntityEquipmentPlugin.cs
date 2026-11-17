@@ -275,14 +275,15 @@ public class EntityEquipmentPlugin : EntityPlugin
 		int maxDistance = _action.Data.GetMaxRange(_action, m_linkedEntity, null);
 		int minDistance = _action.Data.minDistance;
 
-		bool ignoreObstacles = false;
-		if (_action.effects != null)
+		if (_ignoreVisibility && CanCurveShot(_action))
 		{
-			foreach (AEntityPassiveEffect.PassiveEffectContainer passiveContainer in _action.effects)
+			foreach (Tile tile in GridManager.Instance.GetTilesInCurvedShotReach(_from, minDistance, maxDistance))
 			{
-				ignoreObstacles = passiveContainer.enumID == EntityPassiveEffectEnumID.TrajectoryControl;
-				break;
+				if (GridManager.Instance.IsInVisionCone(_from, tile, (HexDirection)_orientation))
+					tilesInRange.Add(tile);
 			}
+
+			return tilesInRange;
 		}
 
 		switch (_action.Data.aoeType)
@@ -292,25 +293,69 @@ public class EntityEquipmentPlugin : EntityPlugin
 			case EntityActionData.AOEType.ThinArc:
 			case EntityActionData.AOEType.Chain:
 			case EntityActionData.AOEType.Ray:
-				tilesInRange.AddRange(GridManager.Instance.GetTilesInVisionCone(_from, minDistance, maxDistance, _orientation, ignoreObstacles, _isThisTurn, _ignoreVisibility));
+				tilesInRange.AddRange(GridManager.Instance.GetTilesInVisionCone(_from, minDistance, maxDistance, _orientation, false, _isThisTurn, _ignoreVisibility));
 				break;
 			case EntityActionData.AOEType.LargeCone:
 			case EntityActionData.AOEType.ThinCone:
 				if (_action.Data.aoECenterType == EntityActionData.AOECenterType.Self)
 					tilesInRange.AddRange(GridManager.Instance.GetTilesInCone(_from, minDistance, maxDistance, _orientation, _action.Data.aoeType, _isThisTurn));
 				else
-					tilesInRange.AddRange(GridManager.Instance.GetTilesInVisionCone(_from, minDistance, maxDistance, _orientation, ignoreObstacles, _isThisTurn, _ignoreVisibility));
+					tilesInRange.AddRange(GridManager.Instance.GetTilesInVisionCone(_from, minDistance, maxDistance, _orientation, false, _isThisTurn, _ignoreVisibility));
 				break;
 			case EntityActionData.AOEType.Circle:
 				if (_action.Data.aoECenterType == EntityActionData.AOECenterType.Self)
-					tilesInRange.AddRange(GridManager.Instance.GetTilesInVisionRange(_from, minDistance, maxDistance, ignoreObstacles, _isThisTurn, _ignoreVisibility));
+					tilesInRange.AddRange(GridManager.Instance.GetTilesInVisionRange(_from, minDistance, maxDistance, false, _isThisTurn, _ignoreVisibility));
 				else
-					tilesInRange.AddRange(GridManager.Instance.GetTilesInVisionCone(_from, minDistance, maxDistance, _orientation, ignoreObstacles, _isThisTurn, _ignoreVisibility));
+					tilesInRange.AddRange(GridManager.Instance.GetTilesInVisionCone(_from, minDistance, maxDistance, _orientation, false, _isThisTurn, _ignoreVisibility));
 				break;
 		}
 
 
 		return tilesInRange;
+	}
+
+	public bool IsTileInWeaponRange ( AEntityAction _action, bool _isThisTurn, Tile _from, int _orientation, Tile _tile, bool _ignoreVisibility = false )
+	{
+		if (_from == null || _tile == null)
+			return false;
+
+		if (!_ignoreVisibility || !CanCurveShot(_action))
+			return GetTilesInWeaponRange(_action, _isThisTurn, _from, _orientation, _ignoreVisibility).Contains(_tile);
+
+		return GridManager.Instance.IsInVisionCone(_from, _tile, (HexDirection)_orientation)
+			&& GridManager.Instance.IsInCurvedShotReach(_from, _tile, _action.Data.minDistance, _action.Data.GetMaxRange(_action, m_linkedEntity, null));
+	}
+
+	public bool CanCurveShot ( AEntityAction _action )
+	{
+		if (_action == null || _action.effects == null || !_action.Data.FiresProjectileAtTarget())
+			return false;
+
+		foreach (AEntityPassiveEffect.PassiveEffectContainer passiveContainer in _action.effects)
+		{
+			if (passiveContainer.enumID == EntityPassiveEffectEnumID.TrajectoryControl
+				&& (passiveContainer.conditionType == Condition.ConditionType.Noone || Condition.UseConditionPredicate(_action, m_linkedEntity, null, passiveContainer.conditionType)))
+				return true;
+		}
+
+		return false;
+	}
+
+	public bool TryCurveShot ( AEntityAction _action, Tile _from, Tile _to, out Tile _curveTile )
+	{
+		_curveTile = null;
+
+		return CanCurveShot(_action)
+			&& GridManager.Instance.TryGetCurvedShotTile(_from, _to, _action.Data.GetMaxRange(_action, m_linkedEntity, null), out _curveTile);
+	}
+
+	private bool TryCurveShot ( AttackAction _attackAction, Entity _targetEntity, bool _doesWinPFC, out Tile _curveTile )
+	{
+		_curveTile = null;
+
+		return CanCurveShot(_attackAction)
+			&& GridManager.Instance.TryGetCurvedShotTile(_attackAction.PerformingEntity, _targetEntity, _doesWinPFC
+				, _attackAction.Data.GetMaxRange(_attackAction, m_linkedEntity, null), out _curveTile);
 	}
 
 	public HashSet<Tile> GetTilesInReach ( AEntityAction _action, Tile _from, bool _isThisTurn = true, bool _ignoreVisibility = false )
@@ -356,15 +401,19 @@ public class EntityEquipmentPlugin : EntityPlugin
 	{
 		//WeaponEquipmentData usedWeapon = m_weapons[_attackAction.linkedEquipmentId].Data;
 		bool doesWinPFC = _attackAction.DoesWinExchangeAgainst(_targetEntity);
+		Tile curveTile = null;
 
-		if (GridManager.Instance.IsThereBlockingWallBetween(_attackAction.PerformingEntity, _targetEntity, doesWinPFC, out _coverTile))
+		if (GridManager.Instance.IsThereBlockingWallBetween(_attackAction.PerformingEntity, _targetEntity, doesWinPFC, out _coverTile)
+			&& !TryCurveShot(_attackAction, _targetEntity, doesWinPFC, out curveTile))
 		{
 			LogConsole.AddLog(string.Format(LocalizationManager.Instance.Get(LocalizationKey.log_wall_blocks)
 				, m_linkedEntity.Data.name, _targetEntity.Data.name), LogConsole.LogEventType.AttackRoll);
 			return false;
 		}
 
-		bool isThereCoverBetween = GridManager.Instance.IsThereCoverBeween(_attackAction.PerformingEntity, _targetEntity, doesWinPFC, out _coverTile);
+		_singleAttackInfo.curveTileID = curveTile == null ? -1 : curveTile.coordinates.ID;
+
+		bool isThereCoverBetween = GridManager.Instance.IsThereCoverBeween(_attackAction.PerformingEntity, _targetEntity, doesWinPFC, out _coverTile, curveTile);
 
 		float targetCamo = _targetEntity.Data.GetStaticStealthBonus(true)
 			+ (_targetEntity.HowIsUnitVisible == NeuronalMembraneEquipmentData.VisionTypes.Optic ? _targetEntity.GetAdditionaryStatBonus(EntityEquipmentData.SecondaryStat.StatType.VisualCamo, null)
@@ -389,7 +438,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 		float userAim = _attackAction.Data.type == EntityActionData.ActionType.DistanceAttack
 				? m_linkedEntity.Data.BrainData.distanceAccuracy + m_linkedEntity.GetAdditionaryStatBonus(EntityEquipmentData.SecondaryStat.StatType.DistanceAccuracy, _attackAction)
 				: m_linkedEntity.Data.BrainData.agility + m_linkedEntity.GetAdditionaryStatBonus(EntityEquipmentData.SecondaryStat.StatType.MeleeAccuracy, _attackAction);
-		float flankBonus = GameConfig.current.game.entityFlankRatio[GridManager.Instance.GetHitTileSide(m_linkedEntity, _targetEntity, doesWinPFC)]
+		float flankBonus = GameConfig.current.game.entityFlankRatio[GridManager.Instance.GetHitTileSide(m_linkedEntity, _targetEntity, doesWinPFC, curveTile)]
 			+ m_linkedEntity.GetAdditionaryStatBonus(EntityEquipmentData.SecondaryStat.StatType.FlankBonus, _attackAction);
 		float modAction = m_linkedEntity.LastActionPerformedData.previousActionAttackModificator;
 
@@ -439,7 +488,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 		return isAttackSuccessful;
 	}
 
-	public bool SabotagePointAttackRoll ( AttackAction _attackAction, Tile _from, Tile _pointTile, out Tile _coverTile )
+	public bool SabotagePointAttackRoll ( AttackAction _attackAction, AttackAction.SingleAttackInfo _singleAttackInfo, Tile _from, Tile _pointTile, out Tile _coverTile )
 	{
 		SabotagePoints.TryGetLivingPoint(_pointTile, out int ownerID);
 		string pointName = SabotagePoints.GetLocalizedName(ownerID);
@@ -447,8 +496,14 @@ public class EntityEquipmentPlugin : EntityPlugin
 
 		if (GridManager.Instance.IsThereBlockingWallBetween(_from, _pointTile, true, out _coverTile))
 		{
-			LogConsole.AddLog(string.Format(localization.Get(LocalizationKey.log_wall_blocks), m_linkedEntity.Data.name, pointName), LogConsole.LogEventType.AttackRoll);
-			return false;
+			if (!TryCurveShot(_attackAction, _from, _pointTile, out Tile curveTile))
+			{
+				LogConsole.AddLog(string.Format(localization.Get(LocalizationKey.log_wall_blocks), m_linkedEntity.Data.name, pointName), LogConsole.LogEventType.AttackRoll);
+				return false;
+			}
+
+			_singleAttackInfo.curveTileID = curveTile.coordinates.ID;
+			_coverTile = null;
 		}
 
 		float userAim = _attackAction.Data.type == EntityActionData.ActionType.DistanceAttack

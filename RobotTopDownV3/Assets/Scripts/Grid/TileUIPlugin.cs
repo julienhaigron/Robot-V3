@@ -58,10 +58,4 @@ public class TileUIPlugin : MonoBehaviour
 	}
 
 	#endregion
-
-	public void SetAsInteractable(bool _canInteract, Color _outlineColor )
-	{
-		m_outline.enabled = _canInteract;
-		m_outline.color = _outlineColor;
-	}
 }

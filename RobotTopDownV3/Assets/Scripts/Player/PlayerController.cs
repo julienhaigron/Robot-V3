@@ -52,11 +52,9 @@ public class PlayerController : Singleton<PlayerController>
 	private Entity m_selectedEntity;
 	public Entity SelectedEntity => m_selectedEntity;
 
-	private Color m_currentRangePreviewColor = Color.blue;
 	private Color m_currentTargetColor = Color.blue;
 
 	private readonly List<Tile> m_aoePreviewTiles = new();
-	private readonly List<Tile> m_rangePreviewTiles = new();
 	private readonly List<Tile> m_targetTiles = new();
 	private readonly List<Tile> m_targetZoneTiles = new();
 
@@ -79,6 +77,10 @@ public class PlayerController : Singleton<PlayerController>
 		EntityEquipmentPlugin.onAnyEntityDeath += OnAnyEntityDeath;
 		TurnManager.onEndLevel += OnEndLevel;
 		GameDatas.onAfterLoad += ApplySavedInputBindings;
+		TurnManager.onActionSelected += OnActionSelected;
+		TurnManager.onActionAdded += OnActionAddedOrRemoved;
+		TurnManager.onActionRemoved += OnActionAddedOrRemoved;
+		onEntitySelected += OnEntitySelected;
 
 		InitInputActions();
 	}
@@ -138,6 +140,10 @@ public class PlayerController : Singleton<PlayerController>
 		EntityEquipmentPlugin.onAnyEntityDeath -= OnAnyEntityDeath;
 		TurnManager.onEndLevel -= OnEndLevel;
 		GameDatas.onAfterLoad -= ApplySavedInputBindings;
+		TurnManager.onActionSelected -= OnActionSelected;
+		TurnManager.onActionAdded -= OnActionAddedOrRemoved;
+		TurnManager.onActionRemoved -= OnActionAddedOrRemoved;
+		onEntitySelected -= OnEntitySelected;
 
 		m_inputActions.FindActionMap("Player")?.Disable();
 
@@ -609,6 +615,7 @@ public class PlayerController : Singleton<PlayerController>
 
 		SetInteractableOutlinesHidden(false);
 		SelectEntity(null);
+		ClearAllOutlines();
 		ClearActionOnTileDisplay();
 		ClearGhostActionOnTileDisplay();
 		ClearGhostEntitiesAndItems();
@@ -618,6 +625,7 @@ public class PlayerController : Singleton<PlayerController>
 	{
 		RefreshHoveredEntity(null);
 		SelectEntity(null);
+		ClearAllOutlines();
 		ClearActionOnTileDisplay();
 		ClearGhostActionOnTileDisplay();
 		ClearGhosts();
@@ -741,46 +749,56 @@ public class PlayerController : Singleton<PlayerController>
 			return;
 
 		m_aoePreviewTiles.Add(_tile);
-		_tile.UI.SetOutlineColor(GameAssets.current.ui.aoePreviewColor);
+		RangeOverlay.SetAoEPreview(m_aoePreviewTiles, GameAssets.current.ui.aoePreviewColor);
+	}
+
+	private void OnActionSelected ( AEntityAction _action )
+	{
+		if (_action == null || GridManager.Instance == null)
+		{
+			RangeOverlay.ClearRange();
+			return;
+		}
+
+		IEnumerable<Tile> rangeTiles = _action.Data.DoesResolveItsOwnTarget() && _action.PerformingEntity != null
+			? _action.PerformingEntity.Equipment.GetTilesInReach(_action, GridManager.Instance.Tiles[_action.supposedPositionAtActionStartID], false, true)
+			: GridManager.Instance.Tiles.Where(_action.TileInteractPredicate);
+
+		RangeOverlay.SetRange(rangeTiles, GameAssets.current.ui.GetActionRangeColor(_action.Data.GetMainActionType(), false));
+	}
+
+	private void OnActionAddedOrRemoved ( TurnManager.RecordedAction _recordedAction )
+	{
+		RangeOverlay.ClearRange();
+	}
+
+	private void OnEntitySelected ( int? _entityID )
+	{
+		if (!_entityID.HasValue)
+			ClearAllOutlines();
+	}
+
+	private void ClearAllOutlines ()
+	{
+		ClearTargetOutlines();
+		m_aoePreviewTiles.Clear();
+		RangeOverlay.ClearAll();
 	}
 
 	public void SetRangePreviewOutlines ( IEnumerable<Tile> _tiles, EntityActionData.MainActionType _mainActionType )
 	{
-		ClearRangePreviewOutlines();
-
-		m_currentRangePreviewColor = GameAssets.current.ui.GetActionRangeColor(_mainActionType, true);
-
-		foreach (Tile tile in _tiles)
-		{
-			if (tile == null || m_rangePreviewTiles.Contains(tile))
-				continue;
-
-			m_rangePreviewTiles.Add(tile);
-			tile.UI.SetOutlineColor(m_currentRangePreviewColor);
-		}
+		RangeOverlay.SetPreview(_tiles, GameAssets.current.ui.GetActionRangeColor(_mainActionType, true));
 	}
 
 	public void ClearRangePreviewOutlines ()
 	{
-		if (m_rangePreviewTiles.Count == 0)
-			return;
-
-		RestoreInteractableOutlines(m_rangePreviewTiles);
-		m_rangePreviewTiles.Clear();
-		RedrawOutlines(m_aoePreviewTiles, GameAssets.current.ui.aoePreviewColor);
-		RedrawOutlines(m_targetTiles, m_currentTargetColor);
+		RangeOverlay.ClearPreview();
 	}
 
 	public void ClearAoEPreviewOutlines ()
 	{
-		if (m_aoePreviewTiles.Count > 0)
-		{
-			RestoreInteractableOutlines(m_aoePreviewTiles);
-			m_aoePreviewTiles.Clear();
-		}
-
-		RedrawOutlines(m_rangePreviewTiles, m_currentRangePreviewColor);
-		RedrawOutlines(m_targetTiles, m_currentTargetColor);
+		m_aoePreviewTiles.Clear();
+		RangeOverlay.ClearAoEPreview();
 	}
 
 	public void SetTargetOutlines ( IEnumerable<Tile> _targetTiles, IEnumerable<Tile> _zoneTiles, EntityActionData.MainActionType _mainActionType )
@@ -799,11 +817,7 @@ public class PlayerController : Singleton<PlayerController>
 		if (m_targetTiles.Count == 0 && m_targetZoneTiles.Count == 0)
 			return;
 
-		foreach (Tile tile in m_targetZoneTiles)
-		{
-			if (tile != null)
-				tile.UI.SetOutlineColor(m_currentTargetColor);
-		}
+		RangeOverlay.SetTargets(m_targetTiles.Concat(m_targetZoneTiles), m_currentTargetColor);
 
 		Dictionary<Tile, string> indexesPerTile = new();
 
@@ -819,10 +833,7 @@ public class PlayerController : Singleton<PlayerController>
 		}
 
 		foreach (KeyValuePair<Tile, string> pair in indexesPerTile)
-		{
-			pair.Key.UI.SetOutlineColor(m_currentTargetColor);
 			pair.Key.UI.SetTargetIndexText(pair.Value);
-		}
 	}
 
 	public void ClearTargetOutlines ()
@@ -836,12 +847,9 @@ public class PlayerController : Singleton<PlayerController>
 				tile.UI.ClearPositionText();
 		}
 
-		RestoreInteractableOutlines(m_targetTiles);
-		RestoreInteractableOutlines(m_targetZoneTiles);
 		m_targetTiles.Clear();
 		m_targetZoneTiles.Clear();
-		RedrawOutlines(m_rangePreviewTiles, m_currentRangePreviewColor);
-		RedrawOutlines(m_aoePreviewTiles, GameAssets.current.ui.aoePreviewColor);
+		RangeOverlay.ClearTargets();
 	}
 
 	public void ClearHoverPreviews ()
@@ -854,31 +862,11 @@ public class PlayerController : Singleton<PlayerController>
 
 	public void SetInteractableOutlinesHidden ( bool _hidden )
 	{
-		if (m_areInteractableOutlinesHidden == _hidden || GridManager.Instance == null)
+		if (m_areInteractableOutlinesHidden == _hidden)
 			return;
 
 		m_areInteractableOutlinesHidden = _hidden;
-
-		RestoreInteractableOutlines(GridManager.Instance.Tiles);
-		RedrawOutlines(m_rangePreviewTiles, m_currentRangePreviewColor);
-		RedrawOutlines(m_aoePreviewTiles, GameAssets.current.ui.aoePreviewColor);
-		RedrawTargetOutlines();
-	}
-
-	private void RestoreInteractableOutlines ( IEnumerable<Tile> _tiles )
-	{
-		Color interactableColor = m_turnManager.CurrentActionSelected != null
-			? GameAssets.current.ui.GetActionRangeColor(m_turnManager.CurrentActionSelected.Data.GetMainActionType(), false)
-			: GameAssets.current.ui.movementRangeColor;
-
-		foreach (Tile tile in _tiles)
-			tile.UI.SetAsInteractable(!m_areInteractableOutlinesHidden && tile.CanInteract, interactableColor);
-	}
-
-	private void RedrawOutlines ( List<Tile> _tiles, Color _color )
-	{
-		foreach (Tile tile in _tiles)
-			tile.UI.SetOutlineColor(_color);
+		RangeOverlay.SetRangeHidden(_hidden);
 	}
 
 	private void OnAnyEntityDeath ( Entity _entity )
