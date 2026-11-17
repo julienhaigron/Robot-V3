@@ -79,7 +79,12 @@ public static class ProceduralMatchGenerator
 
 		Array strategies = Enum.GetValues(typeof(MatchStrategy));
 		match.strategy = (MatchStrategy)strategies.GetValue(UnityEngine.Random.Range(0, strategies.Length));
-		match.enemyPresetNames = GenerateSquad(_phase, match.strategy).Select(preset => preset.name).ToList();
+		match.generatedEnemies = EnemyUnitGenerator.GenerateSquad(_phase);
+		if (match.generatedEnemies.Count == 0)
+		{
+			Debug.LogWarning("No faction has a complete set of droppable components: the enemy squad falls back to the " + _phase + " presets.");
+			match.enemyPresetNames = GeneratePresetSquad(_phase, match.strategy).Select(preset => preset.name).ToList();
+		}
 
 		MissionData.RewardSet rewardSet = MissionData.GenerateRewardSet(MissionData.RollRewardTemplate());
 		match.rewardCredits = new List<ulong>(rewardSet.creditAmounts);
@@ -88,7 +93,7 @@ public static class ProceduralMatchGenerator
 		return match;
 	}
 
-	public static List<UnitPreset> GenerateSquad ( PlaythroughPhase _phase, MatchStrategy _strategy )
+	public static List<UnitPreset> GeneratePresetSquad ( PlaythroughPhase _phase, MatchStrategy _strategy )
 	{
 		List<UnitPreset> squad = new();
 		GameConfig.EnemySquadRules rules = GetSquadRules(_phase);

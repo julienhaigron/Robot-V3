@@ -13,6 +13,7 @@ public partial class GameDatas
 		public PlaythroughPhase phase;
 		public string mapName;
 		public List<string> enemyPresetNames = new();
+		public List<GeneratedUnitData> generatedEnemies = new();
 		public List<ulong> rewardCredits = new();
 		public List<string> rewardComponentNames = new();
 		public string challengerId;
@@ -36,7 +37,10 @@ public partial class GameDatas
 			missionData.type = type;
 			missionData.map = ProceduralMatchGenerator.FindMap(mapName);
 			missionData.missionName = type + "_" + mapName;
-			missionData.enemies = enemyPresetNames.Select(ProceduralMatchGenerator.FindEnemyPreset).Where(preset => preset != null).ToArray();
+			List<UnitPreset> enemies = enemyPresetNames.Select(ProceduralMatchGenerator.FindEnemyPreset).ToList();
+			if (generatedEnemies != null)
+				enemies.AddRange(generatedEnemies.Select(EnemyUnitGenerator.BuildPreset));
+			missionData.enemies = enemies.Where(preset => preset != null).ToArray();
 			missionData.allies = ProceduralMatchGenerator.GetAllies(type);
 			missionData.currencyRewards = Array.Empty<MissionData.CurrencyReward>();
 			missionData.equipmentRewards = new();
@@ -46,8 +50,8 @@ public partial class GameDatas
 
 			if (missionData.map == null)
 				Debug.LogError("Procedural match map " + mapName + " is no longer in GameAssets.game.mapsPerMissionType.");
-			if (missionData.enemies.Length < enemyPresetNames.Count)
-				Debug.LogWarning("Some enemy presets of a procedural match are no longer in GameAssets.game.enemyPresetsPerPhase.");
+			if (missionData.enemies.Length < enemies.Count)
+				Debug.LogWarning("Some enemies of a procedural match use presets or components that are no longer in GameAssets.");
 
 			m_missionData = missionData;
 			return missionData;

@@ -100,46 +100,7 @@ public class BulletWeapon : Weapon
 			yield return ShootAtEntityAnim(_attackAction, _attackIndex, _attackInfo, _lastSuccessfullAttackIndex, target);
 		}
 		else
-		{
-			if (!_attackInfo.isAttackSuccessfull)
-				yield break;
-
-			//handle aoe perform anims
-			List<WeaponTarget> targets = GetTargets(_attackAction, _attackIndex);
-			Dictionary<WeaponEquipmentData.DamageType, int> damages = BuildDamageDictionary(_attackInfo);
-
-			ShowAoEDodges(_attackAction, targets);
-
-			foreach (ParticleSystem ps in m_onPerformPS)
-				ps.Play();
-			SoundManager.Instance.Play(_attackAction.Data.onPerformSingleAttackSFXID);
-
-			foreach (WeaponTarget target in targets)
-			{
-				Entity targetEntity = target.targetEntity != null ? target.targetEntity : target.targetTile.GetCurrentEntity();
-				if (targetEntity == null)
-					continue;
-				int hitAmount = _attackAction.Data.GetHitAmount(_attackAction, m_user, targetEntity);
-				for (int i = 0; i < hitAmount; i++)
-				{
-					targetEntity.Equipment.TakeDamage(new EntityEquipmentPlugin.TakeDamageCallback()
-					{
-						entityAttacker = m_user,
-						entityTargeted = targetEntity,
-						damages = damages
-					});
-
-					ApplyStatuses(targetEntity, _attackInfo);
-					//ApplyEffects(entity);
-				}
-			}
-			foreach (AEntityPassiveEffect.PassiveEffectContainer pe in m_lastPerformedAction.effects)
-			{
-				List<Entity> effectsTargets = GetPassiveEffectTargets(_attackAction, pe, _attackIndex);
-				foreach (Entity entity in effectsTargets)
-					ApplyEffects(entity, pe);
-			}
-		}
+			yield return base.PerformSingleAttackCR(_attackAction, _attackIndex, _attackInfo, _lastSuccessfullAttackIndex);
 	}
 
 	#region Shoot Animations

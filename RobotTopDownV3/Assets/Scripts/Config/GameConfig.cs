@@ -82,6 +82,10 @@ public partial class GameConfig : ScriptableObject
 		[Title("Procedural matches")]
 		public EnemySquadRules[] enemySquadRules;
 		public StrategyArchetypes[] strategyArchetypes;
+		[Range(0f, 1f)]
+		public float expensiveEnemyChance = 0.35f;
+		[Range(1f, 5f)]
+		public float expensiveEnemyEnergyRatio = 2f;
 
 		[Title("Tournament")]
 		public int challengerTournamentInterval = 2;

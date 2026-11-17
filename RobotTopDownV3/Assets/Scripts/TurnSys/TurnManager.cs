@@ -1460,9 +1460,8 @@ public class TurnManager : Singleton<TurnManager>
 			{
 				if (!m_actionsBeingDone.ContainsKey(_performingEntityID))
 				{
-					//here
-					Debug.Log("error here with entity " + _performingEntityID);
-					LogConsole.AddLog("error here with entity " + GameManager.Instance.GetEntityFromID(_performingEntityID).Data.name, LogConsole.LogEventType.ActionResolution);
+					//Debug.Log("error here with entity " + _performingEntityID);
+					//LogConsole.AddLog("error here with entity " + GameManager.Instance.GetEntityFromID(_performingEntityID).Data.name, LogConsole.LogEventType.ActionResolution);
 					TryEndRoundTick();
 					return;
 				}
