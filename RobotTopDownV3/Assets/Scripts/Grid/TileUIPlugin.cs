@@ -22,7 +22,7 @@ public class TileUIPlugin : MonoBehaviour
 
 	public void ClearPositionText ()
 	{
-		m_positionDisplay.text = ".";
+		m_positionDisplay.text = string.Empty;
 	}
 
 	public void SetTargetIndexText ( string _text )

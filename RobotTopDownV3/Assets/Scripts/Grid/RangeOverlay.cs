@@ -10,12 +10,14 @@ public class RangeOverlay : MonoBehaviour
 	private const int k_rangeChannel = 0;
 	private const int k_aoeChannel = 1;
 	private const int k_targetChannel = 2;
+	private const int k_visionChannel = 3;
 
 	private static readonly int s_rangeDataID = Shader.PropertyToID("_RangeData");
 	private static readonly int s_rangeGridID = Shader.PropertyToID("_RangeGrid");
 	private static readonly int s_rangeColorID = Shader.PropertyToID("_RangeColor");
 	private static readonly int s_aoeColorID = Shader.PropertyToID("_AoEColor");
 	private static readonly int s_targetColorID = Shader.PropertyToID("_TargetColor");
+	private static readonly int s_visionTypeID = Shader.PropertyToID("_VisionType");
 
 	private static RangeOverlay s_instance;
 
@@ -35,6 +37,24 @@ public class RangeOverlay : MonoBehaviour
 	private Color m_aoeColor;
 	private readonly List<Tile> m_targetTiles = new();
 	private Color m_targetColor;
+	private readonly List<Tile> m_visionTiles = new();
+	private NeuronalMembraneEquipmentData.VisionTypes m_visionType;
+
+	public static void SetVisionPreview ( IEnumerable<Tile> _tiles, NeuronalMembraneEquipmentData.VisionTypes _visionType )
+	{
+		RangeOverlay overlay = GetOrCreate();
+		if (overlay == null)
+			return;
+
+		overlay.m_visionType = _visionType;
+		overlay.Replace(overlay.m_visionTiles, _tiles);
+	}
+
+	public static void ClearVisionPreview ()
+	{
+		if (s_instance != null)
+			s_instance.Replace(s_instance.m_visionTiles, null);
+	}
 
 	public static void SetRange ( IEnumerable<Tile> _tiles, Color _color )
 	{
@@ -118,6 +138,7 @@ public class RangeOverlay : MonoBehaviour
 		s_instance.Replace(s_instance.m_previewTiles, null);
 		s_instance.Replace(s_instance.m_aoeTiles, null);
 		s_instance.Replace(s_instance.m_targetTiles, null);
+		s_instance.Replace(s_instance.m_visionTiles, null);
 	}
 
 	private static RangeOverlay GetOrCreate ()
@@ -219,6 +240,7 @@ public class RangeOverlay : MonoBehaviour
 		bool isVisible = WriteLayer(rangeTiles, k_rangeChannel, true);
 		isVisible |= WriteLayer(m_aoeTiles, k_aoeChannel, false);
 		isVisible |= WriteLayer(m_targetTiles, k_targetChannel, false);
+		isVisible |= WriteLayer(m_isRangeHidden ? null : m_visionTiles, k_visionChannel, false);
 
 		if (isVisible)
 		{
@@ -227,6 +249,7 @@ public class RangeOverlay : MonoBehaviour
 			m_propertyBlock.SetColor(s_rangeColorID, hasPreview ? m_previewColor : m_rangeColor);
 			m_propertyBlock.SetColor(s_aoeColorID, m_aoeColor);
 			m_propertyBlock.SetColor(s_targetColorID, m_targetColor);
+			m_propertyBlock.SetFloat(s_visionTypeID, (int)m_visionType);
 			m_renderer.SetPropertyBlock(m_propertyBlock);
 		}
 

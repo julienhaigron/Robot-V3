@@ -16,6 +16,17 @@ Shader "Custom/RangeOverlay"
         _GlowLighten ("Glow Lighten", Range(0, 1)) = 0.45
         _PulseSpeed ("Pulse Speed", Range(0, 10)) = 2.4
         _PulseAmount ("Pulse Amount", Range(0, 1)) = 0.35
+        [HideInInspector] _VisionType ("Vision Type", Float) = 0
+        _OpticColor ("Optic Vision Color", Color) = (0.945, 0.937, 0.91, 1)
+        _ThermicColor ("Thermic Vision Color", Color) = (0.847, 0.353, 0.188, 1)
+        _RadarColor ("Radar Vision Color", Color) = (0.498, 0.467, 0.867, 1)
+        _OpticFillOpacity ("Optic Fill Opacity", Range(0, 1)) = 0.12
+        _ThermicFillOpacity ("Thermic Fill Opacity", Range(0, 1)) = 0.16
+        _RadarFillOpacity ("Radar Fill Opacity", Range(0, 1)) = 0
+        _VisionLineWidth ("Vision Line Width", Range(0.01, 0.4)) = 0.08
+        _VisionDashLength ("Vision Dash Length", Range(0.05, 2)) = 0.35
+        _VisionDashRatio ("Vision Dash Ratio", Range(0.05, 1)) = 0.6
+        _VisionOutlineOpacity ("Vision Outline Opacity", Range(0, 1)) = 0.35
     }
 
     SubShader
@@ -50,6 +61,17 @@ Shader "Custom/RangeOverlay"
             float _GlowLighten;
             float _PulseSpeed;
             float _PulseAmount;
+            float _VisionType;
+            float4 _OpticColor;
+            float4 _ThermicColor;
+            float4 _RadarColor;
+            float _OpticFillOpacity;
+            float _ThermicFillOpacity;
+            float _RadarFillOpacity;
+            float _VisionLineWidth;
+            float _VisionDashLength;
+            float _VisionDashRatio;
+            float _VisionOutlineOpacity;
 
             static const float2 s_neighborOffsets[6] =
             {
@@ -59,6 +81,11 @@ Shader "Custom/RangeOverlay"
             static const float2 s_edgeNormals[6] =
             {
                 float2(1, 0), float2(0.5, 0.8660254), float2(-0.5, 0.8660254), float2(-1, 0), float2(-0.5, -0.8660254), float2(0.5, -0.8660254)
+            };
+
+            static const float2 s_edgeTangents[6] =
+            {
+                float2(0, 1), float2(0.8660254, -0.5), float2(0.8660254, 0.5), float2(0, 1), float2(0.8660254, -0.5), float2(0.8660254, 0.5)
             };
 
             struct appdata
@@ -133,6 +160,28 @@ Shader "Custom/RangeOverlay"
                 return Over(color, _color * (1.0 - _LineDarken), lineMask);
             }
 
+            float4 DrawVision (float4 _below, float _isInside, float _edgeDistance, float _along, float _pixelSize)
+            {
+                float3 visionColor = _VisionType < 0.5 ? _OpticColor.rgb : _VisionType < 1.5 ? _ThermicColor.rgb : _RadarColor.rgb;
+                float fillOpacity = _VisionType < 0.5 ? _OpticFillOpacity : _VisionType < 1.5 ? _ThermicFillOpacity : _RadarFillOpacity;
+
+                float dashPhase = frac(_along / _VisionDashLength);
+                float dashSoftness = _pixelSize / _VisionDashLength;
+                float dashMask = smoothstep(0.0, dashSoftness, dashPhase)
+                    * (1.0 - smoothstep(_VisionDashRatio - dashSoftness, _VisionDashRatio + dashSoftness, dashPhase));
+
+                float halfLine = _VisionLineWidth * 0.5;
+                float lineMask = (1.0 - smoothstep(halfLine - _pixelSize, halfLine + _pixelSize, _edgeDistance)) * dashMask;
+                float outlineMask = (1.0 - smoothstep(halfLine + _pixelSize, halfLine + 2.0 * _pixelSize, _edgeDistance)) * dashMask;
+
+                float4 color = _below;
+                if (_isInside > 0.5)
+                    color = Over(color, visionColor, fillOpacity);
+
+                color = Over(color, float3(0.0, 0.0, 0.0), outlineMask * _VisionOutlineOpacity);
+                return Over(color, visionColor, lineMask);
+            }
+
             float4 frag (v2f i) : SV_Target
             {
                 float innerRadius = _RangeGrid.z;
@@ -146,21 +195,28 @@ Shader "Custom/RangeOverlay"
                 float4 layers = GetLayers(axial);
 
                 float4 edgeDistances = float4(1e4, 1e4, 1e4, 1e4);
+                float visionAlong = 0.0;
                 [unroll]
                 for (int k = 0; k < 6; k++)
                 {
                     float4 isBoundary = abs(GetLayers(axial + s_neighborOffsets[k]) - layers);
                     float edgeDistance = innerRadius - dot(local, s_edgeNormals[k]);
+
+                    if (isBoundary.a > 0.5 && edgeDistance < edgeDistances.a)
+                        visionAlong = dot(i.grid, s_edgeTangents[k]);
+
                     edgeDistances = lerp(edgeDistances, min(edgeDistances, edgeDistance), isBoundary);
                 }
 
                 float nearestEdge = min(min(edgeDistances.x, edgeDistances.y), edgeDistances.z);
-                if (dot(layers.rgb, float3(1.0, 1.0, 1.0)) < 0.5 && nearestEdge > _LineWidth * 0.5 + pixelSize)
+                bool isNearLine = nearestEdge <= _LineWidth * 0.5 + pixelSize || edgeDistances.a <= _VisionLineWidth * 0.5 + 2.0 * pixelSize;
+                if (dot(layers, float4(1.0, 1.0, 1.0, 1.0)) < 0.5 && !isNearLine)
                     discard;
 
                 float pulse = 1.0 - _PulseAmount * (0.5 + 0.5 * sin(_Time.y * _PulseSpeed));
                 float4 color = float4(_RangeColor.rgb, 0.0);
                 color = DrawLayer(color, layers.r, edgeDistances.r, _RangeColor.rgb, _FillOpacity, pulse, pixelSize);
+                color = DrawVision(color, layers.a, edgeDistances.a, visionAlong, pixelSize);
                 color = DrawLayer(color, layers.g, edgeDistances.g, _AoEColor.rgb, _AoEFillOpacity, pulse, pixelSize);
                 color = DrawLayer(color, layers.b, edgeDistances.b, _TargetColor.rgb, _TargetFillOpacity, pulse, pixelSize);
                 return color;

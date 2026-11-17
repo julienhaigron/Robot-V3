@@ -1283,6 +1283,14 @@ public class GridManager : Singleton<GridManager>
 
 	#region FOW
 
+	public List<Tile> GetVisionTilesOf ( Entity _entity, Tile _from )
+	{
+		NeuronalMembraneEquipmentData.VisionTypes visionType = _entity.Data.NeuronalMembraneData.visionType;
+		int range = GameConfig.current.game.rangePerVisionType[visionType];
+
+		return GetTilesInVisionRange(_from, 0, range, visionType != NeuronalMembraneEquipmentData.VisionTypes.Optic, true, true);
+	}
+
 	public void OnNewEntity ( Entity _entity )
 	{
 		Tile from = _entity.Displacement.Coordinates.GetTile();
@@ -1290,10 +1298,7 @@ public class GridManager : Singleton<GridManager>
 			_entity.SetVisibility(from.IsVisible, from.IsVisible ? from.GetBestCurrentVisionType() : NeuronalMembraneEquipmentData.VisionTypes.Radar);
 
 		PlayerVisionRangeInfo visionInfo = m_entitiesVisions[_entity.OwnerID];
-		int range = GameConfig.current.game.rangePerVisionType[_entity.Data.NeuronalMembraneData.visionType];
-
-		bool ignoreObstacles = _entity.Data.NeuronalMembraneData.visionType != NeuronalMembraneEquipmentData.VisionTypes.Optic;
-		HashSet<Tile> tilesInVision = GetTilesInVisionRange(from, 0, range, ignoreObstacles, true, true).ToHashSet();
+		HashSet<Tile> tilesInVision = GetVisionTilesOf(_entity, from).ToHashSet();
 		visionInfo.entitiesVisionRange.Add(_entity, tilesInVision);
 
 		if (_entity.IsAlliedTo(GameManager.Instance.PlayerID))
@@ -1338,11 +1343,7 @@ public class GridManager : Singleton<GridManager>
 
 		PlayerVisionRangeInfo visionInfo = m_entitiesVisions[_entity.OwnerID];
 		HashSet<Tile> previousVision = visionInfo.entitiesVisionRange[_entity];
-		int range = GameConfig.current.game.rangePerVisionType[_entity.Data.NeuronalMembraneData.visionType];
-
-		bool ignoreObstacles = _entity.Data.NeuronalMembraneData.visionType != NeuronalMembraneEquipmentData.VisionTypes.Optic;
-		HashSet<Tile> newVision = GetTilesInVisionRange(_entity.Displacement.Coordinates.GetTile(), 0, range
-			, ignoreObstacles, true, true).ToHashSet();
+		HashSet<Tile> newVision = GetVisionTilesOf(_entity, _entity.Displacement.Coordinates.GetTile()).ToHashSet();
 		HashSet<Tile> addedTiles = new(newVision);
 		addedTiles.ExceptWith(previousVision);
 		HashSet<Tile> removedTiles = new(previousVision);
@@ -1389,11 +1390,8 @@ public class GridManager : Singleton<GridManager>
 			for (int i = 0; i < entities.Count; i++)
 			{
 				Entity entity = entities[i];
-				int range = GameConfig.current.game.rangePerVisionType[entity.Data.NeuronalMembraneData.visionType];
-
-				bool ignoreObstacles = entity.Data.NeuronalMembraneData.visionType != NeuronalMembraneEquipmentData.VisionTypes.Optic;
 				HashSet<Tile> previousVision = ownerVision.entitiesVisionRange[entity];
-				HashSet<Tile> newVision = GetTilesInVisionRange(entity.Displacement.Coordinates.GetTile(), 0, range, ignoreObstacles, true, true).ToHashSet();
+				HashSet<Tile> newVision = GetVisionTilesOf(entity, entity.Displacement.Coordinates.GetTile()).ToHashSet();
 
 				if (entity.IsAlliedTo(GameManager.Instance.PlayerID))
 				{

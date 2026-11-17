@@ -81,6 +81,7 @@ public class PlayerController : Singleton<PlayerController>
 		TurnManager.onActionAdded += OnActionAddedOrRemoved;
 		TurnManager.onActionRemoved += OnActionAddedOrRemoved;
 		onEntitySelected += OnEntitySelected;
+		EntityActionDisplay.onSelect += OnActionDisplaySelected;
 
 		InitInputActions();
 	}
@@ -144,6 +145,7 @@ public class PlayerController : Singleton<PlayerController>
 		TurnManager.onActionAdded -= OnActionAddedOrRemoved;
 		TurnManager.onActionRemoved -= OnActionAddedOrRemoved;
 		onEntitySelected -= OnEntitySelected;
+		EntityActionDisplay.onSelect -= OnActionDisplaySelected;
 
 		m_inputActions.FindActionMap("Player")?.Disable();
 
@@ -540,6 +542,9 @@ public class PlayerController : Singleton<PlayerController>
 	{
 		RefreshHoveredEntity(_tile);
 
+		if (EntityActionDisplay.SelectedDisplay == null && (_tile == null || !_tile.CanInteract))
+			RangeOverlay.ClearVisionPreview();
+
 		AEntityAction editedAction = m_turnManager.GetSelectedDisplayAction();
 		bool isEditingTargets = editedAction != null && editedAction == m_turnManager.CurrentActionSelected;
 
@@ -602,6 +607,11 @@ public class PlayerController : Singleton<PlayerController>
 			}
 
 			m_turnManager.RefreshActionDisplay(m_selectedEntity.ID, false, specificTokenCount);
+
+			if (isTargetValid && IsMovementPreview(currentSelectedAction))
+				ShowVisionPreview(m_selectedEntity, _tile);
+			else
+				RangeOverlay.ClearVisionPreview();
 		}
 
 	}
@@ -754,6 +764,8 @@ public class PlayerController : Singleton<PlayerController>
 
 	private void OnActionSelected ( AEntityAction _action )
 	{
+		RangeOverlay.ClearVisionPreview();
+
 		if (_action == null || GridManager.Instance == null)
 		{
 			RangeOverlay.ClearRange();
@@ -770,6 +782,38 @@ public class PlayerController : Singleton<PlayerController>
 	private void OnActionAddedOrRemoved ( TurnManager.RecordedAction _recordedAction )
 	{
 		RangeOverlay.ClearRange();
+		RangeOverlay.ClearVisionPreview();
+	}
+
+	private void OnActionDisplaySelected ( EntityActionDisplay _display, bool _isModAction )
+	{
+		AEntityAction action = _display == null || _isModAction ? null : _display.RecordedAction.action;
+		if (action == null || !IsMovementPreview(action) || action.positionAtActionEndID < 0)
+		{
+			RangeOverlay.ClearVisionPreview();
+			return;
+		}
+
+		ShowVisionPreview(action.PerformingEntity, GridManager.Instance.Tiles[action.positionAtActionEndID]);
+	}
+
+	private static bool IsMovementPreview ( AEntityAction _action )
+	{
+		EntityActionData.ActionCodeType codeType = _action.Data.codeType;
+		return codeType == EntityActionData.ActionCodeType.TargetTileMove
+			|| codeType == EntityActionData.ActionCodeType.MoveThenAttack
+			|| codeType == EntityActionData.ActionCodeType.JumpMove;
+	}
+
+	private void ShowVisionPreview ( Entity _entity, Tile _from )
+	{
+		if (_entity == null || _from == null || GridManager.Instance == null || _entity.Data.NeuronalMembraneData == null)
+		{
+			RangeOverlay.ClearVisionPreview();
+			return;
+		}
+
+		RangeOverlay.SetVisionPreview(GridManager.Instance.GetVisionTilesOf(_entity, _from), _entity.Data.NeuronalMembraneData.visionType);
 	}
 
 	private void OnEntitySelected ( int? _entityID )

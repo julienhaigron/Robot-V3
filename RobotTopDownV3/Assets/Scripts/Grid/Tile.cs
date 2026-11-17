@@ -111,6 +111,8 @@ public class Tile : MonoBehaviour
 		TurnManager.onEndPlayPhase += OnPlayPhaseEnd;
 		PlayerController.onEntitySelected += OnEntitySelected;
 
+		m_ui.ClearPositionText();
+
 		if (m_plannedContentsPerTick == null || m_plannedContentsPerTick.Length == 0)
 		{
 			m_plannedContentsPerTick = new TileContent[GameConfig.current.game.actionTokenPerRound + 1];
