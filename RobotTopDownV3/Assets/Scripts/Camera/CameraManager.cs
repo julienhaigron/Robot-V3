@@ -195,8 +195,6 @@ public class CameraManager : Singleton<CameraManager>
         PlaceCameraAt(m_hubCameraTfm);
     }
 
-    public Quaternion HubCameraRotation => m_hubCameraTfm != null ? m_hubCameraTfm.rotation : m_camera.transform.rotation;
-
     public bool TryGetHubCameraPose ( out Vector3 _position, out Quaternion _rotation )
     {
         _position = m_hubCameraTfm != null ? m_hubCameraTfm.position : Vector3.zero;
@@ -204,11 +202,13 @@ public class CameraManager : Singleton<CameraManager>
         return m_hubCameraTfm != null;
     }
 
-    public float GetDistanceToFit ( float _radius )
+    public float DefaultFieldOfView => m_defaultFieldOfView;
+
+    public float GetFieldOfViewToFit ( float _radius, float _distance )
     {
-        float verticalHalfFov = m_defaultFieldOfView * .5f * Mathf.Deg2Rad;
-        float horizontalHalfFov = Mathf.Atan(Mathf.Tan(verticalHalfFov) * m_camera.aspect);
-        return _radius / Mathf.Sin(Mathf.Min(verticalHalfFov, horizontalHalfFov));
+        float halfAngle = Mathf.Asin(Mathf.Clamp(_radius / Mathf.Max(_distance, 1e-4f), 0f, .99f));
+        float verticalHalfAngle = m_camera.aspect >= 1f ? halfAngle : Mathf.Atan(Mathf.Tan(halfAngle) / m_camera.aspect);
+        return Mathf.Clamp(2f * verticalHalfAngle * Mathf.Rad2Deg, 1f, 170f);
     }
 
     public void PlaceCameraAt ( Transform _cameraPoint )
@@ -222,40 +222,55 @@ public class CameraManager : Singleton<CameraManager>
         TeleportCameraTo(parentPosition, parentRotation);
     }
 
-    public void MoveCameraTo ( Vector3 _cameraPosition, Quaternion _cameraRotation, float _duration )
+    public void PlaceCameraAt ( Vector3 _cameraPosition, Quaternion _cameraRotation, float _fieldOfView )
     {
-        MoveCameraAlong(new[] { m_camera.transform.position, _cameraPosition }, _cameraRotation, _duration);
+        PlaceCameraAt(_cameraPosition, _cameraRotation);
+        m_camera.fieldOfView = _fieldOfView;
     }
 
-    public void MoveCameraAlong ( IReadOnlyList<Vector3> _path, Quaternion _cameraRotation, float _duration )
+    public void MoveCameraAlong ( IReadOnlyList<Vector3> _path, Quaternion _cameraRotation, float _fieldOfView, float _duration )
     {
         if (_path == null || _path.Count == 0)
             return;
 
-        if (_duration <= 0f || _path.Count < 2)
+        if (_duration <= 0f)
         {
-            PlaceCameraAt(_path[_path.Count - 1], _cameraRotation);
+            PlaceCameraAt(_path[_path.Count - 1], _cameraRotation, _fieldOfView);
             return;
         }
 
+        float startFieldOfView = m_camera.usePhysicalProperties ? m_defaultFieldOfView : m_camera.fieldOfView;
         KillCameraMove();
         ResetLens();
+        m_camera.fieldOfView = startFieldOfView;
 
-        Vector3[] points = new Vector3[_path.Count];
-        float[] distances = new float[_path.Count];
-        for (int i = 0; i < _path.Count; i++)
+        int pointCount = Mathf.Max(_path.Count, 2);
+        Vector3[] points = new Vector3[pointCount];
+        float[] distances = new float[pointCount];
+        for (int i = 0; i < pointCount; i++)
         {
-            points[i] = _path[i];
+            points[i] = _path[Mathf.Min(i, _path.Count - 1)];
             distances[i] = i == 0 ? 0f : distances[i - 1] + Vector3.Distance(points[i - 1], points[i]);
         }
 
         Quaternion startRotation = m_camera.transform.rotation;
+        float travelFieldOfView = Mathf.Max(m_defaultFieldOfView, Mathf.Max(startFieldOfView, _fieldOfView));
         m_cameraMoveTween = DOVirtual.Float(0f, 1f, _duration, progress =>
         {
             GetParentPoseFor(SamplePolyline(points, distances, progress), Quaternion.Slerp(startRotation, _cameraRotation, progress)
                 , out Vector3 parentPosition, out Quaternion parentRotation);
             m_cameraParent.transform.SetPositionAndRotation(parentPosition, parentRotation);
+            m_camera.fieldOfView = progress < .5f
+                ? InterpolateFieldOfView(startFieldOfView, travelFieldOfView, Mathf.SmoothStep(0f, 1f, progress * 2f))
+                : InterpolateFieldOfView(travelFieldOfView, _fieldOfView, Mathf.SmoothStep(0f, 1f, progress * 2f - 1f));
         }).SetEase(Ease.InOutCubic);
+    }
+
+    private static float InterpolateFieldOfView ( float _from, float _to, float _progress )
+    {
+        float fromZoom = Mathf.Log(Mathf.Tan(_from * .5f * Mathf.Deg2Rad));
+        float toZoom = Mathf.Log(Mathf.Tan(_to * .5f * Mathf.Deg2Rad));
+        return 2f * Mathf.Atan(Mathf.Exp(Mathf.Lerp(fromZoom, toZoom, _progress))) * Mathf.Rad2Deg;
     }
 
     private static Vector3 SamplePolyline ( Vector3[] _points, float[] _distances, float _progress )

@@ -25,6 +25,7 @@ public class HubManager : Singleton<HubManager>
 	{
 		public Building building;
 		public string meshNamePrefix;
+		public float axisOffset;
 		public Transform cameraPoint;
 	}
 
@@ -35,17 +36,14 @@ public class HubManager : Singleton<HubManager>
 	[Title("Buildings camera")]
 	[SerializeField] private BuildingView[] m_buildingViews = GetDefaultBuildingViews();
 	[SerializeField] private float m_buildingFramingMargin = 1.15f;
-	[SerializeField] private float m_cameraMoveDuration = .7f;
-	[SerializeField] private float m_cameraMaxMoveDuration = 1.8f;
-	[SerializeField] private float m_cameraSpeed = 3f;
+	[SerializeField] private float m_cameraMoveDuration = 1.75f;
+	[SerializeField] private float m_cameraMaxMoveDuration = 4.5f;
+	[SerializeField] private float m_cameraSpeed = 1.2f;
 
-	[Title("Camera path")]
+	[Title("Station axis")]
 	[SerializeField] private string m_moonMeshName = "Moon";
 	[SerializeField] private string m_entranceMeshNamePrefix = "Entry-Ring";
 	[SerializeField] private float m_entranceOuterOffset = .45f;
-	[SerializeField] private float m_entranceInnerOffset = .3f;
-	[SerializeField] private float m_moonAvoidanceFactor = 1.6f;
-	[SerializeField] private float m_interiorAxisSpan = .6f;
 
 	[Title("Hangar")]
 	[SerializeField] private string m_hangarSceneName = "HangarScene";
@@ -64,13 +62,13 @@ public class HubManager : Singleton<HubManager>
 	{
 		return new BuildingView[]
 		{
-			new() { building = Building.Hangar, meshNamePrefix = "Hangar" },
-			new() { building = Building.Recycler, meshNamePrefix = "Recycle" },
-			new() { building = Building.RepairStation, meshNamePrefix = "Repar-Station" },
-			new() { building = Building.PsyShop, meshNamePrefix = "Psy-QG" },
-			new() { building = Building.CommandoShop, meshNamePrefix = "Commando-QG" },
-			new() { building = Building.PaladinShop, meshNamePrefix = "Paladin-QG" },
-			new() { building = Building.Arena, meshNamePrefix = "Arene" },
+			new() { building = Building.Hangar, meshNamePrefix = "Hangar", axisOffset = .6f },
+			new() { building = Building.Recycler, meshNamePrefix = "Recycle", axisOffset = .45f },
+			new() { building = Building.RepairStation, meshNamePrefix = "Repar-Station", axisOffset = 2.55f },
+			new() { building = Building.PsyShop, meshNamePrefix = "Psy-QG", axisOffset = .42f },
+			new() { building = Building.CommandoShop, meshNamePrefix = "Commando-QG", axisOffset = .5f },
+			new() { building = Building.PaladinShop, meshNamePrefix = "Paladin-QG", axisOffset = .46f },
+			new() { building = Building.Arena, meshNamePrefix = "Arene", axisOffset = 2.67f },
 		};
 	}
 
@@ -136,13 +134,14 @@ public class HubManager : Singleton<HubManager>
 
 	private void PlaceCameraOn ( Building _building, float _minDuration )
 	{
-		if ((_building == Building.Overview || !TryGetBuildingCameraPose(_building, out Vector3 position, out Quaternion rotation))
+		float fieldOfView = CameraManager.Instance.DefaultFieldOfView;
+		if ((_building == Building.Overview || !TryGetBuildingCameraPose(_building, out Vector3 position, out Quaternion rotation, out fieldOfView))
 			&& !CameraManager.Instance.TryGetHubCameraPose(out position, out rotation))
 			return;
 
 		if (_minDuration <= 0f)
 		{
-			CameraManager.Instance.PlaceCameraAt(position, rotation);
+			CameraManager.Instance.PlaceCameraAt(position, rotation, fieldOfView);
 			return;
 		}
 
@@ -152,88 +151,82 @@ public class HubManager : Singleton<HubManager>
 			length += Vector3.Distance(path[i - 1], path[i]);
 
 		float duration = m_cameraSpeed > 0f ? Mathf.Clamp(length / m_cameraSpeed, _minDuration, Mathf.Max(_minDuration, m_cameraMaxMoveDuration)) : _minDuration;
-		CameraManager.Instance.MoveCameraAlong(path, rotation, duration);
+		CameraManager.Instance.MoveCameraAlong(path, rotation, fieldOfView, duration);
 	}
 
 	private List<Vector3> BuildCameraPath ( Vector3 _start, Vector3 _end )
 	{
 		List<Vector3> waypoints = new() { _start };
-		if (TryGetMeshBounds(m_moonMeshName, out Bounds moonBounds) && TryGetMeshBounds(m_entranceMeshNamePrefix, out Bounds entranceBounds))
+		if (TryGetStationAxis(out StationAxis station) && !station.IsClearOutside(_start, _end))
 		{
-			MoonShape moon = new(moonBounds, entranceBounds, m_entranceOuterOffset, m_entranceInnerOffset);
-			bool isStartInside = moon.IsInside(_start), isEndInside = moon.IsInside(_end);
-
-			if (isStartInside && isEndInside)
-				AddInteriorWaypoints(waypoints, moon, _start, _end);
-			else if (!isStartInside && !isEndInside)
-				AddAvoidanceWaypoints(waypoints, moon, _start, _end, 0);
-			else if (isStartInside)
-			{
-				AddInteriorWaypoints(waypoints, moon, _start, moon.innerEntrance);
-				AddWaypoint(waypoints, moon.innerEntrance);
-				AddWaypoint(waypoints, moon.outerEntrance);
-				AddAvoidanceWaypoints(waypoints, moon, moon.outerEntrance, _end, 0);
-			}
-			else
-			{
-				AddAvoidanceWaypoints(waypoints, moon, _start, moon.outerEntrance, 0);
-				AddWaypoint(waypoints, moon.outerEntrance);
-				AddWaypoint(waypoints, moon.innerEntrance);
-				AddInteriorWaypoints(waypoints, moon, moon.innerEntrance, _end);
-			}
+			AddWaypoint(waypoints, station.GetAnchor(_start));
+			AddWaypoint(waypoints, station.GetAnchor(_end));
 		}
 
 		AddWaypoint(waypoints, _end);
 		return SampleCatmullRom(waypoints, 12);
 	}
 
-	private readonly struct MoonShape
+	private bool TryGetStationAxis ( out StationAxis _station )
 	{
+		_station = default;
+		if (!TryGetMeshBounds(m_moonMeshName, out Bounds moonBounds) || !TryGetMeshBounds(m_entranceMeshNamePrefix, out Bounds entranceBounds))
+			return false;
+
+		_station = new StationAxis(moonBounds, entranceBounds, m_entranceOuterOffset);
+		return true;
+	}
+
+	private readonly struct StationAxis
+	{
+		private const float k_onAxisTolerance = .02f;
+		private const float k_moonClearance = 1.08f;
+
 		public readonly Vector3 center;
 		public readonly float radius;
 		public readonly Vector3 axis;
-		public readonly Vector3 outerEntrance;
-		public readonly Vector3 innerEntrance;
+		private readonly float m_entranceAxial;
+		private readonly float m_entranceAnchor;
+		private readonly float m_tubeRadius;
 
-		public MoonShape ( Bounds _moon, Bounds _entrance, float _outerOffset, float _innerOffset )
+		public StationAxis ( Bounds _moon, Bounds _entrance, float _outerOffset )
 		{
 			center = _moon.center;
 			radius = Mathf.Max(_moon.extents.x, Mathf.Max(_moon.extents.y, _moon.extents.z));
 			Vector3 toEntrance = _entrance.center - center;
 			axis = toEntrance.sqrMagnitude > 1e-8f ? toEntrance.normalized : Vector3.forward;
-			outerEntrance = _entrance.center + axis * _outerOffset;
-			innerEntrance = _entrance.center - axis * _innerOffset;
+			m_entranceAxial = Vector3.Dot(toEntrance, axis);
+			m_entranceAnchor = m_entranceAxial + _outerOffset;
+
+			Vector3 extents = _entrance.extents;
+			float extentAlongAxis = extents.x * Mathf.Abs(axis.x) + extents.y * Mathf.Abs(axis.y) + extents.z * Mathf.Abs(axis.z);
+			m_tubeRadius = (extents.x + extents.y + extents.z - extentAlongAxis) * .5f;
 		}
 
 		public bool IsInside ( Vector3 _point ) => (_point - center).sqrMagnitude < radius * radius;
+		public bool IsInTube ( Vector3 _point ) => Mathf.Abs(Axial(_point)) <= m_entranceAxial && (_point - OnAxis(_point)).magnitude <= m_tubeRadius;
 		public float Axial ( Vector3 _point ) => Vector3.Dot(_point - center, axis);
-		public Vector3 OnAxis ( Vector3 _point ) => center + axis * Axial(_point);
-	}
+		public Vector3 At ( float _axial ) => center + axis * _axial;
+		public Vector3 OnAxis ( Vector3 _point ) => At(Axial(_point));
 
-	private void AddInteriorWaypoints ( List<Vector3> _waypoints, MoonShape _moon, Vector3 _from, Vector3 _to )
-	{
-		if (Mathf.Abs(_moon.Axial(_from) - _moon.Axial(_to)) <= m_interiorAxisSpan)
-			return;
+		public Vector3 GetAnchor ( Vector3 _point )
+		{
+			Vector3 onAxis = OnAxis(_point);
+			if (IsInside(_point) || (_point - onAxis).magnitude < radius * k_onAxisTolerance)
+				return onAxis;
 
-		AddWaypoint(_waypoints, _moon.OnAxis(_from));
-		AddWaypoint(_waypoints, _moon.OnAxis(_to));
-	}
+			return At(Axial(_point) >= 0f ? m_entranceAnchor : -m_entranceAnchor);
+		}
 
-	private void AddAvoidanceWaypoints ( List<Vector3> _waypoints, MoonShape _moon, Vector3 _from, Vector3 _to, int _depth )
-	{
-		Vector3 segment = _to - _from;
-		float progress = segment.sqrMagnitude > 1e-8f ? Mathf.Clamp01(Vector3.Dot(_moon.center - _from, segment) / segment.sqrMagnitude) : 0f;
-		Vector3 offset = _from + segment * progress - _moon.center;
-		if (offset.magnitude >= _moon.radius * 1.08f || _depth > 2)
-			return;
+		public bool IsClearOutside ( Vector3 _from, Vector3 _to )
+		{
+			if (IsInside(_from) || IsInside(_to))
+				return false;
 
-		if (offset.sqrMagnitude < 1e-8f)
-			offset = Mathf.Abs(segment.normalized.y) < .9f ? new Vector3(segment.z, 0f, -segment.x) : Vector3.right;
-
-		Vector3 around = _moon.center + offset.normalized * (_moon.radius * m_moonAvoidanceFactor);
-		AddAvoidanceWaypoints(_waypoints, _moon, _from, around, _depth + 1);
-		AddWaypoint(_waypoints, around);
-		AddAvoidanceWaypoints(_waypoints, _moon, around, _to, _depth + 1);
+			Vector3 segment = _to - _from;
+			float progress = segment.sqrMagnitude > 1e-8f ? Mathf.Clamp01(Vector3.Dot(center - _from, segment) / segment.sqrMagnitude) : 0f;
+			return (_from + segment * progress - center).magnitude >= radius * k_moonClearance;
+		}
 	}
 
 	private static void AddWaypoint ( List<Vector3> _waypoints, Vector3 _point )
@@ -278,10 +271,11 @@ public class HubManager : Singleton<HubManager>
 		return _a * ((_tb - _t) / (_tb - _ta)) + _b * ((_t - _ta) / (_tb - _ta));
 	}
 
-	private bool TryGetBuildingCameraPose ( Building _building, out Vector3 _position, out Quaternion _rotation )
+	private bool TryGetBuildingCameraPose ( Building _building, out Vector3 _position, out Quaternion _rotation, out float _fieldOfView )
 	{
 		_position = default;
 		_rotation = default;
+		_fieldOfView = CameraManager.Instance.DefaultFieldOfView;
 
 		BuildingView view = m_buildingViews?.FirstOrDefault(buildingView => buildingView != null && buildingView.building == _building);
 		if (view == null)
@@ -294,12 +288,20 @@ public class HubManager : Singleton<HubManager>
 			return true;
 		}
 
-		if (!TryGetMeshBounds(view.meshNamePrefix, out Bounds bounds))
+		if (!TryGetMeshBounds(view.meshNamePrefix, out Bounds bounds) || !TryGetStationAxis(out StationAxis station))
 			return false;
 
-		_rotation = CameraManager.Instance.HubCameraRotation;
-		float distance = CameraManager.Instance.GetDistanceToFit(bounds.extents.magnitude) * m_buildingFramingMargin;
-		_position = bounds.center - _rotation * Vector3.forward * distance;
+		_position = station.At(station.Axial(bounds.center) + view.axisOffset);
+		Vector3 toBuilding = bounds.center - _position;
+		if (toBuilding.sqrMagnitude < 1e-8f)
+			return false;
+
+		Vector3 up = station.IsInTube(bounds.center) ? station.OnAxis(bounds.center) - bounds.center : Vector3.up;
+		if (Vector3.Cross(toBuilding, up).sqrMagnitude < 1e-8f)
+			up = station.axis;
+
+		_rotation = Quaternion.LookRotation(toBuilding, up);
+		_fieldOfView = CameraManager.Instance.GetFieldOfViewToFit(bounds.extents.magnitude * m_buildingFramingMargin, toBuilding.magnitude);
 		return true;
 	}
 

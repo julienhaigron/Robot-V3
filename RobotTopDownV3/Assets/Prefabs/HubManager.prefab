@@ -32,7 +32,6 @@ Transform:
   m_Children:
   - {fileID: 34891796759996725}
   - {fileID: 3760803590592018951}
-  - {fileID: 7300000000000000002}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &8429498299415530980
@@ -52,25 +51,36 @@ MonoBehaviour:
   m_buildingViews:
   - building: 1
     meshNamePrefix: Hangar
+    axisOffset: 0.6
     cameraPoint: {fileID: 0}
   - building: 2
     meshNamePrefix: Recycle
-    cameraPoint: {fileID: 7300000000000000004}
+    axisOffset: 0.45
+    cameraPoint: {fileID: 0}
   - building: 3
     meshNamePrefix: Repar-Station
-    cameraPoint: {fileID: 7300000000000000006}
+    axisOffset: 2.55
+    cameraPoint: {fileID: 0}
   - building: 4
     meshNamePrefix: Psy-QG
-    cameraPoint: {fileID: 7300000000000000008}
+    axisOffset: 0.42
+    cameraPoint: {fileID: 0}
   - building: 5
     meshNamePrefix: Commando-QG
-    cameraPoint: {fileID: 7300000000000000010}
+    axisOffset: 0.5
+    cameraPoint: {fileID: 0}
   - building: 6
     meshNamePrefix: Paladin-QG
-    cameraPoint: {fileID: 7300000000000000012}
+    axisOffset: 0.46
+    cameraPoint: {fileID: 0}
   - building: 7
     meshNamePrefix: Arene
-    cameraPoint: {fileID: 7300000000000000014}
+    axisOffset: 2.67
+    cameraPoint: {fileID: 0}
+  m_buildingFramingMargin: 1.15
+  m_cameraMoveDuration: 1.75
+  m_cameraMaxMoveDuration: 4.5
+  m_cameraSpeed: 1.2
   m_unitSpacing: 2
 --- !u!1 &3605053867823303492
 GameObject:
@@ -132,228 +142,5 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 3786735140990918336}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &7300000000000000001
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 7300000000000000002}
-  m_Layer: 0
-  m_Name: BuildingCameraPoints
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!1 &7300000000000000003
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 7300000000000000004}
-  m_Layer: 0
-  m_Name: Camera_Recycler
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &7300000000000000004
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7300000000000000003}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0.196721, y: -0.752097, z: 0.257888, w: 0.573711}
-  m_LocalPosition: {x: 0.224916, y: -0.048435, z: -0.518249}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 7300000000000000002}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &7300000000000000005
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 7300000000000000006}
-  m_Layer: 0
-  m_Name: Camera_RepairStation
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &7300000000000000006
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7300000000000000005}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0.032551, y: 0.96302, z: -0.136179, w: -0.230193}
-  m_LocalPosition: {x: 0.169274, y: 1.019524, z: 0.545495}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 7300000000000000002}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &7300000000000000007
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 7300000000000000008}
-  m_Layer: 0
-  m_Name: Camera_PsyShop
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &7300000000000000008
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7300000000000000007}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0.028189, y: 0.924487, z: 0.069731, w: -0.373721}
-  m_LocalPosition: {x: 0.176646, y: 0.307611, z: 0.727993}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 7300000000000000002}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &7300000000000000009
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 7300000000000000010}
-  m_Layer: 0
-  m_Name: Camera_CommandoShop
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &7300000000000000010
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7300000000000000009}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0.005361, y: 0.982983, z: 0.029068, w: 0.181304}
-  m_LocalPosition: {x: 0.264981, y: -0.107817, z: 0.466047}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 7300000000000000002}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &7300000000000000011
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 7300000000000000012}
-  m_Layer: 0
-  m_Name: Camera_PaladinShop
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &7300000000000000012
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7300000000000000011}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0.026825, y: 0.938803, z: -0.075156, w: -0.335084}
-  m_LocalPosition: {x: 0.011841, y: -0.234309, z: 0.573071}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 7300000000000000002}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &7300000000000000013
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 7300000000000000014}
-  m_Layer: 0
-  m_Name: Camera_Arena
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &7300000000000000014
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7300000000000000013}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0.126788, y: 0.873175, z: -0.328471, w: -0.337042}
-  m_LocalPosition: {x: 0.390608, y: 0.533006, z: -2.370708}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 7300000000000000002}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!4 &7300000000000000002
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7300000000000000001}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 7300000000000000004}
-  - {fileID: 7300000000000000006}
-  - {fileID: 7300000000000000008}
-  - {fileID: 7300000000000000010}
-  - {fileID: 7300000000000000012}
-  - {fileID: 7300000000000000014}
   m_Father: {fileID: 3786735140990918336}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
