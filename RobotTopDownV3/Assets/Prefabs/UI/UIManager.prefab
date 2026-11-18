@@ -2838,13 +2838,13 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4932363271880485281, guid: 24f4658ecc629c365c4d89612161a998, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7691207152931865111, guid: 24f4658ecc629c365c4d89612161a998, type: 3}
       propertyPath: m_Name
       value: MatchBriefingOverlay
-      objectReference: {fileID: 0}
-    - target: {fileID: 7691207152931865111, guid: 24f4658ecc629c365c4d89612161a998, type: 3}
-      propertyPath: m_IsActive
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8986115189907685181, guid: 24f4658ecc629c365c4d89612161a998, type: 3}
       propertyPath: m_BlockingMask.m_Bits
@@ -6212,10 +6212,6 @@ PrefabInstance:
     - target: {fileID: 8738860751506655258, guid: 1960e43550b44a120584e663afa56c52, type: 3}
       propertyPath: m_Name
       value: PanelTransitionOverlay
-      objectReference: {fileID: 0}
-    - target: {fileID: 8738860751506655258, guid: 1960e43550b44a120584e663afa56c52, type: 3}
-      propertyPath: m_IsActive
-      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
