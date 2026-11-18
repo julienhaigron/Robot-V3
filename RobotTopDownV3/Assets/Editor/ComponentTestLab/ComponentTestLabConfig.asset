@@ -1,0 +1,47 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e0b14119dbb5f974beb1fb9c84937f5b, type: 3}
+  m_Name: ComponentTestLabConfig
+  m_EditorClassIdentifier: MTDEditor::ComponentTestLabConfig
+  scene: {fileID: 102900000, guid: 3f31951f91005d5ca0f9a48825f6d252, type: 3}
+  map: {fileID: 11400000, guid: 8c9dd45a8d4d62df0cee9441eee5b3e8, type: 2}
+  baseFrame: {fileID: 0}
+  baseReactor: {fileID: 0}
+  baseBrain: {fileID: 0}
+  baseMembrane: {fileID: 0}
+  defaultWeapon: {fileID: 0}
+  dummyPreset: {fileID: 0}
+  respawnDelay: 3
+  revealMapOnStart: 0
+  benchDistance: 3
+  benchUnit:
+    frame: {fileID: 0}
+    reactor: {fileID: 0}
+    brain: {fileID: 0}
+    membrane: {fileID: 0}
+    arms: []
+    auxiliary: []
+    chipsets: []
+  benchDummy:
+    frame: {fileID: 0}
+    reactor: {fileID: 0}
+    brain: {fileID: 0}
+    membrane: {fileID: 0}
+    arms: []
+    auxiliary: []
+    chipsets: []
+  performedActions:
+  - Weap_Psy_Glaive/Throw
+  - Weap_Psy_Glaive/Chain_Throw
+  - Weap_Psy_Railgun/Attractive_Shot
+  - Weap_Psy_Railgun/Repulsive_Shot
+  - Weap_Psy_Sniper/Sniper_Shot

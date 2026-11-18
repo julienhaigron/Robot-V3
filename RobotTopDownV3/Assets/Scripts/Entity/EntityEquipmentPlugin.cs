@@ -463,7 +463,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 				: m_linkedEntity.Data.BrainData.agility + m_linkedEntity.GetAdditionaryStatBonus(EntityEquipmentData.SecondaryStat.StatType.MeleeAccuracy, _attackAction);
 		float flankBonus = GameConfig.current.game.entityFlankRatio[GridManager.Instance.GetHitTileSide(m_linkedEntity, _targetEntity, doesWinPFC, curveTile)]
 			+ m_linkedEntity.GetAdditionaryStatBonus(EntityEquipmentData.SecondaryStat.StatType.FlankBonus, _attackAction);
-		float modAction = m_linkedEntity.LastActionPerformedData.previousActionAttackModificator;
+		float modAction = m_linkedEntity.PreviousActionAttackModificator;
 
 		float userHitScore =
 			//userPerception
@@ -532,7 +532,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 		float userAim = _attackAction.Data.type == EntityActionData.ActionType.DistanceAttack
 				? m_linkedEntity.Data.BrainData.distanceAccuracy + m_linkedEntity.GetAdditionaryStatBonus(EntityEquipmentData.SecondaryStat.StatType.DistanceAccuracy, _attackAction)
 				: m_linkedEntity.Data.BrainData.agility + m_linkedEntity.GetAdditionaryStatBonus(EntityEquipmentData.SecondaryStat.StatType.MeleeAccuracy, _attackAction);
-		float modAction = m_linkedEntity.LastActionPerformedData.previousActionAttackModificator;
+		float modAction = m_linkedEntity.PreviousActionAttackModificator;
 		float demolisherBonus = m_linkedEntity.MatchRole == Entity.MatchRoleType.Demolisher ? GameConfig.current.game.demolisherSabotageHitBonus : 0f;
 		float finalScore = userAim + modAction + demolisherBonus;
 

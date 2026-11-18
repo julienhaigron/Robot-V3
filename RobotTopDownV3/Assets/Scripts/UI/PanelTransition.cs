@@ -135,11 +135,11 @@ public class PanelTransition : MonoBehaviour
 			if (!m_hasCapture)
 				return false;
 
-			StartCoroutine(PlayHoloSweep(_switchPanel, IsOpening(_to)));
+			UIManager.Instance.StartCoroutine(PlayHoloSweep(_switchPanel, IsOpening(_to)));
 			return true;
 		}
 
-		StartCoroutine(PlayDiveAndDoors(_from, _to, _switchPanel));
+		UIManager.Instance.StartCoroutine(PlayDiveAndDoors(_from, _to, _switchPanel));
 		return true;
 	}
 
@@ -148,7 +148,7 @@ public class PanelTransition : MonoBehaviour
 		if (m_isPlaying || !m_hasCapture)
 			return false;
 
-		StartCoroutine(PlayHoloSweep(null, true, _onFinished));
+		UIManager.Instance.StartCoroutine(PlayHoloSweep(null, true, _onFinished));
 		return true;
 	}
 

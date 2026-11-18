@@ -83,6 +83,7 @@ public class Entity : MonoBehaviour
 
 	[SerializeField, ReadOnly] private EntityActionData m_lastActionPerformed;
 	public EntityActionData LastActionPerformedData => m_lastActionPerformed == null ? GameConfig.current.game.defaultStartAction : m_lastActionPerformed;
+	public float PreviousActionAttackModificator => LastActionPerformedData != null ? LastActionPerformedData.previousActionAttackModificator : 0f;
 	private AEntityAction m_lastPerformedAction;
 	public AEntityAction LastPerformedAction => m_lastPerformedAction;
 	//[SerializeField, ReadOnly] private bool m_isPerforming = false;

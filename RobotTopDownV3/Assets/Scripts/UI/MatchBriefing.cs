@@ -154,7 +154,7 @@ public class MatchBriefing : MonoBehaviour, ILoadingScreen
 
 	public void Hide ( Action _onHidden )
 	{
-		StartCoroutine(PlayArrival(_onHidden));
+		UIManager.Instance.StartCoroutine(PlayArrival(_onHidden));
 	}
 
 	#endregion

@@ -25,6 +25,9 @@ public class TurnManager : Singleton<TurnManager>
 	
 	public static int currentTick = 0;
 	public bool IsLastTickOfRound => currentTick >= GameConfig.current.game.actionTokenPerRound - 1;
+#if UNITY_EDITOR
+	public static bool isMatchEndDisabled;
+#endif
 
 	private float m_currentTickStartTime;
 	public float CurrentTickElapsedTime => currentPhase == TurnPhase.Playing ? Time.time - m_currentTickStartTime : 0f;
@@ -2048,6 +2051,14 @@ public class TurnManager : Singleton<TurnManager>
 
 	private bool IsGameFinished ( out bool _playerOneWin, out bool _playerTwoWin )
 	{
+#if UNITY_EDITOR
+		if (isMatchEndDisabled)
+		{
+			_playerOneWin = false;
+			_playerTwoWin = false;
+			return false;
+		}
+#endif
 		bool isPlayerOneAlive = false;
 		bool isPlayerTwolive = false;
 		foreach (Entity ally in GameManager.Instance.PlayersEntityAnchor[0].Entities)
