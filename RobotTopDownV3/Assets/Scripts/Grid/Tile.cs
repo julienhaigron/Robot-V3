@@ -454,7 +454,7 @@ public class Tile : MonoBehaviour
 
 		//spawn visual
 		if (statusData.groundPrefab != null && !m_statusVisuals.ContainsKey(_statusID))
-			m_statusVisuals.Add(_statusID, Instantiate(statusData.groundPrefab, m_statusVisualsParent));
+			m_statusVisuals.Add(_statusID, Instantiate(statusData.groundPrefab, m_statusVisualsParent != null ? m_statusVisualsParent : transform));
 	}
 
 	public void RemoveStatus ( EntityStatusEnumID _statusID )

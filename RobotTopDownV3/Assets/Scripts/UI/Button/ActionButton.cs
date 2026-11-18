@@ -17,6 +17,11 @@ public class ActionButton : BaseButton, IPointerExitHandler
 	//[SerializeField] protected BaseButton m_modActionBtn;
 	[SerializeField] protected GameObject m_selectionOutline;
 	[SerializeField] private TutorialHighlightZone m_zone;
+	[SerializeField] private GameObject m_invocationCountRoot;
+	[SerializeField] private TextMeshProUGUI m_invocationCountTMP;
+	[SerializeField] private Color m_invocationCountColor = Color.white;
+	[SerializeField] private Color m_invocationPlannedColor = new(.45f, .82f, 1f, 1f);
+	[SerializeField] private Color m_invocationFullColor = new(1f, .42f, .35f, 1f);
 
 	protected EntityActionEnumID m_actionType;
 	public EntityActionEnumID ActionEnumID => m_actionType;
@@ -64,6 +69,7 @@ public class ActionButton : BaseButton, IPointerExitHandler
 		if (m_selectedBtn == this)
 			m_selectedBtn = null;
 		m_selectionOutline.SetActive(false);
+		SetInvocationCountVisible(false);
 		SetInteractability(true);
 	}
 
@@ -95,8 +101,39 @@ public class ActionButton : BaseButton, IPointerExitHandler
 
 		bool hasEnoughToken = TurnManager.Instance.RemainingActionToken.TryGetValue(entityID, out int remainingToken)
 			&& remainingToken >= action.Data.GetTokenTotalCost(action, PlayerController.Instance.SelectedEntity, null);
+		bool canInvoke = action.Data.CanInvokeMoreItems(PlayerController.Instance.SelectedEntity, m_linkedEquipmentData);
 
-		SetInteractability(hasEnoughToken && Condition.UseConditionPredicate(action, PlayerController.Instance.SelectedEntity, null, action.Data.conditionType));
+		RefreshInvocationCount(action.Data, PlayerController.Instance.SelectedEntity);
+		SetInteractability(hasEnoughToken && canInvoke && Condition.UseConditionPredicate(action, PlayerController.Instance.SelectedEntity, null, action.Data.conditionType));
+	}
+
+	private void RefreshInvocationCount ( EntityActionData _data, Entity _entity )
+	{
+		int max = _data.invocationCountLimit;
+		if (m_invocationCountTMP == null || max <= 0 || !_data.TryGetInvocationTool(_entity, m_linkedEquipmentData, out ToolEquipment tool))
+		{
+			SetInvocationCountVisible(false);
+			return;
+		}
+
+		int placed = 0;
+		int planned = 0;
+		if (_entity.Equipment.ItemsLinkedDataDictionary.TryGetValue(tool.ID, out AItemLinkedData linkedData))
+		{
+			placed = linkedData.PlacedInvocationCount;
+			planned = linkedData.plannedInvocationCount;
+		}
+
+		string plannedText = planned > 0 ? "<color=#" + ColorUtility.ToHtmlStringRGB(m_invocationPlannedColor) + ">+" + planned + "</color>" : string.Empty;
+		m_invocationCountTMP.text = placed + plannedText + "/" + max;
+		m_invocationCountTMP.color = placed + planned >= max ? m_invocationFullColor : m_invocationCountColor;
+		SetInvocationCountVisible(true);
+	}
+
+	private void SetInvocationCountVisible ( bool _isVisible )
+	{
+		if (m_invocationCountRoot != null && m_invocationCountRoot.activeSelf != _isVisible)
+			m_invocationCountRoot.SetActive(_isVisible);
 	}
 
 	protected void RefreshVisual ()

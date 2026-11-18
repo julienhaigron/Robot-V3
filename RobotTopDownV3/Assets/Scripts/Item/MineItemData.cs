@@ -8,6 +8,7 @@ public class MineItemData : AItemData
 {
 	[SerializeField] public int range = 1;
 	[SerializeField] public SerializableDictionary<WeaponEquipmentData.DamageType, int> damages;
+	[SerializeField] public PoolData explosionVFXPool;
 
 	public override AItemLinkedData GetNewLinkedData ()
 	{
@@ -35,6 +36,8 @@ public class MineItemData : AItemData
 
 	public override void OnWalkThrough ( Entity _walkingEntity, AItemLinkedData _linkedData, Item _usedItem, bool _isFromTeleportation )
 	{
+		PlayExplosion(_usedItem.CurrentPosition != null ? _usedItem.CurrentPosition.transform.position : _usedItem.transform.position);
+
 		List<Entity> entities = GridManager.Instance.GetEntitiesInRange(_usedItem.CurrentPosition, range);
 
 		foreach (Entity entity in entities)
@@ -52,10 +55,21 @@ public class MineItemData : AItemData
 
 
 		_usedItem.Kill();
-		//TODO : explosion anim
-		/*TurnManager.InPlayEvent explosionEvent = new();
-		TurnManager.Instance.AddGameEvent(explosionEvent);
-		explosionEvent.EndEvent();*/
+	}
+
+	private void PlayExplosion ( Vector3 _position )
+	{
+		if (explosionVFXPool == null)
+			return;
+
+		try
+		{
+			explosionVFXPool.Get(_position, Quaternion.identity);
+		}
+		catch (Exception ex)
+		{
+			Debug.LogError("Mine explosion VFX " + explosionVFXPool.name + " failed: " + ex.Message);
+		}
 	}
 
 	public override bool InteractPredicate ( Entity _interactingEntity, AItemLinkedData _linkedData, Item _usedItem )

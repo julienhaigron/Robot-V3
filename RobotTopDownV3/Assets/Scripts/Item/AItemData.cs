@@ -11,8 +11,8 @@ public abstract class AItemData : ScriptableObject
 
     public virtual bool InvokeItemPredicate ( ToolEquipment _invocatingTool, EntityActionData _actionData )
 	{
-        return !_invocatingTool.LinkedEntity.Equipment.ItemsLinkedDataDictionary.ContainsKey(_invocatingTool.ID)
-            || _invocatingTool.LinkedEntity.Equipment.ItemsLinkedDataDictionary[_invocatingTool.ID].currentInvocationCount < _actionData.invocationCountLimit;
+        return !_invocatingTool.LinkedEntity.Equipment.ItemsLinkedDataDictionary.TryGetValue(_invocatingTool.ID, out AItemLinkedData linkedData)
+            || linkedData.currentInvocationCount < _actionData.invocationCountLimit;
     }
 
     public virtual bool CanBePlacedOn ( Tile _tile )
@@ -22,7 +22,9 @@ public abstract class AItemData : ScriptableObject
 
     public virtual void OnInvokeItem ( ToolEquipment _invokingTool, Item _item )
 	{
-        _invokingTool.LinkedEntity.Equipment.ItemsLinkedDataDictionary[_invokingTool.ID].currentInvocationCount++;
+        AItemLinkedData linkedData = _invokingTool.LinkedEntity.Equipment.ItemsLinkedDataDictionary[_invokingTool.ID];
+        linkedData.currentInvocationCount++;
+        linkedData.plannedInvocationCount++;
     }
 
     public abstract bool CanWalkThroughPredicate ( AItemLinkedData _linkedData, Item _usedItem, bool _isThisTurn );
@@ -56,4 +58,18 @@ public abstract class AItemData : ScriptableObject
 public abstract class AItemLinkedData
 {
     public int currentInvocationCount = 0;
+    public int plannedInvocationCount = 0;
+
+    public int PlacedInvocationCount => Mathf.Max(0, currentInvocationCount - plannedInvocationCount);
+
+    public void OnPlannedItemPlaced ()
+	{
+        plannedInvocationCount = Mathf.Max(0, plannedInvocationCount - 1);
+	}
+
+    public void OnPlannedItemCanceled ()
+	{
+        currentInvocationCount = Mathf.Max(0, currentInvocationCount - 1);
+        plannedInvocationCount = Mathf.Max(0, plannedInvocationCount - 1);
+	}
 }

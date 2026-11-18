@@ -270,6 +270,9 @@ public class SpecialAction : AEntityAction
 			if (projectile == null)
 				return false;
 
+			if (_user.IsAlliedTo(GameManager.Instance.PlayerID) || _user.IsVisible)
+				Weapon.PlayOrientedVFX(Data.onPerformVFXPool, origin, direction, Data.name);
+
 			ProjectileData projectileData = new()
 			{
 				owner = _user,
@@ -296,6 +299,9 @@ public class SpecialAction : AEntityAction
 
 	private Vector3 GetProjectileOrigin ( Entity _user )
 	{
+		if (!string.IsNullOrEmpty(linkedEquipmentId) && _user.Equipment.Weapons.TryGetValue(linkedEquipmentId, out Weapon weapon) && weapon != null)
+			return weapon.ProjectileOrigin;
+
 		return _user.Skin != null && _user.Skin.Center != null ? _user.Skin.Center.position : _user.transform.position;
 	}
 
@@ -351,14 +357,36 @@ public class SpecialAction : AEntityAction
 	{
 	}
 
+	private HashSet<Tile> m_tilesInRangeCache;
+	private int m_tilesInRangeCacheFrame = -1;
+	private int m_tilesInRangeCacheOrigin = -1;
+	private int m_tilesInRangeCacheMin = -1;
+	private int m_tilesInRangeCacheMax = -1;
+
+	private HashSet<Tile> GetTilesInRangeOf ( int _originID, int _minDist, int _maxDist )
+	{
+		if (m_tilesInRangeCache == null || m_tilesInRangeCacheFrame != Time.frameCount || m_tilesInRangeCacheOrigin != _originID
+			|| m_tilesInRangeCacheMin != _minDist || m_tilesInRangeCacheMax != _maxDist)
+		{
+			m_tilesInRangeCache = new HashSet<Tile>(GridManager.Instance.GetTilesInVisionRange(GridManager.Instance.Tiles[_originID], _minDist, _maxDist, false, true, true));
+			m_tilesInRangeCacheFrame = Time.frameCount;
+			m_tilesInRangeCacheOrigin = _originID;
+			m_tilesInRangeCacheMin = _minDist;
+			m_tilesInRangeCacheMax = _maxDist;
+		}
+
+		return m_tilesInRangeCache;
+	}
+
 	public override bool TileInteractPredicate ( Tile _tile )
 	{
-		if (Data.targetType == EntityActionData.TargetType.Self && _tile.coordinates.ID == TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntityID))
+		int originID = TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntityID);
+		if (Data.targetType == EntityActionData.TargetType.Self && _tile.coordinates.ID == originID)
 			return true;
 
 		int maxDist = Data.GetMaxRange(this, PerformingEntity, null);
 		int minDist = Data.minDistance;
-		bool isInRange = GridManager.Instance.GetTilesInVisionRange(GridManager.Instance.Tiles[TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntityID)], minDist, maxDist, false, true, true).Contains(_tile);
+		bool isInRange = GetTilesInRangeOf(originID, minDist, maxDist).Contains(_tile);
 
 		if (Data.targetType == EntityActionData.TargetType.Tile && isInRange)
 			return true;

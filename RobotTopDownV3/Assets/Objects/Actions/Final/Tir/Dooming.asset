@@ -27,6 +27,7 @@ MonoBehaviour:
   onPerformSingleAttackSFXID: 0
   onSingleAttackHitSFXID: 0
   onSingleAttackHitVFXPool: {fileID: 11400000, guid: e42b90d56af34c1489a7b3f052c7d618, type: 2}
+  onPerformVFXPool: {fileID: 11400000, guid: b2220d562bf9ccd290215ce0b3c0dd3f, type: 2}
   visualEffectType: 0
   visualEffectDuration: 0.3
   projectilePool: {fileID: 11400000, guid: ff58337ff0d4bd14daa837f022953107, type: 2}

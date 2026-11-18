@@ -7,7 +7,7 @@ using System.Linq;
 public class InvokeItemAction : SpecialAction
 {
 	public bool isActionCanceled;
-	public int itemID;
+	public int itemID = -1;
 
 	public override void NetworkSerialize<T> ( BufferSerializer<T> serializer )
 	{
@@ -44,6 +44,8 @@ public class InvokeItemAction : SpecialAction
 
 	public override void CancelAction ()
 	{
+		ReleasePlannedInvocation();
+
 		foreach (int tileID in targetTileIDs ?? System.Array.Empty<int>())
 		{
 			Tile targetTile = GridManager.Instance.Tiles[tileID];
@@ -53,6 +55,19 @@ public class InvokeItemAction : SpecialAction
 		}
 
 		base.CancelAction();
+	}
+
+	private void ReleasePlannedInvocation ()
+	{
+		if (itemID < 0 || GameManager.Instance == null)
+			return;
+
+		Item item = GameManager.Instance.GetItemFromID(itemID);
+		itemID = -1;
+		if (item == null || item.IsPlaced || item.LinkedData == null)
+			return;
+
+		item.LinkedData.OnPlannedItemCanceled();
 	}
 
 	public override void Prepare ( Entity.EntityState _state )

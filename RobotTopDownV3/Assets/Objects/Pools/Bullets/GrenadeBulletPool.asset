@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d02b80ed8cd5c24fba1eb98ab380ef5, type: 3}
   m_Name: GrenadeBulletPool
   m_EditorClassIdentifier: 
-  baseElement: {fileID: 9190299420879906313, guid: f4ae21abc523c87468f4f3ac49396bc0, type: 3}
+  baseElement: {fileID: 7364000000000000003, guid: 30ff58891f55b28203bd6278adf36e65, type: 3}
   size: 15

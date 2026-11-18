@@ -126,6 +126,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1576508625749478, guid: a619fc9eccbe6d242a5a7f82bbb584be, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 198289660349720170, guid: a619fc9eccbe6d242a5a7f82bbb584be, type: 3}
       propertyPath: moveWithTransform
       value: 1
@@ -156,12 +160,8 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1327072034030534790, guid: 90339c63b06c3a44eb3213b310211454, type: 3}
       propertyPath: m_onPerformPS.Array.size
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 1327072034030534790, guid: 90339c63b06c3a44eb3213b310211454, type: 3}
-      propertyPath: 'm_onPerformPS.Array.data[0]'
-      value: 
-      objectReference: {fileID: 1720489991886992962}
     - target: {fileID: 5109658904826126939, guid: 90339c63b06c3a44eb3213b310211454, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

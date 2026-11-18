@@ -32,31 +32,41 @@ public class ObjectsPooling : Singleton<ObjectsPooling>
 	{
 		foreach (PoolData pool in m_pools)
 		{
-			if (!pool.baseElement)
-			{
-				Debug.LogError("The pool " + pool.name + " has no pool element assigned");
-				continue;
-			}
-
-			if(m_everyPoolTfm.ContainsKey(pool) == false)
-			{
-				GameObject newParent = new GameObject(pool.name);
-				newParent.transform.parent = m_mainParent;
-				m_everyPoolTfm.Add(pool, newParent.transform);
-			}
-
-			m_availablePoolElements.Add(pool, new());
-			m_everyPoolElements.Add(pool, new());
-
-			for (int i = 0; i < pool.size; i++)
-			{
-				PopulatePool(pool);
-			}
-
+			RegisterPool(pool);
 			yield return null;
 		}
 
 		m_loadingElement.EndLoading(true);
+	}
+
+	private bool RegisterPool ( PoolData _pool )
+	{
+		if (!_pool)
+			return false;
+
+		if (m_availablePoolElements.ContainsKey(_pool))
+			return true;
+
+		if (!_pool.baseElement)
+		{
+			Debug.LogError("The pool " + _pool.name + " has no pool element assigned");
+			return false;
+		}
+
+		if (m_everyPoolTfm.ContainsKey(_pool) == false)
+		{
+			GameObject newParent = new GameObject(_pool.name);
+			newParent.transform.parent = m_mainParent;
+			m_everyPoolTfm.Add(_pool, newParent.transform);
+		}
+
+		m_availablePoolElements.Add(_pool, new());
+		m_everyPoolElements.Add(_pool, new());
+
+		for (int i = 0; i < _pool.size; i++)
+			PopulatePool(_pool);
+
+		return true;
 	}
 
 	public static PoolElement GetElement ( PoolData _pool, Vector3 _position = default, Quaternion _rotation = default )
@@ -66,6 +76,9 @@ public class ObjectsPooling : Singleton<ObjectsPooling>
 			Debug.LogError("unable to get the pool element, the pool is null");
 			return null;
 		}
+
+		if (!Instance.m_availablePoolElements.ContainsKey(_pool) && !Instance.RegisterPool(_pool))
+			return null;
 
 		if (Instance.m_availablePoolElements[_pool].Count <= 0)
 			Instance.PopulatePool(_pool);

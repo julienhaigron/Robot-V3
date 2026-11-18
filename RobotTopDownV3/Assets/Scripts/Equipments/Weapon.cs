@@ -25,11 +25,56 @@ public class Weapon : MonoBehaviour
 	protected HashSet<Tile> m_targetedTiles = new();
 
 	private WaitForSeconds m_singleAttackDuration;
+	private readonly Dictionary<ParticleSystem, Quaternion> m_onPerformPSRelativeRotations = new();
+
+	private const float c_tileAimHeight = 1f;
+	private const float c_missOffset = .7f;
+	private const float c_sprayJitter = .25f;
+	private const float c_attackProjectileTimeout = 4f;
+
+	public virtual Vector3 ProjectileOrigin => transform.position;
+
+	public static void PlayOrientedVFX ( PoolData _pool, Vector3 _position, Vector3 _direction, string _context )
+	{
+		if (_pool == null)
+			return;
+
+		try
+		{
+			Quaternion rotation = _direction.sqrMagnitude > .0001f ? Quaternion.LookRotation(_direction) : Quaternion.identity;
+			_pool.Get(_position, rotation);
+		}
+		catch (Exception ex)
+		{
+			Debug.LogError("VFX " + _pool.name + " failed for " + _context + ": " + ex.Message);
+		}
+	}
 
 	public class WeaponTarget
 	{
 		public Entity targetEntity;
 		public Tile targetTile;
+	}
+
+	private sealed class AttackFlight
+	{
+		public VisualProjectile projectile;
+		public readonly List<Vector3> waypoints = new();
+		public readonly List<WeaponTarget[]> hits = new();
+		public float launchTime;
+		public bool doesReturn;
+		public bool isLaunched;
+		public bool isDone;
+		public int nextIndex = 1;
+		public Vector3 legStart;
+		public float legStartTime;
+		public float legDuration;
+
+		public void Add ( Vector3 _point, params WeaponTarget[] _hits )
+		{
+			waypoints.Add(_point);
+			hits.Add(_hits);
+		}
 	}
 
 	public virtual void Init ( Entity _user, WeaponEquipmentData _data, string _id, bool _isFirstSide )
@@ -43,7 +88,20 @@ public class Weapon : MonoBehaviour
 
 	protected virtual void Awake ()
 	{
+		CaptureAttackFeedbackPoses();
 		SilenceAttackFeedback();
+	}
+
+	private void CaptureAttackFeedbackPoses ()
+	{
+		if (m_onPerformPS == null)
+			return;
+
+		foreach (ParticleSystem ps in m_onPerformPS)
+		{
+			if (ps != null && !m_onPerformPSRelativeRotations.ContainsKey(ps))
+				m_onPerformPSRelativeRotations.Add(ps, Quaternion.Inverse(transform.rotation) * ps.transform.rotation);
+		}
 	}
 
 	protected virtual void OnEnable ()
@@ -173,43 +231,30 @@ public class Weapon : MonoBehaviour
 
 		if (!_attackInfo.isAttackSuccessfull)
 		{
-			ShowMissOn(_attackAction.GetTargetEntityAt(_attackIndex), _attackInfo.didTargetDodge);
+			Entity missedTarget = _attackAction.GetTargetEntityAt(_attackIndex);
+			Vector3 missPoint = GetMissPoint(_attackAction, _attackIndex, missedTarget);
+			PlayPerformFeedback(_attackAction, missPoint);
+			yield return PlayAttackProjectilesCR(_attackAction, new List<WeaponTarget>(), missPoint, null);
+			ShowMissOn(missedTarget, _attackInfo.didTargetDodge);
 			yield break;
 		}
 
 		List<WeaponTarget> targets = GetTargets(_attackAction, _attackIndex);
 		Dictionary<WeaponEquipmentData.DamageType, int> damages = BuildDamageDictionary(_attackInfo);
+		Vector3 strikePoint = GetStrikePoint(_attackAction, _attackIndex, targets);
+		HashSet<WeaponTarget> hitTargets = new();
+
+		PlayPerformFeedback(_attackAction, strikePoint);
+
+		Action<WeaponTarget> hit = ( target ) => HitTarget(_attackAction, _attackInfo, target, damages, hitTargets);
+		yield return PlayAttackProjectilesCR(_attackAction, targets, strikePoint, hit);
+		NotifyHits(hit, targets.ToArray());
 
 		ShowAoEDodges(_attackAction, targets);
-
-		foreach (ParticleSystem ps in m_onPerformPS)
-			ps.Play();
-		SoundManager.Instance.Play(_attackAction.Data.onPerformSingleAttackSFXID);
-		PlayHitVFX(_attackAction, targets);
 
 		if (_attackAction.Data.type == EntityActionData.ActionType.MeleeAttack)
 			DamageWallsInWeaponRange(_attackAction, damages);
 
-		foreach (WeaponTarget target in targets)
-		{
-			Entity targetEntity = target.targetEntity != null ? target.targetEntity : target.targetTile.GetCurrentEntity();
-			if (targetEntity == null)
-				continue;
-			int hitAmount = _attackAction.Data.GetHitAmount(_attackAction, m_user, targetEntity);
-
-			for (int i = 0; i < hitAmount; i++)
-			{
-				targetEntity.Equipment.TakeDamage(new EntityEquipmentPlugin.TakeDamageCallback()
-				{
-					entityAttacker = m_user,
-					entityTargeted = targetEntity,
-					damages = damages
-				});
-
-				ApplyStatuses(targetEntity, _attackInfo);
-				//ApplyEffects(entity);
-			}
-		}
 		foreach (AEntityPassiveEffect.PassiveEffectContainer pe in m_lastPerformedAction.effects)
 		{
 			List<Entity> effectsTargets = GetPassiveEffectTargets(_attackAction, pe, _attackIndex);
@@ -220,30 +265,361 @@ public class Weapon : MonoBehaviour
 		yield return m_singleAttackDuration;
 	}
 
-	private void PlayHitVFX ( AttackAction _attackAction, List<WeaponTarget> _targets )
+	private void HitTarget ( AttackAction _attackAction, AttackAction.SingleAttackInfo _attackInfo, WeaponTarget _target, Dictionary<WeaponEquipmentData.DamageType, int> _damages, HashSet<WeaponTarget> _hitTargets )
+	{
+		if (_target == null || !_hitTargets.Add(_target))
+			return;
+
+		PlayHitVFX(_attackAction, _target);
+
+		Entity targetEntity = _target.targetEntity != null ? _target.targetEntity : _target.targetTile != null ? _target.targetTile.GetCurrentEntity() : null;
+		if (targetEntity == null)
+			return;
+
+		int hitAmount = _attackAction.Data.GetHitAmount(_attackAction, m_user, targetEntity);
+		for (int i = 0; i < hitAmount; i++)
+		{
+			targetEntity.Equipment.TakeDamage(new EntityEquipmentPlugin.TakeDamageCallback()
+			{
+				entityAttacker = m_user,
+				entityTargeted = targetEntity,
+				damages = _damages
+			});
+
+			ApplyStatuses(targetEntity, _attackInfo);
+		}
+	}
+
+	private void PlayHitVFX ( AttackAction _attackAction, WeaponTarget _target )
 	{
 		PoolData pool = _attackAction.Data.onSingleAttackHitVFXPool;
 		if (pool == null)
 			return;
 
 		bool isZone = _attackAction.Data.aoeType != EntityActionData.AOEType.Noone;
+		Entity entity = _target.targetEntity != null ? _target.targetEntity : _target.targetTile != null ? _target.targetTile.GetCurrentEntity() : null;
+		Vector3 position = !isZone && entity != null && entity.Skin != null && entity.Skin.Center != null
+			? entity.Skin.Center.position
+			: _target.targetTile != null ? _target.targetTile.transform.position : m_user.transform.position;
+
+		try
+		{
+			pool.Get(position, Quaternion.identity);
+		}
+		catch (Exception ex)
+		{
+			Debug.LogError("Hit VFX " + pool.name + " failed for " + _attackAction.Data.name + ": " + ex.Message);
+		}
+	}
+
+	private void PlayPerformFeedback ( AttackAction _attackAction, Vector3 _strikePoint )
+	{
+		EntityActionData data = _attackAction.Data;
+		bool isSpray = data.attackProjectileMode == EntityActionData.AttackProjectileMode.Spray && data.attackProjectilePool != null && data.doesSprayRepeatPerformVFX;
+		if (!isSpray && IsAttackVisible())
+			PlayOrientedVFX(data.onPerformVFXPool, ProjectileOrigin, _strikePoint - ProjectileOrigin, data.name);
+
+		bool isStrikeOnTarget = _attackAction.Data.type == EntityActionData.ActionType.MeleeAttack;
+		foreach (ParticleSystem ps in m_onPerformPS)
+		{
+			if (ps == null)
+				continue;
+
+			if (isStrikeOnTarget)
+				PlacePerformPSAt(ps, _strikePoint);
+			ps.Play();
+		}
+
+		SoundManager.Instance.Play(_attackAction.Data.onPerformSingleAttackSFXID);
+	}
+
+	private void PlacePerformPSAt ( ParticleSystem _ps, Vector3 _strikePoint )
+	{
+		Vector3 direction = _strikePoint - m_user.transform.position;
+		direction.y = 0f;
+		Quaternion facing = direction.sqrMagnitude > .0001f ? Quaternion.LookRotation(direction) : m_user.transform.rotation;
+		Quaternion relativeRotation = m_onPerformPSRelativeRotations.TryGetValue(_ps, out Quaternion rotation) ? rotation : Quaternion.identity;
+		_ps.transform.SetPositionAndRotation(_strikePoint, facing * relativeRotation);
+	}
+
+	protected Vector3 GetAimPoint ( WeaponTarget _target )
+	{
+		Entity entity = _target.targetEntity != null ? _target.targetEntity : _target.targetTile != null ? _target.targetTile.GetCurrentEntity() : null;
+		if (entity != null && entity.Skin != null && entity.Skin.Center != null)
+			return entity.Skin.Center.position;
+
+		return _target.targetTile != null ? _target.targetTile.transform.position + Vector3.up * c_tileAimHeight : ProjectileOrigin + m_user.transform.forward;
+	}
+
+	private Vector3 GetStrikePoint ( AttackAction _attackAction, int _attackIndex, List<WeaponTarget> _targets )
+	{
+		if (_attackAction.Data.aoeType == EntityActionData.AOEType.Noone && _targets.Count > 0)
+			return GetAimPoint(_targets[0]);
+
+		Tile targetTile = _attackAction.GetTargetTileAt(_attackIndex);
+		if (targetTile == null)
+			return _targets.Count > 0 ? GetAimPoint(_targets[0]) : ProjectileOrigin + m_user.transform.forward;
+
+		return GetAimPoint(new WeaponTarget() { targetTile = targetTile, targetEntity = targetTile.GetCurrentEntity() });
+	}
+
+	private Vector3 GetMissPoint ( AttackAction _attackAction, int _attackIndex, Entity _missedTarget )
+	{
+		Tile tile = _missedTarget != null ? _attackAction.GetExchangeTileOf(_missedTarget) : _attackAction.GetTargetTileAt(_attackIndex);
+		Vector3 point = GetAimPoint(new WeaponTarget() { targetEntity = _missedTarget, targetTile = tile });
+
+		Vector3 shot = point - ProjectileOrigin;
+		shot.y = 0f;
+		Vector3 side = shot.sqrMagnitude > .0001f ? Vector3.Cross(Vector3.up, shot.normalized) : m_user.transform.right;
+		return point + side * (UnityEngine.Random.value < .5f ? -c_missOffset : c_missOffset);
+	}
+
+	protected bool IsAttackVisible ()
+	{
+		return m_user == null || GameManager.Instance == null || m_user.IsAlliedTo(GameManager.Instance.PlayerID) || m_user.IsVisible;
+	}
+
+	private IEnumerator PlayAttackProjectilesCR ( AttackAction _attackAction, List<WeaponTarget> _targets, Vector3 _mainPoint, Action<WeaponTarget> _onHit )
+	{
+		EntityActionData data = _attackAction.Data;
+		if (data.attackProjectileMode == EntityActionData.AttackProjectileMode.None || data.attackProjectilePool == null)
+			yield break;
+
+		List<AttackFlight> flights = BuildAttackFlights(data, _targets, _mainPoint);
+		float speed = Mathf.Max(1f, data.attackProjectileSpeed);
+		float startTime = Time.time;
+		bool isVisible = IsAttackVisible();
+
+		while (Time.time - startTime <= c_attackProjectileTimeout)
+		{
+			bool isRunning = false;
+			float now = Time.time;
+			foreach (AttackFlight flight in flights)
+			{
+				if (flight.isDone)
+					continue;
+
+				isRunning = true;
+				if (!flight.isLaunched)
+				{
+					if (now < flight.launchTime)
+						continue;
+					LaunchFlight(flight, data.attackProjectilePool, speed, now, isVisible);
+					if (isVisible && data.attackProjectileMode == EntityActionData.AttackProjectileMode.Spray && data.doesSprayRepeatPerformVFX)
+						PlayOrientedVFX(data.onPerformVFXPool, flight.waypoints[0], flight.waypoints[1] - flight.waypoints[0], data.name);
+				}
+
+				AdvanceFlight(flight, now, speed, _onHit);
+			}
+
+			if (!isRunning)
+				yield break;
+
+			yield return null;
+		}
+
+		foreach (AttackFlight flight in flights)
+		{
+			if (flight.isDone)
+				continue;
+
+			for (int i = flight.nextIndex; i < flight.hits.Count; i++)
+				NotifyHits(_onHit, flight.hits[i]);
+			ReleaseFlight(flight);
+		}
+	}
+
+	private List<AttackFlight> BuildAttackFlights ( EntityActionData _data, List<WeaponTarget> _targets, Vector3 _mainPoint )
+	{
+		List<AttackFlight> flights = new();
+		Vector3 origin = ProjectileOrigin;
+		bool doesReturn = _data.doesAttackProjectileReturn;
+		float now = Time.time;
+
+		if (_data.attackProjectileMode == EntityActionData.AttackProjectileMode.Spray && _targets.Count > 0)
+		{
+			List<WeaponTarget> tiles = SortFromLeftToRight(_targets, origin, _mainPoint);
+			int count = Mathf.Max(_data.attackProjectileSprayCount, tiles.Count);
+			for (int i = 0; i < count; i++)
+			{
+				WeaponTarget target = tiles[Mathf.Min(tiles.Count - 1, i * tiles.Count / count)];
+				Vector3 jitter = new(UnityEngine.Random.Range(-c_sprayJitter, c_sprayJitter), UnityEngine.Random.Range(-c_sprayJitter, c_sprayJitter) * .5f, UnityEngine.Random.Range(-c_sprayJitter, c_sprayJitter));
+				AttackFlight flight = new() { launchTime = now + i * Mathf.Max(0f, _data.attackProjectileSprayInterval), doesReturn = doesReturn };
+				flight.Add(origin);
+				flight.Add(GetAimPoint(target) + jitter, target);
+				if (doesReturn)
+					flight.Add(origin);
+				flights.Add(flight);
+			}
+			return flights;
+		}
+
+		AttackFlight single = new() { launchTime = now, doesReturn = doesReturn };
+		single.Add(origin);
+
+		if (_data.attackProjectileMode == EntityActionData.AttackProjectileMode.Chain && _targets.Count > 0)
+		{
+			foreach (WeaponTarget hop in OrderChainHops(_targets, _mainPoint))
+				single.Add(GetAimPoint(hop), hop);
+		}
+		else
+			single.Add(_mainPoint, _targets.ToArray());
+
+		if (doesReturn)
+			single.Add(origin);
+
+		flights.Add(single);
+		return flights;
+	}
+
+	private List<WeaponTarget> SortFromLeftToRight ( List<WeaponTarget> _targets, Vector3 _origin, Vector3 _mainPoint )
+	{
+		Vector3 forward = _mainPoint - _origin;
+		forward.y = 0f;
+		if (forward.sqrMagnitude < .0001f)
+			forward = m_user.transform.forward;
+
+		List<WeaponTarget> sorted = new(_targets);
+		sorted.Sort(( a, b ) => SignedAngleFrom(forward, _origin, a).CompareTo(SignedAngleFrom(forward, _origin, b)));
+		return sorted;
+	}
+
+	private float SignedAngleFrom ( Vector3 _forward, Vector3 _origin, WeaponTarget _target )
+	{
+		Vector3 direction = GetAimPoint(_target) - _origin;
+		direction.y = 0f;
+		return Vector3.SignedAngle(_forward, direction, Vector3.up);
+	}
+
+	private List<WeaponTarget> OrderChainHops ( List<WeaponTarget> _targets, Vector3 _start )
+	{
+		List<WeaponTarget> remaining = new();
 		foreach (WeaponTarget target in _targets)
 		{
 			Entity entity = target.targetEntity != null ? target.targetEntity : target.targetTile != null ? target.targetTile.GetCurrentEntity() : null;
-			Vector3 position = !isZone && entity != null && entity.Skin != null && entity.Skin.Center != null
-				? entity.Skin.Center.position
-				: target.targetTile != null ? target.targetTile.transform.position : m_user.transform.position;
+			if (entity != null)
+				remaining.Add(target);
+		}
 
+		if (remaining.Count == 0)
+			remaining.AddRange(_targets);
+
+		List<WeaponTarget> ordered = new();
+		Vector3 current = _start;
+		while (remaining.Count > 0)
+		{
+			WeaponTarget closest = remaining.OrderBy(target => Vector3.SqrMagnitude(GetAimPoint(target) - current)).First();
+			ordered.Add(closest);
+			remaining.Remove(closest);
+			current = GetAimPoint(closest);
+		}
+
+		return ordered;
+	}
+
+	private void LaunchFlight ( AttackFlight _flight, PoolData _pool, float _speed, float _now, bool _isVisible )
+	{
+		_flight.isLaunched = true;
+		_flight.legStart = _flight.waypoints[0];
+		_flight.legStartTime = _now;
+		_flight.legDuration = Vector3.Distance(_flight.waypoints[0], _flight.waypoints[1]) / _speed;
+
+		try
+		{
+			Vector3 direction = _flight.waypoints[1] - _flight.waypoints[0];
+			Quaternion rotation = direction.sqrMagnitude > .0001f ? Quaternion.LookRotation(direction) : Quaternion.identity;
+			PoolElement element = _pool.Get(_flight.waypoints[0], rotation);
+			_flight.projectile = element as VisualProjectile;
+
+			if (_flight.projectile != null)
+				_flight.projectile.SetVisible(_isVisible);
+			else if (element != null)
+			{
+				Debug.LogError("Attack projectile pool " + _pool.name + " does not hold a VisualProjectile.");
+				element.Discard();
+			}
+		}
+		catch (Exception ex)
+		{
+			Debug.LogError("Attack projectile " + _pool.name + " failed: " + ex.Message);
+			_flight.projectile = null;
+		}
+	}
+
+	private void AdvanceFlight ( AttackFlight _flight, float _now, float _speed, Action<WeaponTarget> _onHit )
+	{
+		while (!_flight.isDone)
+		{
+			Vector3 destination = _flight.waypoints[_flight.nextIndex];
+			float progress = _flight.legDuration <= 0f ? 1f : (_now - _flight.legStartTime) / _flight.legDuration;
+			bool isReturning = _flight.doesReturn && _flight.nextIndex == _flight.waypoints.Count - 1;
+			Vector3 facing = isReturning ? Vector3.zero : destination - _flight.legStart;
+
+			if (progress < 1f)
+			{
+				PlaceProjectile(_flight, Vector3.Lerp(_flight.legStart, destination, progress), facing);
+				return;
+			}
+
+			PlaceProjectile(_flight, destination, facing);
+			NotifyHits(_onHit, _flight.hits[_flight.nextIndex]);
+
+			float legEnd = _flight.legStartTime + _flight.legDuration;
+			_flight.nextIndex++;
+			if (_flight.nextIndex >= _flight.waypoints.Count)
+			{
+				ReleaseFlight(_flight);
+				return;
+			}
+
+			_flight.legStart = destination;
+			_flight.legStartTime = legEnd;
+			_flight.legDuration = Vector3.Distance(destination, _flight.waypoints[_flight.nextIndex]) / _speed;
+		}
+	}
+
+	private static void PlaceProjectile ( AttackFlight _flight, Vector3 _position, Vector3 _direction )
+	{
+		if (_flight.projectile == null)
+			return;
+
+		_flight.projectile.Place(_position, _direction);
+	}
+
+	private static void NotifyHits ( Action<WeaponTarget> _onHit, WeaponTarget[] _targets )
+	{
+		if (_onHit == null || _targets == null)
+			return;
+
+		foreach (WeaponTarget target in _targets)
+		{
 			try
 			{
-				pool.Get(position, Quaternion.identity);
+				_onHit(target);
 			}
 			catch (Exception ex)
 			{
-				Debug.LogError("Hit VFX " + pool.name + " failed for " + _attackAction.Data.name + ": " + ex.Message);
-				return;
+				Debug.LogException(ex);
 			}
 		}
+	}
+
+	private static void ReleaseFlight ( AttackFlight _flight )
+	{
+		_flight.isDone = true;
+		if (_flight.projectile == null)
+			return;
+
+		try
+		{
+			_flight.projectile.Release();
+		}
+		catch (Exception ex)
+		{
+			Debug.LogError("Attack projectile release failed: " + ex.Message);
+		}
+
+		_flight.projectile = null;
 	}
 
 	private void DamageWallsInWeaponRange ( AttackAction _attackAction, Dictionary<WeaponEquipmentData.DamageType, int> _damages )

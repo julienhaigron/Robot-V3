@@ -105,7 +105,7 @@ public abstract class AEntityAction : INetworkSerializable
 	public virtual void RegisterInteraction ( Tile _tile )
 	{
 		int maxTargetAmount = Data.GetMaxTargetAmount(this, PerformingEntity, _tile.GetEntity(true));
-		TurnManager.Instance.AddTargetTileInCurrentAction(_tile);
+		TurnManager.Instance.AddTargetTileInCurrentAction(_tile, this);
 
 		if (_tile.TryGetPlannedItemAt(timeAtStart, out Item item))
 			item.Data.OnRegisterInteraction(this, item);

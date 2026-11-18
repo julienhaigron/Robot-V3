@@ -67,7 +67,7 @@ PrefabInstance:
     - target: {fileID: 2228564425604616484, guid: 321c15f11c30d63469167f59475dd867, type: 3}
       propertyPath: m_bulletPool
       value: 
-      objectReference: {fileID: 11400000, guid: ff58337ff0d4bd14daa837f022953107, type: 2}
+      objectReference: {fileID: 11400000, guid: 7bfa4d11f6671614f36122497c705a4a, type: 2}
     - target: {fileID: 2228564425604616484, guid: 321c15f11c30d63469167f59475dd867, type: 3}
       propertyPath: m_aimDuration
       value: 0.3

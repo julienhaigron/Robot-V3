@@ -8,6 +8,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2228564425604616484, guid: 321c15f11c30d63469167f59475dd867, type: 3}
+      propertyPath: m_bulletPool
+      value: 
+      objectReference: {fileID: 11400000, guid: ede2bbf6dcca22e2c353881229305a48, type: 2}
     - target: {fileID: 711724775164762558, guid: 321c15f11c30d63469167f59475dd867, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

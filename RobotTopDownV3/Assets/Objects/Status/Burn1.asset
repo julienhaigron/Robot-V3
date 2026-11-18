@@ -17,5 +17,5 @@ MonoBehaviour:
   doesNeedRoll: 1
   description: 
   icon: {fileID: 0}
-  groundPrefab: {fileID: 0}
+  groundPrefab: {fileID: 7342000000000000101, guid: 1f0cb5b7d3d01b059211ff8603006d61, type: 3}
   damageAmount: 1

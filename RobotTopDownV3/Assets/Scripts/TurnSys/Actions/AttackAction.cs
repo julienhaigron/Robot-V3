@@ -402,7 +402,7 @@ public class AttackAction : AEntityAction
 		if (TurnManager.Instance.CurrentActionTargetTiles == null || TurnManager.Instance.CurrentActionTargetTiles.Count % maxTargetAmount == 0)
 			m_orientations.Add(targetOrientation);
 
-		TurnManager.Instance.AddTargetTileInCurrentAction(_tile);
+		TurnManager.Instance.AddTargetTileInCurrentAction(_tile, this);
 
 		if (_tile.TryGetPlannedItemAt(timeAtStart, out Item item))
 			item.Data.OnRegisterInteraction(this, item);

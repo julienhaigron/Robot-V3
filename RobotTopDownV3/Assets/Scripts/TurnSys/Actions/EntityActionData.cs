@@ -30,6 +30,7 @@ public class EntityActionData : AParsableScriptableObject
 	public SfxId onPerformSingleAttackSFXID;
 	public SfxId onSingleAttackHitSFXID;
 	public PoolData onSingleAttackHitVFXPool;
+	public PoolData onPerformVFXPool;
 
 	public enum VisualEffectType
 	{
@@ -46,6 +47,22 @@ public class EntityActionData : AParsableScriptableObject
 	[ShowIf("@visualEffectType == VisualEffectType.Projectile")] public float projectileSpeed = 40f;
 	[ShowIf("@visualEffectType == VisualEffectType.Spell")] public GameObject spellVfxPrefab;
 	[ShowIf("@visualEffectType == VisualEffectType.Spell")] public float spellVfxLifetime = 2f;
+
+	public enum AttackProjectileMode
+	{
+		None,
+		Single,
+		Chain,
+		Spray
+	}
+	[Title("Attack Projectile")]
+	public AttackProjectileMode attackProjectileMode = AttackProjectileMode.None;
+	[ShowIf("@attackProjectileMode != AttackProjectileMode.None")] public PoolData attackProjectilePool;
+	[ShowIf("@attackProjectileMode != AttackProjectileMode.None")] public float attackProjectileSpeed = 20f;
+	[ShowIf("@attackProjectileMode != AttackProjectileMode.None")] public bool doesAttackProjectileReturn;
+	[ShowIf("@attackProjectileMode == AttackProjectileMode.Spray")] public int attackProjectileSprayCount = 10;
+	[ShowIf("@attackProjectileMode == AttackProjectileMode.Spray")] public float attackProjectileSprayInterval = .04f;
+	[ShowIf("@attackProjectileMode == AttackProjectileMode.Spray")] public bool doesSprayRepeatPerformVFX = true;
 
 	[Title("Condition")]
 	[Parsing("Condition")]
@@ -204,6 +221,18 @@ public class EntityActionData : AParsableScriptableObject
 		return targetType != TargetType.Self
 			&& codeType != ActionCodeType.Wait
 			&& !DoesResolveItsOwnTarget();
+	}
+
+	public bool TryGetInvocationTool ( Entity _entity, string _linkedEquipmentID, out ToolEquipment _tool )
+	{
+		_tool = null;
+		return codeType == ActionCodeType.InvokeItem && invocatedItem != null && _entity != null && !string.IsNullOrEmpty(_linkedEquipmentID)
+			&& _entity.Equipment.Tools.TryGetValue(_linkedEquipmentID, out _tool) && _tool != null;
+	}
+
+	public bool CanInvokeMoreItems ( Entity _entity, string _linkedEquipmentID )
+	{
+		return !TryGetInvocationTool(_entity, _linkedEquipmentID, out ToolEquipment tool) || invocatedItem.InvokeItemPredicate(tool, this);
 	}
 
 	public MainActionType GetMainActionType ()

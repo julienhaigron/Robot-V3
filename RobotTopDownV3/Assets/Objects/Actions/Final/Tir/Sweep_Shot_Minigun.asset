@@ -26,13 +26,20 @@ MonoBehaviour:
   afterPerformAnimationKey: 
   onPerformSingleAttackSFXID: 7
   onSingleAttackHitSFXID: 1
-  onSingleAttackHitVFXPool: {fileID: 11400000, guid: 7203c3dbec71caccfb41ba8fb5f4be5d, type: 2}
+  onSingleAttackHitVFXPool: {fileID: 11400000, guid: 5a22612debb332ca54d1e53b1f216597, type: 2}
+  onPerformVFXPool: {fileID: 11400000, guid: 0ce88bd2ee9a3eb9391d542ce02e8458, type: 2}
   visualEffectType: 0
   visualEffectDuration: 0.3
   projectilePool: {fileID: 0}
   projectileSpeed: 10
   spellVfxPrefab: {fileID: 0}
   spellVfxLifetime: 2
+  attackProjectileMode: 3
+  attackProjectilePool: {fileID: 11400000, guid: 65dcfbe40fb1b991d826206c95624498, type: 2}
+  attackProjectileSpeed: 45
+  doesAttackProjectileReturn: 0
+  attackProjectileSprayCount: 14
+  attackProjectileSprayInterval: 0.035
   conditionType: 0
   previousActionAttackModificator: 0
   type: 0

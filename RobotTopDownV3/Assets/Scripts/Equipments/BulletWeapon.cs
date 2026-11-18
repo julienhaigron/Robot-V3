@@ -22,6 +22,8 @@ public class BulletWeapon : Weapon
 	private WaitForSeconds m_aimDurationWFS;
 	private WaitForSeconds m_shootCooldownDurationWFS;
 
+	public override Vector3 ProjectileOrigin => m_bulletPoint != null ? m_bulletPoint.position : transform.position;
+
 	public override void Init ( Entity _user, WeaponEquipmentData _data, string _id, bool _isFirstSide )
 	{
 		base.Init(_user, _data, _id, _isFirstSide);
@@ -50,7 +52,12 @@ public class BulletWeapon : Weapon
 		}
 		else
 		{
-			//handle aoe aim anims
+			Tile aimedTile = _attackAction.GetTargetTileAt(_attackIndex);
+			if (aimedTile != null && m_user.Skin != null)
+			{
+				m_user.Skin.VisualyAimAt(_attackAction.linkedEquipmentId, aimedTile.transform.position + Vector3.up * .5f);
+				yield return m_aimDurationWFS;
+			}
 		}
 
 	}
@@ -134,6 +141,8 @@ public class BulletWeapon : Weapon
 			foreach (ParticleSystem ps in m_onPerformPS)
 				ps.Play();
 			SoundManager.Instance.Play(_attackAction.Data.onPerformSingleAttackSFXID);
+			if (IsAttackVisible())
+				PlayOrientedVFX(_attackAction.Data.onPerformVFXPool, m_bulletPoint.position, m_bulletPoint.forward, _attackAction.Data.name);
 
 			bool isLastBullet = i == hitAmount - 1 && _attackIndex == _lastSuccessfullAttackIndex;
 			Entity missedTarget = i == hitAmount - 1 ? _target.targetEntity : null;

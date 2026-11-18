@@ -39,4 +39,31 @@ MonoBehaviour:
     arms: []
     auxiliary: []
     chipsets: []
-  performedActions: []
+  performedActions:
+  - Weap_Psy_Glaive/Throw
+  - Weap_Psy_Glaive/Chain_Throw
+  - Weap_Psy_Railgun/Attractive_Shot
+  - Weap_Psy_Railgun/Repulsive_Shot
+  - Weap_Psy_Sniper/Sniper_Shot
+  - Weap_Psy_Spear/Spear_Strike
+  - Weap_Psy_Spear/Spear_Strike_Flurry
+  - Weap_Pal_Flail/Simple_Strike
+  - Weap_Pal_Flail/Charged_Strike
+  - Weap_Pal_Hammer/Simple_Strike
+  - Weap_Pal_Hammer/Crushing
+  - Weap_Pal_Minigun/Sweep_Shot_Minigun
+  - Weap_Pal_Minigun/Targeted_Salves
+  - Weap_Pal_Missil_Array/Missile_Barrage
+  - Weap_Com_Flame_Thrower/Sweep_Shot_FlameThrower
+  - Weap_Com_Flame_Thrower/Flame_Jet
+  - Weap_Com_Gauntlet/Punch
+  - Weap_Com_Gauntlet/Rush
+  - Weap_Com_Gauntlet/Charged_Punch
+  - Weap_Com_Grenade_Launcher/Shrapnel_Grenade
+  - Weap_Com_Grenade_Launcher/Incendiary_Grenade
+  - Weap_Com_Grenade_Launcher/Smoke_Grenade
+  - Weap_Com_Rapier/Thrust
+  - Weap_Com_Rapier/Thrust_Flurry
+  - Weap_Com_Rapier/Perforate
+  - Weapon_Start_DoomGun/Dooming
+  - Tool_Com_Mine_Kit/Set_Mine

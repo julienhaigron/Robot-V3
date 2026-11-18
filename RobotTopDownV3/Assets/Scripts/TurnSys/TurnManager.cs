@@ -68,6 +68,7 @@ public class TurnManager : Singleton<TurnManager>
 		: PlayerController.Instance.SelectedEntity.DefaultState;
 
 	private List<Tile> m_currentActionTargetTiles = new();
+	private bool m_isShowingPickTargets;
 	public List<Tile> CurrentActionTargetTiles => m_currentActionTargetTiles;
 	private AEntityAction m_designationPendingAction;
 	private AEntityAction m_designationReachAction;
@@ -397,6 +398,7 @@ public class TurnManager : Singleton<TurnManager>
 		m_currentEquipmentLinkedToActionTypeSelected = _linkedEquipmentID;
 		if (_isResetingAction)
 		{
+			ClearPickTargetOutlines();
 			m_currentActionTargetTiles.Clear();
 			m_currentEntityAction = GetAction(GameAssets.current.game.entityActionsData[_action], performingEntityID, _linkedEquipmentID, timeAtStart);
 
@@ -426,6 +428,7 @@ public class TurnManager : Singleton<TurnManager>
 
 		if (_isResetingAction)
 		{
+			ClearPickTargetOutlines();
 			m_currentActionTargetTiles.Clear();
 			m_currentEntityAction = GetAction(GameAssets.current.game.entityActionsData[_action], performingEntityID, _linkedEquipmentID, timeAtStart);
 
@@ -437,9 +440,36 @@ public class TurnManager : Singleton<TurnManager>
 			RefreshActionDisplay(performingEntityID, false);
 	}
 
-	public void AddTargetTileInCurrentAction ( Tile _tile )
+	public void AddTargetTileInCurrentAction ( Tile _tile, AEntityAction _action = null )
 	{
 		m_currentActionTargetTiles.Add(_tile);
+		RefreshPickTargetOutlines(_action ?? m_currentEntityAction, _tile);
+	}
+
+	private void RefreshPickTargetOutlines ( AEntityAction _action, Tile _lastTile )
+	{
+		if (_action == null || EntityActionDisplay.SelectedDisplay != null || _action.Data.DoesResolveItsOwnTarget() || PlayerController.Instance == null)
+			return;
+
+		int targetCount = _action.Data.GetMaxTargetAmount(_action, _action.PerformingEntity, _lastTile != null ? _lastTile.GetEntity(true) : null) * _action.Data.tokenDuration;
+		if (m_currentActionTargetTiles.Count >= targetCount)
+		{
+			ClearPickTargetOutlines();
+			return;
+		}
+
+		ApplyTargetOutlines(_action);
+		m_isShowingPickTargets = true;
+	}
+
+	private void ClearPickTargetOutlines ()
+	{
+		if (!m_isShowingPickTargets)
+			return;
+
+		m_isShowingPickTargets = false;
+		if (EntityActionDisplay.SelectedDisplay == null && PlayerController.Instance != null)
+			PlayerController.Instance.ClearTargetOutlines();
 	}
 
 	public AEntityAction GetSelectedDisplayAction ()
@@ -1364,7 +1394,14 @@ public class TurnManager : Singleton<TurnManager>
 		if (_selectedEntityID.HasValue && _isResetingAction
 			&& m_remainingActionToken[_selectedEntityID.Value] >= GameAssets.current.game.entityActionsData[m_currentActionTypeSelected].GetTokenTotalCost(m_currentEntityAction, GameManager.Instance.GetEntityFromID(_selectedEntityID.Value), null))
 		{
-			SetCurrentActionSelected(m_currentActionTypeSelected, m_currentEquipmentLinkedToActionTypeSelected, _isResetingAction);
+			Entity selectedEntity = GameManager.Instance.GetEntityFromID(_selectedEntityID.Value);
+			EntityActionData movementAction = selectedEntity != null ? selectedEntity.AI.GetMovementAction() : null;
+			bool canReselect = GameAssets.current.game.entityActionsData[m_currentActionTypeSelected].CanInvokeMoreItems(selectedEntity, m_currentEquipmentLinkedToActionTypeSelected);
+
+			if (!canReselect && movementAction != null)
+				SetCurrentActionSelected(movementAction.enumID, null, _isResetingAction);
+			else
+				SetCurrentActionSelected(m_currentActionTypeSelected, m_currentEquipmentLinkedToActionTypeSelected, _isResetingAction);
 		}
 
 		AEntityAction currentSelectedAction = EntityActionDisplay.SelectedDisplay != null

@@ -33,6 +33,9 @@ public class Item : MonoBehaviour
 
     public void SetPlaced ()
     {
+        if (!m_isPlaced && m_linkedData != null)
+            m_linkedData.OnPlannedItemPlaced();
+
         m_isPlaced = true;
         onAnyItemPlaced?.Invoke(this);
     }
