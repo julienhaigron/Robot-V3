@@ -52,11 +52,14 @@ public class EntityAIPlugin : EntityPlugin
 		public AEntityAction replacedFreeAction;
 		public string replacementReasonTxt;
 
-		public void ReplaceAction ( AEntityAction _replacedAction, string _reasonTxt )
+		public void ReplaceAction ( AEntityAction _replacedAction, string _reasonTxt, bool _keepsFacingOrder = false )
 		{
 			isActionChanging = true;
 			replacedAction = _replacedAction;
 			replacementReasonTxt = _reasonTxt;
+
+			if (!_keepsFacingOrder && replacedFreeAction is RotateEntityAction { isFacingOrder: true })
+				replacedFreeAction = null;
 		}
 
 		public void ReplaceFreeAction ( AEntityAction _replacedFreeAction, string _reasonTxt )
@@ -330,7 +333,7 @@ public class EntityAIPlugin : EntityPlugin
 		else if (!canMove && _recordedAction.type != EntityActionEnumID.Wait && (_recordedAction.action.Data.type == EntityActionData.ActionType.Movement || EntityActionData.IsRotationAction(_recordedAction.action.enumID)
 			 || _recordedAction.action.Data.codeType == EntityActionData.ActionCodeType.MoveThenAttack))
 		{
-			resultInfo.ReplaceAction(GetWaitActionFor(_recordedAction), "Unit cannot move");
+			resultInfo.ReplaceAction(GetWaitActionFor(_recordedAction), "Unit cannot move", _keepsFacingOrder: true);
 		}
 
 		if (needsTarget && resultInfo.replacedAction == _recordedAction.action)
@@ -538,7 +541,8 @@ public class EntityAIPlugin : EntityPlugin
 	private void DropStaleFacing ( TurnManager.RecordedAction _recordedAction, ref CheckActionResultInfo _resultInfo )
 	{
 		AEntityAction freeAction = _recordedAction.freeAction;
-		if (freeAction == null || !EntityActionData.IsRotationAction(freeAction.enumID))
+		if (freeAction == null || !EntityActionData.IsRotationAction(freeAction.enumID)
+			|| freeAction is RotateEntityAction { isFacingOrder: true })
 			return;
 
 		freeAction.CancelAction();

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
 
 public class CameraManager : Singleton<CameraManager>
 {
@@ -22,6 +23,7 @@ public class CameraManager : Singleton<CameraManager>
 
     private float m_defaultFieldOfView;
     private float m_defaultFarClipPlane;
+    private Tween m_cameraMoveTween;
 
     [Header("Follow Units")]
     [SerializeField] private float m_followSmoothTime = .35f;
@@ -193,7 +195,85 @@ public class CameraManager : Singleton<CameraManager>
         PlaceCameraAt(m_hubCameraTfm);
     }
 
+    public Quaternion HubCameraRotation => m_hubCameraTfm != null ? m_hubCameraTfm.rotation : m_camera.transform.rotation;
+
+    public bool TryGetHubCameraPose ( out Vector3 _position, out Quaternion _rotation )
+    {
+        _position = m_hubCameraTfm != null ? m_hubCameraTfm.position : Vector3.zero;
+        _rotation = m_hubCameraTfm != null ? m_hubCameraTfm.rotation : Quaternion.identity;
+        return m_hubCameraTfm != null;
+    }
+
+    public float GetDistanceToFit ( float _radius )
+    {
+        float verticalHalfFov = m_defaultFieldOfView * .5f * Mathf.Deg2Rad;
+        float horizontalHalfFov = Mathf.Atan(Mathf.Tan(verticalHalfFov) * m_camera.aspect);
+        return _radius / Mathf.Sin(Mathf.Min(verticalHalfFov, horizontalHalfFov));
+    }
+
     public void PlaceCameraAt ( Transform _cameraPoint )
+    {
+        PlaceCameraAt(_cameraPoint.position, _cameraPoint.rotation);
+    }
+
+    public void PlaceCameraAt ( Vector3 _cameraPosition, Quaternion _cameraRotation )
+    {
+        GetParentPoseFor(_cameraPosition, _cameraRotation, out Vector3 parentPosition, out Quaternion parentRotation);
+        TeleportCameraTo(parentPosition, parentRotation);
+    }
+
+    public void MoveCameraTo ( Vector3 _cameraPosition, Quaternion _cameraRotation, float _duration )
+    {
+        MoveCameraAlong(new[] { m_camera.transform.position, _cameraPosition }, _cameraRotation, _duration);
+    }
+
+    public void MoveCameraAlong ( IReadOnlyList<Vector3> _path, Quaternion _cameraRotation, float _duration )
+    {
+        if (_path == null || _path.Count == 0)
+            return;
+
+        if (_duration <= 0f || _path.Count < 2)
+        {
+            PlaceCameraAt(_path[_path.Count - 1], _cameraRotation);
+            return;
+        }
+
+        KillCameraMove();
+        ResetLens();
+
+        Vector3[] points = new Vector3[_path.Count];
+        float[] distances = new float[_path.Count];
+        for (int i = 0; i < _path.Count; i++)
+        {
+            points[i] = _path[i];
+            distances[i] = i == 0 ? 0f : distances[i - 1] + Vector3.Distance(points[i - 1], points[i]);
+        }
+
+        Quaternion startRotation = m_camera.transform.rotation;
+        m_cameraMoveTween = DOVirtual.Float(0f, 1f, _duration, progress =>
+        {
+            GetParentPoseFor(SamplePolyline(points, distances, progress), Quaternion.Slerp(startRotation, _cameraRotation, progress)
+                , out Vector3 parentPosition, out Quaternion parentRotation);
+            m_cameraParent.transform.SetPositionAndRotation(parentPosition, parentRotation);
+        }).SetEase(Ease.InOutCubic);
+    }
+
+    private static Vector3 SamplePolyline ( Vector3[] _points, float[] _distances, float _progress )
+    {
+        float target = _progress * _distances[^1];
+        for (int i = 1; i < _points.Length; i++)
+        {
+            if (target > _distances[i] && i < _points.Length - 1)
+                continue;
+
+            float segmentLength = _distances[i] - _distances[i - 1];
+            return segmentLength <= 0f ? _points[i] : Vector3.Lerp(_points[i - 1], _points[i], (target - _distances[i - 1]) / segmentLength);
+        }
+
+        return _points[^1];
+    }
+
+    private void GetParentPoseFor ( Vector3 _cameraPosition, Quaternion _cameraRotation, out Vector3 _parentPosition, out Quaternion _parentRotation )
     {
         Transform parent = m_cameraParent.transform;
         Transform camera = m_camera.transform;
@@ -202,8 +282,16 @@ public class CameraManager : Singleton<CameraManager>
         Quaternion cameraRotationInParent = parentInverseRotation * camera.rotation;
         Vector3 cameraOffsetInParent = parentInverseRotation * (camera.position - parent.position);
 
-        Quaternion parentRotation = _cameraPoint.rotation * Quaternion.Inverse(cameraRotationInParent);
-        TeleportCameraTo(_cameraPoint.position - parentRotation * cameraOffsetInParent, parentRotation);
+        _parentRotation = _cameraRotation * Quaternion.Inverse(cameraRotationInParent);
+        _parentPosition = _cameraPosition - _parentRotation * cameraOffsetInParent;
+    }
+
+    private void KillCameraMove ()
+    {
+        if (m_cameraMoveTween.IsActive())
+            m_cameraMoveTween.Kill();
+
+        m_cameraMoveTween = null;
     }
 
     public void TeleportCameraTo(Transform _to )
@@ -213,6 +301,7 @@ public class CameraManager : Singleton<CameraManager>
 
     public void TeleportCameraTo(Vector3 _position, Quaternion _rotation )
 	{
+        KillCameraMove();
         ResetLens();
         m_cameraParent.transform.position = _position;
         m_cameraParent.transform.rotation = _rotation;

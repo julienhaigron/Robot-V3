@@ -77,3 +77,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_visual: {fileID: 8358130359806494592}
+  m_hologramMaterial: {fileID: 2100000, guid: 6db3f199a8e7d022eedfa14607943dbd, type: 2}

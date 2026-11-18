@@ -6,6 +6,7 @@ using UnityEngine;
 public class GhostEntity : MonoBehaviour
 {
 	[SerializeField] private Transform m_visual;
+	[SerializeField] private Material m_hologramMaterial;
 
     private Entity m_linkedEntity;
 
@@ -18,6 +19,15 @@ public class GhostEntity : MonoBehaviour
 
 		if (skin.TryGetComponent(out LegsAnimator legsAnimator))
 			legsAnimator.Initialize_BaseTransform(m_visual);
+
+		if (m_hologramMaterial == null)
+			return;
+
+		foreach (Renderer renderer in skin.GetComponentsInChildren<Renderer>(true))
+		{
+			if (renderer is MeshRenderer || renderer is SkinnedMeshRenderer)
+				EntitySkinPlugin.OverrideMaterials(renderer, m_hologramMaterial);
+		}
 	}
 
 	public void ShowAtPositionAndOrientation(Tile _position, int _orientation )

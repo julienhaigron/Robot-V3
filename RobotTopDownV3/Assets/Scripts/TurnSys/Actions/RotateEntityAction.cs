@@ -7,19 +7,31 @@ using System.Linq;
 public class RotateEntityAction : AEntityAction
 {
 	public int[] targetedOrientationID; //0 - 5
+	public bool isFacingOrder;
+
+	public override bool IsPlayedFirst => !isFacingOrder && base.IsPlayedFirst;
+	public int FacingOrientation => targetedOrientationID != null && targetedOrientationID.Length > 0 ? targetedOrientationID[^1] : -1;
 
 	public override void NetworkSerialize<T> ( BufferSerializer<T> serializer )
 	{
 		base.NetworkSerialize(serializer);
 		serializer.SerializeValue(ref targetedOrientationID);
+		serializer.SerializeValue(ref isFacingOrder);
+	}
+
+	public void SetFacingOrder ( Tile _pivot, int _orientation, Tile _aimedTile )
+	{
+		isFacingOrder = true;
+		supposedPositionAtActionStartID = _pivot.coordinates.ID;
+		positionAtActionEndID = _pivot.coordinates.ID;
+		targetedOrientationID = new int[1] { _orientation };
+		targetTileIDs = new int[1] { (_aimedTile != null ? _aimedTile : _pivot).coordinates.ID };
 	}
 
 	public override void RegisterInteraction ( Tile _tile )
 	{
-		targetTileIDs = new int[1];
-		targetTileIDs[0] = _tile.coordinates.ID;
-		int orientation = GridManager.Instance.GetClosestOrientation(PerformingEntity.Displacement.Coordinates.GetTile(), _tile);
-		targetedOrientationID = new int[1]{ orientation };
+		SetFacingOrder(GridManager.Instance.Tiles[supposedPositionAtActionStartID]
+			, GridManager.Instance.GetClosestOrientation(GridManager.Instance.Tiles[supposedPositionAtActionStartID], _tile), _tile);
 
 		base.RegisterInteraction(_tile);
 	}
@@ -65,40 +77,61 @@ public class RotateEntityAction : AEntityAction
 		base.Perform(_state);
 	}
 
+	public Tile GetPivotOn ( TurnManager.RecordedAction _host )
+	{
+		if (_host == null || _host.action == null)
+			return GridManager.Instance.Tiles[supposedPositionAtActionStartID];
+
+		return GridManager.Instance.Tiles[IsPlayedFirst ? _host.action.supposedPositionAtActionStartID : _host.action.positionAtActionEndID];
+	}
+
 	public override void Display ( TurnManager.RecordedAction _recordedAction )
 	{
-		//display rotation change on ground
-		
+		if (FacingOrientation < 0 || _recordedAction == null || _recordedAction.action == null)
+			return;
+
+		ShowArrow(this, performingEntityID, GetPivotOn(_recordedAction), FacingOrientation
+			, GetArrowMaterial(_recordedAction.entityState, !isFacingOrder));
 	}
 
 	public override void GhostDisplay ( Entity.EntityState _state )
 	{
-		if (targetTileIDs == null || targetTileIDs.Length == 0)
-			return;
-
-		Vector3 previousPosition = GridManager.Instance.Tiles[supposedPositionAtActionStartID].transform.position;
-		RotationActionDisplay display = ObjectsPooling.GetElement(GameAssets.current.game.rotationHandlePoolData) as RotationActionDisplay;
-		Vector3 startPos = previousPosition;
-		Vector3 destination = GridManager.Instance.Tiles[targetTileIDs[0]].transform.position;
-		display.Init(this, _state);
-		display.transform.position = startPos;
-		display.transform.LookAt(destination);
-
-		PlayerController.Instance.AddRotationActionDisplay(display, performingEntityID);
 	}
 
-	public override void OnSelectActionTileInteractPredicatePrewarm ()
+	public static RotationActionDisplay ShowArrow ( RotateEntityAction _action, int _performingEntityID, Tile _pivot, int _orientation, Material _material )
 	{
-		base.OnSelectActionTileInteractPredicatePrewarm();
-		Tile from = GridManager.Instance.Tiles[TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntityID)];
-		GridManager.Instance.BFS(from, 1, null, true, false);
+		if (_pivot == null || _orientation < 0 || GameAssets.current.game.rotationHandlePoolData == null)
+			return null;
+
+		RotationActionDisplay display = ObjectsPooling.GetElement(GameAssets.current.game.rotationHandlePoolData) as RotationActionDisplay;
+		if (display == null)
+			return null;
+
+		display.Init(_action, _material);
+		display.transform.position = _pivot.transform.position;
+		display.transform.rotation = GetFacingRotation(_orientation);
+
+		PlayerController.Instance.AddRotationActionDisplay(display, _performingEntityID);
+		return display;
+	}
+
+	public static Quaternion GetFacingRotation ( int _orientation )
+	{
+		return Quaternion.Euler(0f, 30f + _orientation * 60f, 0f);
+	}
+
+	public static Material GetArrowMaterial ( Entity.EntityState _state, bool _isGhost )
+	{
+		SerializableDictionary<Entity.EntityState, Material> materials = _isGhost
+			? GameAssets.current.ui.ghostEntityStateMaterials
+			: GameAssets.current.ui.entityStateMaterials;
+
+		return materials != null && materials.TryGetValue(_state, out Material material) ? material : null;
 	}
 
 	public override bool TileInteractPredicate ( Tile _tile )
 	{
-		if (_tile.Distance == 1)
-			return true;
-
-		return false;
+		Tile pivot = GridManager.Instance.Tiles[supposedPositionAtActionStartID];
+		return _tile != null && _tile != pivot && pivot.Neighbors != null && System.Array.IndexOf(pivot.Neighbors, _tile) >= 0;
 	}
 }

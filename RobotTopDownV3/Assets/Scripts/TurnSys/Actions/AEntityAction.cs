@@ -24,6 +24,7 @@ public abstract class AEntityAction : INetworkSerializable
 									  //public int[] statusIds;
 	public AEntityPassiveEffect.PassiveEffectContainer[] effects;
 	public EntityActionData Data => GameAssets.current.game.entityActionsData[enumID];
+	public virtual bool IsPlayedFirst => Data.isPlayedFirst;
 
 	public int preparationDuration = 0;
 	public int actualDuration = 1;

@@ -2250,3 +2250,11 @@ MonoBehaviour:
     values:
     - "{0}: {2} is out of reach, <i>{1}</i> targets {3} instead"
     - "{0} : {2} est hors d'atteinte, <i>{1}</i> vise {3} \xE0 la place"
+  - key: action_desc/facing_order
+    values:
+    - "Facing: chosen by you. Click its icon to change it, right-click to remove it."
+    - "Orientation : choisie par vous. Clic sur son ic\xF4ne pour la changer, clic droit pour la retirer."
+  - key: action_desc/facing_locked
+    values:
+    - "Facing: set by the attack, cannot be changed."
+    - "Orientation : impos\xE9e par l'attaque, non modifiable."

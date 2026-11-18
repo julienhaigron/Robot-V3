@@ -14,6 +14,7 @@ public class HumanoidEntityIK : MonoBehaviour
 	public Animator animator;
 
 	public Transform handGrabSocket;
+	public Transform offHandGrabSocket;
 
 	//public Transform rightHandTarget;
 	//public Transform leftHandtarget;
@@ -21,13 +22,69 @@ public class HumanoidEntityIK : MonoBehaviour
 	public Vector3? leftHandTarget;
 
 	protected Quaternion m_defaultHandPivotRotation;
+	private Quaternion m_defaultOffHandPivotRotation;
+	private Transform m_aimingSocket;
 
 	private Coroutine m_aimCoroutine;
 	private Tween m_recolTween;
 
 	private void Awake ()
 	{
+		if (offHandGrabSocket == null)
+			CreateOffHandSocket();
+
 		m_defaultHandPivotRotation = handGrabSocket.localRotation;
+		if (offHandGrabSocket != null)
+			m_defaultOffHandPivotRotation = offHandGrabSocket.localRotation;
+	}
+
+	public Transform GetGrabSocket ( int _armIndex )
+	{
+		return _armIndex % 2 == 1 && offHandGrabSocket != null ? offHandGrabSocket : handGrabSocket;
+	}
+
+	private AvatarIKGoal GetIKGoalOf ( Transform _socket )
+	{
+		Transform leftHand = GetTransform(CharacterBodyPart.LeftHand);
+		return _socket != null && leftHand != null && _socket.IsChildOf(leftHand) ? AvatarIKGoal.LeftHand : AvatarIKGoal.RightHand;
+	}
+
+	[Button, HideIf("offHandGrabSocket")]
+	public void CreateOffHandSocket ()
+	{
+		if (offHandGrabSocket != null || handGrabSocket == null || handGrabSocket.parent == null)
+			return;
+
+		Transform mainHand = handGrabSocket.parent;
+		Transform leftHand = GetTransform(CharacterBodyPart.LeftHand);
+		Transform rightHand = GetTransform(CharacterBodyPart.RightHand);
+		Transform offHand = mainHand == leftHand ? rightHand : leftHand;
+		if (offHand == null || offHand == mainHand)
+			return;
+
+		Vector3 mirrorNormal = GetMirrorNormal(mainHand, offHand);
+
+		GameObject socket = new() { name = "OffHandGrabSocket" };
+		socket.transform.SetParent(offHand, false);
+		socket.transform.localScale = handGrabSocket.localScale;
+		socket.transform.position = offHand.position + Vector3.Reflect(handGrabSocket.position - mainHand.position, mirrorNormal);
+		socket.transform.rotation = Quaternion.LookRotation(Vector3.Reflect(handGrabSocket.forward, mirrorNormal), Vector3.Reflect(handGrabSocket.up, mirrorNormal));
+
+		offHandGrabSocket = socket.transform;
+	}
+
+	private Vector3 GetMirrorNormal ( Transform _mainHand, Transform _offHand )
+	{
+		if (animator != null && animator.isHuman)
+		{
+			Transform leftArm = animator.GetBoneTransform(HumanBodyBones.LeftUpperArm);
+			Transform rightArm = animator.GetBoneTransform(HumanBodyBones.RightUpperArm);
+			if (leftArm != null && rightArm != null && (rightArm.position - leftArm.position).sqrMagnitude > .0001f)
+				return (rightArm.position - leftArm.position).normalized;
+		}
+
+		Vector3 betweenHands = _offHand.position - _mainHand.position;
+		return betweenHands.sqrMagnitude > .0001f ? betweenHands.normalized : transform.right;
 	}
 
 	[Button()]
@@ -112,16 +169,35 @@ public class HumanoidEntityIK : MonoBehaviour
 
 	public void OnFire ()
 	{
+		Transform hand = m_aimingSocket != null && m_aimingSocket.parent != null
+			? m_aimingSocket.parent : GetTransform(CharacterBodyPart.RightHand);
+		if (hand == null)
+			return;
+
 		m_recolTween.Kill();
-		m_recolTween = bodypartsTransform[CharacterBodyPart.RightHand].DOPunchRotation(Vector3.right * 5f, .2f, 0, 0f);
+		m_recolTween = hand.DOPunchRotation(Vector3.right * 5f, .2f, 0, 0f);
 	}
 
 	public void Aim ( Vector3 _position )
 	{
+		Aim(handGrabSocket, _position);
+	}
+
+	public void Aim ( Transform _socket, Vector3 _position )
+	{
 		if (!TryStopAimCoroutine())
 			return;
 
-		m_aimCoroutine = StartCoroutine(AimPositionCR(_position));
+		Transform socket = _socket != null ? _socket : handGrabSocket;
+		if (m_aimingSocket != null && m_aimingSocket != socket)
+			ResetSocketRotation(m_aimingSocket);
+
+		m_aimingSocket = socket;
+		bool isLeftHand = GetIKGoalOf(socket) == AvatarIKGoal.LeftHand;
+		leftHandTarget = isLeftHand ? _position : null;
+		rightHandTarget = isLeftHand ? null : _position;
+
+		m_aimCoroutine = StartCoroutine(AimPositionCR(m_aimingSocket, _position));
 	}
 
 	public void Aim ( Entity _target )
@@ -129,7 +205,8 @@ public class HumanoidEntityIK : MonoBehaviour
 		if (!TryStopAimCoroutine())
 			return;
 
-		m_aimCoroutine = StartCoroutine(AimEntityCR(_target));
+		m_aimingSocket = handGrabSocket;
+		m_aimCoroutine = StartCoroutine(AimEntityCR(m_aimingSocket, _target));
 	}
 
 	private bool TryStopAimCoroutine ()
@@ -141,20 +218,20 @@ public class HumanoidEntityIK : MonoBehaviour
 		return isActiveAndEnabled;
 	}
 
-	IEnumerator AimEntityCR ( Entity _target )
+	IEnumerator AimEntityCR ( Transform _socket, Entity _target )
 	{
 		while (true)
 		{
-			handGrabSocket.LookAt(_target.transform.position + Vector3.up);
+			_socket.LookAt(_target.transform.position + Vector3.up);
 			yield return null;
 		}
 	}
 
-	IEnumerator AimPositionCR ( Vector3 _position )
+	IEnumerator AimPositionCR ( Transform _socket, Vector3 _position )
 	{
 		while (true)
 		{
-			handGrabSocket.LookAt(_position);
+			_socket.LookAt(_position);
 			yield return null;
 		}
 	}
@@ -164,7 +241,16 @@ public class HumanoidEntityIK : MonoBehaviour
 		TryStopAimCoroutine();
 
 		rightHandTarget = null;
-		handGrabSocket.localRotation = m_defaultHandPivotRotation;
+		leftHandTarget = null;
+		m_aimingSocket = null;
+		ResetSocketRotation(handGrabSocket);
+		ResetSocketRotation(offHandGrabSocket);
+	}
+
+	private void ResetSocketRotation ( Transform _socket )
+	{
+		if (_socket != null)
+			_socket.localRotation = _socket == offHandGrabSocket ? m_defaultOffHandPivotRotation : m_defaultHandPivotRotation;
 	}
 
 	[Button, HideIf("handGrabSocket")]

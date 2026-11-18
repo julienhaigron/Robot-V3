@@ -39,6 +39,7 @@ public class EntityActionDisplay :
 	[SerializeField] private Sprite m_designatedTargetSprite;
 	[SerializeField] private Color m_autoTargetColor = new(.78f, .8f, .84f);
 	[SerializeField] private Color m_designatedTargetColor = new(1f, .66f, .23f);
+	[SerializeField] private Color m_lockedFacingColor = new(.55f, .57f, .6f, .75f);
 
 	private TurnManager.RecordedAction m_recordedAction;
 	public TurnManager.RecordedAction RecordedAction => m_recordedAction;
@@ -71,11 +72,19 @@ public class EntityActionDisplay :
 	private void OnEnable ()
 	{
 		TurnManager.onDesignatedTargetsChanged += OnDesignatedTargetsChanged;
+		TurnManager.onFacingOrdersChanged += OnFacingOrdersChanged;
 	}
 
 	private void OnDisable ()
 	{
 		TurnManager.onDesignatedTargetsChanged -= OnDesignatedTargetsChanged;
+		TurnManager.onFacingOrdersChanged -= OnFacingOrdersChanged;
+	}
+
+	private void OnFacingOrdersChanged ( TurnManager.RecordedAction _host )
+	{
+		if (m_recordedAction != null && m_recordedAction == _host)
+			Init(m_recordedAction, m_isLeftAngleRectangle);
 	}
 
 	private void OnDesignatedTargetsChanged ( AEntityAction _action )
@@ -109,9 +118,14 @@ public class EntityActionDisplay :
 		bool clickedModAction = eventData.pointerPressRaycast.gameObject == m_modActionIconImg.gameObject;
 		bool selectModAction = clickedModAction && GetDisplayedFreeAction() != null;
 
+		if (clickedModAction && IsLockedFacing())
+			return;
+
 		if (eventData.button == PointerEventData.InputButton.Right)
 		{
-			if (clickedModAction)
+			if (clickedModAction && GetDisplayedFreeAction() is RotateEntityAction)
+				TurnManager.Instance.RemoveFacingOrderOf(m_recordedAction);
+			else if (clickedModAction)
 			{
 				m_recordedAction.freeAction = null;
 				m_recordedAction.freeActionType = EntityActionEnumID.Wait;
@@ -164,11 +178,17 @@ public class EntityActionDisplay :
 			return;
 
 		TurnManager.Instance.RefreshActionDisplay(m_recordedAction.action.performingEntityID, false, m_recordedAction.action.TimeAtEnd);
+
+		if (!TurnManager.Instance.IsFacingPickerOpen && GetDisplayedFreeAction() is RotateEntityAction rotation && rotation.FacingOrientation >= 0)
+			PlayerController.Instance.ShowFacingConePreview(m_recordedAction.action.PerformingEntity, rotation.GetPivotOn(m_recordedAction), rotation.FacingOrientation);
 	}
 
 	public void OnPointerExit ( PointerEventData eventData )
 	{
 		ToolTipManager.Instance.Hide();
+
+		if (!TurnManager.Instance.IsFacingPickerOpen && m_recordedAction != null && GetDisplayedFreeAction() is RotateEntityAction)
+			PlayerController.Instance.ClearRangePreviewOutlines();
 
 		if (m_selectedDisplay == this || m_recordedAction == null || TurnManager.Instance.currentPhase != TurnManager.TurnPhase.Recording || !gameObject.activeInHierarchy)
 			return;
@@ -306,7 +326,8 @@ public class EntityActionDisplay :
 		CacheIconBaseColors();
 
 		RefreshMissingTargetOn(m_actionIconImg, m_recordedAction.action, m_missingTargetIconGO, m_actionIconBaseColor);
-		RefreshMissingTargetOn(m_modActionIconImg, GetDisplayedFreeAction(), m_missingTargetModIconGO, m_modActionIconBaseColor);
+		RefreshMissingTargetOn(m_modActionIconImg, GetDisplayedFreeAction(), m_missingTargetModIconGO
+			, IsLockedFacing() ? m_lockedFacingColor : m_modActionIconBaseColor);
 		RefreshTargetBadge();
 	}
 
@@ -325,10 +346,19 @@ public class EntityActionDisplay :
 		m_targetBadgeImg.color = action.HasDesignatedTargets ? m_designatedTargetColor : m_autoTargetColor;
 	}
 
+	private bool IsLockedFacing ()
+	{
+		return m_recordedAction != null && GetDisplayedFreeAction() is RotateEntityAction { isFacingOrder: false };
+	}
+
 	private string GetTooltipDescription ()
 	{
 		AEntityAction action = m_recordedAction.action;
 		string description = action.Data.GetDescription();
+		if (GetDisplayedFreeAction() is RotateEntityAction rotation)
+			description += "\n" + LocalizationManager.Instance.Get(rotation.isFacingOrder
+				? LocalizationKey.action_desc_facing_order : LocalizationKey.action_desc_facing_locked);
+
 		if (!TurnManager.CanDesignateTargetsOf(action) || !action.HasDesignatedTargets)
 			return description;
 

@@ -21,6 +21,7 @@ public class TurnManager : Singleton<TurnManager>
 	public static Action onEndLevel;
 	public static Action onActionTargetsChanged;
 	public static Action<AEntityAction> onDesignatedTargetsChanged;
+	public static Action<RecordedAction> onFacingOrdersChanged;
 	
 	public static int currentTick = 0;
 	public bool IsLastTickOfRound => currentTick >= GameConfig.current.game.actionTokenPerRound - 1;
@@ -41,6 +42,8 @@ public class TurnManager : Singleton<TurnManager>
 	public SerializableDictionary<int, int> RemainingActionToken => m_remainingActionToken;
 
 	private readonly Dictionary<int, Entity.EntityState> m_stateOfLastPlayedAction = new();
+	private readonly HashSet<int> m_entitiesHoldingFacingOrder = new();
+	private FacingPicker m_facingPicker;
 
 	private List<RecordedAction> m_recordedConflict;
 
@@ -227,6 +230,7 @@ public class TurnManager : Singleton<TurnManager>
 	private void OnEntitySelected ( int? _selectedEntity )
 	{
 		EndDesignationWindow();
+		CloseFacingPicker(false);
 		PlayerController.Instance.ClearHoverPreviews();
 
 		if (EntityActionDisplay.SelectedDisplay != null)
@@ -262,7 +266,15 @@ public class TurnManager : Singleton<TurnManager>
 	private void OnActionDisplaySelected ( EntityActionDisplay _selectedDisplay, bool _isModAction )
 	{
 		EndDesignationWindow();
+		CloseFacingPicker(false);
 		PlayerController.Instance.ClearHoverPreviews();
+
+		if (_selectedDisplay != null && _isModAction && _selectedDisplay.RecordedAction.freeAction is RotateEntityAction { isFacingOrder: true })
+		{
+			hasModActionSelected = true;
+			if (TryOpenFacingPicker(_selectedDisplay.RecordedAction.action.PerformingEntity, _selectedDisplay.RecordedAction))
+				return;
+		}
 
 		if (_selectedDisplay != null)
 		{
@@ -321,6 +333,8 @@ public class TurnManager : Singleton<TurnManager>
 		m_trackedEventsPerEntity.Clear();
 		m_entireGameTrackedEventsPerEntity.Clear();
 		m_stateOfLastPlayedAction.Clear();
+		m_entitiesHoldingFacingOrder.Clear();
+		CloseFacingPicker(false);
 	}
 
 	public void TrackEntireGameAction ( int _entityID, EntityActionEnumID _actionType )
@@ -372,6 +386,8 @@ public class TurnManager : Singleton<TurnManager>
 		if (GameAssets.current.game.entityActionsData[_action].GetMainActionType() != EntityActionData.MainActionType.Movement)
 			EndDesignationWindow();
 
+		bool wasPickingFacing = IsFacingPickerOpen;
+		CloseFacingPicker(false);
 		hasModActionSelected = false;
 		m_currentActionTypeSelected = _action;
 		m_currentEquipmentLinkedToActionTypeSelected = _linkedEquipmentID;
@@ -383,6 +399,9 @@ public class TurnManager : Singleton<TurnManager>
 			m_currentEntityAction.OnSelectActionTileInteractPredicatePrewarm();
 			onActionSelected?.Invoke(m_currentEntityAction);
 		}
+
+		if (wasPickingFacing)
+			RefreshActionDisplay(performingEntityID, false);
 	}
 
 	public void SetCurrentModActionSelected ( EntityActionEnumID _action, string _linkedEquipmentID, bool _isResetingAction )
@@ -395,6 +414,8 @@ public class TurnManager : Singleton<TurnManager>
 			? m_recordedActionInput[performingEntityID].ToArray()[^1].action.TimeAtEnd : currentTick;
 
 		EndDesignationWindow();
+		bool wasPickingFacing = IsFacingPickerOpen;
+		CloseFacingPicker(false);
 		hasModActionSelected = true;
 		m_currentModActionTypeSelected = _action;
 		m_currentEquipmentLinkedToActionTypeSelected = _linkedEquipmentID;
@@ -407,6 +428,9 @@ public class TurnManager : Singleton<TurnManager>
 			m_currentEntityAction.OnSelectActionTileInteractPredicatePrewarm();
 			onActionSelected?.Invoke(m_currentEntityAction);
 		}
+
+		if (wasPickingFacing)
+			RefreshActionDisplay(performingEntityID, false);
 	}
 
 	public void AddTargetTileInCurrentAction ( Tile _tile )
@@ -690,6 +714,259 @@ public class TurnManager : Singleton<TurnManager>
 			PlayerController.Instance.ClearTargetOutlines();
 	}
 
+	public sealed class FacingPicker
+	{
+		public int entityID;
+		public Tile pivot;
+		public RecordedAction host;
+		public RotateEntityAction probe;
+		public int hoveredOrientation = -1;
+	}
+
+	public bool IsFacingPickerOpen => m_facingPicker != null;
+
+	public static bool CanHostFacingOrder ( RecordedAction _recordedAction )
+	{
+		if (_recordedAction == null || _recordedAction.action == null)
+			return false;
+
+		bool hasFreeSlot = !HasFreeAction(_recordedAction) || _recordedAction.freeAction is RotateEntityAction { isFacingOrder: true };
+		EntityActionData.ActionCodeType codeType = _recordedAction.action.Data.codeType;
+		return hasFreeSlot && (codeType == EntityActionData.ActionCodeType.Wait || codeType == EntityActionData.ActionCodeType.TargetTileMove);
+	}
+
+	public static bool HasFreeAction ( RecordedAction _recordedAction )
+	{
+		return _recordedAction != null && _recordedAction.freeAction != null
+			&& _recordedAction.freeActionType != EntityActionEnumID.Wait
+			&& _recordedAction.freeActionType != EntityActionEnumID.Unknowned;
+	}
+
+	public bool TryOpenFacingPickerAt ( Entity _entity, Tile _tile )
+	{
+		if (_tile == null || _entity == null || EntityActionDisplay.SelectedDisplay != null
+			|| _tile.coordinates.ID != GetLastRegisteredPositionOfEntity(_entity.ID))
+			return false;
+
+		RecordedAction lastRecordedAction = GetLastRecordedAction(_entity.ID);
+		bool hasHost = lastRecordedAction != null && CanHostFacingOrder(lastRecordedAction);
+		bool canAddWait = m_remainingActionToken.TryGetValue(_entity.ID, out int remainingTokens) && remainingTokens > 0;
+
+		return (hasHost || canAddWait) && TryOpenFacingPicker(_entity, null);
+	}
+
+	private bool TryOpenFacingPicker ( Entity _entity, RecordedAction _host )
+	{
+		if (currentPhase != TurnPhase.Recording || _entity == null || _entity.Equipment.IsDead
+			|| !_entity.IsAlliedTo(GameManager.Instance.PlayerID))
+			return false;
+
+		Tile pivot = GridManager.Instance.Tiles[_host != null ? _host.action.positionAtActionEndID : GetLastRegisteredPositionOfEntity(_entity.ID)];
+		RotateEntityAction probe = GetAction(EntityActionEnumID.RotateEntity, _entity.ID, null, currentTick) as RotateEntityAction;
+		if (probe == null)
+			return false;
+
+		CloseFacingPicker(false);
+		EndDesignationWindow();
+		PlayerController.Instance.ClearHoverPreviews();
+		m_currentActionTargetTiles.Clear();
+
+		probe.supposedPositionAtActionStartID = pivot.coordinates.ID;
+		probe.positionAtActionEndID = pivot.coordinates.ID;
+		m_facingPicker = new FacingPicker { entityID = _entity.ID, pivot = pivot, host = _host, probe = probe };
+
+		onActionSelected?.Invoke(probe);
+		RefreshFacingPicker(null);
+		return true;
+	}
+
+	public bool IsFacingPickerOption ( Tile _tile )
+	{
+		return m_facingPicker != null && m_facingPicker.probe.TileInteractPredicate(_tile);
+	}
+
+	public void RefreshFacingPicker ( Tile _hoveredTile )
+	{
+		if (m_facingPicker == null)
+			return;
+
+		m_facingPicker.hoveredOrientation = IsFacingPickerOption(_hoveredTile)
+			? GridManager.Instance.GetClosestOrientation(m_facingPicker.pivot, _hoveredTile) : -1;
+
+		RefreshActionDisplay(m_facingPicker.entityID, false, GetFacingPickerTokenCount());
+	}
+
+	private int GetFacingPickerTokenCount ()
+	{
+		if (m_facingPicker.host != null)
+			return m_facingPicker.host.action.TimeAtEnd;
+
+		RecordedAction lastRecordedAction = GetLastRecordedAction(m_facingPicker.entityID);
+		return lastRecordedAction == null ? 0 : lastRecordedAction.action.TimeAtEnd;
+	}
+
+	private void DrawFacingPicker ()
+	{
+		if (m_facingPicker == null || !GameManager.Instance.GetEntityFromID(out Entity entity, m_facingPicker.entityID))
+			return;
+
+		int plannedOrientation = GetPlannedOrientationOf(m_facingPicker.entityID, GetFacingPickerTokenCount());
+		int shownOrientation = m_facingPicker.hoveredOrientation >= 0 ? m_facingPicker.hoveredOrientation : plannedOrientation;
+
+		PlayerController.Instance.ShowFacingPicker(entity, m_facingPicker.pivot, shownOrientation, GetDefaultStateOf(entity));
+	}
+
+	public bool TryValidateFacing ( Tile _tile )
+	{
+		if (!IsFacingPickerOption(_tile))
+			return false;
+
+		FacingPicker picker = m_facingPicker;
+		int orientation = GridManager.Instance.GetClosestOrientation(picker.pivot, _tile);
+		RecordedAction host = picker.host ?? GetLastRecordedAction(picker.entityID);
+		bool canHost = host != null && CanHostFacingOrder(host) && host.action.positionAtActionEndID == picker.pivot.coordinates.ID;
+
+		if (!canHost && (!m_remainingActionToken.TryGetValue(picker.entityID, out int remainingTokens) || remainingTokens <= 0))
+			return false;
+
+		int timeAtStart = canHost ? host.action.timeAtStart : GetFacingPickerTokenCount();
+		RotateEntityAction facingOrder = GetAction(EntityActionEnumID.RotateEntity, picker.entityID, null, timeAtStart) as RotateEntityAction;
+		facingOrder.SetFacingOrder(picker.pivot, orientation, _tile);
+
+		CloseFacingPicker();
+
+		if (canHost)
+		{
+			host.AddActionMod(facingOrder, false);
+			onActionTargetsChanged?.Invoke();
+			onFacingOrdersChanged?.Invoke(host);
+		}
+		else
+			RegisterActionAndMod(picker.entityID, GetAction(EntityActionEnumID.Wait, picker.entityID, null, timeAtStart), facingOrder, GetDefaultStateOf(picker.entityID));
+
+		RefreshActionDisplay(picker.entityID, true);
+		return true;
+	}
+
+	public void RemoveFacingOrderOf ( RecordedAction _host )
+	{
+		if (_host == null || _host.freeAction is not RotateEntityAction { isFacingOrder: true })
+			return;
+
+		if (m_facingPicker != null && m_facingPicker.host == _host)
+			CloseFacingPicker();
+
+		_host.freeAction = null;
+		_host.freeActionType = EntityActionEnumID.Wait;
+
+		onActionTargetsChanged?.Invoke();
+		onFacingOrdersChanged?.Invoke(_host);
+		RefreshActionDisplay(_host.action.performingEntityID, false);
+	}
+
+	public void CloseFacingPicker ( bool _restoreSelection = true )
+	{
+		if (m_facingPicker == null)
+			return;
+
+		RecordedAction host = m_facingPicker.host;
+		m_facingPicker = null;
+
+		if (PlayerController.Instance == null)
+			return;
+
+		PlayerController.Instance.ClearRangePreviewOutlines();
+
+		if (!_restoreSelection)
+			return;
+
+		if (host != null && EntityActionDisplay.SelectedDisplay != null && EntityActionDisplay.SelectedDisplay.RecordedAction == host)
+		{
+			EntityActionDisplay.SelectedDisplay.Deselect();
+			return;
+		}
+
+		if (m_currentEntityAction != null && PlayerController.Instance.SelectedEntity != null
+			&& m_currentEntityAction.performingEntityID == PlayerController.Instance.SelectedEntity.ID)
+		{
+			m_currentEntityAction.OnSelectActionTileInteractPredicatePrewarm();
+			onActionSelected?.Invoke(m_currentEntityAction);
+		}
+
+		RefreshActionDisplay(PlayerController.Instance.SelectedEntity != null ? PlayerController.Instance.SelectedEntity.ID : null, false);
+	}
+
+	private void CloseFacingPickerOf ( int _entityID )
+	{
+		if (m_facingPicker != null && m_facingPicker.entityID == _entityID)
+			CloseFacingPicker(false);
+	}
+
+	private RecordedAction GetLastRecordedAction ( int _entityID )
+	{
+		return m_recordedActionInput.TryGetValue(_entityID, out Queue<RecordedAction> queue) && queue != null && queue.Count > 0
+			? queue.ToArray()[^1] : null;
+	}
+
+	public int GetPlannedOrientationOf ( int _entityID, int _tokenCount = int.MaxValue )
+	{
+		Entity entity = GameManager.Instance.GetEntityFromID(_entityID);
+		int orientation = entity == null ? 0 : entity.Displacement.CurrentOrientation;
+		if (!m_recordedActionInput.TryGetValue(_entityID, out Queue<RecordedAction> queue) || queue == null)
+			return orientation;
+
+		int totalCost = 0;
+		foreach (RecordedAction recordedAction in queue)
+		{
+			totalCost += recordedAction.action.TotalDuration;
+			if (totalCost > _tokenCount)
+				break;
+
+			orientation = GetPlannedOrientationAfter(recordedAction, orientation);
+		}
+
+		return orientation;
+	}
+
+	public static int GetPlannedOrientationAfter ( RecordedAction _recordedAction, int _orientationBefore )
+	{
+		RotateEntityAction rotation = HasFreeAction(_recordedAction) ? _recordedAction.freeAction as RotateEntityAction : null;
+		bool hasRotation = rotation != null && rotation.FacingOrientation >= 0;
+
+		if (hasRotation && rotation.IsPlayedFirst)
+			return rotation.FacingOrientation;
+
+		int orientation = GetMovementFacingOf(_recordedAction.action, _orientationBefore);
+		return hasRotation ? rotation.FacingOrientation : orientation;
+	}
+
+	private static int GetMovementFacingOf ( AEntityAction _action, int _orientationBefore )
+	{
+		Tile[] tiles = GridManager.Instance.Tiles;
+		if (_action is MoveToTargetAction moveAction && moveAction.targetTileIDs != null && moveAction.targetTileIDs.Length > 0)
+		{
+			int walkedTileCount = Mathf.Min(moveAction.targetTileIDs.Length, Mathf.Max(1, moveAction.Data.movementSpeed));
+			int lastTileID = moveAction.targetTileIDs[walkedTileCount - 1];
+			int previousTileID = walkedTileCount > 1 ? moveAction.targetTileIDs[walkedTileCount - 2] : moveAction.supposedPositionAtActionStartID;
+
+			return IsValidTileID(lastTileID) && IsValidTileID(previousTileID) && lastTileID != previousTileID
+				? GridManager.Instance.GetClosestOrientation(tiles[previousTileID], tiles[lastTileID])
+				: _orientationBefore;
+		}
+
+		if (_action.Data.codeType == EntityActionData.ActionCodeType.JumpMove
+			&& IsValidTileID(_action.supposedPositionAtActionStartID) && IsValidTileID(_action.positionAtActionEndID)
+			&& _action.supposedPositionAtActionStartID != _action.positionAtActionEndID)
+			return GridManager.Instance.GetClosestOrientation(tiles[_action.supposedPositionAtActionStartID], tiles[_action.positionAtActionEndID]);
+
+		return _orientationBefore;
+	}
+
+	private static bool IsValidTileID ( int _tileID )
+	{
+		return _tileID >= 0 && _tileID < GridManager.Instance.Tiles.Length;
+	}
+
 	public AEntityAction GetAction ( EntityActionEnumID _actionType, int _performingEntityID, string _linkedEquipmentID, int _timeAtStart )
 	{
 		return GetAction(GameAssets.current.game.entityActionsData[_actionType], _performingEntityID, _linkedEquipmentID, _timeAtStart);
@@ -803,6 +1080,7 @@ public class TurnManager : Singleton<TurnManager>
 	public bool RegisterActionAndMod( int _entityID, AEntityAction _action, AEntityAction _modAction, Entity.EntityState _state )
 	{
 		EndDesignationWindow();
+		CloseFacingPickerOf(_entityID);
 		if (m_recordedActionInput.ContainsKey(_entityID) == false)
 			m_recordedActionInput.Add(_entityID, new());
 
@@ -862,6 +1140,7 @@ public class TurnManager : Singleton<TurnManager>
 	public bool AddAction ( int _entityID, AEntityAction _action, Entity.EntityState _state )
 	{
 		EndDesignationWindow();
+		CloseFacingPickerOf(_entityID);
 		if (m_recordedActionInput.ContainsKey(_entityID) == false)
 			m_recordedActionInput.Add(_entityID, new());
 
@@ -918,6 +1197,8 @@ public class TurnManager : Singleton<TurnManager>
 		if (!m_recordedActionInput.ContainsKey(_actionToStartRemoveFrom.performingEntityID)
 			|| m_recordedActionInput[_actionToStartRemoveFrom.performingEntityID].Count <= _recordedActionPositionInQueue)
 			return;
+
+		CloseFacingPickerOf(_actionToStartRemoveFrom.performingEntityID);
 
 		List<RecordedAction> actionQueue = m_recordedActionInput[_actionToStartRemoveFrom.performingEntityID].ToList();
 		for (int i = actionQueue.Count - 1; i >= _recordedActionPositionInQueue; i--)
@@ -1025,20 +1306,7 @@ public class TurnManager : Singleton<TurnManager>
 
 	public int GetLastRegisteredOrientationOfEntity(int _entityID )
 	{
-		int orientation = GameManager.Instance.GetEntityFromID(_entityID).Displacement.CurrentOrientation;
-		if (!m_recordedActionInput.ContainsSerializedKey(_entityID) || m_recordedActionInput[_entityID] == null || m_recordedActionInput[_entityID].Count == 0)
-			return orientation;
-
-		foreach(RecordedAction recordedAction in m_recordedActionInput[_entityID])
-		{
-			//Type match rather than enumID: there are two rotations now, RotateEntity aimed at a tile and
-			//RotateToEntity aimed at an entity, and both end up in this slot.
-			if (recordedAction.freeAction is RotateEntityAction rotateEntityAction
-				&& rotateEntityAction.targetedOrientationID != null && rotateEntityAction.targetedOrientationID.Length > 0)
-				orientation = rotateEntityAction.targetedOrientationID[^1];
-		}
-
-		return orientation;
+		return GetPlannedOrientationOf(_entityID);
 	}
 
 	public int GetPositionOfEntityAtEndOfRound ( int _entityID )
@@ -1120,9 +1388,7 @@ public class TurnManager : Singleton<TurnManager>
 				if (_specificTokenCount != -1 && totalCost <= _specificTokenCount)
 				{
 					lastRecordedPosition = GridManager.Instance.Tiles[recordedAction.action.positionAtActionEndID];
-					if (recordedAction.freeAction is RotateEntityAction rotateEntityAction
-						&& rotateEntityAction.targetedOrientationID != null && rotateEntityAction.targetedOrientationID.Length > 0)
-						lastRecordedOrientation = rotateEntityAction.targetedOrientationID[^1];
+					lastRecordedOrientation = GetPlannedOrientationAfter(recordedAction, lastRecordedOrientation);
 				}
 			}
 
@@ -1147,6 +1413,7 @@ public class TurnManager : Singleton<TurnManager>
 
 		PlayerController.Instance.RedrawTargetOutlines();
 		PlayerController.Instance.RefreshTargetMarkers();
+		DrawFacingPicker();
 	}
 
 	[Button]
@@ -1191,17 +1458,30 @@ public class TurnManager : Singleton<TurnManager>
 			if (lastState.Value != Entity.EntityState.Patroling && lastState.Value != Entity.EntityState.Fleeing)
 				continue;
 
+			if (m_entitiesHoldingFacingOrder.Contains(lastState.Key))
+				continue;
+
 			if (GameManager.Instance.GetEntityFromID(out Entity entity, lastState.Key))
 				entity.AI.FaceClosestVisibleEnemy();
 		}
 
 		m_stateOfLastPlayedAction.Clear();
+		m_entitiesHoldingFacingOrder.Clear();
+	}
+
+	private void TrackFacingOrder ( RecordedAction _recordedAction, bool _doesPlayFreeAction )
+	{
+		if (_doesPlayFreeAction && _recordedAction.freeAction is RotateEntityAction { isFacingOrder: true })
+			m_entitiesHoldingFacingOrder.Add(_recordedAction.performingEntityID);
+		else if (_recordedAction.action.Data.codeType != EntityActionData.ActionCodeType.Wait)
+			m_entitiesHoldingFacingOrder.Remove(_recordedAction.performingEntityID);
 	}
 
 	[Button]
 	public void EndInputPhase ()
 	{
 		EndDesignationWindow();
+		CloseFacingPicker(false);
 		currentPhase = TurnPhase.Calculating;
 
 		//A half picked action leaves its tiles here, and the next AddAction takes them for its own - which
@@ -1540,7 +1820,7 @@ public class TurnManager : Singleton<TurnManager>
 		Entity performingEntity = GameManager.Instance.GetEntityFromID(_recordedAction.performingEntityID);
 		int currentOrientation = performingEntity == null ? -1 : performingEntity.Displacement.CurrentOrientation;
 
-		if (!DoesPlayFreeActionAtTick(_recordedAction))
+		if (!DoesPlayFreeActionAtTick(_recordedAction) || !_recordedAction.freeAction.IsPlayedFirst)
 			return currentOrientation;
 
 		return _recordedAction.freeAction is RotateEntityAction rotateAction
@@ -1554,12 +1834,14 @@ public class TurnManager : Singleton<TurnManager>
 	{
 		m_stateOfLastPlayedAction[_recordedAction.performingEntityID] = _recordedAction.entityState;
 		bool doesPlayFreeAction = DoesPlayFreeActionAtTick(_recordedAction);
+		bool isFreeActionPlayedFirst = doesPlayFreeAction && _recordedAction.freeAction.IsPlayedFirst;
 
-		_recordedAction.action.doesFreeActionOwnFacing = doesPlayFreeAction && IsRotationFreeAction(_recordedAction);
+		_recordedAction.action.doesFreeActionOwnFacing = isFreeActionPlayedFirst && IsRotationFreeAction(_recordedAction);
+		TrackFacingOrder(_recordedAction, doesPlayFreeAction);
 
 		if (doesPlayFreeAction)
 		{
-			if (_recordedAction.freeAction.Data.isPlayedFirst)
+			if (isFreeActionPlayedFirst)
 			{
 				_recordedAction.freeAction.onEndTick = ( performingEntity, didEndAction ) =>
 				{
@@ -1570,9 +1852,16 @@ public class TurnManager : Singleton<TurnManager>
 			}
 			else
 			{
-				_recordedAction.action.onEndTick = ( performingEntity, didEndAction ) =>
+				_recordedAction.action.onEndTick = ( performingEntityID, didEndMainAction ) =>
 				{
-					_recordedAction.freeAction.onEndTick = OnActionEndTick;
+					Entity performer = GameManager.Instance.GetEntityFromID(performingEntityID);
+					if (performer == null || performer.Equipment.IsDead)
+					{
+						OnActionEndTick(performingEntityID, didEndMainAction);
+						return;
+					}
+
+					_recordedAction.freeAction.onEndTick = ( entityID, _ ) => OnActionEndTick(entityID, didEndMainAction);
 					_recordedAction.freeAction.PerformTick(_recordedAction.entityState);
 				};
 				_recordedAction.action.PerformTick(_recordedAction.entityState);

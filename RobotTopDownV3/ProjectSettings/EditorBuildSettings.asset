@@ -24,6 +24,9 @@ EditorBuildSettings:
     path: Assets/Scenes/HubScene.unity
     guid: 826e7b235e8c61b4b8d9eee5f90754f5
   - enabled: 1
+    path: Assets/Scenes/HangarScene.unity
+    guid: b0d8b43cf4aa20b6a57247040a2174bd
+  - enabled: 1
     path: Assets/Scenes/FTUE/Day0Tuto.unity
     guid: e66d81656d18efc4e89c6a77824481f6
   - enabled: 1

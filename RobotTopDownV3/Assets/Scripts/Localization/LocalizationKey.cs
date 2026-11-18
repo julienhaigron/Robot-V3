@@ -558,6 +558,8 @@ public enum LocalizationKey
     action_desc_undesignate_click,
     log_designated_target_lost,
     log_designated_target_fallback,
+    action_desc_facing_order,
+    action_desc_facing_locked,
 }
 
 public static class LocalizationKeyExtensions
@@ -1123,6 +1125,8 @@ public static class LocalizationKeyExtensions
             case LocalizationKey.action_desc_undesignate_click: return "action_desc/undesignate_click";
             case LocalizationKey.log_designated_target_lost: return "log/designated_target_lost";
             case LocalizationKey.log_designated_target_fallback: return "log/designated_target_fallback";
+            case LocalizationKey.action_desc_facing_order: return "action_desc/facing_order";
+            case LocalizationKey.action_desc_facing_locked: return "action_desc/facing_locked";
             default: return string.Empty;
         }
     }

@@ -101,15 +101,17 @@ public class EntityEquipmentPlugin : EntityPlugin
 		//init weapon
 		if (_entityData.arms != null && _entityData.arms.Length > 0)
 		{
-			foreach (GameDatas.PlayerSave.Component stringContainer in _entityData.arms)
+			for (int armIndex = 0; armIndex < _entityData.arms.Length; armIndex++)
 			{
+				GameDatas.PlayerSave.Component stringContainer = _entityData.arms[armIndex];
 				if (stringContainer == null || !stringContainer.TryGetData(out EntityEquipmentData data))
 					continue;
 
+				Transform socket = m_linkedEntity.Skin.IK.GetGrabSocket(armIndex);
 				if (data is WeaponEquipmentData weaponData)
-					AddWeapon(weaponData, stringContainer.ID, m_linkedEntity.Displacement.Spawn.isFirstSide);
+					AddWeapon(weaponData, stringContainer.ID, socket, m_linkedEntity.Displacement.Spawn.isFirstSide);
 				else if (data is ToolEquipmentData toolData)
-					AddTool(toolData, stringContainer.ID, m_linkedEntity.Displacement.Spawn.isFirstSide);
+					AddTool(toolData, stringContainer.ID, socket, m_linkedEntity.Displacement.Spawn.isFirstSide);
 			}
 		}
 
@@ -234,9 +236,9 @@ public class EntityEquipmentPlugin : EntityPlugin
 		public Vector3 hitNormal;
 	}
 
-	private Weapon AddWeapon ( WeaponEquipmentData _data, string _id, bool _isFirstSide )
+	private Weapon AddWeapon ( WeaponEquipmentData _data, string _id, Transform _socket, bool _isFirstSide )
 	{
-		Weapon newWeapon = Instantiate(_data.prefab, m_linkedEntity.Skin.IK.handGrabSocket);
+		Weapon newWeapon = Instantiate(_data.prefab, _socket);
 		newWeapon.Init(m_linkedEntity, _data, _id, _isFirstSide);
 		newWeapon.transform.localScale = Vector3.one;
 		m_weapons.Add(newWeapon.ID, newWeapon);
@@ -356,6 +358,27 @@ public class EntityEquipmentPlugin : EntityPlugin
 		return CanCurveShot(_attackAction)
 			&& GridManager.Instance.TryGetCurvedShotTile(_attackAction.PerformingEntity, _targetEntity, _doesWinPFC
 				, _attackAction.Data.GetMaxRange(_attackAction, m_linkedEntity, null), out _curveTile);
+	}
+
+	public HashSet<Tile> GetWeaponConeTilesAt ( Tile _from, int _orientation )
+	{
+		HashSet<Tile> coneTiles = new();
+		if (_from == null || _orientation < 0 || m_linkedEntity.ComponentLinkedToAction == null)
+			return coneTiles;
+
+		foreach (KeyValuePair<EntityActionEnumID, List<string>> pair in m_linkedEntity.ComponentLinkedToAction)
+		{
+			EntityActionData data = GameAssets.current.game.entityActionsData.TryGetValue(pair.Key, out EntityActionData actionData) ? actionData : null;
+			if (data == null || pair.Value == null || pair.Value.Count == 0
+				|| (data.type != EntityActionData.ActionType.DistanceAttack && data.type != EntityActionData.ActionType.MeleeAttack))
+				continue;
+
+			AEntityAction action = TurnManager.Instance.GetAction(data, m_linkedEntity.ID, pair.Value[0], TurnManager.currentTick);
+			if (action != null)
+				coneTiles.UnionWith(GetTilesInWeaponRange(action, false, _from, _orientation, true));
+		}
+
+		return coneTiles;
 	}
 
 	public HashSet<Tile> GetTilesInReach ( AEntityAction _action, Tile _from, bool _isThisTurn = true, bool _ignoreVisibility = false )
@@ -599,9 +622,9 @@ public class EntityEquipmentPlugin : EntityPlugin
 
 	#region Tool
 
-	private ToolEquipment AddTool ( ToolEquipmentData _data, string _id, bool _isFirstSide )
+	private ToolEquipment AddTool ( ToolEquipmentData _data, string _id, Transform _socket, bool _isFirstSide )
 	{
-		ToolEquipment newTool = Instantiate(_data.prefab, m_linkedEntity.Skin.IK.handGrabSocket);
+		ToolEquipment newTool = Instantiate(_data.prefab, _socket);
 		newTool.Init(m_linkedEntity, _data, _id, _isFirstSide);
 		newTool.transform.localScale = Vector3.one;
 		m_tools.Add(newTool.ID, newTool);

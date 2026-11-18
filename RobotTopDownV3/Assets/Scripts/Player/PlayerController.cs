@@ -375,6 +375,16 @@ public class PlayerController : Singleton<PlayerController>
 		if (m_turnManager.TryToggleDesignatedTarget(_tile))
 			return;
 
+		if (m_turnManager.IsFacingPickerOpen)
+		{
+			if (!m_turnManager.TryValidateFacing(_tile))
+				m_turnManager.CloseFacingPicker();
+			return;
+		}
+
+		if (m_selectedEntity != null && !_tile.CanInteract && m_turnManager.TryOpenFacingPickerAt(m_selectedEntity, _tile))
+			return;
+
 		//Event => Select // unselect entity
 		if (_tile.TryGetEntity(true, out Entity _entity) && !_tile.CanInteract)
 		{
@@ -452,6 +462,12 @@ public class PlayerController : Singleton<PlayerController>
 
 		if (m_turnManager.TryRemoveDesignatedTarget(_tile))
 			return;
+
+		if (m_turnManager.IsFacingPickerOpen)
+		{
+			m_turnManager.CloseFacingPicker();
+			return;
+		}
 
 		AEntityAction action = EntityActionDisplay.SelectedDisplay != null
 			? (m_turnManager.hasModActionSelected ? EntityActionDisplay.SelectedDisplay.RecordedAction.freeAction : EntityActionDisplay.SelectedDisplay.RecordedAction.action)
@@ -551,6 +567,17 @@ public class PlayerController : Singleton<PlayerController>
 	private void OnTileHovered ( Tile _tile )
 	{
 		RefreshHoveredEntity(_tile);
+
+		if (m_turnManager.IsFacingPickerOpen)
+		{
+			if (_tile != m_hoveredTile)
+			{
+				m_hoveredTile = _tile;
+				m_turnManager.RefreshFacingPicker(_tile);
+			}
+			return;
+		}
+
 		RefreshDesignationHover(_tile, false);
 
 		if (EntityActionDisplay.SelectedDisplay == null && (_tile == null || !_tile.CanInteract))
@@ -787,7 +814,37 @@ public class PlayerController : Singleton<PlayerController>
 			? _action.PerformingEntity.Equipment.GetTilesInReach(_action, GridManager.Instance.Tiles[_action.supposedPositionAtActionStartID], false, true)
 			: GridManager.Instance.Tiles.Where(_action.TileInteractPredicate);
 
-		RangeOverlay.SetRange(rangeTiles, GameAssets.current.ui.GetActionRangeColor(_action.Data.GetMainActionType(), false));
+		EntityActionData.MainActionType colorType = _action is RotateEntityAction
+			? EntityActionData.MainActionType.Attack : _action.Data.GetMainActionType();
+		RangeOverlay.SetRange(rangeTiles, GameAssets.current.ui.GetActionRangeColor(colorType, false));
+	}
+
+	public void ShowFacingPicker ( Entity _entity, Tile _pivot, int _shownOrientation, Entity.EntityState _state )
+	{
+		AddGhostEntityAt(_entity, _pivot, _shownOrientation);
+
+		for (int orientation = 0; orientation < 6; orientation++)
+		{
+			if (_pivot.GetNeighbor((HexDirection)orientation) == null)
+				continue;
+
+			RotateEntityAction.ShowArrow(null, _entity.ID, _pivot, orientation
+				, RotateEntityAction.GetArrowMaterial(_state, orientation != _shownOrientation));
+		}
+
+		ShowFacingConePreview(_entity, _pivot, _shownOrientation);
+	}
+
+	public void ShowFacingConePreview ( Entity _entity, Tile _pivot, int _orientation )
+	{
+		HashSet<Tile> coneTiles = _entity == null ? null : _entity.Equipment.GetWeaponConeTilesAt(_pivot, _orientation);
+		if (coneTiles == null || coneTiles.Count == 0)
+		{
+			RangeOverlay.ClearPreview();
+			return;
+		}
+
+		RangeOverlay.SetPreview(coneTiles, GameAssets.current.ui.GetActionRangeColor(EntityActionData.MainActionType.Attack, true));
 	}
 
 	private void OnActionAddedOrRemoved ( TurnManager.RecordedAction _recordedAction )
@@ -824,7 +881,7 @@ public class PlayerController : Singleton<PlayerController>
 			return;
 		}
 
-		RangeOverlay.SetVisionPreview(GridManager.Instance.GetVisionTilesOf(_entity, _from), _entity.Data.NeuronalMembraneData.visionType);
+		RangeOverlay.SetVisionPreview(GridManager.Instance.GetVisionTilesOf(_entity, _from), _entity.Data.NeuronalMembraneData.visionType, _from);
 	}
 
 	private void OnEntitySelected ( int? _entityID )
