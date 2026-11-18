@@ -1,3 +1,4 @@
+using System.Linq;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
@@ -33,6 +34,11 @@ public class EntityActionDisplay :
 	[SerializeField] private GameObject m_leftRedOutline;
 	[SerializeField] private Sprite m_hexagoneSprite;
 	[SerializeField] private Sprite m_hexagoneAndRectangleSprite;
+	[SerializeField] private Image m_targetBadgeImg;
+	[SerializeField] private Sprite m_autoTargetSprite;
+	[SerializeField] private Sprite m_designatedTargetSprite;
+	[SerializeField] private Color m_autoTargetColor = new(.78f, .8f, .84f);
+	[SerializeField] private Color m_designatedTargetColor = new(1f, .66f, .23f);
 
 	private TurnManager.RecordedAction m_recordedAction;
 	public TurnManager.RecordedAction RecordedAction => m_recordedAction;
@@ -61,6 +67,22 @@ public class EntityActionDisplay :
 	private Color m_actionIconBaseColor;
 	private Color m_modActionIconBaseColor;
 	private bool m_didCacheIconColors;
+
+	private void OnEnable ()
+	{
+		TurnManager.onDesignatedTargetsChanged += OnDesignatedTargetsChanged;
+	}
+
+	private void OnDisable ()
+	{
+		TurnManager.onDesignatedTargetsChanged -= OnDesignatedTargetsChanged;
+	}
+
+	private void OnDesignatedTargetsChanged ( AEntityAction _action )
+	{
+		if (m_recordedAction != null && m_recordedAction.action == _action)
+			RefreshTargetBadge();
+	}
 
 	public void Init ( TurnManager.RecordedAction _recordedAction, bool _isLeftAngleRectangle )
 	{
@@ -136,7 +158,7 @@ public class EntityActionDisplay :
 			return;
 
 		EntityActionData data = m_recordedAction.action.Data;
-		ToolTipManager.Instance.Show(data.GetLocalizedName(), data.GetDescription(), gameObject);
+		ToolTipManager.Instance.Show(data.GetLocalizedName(), GetTooltipDescription(), gameObject);
 
 		if (m_selectedDisplay == this || TurnManager.Instance.currentPhase != TurnManager.TurnPhase.Recording)
 			return;
@@ -285,6 +307,36 @@ public class EntityActionDisplay :
 
 		RefreshMissingTargetOn(m_actionIconImg, m_recordedAction.action, m_missingTargetIconGO, m_actionIconBaseColor);
 		RefreshMissingTargetOn(m_modActionIconImg, GetDisplayedFreeAction(), m_missingTargetModIconGO, m_modActionIconBaseColor);
+		RefreshTargetBadge();
+	}
+
+	private void RefreshTargetBadge ()
+	{
+		if (m_targetBadgeImg == null)
+			return;
+
+		AEntityAction action = m_recordedAction == null ? null : m_recordedAction.action;
+		bool isShown = TurnManager.CanDesignateTargetsOf(action);
+		m_targetBadgeImg.gameObject.SetActive(isShown);
+		if (!isShown)
+			return;
+
+		m_targetBadgeImg.sprite = action.HasDesignatedTargets ? m_designatedTargetSprite : m_autoTargetSprite;
+		m_targetBadgeImg.color = action.HasDesignatedTargets ? m_designatedTargetColor : m_autoTargetColor;
+	}
+
+	private string GetTooltipDescription ()
+	{
+		AEntityAction action = m_recordedAction.action;
+		string description = action.Data.GetDescription();
+		if (!TurnManager.CanDesignateTargetsOf(action) || !action.HasDesignatedTargets)
+			return description;
+
+		string targetNames = string.Join(", ", action.designatedEntityIDs
+			.Select(GameManager.Instance.GetEntityFromID)
+			.Where(entity => entity != null)
+			.Select(entity => entity.Data.name));
+		return description + "\n" + string.Format(LocalizationManager.Instance.Get(LocalizationKey.action_desc_designated_target), targetNames);
 	}
 
 	private AEntityAction GetDisplayedFreeAction ()

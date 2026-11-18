@@ -91,6 +91,11 @@ public class ToolTipManager : Singleton<ToolTipManager>
 		m_fadeCoroutine = StartCoroutine(FadeCanvas(1f));
 	}
 
+	public bool IsShownFor ( GameObject _owner )
+	{
+		return m_isActive && m_hasOwner && m_owner == _owner;
+	}
+
 	public void Hide ()
 	{
 		m_isActive = false;

@@ -58,6 +58,10 @@ public class PlayerController : Singleton<PlayerController>
 	private readonly List<Tile> m_targetTiles = new();
 	private readonly List<Tile> m_targetZoneTiles = new();
 
+	private Tile m_designationHoverTile;
+	private Entity m_designationHoveredEnemy;
+	private bool m_isShowingDesignationPreview;
+
 
 	private SerializableDictionary<int, List<ActionDisplayOnTile>> m_actionDisplays = new();
 	private SerializableDictionary<int, List<ActionDisplayOnTile>> m_tempActionDisplays = new();
@@ -368,6 +372,9 @@ public class PlayerController : Singleton<PlayerController>
 		if (m_turnManager.currentPhase != TurnManager.TurnPhase.Recording)
 			return;
 
+		if (m_turnManager.TryToggleDesignatedTarget(_tile))
+			return;
+
 		//Event => Select // unselect entity
 		if (_tile.TryGetEntity(true, out Entity _entity) && !_tile.CanInteract)
 		{
@@ -441,6 +448,9 @@ public class PlayerController : Singleton<PlayerController>
 	private void OnTileRightClick ( Tile _tile )
 	{
 		if (m_turnManager.currentPhase != TurnManager.TurnPhase.Recording)
+			return;
+
+		if (m_turnManager.TryRemoveDesignatedTarget(_tile))
 			return;
 
 		AEntityAction action = EntityActionDisplay.SelectedDisplay != null
@@ -541,6 +551,7 @@ public class PlayerController : Singleton<PlayerController>
 	private void OnTileHovered ( Tile _tile )
 	{
 		RefreshHoveredEntity(_tile);
+		RefreshDesignationHover(_tile, false);
 
 		if (EntityActionDisplay.SelectedDisplay == null && (_tile == null || !_tile.CanInteract))
 			RangeOverlay.ClearVisionPreview();
@@ -824,9 +835,101 @@ public class PlayerController : Singleton<PlayerController>
 
 	private void ClearAllOutlines ()
 	{
+		ResetDesignationHover();
 		ClearTargetOutlines();
 		m_aoePreviewTiles.Clear();
 		RangeOverlay.ClearAll();
+	}
+
+	public void RefreshDesignationHover ()
+	{
+		RefreshDesignationHover(m_designationHoverTile, true);
+	}
+
+	private void RefreshDesignationHover ( Tile _tile, bool _force )
+	{
+		m_designationHoverTile = _tile;
+		AEntityAction focus = m_turnManager.GetDesignationFocusAction();
+		Entity candidate = focus != null && !InputManager.IsPointerOverBlockingUI()
+			&& m_turnManager.TryGetDesignableEnemyOn(_tile, focus, out Entity enemy) ? enemy : null;
+
+		if (candidate == m_designationHoveredEnemy && !_force)
+			return;
+
+		ResetDesignationHover();
+		m_designationHoveredEnemy = candidate;
+		if (candidate != null)
+		{
+			m_isShowingDesignationPreview = true;
+			SetRangePreviewOutlines(m_turnManager.GetDesignationReach(focus), focus.Data.GetMainActionType());
+
+			string hint = focus.IsDesignated(candidate.ID)
+				? LocalizationManager.Instance.Get(LocalizationKey.action_desc_undesignate_click)
+				: string.Format(LocalizationManager.Instance.Get(LocalizationKey.action_desc_designate_click), candidate.Data.name);
+			ToolTipManager.Instance.Show(focus.Data.GetLocalizedName(), hint, candidate.UI.gameObject);
+		}
+
+		RefreshTargetMarkers();
+	}
+
+	private bool ResetDesignationHover ()
+	{
+		bool hadHoveredEnemy = m_designationHoveredEnemy != null;
+		if (m_isShowingDesignationPreview)
+			ClearRangePreviewOutlines();
+
+		if (hadHoveredEnemy && ToolTipManager.Instance.IsShownFor(m_designationHoveredEnemy.UI.gameObject))
+			ToolTipManager.Instance.Hide();
+
+		m_isShowingDesignationPreview = false;
+		m_designationHoveredEnemy = null;
+		return hadHoveredEnemy;
+	}
+
+	public void RefreshTargetMarkers ()
+	{
+		if (GameManager.Instance == null || GameManager.Instance.PlayersEntityAnchor == null)
+			return;
+
+		AEntityAction focus = null;
+		List<Entity> candidates = null;
+		HashSet<int> designated = new();
+		if (m_turnManager.currentPhase == TurnManager.TurnPhase.Recording && m_selectedEntity != null)
+		{
+			focus = m_turnManager.GetDesignationFocusAction();
+			if (focus != null)
+				candidates = m_turnManager.GetDesignableEnemies(focus);
+			else if (m_turnManager.RecordedActions.TryGetValue(m_selectedEntity.ID, out Queue<TurnManager.RecordedAction> queue) && queue != null)
+			{
+				foreach (TurnManager.RecordedAction recordedAction in queue)
+				{
+					if (recordedAction.action.HasDesignatedTargets)
+						designated.UnionWith(recordedAction.action.designatedEntityIDs);
+				}
+			}
+		}
+
+		foreach (EntityAnchor anchor in GameManager.Instance.PlayersEntityAnchor)
+		{
+			if (anchor == null)
+				continue;
+
+			foreach (Entity entity in anchor.Entities)
+			{
+				if (entity == null || entity.UI == null)
+					continue;
+
+				EntityUIPlugin.TargetMarkerState state = EntityUIPlugin.TargetMarkerState.None;
+				if (focus != null ? focus.IsDesignated(entity.ID) : designated.Contains(entity.ID))
+					state = EntityUIPlugin.TargetMarkerState.Designated;
+				else if (entity == m_designationHoveredEnemy)
+					state = EntityUIPlugin.TargetMarkerState.Preview;
+				else if (candidates != null && candidates.Contains(entity))
+					state = EntityUIPlugin.TargetMarkerState.Candidate;
+
+				entity.UI.SetTargetMarker(state);
+			}
+		}
 	}
 
 	public void SetRangePreviewOutlines ( IEnumerable<Tile> _tiles, EntityActionData.MainActionType _mainActionType )
@@ -900,6 +1003,8 @@ public class PlayerController : Singleton<PlayerController>
 	{
 		m_hoveredTile = null;
 		ClearAoEPreviewOutlines();
+		if (ResetDesignationHover())
+			RefreshTargetMarkers();
 	}
 
 	public bool AreInteractableOutlinesHidden => m_areInteractableOutlinesHidden;

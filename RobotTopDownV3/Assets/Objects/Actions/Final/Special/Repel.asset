@@ -27,12 +27,12 @@ MonoBehaviour:
   onPerformSingleAttackSFXID: 0
   onSingleAttackHitSFXID: 0
   onSingleAttackHitVFXPool: {fileID: 0}
-  visualEffectType: 2
+  visualEffectType: 1
   visualEffectDuration: 0.3
   projectilePool: {fileID: 0}
   projectileSpeed: 10
-  spellVfxPrefab: {fileID: 0}
-  spellVfxLifetime: 2
+  spellVfxPrefab: {fileID: 7330000000000000701, guid: e1185af38b23013a4c6c3aca2ce1df1d, type: 3}
+  spellVfxLifetime: 2.5
   conditionType: 0
   previousActionAttackModificator: 0
   type: 3

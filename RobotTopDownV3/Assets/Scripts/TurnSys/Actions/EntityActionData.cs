@@ -101,7 +101,8 @@ public class EntityActionData : AParsableScriptableObject
 		TurnEntity,
 		Wait,
 		InvokeItem,
-		JumpMove
+		JumpMove,
+		MoveItem
 	}
 
 	#region Target Vars
@@ -173,7 +174,7 @@ public class EntityActionData : AParsableScriptableObject
 
 	[Title("Misc")]
 	[ShowIf("@codeType == ActionCodeType.InvokeEntity")] public UnitPreset invocatedEntity;
-	[ShowIf("@codeType == ActionCodeType.InvokeItem")] public AItemData invocatedItem;
+	[ShowIf("@codeType == ActionCodeType.InvokeItem || codeType == ActionCodeType.MoveItem")] public AItemData invocatedItem;
 	[ShowIf("@codeType == ActionCodeType.InvokeEntity || codeType == ActionCodeType.InvokeItem")] public int invocationCountLimit = 1;
 	[ShowIf("@type == ActionType.Movement || codeType == ActionCodeType.MoveThenAttack ")] public int movementSpeed = 1;
 
@@ -550,7 +551,7 @@ public class EntityActionData : AParsableScriptableObject
 			}
 		}
 
-		if (codeType == ActionCodeType.InvokeItem)
+		if (codeType == ActionCodeType.InvokeItem || codeType == ActionCodeType.MoveItem)
 			invocatedItem = _data.GetValue<AItemData>("Special Extra Values");
 #endif
 	}

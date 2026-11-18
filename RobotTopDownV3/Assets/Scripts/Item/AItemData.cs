@@ -41,6 +41,11 @@ public abstract class AItemData : ScriptableObject
 
 	}
 
+    public virtual void OnItemMoved ( Item _item, Tile _from, Tile _to )
+	{
+
+	}
+
     public virtual void OnActionTickStart(int _actionTick, AItemLinkedData _linkedData, Item _usedItem )
 	{
 

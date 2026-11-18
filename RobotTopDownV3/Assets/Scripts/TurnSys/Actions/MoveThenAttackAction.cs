@@ -209,6 +209,9 @@ public class MoveThenAttackAction : AttackAction
 
 	public override void Display ( TurnManager.RecordedAction _recordedAction )
 	{
+		if (positionAfterMovementID < 0)
+			return;
+
 		ActionDisplayOnTile arrow = ObjectsPooling.GetElement(GameAssets.current.game.arrowPoolData) as ActionDisplayOnTile;
 		Vector3 startPos = GridManager.Instance.Tiles[supposedPositionAtActionStartID].transform.position;
 		Vector3 destination = GridManager.Instance.Tiles[(int)positionAfterMovementID].transform.position;
@@ -222,6 +225,9 @@ public class MoveThenAttackAction : AttackAction
 
 	public override void GhostDisplay ( Entity.EntityState _state )
 	{
+		if (positionAfterMovementID < 0)
+			return;
+
 		Tile from = GridManager.Instance.Tiles[(int)TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntityID)];
 		List<Tile> pathToTile = GridManager.Instance.GetPath(from, GridManager.Instance.Tiles[(int)positionAfterMovementID], _isThisTurn: false);
 		pathToTile.Reverse();

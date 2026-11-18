@@ -159,12 +159,12 @@ public class EntityAIPlugin : EntityPlugin
 		bool needsTarget = _recordedAction.action.Data.DoesResolveItsOwnTarget();
 		if (needsTarget)
 		{
-			if (TryResolveEntityTarget(_recordedAction, ref resultInfo))
+			if (TryResolveEntityTarget(_recordedAction, ref resultInfo, out string failureReason))
 				return resultInfo;
 
 			if (isExecutingOrders)
 			{
-				resultInfo.ReplaceAction(GetWaitActionFor(_recordedAction), "No target in reach for " + _recordedAction.type);
+				resultInfo.ReplaceAction(GetWaitActionFor(_recordedAction), failureReason ?? "No target in reach for " + _recordedAction.type);
 				return resultInfo;
 			}
 		}
@@ -1263,13 +1263,31 @@ public class EntityAIPlugin : EntityPlugin
 		return _tile == null ? int.MaxValue : GetRangeBetween(m_linkedEntity.Displacement.Coordinates.GetTile(), _tile);
 	}
 
-	private bool TryResolveEntityTarget ( TurnManager.RecordedAction _recordedAction, ref CheckActionResultInfo _resultInfo )
+	private bool TryResolveEntityTarget ( TurnManager.RecordedAction _recordedAction, ref CheckActionResultInfo _resultInfo, out string _failureReason )
 	{
+		_failureReason = null;
 		AEntityAction action = _recordedAction.action;
 		Tile from = m_linkedEntity.Displacement.Coordinates.GetTile();
+		bool isStrict = _recordedAction.entityState != Entity.EntityState.Patroling;
 
-		if (!TryGetTargetsInReach(action, from, out List<Entity> targets, out Tile sabotagePointTarget, out int orientation))
+		List<Entity> targets;
+		Tile sabotagePointTarget = null;
+		int orientation;
+		int slotCount = -1;
+		Entity lostTarget = null;
+
+		if (action.HasDesignatedTargets && TryGetDesignatedTargetsInReach(action, from, isStrict, out targets, out orientation, out lostTarget))
+			slotCount = targets.Count;
+		else if (action.HasDesignatedTargets && isStrict)
+		{
+			_failureReason = string.Format(LocalizationManager.Instance.Get(LocalizationKey.log_designated_target_lost)
+				, m_linkedEntity.Data.name, action.Data.GetLocalizedName(), GetDesignatedTargetName(action, lostTarget));
 			return false;
+		}
+		else if (!TryGetTargetsInReach(action, from, out targets, out sabotagePointTarget, out orientation))
+			return false;
+		else if (action.HasDesignatedTargets)
+			lostTarget = GameManager.Instance.GetEntityFromID(action.designatedEntityIDs[0]);
 
 		m_lastEntitiesTargeted = targets;
 		m_lastTargetedSabotagePoint = sabotagePointTarget;
@@ -1279,9 +1297,13 @@ public class EntityAIPlugin : EntityPlugin
 			return false;
 
 		targetedAction.Init(action.Data, action.linkedEquipmentId, m_linkedEntity.ID, action.supposedPositionAtActionStartID, TurnManager.currentTick);
-		FillActionTargets(targetedAction, targets, sabotagePointTarget, from, out int[] targetTileIDs, out int[] targetedEntityIDs);
+		FillActionTargets(targetedAction, targets, sabotagePointTarget, from, slotCount, out int[] targetTileIDs, out int[] targetedEntityIDs);
 		targetedAction.SetResolvedTargets(targetTileIDs, targetedEntityIDs);
-		_resultInfo.ReplaceAction(targetedAction, action.enumID + " targets " + (sabotagePointTarget != null ? "a sabotage point" : targets[0].Data.name));
+		string reason = lostTarget != null && sabotagePointTarget == null
+			? string.Format(LocalizationManager.Instance.Get(LocalizationKey.log_designated_target_fallback)
+				, m_linkedEntity.Data.name, action.Data.GetLocalizedName(), lostTarget.Data.name, targets[0].Data.name)
+			: action.enumID + " targets " + (sabotagePointTarget != null ? "a sabotage point" : targets[0].Data.name);
+		_resultInfo.ReplaceAction(targetedAction, reason);
 
 		if (orientation != m_linkedEntity.Displacement.CurrentOrientation)
 		{
@@ -1356,6 +1378,75 @@ public class EntityAIPlugin : EntityPlugin
 		return _targets.Count > 0 || _sabotagePoint != null;
 	}
 
+	private bool TryGetDesignatedTargetsInReach ( AEntityAction _action, Tile _from, bool _isStrict, out List<Entity> _targets, out int _orientation, out Entity _lostTarget )
+	{
+		_targets = new();
+		_orientation = m_linkedEntity.Displacement.CurrentOrientation;
+		_lostTarget = null;
+
+		List<Entity> designated = _action.designatedEntityIDs.Select(GameManager.Instance.GetEntityFromID).Where(entity => entity != null).ToList();
+		int maxTargets = Mathf.Max(1, _action.Data.GetMaxTargetAmount(_action, m_linkedEntity, null));
+		int reservedSlots = Mathf.Min(maxTargets, _action.designatedEntityIDs.Length);
+		Entity stickyTarget = GetStickyTarget();
+		int bestDesignatedCount = 0;
+		int bestRange = int.MaxValue;
+
+		foreach ((IEnumerable<Tile> tiles, int orientation) in GetReachSets(_action, _from))
+		{
+			List<Entity> enemies = GetEnemiesOn(tiles, _from, stickyTarget);
+			List<Entity> designatedInReach = designated.Where(enemies.Contains).ToList();
+			int autoSlots = Mathf.Max(0, maxTargets - (_isStrict ? reservedSlots : designatedInReach.Count));
+			List<Entity> candidates = designatedInReach.Concat(enemies.Where(enemy => !designated.Contains(enemy)).Take(autoSlots)).ToList();
+			if (candidates.Count == 0)
+				continue;
+
+			int range = GetRangeBetween(_from, candidates[0].Displacement.Coordinates.GetTile());
+			bool isBetter = designatedInReach.Count > bestDesignatedCount
+				|| (designatedInReach.Count == bestDesignatedCount
+					&& (candidates.Count > _targets.Count || (candidates.Count == _targets.Count && range < bestRange)));
+			if (!isBetter)
+				continue;
+
+			_targets = candidates;
+			_orientation = orientation;
+			bestDesignatedCount = designatedInReach.Count;
+			bestRange = range;
+		}
+
+		if (!_isStrict && bestDesignatedCount == 0)
+		{
+			_targets = new();
+			return false;
+		}
+
+		List<Entity> chosenTargets = _targets;
+		_lostTarget = designated.FirstOrDefault(entity => !chosenTargets.Contains(entity));
+		return chosenTargets.Count > 0;
+	}
+
+	private IEnumerable<(IEnumerable<Tile> tiles, int orientation)> GetReachSets ( AEntityAction _action, Tile _from )
+	{
+		int currentOrientation = m_linkedEntity.Displacement.CurrentOrientation;
+		if (_action.Data.GetMainActionType() != EntityActionData.MainActionType.Attack)
+		{
+			yield return (GridManager.Instance.GetTilesInVisionRange(_from, _action.Data.minDistance
+				, _action.Data.GetMaxRange(_action, m_linkedEntity, null), false, true, false), currentOrientation);
+			yield break;
+		}
+
+		for (int i = 0; i < 6; i++)
+		{
+			int orientation = (currentOrientation + i) % 6;
+			yield return (m_linkedEntity.Equipment.GetTilesInWeaponRange(_action, true, _from, orientation, true), orientation);
+		}
+	}
+
+	private static string GetDesignatedTargetName ( AEntityAction _action, Entity _lostTarget )
+	{
+		Entity target = _lostTarget != null ? _lostTarget : GameManager.Instance.GetEntityFromID(_action.designatedEntityIDs[0]);
+		return target != null ? target.Data.name : "?";
+	}
+
 	private Tile GetEnemySabotagePointOn ( IEnumerable<Tile> _tiles, Tile _from, Tile _stickySabotagePoint )
 	{
 		Tile closest = null;
@@ -1420,11 +1511,12 @@ public class EntityAIPlugin : EntityPlugin
 		});
 	}
 
-	private void FillActionTargets ( AEntityAction _action, List<Entity> _targets, Tile _sabotagePoint, Tile _from, out int[] _targetTileIDs, out int[] _targetedEntityIDs )
+	private void FillActionTargets ( AEntityAction _action, List<Entity> _targets, Tile _sabotagePoint, Tile _from, int _slotCount, out int[] _targetTileIDs, out int[] _targetedEntityIDs )
 	{
 		bool shouldAddTileInDirectionToTarget = _action.Data.aoeType != EntityActionData.AOEType.Noone
 			&& _action.Data.aoECenterType == EntityActionData.AOECenterType.Self;
-		int maxAmount = _action.Data.GetMaxTargetAmount(_action, m_linkedEntity, null) * _action.actualDuration;
+		int maxTargets = _action.Data.GetMaxTargetAmount(_action, m_linkedEntity, null);
+		int maxAmount = (_slotCount > 0 ? Mathf.Min(_slotCount, maxTargets) : maxTargets) * _action.actualDuration;
 
 		_targetTileIDs = new int[maxAmount];
 		_targetedEntityIDs = new int[maxAmount];

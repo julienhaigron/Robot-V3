@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b2ecfb0bb9c0d64da271845f7f452ab, type: 3}
   m_Name: AmplificateurDefensif
   m_EditorClassIdentifier: RTD::ApplyStatusItemData
-  itemPrefab: {fileID: 3511140373742308496, guid: 77c47a297043c8447af4208d7f6c8b3b, type: 3}
+  itemPrefab: {fileID: 6520863086066432982, guid: 948aed38ecf1b331da43881ff6a82869, type: 3}
   type: 1
   range: 7
   givenStatus: {fileID: 11400000, guid: 3b43fd75a7bed1d409bae48e0a88fa7c, type: 2}

@@ -74,6 +74,17 @@ public class PortalItemData : AItemData
         base.OnRegisterInteraction(_action, _itemOnTile);
 	}
 
+	public override void OnItemMoved ( Item _item, Tile _from, Tile _to )
+	{
+        if (_item.LinkedData is not PortalItemLinkedData portalData)
+            return;
+
+        if (portalData.portalATile == _from)
+            portalData.portalATile = _to;
+        else if (portalData.portalBTile == _from)
+            portalData.portalBTile = _to;
+	}
+
 }
 
 [Serializable]

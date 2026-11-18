@@ -20,6 +20,7 @@ public class TurnManager : Singleton<TurnManager>
 	public int RoundCount => m_roundCount;
 	public static Action onEndLevel;
 	public static Action onActionTargetsChanged;
+	public static Action<AEntityAction> onDesignatedTargetsChanged;
 	
 	public static int currentTick = 0;
 	public bool IsLastTickOfRound => currentTick >= GameConfig.current.game.actionTokenPerRound - 1;
@@ -62,6 +63,9 @@ public class TurnManager : Singleton<TurnManager>
 
 	private List<Tile> m_currentActionTargetTiles = new();
 	public List<Tile> CurrentActionTargetTiles => m_currentActionTargetTiles;
+	private AEntityAction m_designationPendingAction;
+	private AEntityAction m_designationReachAction;
+	private HashSet<Tile> m_designationReach = new();
 
 	public enum TurnPhase { Recording, Calculating, Playing, Off }
 	public TurnPhase currentPhase = TurnPhase.Off;
@@ -222,6 +226,7 @@ public class TurnManager : Singleton<TurnManager>
 
 	private void OnEntitySelected ( int? _selectedEntity )
 	{
+		EndDesignationWindow();
 		PlayerController.Instance.ClearHoverPreviews();
 
 		if (EntityActionDisplay.SelectedDisplay != null)
@@ -256,6 +261,7 @@ public class TurnManager : Singleton<TurnManager>
 
 	private void OnActionDisplaySelected ( EntityActionDisplay _selectedDisplay, bool _isModAction )
 	{
+		EndDesignationWindow();
 		PlayerController.Instance.ClearHoverPreviews();
 
 		if (_selectedDisplay != null)
@@ -363,6 +369,9 @@ public class TurnManager : Singleton<TurnManager>
 		int timeAtStart = m_recordedActionInput.ContainsKey(performingEntityID) && m_recordedActionInput[performingEntityID].Count > 0
 			? m_recordedActionInput[performingEntityID].ToArray()[^1].action.TimeAtEnd : currentTick;
 
+		if (GameAssets.current.game.entityActionsData[_action].GetMainActionType() != EntityActionData.MainActionType.Movement)
+			EndDesignationWindow();
+
 		hasModActionSelected = false;
 		m_currentActionTypeSelected = _action;
 		m_currentEquipmentLinkedToActionTypeSelected = _linkedEquipmentID;
@@ -385,6 +394,7 @@ public class TurnManager : Singleton<TurnManager>
 		int timeAtStart = m_recordedActionInput.ContainsKey(performingEntityID) && m_recordedActionInput[performingEntityID].Count > 0
 			? m_recordedActionInput[performingEntityID].ToArray()[^1].action.TimeAtEnd : currentTick;
 
+		EndDesignationWindow();
 		hasModActionSelected = true;
 		m_currentModActionTypeSelected = _action;
 		m_currentEquipmentLinkedToActionTypeSelected = _linkedEquipmentID;
@@ -497,6 +507,12 @@ public class TurnManager : Singleton<TurnManager>
 
 	private void ApplyTargetOutlines ( AEntityAction _action )
 	{
+		if (CanDesignateTargetsOf(_action))
+		{
+			ShowDesignatedTargetsOf(_action);
+			return;
+		}
+
 		List<Tile> zoneTiles = new();
 
 		if (_action.PerformingEntity != null && !_action.Data.DoesResolveItsOwnTarget() && _action.Data.aoeType != EntityActionData.AOEType.Noone)
@@ -530,16 +546,148 @@ public class TurnManager : Singleton<TurnManager>
 		if (m_currentEntityAction == null || m_currentEntityAction.Data.DoesNeedATargetTile())
 			return false;
 
-		int performingEntityID = m_currentEntityAction.performingEntityID;
-		RegisterAction(performingEntityID, m_currentEntityAction, GetDefaultStateOf(performingEntityID));
+		AEntityAction registeredAction = m_currentEntityAction;
+		int performingEntityID = registeredAction.performingEntityID;
+		RegisterAction(performingEntityID, registeredAction, GetDefaultStateOf(performingEntityID));
 
 		Entity performingEntity = GameManager.Instance.GetEntityFromID(performingEntityID);
 		EntityActionData movementAction = performingEntity == null ? null : performingEntity.AI.GetMovementAction();
 		if (movementAction != null)
 			SetCurrentActionSelected(movementAction.enumID, null, true);
 
+		if (EntityActionDisplay.SelectedDisplay == null && CanDesignateTargetsOf(registeredAction) && IsQueued(registeredAction))
+			m_designationPendingAction = registeredAction;
+
 		RefreshActionDisplay(performingEntityID, true);
 		return true;
+	}
+
+	public static bool CanDesignateTargetsOf ( AEntityAction _action )
+	{
+		return _action != null && _action.Data.DoesResolveItsOwnTarget();
+	}
+
+	public AEntityAction GetDesignationFocusAction ()
+	{
+		Entity selectedEntity = PlayerController.Instance == null ? null : PlayerController.Instance.SelectedEntity;
+		if (currentPhase != TurnPhase.Recording || selectedEntity == null)
+			return null;
+
+		if (EntityActionDisplay.SelectedDisplay != null)
+		{
+			AEntityAction selectedAction = EntityActionDisplay.SelectedDisplay.RecordedAction.action;
+			return !hasModActionSelected && CanDesignateTargetsOf(selectedAction) && selectedAction.performingEntityID == selectedEntity.ID
+				? selectedAction : null;
+		}
+
+		return m_designationPendingAction != null && m_designationPendingAction.performingEntityID == selectedEntity.ID
+			&& IsQueued(m_designationPendingAction)
+			? m_designationPendingAction : null;
+	}
+
+	public HashSet<Tile> GetDesignationReach ( AEntityAction _action )
+	{
+		Entity performer = _action == null ? null : _action.PerformingEntity;
+		if (performer == null)
+			return new HashSet<Tile>();
+
+		if (m_designationReachAction != _action)
+		{
+			m_designationReachAction = _action;
+			m_designationReach = performer.Equipment.GetTilesInReach(_action, GridManager.Instance.Tiles[_action.supposedPositionAtActionStartID], false, true);
+		}
+
+		return m_designationReach;
+	}
+
+	public List<Entity> GetDesignableEnemies ( AEntityAction _action )
+	{
+		List<Entity> enemies = new();
+		Entity performer = _action == null ? null : _action.PerformingEntity;
+		if (performer == null)
+			return enemies;
+
+		foreach (Tile tile in GetDesignationReach(_action))
+		{
+			Entity entity = tile.GetCurrentEntity();
+			if (IsDesignableBy(performer, entity) && !enemies.Contains(entity))
+				enemies.Add(entity);
+		}
+
+		return enemies;
+	}
+
+	public bool TryGetDesignableEnemyOn ( Tile _tile, AEntityAction _action, out Entity _enemy )
+	{
+		_enemy = _tile == null || _action == null ? null : _tile.GetCurrentEntity();
+		return _enemy != null && IsDesignableBy(_action.PerformingEntity, _enemy) && GetDesignationReach(_action).Contains(_tile);
+	}
+
+	public bool TryToggleDesignatedTarget ( Tile _tile )
+	{
+		AEntityAction action = GetDesignationFocusAction();
+		if (!TryGetDesignableEnemyOn(_tile, action, out Entity enemy))
+			return false;
+
+		action.ToggleDesignatedTarget(enemy.ID, action.Data.GetMaxTargetAmount(action, action.PerformingEntity, enemy));
+		OnDesignatedTargetsChanged(action);
+		return true;
+	}
+
+	public bool TryRemoveDesignatedTarget ( Tile _tile )
+	{
+		AEntityAction action = GetDesignationFocusAction();
+		Entity entity = _tile == null || action == null ? null : _tile.GetCurrentEntity();
+		if (entity == null || !action.RemoveDesignatedTarget(entity.ID))
+			return false;
+
+		OnDesignatedTargetsChanged(action);
+		return true;
+	}
+
+	private static bool IsDesignableBy ( Entity _performer, Entity _target )
+	{
+		return _performer != null && _target != null && _target != _performer && !_target.Equipment.IsDead
+			&& !_target.IsAlliedTo(_performer.OwnerID) && _target.IsVisible
+			&& (int)_target.HowIsUnitVisible < (int)NeuronalMembraneEquipmentData.VisionTypes.Radar;
+	}
+
+	private bool IsQueued ( AEntityAction _action )
+	{
+		return m_recordedActionInput.TryGetValue(_action.performingEntityID, out Queue<RecordedAction> queue)
+			&& queue != null && queue.Any(recordedAction => recordedAction.action == _action);
+	}
+
+	private void OnDesignatedTargetsChanged ( AEntityAction _action )
+	{
+		PlayerController.Instance.ClearHoverPreviews();
+		ShowDesignatedTargetsOf(_action);
+		onDesignatedTargetsChanged?.Invoke(_action);
+		RefreshActionDisplay(_action.performingEntityID, false, EntityActionDisplay.SelectedDisplay != null ? _action.TimeAtEnd : -1);
+		PlayerController.Instance.RefreshDesignationHover();
+	}
+
+	private void ShowDesignatedTargetsOf ( AEntityAction _action )
+	{
+		List<Tile> targetTiles = new();
+		foreach (int entityID in _action.designatedEntityIDs)
+		{
+			Entity entity = GameManager.Instance.GetEntityFromID(entityID);
+			if (entity != null && !entity.Equipment.IsDead)
+				targetTiles.Add(entity.Displacement.Coordinates.GetTile());
+		}
+
+		PlayerController.Instance.SetTargetOutlines(targetTiles, Array.Empty<Tile>(), _action.Data.GetMainActionType());
+	}
+
+	private void EndDesignationWindow ()
+	{
+		if (m_designationPendingAction == null)
+			return;
+
+		m_designationPendingAction = null;
+		if (EntityActionDisplay.SelectedDisplay == null && PlayerController.Instance != null)
+			PlayerController.Instance.ClearTargetOutlines();
 	}
 
 	public AEntityAction GetAction ( EntityActionEnumID _actionType, int _performingEntityID, string _linkedEquipmentID, int _timeAtStart )
@@ -594,6 +742,9 @@ public class TurnManager : Singleton<TurnManager>
 				break;
 			case EntityActionData.ActionCodeType.JumpMove:
 				action = new JumpToTarget();
+				break;
+			case EntityActionData.ActionCodeType.MoveItem:
+				action = new MoveItemAction();
 				break;
 			default:
 				Debug.LogError("Missing entree in TurnManager.GetAction for type \"" + _actionData.codeType + "\"");
@@ -651,6 +802,7 @@ public class TurnManager : Singleton<TurnManager>
 
 	public bool RegisterActionAndMod( int _entityID, AEntityAction _action, AEntityAction _modAction, Entity.EntityState _state )
 	{
+		EndDesignationWindow();
 		if (m_recordedActionInput.ContainsKey(_entityID) == false)
 			m_recordedActionInput.Add(_entityID, new());
 
@@ -709,6 +861,7 @@ public class TurnManager : Singleton<TurnManager>
 
 	public bool AddAction ( int _entityID, AEntityAction _action, Entity.EntityState _state )
 	{
+		EndDesignationWindow();
 		if (m_recordedActionInput.ContainsKey(_entityID) == false)
 			m_recordedActionInput.Add(_entityID, new());
 
@@ -781,6 +934,9 @@ public class TurnManager : Singleton<TurnManager>
 
 		CurrentActionSelected.timeAtStart = m_recordedActionInput.ContainsKey(_actionToStartRemoveFrom.performingEntityID) && m_recordedActionInput[_actionToStartRemoveFrom.performingEntityID].Count > 0
 			? m_recordedActionInput[_actionToStartRemoveFrom.performingEntityID].ToArray()[^1].action.TimeAtEnd : 0;
+
+		if (m_designationPendingAction != null && !IsQueued(m_designationPendingAction))
+			EndDesignationWindow();
 
 		onActionRemoved?.Invoke(_actionToStartRemoveFrom);
 
@@ -990,6 +1146,7 @@ public class TurnManager : Singleton<TurnManager>
 		}
 
 		PlayerController.Instance.RedrawTargetOutlines();
+		PlayerController.Instance.RefreshTargetMarkers();
 	}
 
 	[Button]
@@ -1044,6 +1201,7 @@ public class TurnManager : Singleton<TurnManager>
 	[Button]
 	public void EndInputPhase ()
 	{
+		EndDesignationWindow();
 		currentPhase = TurnPhase.Calculating;
 
 		//A half picked action leaves its tiles here, and the next AddAction takes them for its own - which
@@ -1747,6 +1905,8 @@ public class TurnManager : Singleton<TurnManager>
 		int remainingActionTickThisTurn = GameConfig.current.game.actionTokenPerRound - currentTick;
 
 		Entity.EntityState availableState = GetDefaultStateOf(_entity);
+		if (!m_recordedActionInput.ContainsKey(_entity.ID))
+			m_recordedActionInput.Add(_entity.ID, new());
 
 		for (int i = 1; i < remainingActionTickThisTurn; i++)
 		{

@@ -2226,3 +2226,27 @@ MonoBehaviour:
     values:
     - Traps
     - "Pi\xE8ges"
+  - key: action_desc/designation_hint
+    values:
+    - "Click: adds it with automatic targeting. Then click a marked enemy to make it the target."
+    - "Clic : l'ajoute en ciblage automatique. Cliquez ensuite un ennemi marqu\xE9 pour en faire la cible."
+  - key: action_desc/designated_target
+    values:
+    - "Designated target: {0}"
+    - "Cible d\xE9sign\xE9e : {0}"
+  - key: action_desc/designate_click
+    values:
+    - "Click: make {0} the target"
+    - "Clic : faire de {0} la cible"
+  - key: action_desc/undesignate_click
+    values:
+    - "Click: back to automatic targeting"
+    - "Clic : revenir au ciblage automatique"
+  - key: log/designated_target_lost
+    values:
+    - "{0} cancels <i>{1}</i>: {2} is out of reach"
+    - "{0} renonce \xE0 <i>{1}</i> : {2} est hors d'atteinte"
+  - key: log/designated_target_fallback
+    values:
+    - "{0}: {2} is out of reach, <i>{1}</i> targets {3} instead"
+    - "{0} : {2} est hors d'atteinte, <i>{1}</i> vise {3} \xE0 la place"

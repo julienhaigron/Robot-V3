@@ -27,17 +27,17 @@ MonoBehaviour:
   onPerformSingleAttackSFXID: 0
   onSingleAttackHitSFXID: 0
   onSingleAttackHitVFXPool: {fileID: 0}
-  visualEffectType: 2
+  visualEffectType: 1
   visualEffectDuration: 0.3
   projectilePool: {fileID: 0}
   projectileSpeed: 10
-  spellVfxPrefab: {fileID: 0}
+  spellVfxPrefab: {fileID: 7330000000000001001, guid: 92efd4b8085c77ca414dec4bf4fad210, type: 3}
   spellVfxLifetime: 2
   conditionType: 0
   previousActionAttackModificator: 0
   type: 3
   subType: 7
-  codeType: 3
+  codeType: 12
   targetType: 2
   trajectoryType: 0
   minDistance: 1
@@ -58,6 +58,6 @@ MonoBehaviour:
   statusHitProbability: 0
   passiveEffects: []
   invocatedEntity: {fileID: 0}
-  invocatedItem: {fileID: 0}
+  invocatedItem: {fileID: 11400000, guid: c1249abfcbbe09c489ca7aca0a8f2f0b, type: 2}
   invocationCountLimit: 1
   movementSpeed: 1

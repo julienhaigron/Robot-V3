@@ -185,6 +185,7 @@ public class Weapon : MonoBehaviour
 		foreach (ParticleSystem ps in m_onPerformPS)
 			ps.Play();
 		SoundManager.Instance.Play(_attackAction.Data.onPerformSingleAttackSFXID);
+		PlayHitVFX(_attackAction, targets);
 
 		if (_attackAction.Data.type == EntityActionData.ActionType.MeleeAttack)
 			DamageWallsInWeaponRange(_attackAction, damages);
@@ -217,6 +218,32 @@ public class Weapon : MonoBehaviour
 		}
 
 		yield return m_singleAttackDuration;
+	}
+
+	private void PlayHitVFX ( AttackAction _attackAction, List<WeaponTarget> _targets )
+	{
+		PoolData pool = _attackAction.Data.onSingleAttackHitVFXPool;
+		if (pool == null)
+			return;
+
+		bool isZone = _attackAction.Data.aoeType != EntityActionData.AOEType.Noone;
+		foreach (WeaponTarget target in _targets)
+		{
+			Entity entity = target.targetEntity != null ? target.targetEntity : target.targetTile != null ? target.targetTile.GetCurrentEntity() : null;
+			Vector3 position = !isZone && entity != null && entity.Skin != null && entity.Skin.Center != null
+				? entity.Skin.Center.position
+				: target.targetTile != null ? target.targetTile.transform.position : m_user.transform.position;
+
+			try
+			{
+				pool.Get(position, Quaternion.identity);
+			}
+			catch (Exception ex)
+			{
+				Debug.LogError("Hit VFX " + pool.name + " failed for " + _attackAction.Data.name + ": " + ex.Message);
+				return;
+			}
+		}
 	}
 
 	private void DamageWallsInWeaponRange ( AttackAction _attackAction, Dictionary<WeaponEquipmentData.DamageType, int> _damages )

@@ -24,7 +24,7 @@ MonoBehaviour:
   recyclingDurationAmount: 1
   reparingDurationAmount: 1
   canDropRandomly: 1
-  prefab: {fileID: 4024176136403563100, guid: 66812f69ad78b734dbdc05849c6752ae, type: 3}
+  prefab: {fileID: 4024176136403563100, guid: f8425188d46ae8d6c3549af2a52112e7, type: 3}
   attackAnimationSuccessId: 
   attackAnimationFailureId: 
   isTwoHanded: 0

@@ -16,6 +16,8 @@ public abstract class AEntityAction : INetworkSerializable
 
 	public int[] targetedEntityIDs;
 	public int[] targetTileIDs;
+	public int[] designatedEntityIDs = Array.Empty<int>();
+	public bool HasDesignatedTargets => designatedEntityIDs != null && designatedEntityIDs.Length > 0;
 
 	public int supposedPositionAtActionStartID; //tile
 	public int positionAtActionEndID; //tile
@@ -43,6 +45,7 @@ public abstract class AEntityAction : INetworkSerializable
 	public int TimeAtEnd => timeAtStart + TotalDuration;
 	protected bool m_isPerforming = false;
 	public bool IsPerforming => m_isPerforming;
+	private bool m_isWaitingForEndTick;
 
 	public bool IsPerformingAtTick ( int _tick )
 	{
@@ -56,6 +59,7 @@ public abstract class AEntityAction : INetworkSerializable
 		serializer.SerializeValue(ref linkedEquipmentId);
 		serializer.SerializeValue(ref targetedEntityIDs);
 		serializer.SerializeValue(ref targetTileIDs);
+		serializer.SerializeValue(ref designatedEntityIDs);
 		serializer.SerializeValue(ref supposedPositionAtActionStartID);
 		serializer.SerializeValue(ref positionAtActionEndID);
 		serializer.SerializeValue(ref effects);
@@ -123,6 +127,35 @@ public abstract class AEntityAction : INetworkSerializable
 		return Data.DoesNeedATargetTile() && (targetTileIDs == null || targetTileIDs.Length == 0);
 	}
 
+	public bool IsDesignated ( int _entityID )
+	{
+		return HasDesignatedTargets && Array.IndexOf(designatedEntityIDs, _entityID) >= 0;
+	}
+
+	public void ToggleDesignatedTarget ( int _entityID, int _maxTargetAmount )
+	{
+		List<int> designated = new(designatedEntityIDs ?? Array.Empty<int>());
+		if (!designated.Remove(_entityID))
+		{
+			if (designated.Count >= Mathf.Max(1, _maxTargetAmount))
+				designated.RemoveAt(0);
+			designated.Add(_entityID);
+		}
+
+		designatedEntityIDs = designated.ToArray();
+	}
+
+	public bool RemoveDesignatedTarget ( int _entityID )
+	{
+		if (!IsDesignated(_entityID))
+			return false;
+
+		List<int> designated = new(designatedEntityIDs);
+		designated.Remove(_entityID);
+		designatedEntityIDs = designated.ToArray();
+		return true;
+	}
+
 	public void DisplayAoEPreviewOnHoveredTile ()
 	{
 		Tile hoveredTile = PlayerController.Instance == null ? null : PlayerController.Instance.HoveredTile;
@@ -176,6 +209,7 @@ public abstract class AEntityAction : INetworkSerializable
 	//returns true if action fully performed
 	public bool PerformTick ( Entity.EntityState _state )
 	{
+		m_isWaitingForEndTick = true;
 		if (lifetime == 0)
 			OnStartPerform(_state);
 
@@ -206,9 +240,10 @@ public abstract class AEntityAction : INetworkSerializable
 
 	protected virtual void EndTick ()
 	{
-		if (!m_isPerforming)
+		if (!m_isPerforming || !m_isWaitingForEndTick)
 			return;
 
+		m_isWaitingForEndTick = false;
 		lifetime++;
 
 		bool didEndAction = lifetime >= TotalDuration;

@@ -218,7 +218,7 @@ public class SpecialAction : AEntityAction
 			yield break;
 		}
 
-		GameObject vfx = UnityEngine.Object.Instantiate(Data.spellVfxPrefab, GetVisualTargetPosition(), Quaternion.identity);
+		GameObject vfx = UnityEngine.Object.Instantiate(Data.spellVfxPrefab, GetVisualTargetPosition(), Data.spellVfxPrefab.transform.rotation);
 
 		yield return new WaitForSeconds(Data.visualEffectDuration);
 		ApplyActionEffect();

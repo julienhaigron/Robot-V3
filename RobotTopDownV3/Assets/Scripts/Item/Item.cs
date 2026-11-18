@@ -37,6 +37,12 @@ public class Item : MonoBehaviour
         onAnyItemPlaced?.Invoke(this);
     }
 
+    public void MoveTo ( Tile _tile )
+    {
+        m_currentPosition = _tile;
+        transform.position = _tile.transform.position;
+    }
+
     public void OnTileEnter(Entity _enteringEntity, bool _isFromTeleportation )
 	{
         m_data.OnWalkThrough(_enteringEntity, m_linkedData, this, _isFromTeleportation);

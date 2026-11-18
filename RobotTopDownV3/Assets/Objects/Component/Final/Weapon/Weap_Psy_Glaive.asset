@@ -25,7 +25,7 @@ MonoBehaviour:
   reparingDurationAmount: 1
   canDropRandomly: 1
   requiresBlueprint: 0
-  prefab: {fileID: 4024176136403563100, guid: 66812f69ad78b734dbdc05849c6752ae, type: 3}
+  prefab: {fileID: 4024176136403563100, guid: 16148b8497f9c8b0486a41bd5a585845, type: 3}
   attackAnimationSuccessId: 
   attackAnimationFailureId: 
   isTwoHanded: 0

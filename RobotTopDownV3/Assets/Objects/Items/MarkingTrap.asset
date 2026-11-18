@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b2ecfb0bb9c0d64da271845f7f452ab, type: 3}
   m_Name: MarkingTrap
   m_EditorClassIdentifier: RTD::ApplyStatusItemData
-  itemPrefab: {fileID: 3511140373742308496, guid: 77c47a297043c8447af4208d7f6c8b3b, type: 3}
+  itemPrefab: {fileID: 6520863086066432982, guid: 48886485b679d7255058071c99299792, type: 3}
   type: 0
   range: 1
   givenStatus: {fileID: 11400000, guid: 8e5bfd61c7b1163409a1714c5cc52df9, type: 2}

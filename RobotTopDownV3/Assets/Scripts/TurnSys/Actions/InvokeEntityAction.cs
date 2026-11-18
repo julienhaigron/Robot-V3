@@ -20,7 +20,9 @@ public class InvokeEntityAction : SpecialAction
 	{
 		base.Prepare(_state);
 		isActionCanceled = false;
-		newEntityID = GameManager.Instance.PlayersEntityAnchor[GameManager.Instance.PlayerID].Entities[^1].ID + 1;
+		int ownerID = PerformingEntity.OwnerID;
+		List<Entity> ownerEntities = GameManager.Instance.PlayersEntityAnchor[ownerID].Entities;
+		newEntityID = ownerEntities.Count == 0 ? 100 * ownerID : ownerEntities.Max(entity => entity.ID) + 1;
 		foreach(int tileID in targetTileIDs)
 			GridManager.Instance.Tiles[tileID].SetEntity(GameManager.Instance.GetEntityFromID(newEntityID), false);
 	}
@@ -77,9 +79,11 @@ public class InvokeEntityAction : SpecialAction
 			return;
 		}
 
-		foreach(int tileID in targetTileIDs)
-			GameManager.Instance.PlayersEntityAnchor[GameManager.Instance.GetEntityFromID(performingEntityID).OwnerID]
-				.SpawnEntityDuringPlay(Data.invocatedEntity.GetSavedData(), newEntityID, GameManager.Instance.GetEntityFromID(performingEntityID).OwnerID, tileID, EndTick);
+		int ownerID = PerformingEntity.OwnerID;
+		int spawnIndex = 0;
+		foreach (int tileID in targetTileIDs)
+			GameManager.Instance.PlayersEntityAnchor[ownerID]
+				.SpawnEntityDuringPlay(Data.invocatedEntity.GetSavedData(), newEntityID + spawnIndex++, ownerID, tileID, EndTick);
 
 		base.Perform(_state);
 		//DG.Tweening.DOVirtual.DelayedCall(GameConfig.current.game.actionDuration, EndTick);

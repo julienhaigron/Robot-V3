@@ -44,7 +44,7 @@ public class InvokeItemAction : SpecialAction
 
 	public override void CancelAction ()
 	{
-		foreach (int tileID in targetTileIDs)
+		foreach (int tileID in targetTileIDs ?? System.Array.Empty<int>())
 		{
 			Tile targetTile = GridManager.Instance.Tiles[tileID];
 			targetTile.SetPlannedItemAt(null, timeAtStart);
@@ -72,7 +72,8 @@ public class InvokeItemAction : SpecialAction
 		bool doesSelfHaveConflict = false;
 		bool doesOtherHaveConflict = false;
 
-		if (_otherAction is MoveToTargetAction _otherMoveToTargetAction && _otherMoveToTargetAction.targetTileIDs.Any(e => targetTileIDs.Contains(e)))
+		if (_otherAction is MoveToTargetAction _otherMoveToTargetAction && _otherMoveToTargetAction.targetTileIDs != null && targetTileIDs != null
+			&& _otherMoveToTargetAction.targetTileIDs.Any(e => targetTileIDs.Contains(e)))
 		{
 			if (result == EntityActionData.PFCResultType.FirstWins)
 			{
@@ -130,13 +131,13 @@ public class InvokeItemAction : SpecialAction
 
 	public override void Display ( TurnManager.RecordedAction _recordedAction )
 	{
-		foreach (int tileID in targetTileIDs)
+		foreach (int tileID in targetTileIDs ?? System.Array.Empty<int>())
 			PlayerController.Instance.AddGhostItemAt(Data.invocatedItem, GridManager.Instance.Tiles[tileID], 0, itemID);
 	}
 
 	public override void GhostDisplay ( Entity.EntityState _state )
 	{
-		foreach (int tileID in targetTileIDs)
+		foreach (int tileID in targetTileIDs ?? System.Array.Empty<int>())
 			PlayerController.Instance.AddGhostItemAt(Data.invocatedItem, GridManager.Instance.Tiles[tileID], 0, itemID);
 	}
 

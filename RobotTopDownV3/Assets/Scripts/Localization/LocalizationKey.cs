@@ -552,6 +552,12 @@ public enum LocalizationKey
     challenger_assassins,
     challenger_aoe,
     challenger_pieges,
+    action_desc_designation_hint,
+    action_desc_designated_target,
+    action_desc_designate_click,
+    action_desc_undesignate_click,
+    log_designated_target_lost,
+    log_designated_target_fallback,
 }
 
 public static class LocalizationKeyExtensions
@@ -1111,6 +1117,12 @@ public static class LocalizationKeyExtensions
             case LocalizationKey.challenger_assassins: return "challenger/assassins";
             case LocalizationKey.challenger_aoe: return "challenger/aoe";
             case LocalizationKey.challenger_pieges: return "challenger/pieges";
+            case LocalizationKey.action_desc_designation_hint: return "action_desc/designation_hint";
+            case LocalizationKey.action_desc_designated_target: return "action_desc/designated_target";
+            case LocalizationKey.action_desc_designate_click: return "action_desc/designate_click";
+            case LocalizationKey.action_desc_undesignate_click: return "action_desc/undesignate_click";
+            case LocalizationKey.log_designated_target_lost: return "log/designated_target_lost";
+            case LocalizationKey.log_designated_target_fallback: return "log/designated_target_fallback";
             default: return string.Empty;
         }
     }
