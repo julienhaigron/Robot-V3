@@ -39,11 +39,4 @@ MonoBehaviour:
     arms: []
     auxiliary: []
     chipsets: []
-  performedActions:
-  - Weap_Psy_Glaive/Throw
-  - Weap_Psy_Glaive/Chain_Throw
-  - Weap_Psy_Railgun/Attractive_Shot
-  - Weap_Psy_Railgun/Repulsive_Shot
-  - Weap_Psy_Sniper/Sniper_Shot
-  - Weap_Psy_Spear/Spear_Strike
-  - Weap_Psy_Spear/Spear_Strike_Flurry
+  performedActions: []
