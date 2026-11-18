@@ -51,31 +51,38 @@ MonoBehaviour:
   m_buildingViews:
   - building: 1
     meshNamePrefix: Hangar
-    axisOffset: 0.6
+    axisOffset: 0.3
+    fieldOfView: 50
     cameraPoint: {fileID: 0}
   - building: 2
     meshNamePrefix: Recycle
     axisOffset: 0.45
+    fieldOfView: 0
     cameraPoint: {fileID: 0}
   - building: 3
     meshNamePrefix: Repar-Station
     axisOffset: 2.55
+    fieldOfView: 0
     cameraPoint: {fileID: 0}
   - building: 4
     meshNamePrefix: Psy-QG
     axisOffset: 0.42
+    fieldOfView: 0
     cameraPoint: {fileID: 0}
   - building: 5
     meshNamePrefix: Commando-QG
     axisOffset: 0.5
+    fieldOfView: 0
     cameraPoint: {fileID: 0}
   - building: 6
     meshNamePrefix: Paladin-QG
     axisOffset: 0.46
+    fieldOfView: 0
     cameraPoint: {fileID: 0}
   - building: 7
     meshNamePrefix: Arene
     axisOffset: 2.67
+    fieldOfView: 0
     cameraPoint: {fileID: 0}
   m_buildingFramingMargin: 1.15
   m_cameraMoveDuration: 1.75

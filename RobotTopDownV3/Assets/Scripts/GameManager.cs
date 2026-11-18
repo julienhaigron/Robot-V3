@@ -108,11 +108,12 @@ public class GameManager : SingletonPersistant<GameManager>
 		SetupLevel(FTUEManager.Instance.Day0MissionData);
 	}
 
-	private void LoadHubScene ()
+	private void LoadHubScene ( Action _onCovered = null, ILoadingScreen _screen = null )
 	{
 		LoadingManager.Instance.LoadScene(GameConfig.current.game.hubSceneName
 			, () =>
 			{
+				_onCovered?.Invoke();
 				UIManager.Instance.ClosePanel<StartMenuPanel>(true);
 			}
 			, CameraManager.Instance.ShowHub
@@ -137,7 +138,8 @@ public class GameManager : SingletonPersistant<GameManager>
 				}
 
 				ApplicationManager.Instance.SaveApplication();
-			});
+			}
+			, _screen);
 	}
 
 	[Button]
@@ -149,6 +151,10 @@ public class GameManager : SingletonPersistant<GameManager>
 		{
 			m_playerTwoEntityDatas.Add(ennemi.GetSavedData());
 		}
+
+		MatchBriefing briefing = UIManager.Instance.MatchBriefing;
+		if (briefing != null)
+			briefing.Prepare(_mission);
 
 		LoadingManager.Instance.LoadScene(_mission.map.name
 		, () =>
@@ -173,24 +179,29 @@ public class GameManager : SingletonPersistant<GameManager>
 		{
 			UIManager.Instance.OpenPanel<InGamePanel>().Init();
 			TurnManager.Instance.StartInputPhase();
-		});
+		}
+		, briefing);
 	}
 
 	public void GoBackToHub ()
 	{
 		m_returnFromMatch = true;
 		m_currentMission = null;
+		UIManager.Instance.ClosePanel<InGamePanel>(true);
+		LoadHubScene(ClearMatchEntities, UIManager.Instance.MatchExtraction);
+	}
+
+	private void ClearMatchEntities ()
+	{
 		foreach (EntityAnchor anchor in m_playersEntityAnchor)
 		{
 			foreach (Entity entity in anchor.Entities)
 			{
-				Destroy(entity.gameObject);
+				if (entity != null)
+					Destroy(entity.gameObject);
 			}
 			anchor.Entities.Clear();
 		}
-
-		UIManager.Instance.ClosePanel<InGamePanel>(true);
-		LoadHubScene();
 	}
 
 	public void GoToStartScreen ()

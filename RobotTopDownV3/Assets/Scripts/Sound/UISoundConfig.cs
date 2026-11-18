@@ -25,4 +25,9 @@ public class UISoundConfig : ScriptableObject
 	[Header("Drag & drop")]
 	public SfxId dragPickUp = SfxId.None;
 	public SfxId dragDrop = SfxId.None;
+
+	[Header("Panel transitions")]
+	public SfxId transitionDoorsClose = SfxId.None;
+	public SfxId transitionDoorsOpen = SfxId.None;
+	public SfxId transitionHoloSweep = SfxId.None;
 }

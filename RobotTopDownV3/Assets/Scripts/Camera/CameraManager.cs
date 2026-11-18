@@ -204,6 +204,38 @@ public class CameraManager : Singleton<CameraManager>
 
     public float DefaultFieldOfView => m_defaultFieldOfView;
 
+    public bool TryGetGridOverviewPosition ( Vector3 _forward, float _margin, out Vector3 _position )
+    {
+        _position = default;
+        Tile[] tiles = GridManager.Instance != null ? GridManager.Instance.Tiles : null;
+        if (tiles == null || tiles.Length == 0 || _forward.sqrMagnitude < 1e-8f)
+            return false;
+
+        bool hasBounds = false;
+        Bounds bounds = default;
+        foreach (Tile tile in tiles)
+        {
+            if (tile == null)
+                continue;
+
+            if (hasBounds)
+                bounds.Encapsulate(tile.transform.position);
+            else
+                bounds = new Bounds(tile.transform.position, Vector3.zero);
+            hasBounds = true;
+        }
+
+        if (!hasBounds)
+            return false;
+
+        float halfVertical = m_defaultFieldOfView * .5f * Mathf.Deg2Rad;
+        float halfHorizontal = Mathf.Atan(Mathf.Tan(halfVertical) * m_camera.aspect);
+        float radius = Mathf.Max(bounds.extents.x, bounds.extents.z) + Tile.outerRadius;
+        float distance = radius / Mathf.Tan(Mathf.Min(halfVertical, halfHorizontal)) * _margin;
+        _position = bounds.center - _forward.normalized * distance;
+        return true;
+    }
+
     public float GetFieldOfViewToFit ( float _radius, float _distance )
     {
         float halfAngle = Mathf.Asin(Mathf.Clamp(_radius / Mathf.Max(_distance, 1e-4f), 0f, .99f));
@@ -254,16 +286,23 @@ public class CameraManager : Singleton<CameraManager>
         }
 
         Quaternion startRotation = m_camera.transform.rotation;
+        Vector3 startForward = startRotation * Vector3.forward;
+        Vector3 endForward = _cameraRotation * Vector3.forward;
         float travelFieldOfView = Mathf.Max(m_defaultFieldOfView, Mathf.Max(startFieldOfView, _fieldOfView));
         m_cameraMoveTween = DOVirtual.Float(0f, 1f, _duration, progress =>
         {
-            GetParentPoseFor(SamplePolyline(points, distances, progress), Quaternion.Slerp(startRotation, _cameraRotation, progress)
-                , out Vector3 parentPosition, out Quaternion parentRotation);
+            Quaternion rotation = GetLevelRotation(Vector3.Slerp(startForward, endForward, progress), Quaternion.Slerp(startRotation, _cameraRotation, progress));
+            GetParentPoseFor(SamplePolyline(points, distances, progress), rotation, out Vector3 parentPosition, out Quaternion parentRotation);
             m_cameraParent.transform.SetPositionAndRotation(parentPosition, parentRotation);
             m_camera.fieldOfView = progress < .5f
                 ? InterpolateFieldOfView(startFieldOfView, travelFieldOfView, Mathf.SmoothStep(0f, 1f, progress * 2f))
                 : InterpolateFieldOfView(travelFieldOfView, _fieldOfView, Mathf.SmoothStep(0f, 1f, progress * 2f - 1f));
         }).SetEase(Ease.InOutCubic);
+    }
+
+    private static Quaternion GetLevelRotation ( Vector3 _forward, Quaternion _fallback )
+    {
+        return Vector3.Cross(_forward.normalized, Vector3.up).sqrMagnitude < 1e-6f ? _fallback : Quaternion.LookRotation(_forward, Vector3.up);
     }
 
     private static float InterpolateFieldOfView ( float _from, float _to, float _progress )

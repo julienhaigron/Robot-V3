@@ -26,6 +26,7 @@ public class HubManager : Singleton<HubManager>
 		public Building building;
 		public string meshNamePrefix;
 		public float axisOffset;
+		public float fieldOfView;
 		public Transform cameraPoint;
 	}
 
@@ -53,7 +54,10 @@ public class HubManager : Singleton<HubManager>
 
 	private SerializableDictionary<EntitySavedData, Entity> m_squadEntities = new();
 	private bool m_isHangarShown;
+	public bool IsHangarShown => m_isHangarShown;
+	public bool IsHangarReady => m_isHangarShown && !m_isLoadingHangar;
 	private bool m_isLoadingHangar;
+	private bool m_isCameraHeld;
 	private HangarEnvironment m_hangar;
 	private readonly List<GameObject> m_hiddenHubRoots = new();
 	private readonly Dictionary<string, Bounds> m_meshBounds = new();
@@ -62,7 +66,7 @@ public class HubManager : Singleton<HubManager>
 	{
 		return new BuildingView[]
 		{
-			new() { building = Building.Hangar, meshNamePrefix = "Hangar", axisOffset = .6f },
+			new() { building = Building.Hangar, meshNamePrefix = "Hangar", axisOffset = .3f, fieldOfView = 50f },
 			new() { building = Building.Recycler, meshNamePrefix = "Recycle", axisOffset = .45f },
 			new() { building = Building.RepairStation, meshNamePrefix = "Repar-Station", axisOffset = 2.55f },
 			new() { building = Building.PsyShop, meshNamePrefix = "Psy-QG", axisOffset = .42f },
@@ -107,7 +111,7 @@ public class HubManager : Singleton<HubManager>
 			SoloHubPanel => Building.Overview,
 			RecyclePanel => Building.Recycler,
 			RepairStationPanel => Building.RepairStation,
-			SelectMissionPanel => Building.Arena,
+			SelectMissionPanel or MissionPanel or TournamentPanel => Building.Arena,
 			ShopPanel shop => GetShopBuilding(shop.CurrentFaction),
 			_ => null,
 		};
@@ -126,23 +130,73 @@ public class HubManager : Singleton<HubManager>
 
 	public void FocusBuilding ( Building _building )
 	{
-		if (m_isHangarShown)
+		if (m_isHangarShown || m_isCameraHeld)
 			return;
 
 		PlaceCameraOn(_building, m_cameraMoveDuration);
 	}
 
-	private void PlaceCameraOn ( Building _building, float _minDuration )
+	public void SetCameraHeld ( bool _isHeld )
+	{
+		m_isCameraHeld = _isHeld;
+	}
+
+	public float FocusCurrentBuilding ()
+	{
+		if (m_isHangarShown)
+			return 0f;
+
+		return PlaceCameraOn(GetBuildingOf(UIManager.Instance.currentPanel) ?? Building.Overview, m_cameraMoveDuration);
+	}
+
+	public void PlaceCameraOnBuilding ( Building _building )
+	{
+		if (!m_isHangarShown)
+			PlaceCameraOn(_building, 0f);
+	}
+
+	public float DiveToBuilding ( Building _building, float _duration )
+	{
+		if (m_isHangarShown || !TryGetBuildingCameraPose(_building, out Vector3 position, out Quaternion rotation, out float fieldOfView))
+			return 0f;
+
+		CameraManager.Instance.MoveCameraAlong(BuildCameraPath(CameraManager.Instance.Camera.transform.position, position), rotation, fieldOfView, _duration);
+		return _duration;
+	}
+
+	public void PushIntoHangar ( float _distance, float _duration )
+	{
+		if (!m_isHangarShown || m_hangar == null || m_hangar.CameraPoint == null)
+			return;
+
+		Transform point = m_hangar.CameraPoint;
+		Vector3 start = point.position - point.forward * _distance;
+		CameraManager.Instance.PlaceCameraAt(start, point.rotation);
+		CameraManager.Instance.MoveCameraAlong(new[] { start, point.position }, point.rotation, CameraManager.Instance.DefaultFieldOfView, _duration);
+	}
+
+	public float PullBackInHangar ( float _distance, float _duration )
+	{
+		if (!m_isHangarShown || m_hangar == null || m_hangar.CameraPoint == null)
+			return 0f;
+
+		Transform point = m_hangar.CameraPoint;
+		Vector3 end = point.position - point.forward * _distance;
+		CameraManager.Instance.MoveCameraAlong(new[] { CameraManager.Instance.Camera.transform.position, end }, point.rotation, CameraManager.Instance.DefaultFieldOfView, _duration);
+		return _duration;
+	}
+
+	private float PlaceCameraOn ( Building _building, float _minDuration )
 	{
 		float fieldOfView = CameraManager.Instance.DefaultFieldOfView;
 		if ((_building == Building.Overview || !TryGetBuildingCameraPose(_building, out Vector3 position, out Quaternion rotation, out fieldOfView))
 			&& !CameraManager.Instance.TryGetHubCameraPose(out position, out rotation))
-			return;
+			return 0f;
 
 		if (_minDuration <= 0f)
 		{
 			CameraManager.Instance.PlaceCameraAt(position, rotation, fieldOfView);
-			return;
+			return 0f;
 		}
 
 		List<Vector3> path = BuildCameraPath(CameraManager.Instance.Camera.transform.position, position);
@@ -152,6 +206,7 @@ public class HubManager : Singleton<HubManager>
 
 		float duration = m_cameraSpeed > 0f ? Mathf.Clamp(length / m_cameraSpeed, _minDuration, Mathf.Max(_minDuration, m_cameraMaxMoveDuration)) : _minDuration;
 		CameraManager.Instance.MoveCameraAlong(path, rotation, fieldOfView, duration);
+		return duration;
 	}
 
 	private List<Vector3> BuildCameraPath ( Vector3 _start, Vector3 _end )
@@ -185,9 +240,7 @@ public class HubManager : Singleton<HubManager>
 		public readonly Vector3 center;
 		public readonly float radius;
 		public readonly Vector3 axis;
-		private readonly float m_entranceAxial;
 		private readonly float m_entranceAnchor;
-		private readonly float m_tubeRadius;
 
 		public StationAxis ( Bounds _moon, Bounds _entrance, float _outerOffset )
 		{
@@ -195,16 +248,10 @@ public class HubManager : Singleton<HubManager>
 			radius = Mathf.Max(_moon.extents.x, Mathf.Max(_moon.extents.y, _moon.extents.z));
 			Vector3 toEntrance = _entrance.center - center;
 			axis = toEntrance.sqrMagnitude > 1e-8f ? toEntrance.normalized : Vector3.forward;
-			m_entranceAxial = Vector3.Dot(toEntrance, axis);
-			m_entranceAnchor = m_entranceAxial + _outerOffset;
-
-			Vector3 extents = _entrance.extents;
-			float extentAlongAxis = extents.x * Mathf.Abs(axis.x) + extents.y * Mathf.Abs(axis.y) + extents.z * Mathf.Abs(axis.z);
-			m_tubeRadius = (extents.x + extents.y + extents.z - extentAlongAxis) * .5f;
+			m_entranceAnchor = Vector3.Dot(toEntrance, axis) + _outerOffset;
 		}
 
 		public bool IsInside ( Vector3 _point ) => (_point - center).sqrMagnitude < radius * radius;
-		public bool IsInTube ( Vector3 _point ) => Mathf.Abs(Axial(_point)) <= m_entranceAxial && (_point - OnAxis(_point)).magnitude <= m_tubeRadius;
 		public float Axial ( Vector3 _point ) => Vector3.Dot(_point - center, axis);
 		public Vector3 At ( float _axial ) => center + axis * _axial;
 		public Vector3 OnAxis ( Vector3 _point ) => At(Axial(_point));
@@ -285,6 +332,8 @@ public class HubManager : Singleton<HubManager>
 		{
 			_position = view.cameraPoint.position;
 			_rotation = view.cameraPoint.rotation;
+			if (view.fieldOfView > 0f)
+				_fieldOfView = view.fieldOfView;
 			return true;
 		}
 
@@ -296,12 +345,12 @@ public class HubManager : Singleton<HubManager>
 		if (toBuilding.sqrMagnitude < 1e-8f)
 			return false;
 
-		Vector3 up = station.IsInTube(bounds.center) ? station.OnAxis(bounds.center) - bounds.center : Vector3.up;
-		if (Vector3.Cross(toBuilding, up).sqrMagnitude < 1e-8f)
-			up = station.axis;
+		Vector3 up = Vector3.Cross(toBuilding.normalized, Vector3.up).sqrMagnitude < 1e-6f ? station.axis : Vector3.up;
 
 		_rotation = Quaternion.LookRotation(toBuilding, up);
-		_fieldOfView = CameraManager.Instance.GetFieldOfViewToFit(bounds.extents.magnitude * m_buildingFramingMargin, toBuilding.magnitude);
+		_fieldOfView = view.fieldOfView > 0f
+			? view.fieldOfView
+			: CameraManager.Instance.GetFieldOfViewToFit(bounds.extents.magnitude * m_buildingFramingMargin, toBuilding.magnitude);
 		return true;
 	}
 

@@ -111,7 +111,7 @@ public class EntityConfigPanel : AUIPanel
 		foreach (KeyValuePair<EntityEquipmentData.EquipmentType, GameObject> pair in m_mainComponentSectionsBgsGos)
 		{
 			if (!pair.Value.TryGetComponent(out PointerHoverRelay relay))
-				relay = pair.Value.AddComponent<PointerHoverRelay>();
+				continue;
 
 			relay.onHoverChanged += _isHovered => RefreshSections(false);
 			m_sectionHoverRelays[pair.Key] = relay;

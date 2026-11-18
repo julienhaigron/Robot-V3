@@ -28,8 +28,6 @@ public class ToolTipManager : Singleton<ToolTipManager>
 	{
 		base.Awake();
 		m_canvasGroup = m_tooltipPanel.GetComponent<CanvasGroup>();
-		if (m_canvasGroup == null)
-			m_canvasGroup = m_tooltipPanel.AddComponent<CanvasGroup>();
 
 		m_tooltipParentRtfm = m_tooltipPanel.transform.parent as RectTransform;
 		m_toolTipRtfm = m_tooltipPanel.transform as RectTransform;

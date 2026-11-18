@@ -54,6 +54,11 @@ public class AUIWindow : UICanvasParent
 		}
 	}
 
+	public void FadeContainers ( bool _visible, float _duration )
+	{
+		SetContainersVisible(_visible, _duration);
+	}
+
 	public virtual void Close ( float _delay = 0f, bool _instant = false )
 	{
 		foreach(TutorialHighlightZone zone in m_highlighZones)

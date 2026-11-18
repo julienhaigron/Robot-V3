@@ -12,6 +12,7 @@ public class TutoConsole : MonoBehaviour
 	[Title("Dependancies")]
 	[SerializeField] private GameObject m_dialogueParent;
 	[SerializeField] private TextMeshProUGUI m_dialogueTMP;
+	[SerializeField] private RectTransform m_dialogueViewport;
 	[SerializeField] private TextMeshProUGUI m_characterNameTMP;
 	[SerializeField] private Image m_dialogueImg;
 	[SerializeField] private BaseButton m_previousBtn;
@@ -42,14 +43,13 @@ public class TutoConsole : MonoBehaviour
 	private int m_currentDialogueIndex = -1;
 	private int m_currentLineIndex;
 	private Tween m_currentTextTween;
-	private RectTransform m_dialogueViewport;
 	private RectTransform m_dialogueTextRect;
 	private Sequence m_scrollSequence;
 	private Tween m_blinkTween;
 
 	private void Awake ()
 	{
-		BuildDialogueViewport();
+		m_dialogueTextRect = m_dialogueTMP.rectTransform;
 
 		m_previousBtn.onClick += GoToPreviousLineOrDialogue;
 		m_nextBtn.onClick += GoToNextLineOrDialogue;
@@ -65,34 +65,6 @@ public class TutoConsole : MonoBehaviour
 		m_nextBtn.onClick -= GoToNextLineOrDialogue;
 		m_showBtn.onClick -= OnClickShow;
 		m_hideBtn.onClick -= OnClickHide;
-	}
-
-	private void BuildDialogueViewport ()
-	{
-		m_dialogueTextRect = m_dialogueTMP.rectTransform;
-		if (m_dialogueViewport != null || m_dialogueTextRect.parent == null)
-			return;
-
-		GameObject viewportGO = new GameObject("DialogueViewport", typeof(RectTransform), typeof(RectMask2D));
-		m_dialogueViewport = viewportGO.GetComponent<RectTransform>();
-		m_dialogueViewport.SetParent(m_dialogueTextRect.parent, false);
-		m_dialogueViewport.SetSiblingIndex(m_dialogueTextRect.GetSiblingIndex());
-
-		m_dialogueViewport.anchorMin = m_dialogueTextRect.anchorMin;
-		m_dialogueViewport.anchorMax = m_dialogueTextRect.anchorMax;
-		m_dialogueViewport.pivot = m_dialogueTextRect.pivot;
-		m_dialogueViewport.anchoredPosition = m_dialogueTextRect.anchoredPosition;
-		m_dialogueViewport.sizeDelta = m_dialogueTextRect.sizeDelta;
-
-		m_dialogueTextRect.SetParent(m_dialogueViewport, false);
-		m_dialogueTextRect.anchorMin = new Vector2(0f, 1f);
-		m_dialogueTextRect.anchorMax = new Vector2(1f, 1f);
-		m_dialogueTextRect.pivot = new Vector2(0.5f, 1f);
-		m_dialogueTextRect.anchoredPosition = Vector2.zero;
-		m_dialogueTextRect.sizeDelta = new Vector2(0f, m_dialogueViewport.rect.height);
-
-		m_dialogueTMP.overflowMode = TextOverflowModes.Overflow;
-		m_dialogueTMP.enableWordWrapping = true;
 	}
 
 	private float GetHiddenTextHeight ()

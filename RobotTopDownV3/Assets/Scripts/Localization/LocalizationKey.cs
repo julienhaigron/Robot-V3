@@ -560,6 +560,19 @@ public enum LocalizationKey
     log_designated_target_fallback,
     action_desc_facing_order,
     action_desc_facing_locked,
+    briefing_label,
+    briefing_squad,
+    briefing_opponents,
+    briefing_loading,
+    briefing_start,
+    match_goal_extermination,
+    match_goal_defense_de_zone,
+    match_goal_controle_de_point,
+    match_goal_construction,
+    match_goal_sabotage,
+    match_goal_assassinat,
+    briefing_return_station,
+    briefing_begin,
 }
 
 public static class LocalizationKeyExtensions
@@ -1127,6 +1140,19 @@ public static class LocalizationKeyExtensions
             case LocalizationKey.log_designated_target_fallback: return "log/designated_target_fallback";
             case LocalizationKey.action_desc_facing_order: return "action_desc/facing_order";
             case LocalizationKey.action_desc_facing_locked: return "action_desc/facing_locked";
+            case LocalizationKey.briefing_label: return "briefing/label";
+            case LocalizationKey.briefing_squad: return "briefing/squad";
+            case LocalizationKey.briefing_opponents: return "briefing/opponents";
+            case LocalizationKey.briefing_loading: return "briefing/loading";
+            case LocalizationKey.briefing_start: return "briefing/start";
+            case LocalizationKey.match_goal_extermination: return "match_goal/extermination";
+            case LocalizationKey.match_goal_defense_de_zone: return "match_goal/defense_de_zone";
+            case LocalizationKey.match_goal_controle_de_point: return "match_goal/controle_de_point";
+            case LocalizationKey.match_goal_construction: return "match_goal/construction";
+            case LocalizationKey.match_goal_sabotage: return "match_goal/sabotage";
+            case LocalizationKey.match_goal_assassinat: return "match_goal/assassinat";
+            case LocalizationKey.briefing_return_station: return "briefing/return_station";
+            case LocalizationKey.briefing_begin: return "briefing/begin";
             default: return string.Empty;
         }
     }

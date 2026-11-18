@@ -7,6 +7,7 @@ public class GhostEntity : MonoBehaviour
 {
 	[SerializeField] private Transform m_visual;
 	[SerializeField] private Material m_hologramMaterial;
+	public Material HologramMaterial => m_hologramMaterial;
 
     private Entity m_linkedEntity;
 

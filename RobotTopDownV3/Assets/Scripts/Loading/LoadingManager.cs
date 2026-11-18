@@ -5,6 +5,13 @@ using System.Collections.Generic;
 using UnityEngine.SceneManagement;
 using DG.Tweening;
 
+public interface ILoadingScreen
+{
+	void Show ( Action _onCovered );
+	void SetProgress ( float _progress );
+	void Hide ( Action _onHidden );
+}
+
 public class LoadingManager : SingletonPersistant<LoadingManager>
 {
 	public static Action onStartFadeOut;
@@ -16,6 +23,8 @@ public class LoadingManager : SingletonPersistant<LoadingManager>
 	private Coroutine m_loadingCR;
 	private bool m_isLoading = false;
 	public bool IsLoading => m_isLoading;
+	private ILoadingScreen m_screen;
+	private AsyncOperation m_loadOperation;
 
 	private bool m_didFinishInitialLoad = false;
 
@@ -29,6 +38,12 @@ public class LoadingManager : SingletonPersistant<LoadingManager>
 	private void Start ()
 	{
 		InitialLoad();
+	}
+
+	private void Update ()
+	{
+		if (m_screen != null && m_loadOperation != null)
+			m_screen.SetProgress(m_loadOperation.progress / .9f);
 	}
 
 	private void InitialLoad ()
@@ -53,7 +68,7 @@ public class LoadingManager : SingletonPersistant<LoadingManager>
 	}
 
 
-	public void LoadScene ( string _sceneName, Action _onStartLoadFinished, Action _onSceneLoaded, Action _onLoadFinished )
+	public void LoadScene ( string _sceneName, Action _onStartLoadFinished, Action _onSceneLoaded, Action _onLoadFinished, ILoadingScreen _screen = null )
 	{
 		if (m_isLoading)
 			return;
@@ -61,6 +76,17 @@ public class LoadingManager : SingletonPersistant<LoadingManager>
 		m_isLoading = true;
 		m_onLoadFinished = _onLoadFinished;
 		m_onSceneLoaded = _onSceneLoaded;
+		m_screen = _screen;
+
+		if (m_screen != null)
+		{
+			m_screen.Show(() =>
+			{
+				_onStartLoadFinished?.Invoke();
+				m_loadOperation = SceneManager.LoadSceneAsync(_sceneName);
+			});
+			return;
+		}
 
 		UIManager.Instance.LoadingScreenCanvasGroup.DOFade(1f, .3f).OnComplete(() =>
 		{
@@ -98,14 +124,26 @@ public class LoadingManager : SingletonPersistant<LoadingManager>
 			UIManager.Instance.OpenPanel<StartMenuPanel>();
 		}
 
-		UIManager.Instance.LoadingScreenCanvasGroup.DOFade(0f, .3f).OnComplete(() =>
+		if (m_screen != null)
 		{
-			if (m_onLoadFinished != null)
-			{
-				Action previousAction = new(m_onLoadFinished);
-				m_onLoadFinished -= previousAction;
-				previousAction?.Invoke();
-			}
-		});
+			ILoadingScreen screen = m_screen;
+			m_screen = null;
+			m_loadOperation = null;
+			screen.SetProgress(1f);
+			screen.Hide(InvokeLoadFinished);
+			return;
+		}
+
+		UIManager.Instance.LoadingScreenCanvasGroup.DOFade(0f, .3f).OnComplete(InvokeLoadFinished);
+	}
+
+	private void InvokeLoadFinished ()
+	{
+		if (m_onLoadFinished == null)
+			return;
+
+		Action previousAction = new(m_onLoadFinished);
+		m_onLoadFinished -= previousAction;
+		previousAction?.Invoke();
 	}
 }

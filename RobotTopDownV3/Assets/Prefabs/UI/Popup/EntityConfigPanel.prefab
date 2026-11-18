@@ -229,6 +229,7 @@ GameObject:
   - component: {fileID: 920672035977722178}
   - component: {fileID: 7752594423922709492}
   - component: {fileID: 1043079479207749542}
+  - component: {fileID: 2861337425416859124}
   m_Layer: 0
   m_Name: NeuronalMembraneSection
   m_TagString: Untagged
@@ -2814,6 +2815,7 @@ GameObject:
   - component: {fileID: 4036898654711843310}
   - component: {fileID: 7421442617940064553}
   - component: {fileID: 314918551053909212}
+  - component: {fileID: 1964676327866279239}
   m_Layer: 0
   m_Name: BrainSection
   m_TagString: Untagged
@@ -3754,6 +3756,7 @@ GameObject:
   - component: {fileID: 3626036844321540797}
   - component: {fileID: 6383654859342592277}
   - component: {fileID: 4321890639840834809}
+  - component: {fileID: 3434133893194861819}
   m_Layer: 0
   m_Name: FrameSection
   m_TagString: Untagged
@@ -18473,3 +18476,39 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 1261786944420087736, guid: f6b06df8b4e21744694d68399b02ecc3, type: 3}
   m_PrefabInstance: {fileID: 9104236324514658407}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &3434133893194861819
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6462769026895729849}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8bb4221cf144f6c4da2b46c4b7cd7657, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: RTD::PointerHoverRelay
+--- !u!114 &1964676327866279239
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4954721236138769458}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8bb4221cf144f6c4da2b46c4b7cd7657, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: RTD::PointerHoverRelay
+--- !u!114 &2861337425416859124
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1069620823629526385}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8bb4221cf144f6c4da2b46c4b7cd7657, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: RTD::PointerHoverRelay

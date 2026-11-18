@@ -2258,3 +2258,55 @@ MonoBehaviour:
     values:
     - "Facing: set by the attack, cannot be changed."
     - "Orientation : impos\xE9e par l'attaque, non modifiable."
+  - key: briefing/label
+    values:
+    - "Match briefing"
+    - "Briefing du match"
+  - key: briefing/squad
+    values:
+    - "Squad"
+    - "Escouade"
+  - key: briefing/opponents
+    values:
+    - "Opponents: {0}"
+    - "Adversaires : {0}"
+  - key: briefing/loading
+    values:
+    - "Loading {0} %"
+    - "Chargement {0} %"
+  - key: briefing/start
+    values:
+    - "Match start"
+    - "D\xE9but du match"
+  - key: match_goal/extermination
+    values:
+    - "Destroy every enemy unit."
+    - "D\xE9truire toutes les unit\xE9s adverses."
+  - key: match_goal/defense_de_zone
+    values:
+    - "Hold the zone at the end of each turn. First to {0} points wins."
+    - "Tenir la zone en fin de tour. Le premier \xE0 {0} points l'emporte."
+  - key: match_goal/controle_de_point
+    values:
+    - "Control every point at the end of a turn."
+    - "Contr\xF4ler tous les points en fin de tour."
+  - key: match_goal/construction
+    values:
+    - "Link your two communication points with cables."
+    - "Relier vos deux points de communication par des c\xE2bles."
+  - key: match_goal/sabotage
+    values:
+    - "Destroy every enemy sabotage point."
+    - "D\xE9truire tous les points de sabotage adverses."
+  - key: match_goal/assassinat
+    values:
+    - "Take down the enemy king."
+    - "Abattre le roi adverse."
+  - key: briefing/return_station
+    values:
+    - "Back to the station"
+    - "Retour \xE0 la station"
+  - key: briefing/begin
+    values:
+    - "Start"
+    - "Commencer"

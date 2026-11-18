@@ -47,9 +47,9 @@ public class HangarPanel : AUIPanel
 		RefreshDisplay();
 	}
 
-	protected override void OnHideFinished ()
+	protected override void OnHideStarted ()
 	{
-		base.OnHideFinished();
+		base.OnHideStarted();
 		HubManager.Instance.HideHangar();
 	}
 

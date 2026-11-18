@@ -52,6 +52,11 @@ public static class LocalizedEnumExtensions
 		return LocalizationManager.Instance.Get("match_type/" + ToSnakeCase(_type.ToString()));
 	}
 
+	public static string GetLocalizedGoal ( this MissionData.MissionType _type )
+	{
+		return string.Format(LocalizationManager.Instance.Get("match_goal/" + ToSnakeCase(_type.ToString())), GameConfig.current.game.zonePointsToWin);
+	}
+
 	public static string GetLocalizedTitle ( this WeaponEquipmentData.DamageType _type )
 	{
 		return LocalizationManager.Instance.Get("damage_type/" + ToSnakeCase(_type.ToString()));

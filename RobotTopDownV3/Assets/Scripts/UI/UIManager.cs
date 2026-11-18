@@ -25,6 +25,13 @@ public sealed class UIManager : SingletonPersistant<UIManager>
 	private Queue<AUIPopup> m_succesivePopups = new Queue<AUIPopup>();
 	private float m_nextShowPanelDelay;
 	private bool m_nextShowPanelInstant;
+	private PanelTransition m_panelTransition;
+	public PanelTransition PanelTransition => m_panelTransition;
+	private MatchBriefing m_matchBriefing;
+	public MatchBriefing MatchBriefing => m_matchBriefing;
+	private MatchExtraction m_matchExtraction;
+	public MatchExtraction MatchExtraction => m_matchExtraction;
+	private bool m_isSwitchingThroughTransition;
 
 	#region Getter-Setter
 	private Dictionary<Type, AUIPanel> panelsDictionary { get; set; }
@@ -47,6 +54,9 @@ public sealed class UIManager : SingletonPersistant<UIManager>
 		if (Instance != this)
 			return;
 
+		m_panelTransition = GetComponentInChildren<PanelTransition>(true);
+		m_matchBriefing = GetComponentInChildren<MatchBriefing>(true);
+		m_matchExtraction = GetComponentInChildren<MatchExtraction>(true);
 		m_panels = new List<AUIPanel>();
 		m_popups = new List<AUIPopup>();
 		m_topCanvases = new List<AUITopCanvas>();
@@ -152,6 +162,10 @@ public sealed class UIManager : SingletonPersistant<UIManager>
 		if (panelsDictionary.ContainsKey(_type) == false)
 			throw new Exception(GetType().Name + " - Do not have panel [" + _type.Name + "].");
 
+		if (!m_isSwitchingThroughTransition && m_panelTransition != null
+			&& m_panelTransition.TryPlay(currentPanel, panelsDictionary[_type], () => SwitchThroughTransition(_type, _showDelay, _showInstant, _pushHistory, _additive, _closePreviousInstant, _closeAndOpenSimultaneous)))
+			return panelsDictionary[_type];
+
 		nextPanel = panelsDictionary[_type];
 		m_nextShowPanelDelay = _showDelay;
 		m_nextShowPanelInstant = _showInstant;
@@ -176,6 +190,19 @@ public sealed class UIManager : SingletonPersistant<UIManager>
 		OnFocusedWindowChanged(_showInstant);
 		nextPanel = null;
 		return currentPanel;
+	}
+
+	private void SwitchThroughTransition ( Type _type, float _showDelay, bool _showInstant, bool _pushHistory, bool _additive, bool _closePreviousInstant, bool _closeAndOpenSimultaneous )
+	{
+		m_isSwitchingThroughTransition = true;
+		try
+		{
+			OpenPanel(_type, _showDelay, _showInstant, _pushHistory, _additive, _closePreviousInstant, _closeAndOpenSimultaneous);
+		}
+		finally
+		{
+			m_isSwitchingThroughTransition = false;
+		}
 	}
 
 	public void ClosePanel<T> ( bool _instant = false )

@@ -717,6 +717,13 @@ public class PlayerController : Singleton<PlayerController>
 
 	public void AddGhostEntityAt ( Entity _entity, Tile _position, int _orientation )
 	{
+		if (_position == _entity.Displacement.Coordinates.GetTile() && _orientation == _entity.Displacement.CurrentOrientation)
+		{
+			if (m_ghostEntities.TryGetValue(_entity.ID, out GhostEntity shownGhost) && shownGhost != null && shownGhost.gameObject.activeSelf)
+				shownGhost.Hide();
+			return;
+		}
+
 		if (!m_ghostEntities.ContainsKey(_entity.ID))
 		{
 			GhostEntity newGhost = Instantiate(GameAssets.current.game.baseGhost/*, GameManager.Instance.transform*/);

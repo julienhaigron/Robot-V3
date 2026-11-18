@@ -24,7 +24,9 @@ public class EntitySkinPlugin : EntityPlugin
 
 	private string m_aimingWeaponID;
 
-	private bool m_hasThermicLook;
+	private bool m_isThermicLookWanted;
+	private Material m_forcedLook;
+	private Material m_appliedLook;
 	private readonly List<Renderer> m_lookRenderers = new();
 	private readonly List<Material[]> m_lookOriginalMaterials = new();
 	private readonly List<int> m_lookOriginalSortingOrders = new();
@@ -129,7 +131,8 @@ public class EntitySkinPlugin : EntityPlugin
 		bool isThermic = _type == NeuronalMembraneEquipmentData.VisionTypes.Thermic;
 		bool hasThermicMesh = isThermic && m_thermicMaterial != null && m_visualRoot != null;
 
-		SetThermicLook(hasThermicMesh);
+		m_isThermicLookWanted = hasThermicMesh;
+		RefreshLook();
 		SetRootActive(m_visualRoot, _type == NeuronalMembraneEquipmentData.VisionTypes.Optic || hasThermicMesh);
 		SetRootActive(m_thermicRoot, isThermic && !hasThermicMesh);
 		SetRootActive(m_radarRoot, _type == NeuronalMembraneEquipmentData.VisionTypes.Radar);
@@ -148,17 +151,22 @@ public class EntitySkinPlugin : EntityPlugin
 			_root.SetActive(_isActive);
 	}
 
-	private void SetThermicLook ( bool _hasThermicLook )
+	public void SetForcedLook ( Material _material )
 	{
-		if (m_hasThermicLook == _hasThermicLook)
+		m_forcedLook = _material;
+		RefreshLook();
+	}
+
+	private void RefreshLook ()
+	{
+		Material wantedLook = m_forcedLook != null ? m_forcedLook : m_isThermicLookWanted ? m_thermicMaterial : null;
+		if (wantedLook == m_appliedLook)
 			return;
 
-		m_hasThermicLook = _hasThermicLook;
-		if (!_hasThermicLook)
-		{
-			RestoreLook();
+		RestoreLook();
+		m_appliedLook = wantedLook;
+		if (wantedLook == null || m_visualRoot == null)
 			return;
-		}
 
 		foreach (Renderer renderer in m_visualRoot.GetComponentsInChildren<Renderer>(true))
 		{
@@ -169,7 +177,7 @@ public class EntitySkinPlugin : EntityPlugin
 			m_lookOriginalMaterials.Add(renderer.sharedMaterials);
 			m_lookOriginalSortingOrders.Add(renderer.sortingOrder);
 			m_lookOriginalShadowModes.Add(renderer.shadowCastingMode);
-			OverrideMaterials(renderer, m_thermicMaterial);
+			OverrideMaterials(renderer, wantedLook);
 		}
 	}
 
