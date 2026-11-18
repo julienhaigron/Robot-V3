@@ -105,7 +105,6 @@ MonoBehaviour:
   m_hangarPushDuration: 0.9
   m_captionFadeDuration: 0.25
   m_sweepDuration: 0.7
-  m_tintTrail: 0.35
   m_captureImage: {fileID: 6954292835381710177}
   m_doorsImage: {fileID: 4187160468151093833}
   m_captionGroup: {fileID: 8020200860928940132}

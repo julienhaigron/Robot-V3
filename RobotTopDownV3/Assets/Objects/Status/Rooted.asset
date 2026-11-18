@@ -18,3 +18,5 @@ MonoBehaviour:
   description: 
   icon: {fileID: 0}
   groundPrefab: {fileID: 0}
+  entityPrefab: {fileID: 7398400000000000001, guid: f32d82079ed2eb671993fc394c0a6428, type: 3}
+  entityVisualAnchor: 1

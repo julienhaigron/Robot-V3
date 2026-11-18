@@ -24,6 +24,9 @@ MonoBehaviour:
   isPlayedFirst: 1
   preparationAnimationKey: 
   afterPerformAnimationKey: 
+  performAnimationKey: 
+  performAnimationHitDelay: 0
+  shotRecoilStrength: 0.15
   onPerformSingleAttackSFXID: 0
   onSingleAttackHitSFXID: 0
   onSingleAttackHitVFXPool: {fileID: 11400000, guid: 8d9664d0ceee941f86e5533780f823af, type: 2}

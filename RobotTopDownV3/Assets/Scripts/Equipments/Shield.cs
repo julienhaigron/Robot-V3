@@ -16,6 +16,8 @@ public class Shield : ToolEquipment
 	[SerializeField] private float m_orientationIndicatorHeight = .03f;
 	[SerializeField] private Color m_allyIndicatorColor = new(.35f, .85f, 1f, 1f);
 	[SerializeField] private Color m_enemyIndicatorColor = new(1f, .35f, .3f, 1f);
+	[SerializeField] private PoolData m_turnVFXPool;
+	[SerializeField] private float m_turnVFXDistance = .72f;
 
 	private int m_currentHp;
 	public int CurrentHp => m_currentHp;
@@ -62,6 +64,18 @@ public class Shield : ToolEquipment
 		m_orientationIndicator.SetPositionAndRotation(position, Quaternion.Euler(0f, 30f + orientation * 60f, 0f));
 	}
 
+	private void PlayTurnFlash ()
+	{
+		Tile tile = GetIndicatorTile();
+		if (m_turnVFXPool == null || tile == null || (!m_user.IsAlliedTo(GameManager.Instance.PlayerID) && !m_user.IsVisible))
+			return;
+
+		Quaternion facing = Quaternion.Euler(0f, 30f + orientation * 60f, 0f);
+		Vector3 center = m_user.Skin != null && m_user.Skin.Center != null ? m_user.Skin.Center.position : m_user.transform.position;
+		Vector3 position = new Vector3(center.x, tile.transform.position.y + m_orientationIndicatorHeight, center.z) + facing * Vector3.forward * m_turnVFXDistance;
+		Weapon.PlayOrientedVFX(m_turnVFXPool, position, facing * Vector3.forward, ShieldData != null ? ShieldData.name : name);
+	}
+
 	private Tile GetIndicatorTile ()
 	{
 		if (m_user == null || GameManager.Instance == null || GridManager.Instance == null || GridManager.Instance.Tiles == null || m_user.Displacement == null)
@@ -105,6 +119,7 @@ public class Shield : ToolEquipment
 		if(_specialAction is TurnShieldAction turnAction)
 		{
 			orientation = turnAction.targetedOrientation;
+			PlayTurnFlash();
 		}
 
 		DOVirtual.DelayedCall(GameConfig.current.game.actionDuration, () => _onPerformEnd?.Invoke());

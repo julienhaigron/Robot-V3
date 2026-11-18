@@ -224,10 +224,8 @@ public class Weapon : MonoBehaviour
 
 	protected virtual IEnumerator ApplyAttackCR ( AttackAction _attackAction, int _attackIndex, AttackAction.SingleAttackInfo _attackInfo )
 	{
-		if (_attackInfo.isAttackSuccessfull && !string.IsNullOrEmpty(m_data.attackAnimationSuccessId))
-			m_user.Skin.OverrideAnimation(m_data.attackAnimationSuccessId);
-		else if (!string.IsNullOrEmpty(m_data.attackAnimationFailureId))
-			m_user.Skin.OverrideAnimation(m_data.attackAnimationFailureId);
+		if (PlayAttackAnimation(_attackAction, _attackInfo) && _attackAction.Data.performAnimationHitDelay > 0f)
+			yield return new WaitForSeconds(_attackAction.Data.performAnimationHitDelay);
 
 		if (!_attackInfo.isAttackSuccessfull)
 		{
@@ -312,12 +310,38 @@ public class Weapon : MonoBehaviour
 		}
 	}
 
+	protected bool PlayAttackAnimation ( AttackAction _attackAction, AttackAction.SingleAttackInfo _attackInfo )
+	{
+		if (m_user == null || m_user.Skin == null)
+			return false;
+
+		string weaponKey = _attackInfo.isAttackSuccessfull && !string.IsNullOrEmpty(m_data.attackAnimationSuccessId)
+			? m_data.attackAnimationSuccessId : m_data.attackAnimationFailureId;
+		bool isOffHand = m_user.Skin.IK != null && m_user.Skin.IK.IsHeldInLeftHand(transform);
+		return m_user.Skin.PlayActionAnimation(_attackAction.Data, weaponKey, isOffHand);
+	}
+
+	public void PlayShotRecoil ( EntityActionData _data )
+	{
+		if (_data == null || _data.shotRecoilStrength <= 0f || m_user == null || m_user.Skin == null || m_user.Skin.IK == null)
+			return;
+
+		m_user.Skin.IK.Recoil(_data.shotRecoilStrength, transform, m_data != null && m_data.isTwoHanded);
+	}
+
+	private static bool IsShot ( EntityActionData _data )
+	{
+		return _data.type == EntityActionData.ActionType.DistanceAttack;
+	}
+
 	private void PlayPerformFeedback ( AttackAction _attackAction, Vector3 _strikePoint )
 	{
 		EntityActionData data = _attackAction.Data;
 		bool isSpray = data.attackProjectileMode == EntityActionData.AttackProjectileMode.Spray && data.attackProjectilePool != null && data.doesSprayRepeatPerformVFX;
 		if (!isSpray && IsAttackVisible())
 			PlayOrientedVFX(data.onPerformVFXPool, ProjectileOrigin, _strikePoint - ProjectileOrigin, data.name);
+		if (IsShot(data) && !(data.attackProjectileMode == EntityActionData.AttackProjectileMode.Spray && data.attackProjectilePool != null))
+			PlayShotRecoil(data);
 
 		bool isStrikeOnTarget = _attackAction.Data.type == EntityActionData.ActionType.MeleeAttack;
 		foreach (ParticleSystem ps in m_onPerformPS)
@@ -407,6 +431,8 @@ public class Weapon : MonoBehaviour
 					LaunchFlight(flight, data.attackProjectilePool, speed, now, isVisible);
 					if (isVisible && data.attackProjectileMode == EntityActionData.AttackProjectileMode.Spray && data.doesSprayRepeatPerformVFX)
 						PlayOrientedVFX(data.onPerformVFXPool, flight.waypoints[0], flight.waypoints[1] - flight.waypoints[0], data.name);
+					if (IsShot(data) && data.attackProjectileMode == EntityActionData.AttackProjectileMode.Spray)
+						PlayShotRecoil(data);
 				}
 
 				AdvanceFlight(flight, now, speed, _onHit);

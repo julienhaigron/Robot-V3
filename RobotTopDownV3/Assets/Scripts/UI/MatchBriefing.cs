@@ -16,10 +16,7 @@ public class MatchBriefing : MonoBehaviour, ILoadingScreen
 	private const byte k_objectiveCode = 4;
 	private const byte k_squadSpawnCode = 5;
 
-	private static readonly int s_mapGridID = Shader.PropertyToID("_MapGrid");
-	private static readonly int s_mapBoundsID = Shader.PropertyToID("_MapBounds");
-	private static readonly int s_revealCenterID = Shader.PropertyToID("_RevealCenter");
-	private static readonly int s_revealID = Shader.PropertyToID("_Reveal");
+	private static readonly int s_revealID = Shader.PropertyToID("_BriefingMapReveal");
 
 	[Title("Briefing")]
 	[SerializeField] private float m_minimumDuration = 2.8f;
@@ -53,7 +50,6 @@ public class MatchBriefing : MonoBehaviour, ILoadingScreen
 	[SerializeField] private CanvasGroup m_bannerGroup;
 	[SerializeField] private TextMeshProUGUI m_bannerTMP;
 
-	private Material m_mapMaterial;
 	private Texture2D m_mapData;
 	private bool m_isShown;
 	private bool m_isStartRequested;
@@ -63,12 +59,6 @@ public class MatchBriefing : MonoBehaviour, ILoadingScreen
 
 	private void Awake ()
 	{
-		if (m_map != null && m_map.material != null)
-		{
-			m_mapMaterial = new Material(m_map.material);
-			m_map.material = m_mapMaterial;
-		}
-
 		m_startButton.onClick += OnClickStart;
 	}
 
@@ -76,8 +66,6 @@ public class MatchBriefing : MonoBehaviour, ILoadingScreen
 	{
 		if (m_startButton != null)
 			m_startButton.onClick -= OnClickStart;
-		if (m_mapMaterial != null)
-			Destroy(m_mapMaterial);
 		if (m_mapData != null)
 			Destroy(m_mapData);
 	}
@@ -247,7 +235,7 @@ public class MatchBriefing : MonoBehaviour, ILoadingScreen
 
 	private void BuildMap ( GridData _grid )
 	{
-		bool hasMap = _grid != null && _grid.width > 0 && _grid.height > 0 && _grid.tiles != null && m_mapMaterial != null;
+		bool hasMap = _grid != null && _grid.width > 0 && _grid.height > 0 && _grid.tiles != null;
 		m_map.gameObject.SetActive(hasMap);
 		if (!hasMap)
 			return;
@@ -275,18 +263,9 @@ public class MatchBriefing : MonoBehaviour, ILoadingScreen
 		m_mapData.Apply(false);
 		m_map.texture = m_mapData;
 
-		float innerRadius = Tile.innerRadius;
-		float outerRadius = Tile.outerRadius;
-		float minX = -innerRadius;
-		float maxX = (width - .5f) * innerRadius * 2f + innerRadius;
-		float minZ = -outerRadius;
-		float maxZ = (height - 1) * outerRadius * 1.5f + outerRadius;
-		Vector2 center = new((minX + maxX) * .5f, (minZ + maxZ) * .5f);
-
-		m_mapMaterial.SetVector(s_mapGridID, new Vector4(width, height, innerRadius, outerRadius));
-		m_mapMaterial.SetVector(s_mapBoundsID, new Vector4(minX, minZ, maxX, maxZ));
-		m_mapMaterial.SetVector(s_revealCenterID, new Vector4(center.x, center.y, new Vector2(maxX - center.x, maxZ - center.y).magnitude, 0f));
-		m_mapFitter.aspectRatio = (maxX - minX) / Mathf.Max(maxZ - minZ, .001f);
+		float mapWidth = (2f * width + 1f) * Tile.innerRadius;
+		float mapHeight = (1.5f * height + .5f) * Tile.outerRadius;
+		m_mapFitter.aspectRatio = mapWidth / Mathf.Max(mapHeight, .001f);
 	}
 
 	private static byte GetTileCode ( GridData.TileData _tile )
@@ -307,8 +286,7 @@ public class MatchBriefing : MonoBehaviour, ILoadingScreen
 
 	private void ApplyProgress ()
 	{
-		if (m_mapMaterial != null)
-			m_mapMaterial.SetFloat(s_revealID, m_displayedProgress);
+		Shader.SetGlobalFloat(s_revealID, m_displayedProgress);
 		m_progressFill.anchorMax = new Vector2(m_displayedProgress, 1f);
 		m_loadingTMP.text = string.Format(LocalizationManager.Instance.Get(LocalizationKey.briefing_loading), Mathf.RoundToInt(m_displayedProgress * 100f));
 	}

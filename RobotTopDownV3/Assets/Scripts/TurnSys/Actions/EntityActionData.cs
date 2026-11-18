@@ -27,10 +27,14 @@ public class EntityActionData : AParsableScriptableObject
 	[Title("Animation")]
 	public string preparationAnimationKey;
 	public string afterPerformAnimationKey;
+	public string performAnimationKey;
+	[ShowIf("@type == ActionType.MeleeAttack || !string.IsNullOrEmpty(performAnimationKey)"), Min(0f)] public float performAnimationHitDelay = .3f;
+	[HideIf("@type == ActionType.MeleeAttack || type == ActionType.Movement"), Min(0f)] public float shotRecoilStrength = 1f;
 	public SfxId onPerformSingleAttackSFXID;
 	public SfxId onSingleAttackHitSFXID;
 	public PoolData onSingleAttackHitVFXPool;
 	public PoolData onPerformVFXPool;
+	public PoolData movementTrailPool;
 
 	public enum VisualEffectType
 	{

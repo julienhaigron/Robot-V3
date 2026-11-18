@@ -36,7 +36,11 @@ public class MineItemData : AItemData
 
 	public override void OnWalkThrough ( Entity _walkingEntity, AItemLinkedData _linkedData, Item _usedItem, bool _isFromTeleportation )
 	{
-		PlayExplosion(_usedItem.CurrentPosition != null ? _usedItem.CurrentPosition.transform.position : _usedItem.transform.position);
+		Tile mineTile = _usedItem.CurrentPosition;
+		bool isSeen = mineTile == null || mineTile.IsVisible
+			|| (_usedItem.Invocator != null && _usedItem.Invocator.IsAlliedTo(GameManager.Instance.PlayerID));
+		if (isSeen)
+			PlayExplosion(mineTile != null ? mineTile.transform.position : _usedItem.transform.position);
 
 		List<Entity> entities = GridManager.Instance.GetEntitiesInRange(_usedItem.CurrentPosition, range);
 

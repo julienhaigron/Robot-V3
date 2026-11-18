@@ -16,13 +16,9 @@ public class PanelTransition : MonoBehaviour
 
 	private const float k_readyTimeout = 6f;
 
-	private static readonly int s_closureID = Shader.PropertyToID("_Closure");
-	private static readonly int s_offsetID = Shader.PropertyToID("_Offset");
-	private static readonly int s_progressID = Shader.PropertyToID("_Progress");
-	private static readonly int s_directionID = Shader.PropertyToID("_Direction");
+	private static readonly int s_sweepID = Shader.PropertyToID("_PanelTransitionSweep");
+	private static readonly int s_doorsID = Shader.PropertyToID("_PanelTransitionDoors");
 	private static readonly int s_tintTrailID = Shader.PropertyToID("_TintTrail");
-	private static readonly int s_flipCaptureID = Shader.PropertyToID("_FlipCapture");
-	private static readonly int s_screenSizeID = Shader.PropertyToID("_ScreenSize");
 
 	[Title("Dive and doors")]
 	[SerializeField] private float m_panelFadeDuration = .25f;
@@ -38,7 +34,6 @@ public class PanelTransition : MonoBehaviour
 
 	[Title("Holo sweep")]
 	[SerializeField] private float m_sweepDuration = .7f;
-	[SerializeField, Range(0f, 1f)] private float m_tintTrail = .35f;
 
 	[Title("References")]
 	[SerializeField] private RawImage m_captureImage;
@@ -49,8 +44,6 @@ public class PanelTransition : MonoBehaviour
 	[SerializeField] private RectTransform m_captionProgressFill;
 	[SerializeField] private Image m_blocker;
 
-	private Material m_holoMaterial;
-	private Material m_doorsMaterial;
 	private RenderTexture m_capture;
 	private bool m_hasCapture;
 	private bool m_isPlaying;
@@ -58,19 +51,7 @@ public class PanelTransition : MonoBehaviour
 
 	private void Awake ()
 	{
-		m_holoMaterial = InstantiateMaterial(m_captureImage);
-		m_doorsMaterial = InstantiateMaterial(m_doorsImage);
 		StartCoroutine(CaptureLoop());
-	}
-
-	private static Material InstantiateMaterial ( Graphic _graphic )
-	{
-		if (_graphic == null || _graphic.material == null)
-			return null;
-
-		Material instance = new(_graphic.material);
-		_graphic.material = instance;
-		return instance;
 	}
 
 	private void OnDestroy ()
@@ -80,11 +61,6 @@ public class PanelTransition : MonoBehaviour
 			m_capture.Release();
 			Destroy(m_capture);
 		}
-
-		if (m_holoMaterial != null)
-			Destroy(m_holoMaterial);
-		if (m_doorsMaterial != null)
-			Destroy(m_doorsMaterial);
 	}
 
 	public static Style GetStyle ( AUIPanel _from, AUIPanel _to )
@@ -159,10 +135,14 @@ public class PanelTransition : MonoBehaviour
 		m_blocker.gameObject.SetActive(_isBlocking);
 	}
 
-	private static void SetScreenSize ( Material _material )
+	private static void SetSweep ( float _progress, float _direction )
 	{
-		if (_material != null)
-			_material.SetVector(s_screenSizeID, new Vector4(Screen.width, Screen.height, 0f, 0f));
+		Shader.SetGlobalVector(s_sweepID, new Vector4(_progress, _direction, Screen.width, Screen.height));
+	}
+
+	private static void SetDoors ( float _closure, float _offset )
+	{
+		Shader.SetGlobalVector(s_doorsID, new Vector4(_closure, _offset, Screen.width, Screen.height));
 	}
 
 	#endregion
@@ -213,11 +193,8 @@ public class PanelTransition : MonoBehaviour
 		m_isPlaying = true;
 		SetBlocking(true);
 
-		SetScreenSize(m_holoMaterial);
-		m_holoMaterial.SetFloat(s_flipCaptureID, SystemInfo.graphicsUVStartsAtTop ? 1f : 0f);
-		m_holoMaterial.SetFloat(s_directionID, _isOpening ? 1f : -1f);
-		m_holoMaterial.SetFloat(s_tintTrailID, m_tintTrail);
-		m_holoMaterial.SetFloat(s_progressID, 0f);
+		float direction = _isOpening ? 1f : -1f;
+		SetSweep(0f, direction);
 		m_captureImage.gameObject.SetActive(true);
 
 		_switchPanel?.Invoke();
@@ -225,11 +202,11 @@ public class PanelTransition : MonoBehaviour
 
 		yield return null;
 
-		float travel = 1f + m_tintTrail;
+		float travel = 1f + m_captureImage.material.GetFloat(s_tintTrailID);
 		yield return Animate(m_sweepDuration * travel, _progress =>
 		{
 			float position = EaseInOut(_progress) * travel;
-			m_holoMaterial.SetFloat(s_progressID, position);
+			SetSweep(position, direction);
 			if (position >= 1f)
 				SetBlocking(false);
 		});
@@ -264,7 +241,6 @@ public class PanelTransition : MonoBehaviour
 
 		yield return Wait(Mathf.Max(m_panelFadeDuration, leadDuration - m_doorsCloseDuration));
 
-		SetScreenSize(m_doorsMaterial);
 		SetDoors(0f, 0f);
 		m_doorsImage.gameObject.SetActive(true);
 		SoundManager.PlayUISafe(SfxId.None, _config => _config.transitionDoorsClose);
@@ -300,12 +276,6 @@ public class PanelTransition : MonoBehaviour
 		m_isPlaying = false;
 	}
 
-	private void SetDoors ( float _closure, float _offset )
-	{
-		m_doorsMaterial.SetFloat(s_closureID, _closure);
-		m_doorsMaterial.SetFloat(s_offsetID, _offset);
-	}
-
 	public float DoorsCloseDuration => m_doorsCloseDuration + m_doorsImpactDuration;
 
 	public void BlockInput ( bool _isBlocked )
@@ -317,7 +287,6 @@ public class PanelTransition : MonoBehaviour
 	{
 		m_isPlaying = true;
 		SetBlocking(true);
-		SetScreenSize(m_doorsMaterial);
 		SetDoors(0f, 0f);
 		m_doorsImage.gameObject.SetActive(true);
 		m_captionTMP.text = _caption;

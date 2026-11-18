@@ -410,11 +410,11 @@ public class EntityEquipmentPlugin : EntityPlugin
 		bool isCenteredOnCaster = _action.Data.aoECenterType == EntityActionData.AOECenterType.Self;
 		int maxDistance = isCenteredOnCaster ? _action.Data.GetMaxRange(_action, m_linkedEntity, null) : _action.Data.GetAoEMaxRange(_action, m_linkedEntity, null);
 		int minDistance = isCenteredOnCaster ? _action.Data.minDistance : _action.Data.aoeMinEffectRange;
-		Tile from = !isCenteredOnCaster ? _targetTile
-			: _usePlannedPose ? GridManager.Instance.Tiles[_action.supposedPositionAtActionStartID]
+		Tile casterTile = _usePlannedPose ? GridManager.Instance.Tiles[_action.supposedPositionAtActionStartID]
 			: _action.PerformingEntity.Displacement.Coordinates.GetTile();
-		int orientation = _usePlannedPose && isCenteredOnCaster && _targetTile != null && _targetTile != from
-			? GridManager.Instance.GetClosestOrientation(from, _targetTile)
+		Tile from = !isCenteredOnCaster ? _targetTile : casterTile;
+		int orientation = _usePlannedPose && _targetTile != null && casterTile != null && _targetTile != casterTile
+			? GridManager.Instance.GetClosestOrientation(casterTile, _targetTile)
 			: m_linkedEntity.Displacement.CurrentOrientation;
 		int extraValue = _action.Data.maxChainedTarget;
 		return GridManager.Instance.GetTilesInAoERange(_action.Data.aoeType, m_linkedEntity, from, _targetTile, minDistance, maxDistance, extraValue, _isThisTurn, orientation);

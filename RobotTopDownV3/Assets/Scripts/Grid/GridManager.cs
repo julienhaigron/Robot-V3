@@ -536,21 +536,27 @@ public class GridManager : Singleton<GridManager>
 				tilesInRange.AddRange(GetTilesInArc(_from, _minDistance, _maxDistance, orientation, true, _type == EntityActionData.AOEType.LargeArc, _isThisTurn));
 				break;
 			case EntityActionData.AOEType.Chain:
+				if (_targetTile != null && _targetTile.TryGetEntity(_isThisTurn, out Entity primaryEntity) && !primaryEntity.IsAlliedTo(_caster.OwnerID))
+					tilesInRange.Add(_targetTile);
+
 				foreach (Tile tile in GetTilesInVisionRange(_from, _minDistance, _maxDistance, false, _isThisTurn, true))
 				{
-					if (!tile.TryGetEntity(_isThisTurn, out Entity chainedEntity) || chainedEntity.IsAlliedTo(_caster.OwnerID))
+					if (tilesInRange.Count >= _extraValue + 1)
+						break;
+
+					if (tile == _targetTile || !tile.TryGetEntity(_isThisTurn, out Entity chainedEntity) || chainedEntity.IsAlliedTo(_caster.OwnerID))
 						continue;
 
 					tilesInRange.Add(tile);
-
-					if (tilesInRange.Count >= _extraValue + 1)
-						break;
 				}
 				break;
 		}
 
 		foreach (Tile tile in tilesInRange.ToArray())
 		{
+			if (_type == EntityActionData.AOEType.Chain && tile == _targetTile)
+				continue;
+
 			if (_from.coordinates.DistanceTo(tile.coordinates) < _minDistance)
 				tilesInRange.Remove(tile);
 		}

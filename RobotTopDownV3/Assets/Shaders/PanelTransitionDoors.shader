@@ -12,9 +12,6 @@ Shader "UI/PanelTransitionDoors"
         _StripePeriod ("Stripe Period (px)", Float) = 38
         _PanelSpacing ("Panel Spacing (px)", Float) = 120
         _LineThickness ("Line Thickness (px)", Float) = 3
-        _Closure ("Closure", Range(0, 1)) = 0
-        _Offset ("Offset (px)", Float) = 0
-        [HideInInspector] _ScreenSize ("Screen Size", Vector) = (1920, 1080, 0, 0)
     }
 
     SubShader
@@ -43,9 +40,7 @@ Shader "UI/PanelTransitionDoors"
             float _StripePeriod;
             float _PanelSpacing;
             float _LineThickness;
-            float _Closure;
-            float _Offset;
-            float4 _ScreenSize;
+            float4 _PanelTransitionDoors;
 
             struct appdata
             {
@@ -72,11 +67,11 @@ Shader "UI/PanelTransitionDoors"
 
             float4 frag (v2f i) : SV_Target
             {
-                float2 size = max(_ScreenSize.xy, float2(1.0, 1.0));
+                float2 size = max(_PanelTransitionDoors.zw, float2(1.0, 1.0));
                 float2 px = i.uv * size;
-                px.x -= _Offset;
+                px.x -= _PanelTransitionDoors.y;
 
-                float doorWidth = size.x * 0.5 * _Closure;
+                float doorWidth = size.x * 0.5 * _PanelTransitionDoors.x;
                 float leftDepth = doorWidth - px.x;
                 float rightDepth = px.x - (size.x - doorWidth);
                 clip(max(leftDepth, rightDepth));

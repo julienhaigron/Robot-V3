@@ -199,3 +199,5 @@ MonoBehaviour:
   m_orientationIndicatorHeight: 0.03
   m_allyIndicatorColor: {r: 0.35, g: 0.85, b: 1, a: 1}
   m_enemyIndicatorColor: {r: 1, g: 0.35, b: 0.3, a: 1}
+  m_turnVFXPool: {fileID: 11400000, guid: c2bdcc46554beccfefb480fee0b3cf93, type: 2}
+  m_turnVFXDistance: 0.72

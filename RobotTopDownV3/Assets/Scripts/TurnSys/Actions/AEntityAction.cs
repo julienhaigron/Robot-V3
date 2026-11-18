@@ -47,6 +47,7 @@ public abstract class AEntityAction : INetworkSerializable
 	protected bool m_isPerforming = false;
 	public bool IsPerforming => m_isPerforming;
 	private bool m_isWaitingForEndTick;
+	private VisualProjectile m_movementTrail;
 
 	public bool IsPerformingAtTick ( int _tick )
 	{
@@ -270,6 +271,23 @@ public abstract class AEntityAction : INetworkSerializable
 	public virtual void CancelAction ()
 	{
 
+	}
+
+	protected void AttachMovementTrail ()
+	{
+		DetachMovementTrail();
+		Entity performer = PerformingEntity;
+		if (performer != null && performer.Skin != null && (performer.IsAlliedTo(GameManager.Instance.PlayerID) || performer.IsVisible))
+			m_movementTrail = VisualProjectile.AttachTo(Data.movementTrailPool, performer.Skin.Center);
+	}
+
+	protected void DetachMovementTrail ()
+	{
+		if (m_movementTrail == null)
+			return;
+
+		m_movementTrail.Detach();
+		m_movementTrail = null;
 	}
 
 	public virtual void OnModActionAdded ( AEntityAction _mainAction )

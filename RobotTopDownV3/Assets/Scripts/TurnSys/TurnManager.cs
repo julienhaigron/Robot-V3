@@ -1416,6 +1416,8 @@ public class TurnManager : Singleton<TurnManager>
 			Entity entity = GameManager.Instance.GetEntityFromID(entityID);
 			Tile lastRecordedPosition = entity.Displacement.Coordinates.GetTile();
 			int lastRecordedOrientation = entity.Displacement.CurrentOrientation;
+			int ghostTokenCount = _specificTokenCount == -1 && entityID == _selectedEntityID && EntityActionDisplay.SelectedDisplay == null
+				? int.MaxValue : _specificTokenCount;
 
 			foreach (RecordedAction recordedAction in m_recordedActionInput[entityID].ToArray())
 			{
@@ -1426,7 +1428,7 @@ public class TurnManager : Singleton<TurnManager>
 				if (recordedAction.freeAction != null && recordedAction.freeActionType != EntityActionEnumID.Unknowned && recordedAction.freeActionType != EntityActionEnumID.Wait)
 					recordedAction.freeAction.Display(recordedAction);
 
-				if (_specificTokenCount != -1 && totalCost <= _specificTokenCount)
+				if (ghostTokenCount != -1 && totalCost <= ghostTokenCount)
 				{
 					lastRecordedPosition = GridManager.Instance.Tiles[recordedAction.action.positionAtActionEndID];
 					lastRecordedOrientation = GetPlannedOrientationAfter(recordedAction, lastRecordedOrientation);

@@ -64,8 +64,8 @@ public class JumpToTarget : AEntityAction
 		{
 			if (m_performCR != null)
 				GameManager.Instance.StopCoroutine(m_performCR);
-			if (m_movementTween != null && m_movementTween.IsActive())
-				m_movementTween.Kill();
+			PerformingEntity.Displacement.CancelMovement(m_movementTween);
+			DetachMovementTrail();
 
 			EndTick();
 		}
@@ -96,6 +96,12 @@ public class JumpToTarget : AEntityAction
 		List<Tile> path = GridManager.Instance.GetPath(from, to, false);*/
 		int movementAmount = 1;
 		float movementSpeed = GameConfig.current.game.actionDuration / movementAmount;
+		bool isVisible = PerformingEntity.IsAlliedTo(GameManager.Instance.PlayerID) || PerformingEntity.IsVisible;
+		Tile departure = GridManager.Instance.Tiles[PerformingEntity.Displacement.Coordinates.ID];
+		Tile landing = null;
+		if (isVisible)
+			Weapon.PlayOrientedVFX(Data.onPerformVFXPool, departure.transform.position, Vector3.zero, Data.name);
+		AttachMovementTrail();
 
 		for (int i = 0; i < movementAmount; i++)
 		{
@@ -112,12 +118,17 @@ public class JumpToTarget : AEntityAction
 			if (m_movementTween == null)
 				break;
 
+			landing = GridManager.Instance.Tiles[targetTileIDs[i]];
 			yield return new WaitForSeconds(movementSpeed);
 			/*foreach (Tile tile in tilesInRange)
 			{
 				tile.UI.ResetOutline();
 			}*/
 		}
+
+		DetachMovementTrail();
+		if (isVisible && landing != null)
+			Weapon.PlayOrientedVFX(Data.onSingleAttackHitVFXPool, landing.transform.position, Vector3.zero, Data.name);
 
 		EndTick();
 	}

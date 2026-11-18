@@ -13,6 +13,10 @@ public abstract class AEntityStatus : ScriptableEnum<EntityStatusEnumID>
     public Sprite icon;
     public GameObject groundPrefab;
 
+    public enum EntityVisualAnchor { Center, Feet, AboveHead }
+    public GameObject entityPrefab;
+    public EntityVisualAnchor entityVisualAnchor = EntityVisualAnchor.Center;
+
     public string GetTooltip ( int _duration, int _remainingDuration )
     {
         System.Text.StringBuilder builder = new();

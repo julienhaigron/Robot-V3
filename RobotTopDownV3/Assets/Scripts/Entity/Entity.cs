@@ -67,6 +67,9 @@ public class Entity : MonoBehaviour
 	private List<EntityStatusEnumID> m_status = new();
 	public List<EntityStatusEnumID> Status => m_status;
 	private Dictionary<AEntityStatus, int> m_remainingDurationToActiveStatuses = new();
+	private readonly Dictionary<EntityStatusEnumID, GameObject> m_statusVisuals = new();
+	private const float c_aboveHeadHeight = 1.4f;
+	private const float c_feetHeight = .03f;
 	private Dictionary<AEntityStatus, int> m_appliedDurationToActiveStatuses = new();
 	private List<EntityEquipmentData.StatBonusBuff> m_statBuffs = new();
 	public List<EntityEquipmentData.StatBonusBuff> StatBuffs => m_statBuffs;
@@ -472,6 +475,8 @@ public class Entity : MonoBehaviour
 		if (wasAlreadyActive)
 			return;
 
+		ShowStatusVisual(_statusID, status);
+
 		LogConsole.AddLog(string.Format(LocalizationManager.Instance.Get(LocalizationKey.log_status_affected), m_data.name, status.GetLocalizedName(), _duration)
 			, LogConsole.LogEventType.Status
 			, new LogConsole.LogDetails("status_effect_" + LogConsole.Instance.Counter, status.GetLocalizedName(), status.GetTooltip(_duration, _duration)));
@@ -485,8 +490,48 @@ public class Entity : MonoBehaviour
 		m_status.Remove(_statusID);
 		m_remainingDurationToActiveStatuses.Remove(GameAssets.current.game.entityStatus[_statusID]);
 		m_appliedDurationToActiveStatuses.Remove(GameAssets.current.game.entityStatus[_statusID]);
+		HideStatusVisual(_statusID);
 
 		onStatusRemoved?.Invoke(_statusID);
+	}
+
+	private void ShowStatusVisual ( EntityStatusEnumID _statusID, AEntityStatus _status )
+	{
+		if (_status.entityPrefab == null || m_skin == null || m_statusVisuals.ContainsKey(_statusID))
+			return;
+
+		GameObject visual = Instantiate(_status.entityPrefab, m_skin.StatusVisualParent);
+		visual.transform.position = GetStatusVisualPosition(_status.entityVisualAnchor);
+		m_statusVisuals.Add(_statusID, visual);
+	}
+
+	private void HideStatusVisual ( EntityStatusEnumID _statusID )
+	{
+		if (!m_statusVisuals.TryGetValue(_statusID, out GameObject visual))
+			return;
+
+		if (visual != null)
+			Destroy(visual);
+		m_statusVisuals.Remove(_statusID);
+	}
+
+	private Vector3 GetStatusVisualPosition ( AEntityStatus.EntityVisualAnchor _anchor )
+	{
+		Vector3 center = m_skin != null && m_skin.Center != null ? m_skin.Center.position : transform.position;
+		switch (_anchor)
+		{
+			case AEntityStatus.EntityVisualAnchor.AboveHead:
+				return center + Vector3.up * c_aboveHeadHeight;
+
+			case AEntityStatus.EntityVisualAnchor.Feet:
+				int tileID = m_displacement != null ? m_displacement.Coordinates.ID : -1;
+				bool hasTile = GridManager.Instance != null && GridManager.Instance.Tiles != null && tileID >= 0 && tileID < GridManager.Instance.Tiles.Length;
+				float groundHeight = hasTile ? GridManager.Instance.Tiles[tileID].transform.position.y : transform.position.y;
+				return new Vector3(center.x, groundHeight + c_feetHeight, center.z);
+
+			default:
+				return center;
+		}
 	}
 
 	public void AddAdditionaryStatBonus ( EntityEquipmentData.StatBonusBuff _statBuff )

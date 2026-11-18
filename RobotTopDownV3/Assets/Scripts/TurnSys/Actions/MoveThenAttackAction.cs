@@ -70,8 +70,8 @@ public class MoveThenAttackAction : AttackAction
 
 		if (m_isPerforming)
 		{
-			if (m_movementTween != null && m_movementTween.IsActive())
-				m_movementTween.Kill();
+			PerformingEntity.Displacement.CancelMovement(m_movementTween);
+			DetachMovementTrail();
 
 			EndTick();
 		}
@@ -184,8 +184,10 @@ public class MoveThenAttackAction : AttackAction
 		//move to targetTile
 		if (positionAfterMovementID != -1/* && thisActionDestination.GetEntity(false) == null*/)
 		{
+			AttachMovementTrail();
 			m_movementTween = PerformingEntity.Displacement.MoveToTile((int)positionAfterMovementID, () =>
 			{
+				DetachMovementTrail();
 				/*foreach (Tile tile in tilesInRange)
 				{
 					tile.UI.ResetOutline();

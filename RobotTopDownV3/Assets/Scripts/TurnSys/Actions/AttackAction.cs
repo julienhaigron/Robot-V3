@@ -48,9 +48,15 @@ public class AttackAction : AEntityAction
 		serializer.SerializeValue(ref attacksInfos);
 	}
 
+	private int GetTargetIndex ( int _attackIndex )
+	{
+		int attacksPerTick = attacksInfos != null && attacksInfos.Length > 0 ? attacksInfos.Length : 1;
+		return Mathf.Max(0, ActiveLifetime) * attacksPerTick + _attackIndex;
+	}
+
 	public Entity GetTargetEntityAt ( int _attackIndex )
 	{
-		int index = _attackIndex * ActiveLifetime;
+		int index = GetTargetIndex(_attackIndex);
 
 		return targetedEntityIDs != null && index >= 0 && index < targetedEntityIDs.Length
 			? GameManager.Instance.GetEntityFromID(targetedEntityIDs[index])
@@ -59,7 +65,7 @@ public class AttackAction : AEntityAction
 
 	public Tile GetTargetTileAt ( int _attackIndex )
 	{
-		int index = _attackIndex * ActiveLifetime;
+		int index = GetTargetIndex(_attackIndex);
 
 		return targetTileIDs != null && index >= 0 && index < targetTileIDs.Length
 			? GridManager.Instance.Tiles[targetTileIDs[index]]
@@ -235,7 +241,7 @@ public class AttackAction : AEntityAction
 					attackInfo.isAttackSuccessfull = true;
 
 					Tile shooterTile = PerformingEntity.Displacement.Coordinates.GetTile();
-					Tile aoeCenter = GridManager.Instance.Tiles[targetTileIDs[attackCount * ActiveLifetime]];
+					Tile aoeCenter = GridManager.Instance.Tiles[targetTileIDs[GetTargetIndex(attackCount)]];
 					bool isBlockedByWall = GridManager.Instance.IsThereBlockingWallBetween(shooterTile, aoeCenter, true, out coverHitted);
 
 					if (isBlockedByWall && PerformingEntity.Equipment.TryCurveShot(this, shooterTile, aoeCenter, out Tile curveTile))
@@ -244,7 +250,7 @@ public class AttackAction : AEntityAction
 						coverHitted = null;
 					}
 					else if (isBlockedByWall)
-						targetTileIDs[attackCount * ActiveLifetime] = coverHitted.coordinates.ID;
+						targetTileIDs[GetTargetIndex(attackCount)] = coverHitted.coordinates.ID;
 				}
 				else if (targetEntity == null)
 				{

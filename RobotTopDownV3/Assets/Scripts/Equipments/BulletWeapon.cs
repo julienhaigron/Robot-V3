@@ -38,7 +38,9 @@ public class BulletWeapon : Weapon
 		if (_attackAction.Data.aoeType == EntityActionData.AOEType.Noone || (_attackAction.Data.aoeType == EntityActionData.AOEType.Circle && _attackAction.Data.targetType != EntityActionData.TargetType.Self))
 		{
 			Entity targetEntity = _attackAction.GetTargetEntityAt(_attackIndex);
-			Tile targetTile = GridManager.Instance.Tiles[_attackAction.targetTileIDs[_attackIndex]];
+			Tile targetTile = _attackAction.GetTargetTileAt(_attackIndex);
+			if (targetTile == null)
+				yield break;
 
 			Vector3 targetPosition = _attackAction.Data.targetType == EntityActionData.TargetType.Tile || targetEntity == null
 				? targetTile.transform.position
@@ -102,7 +104,8 @@ public class BulletWeapon : Weapon
 				yield break;
 			}
 
-			WeaponTarget target = targets[_attackIndex % targets.Count];
+			Tile aimedTile = _attackAction.GetTargetTileAt(_attackIndex);
+			WeaponTarget target = targets.Find(candidate => candidate.targetTile == aimedTile) ?? targets[0];
 			//Entity targetEntity = GameManager.Instance.GetEntityFromID((int)_attackAction.targetedEntityIDs[_attackIndex]);
 			yield return ShootAtEntityAnim(_attackAction, _attackIndex, _attackInfo, _lastSuccessfullAttackIndex, target);
 		}
@@ -143,6 +146,9 @@ public class BulletWeapon : Weapon
 			SoundManager.Instance.Play(_attackAction.Data.onPerformSingleAttackSFXID);
 			if (IsAttackVisible())
 				PlayOrientedVFX(_attackAction.Data.onPerformVFXPool, m_bulletPoint.position, m_bulletPoint.forward, _attackAction.Data.name);
+			if (i == 0)
+				PlayAttackAnimation(_attackAction, _attackInfo);
+			PlayShotRecoil(_attackAction.Data);
 
 			bool isLastBullet = i == hitAmount - 1 && _attackIndex == _lastSuccessfullAttackIndex;
 			Entity missedTarget = i == hitAmount - 1 ? _target.targetEntity : null;

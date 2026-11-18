@@ -138,6 +138,9 @@ public class InvokeItemAction : SpecialAction
 			targetTile.SetItem(item, true);
 			item.transform.position = targetTile.transform.position;
 			item.SetPlaced();
+
+			if (PerformingEntity.IsAlliedTo(GameManager.Instance.PlayerID) || PerformingEntity.IsVisible)
+				Weapon.PlayOrientedVFX(Data.onPerformVFXPool, targetTile.transform.position, Vector3.zero, Data.name);
 		}
 
 		base.Perform(_state);

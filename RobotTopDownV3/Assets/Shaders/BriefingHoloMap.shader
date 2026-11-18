@@ -4,7 +4,6 @@ Shader "UI/BriefingHoloMap"
     {
         [PerRendererData] _MainTex ("Map Data", 2D) = "black" {}
         _Color ("Tint", Color) = (1, 1, 1, 1)
-        _Reveal ("Reveal", Range(0, 1)) = 1
         _LineColor ("Line Color", Color) = (0.5, 0.83, 1, 0.9)
         _FloorColor ("Floor Color", Color) = (0.5, 0.83, 1, 0.07)
         _WallColor ("Wall Color", Color) = (0.5, 0.83, 1, 0.34)
@@ -14,9 +13,6 @@ Shader "UI/BriefingHoloMap"
         _LineWidth ("Line Width (tile units)", Range(0.01, 0.3)) = 0.05
         _FrontWidth ("Scan Front Width", Range(0.005, 0.2)) = 0.03
         _ScanlineOpacity ("Scanline Opacity", Range(0, 1)) = 0.18
-        [HideInInspector] _MapGrid ("Map Grid", Vector) = (1, 1, 0.866, 1)
-        [HideInInspector] _MapBounds ("Map Bounds", Vector) = (0, 0, 1, 1)
-        [HideInInspector] _RevealCenter ("Reveal Center", Vector) = (0, 0, 1, 0)
     }
 
     SubShader
@@ -36,9 +32,12 @@ Shader "UI/BriefingHoloMap"
             #pragma target 3.0
             #include "UnityCG.cginc"
 
+            static const float k_outerRadius = 1.0;
+            static const float k_innerRadius = 0.8660254;
+
             sampler2D _MainTex;
+            float4 _MainTex_TexelSize;
             float4 _Color;
-            float _Reveal;
             float4 _LineColor;
             float4 _FloorColor;
             float4 _WallColor;
@@ -48,9 +47,7 @@ Shader "UI/BriefingHoloMap"
             float _LineWidth;
             float _FrontWidth;
             float _ScanlineOpacity;
-            float4 _MapGrid;
-            float4 _MapBounds;
-            float4 _RevealCenter;
+            float _BriefingMapReveal;
 
             static const float2 s_edgeNormals[6] =
             {
@@ -67,15 +64,25 @@ Shader "UI/BriefingHoloMap"
             struct v2f
             {
                 float4 pos : SV_POSITION;
-                float2 uv : TEXCOORD0;
+                float2 map : TEXCOORD0;
                 float4 color : COLOR;
             };
+
+            float2 MapBoundsMin ()
+            {
+                return float2(-k_innerRadius, -k_outerRadius);
+            }
+
+            float2 MapBoundsMax ()
+            {
+                return float2(2.0 * k_innerRadius * _MainTex_TexelSize.z, (1.5 * _MainTex_TexelSize.w - 0.5) * k_outerRadius);
+            }
 
             v2f vert (appdata v)
             {
                 v2f o;
                 o.pos = UnityObjectToClipPos(v.vertex);
-                o.uv = v.uv;
+                o.map = lerp(MapBoundsMin(), MapBoundsMax(), v.uv);
                 o.color = v.color * _Color;
                 return o;
             }
@@ -108,34 +115,35 @@ Shader "UI/BriefingHoloMap"
 
             float4 frag (v2f i) : SV_Target
             {
-                float innerRadius = _MapGrid.z;
-                float outerRadius = _MapGrid.w;
-                float2 map = lerp(_MapBounds.xy, _MapBounds.zw, i.uv);
+                float2 grid = _MainTex_TexelSize.zw;
+                float2 map = i.map;
                 float pixel = max(fwidth(map.x), fwidth(map.y));
 
-                float row = map.y / (1.5 * outerRadius);
-                float2 axial = RoundAxial(float2(map.x / (2.0 * innerRadius) - row * 0.5, row));
+                float row = map.y / (1.5 * k_outerRadius);
+                float2 axial = RoundAxial(float2(map.x / (2.0 * k_innerRadius) - row * 0.5, row));
                 float2 cell = float2(axial.x + floor(axial.y * 0.5), axial.y);
-                float isInGrid = step(0.0, cell.x) * step(0.0, cell.y) * step(cell.x, _MapGrid.x - 1.0) * step(cell.y, _MapGrid.y - 1.0);
-                float code = floor(tex2Dlod(_MainTex, float4((cell + 0.5) / _MapGrid.xy, 0.0, 0.0)).r * 255.0 + 0.5) * isInGrid;
+                float isInGrid = step(0.0, cell.x) * step(0.0, cell.y) * step(cell.x, grid.x - 1.0) * step(cell.y, grid.y - 1.0);
+                float code = floor(tex2Dlod(_MainTex, float4((cell + 0.5) * _MainTex_TexelSize.xy, 0.0, 0.0)).r * 255.0 + 0.5) * isInGrid;
 
-                float2 center = float2((axial.x + axial.y * 0.5) * 2.0 * innerRadius, axial.y * 1.5 * outerRadius);
+                float2 center = float2((axial.x + axial.y * 0.5) * 2.0 * k_innerRadius, axial.y * 1.5 * k_outerRadius);
                 float2 local = map - center;
                 float edgeDistance = 1e4;
                 [unroll]
                 for (int k = 0; k < 6; k++)
-                    edgeDistance = min(edgeDistance, innerRadius - dot(local, s_edgeNormals[k]));
+                    edgeDistance = min(edgeDistance, k_innerRadius - dot(local, s_edgeNormals[k]));
 
                 float4 fill = code < 1.5 ? _FloorColor : code < 2.5 ? _WallColor : code < 3.5 ? _CoverColor : code < 4.5 ? _ObjectiveColor : _SpawnColor;
                 float3 lineColor = code > 3.5 && code < 4.5 ? _ObjectiveColor.rgb : _LineColor.rgb;
                 float outline = 1.0 - smoothstep(_LineWidth - pixel, _LineWidth + pixel, edgeDistance);
 
-                float distanceToCenter = length(center - _RevealCenter.xy) / max(_RevealCenter.z, 0.001);
-                float front = _Reveal * 1.08;
+                float2 revealCenter = (MapBoundsMin() + MapBoundsMax()) * 0.5;
+                float revealRadius = length(MapBoundsMax() - revealCenter);
+                float distanceToCenter = length(center - revealCenter) / max(revealRadius, 0.001);
+                float front = _BriefingMapReveal * 1.08;
                 float isTile = step(0.5, code);
                 float visible = saturate((front - distanceToCenter) / 0.04) * isTile;
                 float gap = (distanceToCenter - front) / max(_FrontWidth, 0.0001);
-                float ring = exp(-gap * gap) * isTile * (1.0 - step(0.999, _Reveal));
+                float ring = exp(-gap * gap) * isTile * (1.0 - step(0.999, _BriefingMapReveal));
 
                 float4 color = float4(fill.rgb, fill.a * visible);
                 color = Over(color, lineColor, outline * _LineColor.a * visible);

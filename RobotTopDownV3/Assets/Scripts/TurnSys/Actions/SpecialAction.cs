@@ -272,6 +272,8 @@ public class SpecialAction : AEntityAction
 
 			if (_user.IsAlliedTo(GameManager.Instance.PlayerID) || _user.IsVisible)
 				Weapon.PlayOrientedVFX(Data.onPerformVFXPool, origin, direction, Data.name);
+			if (!string.IsNullOrEmpty(linkedEquipmentId) && _user.Equipment.Weapons.TryGetValue(linkedEquipmentId, out Weapon weapon) && weapon != null)
+				weapon.PlayShotRecoil(Data);
 
 			ProjectileData projectileData = new()
 			{

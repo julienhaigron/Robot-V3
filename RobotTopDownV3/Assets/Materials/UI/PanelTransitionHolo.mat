@@ -30,6 +30,8 @@ Material:
     - _LineWidth: 3
     - _ScanlineOpacity: 0.14
     - _ScanlinePeriod: 4
+    - _TintFade: 1
+    - _TintTrail: 0.35
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _LineColor: {r: 0.55, g: 0.85, b: 1, a: 1}

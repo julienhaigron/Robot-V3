@@ -4,10 +4,8 @@ Shader "UI/PanelTransitionHolo"
     {
         [PerRendererData] _MainTex ("Texture", 2D) = "white" {}
         _Color ("Tint", Color) = (1, 1, 1, 1)
-        _Progress ("Progress", Range(0, 2)) = 0
         _TintFade ("Tint Fade", Range(0, 1)) = 1
         _TintTrail ("Tint Trail (screen fraction)", Range(0.01, 1)) = 0.35
-        [HideInInspector] _Direction ("Direction", Float) = 1
         _TintColor ("Tint Color", Color) = (0.31, 0.71, 1, 0.22)
         _LineColor ("Line Color", Color) = (0.55, 0.85, 1, 1)
         _LineWidth ("Line Width (px)", Float) = 3
@@ -15,8 +13,6 @@ Shader "UI/PanelTransitionHolo"
         _ScanlineOpacity ("Scanline Opacity", Range(0, 1)) = 0.14
         _GlitchHeight ("Glitch Height (px)", Float) = 28
         _GlitchAmount ("Glitch Amount (px)", Float) = 14
-        [HideInInspector] _FlipCapture ("Flip Capture", Float) = 0
-        [HideInInspector] _ScreenSize ("Screen Size", Vector) = (1920, 1080, 0, 0)
     }
 
     SubShader
@@ -38,10 +34,8 @@ Shader "UI/PanelTransitionHolo"
 
             sampler2D _MainTex;
             float4 _Color;
-            float _Progress;
             float _TintFade;
             float _TintTrail;
-            float _Direction;
             float4 _TintColor;
             float4 _LineColor;
             float _LineWidth;
@@ -49,8 +43,7 @@ Shader "UI/PanelTransitionHolo"
             float _ScanlineOpacity;
             float _GlitchHeight;
             float _GlitchAmount;
-            float _FlipCapture;
-            float4 _ScreenSize;
+            float4 _PanelTransitionSweep;
 
             struct appdata
             {
@@ -77,10 +70,10 @@ Shader "UI/PanelTransitionHolo"
 
             float4 frag (v2f i) : SV_Target
             {
-                float2 size = max(_ScreenSize.xy, float2(1.0, 1.0));
+                float2 size = max(_PanelTransitionSweep.zw, float2(1.0, 1.0));
                 float2 px = i.uv * size;
-                float travel = _Progress * size.y;
-                bool isDownward = _Direction > 0.0;
+                float travel = _PanelTransitionSweep.x * size.y;
+                bool isDownward = _PanelTransitionSweep.y > 0.0;
                 float lineY = isDownward ? size.y - travel : travel;
                 float behind = isDownward ? px.y - lineY : lineY - px.y;
                 float halfLine = _LineWidth * 0.5;
@@ -93,7 +86,9 @@ Shader "UI/PanelTransitionHolo"
                 float noise = frac(sin(floor(px.y / 3.0) * 91.7 + floor(_Time.y * 30.0) * 13.3) * 43758.5453);
                 float2 captureUV = i.uv;
                 captureUV.x += (noise - 0.5) * band * _GlitchAmount / size.x;
-                captureUV.y = _FlipCapture > 0.5 ? 1.0 - captureUV.y : captureUV.y;
+                #if UNITY_UV_STARTS_AT_TOP
+                captureUV.y = 1.0 - captureUV.y;
+                #endif
                 float3 captured = lerp(tex2D(_MainTex, captureUV).rgb, _LineColor.rgb, band * 0.3);
 
                 float4 color = float4(captured, 1.0);

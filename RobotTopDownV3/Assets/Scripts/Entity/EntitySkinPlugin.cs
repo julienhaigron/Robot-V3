@@ -14,6 +14,7 @@ public class EntitySkinPlugin : EntityPlugin
 	[SerializeField] private Material m_thermicMaterial;
 	[SerializeField] private Transform m_center;
 	public Transform Center => m_center;
+	public Transform StatusVisualParent => m_visualRoot != null ? m_visualRoot.transform : transform;
 
 	[SerializeField] private Animator m_animator;
 	[SerializeField] private HumanoidEntityIK m_humanoidEntityIK;
@@ -22,6 +23,8 @@ public class EntitySkinPlugin : EntityPlugin
 	[SerializeField] private SerializableDictionary<EntityActionData.ActionType, string> m_animationKeyPerActionDictionary;
 	[SerializeField] private string m_idleAnimationKey;
 
+	private const string MirrorAttackParameter = "MirrorAttack";
+	private HashSet<string> m_animatorParameters;
 	private string m_aimingWeaponID;
 
 	private bool m_isThermicLookWanted;
@@ -43,14 +46,42 @@ public class EntitySkinPlugin : EntityPlugin
 
 	public void OnStartActionPerform (AEntityAction _action)
 	{
-		m_animator.speed = 1;
-		if(_action.enumID == EntityActionEnumID.Wait)
-		{
-			//m_animator.SetTrigger(m_idleAnimationKey);
+		if (m_animator != null)
+			m_animator.speed = 1;
+		if (_action.enumID == EntityActionEnumID.Wait || _action is AttackAction)
+			return;
 
+		PlayActionAnimation(_action.Data);
+	}
+
+	public bool PlayActionAnimation ( EntityActionData _data, string _fallbackKey = null, bool _isMirrored = false )
+	{
+		if (m_animator == null || _data == null)
+			return false;
+
+		string key = !string.IsNullOrEmpty(_data.performAnimationKey) ? _data.performAnimationKey
+			: !string.IsNullOrEmpty(_fallbackKey) ? _fallbackKey
+			: m_animationKeyPerActionDictionary.ContainsKey(_data.type) ? m_animationKeyPerActionDictionary[_data.type] : null;
+		if (string.IsNullOrEmpty(key))
+			return false;
+
+		if (HasAnimatorParameter(MirrorAttackParameter))
+			m_animator.SetBool(MirrorAttackParameter, _isMirrored);
+		m_animator.SetTrigger(key);
+		return true;
+	}
+
+	private bool HasAnimatorParameter ( string _name )
+	{
+		if (m_animatorParameters == null)
+		{
+			if (m_animator.runtimeAnimatorController == null || m_animator.parameterCount == 0)
+				return false;
+
+			m_animatorParameters = new HashSet<string>(m_animator.parameters.Select(parameter => parameter.name));
 		}
-		else if (m_animationKeyPerActionDictionary.ContainsKey(_action.Data.type))
-			m_animator.SetTrigger(m_animationKeyPerActionDictionary[_action.Data.type]);
+
+		return m_animatorParameters.Contains(_name);
 	}
 
 	public void OverrideAnimation(string _animationID )

@@ -54,6 +54,45 @@ public class VisualProjectile : PoolElement
 			transform.rotation = Quaternion.LookRotation(_direction);
 	}
 
+	public static VisualProjectile AttachTo ( PoolData _pool, Transform _parent )
+	{
+		if (_pool == null || _parent == null)
+			return null;
+
+		try
+		{
+			PoolElement element = _pool.Get(_parent.position, _parent.rotation);
+			VisualProjectile projectile = element as VisualProjectile;
+			if (projectile == null)
+			{
+				if (element != null)
+					element.Discard();
+				return null;
+			}
+
+			projectile.transform.SetParent(_parent, true);
+			return projectile;
+		}
+		catch (System.Exception ex)
+		{
+			Debug.LogError("Attached VFX " + _pool.name + " failed: " + ex.Message);
+			return null;
+		}
+	}
+
+	public void Detach ()
+	{
+		try
+		{
+			transform.SetParent(null, true);
+			Release();
+		}
+		catch (System.Exception ex)
+		{
+			Debug.LogError("Attached VFX release failed: " + ex.Message);
+		}
+	}
+
 	public void Release ()
 	{
 		SetHeadsVisible(false);

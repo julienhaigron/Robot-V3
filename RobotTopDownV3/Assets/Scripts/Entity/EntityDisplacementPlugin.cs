@@ -53,6 +53,20 @@ public class EntityDisplacementPlugin : EntityPlugin
 			m_rotationTween.Kill();
 	}
 
+	public void CancelMovement ( Tween _movement )
+	{
+		if (_movement == null || !_movement.IsActive())
+			return;
+
+		bool isCurrentMovement = _movement == m_movementTween;
+		_movement.Kill();
+		if (!isCurrentMovement)
+			return;
+
+		m_pendingMovementDoneAction = null;
+		m_linkedEntity.Skin.SetIsMoving(false);
+	}
+
 	private void KillMovementTweenAndReleasePendingAction ()
 	{
 		if (m_movementTween.IsActive())
@@ -111,7 +125,7 @@ public class EntityDisplacementPlugin : EntityPlugin
 		onAnyEntitySpawn.Invoke(m_linkedEntity);
 	}
 
-	public Tween MoveToTile( int _tileID,  System.Action onMovementDoneAction, bool _overrideMovementSpeed = false, float _overritenMovementSpeed = 0)
+	public Tween MoveToTile( int _tileID,  System.Action onMovementDoneAction, bool _overrideMovementSpeed = false, float _overritenMovementSpeed = 0, bool _keepsOrientation = false )
 	{
 		Tile tile = GridManager.Instance.Tiles[_tileID];
 
@@ -131,7 +145,7 @@ public class EntityDisplacementPlugin : EntityPlugin
 		float movementDuration
  = _overrideMovementSpeed ? _overritenMovementSpeed : GameConfig.current.game.actionDuration;
 
-		if (ShouldFaceMovementDirection())
+		if (!_keepsOrientation && ShouldFaceMovementDirection())
 			Rotate(tile, movementDuration);
 
 		KillMovementTweenAndReleasePendingAction();
