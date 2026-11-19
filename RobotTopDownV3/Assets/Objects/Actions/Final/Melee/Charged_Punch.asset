@@ -25,17 +25,31 @@ MonoBehaviour:
   preparationAnimationKey: 
   afterPerformAnimationKey: 
   performAnimationKey: OnPunch
-  performAnimationHitDelay: 0.31
+  performAnimationHitDelay: 0.356
+  preparationAnimationMode: 1
+  preparationHoldDelay: 0.167
+  preparationWindUpRatio: 0.8
+  recoveryAnimationMode: 0
+  recoveryHoldDelay: 0.672
   shotRecoilStrength: 0
   onPerformSingleAttackSFXID: 0
   onSingleAttackHitSFXID: 0
   onSingleAttackHitVFXPool: {fileID: 11400000, guid: a7ca0993cd7feb8532293906c8abd0a1, type: 2}
+  onPerformVFXPool: {fileID: 0}
+  movementTrailPool: {fileID: 0}
   visualEffectType: 2
   visualEffectDuration: 0.3
   projectilePool: {fileID: 0}
   projectileSpeed: 10
   spellVfxPrefab: {fileID: 0}
   spellVfxLifetime: 2
+  attackProjectileMode: 0
+  attackProjectilePool: {fileID: 0}
+  attackProjectileSpeed: 20
+  doesAttackProjectileReturn: 0
+  attackProjectileSprayCount: 10
+  attackProjectileSprayInterval: 0.04
+  doesSprayRepeatPerformVFX: 1
   conditionType: 0
   previousActionAttackModificator: 0
   type: 1

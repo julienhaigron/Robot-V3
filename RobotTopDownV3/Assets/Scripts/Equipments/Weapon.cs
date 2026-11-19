@@ -224,8 +224,9 @@ public class Weapon : MonoBehaviour
 
 	protected virtual IEnumerator ApplyAttackCR ( AttackAction _attackAction, int _attackIndex, AttackAction.SingleAttackInfo _attackInfo )
 	{
-		if (PlayAttackAnimation(_attackAction, _attackInfo) && _attackAction.Data.performAnimationHitDelay > 0f)
-			yield return new WaitForSeconds(_attackAction.Data.performAnimationHitDelay);
+		bool isFinalStrike = _attackAction.IsLastPerformTick && (_attackAction.attacksInfos == null || _attackIndex >= _attackAction.attacksInfos.Length - 1);
+		if (PlayAttackAnimation(_attackAction, _attackInfo, isFinalStrike, out float impactDelay) && impactDelay > 0f)
+			yield return new WaitForSeconds(impactDelay);
 
 		if (!_attackInfo.isAttackSuccessfull)
 		{
@@ -312,13 +313,19 @@ public class Weapon : MonoBehaviour
 
 	protected bool PlayAttackAnimation ( AttackAction _attackAction, AttackAction.SingleAttackInfo _attackInfo )
 	{
+		return PlayAttackAnimation(_attackAction, _attackInfo, _attackAction.IsLastPerformTick, out _);
+	}
+
+	protected bool PlayAttackAnimation ( AttackAction _attackAction, AttackAction.SingleAttackInfo _attackInfo, bool _isFinalStrike, out float _impactDelay )
+	{
+		_impactDelay = 0f;
 		if (m_user == null || m_user.Skin == null)
 			return false;
 
 		string weaponKey = _attackInfo.isAttackSuccessfull && !string.IsNullOrEmpty(m_data.attackAnimationSuccessId)
 			? m_data.attackAnimationSuccessId : m_data.attackAnimationFailureId;
 		bool isLeftHand = m_user.Skin.IK != null && m_user.Skin.IK.IsHeldInLeftHand(transform);
-		return m_user.Skin.PlayActionAnimation(_attackAction.Data, weaponKey, isLeftHand);
+		return m_user.Skin.PlayAttackAnimation(_attackAction, weaponKey, isLeftHand, _isFinalStrike, out _impactDelay);
 	}
 
 	public void PlayShotRecoil ( EntityActionData _data )

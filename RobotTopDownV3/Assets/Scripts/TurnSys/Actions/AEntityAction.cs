@@ -43,6 +43,7 @@ public abstract class AEntityAction : INetworkSerializable
 	}
 	public int timeAtStart = 0;
 	public int TimeAtStartPerform => timeAtStart + preparationDuration;
+	public bool IsLastPerformTick => lifetime >= preparationDuration + actualDuration - 1;
 	public int TimeAtEnd => timeAtStart + TotalDuration;
 	protected bool m_isPerforming = false;
 	public bool IsPerforming => m_isPerforming;

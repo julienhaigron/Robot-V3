@@ -29,6 +29,31 @@ public class EntityActionData : AParsableScriptableObject
 	public string afterPerformAnimationKey;
 	public string performAnimationKey;
 	[ShowIf("@type == ActionType.MeleeAttack || !string.IsNullOrEmpty(performAnimationKey)"), Min(0f)] public float performAnimationHitDelay = .3f;
+
+	public enum PreparationAnimationMode
+	{
+		None,
+		WindUp,
+		Trigger
+	}
+
+	public enum RecoveryAnimationMode
+	{
+		None,
+		Hold,
+		Trigger
+	}
+
+	[ShowIf("@m_tokenPreparationDuration > 0"), Tooltip("Ticks de préparation. WindUp : la frappe s'arme lentement jusqu'à la pose armée et la tient, puis repart de là au tick d'action. Trigger : joue preparationAnimationKey.")]
+	public PreparationAnimationMode preparationAnimationMode;
+	[ShowIf("@m_tokenPreparationDuration > 0 && preparationAnimationMode == PreparationAnimationMode.WindUp"), Min(0f), Tooltip("Pose armée : secondes après le déclenchement de la frappe, à la vitesse du contrôleur, avant le délai d'impact.")]
+	public float preparationHoldDelay = .2f;
+	[ShowIf("@m_tokenPreparationDuration > 0 && preparationAnimationMode == PreparationAnimationMode.WindUp"), Range(.1f, 1f), Tooltip("Part de la préparation passée à armer ; le reste tient la pose.")]
+	public float preparationWindUpRatio = .8f;
+	[ShowIf("@m_tokenCooldown > 0"), Tooltip("Ticks de refroidissement, après la dernière frappe. Hold : le geste ralentit et se fige à la pose de tenue, puis repart à la fin de l'action. Trigger : joue afterPerformAnimationKey à ce moment-là.")]
+	public RecoveryAnimationMode recoveryAnimationMode;
+	[ShowIf("@m_tokenCooldown > 0 && recoveryAnimationMode != RecoveryAnimationMode.None"), Min(0f), Tooltip("Secondes après le déclenchement de la frappe, à la vitesse du contrôleur, après le délai d'impact.")]
+	public float recoveryHoldDelay = .6f;
 	[HideIf("@type == ActionType.MeleeAttack || type == ActionType.Movement"), Min(0f)] public float shotRecoilStrength = 1f;
 	public SfxId onPerformSingleAttackSFXID;
 	public SfxId onSingleAttackHitSFXID;

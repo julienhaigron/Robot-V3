@@ -22,9 +22,14 @@ public class EntitySkinPlugin : EntityPlugin
 
 	[SerializeField] private SerializableDictionary<EntityActionData.ActionType, string> m_animationKeyPerActionDictionary;
 	[SerializeField] private string m_idleAnimationKey;
+	[SerializeField] private EntityAnimationProfile m_animationProfile;
+	public EntityAnimationProfile AnimationProfile => m_animationProfile;
 
-	private const string LeftHandAttackParameter = "LeftHandAttack";
-	private HashSet<string> m_animatorParameters;
+	public const string LeftHandAttackParameter = AttackAnimationPlayer.LeftHandParameter;
+	public const string AttackSpeedParameter = AttackAnimationPlayer.SpeedParameter;
+	public const string AttackLayerName = AttackAnimationPlayer.LayerName;
+	private AttackAnimationPlayer m_attackPlayer;
+	public AttackAnimationPlayer AttackPlayer => m_attackPlayer ??= new AttackAnimationPlayer(m_animator, TuningFor);
 	private string m_aimingWeaponID;
 
 	private bool m_isThermicLookWanted;
@@ -43,46 +48,73 @@ public class EntitySkinPlugin : EntityPlugin
 		m_linkedEntity.onStartPerformAction += OnStartActionPerform;
 		m_linkedEntity.onEndPerformAction += OnEndActionPerform;
 		m_linkedEntity.Equipment.onDeath += OnEntityDeath;
+		TurnManager.onStartInputPhase += OnStartInputPhase;
+	}
+
+	private void OnDestroy ()
+	{
+		TurnManager.onStartInputPhase -= OnStartInputPhase;
+		m_attackPlayer?.Stop();
+	}
+
+	private AttackAnimationPlayer.Tuning TuningFor ( EntityActionData _data, string _key )
+	{
+		return m_animationProfile != null
+			? new AttackAnimationPlayer.Tuning(m_animationProfile.SpeedFor(_data, _key), m_animationProfile.IntensityFor(_data, _key))
+			: new AttackAnimationPlayer.Tuning(1f, 1f);
 	}
 
 	public void OnStartActionPerform (AEntityAction _action)
 	{
 		if (m_animator != null)
 			m_animator.speed = 1;
-		if (_action.enumID == EntityActionEnumID.Wait || _action is AttackAction)
+		if (!_action.Data.isModAction)
+			AttackPlayer.OnActionStarted(_action);
+		if (_action is AttackAction attackAction)
+		{
+			StartPreparation(attackAction);
+			return;
+		}
+
+		if (_action.enumID == EntityActionEnumID.Wait)
 			return;
 
 		PlayActionAnimation(_action.Data);
 	}
 
-	public bool PlayActionAnimation ( EntityActionData _data, string _fallbackKey = null, bool _isLeftHand = false )
+	private void StartPreparation ( AttackAction _action )
 	{
-		if (m_animator == null || _data == null)
-			return false;
+		EntityActionData data = _action.Data;
+		if (m_animator == null || _action.preparationDuration <= 0 || data.preparationAnimationMode == EntityActionData.PreparationAnimationMode.None
+			|| _action.IsPerformingAtTick(TurnManager.currentTick)
+			|| !m_linkedEntity.Equipment.Weapons.TryGetValue(_action.linkedEquipmentId ?? "", out Weapon weapon) || weapon == null)
+			return;
 
-		string key = !string.IsNullOrEmpty(_data.performAnimationKey) ? _data.performAnimationKey
-			: !string.IsNullOrEmpty(_fallbackKey) ? _fallbackKey
-			: m_animationKeyPerActionDictionary.ContainsKey(_data.type) ? m_animationKeyPerActionDictionary[_data.type] : null;
-		if (string.IsNullOrEmpty(key))
-			return false;
-
-		if (HasAnimatorParameter(LeftHandAttackParameter))
-			m_animator.SetBool(LeftHandAttackParameter, _isLeftHand);
-		m_animator.SetTrigger(key);
-		return true;
+		bool isLeftHand = m_humanoidEntityIK != null && m_humanoidEntityIK.IsHeldInLeftHand(weapon.transform);
+		float seconds = Mathf.Max(1, _action.TimeAtStartPerform - TurnManager.currentTick) * GameConfig.current.game.actionDuration;
+		AttackPlayer.StartPreparation(_action, data, ResolveAnimationKey(data, weapon.Data.attackAnimationSuccessId), isLeftHand, AttackAnimationPlayer.Timing.From(data), seconds);
 	}
 
-	private bool HasAnimatorParameter ( string _name )
+	public bool PlayActionAnimation ( EntityActionData _data, string _fallbackKey = null, bool _isLeftHand = false )
 	{
-		if (m_animatorParameters == null)
-		{
-			if (m_animator.runtimeAnimatorController == null || m_animator.parameterCount == 0)
-				return false;
+		return m_animator != null && _data != null && AttackPlayer.Play(_data, ResolveAnimationKey(_data, _fallbackKey), _isLeftHand);
+	}
 
-			m_animatorParameters = new HashSet<string>(m_animator.parameters.Select(parameter => parameter.name));
-		}
+	public bool PlayAttackAnimation ( AttackAction _action, string _fallbackKey, bool _isLeftHand, bool _isFinalStrike, out float _impactDelay )
+	{
+		_impactDelay = 0f;
+		if (m_animator == null || _action == null || _action.Data == null)
+			return false;
 
-		return m_animatorParameters.Contains(_name);
+		EntityActionData data = _action.Data;
+		return AttackPlayer.Strike(_action, data, ResolveAnimationKey(data, _fallbackKey), _isLeftHand, AttackAnimationPlayer.Timing.From(data), _isFinalStrike && _action.cooldownDuration > 0, out _impactDelay);
+	}
+
+	private string ResolveAnimationKey ( EntityActionData _data, string _fallbackKey )
+	{
+		return !string.IsNullOrEmpty(_data.performAnimationKey) ? _data.performAnimationKey
+			: !string.IsNullOrEmpty(_fallbackKey) ? _fallbackKey
+			: m_animationKeyPerActionDictionary.ContainsKey(_data.type) ? m_animationKeyPerActionDictionary[_data.type] : null;
 	}
 
 	public void OverrideAnimation(string _animationID )
@@ -96,7 +128,15 @@ public class EntitySkinPlugin : EntityPlugin
 		//freeze body anim
 		//m_animator.SetTrigger("OnEndAction");
 
+		if (m_attackPlayer != null && m_attackPlayer.Owner is AEntityAction action && !action.IsPerforming)
+			m_attackPlayer.EndAction(action);
+
 		ReleaseCurrentAim();
+	}
+
+	private void OnStartInputPhase ()
+	{
+		m_attackPlayer?.Cancel();
 	}
 
 	public void ReleaseCurrentAim ()
@@ -132,6 +172,7 @@ public class EntitySkinPlugin : EntityPlugin
 	private void OnEntityDeath (int _entityID)
 	{
 		//TODO : actual clean death with anim and PS
+		m_attackPlayer?.Stop();
 		Hide();
 	}
 

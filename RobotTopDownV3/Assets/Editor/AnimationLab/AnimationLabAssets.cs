@@ -11,7 +11,8 @@ public static class AnimationLabAssets
 {
 	public const string HandParameter = "LeftHandAttack";
 	public const string MovingParameter = "IsMoving";
-	public const string AttackLayer = "Top";
+	public const string AttackLayer = EntitySkinPlugin.AttackLayerName;
+	public const string ProfileFolder = "Assets/Animations/Profiles";
 
 	public class HeldOption
 	{
@@ -34,6 +35,8 @@ public static class AnimationLabAssets
 		public float exitTime = 1f;
 		public float enterDuration = .1f;
 		public float exitDuration = .25f;
+		public float assetSpeed = 1f;
+		public float assetOffset;
 
 		public float ClipLength => clip != null && clip.length > 0f ? clip.length : 1f;
 		public bool HasSeparateClips => right != null && left != null && right.motion != left.motion;
@@ -51,6 +54,16 @@ public static class AnimationLabAssets
 		public float ImpactFor ( float _hitDelay )
 		{
 			return Mathf.Clamp01(offset + _hitDelay * Mathf.Max(.01f, speed) / ClipLength);
+		}
+
+		public float AssetDelayFor ( float _normalizedTime )
+		{
+			return Mathf.Max(0f, (_normalizedTime - assetOffset) * ClipLength / Mathf.Max(.01f, assetSpeed));
+		}
+
+		public float AssetNormalizedFor ( float _delay )
+		{
+			return Mathf.Clamp01(assetOffset + _delay * Mathf.Max(.01f, assetSpeed) / ClipLength);
 		}
 	}
 
@@ -156,6 +169,8 @@ public static class AnimationLabAssets
 		timing.clip = reference.motion as AnimationClip;
 		timing.speed = reference.speed;
 		timing.offset = enter.offset;
+		timing.assetSpeed = timing.speed;
+		timing.assetOffset = timing.offset;
 		timing.enterDuration = enter.duration;
 		timing.exitTime = exit != null ? exit.exitTime : 1f;
 		timing.exitDuration = exit != null ? exit.duration : .25f;
@@ -200,6 +215,206 @@ public static class AnimationLabAssets
 		}
 
 		AssetDatabase.SaveAssets();
+	}
+
+	public static void RescalePhaseDelays ( IEnumerable<EntityActionData> _actions, AttackTiming _timing )
+	{
+		foreach (EntityActionData action in _actions)
+		{
+			float hold = Round(_timing.HitDelayFor(_timing.AssetNormalizedFor(action.preparationHoldDelay)), 1000f);
+			float recovery = Round(_timing.HitDelayFor(_timing.AssetNormalizedFor(action.recoveryHoldDelay)), 1000f);
+			bool rescalesHold = action.preparationAnimationMode == EntityActionData.PreparationAnimationMode.WindUp && !Mathf.Approximately(hold, action.preparationHoldDelay);
+			bool rescalesRecovery = action.recoveryAnimationMode != EntityActionData.RecoveryAnimationMode.None && !Mathf.Approximately(recovery, action.recoveryHoldDelay);
+			if (!rescalesHold && !rescalesRecovery)
+				continue;
+
+			if (rescalesHold)
+				action.preparationHoldDelay = hold;
+			if (rescalesRecovery)
+				action.recoveryHoldDelay = recovery;
+			EditorUtility.SetDirty(action);
+		}
+
+		AssetDatabase.SaveAssets();
+	}
+
+	public static void WritePhases ( EntityActionData _action, EntityActionData.PreparationAnimationMode _preparation, float _holdDelay, float _windUpRatio, string _preparationKey
+		, EntityActionData.RecoveryAnimationMode _recovery, float _recoveryDelay, string _recoveryKey )
+	{
+		_action.preparationAnimationMode = _preparation;
+		_action.preparationHoldDelay = Round(_holdDelay, 1000f);
+		_action.preparationWindUpRatio = Round(_windUpRatio, 100f);
+		_action.preparationAnimationKey = _preparationKey ?? "";
+		_action.recoveryAnimationMode = _recovery;
+		_action.recoveryHoldDelay = Round(_recoveryDelay, 1000f);
+		_action.afterPerformAnimationKey = _recoveryKey ?? "";
+		EditorUtility.SetDirty(_action);
+		AssetDatabase.SaveAssets();
+	}
+
+	public static List<string> TriggerNames ( RuntimeAnimatorController _runtimeController )
+	{
+		return _runtimeController is AnimatorController controller
+			? controller.parameters.Where(parameter => parameter.type == AnimatorControllerParameterType.Trigger).Select(parameter => parameter.name).ToList()
+			: new List<string>();
+	}
+
+	public static EntityAnimationProfile FindProfile ( GameObject _unitPrefab )
+	{
+		EntitySkinPlugin skin = _unitPrefab != null ? _unitPrefab.GetComponentInChildren<EntitySkinPlugin>(true) : null;
+		return skin != null ? skin.AnimationProfile : null;
+	}
+
+	public static void SaveTuning ( EntityAnimationProfile _profile, EntityActionData _action, float _speed, float _intensity )
+	{
+		EntityAnimationProfile.AttackTuning tuning = _profile.FindOwn(_action);
+		if (tuning == null)
+		{
+			tuning = new EntityAnimationProfile.AttackTuning { action = _action };
+			_profile.attacks.Add(tuning);
+		}
+
+		tuning.trigger = _action.performAnimationKey;
+		tuning.speed = Round(_speed, 100f);
+		tuning.intensity = Round(_intensity, 100f);
+		EditorUtility.SetDirty(_profile);
+		AssetDatabase.SaveAssets();
+	}
+
+	public static void RemoveTuning ( EntityAnimationProfile _profile, EntityActionData _action )
+	{
+		_profile.attacks.RemoveAll(tuning => tuning != null && tuning.action == _action);
+		EditorUtility.SetDirty(_profile);
+		AssetDatabase.SaveAssets();
+	}
+
+	public static void SaveDefaults ( EntityAnimationProfile _profile, float _speed, float _intensity )
+	{
+		_profile.attackSpeed = Round(_speed, 100f);
+		_profile.attackIntensity = Round(_intensity, 100f);
+		EditorUtility.SetDirty(_profile);
+		AssetDatabase.SaveAssets();
+	}
+
+	private static float Round ( float _value, float _steps )
+	{
+		return Mathf.Round(_value * _steps) / _steps;
+	}
+
+	public static List<HeldOption> FindSameVisual ( HeldOption _option, IEnumerable<HeldOption> _options )
+	{
+		List<HeldOption> result = new();
+		if (_option == null || _option.prefab == null)
+			return result;
+
+		List<(string mesh, Matrix4x4 pose)> reference = VisualParts(_option.prefab);
+		if (reference.Count == 0)
+			return result;
+
+		HashSet<GameObject> seen = new() { _option.prefab };
+		foreach (HeldOption candidate in _options)
+		{
+			if (candidate != null && candidate.prefab != null && seen.Add(candidate.prefab) && IsSameVisual(reference, VisualParts(candidate.prefab)))
+				result.Add(candidate);
+		}
+
+		return result;
+	}
+
+	private static List<(string mesh, Matrix4x4 pose)> VisualParts ( GameObject _prefab )
+	{
+		List<(string mesh, Matrix4x4 pose)> parts = new();
+		Transform root = _prefab.transform;
+		foreach (Renderer renderer in _prefab.GetComponentsInChildren<Renderer>(true))
+		{
+			Mesh mesh = renderer is SkinnedMeshRenderer skinned ? skinned.sharedMesh
+				: renderer is MeshRenderer && renderer.TryGetComponent(out MeshFilter filter) ? filter.sharedMesh : null;
+			if (mesh != null && renderer.enabled && IsActiveUnder(renderer.transform, root))
+				parts.Add((AssetDatabase.GetAssetPath(mesh) + "/" + mesh.name, root.worldToLocalMatrix * renderer.transform.localToWorldMatrix));
+		}
+
+		return parts;
+	}
+
+	private static bool IsActiveUnder ( Transform _transform, Transform _root )
+	{
+		for (Transform current = _transform; current != null; current = current.parent)
+		{
+			if (!current.gameObject.activeSelf)
+				return false;
+			if (current == _root)
+				return true;
+		}
+
+		return true;
+	}
+
+	private static bool IsSameVisual ( List<(string mesh, Matrix4x4 pose)> _reference, List<(string mesh, Matrix4x4 pose)> _candidate )
+	{
+		if (_reference.Count != _candidate.Count)
+			return false;
+
+		bool[] isUsed = new bool[_candidate.Count];
+		foreach ((string mesh, Matrix4x4 pose) part in _reference)
+		{
+			int match = -1;
+			for (int i = 0; i < _candidate.Count && match < 0; i++)
+			{
+				if (!isUsed[i] && _candidate[i].mesh == part.mesh && IsClose(_candidate[i].pose, part.pose))
+					match = i;
+			}
+
+			if (match < 0)
+				return false;
+			isUsed[match] = true;
+		}
+
+		return true;
+	}
+
+	private static bool IsClose ( Matrix4x4 _a, Matrix4x4 _b )
+	{
+		for (int i = 0; i < 16; i++)
+		{
+			if (Mathf.Abs(_a[i] - _b[i]) > .001f)
+				return false;
+		}
+
+		return true;
+	}
+
+	public static EntityAnimationProfile CreateProfile ( GameObject _unitPrefab, out string _path )
+	{
+		_path = null;
+		string prefabPath = AssetDatabase.GetAssetPath(_unitPrefab);
+		if (string.IsNullOrEmpty(prefabPath))
+			return null;
+
+		GameObject root = PrefabUtility.LoadPrefabContents(prefabPath);
+		try
+		{
+			EntitySkinPlugin skin = root.GetComponentInChildren<EntitySkinPlugin>(true);
+			if (skin == null)
+				return null;
+
+			if (!AssetDatabase.IsValidFolder(ProfileFolder))
+				AssetDatabase.CreateFolder(System.IO.Path.GetDirectoryName(ProfileFolder).Replace('\\', '/'), System.IO.Path.GetFileName(ProfileFolder));
+
+			EntityAnimationProfile profile = ScriptableObject.CreateInstance<EntityAnimationProfile>();
+			_path = AssetDatabase.GenerateUniqueAssetPath(ProfileFolder + "/" + _unitPrefab.name + ".asset");
+			AssetDatabase.CreateAsset(profile, _path);
+
+			SerializedObject serialized = new(skin);
+			serialized.FindProperty("m_animationProfile").objectReferenceValue = profile;
+			serialized.ApplyModifiedPropertiesWithoutUndo();
+			PrefabUtility.SaveAsPrefabAsset(root, prefabPath);
+			AssetDatabase.SaveAssets();
+			return profile;
+		}
+		finally
+		{
+			PrefabUtility.UnloadPrefabContents(root);
+		}
 	}
 
 	public static void SaveGrip ( GameObject _prefab, Vector3 _localPosition, Quaternion _localRotation )

@@ -199,6 +199,10 @@ PrefabInstance:
       propertyPath: m_humanoidEntityIK
       value: 
       objectReference: {fileID: 8591556317062257417}
+    - target: {fileID: 4353477765861233231, guid: facf97aac763a09489a27b119520aaff, type: 3}
+      propertyPath: m_animationProfile
+      value: 
+      objectReference: {fileID: 11400000, guid: 3980769117539aa1ce43e8549d8a713f, type: 2}
     - target: {fileID: 5695719431895869441, guid: facf97aac763a09489a27b119520aaff, type: 3}
       propertyPath: m_weaponConesParent
       value: 

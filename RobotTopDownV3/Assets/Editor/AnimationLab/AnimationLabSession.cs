@@ -24,8 +24,7 @@ public static class AnimationLabSession
 	public static HashSet<string> LegsNoise { get; private set; }
 	public static bool IsLegsBaselineReady => LegsBaseline != null && LegsNoise != null;
 
-	public static string LoopTrigger { get; private set; }
-	private static bool s_loopLeftHand;
+	public static bool IsLooping { get; private set; }
 	private static float s_idleSince = -1f;
 	private static int s_buildFrame;
 	private static Dictionary<string, string> s_firstSnapshot;
@@ -136,16 +135,15 @@ public static class AnimationLabSession
 		}
 	}
 
-	public static void SetLoop ( string _trigger, bool _leftHand )
+	public static void SetLoop ( bool _isLooping )
 	{
-		LoopTrigger = _trigger;
-		s_loopLeftHand = _leftHand;
+		IsLooping = _isLooping;
 		s_idleSince = -1f;
 	}
 
 	private static void Teardown ()
 	{
-		LoopTrigger = null;
+		IsLooping = false;
 		if (Rig != null)
 			Rig.Teardown();
 		Rig = null;
@@ -172,10 +170,10 @@ public static class AnimationLabSession
 
 		CaptureLegsBaseline();
 
-		if (string.IsNullOrEmpty(LoopTrigger) || Rig.Animator.speed == 0f)
+		if (!IsLooping || Rig.Animator.speed == 0f || Rig.Request == null)
 			return;
 
-		if (!Rig.IsTopIdle())
+		if (Rig.IsSequencePlaying || !Rig.IsTopIdle())
 		{
 			s_idleSince = -1f;
 			return;
@@ -186,7 +184,7 @@ public static class AnimationLabSession
 		else if (Time.realtimeSinceStartup - s_idleSince >= c_loopPause)
 		{
 			s_idleSince = -1f;
-			Rig.Trigger(LoopTrigger, s_loopLeftHand);
+			Rig.Play(Rig.Request.Value);
 		}
 	}
 
