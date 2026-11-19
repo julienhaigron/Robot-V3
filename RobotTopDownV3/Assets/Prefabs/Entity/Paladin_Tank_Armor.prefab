@@ -37,10 +37,6 @@ PrefabInstance:
       value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 3894988364515184562, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
-      propertyPath: StepPointsOverlapRadius
-      value: 0.61
-      objectReference: {fileID: 0}
-    - target: {fileID: 3894988364515184562, guid: 96086472d3f3a42499d18f104048fa72, type: 3}
       propertyPath: _Editor_OnValidateTrigger
       value: 0
       objectReference: {fileID: 0}
