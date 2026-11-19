@@ -32,6 +32,11 @@ public class EntitySkinPlugin : EntityPlugin
 	public AttackAnimationPlayer AttackPlayer => m_attackPlayer ??= new AttackAnimationPlayer(m_animator, TuningFor);
 	private string m_aimingWeaponID;
 
+	private GuardAnimationPlayer m_guardPlayer;
+	public GuardAnimationPlayer GuardPlayer => m_guardPlayer ??= new GuardAnimationPlayer(m_animator);
+	private bool m_isMoving;
+	private Weapon m_guardWeapon;
+
 	private bool m_isThermicLookWanted;
 	private Material m_forcedLook;
 	private Material m_appliedLook;
@@ -49,6 +54,42 @@ public class EntitySkinPlugin : EntityPlugin
 		m_linkedEntity.onEndPerformAction += OnEndActionPerform;
 		m_linkedEntity.Equipment.onDeath += OnEntityDeath;
 		TurnManager.onStartInputPhase += OnStartInputPhase;
+		if (m_humanoidEntityIK != null)
+			m_humanoidEntityIK.GripAmount = m_animationProfile != null ? m_animationProfile.gripAmount : 1f;
+	}
+
+	private void Update ()
+	{
+		if (m_animator == null || m_linkedEntity == null || m_linkedEntity.Equipment == null)
+			return;
+
+		Weapon weapon = m_isMoving ? null : GuardWeapon();
+		bool isLeftHand = weapon != null && m_humanoidEntityIK != null && m_humanoidEntityIK.IsHeldInLeftHand(weapon.transform);
+		GuardPlayer.Set(weapon != null ? weapon.Data.guardAnimation : null, isLeftHand, weapon != null ? weapon.Data.guardTorsoYaw : 0f);
+		GuardPlayer.Update(Time.deltaTime);
+	}
+
+	private Weapon GuardWeapon ()
+	{
+		if (m_guardWeapon != null && m_guardWeapon.Data != null)
+			return m_guardWeapon;
+
+		Weapon found = null;
+		foreach (Weapon weapon in m_linkedEntity.Equipment.Weapons.Values)
+		{
+			if (weapon == null || weapon.Data == null || string.IsNullOrEmpty(weapon.Data.guardAnimation))
+				continue;
+			if (found == null || m_humanoidEntityIK != null && !m_humanoidEntityIK.IsHeldInLeftHand(weapon.transform))
+				found = weapon;
+		}
+
+		return found;
+	}
+
+	private void RememberGuardWeapon ( AttackAction _action )
+	{
+		if (m_linkedEntity.Equipment.Weapons.TryGetValue(_action.linkedEquipmentId ?? "", out Weapon weapon) && weapon != null)
+			m_guardWeapon = weapon;
 	}
 
 	private void OnDestroy ()
@@ -90,6 +131,7 @@ public class EntitySkinPlugin : EntityPlugin
 			|| !m_linkedEntity.Equipment.Weapons.TryGetValue(_action.linkedEquipmentId ?? "", out Weapon weapon) || weapon == null)
 			return;
 
+		m_guardWeapon = weapon;
 		bool isLeftHand = m_humanoidEntityIK != null && m_humanoidEntityIK.IsHeldInLeftHand(weapon.transform);
 		float seconds = Mathf.Max(1, _action.TimeAtStartPerform - TurnManager.currentTick) * GameConfig.current.game.actionDuration;
 		AttackPlayer.StartPreparation(_action, data, ResolveAnimationKey(data, weapon.Data.attackAnimationSuccessId), isLeftHand, AttackAnimationPlayer.Timing.From(data), seconds);
@@ -107,6 +149,7 @@ public class EntitySkinPlugin : EntityPlugin
 			return false;
 
 		EntityActionData data = _action.Data;
+		RememberGuardWeapon(_action);
 		return AttackPlayer.Strike(_action, data, ResolveAnimationKey(data, _fallbackKey), _isLeftHand, AttackAnimationPlayer.Timing.From(data), _isFinalStrike && _action.cooldownDuration > 0, out _impactDelay);
 	}
 
@@ -166,6 +209,7 @@ public class EntitySkinPlugin : EntityPlugin
 
 	public void SetIsMoving(bool _isMoving )
 	{
+		m_isMoving = _isMoving;
 		m_animator.SetBool("IsMoving", _isMoving);
 	}
 

@@ -49,6 +49,10 @@ public class AnimationLabWindow : EditorWindow
 	private bool m_showDefaults;
 	private AnimationLabAssets.HeldOption m_twinsFor;
 	private List<AnimationLabAssets.HeldOption> m_twins;
+	private AnimationLabAssets.HeldOption m_guardFor;
+	private int m_guardHand = -1;
+	private string m_guardKey;
+	private float m_guardTorso;
 	private Marker m_dragged;
 	private float m_timeScale = 1f;
 	private bool m_loop;
@@ -91,6 +95,7 @@ public class AnimationLabWindow : EditorWindow
 		m_phaseAction = null;
 		m_isPhaseDirty = false;
 		m_twinsFor = null;
+		m_guardFor = null;
 		m_loop = false;
 		m_timeScale = 1f;
 		m_legChanges = null;
@@ -219,6 +224,73 @@ public class AnimationLabWindow : EditorWindow
 			Equip(_rig, AnimationLabRig.MainHand, _rig.heldOptions[AnimationLabRig.OffHand]);
 			Equip(_rig, AnimationLabRig.OffHand, main);
 		}
+
+		float grip = EditorGUILayout.Slider(new GUIContent("Fermeture des mains", "Fermeture des doigts sur l'arme ou l'outil tenu, pour cette unité : 1 = la prise complète, 0 = les doigts suivent l'animation."), _rig.IK.GripAmount, 0f, 1f);
+		if (!Mathf.Approximately(grip, _rig.IK.GripAmount))
+			_rig.IK.GripAmount = grip;
+
+		if (_rig.Profile == null)
+			return;
+
+		using (new EditorGUI.DisabledScope(Mathf.Abs(_rig.IK.GripAmount - _rig.Profile.gripAmount) < .005f))
+		{
+			if (GUILayout.Button("Enregistrer la fermeture dans le profil de l'unité"))
+			{
+				AnimationLabAssets.SaveGripAmount(_rig.Profile, _rig.IK.GripAmount);
+				m_status = "Fermeture des mains " + _rig.IK.GripAmount.ToString("0.00") + " enregistrée dans " + AssetDatabase.GetAssetPath(_rig.Profile) + ".";
+				GUIUtility.ExitGUI();
+			}
+		}
+	}
+
+	private void DrawGuard ( AnimationLabRig _rig, AnimationLabAssets.HeldOption _option, bool _isLeftHand )
+	{
+		if (_option.data is not WeaponEquipmentData weapon)
+			return;
+
+		if (m_guardFor != _option || m_guardHand != m_strikeHand)
+		{
+			m_guardFor = _option;
+			m_guardHand = m_strikeHand;
+			m_guardKey = weapon.guardAnimation ?? "";
+			m_guardTorso = weapon.guardTorsoYaw;
+		}
+
+		List<string> keys = AnimationLabAssets.GuardKeys(_rig.Animator.runtimeAnimatorController);
+		if (!string.IsNullOrEmpty(m_guardKey) && !keys.Contains(m_guardKey))
+			keys.Add(m_guardKey);
+		string[] labels = new[] { "Aucune : repos neutre" }.Concat(keys.Select(key => _rig.Guard.HasState(key, _isLeftHand) ? key : key + " (absente du contrôleur)")).ToArray();
+		int index = string.IsNullOrEmpty(m_guardKey) ? 0 : keys.IndexOf(m_guardKey) + 1;
+		int chosen = EditorGUILayout.Popup(new GUIContent("Garde de l'arme", "Idle joué au repos avec cette arme : les états « Guard <nom> R » et « Guard <nom> L » du calque de base, en miroir dans l'autre main. L'unité revient au repos neutre pour marcher."), index, labels);
+		if (chosen != index)
+			m_guardKey = chosen == 0 ? "" : keys[chosen - 1];
+
+		using (new EditorGUI.DisabledScope(string.IsNullOrEmpty(m_guardKey)))
+		using (new EditorGUILayout.HorizontalScope())
+		{
+			m_guardTorso = EditorGUILayout.Slider(new GUIContent("Rotation du buste", "Tourne le buste et les bras dans la garde, sans bouger la tête ni les jambes. Valeur de la main principale : l'autre main prend l'angle opposé."), m_guardTorso, -GuardAnimationPlayer.TorsoRange, GuardAnimationPlayer.TorsoRange);
+			if (GUILayout.Button(new GUIContent("De face", "Calcule la rotation qui met les épaules face à la direction de l'unité dans cette garde."), GUILayout.Width(70)))
+				m_guardTorso = Mathf.Round(_rig.FrontTorsoYaw());
+		}
+
+		_rig.SetGuard(m_guardKey, _isLeftHand, m_guardTorso);
+		bool isSaved = m_guardKey == (weapon.guardAnimation ?? "") && Mathf.Abs(m_guardTorso - weapon.guardTorsoYaw) < .5f;
+		using (new EditorGUI.DisabledScope(isSaved))
+		using (new EditorGUILayout.HorizontalScope())
+		{
+			if (GUILayout.Button("Enregistrer la garde dans " + weapon.name))
+			{
+				AnimationLabAssets.SaveGuard(weapon, m_guardKey, m_guardTorso);
+				m_status = "Garde de " + weapon.name + " enregistrée : " + (string.IsNullOrEmpty(weapon.guardAnimation) ? "repos neutre" : weapon.guardAnimation + ", buste " + weapon.guardTorsoYaw.ToString("0") + "°") + ".";
+				GUIUtility.ExitGUI();
+			}
+
+			if (GUILayout.Button("Annuler", GUILayout.Width(70)))
+			{
+				m_guardKey = weapon.guardAnimation ?? "";
+				m_guardTorso = weapon.guardTorsoYaw;
+			}
+		}
 	}
 
 	private void Equip ( AnimationLabRig _rig, int _hand, AnimationLabAssets.HeldOption _option )
@@ -280,6 +352,7 @@ public class AnimationLabWindow : EditorWindow
 		EditorGUILayout.LabelField("État joué", state.name + "   (clip " + (m_timing.clip != null ? m_timing.clip.name : "aucun") + ", " + m_timing.ClipLength.ToString("0.00") + " s)");
 		if (m_timing.HasSeparateClips)
 			EditorGUILayout.HelpBox("Les états R et L ont des clips différents : le timing affiché est celui de " + (m_timing.right != null ? m_timing.right.name : state.name) + ".", MessageType.Warning);
+		DrawGuard(_rig, option, isLeftHand);
 
 		using (new EditorGUILayout.HorizontalScope())
 		{
@@ -1224,6 +1297,7 @@ public class AnimationLabWindow : EditorWindow
 			+ "Attaque : choisis la main, puis l'action de l'arme. « Jouer comme en jeu » joue l'action entière, tick par tick, comme le combat. « Image par image » fige la pose : fais glisser la tête de lecture blanche, ou les repères Entrée (bleu), Impact (rouge) et Sortie (vert). L'impact donne le délai avant les dégâts, les effets et le projectile. La vitesse du clip s'entend tout de suite ; « Enregistrer le timing » écrit la vitesse, l'entrée, la sortie et les fondus dans le contrôleur (états R et L, toutes les unités), et le délai d'impact dans toutes les actions de ce déclencheur.\n\n"
 			+ "Phases (actions de plus d'un tick) : la frise du dessous montre la préparation, la frappe et la récupération à la durée du jeu. « Armer la frappe » monte le geste jusqu'à la pose armée (repère orange) en ralentissant, la tient, puis la frappe repart de là : l'impact arrive plus tôt dans le tick de frappe. « Tenir la fin du geste » fige la pose tenue (repère violet) pendant le refroidissement. « Déclencheur dédié » joue un état du contrôleur à la place. « Enregistrer les phases » n'écrit que dans l'action choisie.\n\n"
 			+ "Réglage de l'action sur l'unité : la vitesse × et l'intensité ne valent que pour l'unité chargée et l'action choisie, dans le profil d'animation de l'unité. Sans réglage propre, l'action reprend le réglage de son déclencheur s'il en a un, sinon les valeurs par défaut de l'unité. La vitesse divise le délai d'impact en jeu, donc l'impact reste calé. L'intensité est le poids du calque d'attaque : elle réduit l'amplitude du geste.\n\n"
+			+ "Garde : chaque arme a une garde, l'Idle joué au repos avec elle (Axe, Boxing, Torch, Throw : les états « Guard <nom> R/L » du contrôleur). Elle place les jambes comme au début de ses attaques, la tête vers l'avant. « Rotation du buste » remet le buste et les bras de face sans bouger la tête ni les jambes ; « De face » la calcule. L'unité revient au repos neutre pour marcher. Mains : les mains qui tiennent quelque chose se ferment, à la fermeture réglée pour l'unité.\n\n"
 			+ "Prise : fige la pose à l'impact, puis tourne et place l'arme (champs, boutons +90 ou outils W/E de la Scene après « Sélectionner »). L'enregistrement écrit la pose de la racine du prefab de l'arme ; « Enregistrer aussi dans les armes au même visuel » l'écrit dans toutes les armes qui ont le même mesh à la même place. La main secondaire en reçoit le miroir, en jeu comme ici. Le socket principal déplace toutes les armes à la fois : à réserver au calage de la main elle-même.\n\n"
 			+ "Marche : l'unité parcourt les cases au rythme du jeu. Règle le LegsAnimator dans l'Inspector pendant qu'elle marche, puis « Enregistrer les réglages des jambes » : seuls les réglages modifiés depuis le lancement sont écrits dans le prefab d'unité, après confirmation.\n\n"
 			+ "Tout ce qui n'est pas enregistré disparaît en quittant le Play.", MessageType.None);

@@ -45,6 +45,15 @@ public class HumanoidEntityIK : MonoBehaviour
 	private readonly RecoilPose m_chestPose = new();
 	private readonly RecoilPose m_armPose = new();
 
+	public const string LeftGripLayerName = "LeftHandGrip";
+	public const string RightGripLayerName = "RightHandGrip";
+	private const float c_gripSpeed = 8f;
+	public float GripAmount { get; set; } = 1f;
+	private int m_leftGripLayer = -2;
+	private int m_rightGripLayer = -2;
+	private float m_leftGrip;
+	private float m_rightGrip;
+
 	private class RecoilPose
 	{
 		public Transform bone;
@@ -221,10 +230,66 @@ public class HumanoidEntityIK : MonoBehaviour
 		m_recoilSpeed += _strength * RecoilImpulse * 2f * Mathf.PI * m_recoilFrequency;
 	}
 
+	private void Update ()
+	{
+		UpdateGrip(Time.deltaTime);
+	}
+
 	private void LateUpdate ()
 	{
 		AimSocket();
 		UpdateRecoil(Time.deltaTime);
+	}
+
+	private void UpdateGrip ( float _deltaTime )
+	{
+		if (animator == null || animator.runtimeAnimatorController == null)
+			return;
+
+		if (m_leftGripLayer == -2)
+		{
+			m_leftGripLayer = animator.GetLayerIndex(LeftGripLayerName);
+			m_rightGripLayer = animator.GetLayerIndex(RightGripLayerName);
+		}
+
+		if (m_leftGripLayer < 0 && m_rightGripLayer < 0)
+			return;
+
+		bool isLeftHolding = false;
+		bool isRightHolding = false;
+		MarkHolding(handGrabSocket, ref isLeftHolding, ref isRightHolding);
+		if (offHandGrabSocket != handGrabSocket)
+			MarkHolding(offHandGrabSocket, ref isLeftHolding, ref isRightHolding);
+
+		float step = c_gripSpeed * _deltaTime;
+		m_leftGrip = Mathf.MoveTowards(m_leftGrip, isLeftHolding ? GripAmount : 0f, step);
+		m_rightGrip = Mathf.MoveTowards(m_rightGrip, isRightHolding ? GripAmount : 0f, step);
+		if (m_leftGripLayer >= 0)
+			animator.SetLayerWeight(m_leftGripLayer, m_leftGrip);
+		if (m_rightGripLayer >= 0)
+			animator.SetLayerWeight(m_rightGripLayer, m_rightGrip);
+	}
+
+	private void MarkHolding ( Transform _socket, ref bool _isLeftHolding, ref bool _isRightHolding )
+	{
+		if (_socket == null || !HasActiveChild(_socket))
+			return;
+
+		if (GetIKGoalOf(_socket) == AvatarIKGoal.LeftHand)
+			_isLeftHolding = true;
+		else
+			_isRightHolding = true;
+	}
+
+	private static bool HasActiveChild ( Transform _parent )
+	{
+		for (int i = 0; i < _parent.childCount; i++)
+		{
+			if (_parent.GetChild(i).gameObject.activeSelf)
+				return true;
+		}
+
+		return false;
 	}
 
 	private void AimSocket ()

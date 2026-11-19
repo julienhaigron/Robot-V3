@@ -30,3 +30,5 @@ MonoBehaviour:
   attackAnimationFailureId: 
   isTwoHanded: 0
   singleAttackAnimationDuration: 0.3
+  guardAnimation: Axe
+  guardTorsoYaw: -38

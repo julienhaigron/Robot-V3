@@ -28,6 +28,8 @@ public class EntityAnimationProfile : ScriptableObject
 	[Range(MinIntensity, 1f)] public float attackIntensity = 1f;
 	[Tooltip("Réglages par action, puis par déclencheur (action vide). Ce qui n'a pas d'entrée utilise les deux valeurs ci-dessus.")]
 	public List<AttackTuning> attacks = new();
+	[Tooltip("Fermeture des mains qui tiennent une arme ou un outil : 1 = la prise complète, 0 = les doigts suivent l'animation.")]
+	[Range(0f, 1f)] public float gripAmount = 1f;
 
 	public AttackTuning Find ( EntityActionData _action, string _trigger )
 	{

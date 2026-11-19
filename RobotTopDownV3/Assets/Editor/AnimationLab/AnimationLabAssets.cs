@@ -296,6 +296,39 @@ public static class AnimationLabAssets
 		AssetDatabase.SaveAssets();
 	}
 
+	public static void SaveGuard ( WeaponEquipmentData _weapon, string _key, float _torsoYaw )
+	{
+		_weapon.guardAnimation = _key ?? "";
+		_weapon.guardTorsoYaw = Round(_torsoYaw, 1f);
+		EditorUtility.SetDirty(_weapon);
+		AssetDatabase.SaveAssets();
+	}
+
+	public static List<string> GuardKeys ( RuntimeAnimatorController _controller )
+	{
+		List<string> keys = new();
+		if (_controller is not AnimatorController controller || controller.layers.Length == 0)
+			return keys;
+
+		HashSet<string> names = new(controller.layers[0].stateMachine.states.Select(child => child.state.name));
+		foreach (string name in names)
+		{
+			if (!name.StartsWith(GuardAnimationPlayer.StatePrefix) || !name.EndsWith(" R") || !names.Contains(name.Substring(0, name.Length - 2) + " L"))
+				continue;
+			keys.Add(name.Substring(GuardAnimationPlayer.StatePrefix.Length, name.Length - GuardAnimationPlayer.StatePrefix.Length - 2));
+		}
+
+		keys.Sort();
+		return keys;
+	}
+
+	public static void SaveGripAmount ( EntityAnimationProfile _profile, float _amount )
+	{
+		_profile.gripAmount = Round(_amount, 100f);
+		EditorUtility.SetDirty(_profile);
+		AssetDatabase.SaveAssets();
+	}
+
 	private static float Round ( float _value, float _steps )
 	{
 		return Mathf.Round(_value * _steps) / _steps;

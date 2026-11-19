@@ -23,6 +23,10 @@ public class WeaponEquipmentData : EntityEquipmentData
     public string attackAnimationFailureId;
     public bool isTwoHanded = false;
     public float singleAttackAnimationDuration = .3f;
+    [Tooltip("Garde de l'unité au repos avec cette arme : l'Idle des états « Guard <nom> R » et « Guard <nom> L » du contrôleur (Axe, Boxing, Torch, Throw), en miroir dans l'autre main. Vide = repos neutre. L'unité revient au repos neutre pour marcher.")]
+    public string guardAnimation = "";
+    [Tooltip("Rotation du buste en garde, en degrés, l'arme tenue dans la main principale : elle tourne le buste et les bras sans bouger la tête ni les jambes. Dans l'autre main, l'angle opposé.")]
+    [Range(-60f, 60f)] public float guardTorsoYaw = 0f;
 
     public enum DamageType
 	{

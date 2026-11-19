@@ -44,6 +44,7 @@ public class AnimationLabRig
 	public int TopLayer { get; private set; }
 	public EntityAnimationProfile Profile { get; private set; }
 	public AttackAnimationPlayer Player { get; private set; }
+	public GuardAnimationPlayer Guard { get; private set; }
 	public PlayRequest? Request { get; set; }
 	public float PlanStart { get; private set; } = -1f;
 
@@ -57,6 +58,10 @@ public class AnimationLabRig
 	private readonly Dictionary<EntityActionData, (float speed, float intensity)> m_tunings = new();
 	private readonly Dictionary<string, float> m_clipSpeedScales = new();
 	private (float speed, float intensity)? m_defaults;
+	private bool m_isMoving;
+	private string m_guardKey;
+	private bool m_isGuardLeft;
+	private float m_guardTorso;
 
 	public bool IsAlive => Root != null && Animator != null && IK != null;
 	public bool IsWalking => m_walk != null && m_walk.IsActive();
@@ -94,6 +99,8 @@ public class AnimationLabRig
 
 			rig.Animator.cullingMode = AnimatorCullingMode.AlwaysAnimate;
 			rig.Player = new AttackAnimationPlayer(rig.Animator, rig.PlayerTuning);
+			rig.Guard = new GuardAnimationPlayer(rig.Animator);
+			ik.GripAmount = rig.Profile != null ? rig.Profile.gripAmount : 1f;
 			rig.TopLayer = rig.Animator.GetLayerIndex(AnimationLabAssets.AttackLayer);
 			if (rig.TopLayer < 0)
 				rig.TopLayer = rig.Animator.layerCount - 1;
@@ -135,6 +142,7 @@ public class AnimationLabRig
 
 		held[_hand] = null;
 		heldOptions[_hand] = _option;
+		ResetGuardFromHeld();
 		if (_option == null || _option.prefab == null)
 			return;
 
@@ -343,6 +351,65 @@ public class AnimationLabRig
 		return _state != null && info.shortNameHash == _state.nameHash;
 	}
 
+	public void SetGuard ( string _key, bool _isLeftHand, float _torsoYaw )
+	{
+		m_guardKey = _key;
+		m_isGuardLeft = _isLeftHand;
+		m_guardTorso = _torsoYaw;
+	}
+
+	public void ResetGuardFromHeld ()
+	{
+		for (int hand = MainHand; hand <= OffHand; hand++)
+		{
+			if (heldOptions[hand]?.data is WeaponEquipmentData weapon && !string.IsNullOrEmpty(weapon.guardAnimation))
+			{
+				SetGuard(weapon.guardAnimation, IsHeldInLeftHand(hand), weapon.guardTorsoYaw);
+				return;
+			}
+		}
+
+		SetGuard(null, false, 0f);
+	}
+
+	public void TickGuard ( float _deltaTime )
+	{
+		if (Guard == null)
+			return;
+
+		Guard.Set(m_isMoving ? null : m_guardKey, m_isGuardLeft, m_guardTorso);
+		Guard.Update(_deltaTime);
+	}
+
+	public float FrontTorsoYaw ()
+	{
+		Transform left = Animator.GetBoneTransform(HumanBodyBones.LeftUpperArm);
+		Transform right = Animator.GetBoneTransform(HumanBodyBones.RightUpperArm);
+		if (left == null || right == null || Guard == null || !Guard.HasGuard || !Player.HasParameter(GuardAnimationPlayer.TorsoParameter))
+			return m_guardTorso;
+
+		float weight = Animator.GetLayerWeight(TopLayer);
+		float twist = Animator.GetFloat(GuardAnimationPlayer.TorsoParameter);
+		Animator.SetLayerWeight(TopLayer, 0f);
+		float raw = ShouldersYaw(0f, left, right);
+		float probe = Mathf.Clamp(-raw / GuardAnimationPlayer.TorsoRange, -1f, 1f);
+		float gain = Mathf.Abs(probe) > .01f ? (ShouldersYaw(probe, left, right) - raw) / (probe * GuardAnimationPlayer.TorsoRange) : 1f;
+		Animator.SetFloat(GuardAnimationPlayer.TorsoParameter, twist);
+		Animator.SetLayerWeight(TopLayer, weight);
+		Animator.Update(0f);
+
+		float yaw = Mathf.Clamp(-raw / Mathf.Max(.2f, gain), -GuardAnimationPlayer.TorsoRange, GuardAnimationPlayer.TorsoRange);
+		return m_isGuardLeft ? -yaw : yaw;
+	}
+
+	private float ShouldersYaw ( float _twist, Transform _left, Transform _right )
+	{
+		Animator.SetFloat(GuardAnimationPlayer.TorsoParameter, _twist);
+		Animator.Update(0f);
+		Vector3 local = Visual.InverseTransformDirection(_right.position - _left.position);
+		return Mathf.Atan2(-local.z, local.x) * Mathf.Rad2Deg;
+	}
+
 	public float FindWindUpPeak ( AnimatorState _state, float _from, float _to, bool _isLeftHand )
 	{
 		Transform hand = Animator.GetBoneTransform(_isLeftHand ? HumanBodyBones.LeftHand : HumanBodyBones.RightHand);
@@ -426,6 +493,7 @@ public class AnimationLabRig
 
 	private void SetMoving ( bool _isMoving )
 	{
+		m_isMoving = _isMoving;
 		if (Animator != null && Player != null && Player.HasParameter(AnimationLabAssets.MovingParameter))
 			Animator.SetBool(AnimationLabAssets.MovingParameter, _isMoving);
 	}

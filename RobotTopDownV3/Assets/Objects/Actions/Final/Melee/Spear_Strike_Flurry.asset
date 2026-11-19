@@ -25,11 +25,18 @@ MonoBehaviour:
   preparationAnimationKey: 
   afterPerformAnimationKey: 
   performAnimationKey: OnStab
-  performAnimationHitDelay: 0.32
+  performAnimationHitDelay: 0.344
+  preparationAnimationMode: 1
+  preparationHoldDelay: 0.1
+  preparationWindUpRatio: 0.8
+  recoveryAnimationMode: 0
+  recoveryHoldDelay: 0.6
   shotRecoilStrength: 0
   onPerformSingleAttackSFXID: 0
   onSingleAttackHitSFXID: 0
   onSingleAttackHitVFXPool: {fileID: 11400000, guid: 1218e8eaa5b68ad81c2cc7b00db53f3c, type: 2}
+  onPerformVFXPool: {fileID: 0}
+  movementTrailPool: {fileID: 0}
   visualEffectType: 2
   visualEffectDuration: 0.3
   projectilePool: {fileID: 0}
@@ -42,6 +49,7 @@ MonoBehaviour:
   doesAttackProjectileReturn: 1
   attackProjectileSprayCount: 0
   attackProjectileSprayInterval: 0.09
+  doesSprayRepeatPerformVFX: 1
   conditionType: 0
   previousActionAttackModificator: 0
   type: 1

@@ -168,6 +168,7 @@ public static class AnimationLabSession
 		if (!EditorApplication.isPlaying || Rig == null || !Rig.IsAlive)
 			return;
 
+		Rig.TickGuard(Time.deltaTime);
 		CaptureLegsBaseline();
 
 		if (!IsLooping || Rig.Animator.speed == 0f || Rig.Request == null)
