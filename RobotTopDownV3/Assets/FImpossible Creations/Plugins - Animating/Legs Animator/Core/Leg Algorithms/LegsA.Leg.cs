@@ -21,6 +21,8 @@ namespace FIMSpace.FProceduralAnimation
             [FPD_Suffix(0f, 1f)]
             public float LegBlendWeight = 1f;
 
+            internal System.Collections.IEnumerator FadeRoutine;
+
             #region Blend variables
 
             /// <summary> Multiplier for modules </summary>
@@ -31,6 +33,7 @@ namespace FIMSpace.FProceduralAnimation
 
             /// <summary> (precomputed on preCalibrate) Inidividual leg blend + legs animator blend </summary>
             float finalBoneBlend = 1f;
+            bool _wasIKApplied;
 
             #endregion
 
@@ -189,8 +192,7 @@ namespace FIMSpace.FProceduralAnimation
 #endif                
                 #endregion
 
-                BlendWeight = BlendWeight * InternalModuleBlendWeight;
-                finalBoneBlend = BlendWeight * Owner._MainBlend;
+                IK_UpdateParamsBase();
 
                 if (finalBoneBlend < 0.0001f)
                 {
@@ -204,7 +206,7 @@ namespace FIMSpace.FProceduralAnimation
                         RaycastHitted = false;
                     }
 
-                    return;
+                    if (!_wasIKApplied) return;
                 }
 
                 if( Owner.Calibrate == ECalibrateMode.Calibrate )
@@ -219,8 +221,11 @@ namespace FIMSpace.FProceduralAnimation
                         BoneStart.localRotation = _AnimatorStartBoneLocRot;
                         BoneMid.localRotation = _AnimatorMidBoneLocRot;
                         BoneEnd.localRotation = _AnimatorEndBoneLocRot;
+                        if (BoneFeet) BoneFeet.localRotation = _AnimatorFeetBoneLocRot;
                     }
                 }
+
+                _wasIKApplied = false;
 
                 //G_CustomForceNOTDetach = false;
                 //G_CustomForceDetach = false;
@@ -239,6 +244,7 @@ namespace FIMSpace.FProceduralAnimation
                     _AnimatorStartBoneLocRot = BoneStart.localRotation;
                     _AnimatorMidBoneLocRot = BoneMid.localRotation;
                     _AnimatorEndBoneLocRot = BoneEnd.localRotation;
+                    if (BoneFeet) _AnimatorFeetBoneLocRot = BoneFeet.localRotation;
                 }
             }
 

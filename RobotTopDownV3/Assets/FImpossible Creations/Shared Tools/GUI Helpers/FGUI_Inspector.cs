@@ -10,6 +10,9 @@ using System.Text;
 
 namespace FIMSpace.FEditor
 {
+#if UNITY_6000_6_OR_NEWER
+    [Unity.Scripting.LifecycleManagement.NoAutoStaticsCleanup]
+#endif
     public static class FGUI_Inspector
     {
         public static readonly GUILayoutOption[] _button_h34 = new GUILayoutOption[] { GUILayout.Height(34) };

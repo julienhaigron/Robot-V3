@@ -89,7 +89,10 @@ namespace FIMSpace.FProceduralAnimation
         public void User_FadeLeg(int legIndex, float blend, float duration)
         {
             if (Legs.ContainsIndex(legIndex) == false) return;
-            StartCoroutine(IEFadeLegTo(Legs[legIndex], 0f, duration));
+            var leg = Legs[legIndex];
+            if (leg.FadeRoutine != null) StopCoroutine(leg.FadeRoutine);
+            leg.FadeRoutine = IEFadeLegTo(leg, Mathf.Clamp01(blend), duration);
+            StartCoroutine(leg.FadeRoutine);
         }
 
         bool? _wasFadingOn = null;
@@ -175,13 +178,15 @@ namespace FIMSpace.FProceduralAnimation
 
             while (elapsed < duration)
             {
-                elapsed += DeltaTime;
-                leg.LegBlendWeight = Mathf.Lerp(startBlend, blend, elapsed / duration);
                 yield return null;
+                elapsed += UnscaledDeltaTime ? Time.unscaledDeltaTime : Time.deltaTime;
+                leg.LegBlendWeight = Mathf.SmoothStep(startBlend, blend, elapsed / duration);
+                leg.IK_UpdateParamsBase();
             }
 
             leg.LegBlendWeight = blend;
-            yield break;
+            leg.IK_UpdateParamsBase();
+            leg.FadeRoutine = null;
         }
 
         #endregion

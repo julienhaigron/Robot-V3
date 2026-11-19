@@ -9,6 +9,9 @@ namespace FIMSpace.FProceduralAnimation
     {
         protected List<ImpulseExecutor> Impulses = new List<ImpulseExecutor>();
 
+#if UNITY_6000_6_OR_NEWER
+    [Unity.Scripting.LifecycleManagement.NoAutoStaticsCleanup]
+#endif
         public struct ImpulseExecutor
         {
             public float Elapsed;

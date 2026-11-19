@@ -8,8 +8,8 @@ namespace FIMSpace.FProceduralAnimation
         {
             public bool RaycastHitted { get; private set; }
             public RaycastHit LastGroundHit { get { return legGroundHit; } }
-            public RaycastHit legGroundHit;
-            public RaycastHit lastGroundHitWithTarget;
+            [System.NonSerialized] public RaycastHit legGroundHit;
+            [System.NonSerialized] public RaycastHit lastGroundHitWithTarget;
 
             public Vector3 groundHitRootSpacePos { get; private set; }
 

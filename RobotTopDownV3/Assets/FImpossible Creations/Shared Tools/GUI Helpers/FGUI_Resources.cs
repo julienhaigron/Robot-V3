@@ -6,6 +6,9 @@ using UnityEngine;
 
 namespace FIMSpace.FEditor
 {
+#if UNITY_6000_6_OR_NEWER
+    [Unity.Scripting.LifecycleManagement.NoAutoStaticsCleanup]
+#endif
     public static class FGUI_Resources
     {
         /// Background Icons ----------------------------------------------------
@@ -161,6 +164,10 @@ namespace FIMSpace.FEditor
         private static GUIStyle __inBoxStyleS = null;
         public static GUIStyle BGInBoxBlankStyle { get { if (__inBoxBlankStyle != null) return __inBoxBlankStyle; __inBoxBlankStyle = new GUIStyle(); __inBoxBlankStyle.padding = BGInBoxStyle.padding; __inBoxBlankStyle.margin = BGInBoxStyle.margin; return __inBoxBlankStyle; } }
         private static GUIStyle __inBoxBlankStyle = null;
+
+        public static GUIStyle BGInBoxBlankStylePadded { get { if (__inBoxBlankStylePad != null) return __inBoxBlankStylePad; __inBoxBlankStylePad = new GUIStyle(); __inBoxBlankStylePad.padding = new RectOffset(16, 12, 10, 10); __inBoxBlankStylePad.margin = BGInBoxStyle.margin; return __inBoxBlankStylePad; } }
+        private static GUIStyle __inBoxBlankStylePad = null;
+
         public static GUIStyle BGInBoxLightStyle { get { if (__inBoxLightStyle != null) return __inBoxLightStyle; __inBoxLightStyle = new GUIStyle(BGInBoxStyle); __inBoxLightStyle.normal.background = Resources.Load<Texture2D>("Fimp/Backgrounds/FInBoxLight"); return __inBoxLightStyle; } }
         private static GUIStyle __inBoxLightStyle = null;
 

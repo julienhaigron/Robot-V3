@@ -91,26 +91,51 @@ public static class FEditor_TransformHandles
         return rotation;
     }
 
-    public static Vector3 ScaleHandle(Vector3 scale, Vector3 position, Quaternion rotation, float size, bool scaleAll = false, bool worldScale = false)
+    public static Vector3 ScaleHandle( Vector3 scale, Vector3 position, Quaternion rotation, float size, bool scaleAll = false, bool worldScale = false, bool drawX = true, bool drawY = true, bool drawZ = true, bool allowNegative = false )
     {
         float handleSize = size;
-        if (worldScale) handleSize = HandleUtility.GetHandleSize(position) * size;
+        if( worldScale ) handleSize = HandleUtility.GetHandleSize( position ) * size;
 
-        if (!scaleAll)
+        Vector3 preScale = scale;
+
+        if( !scaleAll )
         {
-            Handles.color = Handles.xAxisColor;
-            scale.x = Handles.ScaleSlider(scale.x, position, rotation * Vector3.right, rotation, handleSize, 0.001f);
-            Handles.color = Handles.yAxisColor;
-            scale.y = Handles.ScaleSlider(scale.y, position, rotation * Vector3.up, rotation, handleSize, 0.001f);
-            Handles.color = Handles.zAxisColor;
-            scale.z = Handles.ScaleSlider(scale.z, position, rotation * Vector3.forward, rotation, handleSize, 0.001f);
+            if( drawX )
+            {
+                Handles.color = Handles.xAxisColor;
+                scale.x = Handles.ScaleSlider( scale.x, position, rotation * Vector3.right, rotation, handleSize, 0.001f );
+
+                if (!allowNegative) if( Mathf.Sign( scale.x ) != Mathf.Sign( preScale.x ) ) scale.x = preScale.x * handleSize * 0.001f;
+            }
+
+            if( drawY )
+            {
+                Handles.color = Handles.yAxisColor;
+                scale.y = Handles.ScaleSlider( scale.y, position, rotation * Vector3.up, rotation, handleSize, 0.001f );
+
+                if( !allowNegative ) if( Mathf.Sign( scale.y ) != Mathf.Sign( preScale.y ) ) scale.y = preScale.y * handleSize * 0.001f;
+            }
+
+            if( drawZ )
+            {
+                Handles.color = Handles.zAxisColor;
+                scale.z = Handles.ScaleSlider( scale.z, position, rotation * Vector3.forward, rotation, handleSize, 0.001f );
+
+                if( !allowNegative ) if( Mathf.Sign( scale.z ) != Mathf.Sign( preScale.z ) ) scale.z = preScale.z * handleSize * 0.001f;
+            }
         }
 
         Handles.color = Handles.centerColor;
         EditorGUI.BeginChangeCheck();
-        float num1 = Handles.ScaleValueHandle(scale.x, position, rotation, handleSize, Handles.CubeHandleCap, 0.001f);
+        float num1 = Handles.ScaleValueHandle( scale.x, position, rotation, handleSize, Handles.CubeHandleCap, 0.001f );
 
-        if (EditorGUI.EndChangeCheck())
+        if( Mathf.Sign( num1 ) != Mathf.Sign( preScale.x ) )
+        {
+            num1 = preScale.x * handleSize * 0.001f;
+            if( !allowNegative ) if( Mathf.Abs( num1 ) < 0.001f ) num1 = 0.001f * Mathf.Sign( preScale.x );
+        }
+
+        if( EditorGUI.EndChangeCheck() )
         {
             float num2 = num1 / scale.x;
             scale.x = num1;
@@ -166,7 +191,7 @@ public static class FEditor_TransformHandles
         {
             Handles.color = Handles.centerColor;
             Vector3 prePos = position;
-            var fmh_169_57_639174749506045091 = Quaternion.identity; position = Handles.FreeMoveHandle(position, handleSize * 0.15f, Vector3.one * 0.001f, Handles.RectangleHandleCap);
+            position = Handles.FreeMoveHandle(position, handleSize * 0.15f, Vector3.one * 0.001f, Handles.RectangleHandleCap);
             if (yHandles == false) position.y = prePos.y;
         }
 

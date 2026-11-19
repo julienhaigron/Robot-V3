@@ -51,9 +51,9 @@ namespace FIMSpace.FProceduralAnimation
 
         #region Performance Measuring
 
-        public FDebug_PerformanceTest _perf_preUpd = new FDebug_PerformanceTest();
-        public FDebug_PerformanceTest _perf_preLate = new FDebug_PerformanceTest();
-        public FDebug_PerformanceTest _perf_main = new FDebug_PerformanceTest();
+        [System.NonSerialized] public FDebug_PerformanceTest _perf_preUpd = new FDebug_PerformanceTest();
+        [System.NonSerialized] public FDebug_PerformanceTest _perf_preLate = new FDebug_PerformanceTest();
+        [System.NonSerialized] public FDebug_PerformanceTest _perf_main = new FDebug_PerformanceTest();
 
         #endregion
 

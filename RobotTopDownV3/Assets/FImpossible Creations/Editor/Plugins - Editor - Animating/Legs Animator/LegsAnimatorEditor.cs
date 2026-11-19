@@ -4,7 +4,9 @@ using UnityEngine;
 
 namespace FIMSpace.FProceduralAnimation
 {
-
+#if UNITY_6000_6_OR_NEWER
+    [Unity.Scripting.LifecycleManagement.NoAutoStaticsCleanup]
+#endif
     [CanEditMultipleObjects]
     [CustomEditor( typeof( LegsAnimator ), true )]
     public partial class LegsAnimatorEditor : Editor
@@ -163,7 +165,7 @@ namespace FIMSpace.FProceduralAnimation
                     if( loaded == false )
                     {
                         EditorGUILayout.BeginHorizontal();
-                        if( GUILayout.Button( new GUIContent( " Import Legs Animator Demos", EditorGUIUtility.IconContent( "UnityLogo" ).image ), GUILayout.Height( 22 ) ) ) AssetDatabase.ImportPackage( demosPath, true );
+                        if( GUILayout.Button( new GUIContent( " Import Legs Animator Demos", EditorGUIUtility.IconContent( "UnityLogo" ).image ), GUILayout.Height( 22 ) ) ) FUVH.ImportPackage( demosPath, true );
                         if( GUILayout.Button( new GUIContent( FGUI_Resources.TexTargetingIcon, "Go to legs animator directory in the project window." ), GUILayout.Width( 24 ), GUILayout.Height( 22 ) ) ) { EditorGUIUtility.PingObject( DemosPackage ); }
                         EditorGUILayout.EndHorizontal();
                     }
@@ -174,8 +176,8 @@ namespace FIMSpace.FProceduralAnimation
                     {
                         GUI.color = new Color( 1f, 1f, 1f, 0.5f );
                         EditorGUILayout.BeginHorizontal();
-                        if( GUILayout.Button( "Import Assembly Definitions" ) ) AssetDatabase.ImportPackage( AssetDatabase.GetAssetPath( AssemblyDefinitions ), true );
-                        if( GUILayout.Button( new GUIContent( "All Fimpossible AssemDefs", "Importing all fimpossible creations assembly definitions, if you use multiple plugins from Fimpossible Creations." ) ) ) AssetDatabase.ImportPackage( AssetDatabase.GetAssetPath( AssemblyDefinitionsAll ), true );
+                        if( GUILayout.Button( "Import Assembly Definitions" ) ) FUVH.ImportPackage( AssetDatabase.GetAssetPath( AssemblyDefinitions ), true );
+                        if( GUILayout.Button( new GUIContent( "All Fimpossible AssemDefs", "Importing all fimpossible creations assembly definitions, if you use multiple plugins from Fimpossible Creations." ) ) ) FUVH.ImportPackage( AssetDatabase.GetAssetPath( AssemblyDefinitionsAll ), true );
                         EditorGUILayout.EndHorizontal();
                         GUI.color = Color.white;
                     }

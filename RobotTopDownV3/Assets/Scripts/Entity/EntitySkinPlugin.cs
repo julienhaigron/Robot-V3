@@ -57,7 +57,6 @@ public class EntitySkinPlugin : EntityPlugin
 
 	public bool PlayActionAnimation ( EntityActionData _data, string _fallbackKey = null, bool _isLeftHand = false )
 	{
-		Debug.LogWarning($"[AnimProbe] {name} PlayActionAnimation data={(_data != null ? _data.name : "null")} dataKey={(_data != null ? _data.performAnimationKey : "")} fallback={_fallbackKey} animator={(m_animator != null ? m_animator.name : "NULL")}", this);
 		if (m_animator == null || _data == null)
 			return false;
 
@@ -70,33 +69,7 @@ public class EntitySkinPlugin : EntityPlugin
 		if (HasAnimatorParameter(LeftHandAttackParameter))
 			m_animator.SetBool(LeftHandAttackParameter, _isLeftHand);
 		m_animator.SetTrigger(key);
-		Debug.LogWarning($"[AnimProbe] {name} trigger={key} leftHand={_isLeftHand} hasHandParam={HasAnimatorParameter(LeftHandAttackParameter)} active={m_animator.isActiveAndEnabled} human={m_animator.isHuman} avatar={(m_animator.avatar != null ? m_animator.avatar.name + " valid=" + m_animator.avatar.isValid : "none")} controller={(m_animator.runtimeAnimatorController != null ? m_animator.runtimeAnimatorController.name : "none")} layers={m_animator.layerCount} speed={m_animator.speed} culling={m_animator.cullingMode}", this);
-		if (isActiveAndEnabled)
-			StartCoroutine(ProbeAttackCR(key));
 		return true;
-	}
-
-	private static readonly string[] s_probeStates = { "Default", "Punch R", "Punch L", "Stab R", "Stab L", "Swing R", "Swing L", "Smash R", "Smash L", "Throw R", "Throw L", "Slash R", "Slash L" };
-
-	private IEnumerator ProbeAttackCR ( string _key )
-	{
-		Transform hips = m_animator.isHuman ? m_animator.GetBoneTransform(HumanBodyBones.Hips) : null;
-		Transform rightHand = m_animator.isHuman ? m_animator.GetBoneTransform(HumanBodyBones.RightHand) : null;
-		Transform leftHand = m_animator.isHuman ? m_animator.GetBoneTransform(HumanBodyBones.LeftHand) : null;
-		bool hasBones = hips != null && rightHand != null && leftHand != null;
-		Vector3 right0 = hasBones ? hips.InverseTransformPoint(rightHand.position) : Vector3.zero;
-		Vector3 left0 = hasBones ? hips.InverseTransformPoint(leftHand.position) : Vector3.zero;
-		int top = m_animator.layerCount - 1;
-		for (int i = 1; i <= 4; i++)
-		{
-			yield return new WaitForSeconds(.1f);
-			AnimatorStateInfo state = m_animator.GetCurrentAnimatorStateInfo(top);
-			string stateName = s_probeStates.FirstOrDefault(n => state.IsName(n)) ?? state.shortNameHash.ToString();
-			string clips = string.Join(", ", m_animator.GetCurrentAnimatorClipInfo(top).Select(c => c.clip == null ? "null" : c.clip.name + " human=" + c.clip.humanMotion + " w=" + c.weight.ToString("0.00")));
-			float rightMove = hasBones ? Vector3.Distance(hips.InverseTransformPoint(rightHand.position), right0) : -1f;
-			float leftMove = hasBones ? Vector3.Distance(hips.InverseTransformPoint(leftHand.position), left0) : -1f;
-			Debug.LogWarning($"[AnimProbe] {name} {_key} +{i * .1f:0.0}s layer={m_animator.GetLayerName(top)} weight={m_animator.GetLayerWeight(top):0.00} state={stateName} t={state.normalizedTime:0.00} transition={m_animator.IsInTransition(top)} clips=[{clips}] handMove R={rightMove:0.000} L={leftMove:0.000} rootActive={gameObject.activeInHierarchy} animatorActive={m_animator.isActiveAndEnabled}", this);
-		}
 	}
 
 	private bool HasAnimatorParameter ( string _name )

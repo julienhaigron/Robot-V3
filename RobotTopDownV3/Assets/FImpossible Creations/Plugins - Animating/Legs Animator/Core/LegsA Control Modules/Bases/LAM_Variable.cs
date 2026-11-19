@@ -32,7 +32,8 @@ namespace FIMSpace.FProceduralAnimation
             [SerializeField] private string _string = "";
             [SerializeField] private AnimationCurve _curve = null;
             [SerializeField] private UnityEngine.Object _uObject = null;
-            [SerializeField] private object _object = null;
+            /// <summary> object is not serializable, use _object only for temporary data </summary>
+            [System.NonSerialized] private object _object = null;
 
             public Variable(string name, object value)
             {

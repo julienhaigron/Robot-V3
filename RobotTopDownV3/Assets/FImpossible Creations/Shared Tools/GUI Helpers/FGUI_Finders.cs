@@ -3,6 +3,9 @@ using UnityEngine;
 
 namespace FIMSpace.FEditor
 {
+#if UNITY_6000_6_OR_NEWER
+    [Unity.Scripting.LifecycleManagement.NoAutoStaticsCleanup]
+#endif
     public static class FGUI_Finders
     {
         public static Component FoundAnimator;

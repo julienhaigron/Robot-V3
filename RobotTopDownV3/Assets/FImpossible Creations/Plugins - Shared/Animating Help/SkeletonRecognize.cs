@@ -3,6 +3,9 @@ using UnityEngine;
 
 namespace FIMSpace.AnimationTools
 {
+#if UNITY_6000_6_OR_NEWER
+    [Unity.Scripting.LifecycleManagement.NoAutoStaticsCleanup]
+#endif
     public static class SkeletonRecognize
     {
         public enum EWhatIsIt

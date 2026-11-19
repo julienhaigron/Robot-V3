@@ -14,8 +14,11 @@ namespace FIMSpace.FProceduralAnimation
 
         public float HipsAdjustingBlend
         {
-            get { return UseHips ? (1f) : 0f; }
+            get { return UseHips ? ( User_HipsBlend ) : 0f; }
         }
+
+        /// <summary> Can be used for custom fade out for the hips motion </summary>
+        [NonSerialized] public float User_HipsBlend = 1f;
 
         [Tooltip("Whole body lift effect blend")]
         [FPD_Suffix(0f, 1f)] public float HipsHeightStepBlend = 1f;

@@ -16,47 +16,47 @@ namespace FIMSpace.FProceduralAnimation
         [HideInInspector] public Object AssemblyDefinitionsAll;
 
 
-        public SerializedProperty sp_Debug_IsGrounded;
-        public SerializedProperty sp_BaseTransform;
-        public SerializedProperty sp_LegsAnimatorBlend;
-        public SerializedProperty sp_Hips;
-        public SerializedProperty sp_HipsChildSpineBone;
-        public SerializedProperty sp_DelayedInitialization;
-        public SerializedProperty sp_Legs;
-        public SerializedProperty sp_ImpulsesPowerMultiplier;
+        [System.NonSerialized] public SerializedProperty sp_Debug_IsGrounded;
+        [System.NonSerialized] public SerializedProperty sp_BaseTransform;
+        [System.NonSerialized] public SerializedProperty sp_LegsAnimatorBlend;
+        [System.NonSerialized] public SerializedProperty sp_Hips;
+        [System.NonSerialized] public SerializedProperty sp_HipsChildSpineBone;
+        [System.NonSerialized] public SerializedProperty sp_DelayedInitialization;
+        [System.NonSerialized] public SerializedProperty sp_Legs;
+        [System.NonSerialized] public SerializedProperty sp_ImpulsesPowerMultiplier;
         //public SerializedProperty sp_LegsMainSettings;
-        public SerializedProperty sp_AnimateFoot;
-        public SerializedProperty sp_ScRefMode;
-        public SerializedProperty sp_customScaleReferenceValue;
-        public SerializedProperty sp_GroundMask;
-        public SerializedProperty sp_IKHint;
-        public SerializedProperty sp_CastDistance;
-        public SerializedProperty sp_MaxStepDown;
-        public SerializedProperty sp_StabilityAlgorithm;
-        public SerializedProperty sp_UseHipsRotation;
-        public SerializedProperty sp_Event_OnStep;
-        public SerializedProperty sp_ExtraPelvisOffset;
-        public SerializedProperty sp_Mecanim;
-        public SerializedProperty sp_HipsSetup;
-        public SerializedProperty sp_BaseLegAnimating;
-        public SerializedProperty sp_SmoothSuddenSteps;
-        public SerializedProperty sp_HipsAdjustingBlend;
-        public SerializedProperty sp_GlueBlend;
-        public SerializedProperty sp_GlueMode;
-        public SerializedProperty sp_MotionInfluence;
-        public SerializedProperty sp_StepPointsOverlapRadius;
+        [System.NonSerialized] public SerializedProperty sp_AnimateFoot;
+        [System.NonSerialized] public SerializedProperty sp_ScRefMode;
+        [System.NonSerialized] public SerializedProperty sp_customScaleReferenceValue;
+        [System.NonSerialized] public SerializedProperty sp_GroundMask;
+        [System.NonSerialized] public SerializedProperty sp_IKHint;
+        [System.NonSerialized] public SerializedProperty sp_CastDistance;
+        [System.NonSerialized] public SerializedProperty sp_MaxStepDown;
+        [System.NonSerialized] public SerializedProperty sp_StabilityAlgorithm;
+        [System.NonSerialized] public SerializedProperty sp_UseHipsRotation;
+        [System.NonSerialized] public SerializedProperty sp_Event_OnStep;
+        [System.NonSerialized] public SerializedProperty sp_ExtraPelvisOffset;
+        [System.NonSerialized] public SerializedProperty sp_Mecanim;
+        [System.NonSerialized] public SerializedProperty sp_HipsSetup;
+        [System.NonSerialized] public SerializedProperty sp_BaseLegAnimating;
+        [System.NonSerialized] public SerializedProperty sp_SmoothSuddenSteps;
+        [System.NonSerialized] public SerializedProperty sp_HipsAdjustingBlend;
+        [System.NonSerialized] public SerializedProperty sp_GlueBlend;
+        [System.NonSerialized] public SerializedProperty sp_GlueMode;
+        [System.NonSerialized] public SerializedProperty sp_MotionInfluence;
+        [System.NonSerialized] public SerializedProperty sp_StepPointsOverlapRadius;
 
-        public SerializedProperty sp_DisableIfInvisible;
-        public SerializedProperty sp_DisableIfInvisibleArray;
-        public SerializedProperty sp_FadeOffAtDistance;
-        public SerializedProperty sp_SwingHelper;
-        public SerializedProperty sp_AnimationFloorLevel;
-        public SerializedProperty sp_ExtraHipsHubs;
-        public SerializedProperty sp__StepHeatPenaltyCurve;
-        public SerializedProperty sp_RagdolledParameter;
+        [System.NonSerialized] public SerializedProperty sp_DisableIfInvisible;
+        [System.NonSerialized] public SerializedProperty sp_DisableIfInvisibleArray;
+        [System.NonSerialized] public SerializedProperty sp_FadeOffAtDistance;
+        [System.NonSerialized] public SerializedProperty sp_SwingHelper;
+        [System.NonSerialized] public SerializedProperty sp_AnimationFloorLevel;
+        [System.NonSerialized] public SerializedProperty sp_ExtraHipsHubs;
+        [System.NonSerialized] public SerializedProperty sp__StepHeatPenaltyCurve;
+        [System.NonSerialized] public SerializedProperty sp_RagdolledParameter;
 
-        public SerializedProperty sp_Rigidbody;
-        public SerializedProperty sp_Calibrate;
+        [System.NonSerialized] public SerializedProperty sp_Rigidbody;
+        [System.NonSerialized] public SerializedProperty sp_Calibrate;
 
         protected virtual void OnEnable()
         {

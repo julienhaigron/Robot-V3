@@ -11,6 +11,9 @@ using System.Reflection;
 
 namespace FIMSpace.Generating
 {
+#if UNITY_6000_6_OR_NEWER
+    [Unity.Scripting.LifecycleManagement.NoAutoStaticsCleanup]
+#endif
     public static class FGenerators
     {
 
@@ -92,6 +95,12 @@ namespace FIMSpace.Generating
         }
 
 
+        public static void MarkDirty(UnityEngine.Object target)
+        {
+#if UNITY_EDITOR
+            if (target != null) UnityEditor.EditorUtility.SetDirty(target);
+#endif
+        }
         public static bool IsChildOf(Transform child, Transform rootParent)
         {
             Transform tParent = child;
@@ -1153,6 +1162,9 @@ return 1f;
 
     #region Prefab Helper
 
+#if UNITY_6000_6_OR_NEWER
+    [Unity.Scripting.LifecycleManagement.NoAutoStaticsCleanup]
+#endif
     /// <summary>
     /// Class helping drawing prefabs inside inspector window and referencing to them by FGenerators
     /// </summary>

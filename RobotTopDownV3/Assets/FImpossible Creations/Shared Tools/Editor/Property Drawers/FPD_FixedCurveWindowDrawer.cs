@@ -10,6 +10,9 @@ public class FPD_FixedCurveWindow : PropertyDrawer
 
         if (property.propertyType == SerializedPropertyType.AnimationCurve)
         {
+            if ( position.Contains( Event.current.mousePosition) && Event.current.type == EventType.MouseDown )
+                FPD_FixedCurveWindowAttribute.LastClickedCurve = property.animationCurveValue; // Can be used for custom editors
+
             EditorGUI.CurveField(position, property, att.Color, new Rect(att.StartTime, att.StartValue, att.EndTime - att.StartTime , att.EndValue - att.StartValue ), label );
         }
     }

@@ -3,8 +3,11 @@
 
 namespace FIMSpace
 {
+#if UNITY_6000_6_OR_NEWER
+    [Unity.Scripting.LifecycleManagement.NoAutoStaticsCleanup]
+#endif
     /// <summary>
-    /// FM: Class which contains many helpful methods which operates on Vectors and Quaternions or some other floating point maths
+    /// Class which contains many helpful methods which operates on Vectors and Quaternions or some other floating point maths
     /// </summary>
     public static class FEngineering
     {

@@ -3,13 +3,16 @@ using UnityEngine;
 
 namespace FIMSpace.FEditor
 {
+#if UNITY_6000_6_OR_NEWER
+    [Unity.Scripting.LifecycleManagement.NoAutoStaticsCleanup]
+#endif
     [CustomPropertyDrawer(typeof(FPD_HeaderAttribute))]
     public class FPD_Header : DecoratorDrawer
     {
-        public static GUIStyle HeaderStyle { get { if (_headerStyle == null) { _headerStyle = new GUIStyle(EditorStyles.helpBox); _headerStyle.fontStyle = FontStyle.Bold; _headerStyle.alignment = TextAnchor.MiddleCenter; _headerStyle.fontSize = 11;  } return _headerStyle; } }
+        public static GUIStyle HeaderStyle { get { if( _headerStyle == null ) { _headerStyle = new GUIStyle( EditorStyles.helpBox ); _headerStyle.fontStyle = FontStyle.Bold; _headerStyle.alignment = TextAnchor.MiddleCenter; _headerStyle.fontSize = 11; } return _headerStyle; } }
         private static GUIStyle _headerStyle;
 
-        public override void OnGUI(Rect position)
+        public override void OnGUI( Rect position )
         {
             FPD_HeaderAttribute att = (FPD_HeaderAttribute)base.attribute;
 
@@ -17,7 +20,9 @@ namespace FIMSpace.FEditor
 
             pos.y += att.UpperPadding;
 
-            GUI.Label(pos, new GUIContent(att.HeaderText), HeaderStyle);
+            if( att.BGColor != Color.white ) { GUI.backgroundColor = att.BGColor; }
+            GUI.Label( pos, new GUIContent( att.HeaderText ), HeaderStyle );
+            GUI.backgroundColor = Color.white;
         }
 
         public override float GetHeight()

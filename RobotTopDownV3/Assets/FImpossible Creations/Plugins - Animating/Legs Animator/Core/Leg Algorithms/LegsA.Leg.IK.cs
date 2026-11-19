@@ -105,6 +105,7 @@ namespace FIMSpace.FProceduralAnimation
             public Quaternion _AnimatorStartBoneLocRot { get; private set; }
             public Quaternion _AnimatorMidBoneLocRot { get; private set; }
             public Quaternion _AnimatorEndBoneLocRot { get; private set; }
+            Quaternion _AnimatorFeetBoneLocRot;
 
             bool _wasGrounded = true;
             Vector3 _ungroundLocalIKCache;
@@ -201,6 +202,7 @@ namespace FIMSpace.FProceduralAnimation
 
                 if (IKProcessor.IKWeight > 0f)
                 {
+                    _wasIKApplied = true;
                     if (!Owner.UseCustomIK) if (LegStretchLimit < 1.1f) IKProcessor.ApplyMaxStretchingPreprocessing(LegStretchLimit, 3f);
 
                     ExtraIKPostProcessingApply();
@@ -218,8 +220,10 @@ namespace FIMSpace.FProceduralAnimation
 
             public void IK_UpdateParamsBase()
             {
-                IKProcessor.IKWeight = Owner._MainBlend * LegBlendWeight * InternalModuleBlendWeight;
-                BlendWeight = IKProcessor.IKWeight;
+                if (IKProcessor == null) return;
+                BlendWeight = LegBlendWeight * InternalModuleBlendWeight;
+                finalBoneBlend = Owner._MainBlend * BlendWeight;
+                IKProcessor.IKWeight = finalBoneBlend;
                 IKProcessor.InverseHint = InverseHint;
             }
 

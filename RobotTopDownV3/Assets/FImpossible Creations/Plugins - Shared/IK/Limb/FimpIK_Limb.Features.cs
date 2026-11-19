@@ -190,6 +190,7 @@ namespace FIMSpace.FTools
             Vector3 newOffset = newAnkleRot * rotatedOffset;
             rotatedOffset = newOffset - toFeet;
 
+            feetCompensate *= Mathf.Clamp01(IKWeight);
             if (feetCompensate > 0f)
             {
                 Quaternion newFeetRot = Quaternion.Inverse(rotationOffset) * (FeetIKBone.transform.rotation);

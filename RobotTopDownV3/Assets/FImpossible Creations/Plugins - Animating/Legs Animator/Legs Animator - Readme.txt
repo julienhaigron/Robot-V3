@@ -1,7 +1,7 @@
 __________________________________________________________________________________________
 
 Package "Legs Animator"
-Version 1.0.4.6.1
+Version 1.0.4.7
 
 Made by FImpossible Creations - Filip Moeglich
 http://fimpossiblecreations.pl
@@ -60,6 +60,13 @@ Check Manual for more
 
 
 __________________________________________________________________________________________
+
+Version 1.0.4.7
+- Demos Package is using URP by default
+- Demos scripts updated to support both: old and new input system
+- Fixed unity 6000.6+ warnings
+- Fixed leg blend coroutine logic
+- Added User_HipsBlend to the LegsAnimator
 
 Version 1.0.4.6.1
 - Code preparation for the Full Body extension 

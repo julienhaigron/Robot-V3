@@ -3,6 +3,9 @@ using UnityEngine;
 
 namespace FIMSpace.FProceduralAnimation
 {
+#if UNITY_6000_6_OR_NEWER
+    [Unity.Scripting.LifecycleManagement.NoAutoStaticsCleanup]
+#endif
     [AddComponentMenu("FImpossible Creations/Legs Animator")]
     [HelpURL("https://assetstore.unity.com/packages/tools/animation/legs-animator-154245")]
     [DefaultExecutionOrder(-7)]

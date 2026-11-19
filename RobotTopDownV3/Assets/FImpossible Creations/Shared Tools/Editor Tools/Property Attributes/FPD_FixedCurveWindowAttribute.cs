@@ -1,7 +1,12 @@
 ﻿using UnityEngine;
 
+#if UNITY_6000_6_OR_NEWER
+    [Unity.Scripting.LifecycleManagement.NoAutoStaticsCleanup]
+#endif
 public class FPD_FixedCurveWindowAttribute : PropertyAttribute
 {
+    public static AnimationCurve LastClickedCurve = null;
+
     public float StartTime;
     public float EndTime;
     public float StartValue;
