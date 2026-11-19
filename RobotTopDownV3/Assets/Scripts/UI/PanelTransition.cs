@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.InputSystem;
 using TMPro;
 using Sirenix.OdinInspector;
 
@@ -34,6 +35,7 @@ public class PanelTransition : MonoBehaviour
 
 	[Title("Holo sweep")]
 	[SerializeField] private float m_sweepDuration = .7f;
+	[SerializeField] private float m_captureInterval = .1f;
 
 	[Title("References")]
 	[SerializeField] private RawImage m_captureImage;
@@ -45,7 +47,9 @@ public class PanelTransition : MonoBehaviour
 	[SerializeField] private Image m_blocker;
 
 	private RenderTexture m_capture;
-	private bool m_hasCapture;
+	private AUIPanel m_capturedPanel;
+	private float m_nextCaptureTime;
+	private int m_shownDoorsPercent = -1;
 	private bool m_isPlaying;
 	public bool IsPlaying => m_isPlaying;
 
@@ -108,7 +112,7 @@ public class PanelTransition : MonoBehaviour
 
 		if (style == Style.HoloSweep)
 		{
-			if (!m_hasCapture)
+			if (m_capturedPanel != _from)
 				return false;
 
 			UIManager.Instance.StartCoroutine(PlayHoloSweep(_switchPanel, IsOpening(_to)));
@@ -121,7 +125,7 @@ public class PanelTransition : MonoBehaviour
 
 	public bool TryPlayCoverSweep ( Action _onFinished )
 	{
-		if (m_isPlaying || !m_hasCapture)
+		if (m_isPlaying || m_capturedPanel == null || m_capturedPanel != UIManager.Instance.currentPanel)
 			return false;
 
 		UIManager.Instance.StartCoroutine(PlayHoloSweep(null, true, _onFinished));
@@ -154,18 +158,37 @@ public class PanelTransition : MonoBehaviour
 		WaitForEndOfFrame endOfFrame = new();
 		while (true)
 		{
+			yield return null;
+
+			AUIPanel panel = UIManager.Instance != null ? UIManager.Instance.currentPanel : null;
+			if (m_isPlaying || !IsHoloSweepSource(panel))
+			{
+				m_capturedPanel = null;
+				continue;
+			}
+
+			if (panel == m_capturedPanel && Time.unscaledTime < m_nextCaptureTime && !IsPointerPressed())
+				continue;
+
 			yield return endOfFrame;
 
-			if (m_isPlaying || UIManager.Instance == null || !IsHoloSweepSource(UIManager.Instance.currentPanel))
+			if (m_isPlaying || UIManager.Instance == null || UIManager.Instance.currentPanel != panel)
 			{
-				m_hasCapture = false;
+				m_capturedPanel = null;
 				continue;
 			}
 
 			EnsureCaptureTexture();
 			ScreenCapture.CaptureScreenshotIntoRenderTexture(m_capture);
-			m_hasCapture = true;
+			m_capturedPanel = panel;
+			m_nextCaptureTime = Time.unscaledTime + m_captureInterval;
 		}
+	}
+
+	private static bool IsPointerPressed ()
+	{
+		Pointer pointer = Pointer.current;
+		return pointer != null && pointer.press.isPressed;
 	}
 
 	private void EnsureCaptureTexture ()
@@ -290,6 +313,7 @@ public class PanelTransition : MonoBehaviour
 		SetDoors(0f, 0f);
 		m_doorsImage.gameObject.SetActive(true);
 		m_captionTMP.text = _caption;
+		m_shownDoorsPercent = -1;
 		SetDoorsProgress(0f);
 
 		SoundManager.PlayUISafe(SfxId.None, _config => _config.transitionDoorsClose);
@@ -304,9 +328,13 @@ public class PanelTransition : MonoBehaviour
 
 	public void SetDoorsProgress ( float _progress )
 	{
-		float progress = Mathf.Clamp01(_progress);
-		m_captionProgressFill.anchorMax = new Vector2(progress, 1f);
-		m_captionProgressTMP.text = string.Format(LocalizationManager.Instance.Get(LocalizationKey.briefing_loading), Mathf.RoundToInt(progress * 100f));
+		int percent = Mathf.RoundToInt(Mathf.Clamp01(_progress) * 100f);
+		if (percent == m_shownDoorsPercent)
+			return;
+
+		m_shownDoorsPercent = percent;
+		m_captionProgressFill.anchorMax = new Vector2(percent * .01f, 1f);
+		m_captionProgressTMP.text = string.Format(LocalizationManager.Instance.Get(LocalizationKey.briefing_loading), percent);
 	}
 
 	public IEnumerator OpenDoors ()

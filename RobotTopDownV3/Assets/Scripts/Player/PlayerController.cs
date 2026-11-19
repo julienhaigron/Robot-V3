@@ -826,7 +826,7 @@ public class PlayerController : Singleton<PlayerController>
 		RangeOverlay.SetRange(rangeTiles, GameAssets.current.ui.GetActionRangeColor(colorType, false));
 	}
 
-	public void ShowFacingPicker ( Entity _entity, Tile _pivot, int _shownOrientation, Entity.EntityState _state )
+	public void ShowFacingPicker ( Entity _entity, Tile _pivot, int _shownOrientation, Entity.EntityState _state, HashSet<Tile> _coneTiles = null )
 	{
 		AddGhostEntityAt(_entity, _pivot, _shownOrientation);
 
@@ -839,12 +839,12 @@ public class PlayerController : Singleton<PlayerController>
 				, RotateEntityAction.GetArrowMaterial(_state, orientation != _shownOrientation));
 		}
 
-		ShowFacingConePreview(_entity, _pivot, _shownOrientation);
+		ShowFacingConePreview(_entity, _pivot, _shownOrientation, _coneTiles);
 	}
 
-	public void ShowFacingConePreview ( Entity _entity, Tile _pivot, int _orientation )
+	public void ShowFacingConePreview ( Entity _entity, Tile _pivot, int _orientation, HashSet<Tile> _coneTiles = null )
 	{
-		HashSet<Tile> coneTiles = _entity == null ? null : _entity.Equipment.GetWeaponConeTilesAt(_pivot, _orientation);
+		HashSet<Tile> coneTiles = _coneTiles ?? (_entity == null ? null : _entity.Equipment.GetWeaponConeTilesAt(_pivot, _orientation));
 		if (coneTiles == null || coneTiles.Count == 0)
 		{
 			RangeOverlay.ClearPreview();

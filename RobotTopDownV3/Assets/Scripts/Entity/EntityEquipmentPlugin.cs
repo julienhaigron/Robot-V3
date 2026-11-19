@@ -405,7 +405,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 		return tilesInReach;
 	}
 
-	public List<Tile> GetTilesInAoERange ( AEntityAction _action, Tile _targetTile, bool _isThisTurn = false, bool _usePlannedPose = false )
+	public List<Tile> GetTilesInAoERange ( AEntityAction _action, Tile _targetTile, bool _isThisTurn = false, bool _usePlannedPose = false, System.Func<Tile, Entity> _entityOnTile = null )
 	{
 		bool isCenteredOnCaster = _action.Data.aoECenterType == EntityActionData.AOECenterType.Self;
 		int maxDistance = isCenteredOnCaster ? _action.Data.GetMaxRange(_action, m_linkedEntity, null) : _action.Data.GetAoEMaxRange(_action, m_linkedEntity, null);
@@ -417,7 +417,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 			? GridManager.Instance.GetClosestOrientation(casterTile, _targetTile)
 			: m_linkedEntity.Displacement.CurrentOrientation;
 		int extraValue = _action.Data.maxChainedTarget;
-		return GridManager.Instance.GetTilesInAoERange(_action.Data.aoeType, m_linkedEntity, from, _targetTile, minDistance, maxDistance, extraValue, _isThisTurn, orientation);
+		return GridManager.Instance.GetTilesInAoERange(_action.Data.aoeType, m_linkedEntity, from, _targetTile, minDistance, maxDistance, extraValue, _isThisTurn, orientation, _entityOnTile);
 	}
 
 	public bool AttackRoll ( AttackAction _attackAction, AttackAction.SingleAttackInfo _singleAttackInfo, Entity _targetEntity, out Tile _coverTile )

@@ -510,7 +510,7 @@ public class GridManager : Singleton<GridManager>
 		return tilesInRange;
 	}
 
-	public List<Tile> GetTilesInAoERange ( EntityActionData.AOEType _type, Entity _caster, Tile _from, Tile _targetTile, int _minDistance, int _maxDistance, int _extraValue, bool _isThisTurn = false, int _orientation = -1 )
+	public List<Tile> GetTilesInAoERange ( EntityActionData.AOEType _type, Entity _caster, Tile _from, Tile _targetTile, int _minDistance, int _maxDistance, int _extraValue, bool _isThisTurn = false, int _orientation = -1, Func<Tile, Entity> _entityOnTile = null )
 	{
 		List<Tile> tilesInRange = new();
 		int orientation = _orientation < 0 ? _caster.Displacement.CurrentOrientation : _orientation;
@@ -536,7 +536,9 @@ public class GridManager : Singleton<GridManager>
 				tilesInRange.AddRange(GetTilesInArc(_from, _minDistance, _maxDistance, orientation, true, _type == EntityActionData.AOEType.LargeArc, _isThisTurn));
 				break;
 			case EntityActionData.AOEType.Chain:
-				if (_targetTile != null && _targetTile.TryGetEntity(_isThisTurn, out Entity primaryEntity) && !primaryEntity.IsAlliedTo(_caster.OwnerID))
+				Func<Tile, Entity> entityOn = _entityOnTile ?? (tile => tile.TryGetEntity(_isThisTurn, out Entity entity) ? entity : null);
+				Entity primaryEntity = _targetTile != null ? entityOn(_targetTile) : null;
+				if (primaryEntity != null && !primaryEntity.IsAlliedTo(_caster.OwnerID))
 					tilesInRange.Add(_targetTile);
 
 				foreach (Tile tile in GetTilesInVisionRange(_from, _minDistance, _maxDistance, false, _isThisTurn, true))
@@ -544,7 +546,8 @@ public class GridManager : Singleton<GridManager>
 					if (tilesInRange.Count >= _extraValue + 1)
 						break;
 
-					if (tile == _targetTile || !tile.TryGetEntity(_isThisTurn, out Entity chainedEntity) || chainedEntity.IsAlliedTo(_caster.OwnerID))
+					Entity chainedEntity = tile == _targetTile ? null : entityOn(tile);
+					if (chainedEntity == null || chainedEntity.IsAlliedTo(_caster.OwnerID))
 						continue;
 
 					tilesInRange.Add(tile);

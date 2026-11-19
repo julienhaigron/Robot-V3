@@ -25,7 +25,7 @@ MonoBehaviour:
   preparationAnimationKey: 
   afterPerformAnimationKey: 
   performAnimationKey: OnSwing
-  performAnimationHitDelay: 0.28
+  performAnimationHitDelay: 0.33
   shotRecoilStrength: 0
   onPerformSingleAttackSFXID: 0
   onSingleAttackHitSFXID: 0

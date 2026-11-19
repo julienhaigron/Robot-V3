@@ -56,6 +56,7 @@ public class MatchBriefing : MonoBehaviour, ILoadingScreen
 	private float m_elapsed;
 	private float m_loadProgress;
 	private float m_displayedProgress;
+	private int m_shownPercent = -1;
 
 	private void Awake ()
 	{
@@ -77,7 +78,11 @@ public class MatchBriefing : MonoBehaviour, ILoadingScreen
 
 		m_elapsed += Time.unscaledDeltaTime;
 		float target = Mathf.Min(m_minimumDuration > 0f ? m_elapsed / m_minimumDuration : 1f, m_loadProgress);
-		m_displayedProgress = Mathf.Max(m_displayedProgress, Mathf.Clamp01(target));
+		float displayedProgress = Mathf.Max(m_displayedProgress, Mathf.Clamp01(target));
+		if (displayedProgress == m_displayedProgress)
+			return;
+
+		m_displayedProgress = displayedProgress;
 		ApplyProgress();
 	}
 
@@ -117,6 +122,7 @@ public class MatchBriefing : MonoBehaviour, ILoadingScreen
 		m_elapsed = 0f;
 		m_loadProgress = 0f;
 		m_displayedProgress = 0f;
+		m_shownPercent = -1;
 		ApplyProgress();
 
 		m_mapRect.localScale = Vector3.one;
@@ -288,7 +294,13 @@ public class MatchBriefing : MonoBehaviour, ILoadingScreen
 	{
 		Shader.SetGlobalFloat(s_revealID, m_displayedProgress);
 		m_progressFill.anchorMax = new Vector2(m_displayedProgress, 1f);
-		m_loadingTMP.text = string.Format(LocalizationManager.Instance.Get(LocalizationKey.briefing_loading), Mathf.RoundToInt(m_displayedProgress * 100f));
+
+		int percent = Mathf.RoundToInt(m_displayedProgress * 100f);
+		if (percent == m_shownPercent)
+			return;
+
+		m_shownPercent = percent;
+		m_loadingTMP.text = string.Format(LocalizationManager.Instance.Get(LocalizationKey.briefing_loading), percent);
 	}
 
 	#endregion

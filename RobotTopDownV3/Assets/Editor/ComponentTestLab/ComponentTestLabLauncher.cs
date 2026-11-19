@@ -104,8 +104,6 @@ public static class ComponentTestLabLauncher
 			if (!ComponentTestLabMap.Sync(config, layout, out string error))
 				throw new InvalidOperationException(error);
 
-			ComponentTestLabMap.EnsureInBuildSettings(config.ScenePath);
-
 			SceneAsset startScene = FindStartScene();
 			if (startScene == null)
 				throw new InvalidOperationException("La scène de démarrage du jeu est introuvable dans les Build Settings.");

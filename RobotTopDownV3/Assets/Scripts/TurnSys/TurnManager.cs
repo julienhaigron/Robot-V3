@@ -755,6 +755,8 @@ public class TurnManager : Singleton<TurnManager>
 		public RecordedAction host;
 		public RotateEntityAction probe;
 		public int hoveredOrientation = -1;
+		public bool isDrawn;
+		public readonly Dictionary<int, HashSet<Tile>> coneTilesPerOrientation = new();
 	}
 
 	public bool IsFacingPickerOpen => m_facingPicker != null;
@@ -824,9 +826,13 @@ public class TurnManager : Singleton<TurnManager>
 		if (m_facingPicker == null)
 			return;
 
-		m_facingPicker.hoveredOrientation = IsFacingPickerOption(_hoveredTile)
+		int hoveredOrientation = IsFacingPickerOption(_hoveredTile)
 			? GridManager.Instance.GetClosestOrientation(m_facingPicker.pivot, _hoveredTile) : -1;
+		if (m_facingPicker.isDrawn && hoveredOrientation == m_facingPicker.hoveredOrientation)
+			return;
 
+		m_facingPicker.hoveredOrientation = hoveredOrientation;
+		m_facingPicker.isDrawn = true;
 		RefreshActionDisplay(m_facingPicker.entityID, false, GetFacingPickerTokenCount());
 	}
 
@@ -847,7 +853,18 @@ public class TurnManager : Singleton<TurnManager>
 		int plannedOrientation = GetPlannedOrientationOf(m_facingPicker.entityID, GetFacingPickerTokenCount());
 		int shownOrientation = m_facingPicker.hoveredOrientation >= 0 ? m_facingPicker.hoveredOrientation : plannedOrientation;
 
-		PlayerController.Instance.ShowFacingPicker(entity, m_facingPicker.pivot, shownOrientation, GetDefaultStateOf(entity));
+		PlayerController.Instance.ShowFacingPicker(entity, m_facingPicker.pivot, shownOrientation, GetDefaultStateOf(entity), GetFacingConeTiles(entity, shownOrientation));
+	}
+
+	private HashSet<Tile> GetFacingConeTiles ( Entity _entity, int _orientation )
+	{
+		if (!m_facingPicker.coneTilesPerOrientation.TryGetValue(_orientation, out HashSet<Tile> coneTiles))
+		{
+			coneTiles = _entity.Equipment.GetWeaponConeTilesAt(m_facingPicker.pivot, _orientation);
+			m_facingPicker.coneTilesPerOrientation.Add(_orientation, coneTiles);
+		}
+
+		return coneTiles;
 	}
 
 	public bool TryValidateFacing ( Tile _tile )

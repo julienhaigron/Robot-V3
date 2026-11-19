@@ -302,9 +302,45 @@ public class GameManager : SingletonPersistant<GameManager>
 		PlayerController.Instance.ClearGhosts();
 		PlayerController.Instance.ResetZoom();
 		PlayerController.Instance.ResetRotation();
+		PrewarmMatchPools();
 
 		/*UIManager.Instance.OpenPanel<InGamePanel>().Init();
 		TurnManager.Instance.StartInputPhase();*/
+	}
+
+	private void PrewarmMatchPools ()
+	{
+		HashSet<PoolData> pools = new() { GameAssets.current.game.deathVFXPoolData, GameAssets.current.game.doomDeathVFXPoolData };
+		foreach (EntityAnchor anchor in m_playersEntityAnchor)
+		{
+			foreach (Entity entity in anchor.Entities)
+			{
+				if (entity == null)
+					continue;
+
+				foreach (MonoBehaviour behaviour in entity.GetComponentsInChildren<MonoBehaviour>(true))
+					ObjectsPooling.CollectPools(behaviour, pools);
+				CollectActionPools(entity.KnownedActions, pools);
+				CollectActionPools(entity.KnownedModActions, pools);
+			}
+		}
+
+		ObjectsPooling.Instance.Prewarm(pools);
+	}
+
+	private static void CollectActionPools ( List<EntityActionEnumID> _actionIDs, HashSet<PoolData> _pools )
+	{
+		if (_actionIDs == null)
+			return;
+
+		foreach (EntityActionEnumID actionID in _actionIDs)
+		{
+			if (!GameAssets.current.game.entityActionsData.TryGetValue(actionID, out EntityActionData data) || data == null)
+				continue;
+
+			ObjectsPooling.CollectPools(data, _pools);
+			ObjectsPooling.CollectPools(data.invocatedItem, _pools);
+		}
 	}
 
 	public bool GetEntityFromID ( out Entity _entity, int _entityID )

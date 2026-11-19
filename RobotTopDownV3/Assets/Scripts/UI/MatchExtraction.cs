@@ -7,7 +7,13 @@ using Sirenix.OdinInspector;
 
 public class MatchExtraction : MonoBehaviour, ILoadingScreen
 {
-	private static readonly string[] s_hologramFadeProperties = { "_Opacity", "_RimOpacity", "_ScanlineOpacity", "_OccludedOpacity" };
+	private static readonly int[] s_hologramFadeIDs =
+	{
+		Shader.PropertyToID("_Opacity"),
+		Shader.PropertyToID("_RimOpacity"),
+		Shader.PropertyToID("_ScanlineOpacity"),
+		Shader.PropertyToID("_OccludedOpacity")
+	};
 
 	[Title("Extraction")]
 	[SerializeField] private float m_riseDuration = 1.8f;
@@ -18,7 +24,8 @@ public class MatchExtraction : MonoBehaviour, ILoadingScreen
 	[SerializeField] private float m_doorsHoldDuration = .25f;
 	[SerializeField, Range(0f, 1f)] private float m_hubShownAt = .75f;
 
-	private Material m_hologram;
+	private MaterialPropertyBlock m_fadeBlock;
+	private Tween m_fadeTween;
 
 	public void Show ( Action _onCovered )
 	{
@@ -44,18 +51,17 @@ public class MatchExtraction : MonoBehaviour, ILoadingScreen
 			transition.BlockInput(true);
 
 		List<Entity> squad = MatchBriefing.GetPlayerSquad();
-		Material source = GameAssets.current.game.baseGhost != null ? GameAssets.current.game.baseGhost.HologramMaterial : null;
-		m_hologram = source != null ? new Material(source) : null;
-		if (m_hologram != null)
+		Material hologram = GameAssets.current.game.baseGhost != null ? GameAssets.current.game.baseGhost.HologramMaterial : null;
+		if (hologram != null)
 		{
 			foreach (Entity entity in squad)
-				entity.Skin.SetForcedLook(m_hologram);
+				entity.Skin.SetForcedLook(hologram);
 
-			foreach (string property in s_hologramFadeProperties)
-			{
-				if (m_hologram.HasProperty(property))
-					m_hologram.DOFloat(0f, property, m_riseDuration * m_dematerializeEnd).SetUpdate(true);
-			}
+			float[] baseValues = new float[s_hologramFadeIDs.Length];
+			for (int i = 0; i < s_hologramFadeIDs.Length; i++)
+				baseValues[i] = hologram.HasProperty(s_hologramFadeIDs[i]) ? hologram.GetFloat(s_hologramFadeIDs[i]) : 0f;
+
+			m_fadeTween = DOVirtual.Float(1f, 0f, m_riseDuration * m_dematerializeEnd, _visibility => SetHologramVisibility(squad, baseValues, _visibility)).SetUpdate(true);
 		}
 
 		Transform camera = CameraManager.Instance.Camera.transform;
@@ -75,12 +81,28 @@ public class MatchExtraction : MonoBehaviour, ILoadingScreen
 			yield return transition.CloseDoors(LocalizationManager.Instance.Get(LocalizationKey.briefing_return_station));
 
 		_onCovered?.Invoke();
+		m_fadeTween?.Kill();
+		m_fadeTween = null;
+	}
 
-		if (m_hologram != null)
+	private void SetHologramVisibility ( List<Entity> _squad, float[] _baseValues, float _visibility )
+	{
+		m_fadeBlock ??= new MaterialPropertyBlock();
+		foreach (Entity entity in _squad)
 		{
-			DOTween.Kill(m_hologram);
-			Destroy(m_hologram);
-			m_hologram = null;
+			if (entity == null)
+				continue;
+
+			foreach (Renderer renderer in entity.Skin.LookRenderers)
+			{
+				if (renderer == null)
+					continue;
+
+				renderer.GetPropertyBlock(m_fadeBlock);
+				for (int i = 0; i < s_hologramFadeIDs.Length; i++)
+					m_fadeBlock.SetFloat(s_hologramFadeIDs[i], _baseValues[i] * _visibility);
+				renderer.SetPropertyBlock(m_fadeBlock);
+			}
 		}
 	}
 

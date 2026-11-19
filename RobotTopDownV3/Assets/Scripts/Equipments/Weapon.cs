@@ -317,8 +317,8 @@ public class Weapon : MonoBehaviour
 
 		string weaponKey = _attackInfo.isAttackSuccessfull && !string.IsNullOrEmpty(m_data.attackAnimationSuccessId)
 			? m_data.attackAnimationSuccessId : m_data.attackAnimationFailureId;
-		bool isOffHand = m_user.Skin.IK != null && m_user.Skin.IK.IsHeldInLeftHand(transform);
-		return m_user.Skin.PlayActionAnimation(_attackAction.Data, weaponKey, isOffHand);
+		bool isLeftHand = m_user.Skin.IK != null && m_user.Skin.IK.IsHeldInLeftHand(transform);
+		return m_user.Skin.PlayActionAnimation(_attackAction.Data, weaponKey, isLeftHand);
 	}
 
 	public void PlayShotRecoil ( EntityActionData _data )
@@ -662,23 +662,6 @@ public class Weapon : MonoBehaviour
 		}
 	}
 
-	private Entity GetEntityCaughtOn ( Tile _tile, AttackAction _attackAction )
-	{
-		foreach (EntityAnchor anchor in GameManager.Instance.PlayersEntityAnchor)
-		{
-			foreach (Entity entity in anchor.Entities)
-			{
-				if (entity.Equipment.IsDead)
-					continue;
-
-				if (_attackAction.GetExchangeTileOf(entity) == _tile)
-					return entity;
-			}
-		}
-
-		return null;
-	}
-
 	protected List<WeaponTarget> GetTargets ( AttackAction _attackAction, int _attackIndex )
 	{
 		List<WeaponTarget> targets = new();
@@ -690,11 +673,11 @@ public class Weapon : MonoBehaviour
 			if (aoeCenter == null)
 				return targets;
 
-			foreach (Tile tile in m_user.Equipment.GetTilesInAoERange(_attackAction, aoeCenter))
+			foreach (Tile tile in m_user.Equipment.GetTilesInAoERange(_attackAction, aoeCenter, _entityOnTile: _attackAction.GetEntityCaughtOn))
 			{
 				m_targetedTiles.Add(tile);
 				tile.UI.SetOutlineColor(Color.red);
-				targets.Add(new() { targetTile = tile, targetEntity = GetEntityCaughtOn(tile, _attackAction) });
+				targets.Add(new() { targetTile = tile, targetEntity = _attackAction.GetEntityCaughtOn(tile) });
 			}
 		}
 		else

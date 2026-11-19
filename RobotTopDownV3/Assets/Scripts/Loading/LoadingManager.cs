@@ -25,6 +25,7 @@ public class LoadingManager : SingletonPersistant<LoadingManager>
 	public bool IsLoading => m_isLoading;
 	private ILoadingScreen m_screen;
 	private AsyncOperation m_loadOperation;
+	private float m_reportedProgress = -1f;
 
 	private bool m_didFinishInitialLoad = false;
 
@@ -42,8 +43,15 @@ public class LoadingManager : SingletonPersistant<LoadingManager>
 
 	private void Update ()
 	{
-		if (m_screen != null && m_loadOperation != null)
-			m_screen.SetProgress(m_loadOperation.progress / .9f);
+		if (m_screen == null || m_loadOperation == null)
+			return;
+
+		float progress = m_loadOperation.progress / .9f;
+		if (progress == m_reportedProgress)
+			return;
+
+		m_reportedProgress = progress;
+		m_screen.SetProgress(progress);
 	}
 
 	private void InitialLoad ()
@@ -77,13 +85,14 @@ public class LoadingManager : SingletonPersistant<LoadingManager>
 		m_onLoadFinished = _onLoadFinished;
 		m_onSceneLoaded = _onSceneLoaded;
 		m_screen = _screen;
+		m_reportedProgress = -1f;
 
 		if (m_screen != null)
 		{
 			m_screen.Show(() =>
 			{
 				_onStartLoadFinished?.Invoke();
-				m_loadOperation = SceneManager.LoadSceneAsync(_sceneName);
+				m_loadOperation = LoadSceneAsync(_sceneName);
 			});
 			return;
 		}
@@ -91,8 +100,24 @@ public class LoadingManager : SingletonPersistant<LoadingManager>
 		UIManager.Instance.LoadingScreenCanvasGroup.DOFade(1f, .3f).OnComplete(() =>
 		{
 			_onStartLoadFinished?.Invoke();
-			SceneManager.LoadSceneAsync(_sceneName);
+			LoadSceneAsync(_sceneName);
 		});
+	}
+
+	private static AsyncOperation LoadSceneAsync ( string _sceneName )
+	{
+#if UNITY_EDITOR
+		if (!Application.CanStreamedLevelBeLoaded(_sceneName))
+		{
+			foreach (string guid in UnityEditor.AssetDatabase.FindAssets(_sceneName + " t:Scene"))
+			{
+				string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
+				if (System.IO.Path.GetFileNameWithoutExtension(path) == _sceneName)
+					return UnityEditor.SceneManagement.EditorSceneManager.LoadSceneAsyncInPlayMode(path, new LoadSceneParameters(LoadSceneMode.Single));
+			}
+		}
+#endif
+		return SceneManager.LoadSceneAsync(_sceneName);
 	}
 
 	private void OnSceneLoaded ( Scene _scene, LoadSceneMode _mode )

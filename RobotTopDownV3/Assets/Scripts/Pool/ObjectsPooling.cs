@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Xml.Linq;
 using UnityEngine;
 
@@ -8,6 +9,10 @@ using UnityEngine;
 [RequireComponent(typeof(LoadingElement))]
 public class ObjectsPooling : Singleton<ObjectsPooling>
 {
+	private const float k_prewarmFrameBudget = .004f;
+
+	private static readonly Dictionary<Type, FieldInfo[]> s_poolFieldsPerType = new();
+
 	[SerializeField] private LoadingElement m_loadingElement;
 	[SerializeField] private Transform m_mainParent;
 	[SerializeField] private PoolData[] m_pools;
@@ -39,7 +44,90 @@ public class ObjectsPooling : Singleton<ObjectsPooling>
 		m_loadingElement.EndLoading(true);
 	}
 
-	private bool RegisterPool ( PoolData _pool )
+	public void Prewarm ( IEnumerable<PoolData> _pools )
+	{
+		StartCoroutine(PrewarmRoutine(_pools));
+	}
+
+	private IEnumerator PrewarmRoutine ( IEnumerable<PoolData> _pools )
+	{
+		Queue<PoolData> pending = new(_pools);
+		HashSet<PoolData> visited = new(pending);
+		HashSet<PoolData> chained = new();
+		float frameStart = Time.realtimeSinceStartup;
+
+		while (pending.Count > 0)
+		{
+			PoolData pool = pending.Dequeue();
+			if (!RegisterPool(pool, false))
+				continue;
+
+			chained.Clear();
+			foreach (MonoBehaviour behaviour in pool.baseElement.GetComponentsInChildren<MonoBehaviour>(true))
+				CollectPools(behaviour, chained);
+			foreach (PoolData chainedPool in chained)
+			{
+				if (visited.Add(chainedPool))
+					pending.Enqueue(chainedPool);
+			}
+
+			while (pool && m_everyPoolElements.TryGetValue(pool, out List<PoolElement> elements) && elements.Count < pool.size)
+			{
+				PopulatePool(pool);
+				if (Time.realtimeSinceStartup - frameStart > k_prewarmFrameBudget)
+				{
+					yield return null;
+					frameStart = Time.realtimeSinceStartup;
+				}
+			}
+		}
+	}
+
+	public static void CollectPools ( UnityEngine.Object _source, HashSet<PoolData> _pools )
+	{
+		if (_source == null)
+			return;
+
+		foreach (FieldInfo field in GetPoolFields(_source.GetType()))
+		{
+			object value = field.GetValue(_source);
+			if (value is PoolData pool)
+			{
+				if (pool != null)
+					_pools.Add(pool);
+			}
+			else if (value is IEnumerable<PoolData> pools)
+			{
+				foreach (PoolData listedPool in pools)
+				{
+					if (listedPool != null)
+						_pools.Add(listedPool);
+				}
+			}
+		}
+	}
+
+	private static FieldInfo[] GetPoolFields ( Type _type )
+	{
+		if (s_poolFieldsPerType.TryGetValue(_type, out FieldInfo[] cachedFields))
+			return cachedFields;
+
+		List<FieldInfo> fields = new();
+		for (Type type = _type; type != null && type != typeof(MonoBehaviour) && type != typeof(ScriptableObject); type = type.BaseType)
+		{
+			foreach (FieldInfo field in type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly))
+			{
+				if (typeof(PoolData).IsAssignableFrom(field.FieldType) || typeof(IEnumerable<PoolData>).IsAssignableFrom(field.FieldType))
+					fields.Add(field);
+			}
+		}
+
+		cachedFields = fields.ToArray();
+		s_poolFieldsPerType.Add(_type, cachedFields);
+		return cachedFields;
+	}
+
+	private bool RegisterPool ( PoolData _pool, bool _isPopulated = true )
 	{
 		if (!_pool)
 			return false;
@@ -63,8 +151,11 @@ public class ObjectsPooling : Singleton<ObjectsPooling>
 		m_availablePoolElements.Add(_pool, new());
 		m_everyPoolElements.Add(_pool, new());
 
-		for (int i = 0; i < _pool.size; i++)
-			PopulatePool(_pool);
+		if (_isPopulated)
+		{
+			for (int i = 0; i < _pool.size; i++)
+				PopulatePool(_pool);
+		}
 
 		return true;
 	}

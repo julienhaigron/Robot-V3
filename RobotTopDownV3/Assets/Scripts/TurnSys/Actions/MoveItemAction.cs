@@ -1,11 +1,34 @@
-using System.Linq;
+using UnityEngine;
 
 public class MoveItemAction : SpecialAction
 {
+	private int m_movableItemCheckFrame = -1;
+	private bool m_hasMovableItem;
+
 	public override bool TileInteractPredicate ( Tile _tile )
 	{
 		return Data.invocatedItem != null && _tile.GetItem(true) == null && _tile.GetPlannedItemAt(timeAtStart) == null
-			&& Data.invocatedItem.CanBePlacedOn(_tile) && GetClosestMovableItem(_tile, false) != null && base.TileInteractPredicate(_tile);
+			&& Data.invocatedItem.CanBePlacedOn(_tile) && HasMovableItem() && base.TileInteractPredicate(_tile);
+	}
+
+	private bool HasMovableItem ()
+	{
+		if (m_movableItemCheckFrame == Time.frameCount)
+			return m_hasMovableItem;
+
+		m_movableItemCheckFrame = Time.frameCount;
+		m_hasMovableItem = false;
+		Entity user = PerformingEntity;
+		foreach (Item item in GameManager.Instance.Items)
+		{
+			if (IsMovable(item, user, false))
+			{
+				m_hasMovableItem = true;
+				break;
+			}
+		}
+
+		return m_hasMovableItem;
 	}
 
 	protected override void ApplyActionEffect ()
@@ -48,9 +71,26 @@ public class MoveItemAction : SpecialAction
 	private Item GetClosestMovableItem ( Tile _destination, bool _placedOnly )
 	{
 		Entity user = PerformingEntity;
-		return GameManager.Instance.Items
-			.Where(item => item != null && item.Data == Data.invocatedItem && item.Invocator == user && item.CurrentPosition != null && (item.IsPlaced || !_placedOnly))
-			.OrderBy(item => item.CurrentPosition.coordinates.DistanceTo(_destination.coordinates))
-			.FirstOrDefault();
+		Item closestItem = null;
+		int closestDistance = int.MaxValue;
+		foreach (Item item in GameManager.Instance.Items)
+		{
+			if (!IsMovable(item, user, _placedOnly))
+				continue;
+
+			int distance = item.CurrentPosition.coordinates.DistanceTo(_destination.coordinates);
+			if (distance < closestDistance)
+			{
+				closestItem = item;
+				closestDistance = distance;
+			}
+		}
+
+		return closestItem;
+	}
+
+	private bool IsMovable ( Item _item, Entity _user, bool _placedOnly )
+	{
+		return _item != null && _item.Data == Data.invocatedItem && _item.Invocator == _user && _item.CurrentPosition != null && (_item.IsPlaced || !_placedOnly);
 	}
 }

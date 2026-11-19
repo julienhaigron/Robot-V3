@@ -110,6 +110,23 @@ public class AttackAction : AEntityAction
 		return GridManager.Instance.Tiles[TurnManager.Instance.GetEntityPositionAtEndOfTick(_entity.ID, _entity.Displacement.Coordinates.ID)];
 	}
 
+	public Entity GetEntityCaughtOn ( Tile _tile )
+	{
+		if (_tile == null)
+			return null;
+
+		foreach (EntityAnchor anchor in GameManager.Instance.PlayersEntityAnchor)
+		{
+			foreach (Entity entity in anchor.Entities)
+			{
+				if (!entity.Equipment.IsDead && GetExchangeTileOf(entity) == _tile)
+					return entity;
+			}
+		}
+
+		return null;
+	}
+
 	public bool DidDesignatedTargetEscapeReach ( int _attackIndex )
 	{
 		Entity targetEntity = GetTargetEntityAt(_attackIndex);
@@ -205,7 +222,7 @@ public class AttackAction : AEntityAction
 		if (aoeCenter == null)
 			return caught;
 
-		HashSet<Tile> zone = PerformingEntity.Equipment.GetTilesInAoERange(this, aoeCenter).ToHashSet();
+		HashSet<Tile> zone = PerformingEntity.Equipment.GetTilesInAoERange(this, aoeCenter, _entityOnTile: GetEntityCaughtOn).ToHashSet();
 
 		foreach (EntityAnchor anchor in GameManager.Instance.PlayersEntityAnchor)
 		{

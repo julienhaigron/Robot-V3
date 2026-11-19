@@ -5,6 +5,7 @@ using UnityEngine.Rendering;
 public class RangeOverlay : MonoBehaviour
 {
 	private const string k_materialResourcePath = "RangeOverlay";
+	private const string k_wallMaterialResourcePath = "RangeOverlayWalls";
 	private const float k_heightAboveGround = 0.01f;
 	private const int k_bytesPerTile = 4;
 	private const int k_rangeChannel = 0;
@@ -13,7 +14,6 @@ public class RangeOverlay : MonoBehaviour
 	private const int k_visionChannel = 3;
 	private const byte k_visionValue = 192;
 	private const byte k_wallFlag = 32;
-	private const string k_wallKeyword = "RANGE_OVERLAY_WALLS";
 	private const float k_wallVolumeHeight = 4f;
 
 	private static readonly int s_rangeDataID = Shader.PropertyToID("_RangeData");
@@ -35,10 +35,10 @@ public class RangeOverlay : MonoBehaviour
 	private Material m_material;
 	private MeshFilter m_meshFilter;
 	private MeshRenderer m_renderer;
-	private Material m_wallMaterial;
 	private MeshFilter m_wallMeshFilter;
 	private MeshRenderer m_wallRenderer;
 	private MaterialPropertyBlock m_propertyBlock;
+	private MaterialPropertyBlock m_wallPropertyBlock;
 	private Texture2D m_rangeData;
 	private byte[] m_rangeBytes;
 	private bool m_isDirty;
@@ -188,20 +188,21 @@ public class RangeOverlay : MonoBehaviour
 			return null;
 
 		Material material = Resources.Load<Material>(k_materialResourcePath);
-		if (material == null)
+		Material wallMaterial = Resources.Load<Material>(k_wallMaterialResourcePath);
+		if (material == null || wallMaterial == null)
 		{
-			Debug.LogError("RangeOverlay: missing material Resources/" + k_materialResourcePath);
+			Debug.LogError("RangeOverlay: missing material Resources/" + (material == null ? k_materialResourcePath : k_wallMaterialResourcePath));
 			return null;
 		}
 
 		GameObject overlayObject = new GameObject("RangeOverlay");
 		overlayObject.transform.SetParent(GridManager.Instance.transform, false);
 		s_instance = overlayObject.AddComponent<RangeOverlay>();
-		s_instance.Init(material, GridManager.Instance.GridData.width, GridManager.Instance.GridData.height);
+		s_instance.Init(material, wallMaterial, GridManager.Instance.GridData.width, GridManager.Instance.GridData.height);
 		return s_instance;
 	}
 
-	private void Init ( Material _material, int _width, int _height )
+	private void Init ( Material _material, Material _wallMaterial, int _width, int _height )
 	{
 		m_material = _material;
 		m_rangeBytes = new byte[_width * _height * k_bytesPerTile];
@@ -223,19 +224,23 @@ public class RangeOverlay : MonoBehaviour
 		wallObject.transform.SetParent(transform, false);
 		m_wallMeshFilter = wallObject.AddComponent<MeshFilter>();
 		m_wallMeshFilter.sharedMesh = BuildWallVolume(_width, _height);
-		m_wallMaterial = new Material(_material) { name = "RangeOverlayWalls" };
-		SyncWallMaterial();
 		m_wallRenderer = wallObject.AddComponent<MeshRenderer>();
-		m_wallRenderer.sharedMaterial = m_wallMaterial;
+		m_wallRenderer.sharedMaterial = _wallMaterial;
 		ConfigureRenderer(m_wallRenderer);
 
 		Camera mainCamera = Camera.main;
 		if (mainCamera != null)
 			mainCamera.depthTextureMode |= DepthTextureMode.Depth;
 
+		Vector4 grid = new(_width, _height, Tile.innerRadius, Tile.outerRadius);
 		m_propertyBlock = new MaterialPropertyBlock();
 		m_propertyBlock.SetTexture(s_rangeDataID, m_rangeData);
-		m_propertyBlock.SetVector(s_rangeGridID, new Vector4(_width, _height, Tile.innerRadius, Tile.outerRadius));
+		m_propertyBlock.SetVector(s_rangeGridID, grid);
+
+		m_wallPropertyBlock = new MaterialPropertyBlock();
+		CopyStyleToWallBlock();
+		m_wallPropertyBlock.SetTexture(s_rangeDataID, m_rangeData);
+		m_wallPropertyBlock.SetVector(s_rangeGridID, grid);
 
 		m_isRangeHidden = PlayerController.Instance != null && PlayerController.Instance.AreInteractableOutlinesHidden;
 	}
@@ -249,12 +254,47 @@ public class RangeOverlay : MonoBehaviour
 		_renderer.enabled = false;
 	}
 
-	private void SyncWallMaterial ()
+	private void CopyStyleToWallBlock ()
 	{
-		m_wallMaterial.CopyPropertiesFromMaterial(m_material);
-		m_wallMaterial.EnableKeyword(k_wallKeyword);
-		m_wallMaterial.SetFloat(s_overlayCullID, (float)CullMode.Front);
-		m_wallMaterial.SetFloat(s_overlayZTestID, (float)CompareFunction.Always);
+		Shader shader = m_material.shader;
+		for (int i = 0; i < shader.GetPropertyCount(); i++)
+		{
+			int id = shader.GetPropertyNameId(i);
+			if (IsSetPerRedraw(id) || id == s_overlayCullID || id == s_overlayZTestID)
+				continue;
+
+			switch (shader.GetPropertyType(i))
+			{
+				case ShaderPropertyType.Color:
+					m_wallPropertyBlock.SetColor(id, m_material.GetColor(id));
+					break;
+				case ShaderPropertyType.Vector:
+					m_wallPropertyBlock.SetVector(id, m_material.GetVector(id));
+					break;
+				case ShaderPropertyType.Float:
+				case ShaderPropertyType.Range:
+					m_wallPropertyBlock.SetFloat(id, m_material.GetFloat(id));
+					break;
+				case ShaderPropertyType.Int:
+					m_wallPropertyBlock.SetInteger(id, m_material.GetInteger(id));
+					break;
+			}
+		}
+	}
+
+	private static bool IsSetPerRedraw ( int _id )
+	{
+		return _id == s_rangeDataID || _id == s_rangeGridID || _id == s_rangeColorID || _id == s_aoeColorID
+			|| _id == s_targetColorID || _id == s_visionTypeID || _id == s_visionCenterID;
+	}
+
+	private void ApplyDynamicProperties ( MaterialPropertyBlock _block, bool _hasPreview )
+	{
+		_block.SetColor(s_rangeColorID, _hasPreview ? m_previewColor : m_rangeColor);
+		_block.SetColor(s_aoeColorID, m_aoeColor);
+		_block.SetColor(s_targetColorID, m_targetColor);
+		_block.SetFloat(s_visionTypeID, (int)m_visionType);
+		_block.SetVector(s_visionCenterID, m_visionCenter);
 	}
 
 	private static void GetGridBounds ( int _width, int _height, out float _minX, out float _maxX, out float _minZ, out float _maxZ )
@@ -330,7 +370,8 @@ public class RangeOverlay : MonoBehaviour
 #if UNITY_EDITOR
 		else if (m_wallRenderer.enabled)
 		{
-			SyncWallMaterial();
+			CopyStyleToWallBlock();
+			m_wallRenderer.SetPropertyBlock(m_wallPropertyBlock);
 			UpdateRadarPing(true);
 		}
 #endif
@@ -357,17 +398,11 @@ public class RangeOverlay : MonoBehaviour
 		{
 			m_rangeData.SetPixelData(m_rangeBytes, 0);
 			m_rangeData.Apply(false);
-			m_propertyBlock.SetColor(s_rangeColorID, hasPreview ? m_previewColor : m_rangeColor);
-			m_propertyBlock.SetColor(s_aoeColorID, m_aoeColor);
-			m_propertyBlock.SetColor(s_targetColorID, m_targetColor);
-			m_propertyBlock.SetFloat(s_visionTypeID, (int)m_visionType);
-			m_propertyBlock.SetVector(s_visionCenterID, m_visionCenter);
+			ApplyDynamicProperties(m_propertyBlock, hasPreview);
+			ApplyDynamicProperties(m_wallPropertyBlock, hasPreview);
 			m_renderer.SetPropertyBlock(m_propertyBlock);
-			m_wallRenderer.SetPropertyBlock(m_propertyBlock);
+			m_wallRenderer.SetPropertyBlock(m_wallPropertyBlock);
 		}
-
-		if (hasVision)
-			SyncWallMaterial();
 
 		m_renderer.enabled = isVisible;
 		m_wallRenderer.enabled = hasVision;
@@ -458,8 +493,5 @@ public class RangeOverlay : MonoBehaviour
 
 		if (m_wallMeshFilter != null && m_wallMeshFilter.sharedMesh != null)
 			Destroy(m_wallMeshFilter.sharedMesh);
-
-		if (m_wallMaterial != null)
-			Destroy(m_wallMaterial);
 	}
 }

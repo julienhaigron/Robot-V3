@@ -116,21 +116,6 @@ public static class ComponentTestLabMap
 		return true;
 	}
 
-	public static void EnsureInBuildSettings ( string _scenePath )
-	{
-		EditorBuildSettingsScene[] scenes = EditorBuildSettings.scenes;
-		int index = Array.FindIndex(scenes, buildScene => string.Equals(buildScene.path, _scenePath, StringComparison.OrdinalIgnoreCase));
-		if (index >= 0 && scenes[index].enabled)
-			return;
-
-		if (index >= 0)
-			scenes[index].enabled = true;
-		else
-			scenes = scenes.Append(new EditorBuildSettingsScene(_scenePath, true)).ToArray();
-
-		EditorBuildSettings.scenes = scenes;
-	}
-
 	private static bool IsDataUpToDate ( GridData _data, ComponentTestLabLayout _layout )
 	{
 		if (_data.width != _layout.Width || _data.height != _layout.Height || _data.tiles == null || _data.tiles.Length != _layout.GroundTypes.Length)
