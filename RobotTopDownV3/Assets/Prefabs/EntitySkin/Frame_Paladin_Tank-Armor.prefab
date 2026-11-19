@@ -271,6 +271,38 @@ MonoBehaviour:
     customStringList: []
     customObjectList: []
     variables: []
+  - Enabled: 1
+    Parent: {fileID: 3894988364515184562}
+    ModuleReference: {fileID: 11400000, guid: 6736a4921bdae6b43f0b6bb815d0e66e, type: 2}
+    customStringList: []
+    customObjectList: []
+    variables:
+    - VariableName: Avance du pas (s)
+      Tooltip: 
+      _value: {x: 0.2, y: 0, z: 0, w: 0}
+      _string: 
+      _curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      _uObject: {fileID: 0}
+      VariableType: 0
+      _rangeHelper: {x: 0, y: 0.5, z: 0, w: 0}
+    - VariableName: "Seuil de t\xE9l\xE9port (m/s)"
+      Tooltip: 
+      _value: {x: 6, y: 0, z: 0, w: 0}
+      _string: 
+      _curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      _uObject: {fileID: 0}
+      VariableType: 0
+      _rangeHelper: {x: 2, y: 20, z: 0, w: 0}
   ImpulsesPowerMultiplier: 1
   ImpulsesDurationMultiplier: 1
   ImpulsesDampUpPushes: 0
@@ -545,7 +577,7 @@ MonoBehaviour:
       m_RotationOrder: 4
     SpherizePower: 0.3
     MinFootRaise: 0.306
-    MaxFootRaise: 0.42
+    MaxFootRaise: 0.55
     RaiseYAxisCurve:
       serializedVersion: 2
       m_Curve:
