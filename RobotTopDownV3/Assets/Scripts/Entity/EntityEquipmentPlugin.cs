@@ -239,6 +239,8 @@ public class EntityEquipmentPlugin : EntityPlugin
 	private Weapon AddWeapon ( WeaponEquipmentData _data, string _id, Transform _socket, bool _isFirstSide )
 	{
 		Weapon newWeapon = Instantiate(_data.prefab, _socket);
+		if (m_linkedEntity.Skin.IK != null)
+			m_linkedEntity.Skin.IK.FitInHand(newWeapon.transform);
 		newWeapon.Init(m_linkedEntity, _data, _id, _isFirstSide);
 		newWeapon.transform.localScale = Vector3.one;
 		m_weapons.Add(newWeapon.ID, newWeapon);
@@ -625,6 +627,8 @@ public class EntityEquipmentPlugin : EntityPlugin
 	private ToolEquipment AddTool ( ToolEquipmentData _data, string _id, Transform _socket, bool _isFirstSide )
 	{
 		ToolEquipment newTool = Instantiate(_data.prefab, _socket);
+		if (m_linkedEntity.Skin.IK != null)
+			m_linkedEntity.Skin.IK.FitInHand(newTool.transform);
 		newTool.Init(m_linkedEntity, _data, _id, _isFirstSide);
 		newTool.transform.localScale = Vector3.one;
 		m_tools.Add(newTool.ID, newTool);

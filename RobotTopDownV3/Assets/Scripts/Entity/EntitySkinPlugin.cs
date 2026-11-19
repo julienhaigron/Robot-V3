@@ -119,7 +119,7 @@ public class EntitySkinPlugin : EntityPlugin
 		}
 		else
 		{
-			m_humanoidEntityIK.Aim(weapon.transform.parent, _aimedPosition);
+			m_humanoidEntityIK.Aim(weapon.transform.parent, _aimedPosition, weapon.transform);
 		}
 
 	}

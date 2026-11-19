@@ -31,6 +31,7 @@ public class HumanoidEntityIK : MonoBehaviour
 	protected Quaternion m_defaultHandPivotRotation;
 	private Quaternion m_defaultOffHandPivotRotation;
 	private Transform m_aimingSocket;
+	private Transform m_aimingHeld;
 	private Vector3? m_aimedPosition;
 	private Entity m_aimedEntity;
 
@@ -64,6 +65,20 @@ public class HumanoidEntityIK : MonoBehaviour
 	public Transform GetGrabSocket ( int _armIndex )
 	{
 		return _armIndex % 2 == 1 && offHandGrabSocket != null ? offHandGrabSocket : handGrabSocket;
+	}
+
+	public void FitInHand ( Transform _held )
+	{
+		if (_held != null && offHandGrabSocket != null && offHandGrabSocket != handGrabSocket && _held.parent == offHandGrabSocket)
+			MirrorLocalPose(_held);
+	}
+
+	public static void MirrorLocalPose ( Transform _held )
+	{
+		Vector3 position = _held.localPosition;
+		Quaternion rotation = _held.localRotation;
+		_held.localPosition = new Vector3(-position.x, position.y, position.z);
+		_held.localRotation = new Quaternion(rotation.x, -rotation.y, -rotation.z, rotation.w);
 	}
 
 	private AvatarIKGoal GetIKGoalOf ( Transform _socket )
@@ -217,10 +232,20 @@ public class HumanoidEntityIK : MonoBehaviour
 		if (m_aimingSocket == null)
 			return;
 
+		Vector3 target;
 		if (m_aimedEntity != null)
-			m_aimingSocket.LookAt(m_aimedEntity.transform.position + Vector3.up);
+			target = m_aimedEntity.transform.position + Vector3.up;
 		else if (m_aimedPosition.HasValue)
-			m_aimingSocket.LookAt(m_aimedPosition.Value);
+			target = m_aimedPosition.Value;
+		else
+			return;
+
+		Vector3 direction = target - m_aimingSocket.position;
+		if (direction.sqrMagnitude < .000001f)
+			return;
+
+		Quaternion look = Quaternion.LookRotation(direction);
+		m_aimingSocket.rotation = m_aimingHeld != null && m_aimingHeld.parent == m_aimingSocket ? look * Quaternion.Inverse(m_aimingHeld.localRotation) : look;
 	}
 
 	private void UpdateRecoil ( float _deltaTime )
@@ -275,7 +300,7 @@ public class HumanoidEntityIK : MonoBehaviour
 		Aim(handGrabSocket, _position);
 	}
 
-	public void Aim ( Transform _socket, Vector3 _position )
+	public void Aim ( Transform _socket, Vector3 _position, Transform _held = null )
 	{
 		if (!isActiveAndEnabled)
 			return;
@@ -285,6 +310,7 @@ public class HumanoidEntityIK : MonoBehaviour
 			ResetSocketRotation(m_aimingSocket);
 
 		m_aimingSocket = socket;
+		m_aimingHeld = _held;
 		m_aimedPosition = _position;
 		m_aimedEntity = null;
 		bool isLeftHand = GetIKGoalOf(socket) == AvatarIKGoal.LeftHand;
@@ -298,6 +324,7 @@ public class HumanoidEntityIK : MonoBehaviour
 			return;
 
 		m_aimingSocket = handGrabSocket;
+		m_aimingHeld = null;
 		m_aimedEntity = _target;
 		m_aimedPosition = null;
 	}
@@ -309,6 +336,7 @@ public class HumanoidEntityIK : MonoBehaviour
 		rightHandTarget = null;
 		leftHandTarget = null;
 		m_aimingSocket = null;
+		m_aimingHeld = null;
 		ResetSocketRotation(handGrabSocket);
 		ResetSocketRotation(offHandGrabSocket);
 	}
