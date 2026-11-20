@@ -7,6 +7,7 @@ using Unity.Netcode;
 public class SpecialAction : AEntityAction
 {
 	private const float ProjectileTimeout = 3f;
+	private float m_visualBudget;
 	public const float WeaponAimDuration = .3f;
 	public const float WeaponAimHold = .4f;
 
@@ -179,10 +180,11 @@ public class SpecialAction : AEntityAction
 
 		if (DoesOwnItsCompletion)
 		{
-			DG.Tweening.DOVirtual.DelayedCall(GameConfig.current.game.actionDuration, EndTick);
+			DG.Tweening.DOVirtual.DelayedCall(TickTimeLeft, EndTick);
 			return;
 		}
 
+		m_visualBudget = TickTimeLeft;
 		GameManager.Instance.StartCoroutine(PlayVisualEffectCR());
 	}
 
@@ -208,7 +210,7 @@ public class SpecialAction : AEntityAction
 
 	private IEnumerator CharacterAnimationVisualCR ()
 	{
-		yield return new WaitForSeconds(Data.visualEffectDuration);
+		yield return new WaitForSeconds(Mathf.Min(Data.visualEffectDuration, m_visualBudget));
 		ApplyActionEffect();
 	}
 
@@ -222,7 +224,7 @@ public class SpecialAction : AEntityAction
 
 		GameObject vfx = UnityEngine.Object.Instantiate(Data.spellVfxPrefab, GetVisualTargetPosition(), Data.spellVfxPrefab.transform.rotation);
 
-		yield return new WaitForSeconds(Data.visualEffectDuration);
+		yield return new WaitForSeconds(Mathf.Min(Data.visualEffectDuration, m_visualBudget));
 		ApplyActionEffect();
 
 		UnityEngine.Object.Destroy(vfx, Data.spellVfxLifetime);
@@ -310,7 +312,7 @@ public class SpecialAction : AEntityAction
 			ProjectileData projectileData = new()
 			{
 				owner = _user,
-				speed = Vector2.right * Data.projectileSpeed,
+				speed = Vector2.right * Mathf.Max(Data.projectileSpeed, direction.magnitude / Mathf.Max(.1f, m_visualBudget - WeaponAimDuration)),
 				attackData = Data,
 				onHitSFXID = Data.onSingleAttackHitSFXID,
 				onHitVFXPool = Data.onSingleAttackHitVFXPool,

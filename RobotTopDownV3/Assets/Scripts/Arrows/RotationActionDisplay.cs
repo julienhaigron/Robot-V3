@@ -1,54 +1,64 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class RotationActionDisplay : PoolElement
+public class RotationActionDisplay : GroundOrderDisplay
 {
-	private static readonly int ColorID = Shader.PropertyToID("_Color");
+	private const float c_degreesPerSample = 6f;
 
-    [SerializeField] private MeshRenderer[] m_renderers;
+	[Header("Arc")]
+	[SerializeField] private SpriteRenderer m_startDot;
+	[SerializeField] private float m_radius = .79f;
+	[SerializeField] private float m_pathClearance = .2f;
 	[SerializeField] private Color m_rotationColor = new(.72f, .35f, 1f, 1f);
+	[SerializeField] private Color m_startDotColor = new(.96f, .97f, .98f, 1f);
 
-	private RotateEntityAction m_action;
-	public RotateEntityAction Action => m_action;
-	private MaterialPropertyBlock m_propertyBlock;
-	/*public Tile OriginTile => GridManager.Instance.Tiles[m_action.supposedPositionAtActionStartID];
-	public Tile DestinationTile => GridManager.Instance.Tiles[m_action.positionAtActionEndID];*/
-
-	public void Init (RotateEntityAction _rotateAction, Entity.EntityState _state)
+	public static void Show ( int _performingEntityID, Tile _pivot, int _fromOrientation, int _toOrientation, bool _isGhost )
 	{
-		Init(_rotateAction, GameAssets.current.ui.entityStateMaterials[_state]);
+		Show(_performingEntityID, _pivot, _fromOrientation, _toOrientation, _isGhost, false);
 	}
 
-	public void Init ( RotateEntityAction _rotateAction, Material _material )
+	public static void ShowMovementTurn ( int _performingEntityID, Tile _pivot, int _fromOrientation, int _toOrientation )
 	{
-		m_action = _rotateAction;
-		if (_material != null)
-			SetMaterial(_material);
+		Show(_performingEntityID, _pivot, _fromOrientation, _toOrientation, true, true);
 	}
 
-    public void SetMaterial(Material _mat)
+	private static void Show ( int _performingEntityID, Tile _pivot, int _fromOrientation, int _toOrientation, bool _isGhost, bool _endsOnPath )
 	{
-		foreach(MeshRenderer rd in m_renderers)
+		if (_pivot == null || _toOrientation < 0
+			|| ObjectsPooling.GetElement(GameAssets.current.game.rotationHandlePoolData, Vector3.zero, Quaternion.identity) is not RotationActionDisplay display)
+			return;
+
+		display.Init(_pivot.transform.position, _fromOrientation < 0 ? _toOrientation : _fromOrientation, _toOrientation, _isGhost, _endsOnPath);
+		PlayerController.Instance.AddRotationActionDisplay(display, _performingEntityID);
+	}
+
+	private void Init ( Vector3 _pivot, int _fromOrientation, int _toOrientation, bool _isGhost, bool _endsOnPath )
+	{
+		SetStyle(m_rotationColor, _isGhost);
+
+		int steps = ((_toOrientation - _fromOrientation) % 6 + 6) % 6;
+		if (steps == 0)
 		{
-			rd.material = _mat;
+			ClearStrip();
+			m_startDot.enabled = false;
+			Vector3 facing = RotateEntityAction.GetFacingRotation(_toOrientation) * Vector3.forward;
+			ShowHead(_pivot + facing * (m_radius + HeadLength * .5f), facing);
+			return;
 		}
 
-		ApplyRotationColor(_mat);
-	}
+		Quaternion start = RotateEntityAction.GetFacingRotation(_fromOrientation);
+		float sweep = (steps <= 3 ? steps : steps - 6) * 60f;
+		float sign = Mathf.Sign(sweep);
+		float tip = _endsOnPath ? sweep - sign * m_pathClearance / m_radius * Mathf.Rad2Deg : sweep;
+		float arcEnd = tip - sign * HeadLength * c_stripEndInHead / m_radius * Mathf.Rad2Deg;
+		int samples = Mathf.Max(1, Mathf.CeilToInt(Mathf.Abs(arcEnd) / c_degreesPerSample));
 
-	private void ApplyRotationColor ( Material _material )
-	{
-		Color color = m_rotationColor;
-		if (_material != null && _material.HasProperty(ColorID))
-			color.a *= _material.GetColor(ColorID).a;
+		m_points.Clear();
+		for (int i = 0; i <= samples; i++)
+			m_points.Add(_pivot + start * Quaternion.Euler(0f, arcEnd * i / samples, 0f) * Vector3.forward * m_radius);
+		DrawStrip();
 
-		m_propertyBlock ??= new MaterialPropertyBlock();
-		foreach (MeshRenderer meshRenderer in GetComponentsInChildren<MeshRenderer>(true))
-		{
-			meshRenderer.GetPropertyBlock(m_propertyBlock);
-			m_propertyBlock.SetColor(ColorID, color);
-			meshRenderer.SetPropertyBlock(m_propertyBlock);
-		}
+		Quaternion headRotation = start * Quaternion.Euler(0f, tip - sign * HeadLength * .5f / m_radius * Mathf.Rad2Deg, 0f);
+		ShowHead(_pivot + start * Quaternion.Euler(0f, tip, 0f) * Vector3.forward * m_radius, sign * (headRotation * Vector3.right));
+		PlaceFlat(m_startDot, _pivot + start * Vector3.forward * m_radius, start * Vector3.forward, Faded(m_startDotColor));
 	}
 }

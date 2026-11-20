@@ -110,9 +110,7 @@ public class GameAssets : ScriptableObject
         [Title("Tile")]
         public SerializableDictionary<TileGroundType, Material> tileGroundMaterials = new();
         [Title("Actions")]
-        public SerializableDictionary<Entity.EntityState, Material> entityStateMaterials = new();
         public SerializableDictionary<Entity.EntityState, Color> entityStateColors = new();
-        public SerializableDictionary<Entity.EntityState, Material> ghostEntityStateMaterials = new();
 
         [Title("Icons")]
         public SerializableDictionary<EntityEquipmentData.EquipmentType, Sprite> componentIcons = new();

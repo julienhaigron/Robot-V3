@@ -213,7 +213,7 @@ public class ActionPhaseIndicator : MonoBehaviour
 				.Join(m_ripple.DOFade(0f, m_rippleDuration));
 		}
 		else
-			m_tickSequence.Join(m_progress.DOFillAmount(arc, GameConfig.current.game.actionDuration).SetEase(Ease.Linear));
+			m_tickSequence.Join(m_progress.DOFillAmount(arc, m_action.TickTimeLeft).SetEase(Ease.Linear));
 	}
 
 	private void PlaceOnArc ( Image _image, int _index, float _span, float _arc )

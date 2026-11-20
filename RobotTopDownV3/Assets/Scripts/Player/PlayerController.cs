@@ -694,18 +694,16 @@ public class PlayerController : Singleton<PlayerController>
 
 	public void AddActionDisplay ( ActionDisplayOnTile _display, int _performingEntityID, bool _isTemp )
 	{
-		if (_isTemp)
+		SerializableDictionary<int, List<ActionDisplayOnTile>> displays = _isTemp ? m_tempActionDisplays : m_actionDisplays;
+		if (!displays.TryGetValue(_performingEntityID, out List<ActionDisplayOnTile> entityDisplays))
 		{
-			if (!m_tempActionDisplays.ContainsKey(_performingEntityID))
-				m_tempActionDisplays.Add(_performingEntityID, new());
-			m_tempActionDisplays[_performingEntityID].Add(_display);
+			entityDisplays = new();
+			displays.Add(_performingEntityID, entityDisplays);
 		}
-		else
-		{
-			if (!m_actionDisplays.ContainsKey(_performingEntityID))
-				m_actionDisplays.Add(_performingEntityID, new());
-			m_actionDisplays[_performingEntityID].Add(_display);
-		}
+
+		if (entityDisplays.Count > 0)
+			entityDisplays[^1].LinkTo(_display);
+		entityDisplays.Add(_display);
 	}
 
 	public void AddRotationActionDisplay ( RotationActionDisplay _display, int _performingEntityID )
@@ -826,17 +824,15 @@ public class PlayerController : Singleton<PlayerController>
 		RangeOverlay.SetRange(rangeTiles, GameAssets.current.ui.GetActionRangeColor(colorType, false));
 	}
 
-	public void ShowFacingPicker ( Entity _entity, Tile _pivot, int _shownOrientation, Entity.EntityState _state, HashSet<Tile> _coneTiles = null )
+	public void ShowFacingPicker ( Entity _entity, Tile _pivot, int _fromOrientation, int _shownOrientation, HashSet<Tile> _coneTiles = null )
 	{
 		AddGhostEntityAt(_entity, _pivot, _shownOrientation);
 
+		RotationActionDisplay.Show(_entity.ID, _pivot, _fromOrientation, _shownOrientation, false);
 		for (int orientation = 0; orientation < 6; orientation++)
 		{
-			if (_pivot.GetNeighbor((HexDirection)orientation) == null)
-				continue;
-
-			RotateEntityAction.ShowArrow(null, _entity.ID, _pivot, orientation
-				, RotateEntityAction.GetArrowMaterial(_state, orientation != _shownOrientation));
+			if (orientation != _shownOrientation && orientation != _fromOrientation && _pivot.GetNeighbor((HexDirection)orientation) != null)
+				RotationActionDisplay.Show(_entity.ID, _pivot, orientation, orientation, true);
 		}
 
 		ShowFacingConePreview(_entity, _pivot, _shownOrientation, _coneTiles);

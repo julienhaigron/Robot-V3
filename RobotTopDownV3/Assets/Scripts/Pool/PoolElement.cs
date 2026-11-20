@@ -53,7 +53,7 @@ public class PoolElement : MonoBehaviour
 		Discard();
 	}
 
-	private void OnDestroy ()
+	protected virtual void OnDestroy ()
 	{
 		onDiscard = null;
 	}

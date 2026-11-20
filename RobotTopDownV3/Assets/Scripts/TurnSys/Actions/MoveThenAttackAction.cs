@@ -7,6 +7,7 @@ using DG.Tweening;
 
 public class MoveThenAttackAction : AttackAction
 {
+	private const float c_dashTimeShare = .45f;
 	public int positionAfterMovementID = -1;
 	public bool isActionCanceled = false;
 
@@ -172,57 +173,23 @@ public class MoveThenAttackAction : AttackAction
 
 	protected override void Perform ( Entity.EntityState _state )
 	{
-		/*List<Tile> tilesInRange = new();
-		foreach (string weaponId in PerformingEntity.Equipment.Weapons.Keys)
-			tilesInRange.AddRange(PerformingEntity.Equipment.GetTilesInWeaponRange(this, weaponId, true));
-
-		foreach (Tile tile in tilesInRange)
-		{
-			tile.UI.SetOutlineColor(Color.blue);
-		}*/
-
-		//move to targetTile
-		if (positionAfterMovementID != -1/* && thisActionDestination.GetEntity(false) == null*/)
+		float dashDuration = TickTimeLeft * c_dashTimeShare;
+		if (positionAfterMovementID != -1)
 		{
 			AttachMovementTrail();
 			m_movementTween = PerformingEntity.Displacement.MoveToTile((int)positionAfterMovementID, () =>
 			{
 				DetachMovementTrail();
-				/*foreach (Tile tile in tilesInRange)
-				{
-					tile.UI.ResetOutline();
-				}*/
 				base.Perform(_state);
-			});
-
+			}, true, dashDuration);
 		}
 		else
-		{
-			DG.Tweening.DOVirtual.DelayedCall(GameConfig.current.game.actionDuration, () =>
-			{
-				/*foreach (Tile tile in tilesInRange)
-				{
-					tile.UI.ResetOutline();
-				}*/
-				base.Perform(_state);
-			});
-		}
+			DG.Tweening.DOVirtual.DelayedCall(dashDuration, () => base.Perform(_state));
 	}
 
 	public override void Display ( TurnManager.RecordedAction _recordedAction )
 	{
-		if (positionAfterMovementID < 0)
-			return;
-
-		ActionDisplayOnTile arrow = ObjectsPooling.GetElement(GameAssets.current.game.arrowPoolData) as ActionDisplayOnTile;
-		Vector3 startPos = GridManager.Instance.Tiles[supposedPositionAtActionStartID].transform.position;
-		Vector3 destination = GridManager.Instance.Tiles[(int)positionAfterMovementID].transform.position;
-		Vector3 position = Vector3.Lerp(startPos, destination, .5f);
-		arrow.Init(_recordedAction, true);
-		arrow.transform.position = position;
-		arrow.transform.LookAt(GridManager.Instance.Tiles[(int)positionAfterMovementID].transform);
-
-		PlayerController.Instance.AddActionDisplay(arrow, performingEntityID, false);
+		ActionDisplayOnTile.ShowRecorded(_recordedAction, positionAfterMovementID);
 	}
 
 	public override void GhostDisplay ( Entity.EntityState _state )
@@ -230,24 +197,8 @@ public class MoveThenAttackAction : AttackAction
 		if (positionAfterMovementID < 0)
 			return;
 
-		Tile from = GridManager.Instance.Tiles[(int)TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntityID)];
-		List<Tile> pathToTile = GridManager.Instance.GetPath(from, GridManager.Instance.Tiles[(int)positionAfterMovementID], _isThisTurn: false);
-		pathToTile.Reverse();
-
-		for (int i = 0; i < pathToTile.Count - 1; i++)
-		{
-			ActionDisplayOnTile arrow = ObjectsPooling.GetElement(GameAssets.current.game.arrowPoolData) as ActionDisplayOnTile;
-			Vector3 startPos = pathToTile[i].transform.position;
-			Vector3 destination = pathToTile[i + 1].transform.position;
-			Vector3 position = Vector3.Lerp(startPos, destination, .5f);
-			arrow.SetMaterial(GameAssets.current.ui.ghostEntityStateMaterials[_state]);
-			arrow.SetBeginningGoVisibility(i == 0);
-			arrow.transform.position = position;
-			arrow.transform.LookAt(pathToTile[i + 1].transform);
-
-			PlayerController.Instance.AddActionDisplay(arrow, performingEntityID, true);
-		}
-
+		Tile[] tiles = GridManager.Instance.Tiles;
+		ActionDisplayOnTile.ShowGhost(this, tiles[TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntityID)], tiles[positionAfterMovementID], _state);
 	}
 
 	private bool IsDestinationOccupiedOnNextTurnAction ()

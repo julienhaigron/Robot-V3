@@ -35,6 +35,8 @@ public abstract class AEntityAction : INetworkSerializable
 	public int lifetime = 0;
 	public bool doesFreeActionOwnFacing;
 	public int orientationAtPerform = -1;
+	public float tickTimeReserve;
+	public float TickTimeLeft => TurnManager.GetTickTimeLeft(tickTimeReserve);
 	public bool wasReplacedByAI;
 
 	public string TagLogMessage ( string _message )
@@ -226,7 +228,7 @@ public abstract class AEntityAction : INetworkSerializable
 		}
 		else
 		{
-			DG.Tweening.DOVirtual.DelayedCall(GameConfig.current.game.actionDuration, () => EndTick());
+			DG.Tweening.DOVirtual.DelayedCall(TickTimeLeft, () => EndTick());
 			return false;
 		}
 	}

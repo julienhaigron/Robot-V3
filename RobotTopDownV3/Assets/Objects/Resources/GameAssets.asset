@@ -322,24 +322,12 @@ MonoBehaviour:
       - {fileID: 2100000, guid: c1f2433092844e2bada915f829bc3bde, type: 2}
       - {fileID: 2100000, guid: e75e8d13e8dd49a39cda30160c3015fc, type: 2}
       - {fileID: 2100000, guid: 24250b0869e44a3d934d511e83d1bd98, type: 2}
-    entityStateMaterials:
-      keys: 000000000100000002000000
-      values:
-      - {fileID: 2100000, guid: 01d969979321bef449ffd88218909815, type: 2}
-      - {fileID: 2100000, guid: a8bc155b222905340a53cac2ac3db7a0, type: 2}
-      - {fileID: 2100000, guid: 2e3db9c21b741184e9a00525552b876e, type: 2}
     entityStateColors:
       keys: 000000000100000002000000
       values:
       - {r: 0.16879244, g: 0.8113208, b: 0.04209684, a: 1}
       - {r: 1, g: 0, b: 0, a: 1}
       - {r: 0.22467959, g: 0.6299838, b: 0.9339623, a: 1}
-    ghostEntityStateMaterials:
-      keys: 000000000100000002000000
-      values:
-      - {fileID: 2100000, guid: e1a0eb7cc1923f946ab2d41224f8cda7, type: 2}
-      - {fileID: 2100000, guid: 70fa849432054e74c89bb3e1a876324c, type: 2}
-      - {fileID: 2100000, guid: 75966bde5e759e8459a8eda2d59676f2, type: 2}
     componentIcons:
       keys: 000000000100000002000000030000000400000005000000060000000700000008000000
       values:

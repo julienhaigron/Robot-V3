@@ -18,24 +18,30 @@ public class BulletWeapon : Weapon
 	[SerializeField] private float m_aimDuration = 1f;
 	[SerializeField] private float m_shootCooldownDuration = .3f;
 
-	private WaitForSeconds m_timeBetweenBulletsWFS;
-	private WaitForSeconds m_aimDurationWFS;
-	private WaitForSeconds m_shootCooldownDurationWFS;
-
 	protected override Transform LaunchPoint => m_bulletPoint != null ? m_bulletPoint : transform;
 
-	public override void Init ( Entity _user, WeaponEquipmentData _data, string _id, bool _isFirstSide )
+	private static bool FiresBullets ( EntityActionData _data )
 	{
-		base.Init(_user, _data, _id, _isFirstSide);
+		return _data.aoeType == EntityActionData.AOEType.Noone || (_data.aoeType == EntityActionData.AOEType.Circle && _data.targetType != EntityActionData.TargetType.Self);
+	}
 
-		m_timeBetweenBulletsWFS = new WaitForSeconds(m_timeBetweenEachBullet);
-		m_aimDurationWFS = new WaitForSeconds(m_aimDuration);
-		m_shootCooldownDurationWFS = new WaitForSeconds(m_shootCooldownDuration);
+	protected override float EstimateAttackDuration ( AttackAction _attackAction )
+	{
+		int attackCount = _attackAction.attacksInfos.Length;
+		if (!FiresBullets(_attackAction.Data))
+			return attackCount * m_aimDuration + base.EstimateAttackDuration(_attackAction);
+
+		int bulletCount = 0;
+		for (int i = 0; i < attackCount; i++)
+			bulletCount += _attackAction.Data.GetHitAmount(_attackAction, m_user, _attackAction.GetTargetEntityAt(i));
+
+		return attackCount * m_aimDuration + Mathf.Max(0, bulletCount - 1) * m_timeBetweenEachBullet
+			+ GetDistanceToTarget(_attackAction, attackCount - 1) / Mathf.Max(1f, m_speed);
 	}
 
 	protected override IEnumerator AimTargetCR ( AttackAction _attackAction, int _attackIndex, AttackAction.SingleAttackInfo _attackInfo )
 	{
-		if (_attackAction.Data.aoeType == EntityActionData.AOEType.Noone || (_attackAction.Data.aoeType == EntityActionData.AOEType.Circle && _attackAction.Data.targetType != EntityActionData.TargetType.Self))
+		if (FiresBullets(_attackAction.Data))
 		{
 			Entity targetEntity = _attackAction.GetTargetEntityAt(_attackIndex);
 			Tile targetTile = _attackAction.GetTargetTileAt(_attackIndex);
@@ -58,7 +64,7 @@ public class BulletWeapon : Weapon
 			if (aimedTile != null && m_user.Skin != null)
 			{
 				m_user.Skin.VisualyAimAt(_attackAction.linkedEquipmentId, aimedTile.transform.position + Vector3.up * .5f, _attackAction.Data);
-				yield return m_aimDurationWFS;
+				yield return new WaitForSeconds(Paced(m_aimDuration));
 			}
 		}
 
@@ -86,14 +92,14 @@ public class BulletWeapon : Weapon
 			m_user.Skin.VisualyAimAt(_attackAction.linkedEquipmentId, adjacentPos, _attackAction.Data);
 		}
 
-		yield return m_aimDurationWFS;
+		yield return new WaitForSeconds(Paced(m_aimDuration));
 	}
 
 	#endregion
 
 	protected override IEnumerator PerformSingleAttackCR ( AttackAction _attackAction, int _attackIndex, AttackAction.SingleAttackInfo _attackInfo, int _lastSuccessfullAttackIndex )
 	{
-		if (_attackAction.Data.aoeType == EntityActionData.AOEType.Noone || (_attackAction.Data.aoeType == EntityActionData.AOEType.Circle && _attackAction.Data.targetType != EntityActionData.TargetType.Self))
+		if (FiresBullets(_attackAction.Data))
 		{
 			List<WeaponTarget> targets = GetTargets(_attackAction, _attackIndex);
 
@@ -121,7 +127,7 @@ public class BulletWeapon : Weapon
 		ProjectileData bulletData = new()
 		{
 			owner = m_user,
-			speed = Vector2.right * m_speed,
+			speed = Vector2.right * (m_speed / Pace),
 			attackData = _attackAction.Data,
 			weapon = m_data,
 			onHitSFXID = _attackAction.Data.onSingleAttackHitSFXID,
@@ -156,7 +162,7 @@ public class BulletWeapon : Weapon
 			m_bulletPool.Get<Projectile>(launch.position, launch.rotation).SetProjectileDataAndLaunch(bulletData
 				, ( impactTile ) => ApplyBulletImpact(impactTile, _attackAction, _attackInfo, isLastBullet, _target.targetEntity), () => OnProjectileDespawn(isLastBullet, missedTarget, _attackInfo.didTargetDodge), curveTile);
 
-			yield return m_timeBetweenBulletsWFS;
+			yield return new WaitForSeconds(Paced(m_timeBetweenEachBullet));
 		}
 	}
 
@@ -241,6 +247,6 @@ public class BulletWeapon : Weapon
 		if (!_attackAction.Data.KeepsAimAfterVolley(_attackAction.IsLastPerformTick, _attackAction.cooldownDuration))
 			m_user.Skin.ReleaseAim();
 
-		yield return m_shootCooldownDurationWFS;
+		yield return new WaitForSeconds(Paced(m_shootCooldownDuration));
 	}
 }

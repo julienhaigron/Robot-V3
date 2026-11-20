@@ -71,7 +71,7 @@ public class RotateEntityAction : AEntityAction
 		}
 		else
 		{
-			PerformingEntity.Displacement.Rotate(targetedOrientationID[lifetime], GameConfig.current.game.entityRotationDuration, EndTick);
+			PerformingEntity.Displacement.Rotate(targetedOrientationID[lifetime], Mathf.Min(GameConfig.current.game.entityRotationDuration, TickTimeLeft), EndTick);
 		}
 
 		base.Perform(_state);
@@ -87,46 +87,21 @@ public class RotateEntityAction : AEntityAction
 
 	public override void Display ( TurnManager.RecordedAction _recordedAction )
 	{
-		if (FacingOrientation < 0 || _recordedAction == null || _recordedAction.action == null)
+		if (FacingOrientation < 0 || _recordedAction == null || _recordedAction.action == null
+			|| (isFacingOrder && TurnManager.Instance.IsEditingFacingOf(_recordedAction)))
 			return;
 
-		ShowArrow(this, performingEntityID, GetPivotOn(_recordedAction), FacingOrientation
-			, GetArrowMaterial(_recordedAction.entityState, !isFacingOrder));
+		RotationActionDisplay.Show(performingEntityID, GetPivotOn(_recordedAction)
+			, TurnManager.Instance.GetOrientationBeforeFreeRotation(_recordedAction), FacingOrientation, !isFacingOrder);
 	}
 
 	public override void GhostDisplay ( Entity.EntityState _state )
 	{
 	}
 
-	public static RotationActionDisplay ShowArrow ( RotateEntityAction _action, int _performingEntityID, Tile _pivot, int _orientation, Material _material )
-	{
-		if (_pivot == null || _orientation < 0 || GameAssets.current.game.rotationHandlePoolData == null)
-			return null;
-
-		RotationActionDisplay display = ObjectsPooling.GetElement(GameAssets.current.game.rotationHandlePoolData) as RotationActionDisplay;
-		if (display == null)
-			return null;
-
-		display.Init(_action, _material);
-		display.transform.position = _pivot.transform.position;
-		display.transform.rotation = GetFacingRotation(_orientation);
-
-		PlayerController.Instance.AddRotationActionDisplay(display, _performingEntityID);
-		return display;
-	}
-
 	public static Quaternion GetFacingRotation ( int _orientation )
 	{
 		return Quaternion.Euler(0f, 30f + _orientation * 60f, 0f);
-	}
-
-	public static Material GetArrowMaterial ( Entity.EntityState _state, bool _isGhost )
-	{
-		SerializableDictionary<Entity.EntityState, Material> materials = _isGhost
-			? GameAssets.current.ui.ghostEntityStateMaterials
-			: GameAssets.current.ui.entityStateMaterials;
-
-		return materials != null && materials.TryGetValue(_state, out Material material) ? material : null;
 	}
 
 	public override bool TileInteractPredicate ( Tile _tile )

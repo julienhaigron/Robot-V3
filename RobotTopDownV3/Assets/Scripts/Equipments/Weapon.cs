@@ -24,7 +24,9 @@ public class Weapon : MonoBehaviour
 	protected Action m_onPerformAttackEnd;
 	protected HashSet<Tile> m_targetedTiles = new();
 
-	private WaitForSeconds m_singleAttackDuration;
+	private float m_pace = 1f;
+	private const float c_minPace = .2f;
+	protected float Pace => m_pace;
 	private readonly Dictionary<ParticleSystem, Quaternion> m_onPerformPSRelativeRotations = new();
 
 	private const float c_tileAimHeight = 1f;
@@ -93,8 +95,6 @@ public class Weapon : MonoBehaviour
 		m_user = _user;
 		m_data = _data;
 		m_id = _id;
-
-		m_singleAttackDuration = new WaitForSeconds(_data.singleAttackAnimationDuration);
 	}
 
 	protected virtual void Awake ()
@@ -165,6 +165,7 @@ public class Weapon : MonoBehaviour
 			yield break;
 		}
 
+		m_pace = GetPace(_attackAction);
 		int lastSuccessfullAttackIndex = -1;
 		for (int i = 0; i < _attackAction.attacksInfos.Length; i++)
 		{
@@ -192,6 +193,46 @@ public class Weapon : MonoBehaviour
 			EndAttack(_attackAction);
 
 		m_attackCR = null;
+	}
+
+	private float GetPace ( AttackAction _attackAction )
+	{
+		float estimate = EstimateAttackDuration(_attackAction);
+		float budget = _attackAction.TickTimeLeft;
+		return estimate > budget ? Mathf.Max(c_minPace, budget / estimate) : 1f;
+	}
+
+	protected float Paced ( float _seconds )
+	{
+		return _seconds * m_pace;
+	}
+
+	protected virtual float EstimateAttackDuration ( AttackAction _attackAction )
+	{
+		EntityActionData data = _attackAction.Data;
+		float duration = 0f;
+		for (int i = 0; i < _attackAction.attacksInfos.Length; i++)
+			duration += data.performAnimationHitDelay + EstimateFeedbackFlight(data, GetDistanceToTarget(_attackAction, i)) + m_data.singleAttackAnimationDuration;
+
+		return duration;
+	}
+
+	protected float GetDistanceToTarget ( AttackAction _attackAction, int _attackIndex )
+	{
+		Tile tile = _attackAction.GetTargetTileAt(_attackIndex);
+		return tile != null ? Vector3.Distance(ProjectileOrigin, tile.transform.position) : 0f;
+	}
+
+	private static float EstimateFeedbackFlight ( EntityActionData _data, float _distance )
+	{
+		if (_data.attackProjectileMode == EntityActionData.AttackProjectileMode.None || _data.attackProjectilePool == null)
+			return 0f;
+
+		float flight = _distance / Mathf.Max(1f, _data.attackProjectileSpeed) * (_data.doesAttackProjectileReturn ? 2f : 1f);
+		if (_data.attackProjectileMode == EntityActionData.AttackProjectileMode.Spray)
+			flight += Mathf.Max(0, _data.attackProjectileSprayCount - 1) * Mathf.Max(0f, _data.attackProjectileSprayInterval);
+
+		return flight;
 	}
 
 	#region ATTACK FLOW
@@ -272,7 +313,7 @@ public class Weapon : MonoBehaviour
 				ApplyEffects(entity, pe);
 		}
 
-		yield return m_singleAttackDuration;
+		yield return new WaitForSeconds(Paced(m_data.singleAttackAnimationDuration));
 	}
 
 	private void HitTarget ( AttackAction _attackAction, AttackAction.SingleAttackInfo _attackInfo, WeaponTarget _target, Dictionary<WeaponEquipmentData.DamageType, int> _damages, HashSet<WeaponTarget> _hitTargets )
@@ -436,7 +477,7 @@ public class Weapon : MonoBehaviour
 			yield break;
 
 		List<AttackFlight> flights = BuildAttackFlights(data, _targets, _mainPoint);
-		float speed = Mathf.Max(1f, data.attackProjectileSpeed);
+		float speed = Mathf.Max(1f, data.attackProjectileSpeed) / m_pace;
 		float startTime = Time.time;
 		bool isVisible = IsAttackVisible();
 
@@ -496,7 +537,7 @@ public class Weapon : MonoBehaviour
 			{
 				WeaponTarget target = tiles[Mathf.Min(tiles.Count - 1, i * tiles.Count / count)];
 				Vector3 jitter = new(UnityEngine.Random.Range(-c_sprayJitter, c_sprayJitter), UnityEngine.Random.Range(-c_sprayJitter, c_sprayJitter) * .5f, UnityEngine.Random.Range(-c_sprayJitter, c_sprayJitter));
-				AttackFlight flight = new() { launchTime = now + i * Mathf.Max(0f, _data.attackProjectileSprayInterval), doesReturn = doesReturn };
+				AttackFlight flight = new() { launchTime = now + i * Paced(Mathf.Max(0f, _data.attackProjectileSprayInterval)), doesReturn = doesReturn };
 				flight.Add(origin);
 				flight.Add(GetAimPoint(target) + jitter, target);
 				if (doesReturn)

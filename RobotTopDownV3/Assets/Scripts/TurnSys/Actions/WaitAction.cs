@@ -33,7 +33,7 @@ public class WaitAction : AEntityAction
 	{
 		base.Perform(_state);
 
-		DG.Tweening.DOVirtual.DelayedCall(GameConfig.current.game.actionDuration, () => EndTick());
+		DG.Tweening.DOVirtual.DelayedCall(TickTimeLeft, () => EndTick());
 	}
 
 	public override void Display ( TurnManager.RecordedAction _recordedAction )

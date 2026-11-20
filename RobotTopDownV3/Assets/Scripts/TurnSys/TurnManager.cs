@@ -5,6 +5,7 @@ using Sirenix.OdinInspector;
 using Unity.Netcode;
 using System.Linq;
 using System;
+using DG.Tweening;
 
 public class TurnManager : Singleton<TurnManager>
 {
@@ -30,6 +31,11 @@ public class TurnManager : Singleton<TurnManager>
 #endif
 
 	private float m_currentTickStartTime;
+	private float m_tickPlayStartTime;
+	private Tween m_tickEndDelay;
+	private const float c_minActionTimeShare = .25f;
+	private const float c_tickEndTolerance = .02f;
+	public static float TickDuration => GameConfig.current.game.actionDuration;
 	public float CurrentTickElapsedTime => currentPhase == TurnPhase.Playing ? Time.time - m_currentTickStartTime : 0f;
 
 	[SerializeField] private NetworkedTurnSystem m_networkedTurnSystem;
@@ -340,6 +346,14 @@ public class TurnManager : Singleton<TurnManager>
 		m_stateOfLastPlayedAction.Clear();
 		m_entitiesHoldingFacingOrder.Clear();
 		CloseFacingPicker(false);
+		m_tickEndDelay?.Kill();
+		m_tickEndDelay = null;
+	}
+
+	public static float GetTickTimeLeft ( float _reserve = 0f )
+	{
+		float elapsed = Instance != null && Instance.currentPhase == TurnPhase.Playing ? Time.time - Instance.m_tickPlayStartTime : 0f;
+		return Mathf.Max(TickDuration * c_minActionTimeShare, TickDuration - elapsed - _reserve);
 	}
 
 	public void TrackEntireGameAction ( int _entityID, EntityActionEnumID _actionType )
@@ -850,10 +864,23 @@ public class TurnManager : Singleton<TurnManager>
 		if (m_facingPicker == null || !GameManager.Instance.GetEntityFromID(out Entity entity, m_facingPicker.entityID))
 			return;
 
+		RecordedAction host = GetFacingPickerHost();
 		int plannedOrientation = GetPlannedOrientationOf(m_facingPicker.entityID, GetFacingPickerTokenCount());
+		int fromOrientation = host != null ? GetOrientationBeforeFreeRotation(host) : plannedOrientation;
 		int shownOrientation = m_facingPicker.hoveredOrientation >= 0 ? m_facingPicker.hoveredOrientation : plannedOrientation;
 
-		PlayerController.Instance.ShowFacingPicker(entity, m_facingPicker.pivot, shownOrientation, GetDefaultStateOf(entity), GetFacingConeTiles(entity, shownOrientation));
+		PlayerController.Instance.ShowFacingPicker(entity, m_facingPicker.pivot, fromOrientation, shownOrientation, GetFacingConeTiles(entity, shownOrientation));
+	}
+
+	private RecordedAction GetFacingPickerHost ()
+	{
+		RecordedAction host = m_facingPicker.host ?? GetLastRecordedAction(m_facingPicker.entityID);
+		return host != null && CanHostFacingOrder(host) && host.action.positionAtActionEndID == m_facingPicker.pivot.coordinates.ID ? host : null;
+	}
+
+	public bool IsEditingFacingOf ( RecordedAction _host )
+	{
+		return m_facingPicker != null && _host != null && _host == GetFacingPickerHost();
 	}
 
 	private HashSet<Tile> GetFacingConeTiles ( Entity _entity, int _orientation )
@@ -874,8 +901,8 @@ public class TurnManager : Singleton<TurnManager>
 
 		FacingPicker picker = m_facingPicker;
 		int orientation = GridManager.Instance.GetClosestOrientation(picker.pivot, _tile);
-		RecordedAction host = picker.host ?? GetLastRecordedAction(picker.entityID);
-		bool canHost = host != null && CanHostFacingOrder(host) && host.action.positionAtActionEndID == picker.pivot.coordinates.ID;
+		RecordedAction host = GetFacingPickerHost();
+		bool canHost = host != null;
 
 		if (!canHost && (!m_remainingActionToken.TryGetValue(picker.entityID, out int remainingTokens) || remainingTokens <= 0))
 			return false;
@@ -977,6 +1004,17 @@ public class TurnManager : Singleton<TurnManager>
 		}
 
 		return orientation;
+	}
+
+	public int GetOrientationBeforeFreeRotation ( RecordedAction _host )
+	{
+		return GetFacingAfterMovementOf(_host, GetPlannedOrientationOf(_host.action.performingEntityID, _host.action.timeAtStart));
+	}
+
+	private static int GetFacingAfterMovementOf ( RecordedAction _recordedAction, int _orientationBefore )
+	{
+		return _recordedAction.freeAction is RotateEntityAction { IsPlayedFirst: true }
+			? _orientationBefore : GetMovementFacingOf(_recordedAction.action, _orientationBefore);
 	}
 
 	public static int GetPlannedOrientationAfter ( RecordedAction _recordedAction, int _orientationBefore )
@@ -1432,7 +1470,8 @@ public class TurnManager : Singleton<TurnManager>
 			RecordedAction lastRecordedAction = new();
 			Entity entity = GameManager.Instance.GetEntityFromID(entityID);
 			Tile lastRecordedPosition = entity.Displacement.Coordinates.GetTile();
-			int lastRecordedOrientation = entity.Displacement.CurrentOrientation;
+			int plannedOrientation = entity.Displacement.CurrentOrientation;
+			int lastRecordedOrientation = plannedOrientation;
 			int ghostTokenCount = _specificTokenCount == -1 && entityID == _selectedEntityID && EntityActionDisplay.SelectedDisplay == null
 				? int.MaxValue : _specificTokenCount;
 
@@ -1442,13 +1481,18 @@ public class TurnManager : Singleton<TurnManager>
 				totalCost += recordedAction.action.TotalDuration;
 				recordedAction.action.Display(recordedAction);
 
+				int movementFacing = GetFacingAfterMovementOf(recordedAction, plannedOrientation);
+				if (movementFacing != plannedOrientation)
+					RotationActionDisplay.ShowMovementTurn(entityID, GridManager.Instance.Tiles[recordedAction.action.supposedPositionAtActionStartID], plannedOrientation, movementFacing);
+
 				if (recordedAction.freeAction != null && recordedAction.freeActionType != EntityActionEnumID.Unknowned && recordedAction.freeActionType != EntityActionEnumID.Wait)
 					recordedAction.freeAction.Display(recordedAction);
 
+				plannedOrientation = GetPlannedOrientationAfter(recordedAction, plannedOrientation);
 				if (ghostTokenCount != -1 && totalCost <= ghostTokenCount)
 				{
 					lastRecordedPosition = GridManager.Instance.Tiles[recordedAction.action.positionAtActionEndID];
-					lastRecordedOrientation = GetPlannedOrientationAfter(recordedAction, lastRecordedOrientation);
+					lastRecordedOrientation = plannedOrientation;
 				}
 			}
 
@@ -1837,6 +1881,7 @@ public class TurnManager : Singleton<TurnManager>
 
 	public void PlayThisRoundActions ()
 	{
+		m_tickPlayStartTime = Time.time;
 		onNewRoundStart?.Invoke();
 		currentPhase = TurnPhase.Playing;
 		List<int> entityIDs = new(m_actionsToPlay.Keys);
@@ -1897,6 +1942,8 @@ public class TurnManager : Singleton<TurnManager>
 		bool isFreeActionPlayedFirst = doesPlayFreeAction && _recordedAction.freeAction.IsPlayedFirst;
 
 		_recordedAction.action.doesFreeActionOwnFacing = isFreeActionPlayedFirst && IsRotationFreeAction(_recordedAction);
+		_recordedAction.action.tickTimeReserve = doesPlayFreeAction && !isFreeActionPlayedFirst
+			? Mathf.Min(GameConfig.current.game.entityRotationDuration, TickDuration * .5f) : 0f;
 		TrackFacingOrder(_recordedAction, doesPlayFreeAction);
 
 		if (doesPlayFreeAction)
@@ -1998,6 +2045,9 @@ public class TurnManager : Singleton<TurnManager>
 
 		if (areAllActionPerformed && m_inPlayEventBeingDone.Count == 0)
 		{
+			if (DelayTickEnd())
+				return;
+
 			if (!GameManager.Instance.IsOnline)
 			{
 				EndRoundTick();
@@ -2008,6 +2058,24 @@ public class TurnManager : Singleton<TurnManager>
 				NetworkTaskOrchestrator.Instance.NotifyTaskEndToServerRPC("PlayPhase");
 			}
 		}
+	}
+
+	private bool DelayTickEnd ()
+	{
+		if (m_tickEndDelay != null)
+			return true;
+
+		float remaining = TickDuration - (Time.time - m_tickPlayStartTime);
+		if (remaining <= c_tickEndTolerance)
+			return false;
+
+		m_tickEndDelay = DOVirtual.DelayedCall(remaining, () =>
+		{
+			m_tickEndDelay = null;
+			if (currentPhase == TurnPhase.Playing)
+				TryEndRoundTick();
+		});
+		return true;
 	}
 
 	public void NotifyTickCompletionIfDone ()

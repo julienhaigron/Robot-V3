@@ -80,7 +80,7 @@ public class MoveToTargetAction : AEntityAction
 		}
 		else
 		{
-			m_movementTween = DOVirtual.DelayedCall(GameConfig.current.game.actionDuration, () =>
+			m_movementTween = DOVirtual.DelayedCall(TickTimeLeft, () =>
 			{
 				EndTick();
 			});
@@ -90,7 +90,7 @@ public class MoveToTargetAction : AEntityAction
 	private IEnumerator PerformCR ()
 	{
 		int movementAmount = Mathf.Min(targetTileIDs.Length, Data.movementSpeed);
-		float movementSpeed = GameConfig.current.game.actionDuration / movementAmount;
+		float movementSpeed = TickTimeLeft / movementAmount;
 
 		for (int i = 0; i < movementAmount; i++)
 		{
@@ -348,22 +348,7 @@ public class MoveToTargetAction : AEntityAction
 
 	public override void Display ( TurnManager.RecordedAction _recordedAction )
 	{
-		Vector3 previousPosition = GridManager.Instance.Tiles[supposedPositionAtActionStartID].transform.position;
-		bool didBeginning = false;
-		foreach (int tileID in targetTileIDs)
-		{
-			ActionDisplayOnTile arrow = ObjectsPooling.GetElement(GameAssets.current.game.arrowPoolData) as ActionDisplayOnTile;
-			Vector3 startPos = previousPosition;
-			Vector3 destination = GridManager.Instance.Tiles[tileID].transform.position;
-			Vector3 position = Vector3.Lerp(startPos, destination, .5f);
-			previousPosition = destination;
-			arrow.Init(_recordedAction, !didBeginning);
-			arrow.transform.position = position;
-			arrow.transform.LookAt(GridManager.Instance.Tiles[tileID].transform);
-
-			didBeginning = true;
-			PlayerController.Instance.AddActionDisplay(arrow, performingEntityID, false);
-		}
+		ActionDisplayOnTile.ShowRecorded(_recordedAction, targetTileIDs);
 	}
 
 	public override void GhostDisplay ( Entity.EntityState _state )
@@ -375,22 +360,8 @@ public class MoveToTargetAction : AEntityAction
 		List<Tile> path = GridManager.Instance.GetPath(from, GridManager.Instance.Tiles[positionAtActionEndID], true, false, PerformingEntity, _canTraverseAllies: true);
 		if (path == null)
 			return;
+
 		path.Reverse();
-
-		for (int i = 0; i < path.Count - 1; i++)
-		{
-			Tile thisTile = path[i];
-			Tile otherTile = path[i+1];
-			ActionDisplayOnTile arrow = ObjectsPooling.GetElement(GameAssets.current.game.arrowPoolData) as ActionDisplayOnTile;
-			Vector3 startPos = thisTile.transform.position;
-			Vector3 destination = otherTile.transform.position;
-			Vector3 position = Vector3.Lerp(startPos, destination, .5f);
-			arrow.SetMaterial(GameAssets.current.ui.ghostEntityStateMaterials[_state]);
-			arrow.SetBeginningGoVisibility(i % Data.movementSpeed == 0);
-			arrow.transform.position = position;
-			arrow.transform.LookAt(otherTile.transform);
-
-			PlayerController.Instance.AddActionDisplay(arrow, performingEntityID, true);
-		}
+		ActionDisplayOnTile.ShowGhost(this, path, Data.movementSpeed, _state);
 	}
 }
