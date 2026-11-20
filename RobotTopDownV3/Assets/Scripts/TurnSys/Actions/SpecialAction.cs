@@ -7,6 +7,8 @@ using Unity.Netcode;
 public class SpecialAction : AEntityAction
 {
 	private const float ProjectileTimeout = 3f;
+	public const float WeaponAimDuration = .3f;
+	public const float WeaponAimHold = .4f;
 
 	public override void Prepare ( Entity.EntityState _state )
 	{
@@ -234,12 +236,17 @@ public class SpecialAction : AEntityAction
 
 		bool isProjectileDone = false;
 		bool wasEffectApplied = false;
+		bool isAiming = Data.projectilePool != null && user != null && (targetTile != null || targetEntity != null) && AimLinkedWeapon(user, targetEntity);
+		if (isAiming)
+			yield return new WaitForSeconds(WeaponAimDuration);
 
 		if (Data.projectilePool == null || user == null || (targetTile == null && targetEntity == null)
 			|| !TryLaunchProjectile(user, targetTile, targetEntity
 				, () => { wasEffectApplied = true; ApplyActionEffect(); }
 				, () => isProjectileDone = true))
 		{
+			if (isAiming)
+				ReleaseLinkedWeaponAim(user);
 			yield return CharacterAnimationVisualCR();
 			yield break;
 		}
@@ -248,11 +255,36 @@ public class SpecialAction : AEntityAction
 		while (!isProjectileDone && elapsed < ProjectileTimeout)
 		{
 			elapsed += Time.deltaTime;
+			if (isAiming && elapsed >= WeaponAimHold)
+			{
+				isAiming = false;
+				ReleaseLinkedWeaponAim(user);
+			}
 			yield return null;
 		}
 
+		if (isAiming)
+			ReleaseLinkedWeaponAim(user);
 		if (!wasEffectApplied)
 			ApplyActionEffect();
+	}
+
+	private bool AimLinkedWeapon ( Entity _user, Entity _targetEntity )
+	{
+		if (string.IsNullOrEmpty(linkedEquipmentId) || _user.Skin == null || !_user.Equipment.Weapons.TryGetValue(linkedEquipmentId, out Weapon weapon) || weapon == null)
+			return false;
+
+		Vector3 target = GetVisualTargetPosition();
+		if (_targetEntity == null)
+			target += Vector3.up * .5f;
+		_user.Skin.VisualyAimAt(linkedEquipmentId, target, Data);
+		return true;
+	}
+
+	private void ReleaseLinkedWeaponAim ( Entity _user )
+	{
+		if (_user != null && _user.Skin != null)
+			_user.Skin.ReleaseAim();
 	}
 
 	private bool TryLaunchProjectile ( Entity _user, Tile _targetTile, Entity _targetEntity, Action _onImpact, Action _onDespawn )

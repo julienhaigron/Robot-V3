@@ -168,7 +168,7 @@ public static class AnimationLabSession
 		if (!EditorApplication.isPlaying || Rig == null || !Rig.IsAlive)
 			return;
 
-		Rig.TickGuard(Time.deltaTime);
+		Rig.TickAnimators(Time.deltaTime);
 		CaptureLegsBaseline();
 
 		if (!IsLooping || Rig.Animator.speed == 0f || Rig.Request == null)
@@ -185,7 +185,7 @@ public static class AnimationLabSession
 		else if (Time.realtimeSinceStartup - s_idleSince >= c_loopPause)
 		{
 			s_idleSince = -1f;
-			Rig.Play(Rig.Request.Value);
+			Rig.Play(Rig.Request());
 		}
 	}
 

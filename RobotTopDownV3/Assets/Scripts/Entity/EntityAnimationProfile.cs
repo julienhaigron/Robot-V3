@@ -33,21 +33,26 @@ public class EntityAnimationProfile : ScriptableObject
 
 	public AttackTuning Find ( EntityActionData _action, string _trigger )
 	{
-		return FindOwn(_action) ?? FindTrigger(_trigger);
+		return FindOwn(_action, _trigger) ?? FindTrigger(_trigger);
 	}
 
-	public AttackTuning FindOwn ( EntityActionData _action )
+	public AttackTuning FindOwn ( EntityActionData _action, string _trigger )
 	{
 		if (_action == null || attacks == null)
 			return null;
 
 		foreach (AttackTuning tuning in attacks)
 		{
-			if (tuning != null && tuning.action == _action)
+			if (IsOwnEntry(tuning, _action, _trigger))
 				return tuning;
 		}
 
 		return null;
+	}
+
+	public static bool IsOwnEntry ( AttackTuning _tuning, EntityActionData _action, string _trigger )
+	{
+		return _tuning != null && _tuning.action == _action && (string.IsNullOrEmpty(_tuning.trigger) || _tuning.trigger == _trigger);
 	}
 
 	public AttackTuning FindTrigger ( string _trigger )
@@ -66,18 +71,14 @@ public class EntityAnimationProfile : ScriptableObject
 
 	public TuningSource SourceFor ( EntityActionData _action, string _trigger )
 	{
-		return FindOwn(_action) != null ? TuningSource.Action : FindTrigger(_trigger) != null ? TuningSource.Trigger : TuningSource.Default;
+		return FindOwn(_action, _trigger) != null ? TuningSource.Action : FindTrigger(_trigger) != null ? TuningSource.Trigger : TuningSource.Default;
 	}
 
-	public float SpeedFor ( EntityActionData _action, string _trigger )
+	public AttackAnimationPlayer.Tuning TuningFor ( EntityActionData _action, string _trigger )
 	{
 		AttackTuning tuning = Find(_action, _trigger);
-		return Mathf.Clamp(tuning != null ? tuning.speed : attackSpeed, MinSpeed, MaxSpeed);
-	}
-
-	public float IntensityFor ( EntityActionData _action, string _trigger )
-	{
-		AttackTuning tuning = Find(_action, _trigger);
-		return Mathf.Clamp(tuning != null ? tuning.intensity : attackIntensity, MinIntensity, 1f);
+		return new AttackAnimationPlayer.Tuning(
+			Mathf.Clamp(tuning != null ? tuning.speed : attackSpeed, MinSpeed, MaxSpeed),
+			Mathf.Clamp(tuning != null ? tuning.intensity : attackIntensity, MinIntensity, 1f));
 	}
 }

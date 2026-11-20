@@ -30,3 +30,6 @@ MonoBehaviour:
   attackAnimationFailureId: 
   isTwoHanded: 0
   singleAttackAnimationDuration: 0.3
+  guardAnimation: Throw
+  guardTorsoYaw: 35
+  aimAnimation: Cannon

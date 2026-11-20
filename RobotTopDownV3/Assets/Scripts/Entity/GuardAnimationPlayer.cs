@@ -1,20 +1,15 @@
 using UnityEngine;
 
-public class GuardAnimationPlayer
+public class GuardAnimationPlayer : AnimatorLayerDriver
 {
 	public const string StatePrefix = "Guard ";
 	public const string IdleStateName = "Idle";
 	public const string TorsoParameter = "TorsoTwist";
 	public const float TorsoRange = 60f;
-	private const int c_layer = 0;
 	private const float c_fade = .35f;
 	private const float c_torsoSpeed = 150f;
 
-	private readonly Animator m_animator;
 	private readonly int m_idleState = Animator.StringToHash(IdleStateName);
-	private bool m_isChecked;
-	private bool m_hasIdle;
-	private bool m_hasTorso;
 	private string m_key;
 	private bool m_isLeftHand;
 	private int m_state;
@@ -24,24 +19,23 @@ public class GuardAnimationPlayer
 	public float Torso { get; private set; }
 	public bool HasGuard => m_state != 0;
 
-	public GuardAnimationPlayer ( Animator _animator )
+	public GuardAnimationPlayer ( Animator _animator ) : base(_animator, null)
 	{
-		m_animator = _animator;
 	}
 
 	public static string StateName ( string _key, bool _isLeftHand )
 	{
-		return StatePrefix + _key + (_isLeftHand ? " L" : " R");
+		return HandStateName(StatePrefix, _key, _isLeftHand);
 	}
 
 	public bool HasState ( string _key, bool _isLeftHand )
 	{
-		return IsReady() && !string.IsNullOrEmpty(_key) && m_animator.HasState(c_layer, Animator.StringToHash(StateName(_key, _isLeftHand)));
+		return !string.IsNullOrEmpty(_key) && HasState(StateName(_key, _isLeftHand));
 	}
 
 	public void Set ( string _key, bool _isLeftHand, float _torsoYaw )
 	{
-		if (!IsReady())
+		if (Layer < 0)
 			return;
 
 		if (_key != m_key || _isLeftHand != m_isLeftHand)
@@ -51,40 +45,25 @@ public class GuardAnimationPlayer
 			m_state = HasState(_key, _isLeftHand) ? Animator.StringToHash(StateName(_key, _isLeftHand)) : 0;
 		}
 
-		m_torsoTarget = HasGuard && m_hasTorso ? Mathf.Clamp(_isLeftHand ? -_torsoYaw : _torsoYaw, -TorsoRange, TorsoRange) : 0f;
+		m_torsoTarget = HasGuard && HasParameter(TorsoParameter) ? Mathf.Clamp(_isLeftHand ? -_torsoYaw : _torsoYaw, -TorsoRange, TorsoRange) : 0f;
 	}
 
 	public void Update ( float _deltaTime )
 	{
-		if (!IsReady() || !m_animator.isActiveAndEnabled)
+		if (!IsPlayable)
 			return;
 
-		int playing = m_animator.IsInTransition(c_layer) ? m_animator.GetNextAnimatorStateInfo(c_layer).shortNameHash : m_animator.GetCurrentAnimatorStateInfo(c_layer).shortNameHash;
+		int playing = PlayingState();
 		if (m_state != 0 && playing != m_state)
 		{
-			m_animator.CrossFadeInFixedTime(m_state, c_fade, c_layer);
+			m_animator.CrossFadeInFixedTime(m_state, c_fade, Layer);
 			m_lastGuard = m_state;
 		}
-		else if (m_state == 0 && m_hasIdle && m_lastGuard != 0 && playing == m_lastGuard)
-			m_animator.CrossFadeInFixedTime(m_idleState, c_fade, c_layer);
+		else if (m_state == 0 && m_lastGuard != 0 && playing == m_lastGuard && HasState(IdleStateName))
+			m_animator.CrossFadeInFixedTime(m_idleState, c_fade, Layer);
 
 		Torso = Mathf.MoveTowards(Torso, m_torsoTarget, c_torsoSpeed * _deltaTime);
-		if (m_hasTorso)
+		if (HasParameter(TorsoParameter))
 			m_animator.SetFloat(TorsoParameter, Torso / TorsoRange);
-	}
-
-	private bool IsReady ()
-	{
-		if (m_isChecked)
-			return true;
-
-		if (m_animator == null || m_animator.runtimeAnimatorController == null || !m_animator.isInitialized)
-			return false;
-
-		m_isChecked = true;
-		m_hasIdle = m_animator.HasState(c_layer, m_idleState);
-		foreach (AnimatorControllerParameter parameter in m_animator.parameters)
-			m_hasTorso |= parameter.name == TorsoParameter && parameter.type == AnimatorControllerParameterType.Float;
-		return true;
 	}
 }

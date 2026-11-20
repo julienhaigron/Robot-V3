@@ -1,24 +1,33 @@
 using Sirenix.OdinInspector;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.TextCore.Text;
 
 public class HumanoidEntityIK : MonoBehaviour
 {
 	[System.Serializable]
 	public class BodyPartsTransforms : SerializableDictionary<CharacterBodyPart, Transform> { };
 
+	public enum CharacterBodyPart
+	{
+		RightHand,
+		LeftHand,
+		Spine,
+		RightFoot,
+		LeftFoot,
+		ArmStack,
+	}
+
+	public const string LeftGripLayerName = "LeftHandGrip";
+	public const string RightGripLayerName = "RightHandGrip";
+	private const float c_gripSpeed = 8f;
+	private const float c_aimBlendSpeed = 6f;
+	private const float c_recoilImpulse = 1.75f;
+	private const float c_recoilStep = 1f / 120f;
+
 	public BodyPartsTransforms bodypartsTransform = new BodyPartsTransforms();
 	public Animator animator;
 
 	public Transform handGrabSocket;
 	public Transform offHandGrabSocket;
-
-	//public Transform rightHandTarget;
-	//public Transform leftHandtarget;
-	public Vector3? rightHandTarget;
-	public Vector3? leftHandTarget;
 
 	[Title("Shot Recoil")]
 	[SerializeField] private float m_recoilBodyPitch = 6f;
@@ -28,15 +37,22 @@ public class HumanoidEntityIK : MonoBehaviour
 	[SerializeField, Range(.05f, 1f)] private float m_recoilDamping = .45f;
 	[SerializeField, Min(0f)] private float m_maxRecoil = 3f;
 
-	protected Quaternion m_defaultHandPivotRotation;
+	public float GripAmount { get; set; } = 1f;
+
+	private Quaternion m_defaultHandPivotRotation;
 	private Quaternion m_defaultOffHandPivotRotation;
+
+	private Pose m_renderedMainSocket;
+	private Pose m_renderedOffSocket;
+	private bool m_hasRenderedSockets;
+
 	private Transform m_aimingSocket;
 	private Transform m_aimingHeld;
-	private Vector3? m_aimedPosition;
-	private Entity m_aimedEntity;
+	private AvatarIKGoal m_aimGoal = AvatarIKGoal.RightHand;
+	private Vector3 m_aimTarget;
+	private float m_aimWeight;
+	private bool m_isAiming;
 
-	private const float RecoilImpulse = 1.75f;
-	private const float RecoilStep = 1f / 120f;
 	private float m_recoil;
 	private float m_recoilSpeed;
 	private float m_recoilSide;
@@ -45,10 +61,6 @@ public class HumanoidEntityIK : MonoBehaviour
 	private readonly RecoilPose m_chestPose = new();
 	private readonly RecoilPose m_armPose = new();
 
-	public const string LeftGripLayerName = "LeftHandGrip";
-	public const string RightGripLayerName = "RightHandGrip";
-	private const float c_gripSpeed = 8f;
-	public float GripAmount { get; set; } = 1f;
 	private int m_leftGripLayer = -2;
 	private int m_rightGripLayer = -2;
 	private float m_leftGrip;
@@ -71,23 +83,99 @@ public class HumanoidEntityIK : MonoBehaviour
 			m_defaultOffHandPivotRotation = offHandGrabSocket.localRotation;
 	}
 
+	private void Reset ()
+	{
+		SetupBodyparts();
+		CreateHandSocket();
+	}
+
+	private void Update ()
+	{
+		UpdateGrip(Time.deltaTime);
+		UpdateAimWeight(Time.deltaTime);
+	}
+
+	private void LateUpdate ()
+	{
+		AimSocket();
+		UpdateRecoil(Time.deltaTime);
+		CaptureRenderedSockets();
+	}
+
+	private void OnDisable ()
+	{
+		m_hasRenderedSockets = false;
+	}
+
+	private void OnAnimatorIK ( int _layerIndex )
+	{
+		SetHandGoal(AvatarIKGoal.RightHand);
+		SetHandGoal(AvatarIKGoal.LeftHand);
+	}
+
+	#region Sockets
+
+	public Transform GetTransform ( CharacterBodyPart _characterBodyPart )
+	{
+		return bodypartsTransform.TryGetValue(_characterBodyPart, out Transform part) ? part : null;
+	}
+
 	public Transform GetGrabSocket ( int _armIndex )
 	{
 		return _armIndex % 2 == 1 && offHandGrabSocket != null ? offHandGrabSocket : handGrabSocket;
 	}
 
-	public void FitInHand ( Transform _held )
+	public bool IsHeldInLeftHand ( Transform _item )
 	{
-		if (_held != null && offHandGrabSocket != null && offHandGrabSocket != handGrabSocket && _held.parent == offHandGrabSocket)
-			MirrorLocalPose(_held);
+		return GetIKGoalOf(_item) == AvatarIKGoal.LeftHand;
 	}
 
-	public static void MirrorLocalPose ( Transform _held )
+	public Pose RenderedPoseOf ( Transform _point )
 	{
+		Transform socket = m_hasRenderedSockets ? HoldingSocketOf(_point) : null;
+		if (socket == null)
+			return new Pose(_point.position, _point.rotation);
+
+		Pose rendered = socket == offHandGrabSocket ? m_renderedOffSocket : m_renderedMainSocket;
+		Quaternion toRendered = rendered.rotation * Quaternion.Inverse(socket.rotation);
+		return new Pose(rendered.position + toRendered * (_point.position - socket.position), toRendered * _point.rotation);
+	}
+
+	private Transform HoldingSocketOf ( Transform _point )
+	{
+		for (Transform current = _point; current != null; current = current.parent)
+		{
+			if (current == handGrabSocket || current == offHandGrabSocket)
+				return current;
+		}
+
+		return null;
+	}
+
+	private void CaptureRenderedSockets ()
+	{
+		if (handGrabSocket != null)
+			m_renderedMainSocket = new Pose(handGrabSocket.position, handGrabSocket.rotation);
+		if (offHandGrabSocket != null)
+			m_renderedOffSocket = new Pose(offHandGrabSocket.position, offHandGrabSocket.rotation);
+		m_hasRenderedSockets = true;
+	}
+
+	public void FitInHand ( Transform _held )
+	{
+		if (_held == null || offHandGrabSocket == null || offHandGrabSocket == handGrabSocket || _held.parent != offHandGrabSocket)
+			return;
+
 		Vector3 position = _held.localPosition;
 		Quaternion rotation = _held.localRotation;
-		_held.localPosition = new Vector3(-position.x, position.y, position.z);
-		_held.localRotation = new Quaternion(rotation.x, -rotation.y, -rotation.z, rotation.w);
+		MirrorPose(ref position, ref rotation);
+		_held.SetLocalPositionAndRotation(position, rotation);
+	}
+
+	public static void MirrorPose ( ref Vector3 _position, ref Quaternion _rotation )
+	{
+		_position = new Vector3(-_position.x, _position.y, _position.z);
+		_rotation = new Quaternion(_rotation.x, -_rotation.y, -_rotation.z, _rotation.w);
 	}
 
 	private AvatarIKGoal GetIKGoalOf ( Transform _socket )
@@ -110,31 +198,40 @@ public class HumanoidEntityIK : MonoBehaviour
 			return;
 
 		Vector3 mirrorNormal = GetMirrorNormal(mainHand, offHand);
-
 		GameObject socket = new() { name = "OffHandGrabSocket" };
 		socket.transform.SetParent(offHand, false);
 		socket.transform.localScale = handGrabSocket.localScale;
 		socket.transform.position = offHand.position + Vector3.Reflect(handGrabSocket.position - mainHand.position, mirrorNormal);
 		socket.transform.rotation = Quaternion.LookRotation(Vector3.Reflect(handGrabSocket.forward, mirrorNormal), Vector3.Reflect(handGrabSocket.up, mirrorNormal));
-
 		offHandGrabSocket = socket.transform;
 	}
 
 	private Vector3 GetMirrorNormal ( Transform _mainHand, Transform _offHand )
 	{
-		if (animator != null && animator.isHuman)
-		{
-			Transform leftArm = animator.GetBoneTransform(HumanBodyBones.LeftUpperArm);
-			Transform rightArm = animator.GetBoneTransform(HumanBodyBones.RightUpperArm);
-			if (leftArm != null && rightArm != null && (rightArm.position - leftArm.position).sqrMagnitude > .0001f)
-				return (rightArm.position - leftArm.position).normalized;
-		}
+		Transform leftArm = GetHumanBone(HumanBodyBones.LeftUpperArm);
+		Transform rightArm = GetHumanBone(HumanBodyBones.RightUpperArm);
+		if (leftArm != null && rightArm != null && (rightArm.position - leftArm.position).sqrMagnitude > .0001f)
+			return (rightArm.position - leftArm.position).normalized;
 
 		Vector3 betweenHands = _offHand.position - _mainHand.position;
 		return betweenHands.sqrMagnitude > .0001f ? betweenHands.normalized : transform.right;
 	}
 
-	[Button()]
+	[Button, HideIf("handGrabSocket")]
+	public void CreateHandSocket ()
+	{
+		if (handGrabSocket)
+			return;
+
+		GameObject socket = new() { name = "GrabSocket" };
+		socket.transform.parent = GetTransform(CharacterBodyPart.RightHand);
+		socket.transform.localScale = Vector3.one;
+		socket.transform.localPosition = Vector3.zero;
+		socket.transform.localRotation = Quaternion.Euler(-90, 0, 90);
+		handGrabSocket = socket.transform;
+	}
+
+	[Button]
 	private void SetupBodyparts ()
 	{
 		animator = GetComponent<Animator>();
@@ -145,101 +242,112 @@ public class HumanoidEntityIK : MonoBehaviour
 		bodypartsTransform.Add(CharacterBodyPart.LeftFoot, FindObjectContainingName("foot.left", transform));
 	}
 
-	private void Reset ()
-	{
-		SetupBodyparts();
-		CreateHandSocket();
-	}
-
-	private Transform FindObjectContainingName ( string _name, Transform _transformFrom )
+	private static Transform FindObjectContainingName ( string _name, Transform _from )
 	{
 		_name = _name.ToLower();
-		foreach (Transform child in _transformFrom)
+		foreach (Transform child in _from)
 		{
 			if (child.name.ToLower().Contains(_name))
-			{
 				return child;
-			}
-			Transform t = FindObjectContainingName(_name, child);
-			if (t != null)
-			{
-				return t;
-			}
+
+			Transform found = FindObjectContainingName(_name, child);
+			if (found != null)
+				return found;
 		}
+
 		return null;
 	}
 
-	public Transform GetTransform ( CharacterBodyPart _characterBodyPart )
+	private Transform GetHumanBone ( HumanBodyBones _bone )
 	{
-		if (bodypartsTransform.ContainsKey(_characterBodyPart))
-		{
-			return (bodypartsTransform[_characterBodyPart]);
-		}
-		return null;
+		return animator != null && animator.isHuman ? animator.GetBoneTransform(_bone) : null;
 	}
 
-	public enum CharacterBodyPart
-	{
-		RightHand,
-		LeftHand,
-		Spine,
-		RightFoot,
-		LeftFoot,
-		ArmStack,
-	}
+	#endregion
 
-	private void OnAnimatorIK ( int _layerIndex )
-	{
-		if (rightHandTarget != null && rightHandTarget.HasValue)
-		{
-			animator.SetIKPositionWeight(AvatarIKGoal.RightHand, 1f);
-			animator.SetIKPosition(AvatarIKGoal.RightHand, rightHandTarget.Value);
-		}
-		else
-		{
-			animator.SetIKPositionWeight(AvatarIKGoal.RightHand, 0f);
-			//animator.SetIKRotationWeight(AvatarIKGoal.RightHand, 0f);
-		}
-		if (leftHandTarget != null && leftHandTarget.HasValue)
-		{
-			animator.SetIKPositionWeight(AvatarIKGoal.LeftHand, 1f);
-			animator.SetIKPosition(AvatarIKGoal.LeftHand, leftHandTarget.Value);
-			/*animator.SetIKRotationWeight(AvatarIKGoal.LeftHand, 1f);
-			animator.SetIKRotation(AvatarIKGoal.LeftHand, leftHandtarget.rotation);*/
-		}
-		else
-		{
-			animator.SetIKPositionWeight(AvatarIKGoal.LeftHand, 0f);
-			//animator.SetIKRotationWeight(AvatarIKGoal.LeftHand, 0f);
-		}
-	}
+	#region Aim
 
-	public bool IsHeldInLeftHand ( Transform _item )
+	public void Aim ( Transform _socket, Vector3 _position, Transform _held = null )
 	{
-		return GetIKGoalOf(_item) == AvatarIKGoal.LeftHand;
-	}
-
-	public void Recoil ( float _strength, Transform _weapon, bool _isTwoHanded )
-	{
-		if (_strength <= 0f || !isActiveAndEnabled)
+		if (!isActiveAndEnabled)
 			return;
 
-		bool isLeftHand = IsHeldInLeftHand(_weapon);
-		m_recoilSide = _isTwoHanded ? 0f : isLeftHand ? -1f : 1f;
-		m_recoilArm = _isTwoHanded ? null : GetHumanBone(isLeftHand ? HumanBodyBones.LeftUpperArm : HumanBodyBones.RightUpperArm);
-		m_recoilSpeed += _strength * RecoilImpulse * 2f * Mathf.PI * m_recoilFrequency;
+		Transform socket = _socket != null ? _socket : handGrabSocket;
+		if (m_aimingSocket != null && m_aimingSocket != socket)
+			ResetSocketRotation(m_aimingSocket);
+
+		m_aimingSocket = socket;
+		m_aimingHeld = _held;
+		m_aimGoal = GetIKGoalOf(socket);
+		m_aimTarget = _position;
+		m_isAiming = true;
 	}
 
-	private void Update ()
+	public void ReleaseAim ()
 	{
-		UpdateGrip(Time.deltaTime);
+		m_isAiming = false;
+		if (m_aimWeight > 0f && isActiveAndEnabled)
+			return;
+
+		m_aimWeight = 0f;
+		FinishRelease();
 	}
 
-	private void LateUpdate ()
+	private void UpdateAimWeight ( float _deltaTime )
 	{
-		AimSocket();
-		UpdateRecoil(Time.deltaTime);
+		if (!m_isAiming && m_aimWeight <= 0f)
+			return;
+
+		m_aimWeight = Mathf.MoveTowards(m_aimWeight, m_isAiming ? 1f : 0f, c_aimBlendSpeed * _deltaTime);
+		if (!m_isAiming && m_aimWeight <= 0f)
+			FinishRelease();
 	}
+
+	private void SetHandGoal ( AvatarIKGoal _goal )
+	{
+		bool isAimed = m_aimWeight > 0f && _goal == m_aimGoal;
+		animator.SetIKPositionWeight(_goal, isAimed ? m_aimWeight : 0f);
+		if (isAimed)
+			animator.SetIKPosition(_goal, m_aimTarget);
+	}
+
+	private void AimSocket ()
+	{
+		if (m_aimingSocket == null)
+			return;
+
+		Vector3 direction = m_aimTarget - m_aimingSocket.position;
+		if (direction.sqrMagnitude < .000001f)
+			return;
+
+		Quaternion look = Quaternion.LookRotation(direction);
+		Quaternion aimed = m_aimingHeld != null && m_aimingHeld.parent == m_aimingSocket ? look * Quaternion.Inverse(m_aimingHeld.localRotation) : look;
+		Quaternion rest = m_aimingSocket.parent != null ? m_aimingSocket.parent.rotation * DefaultRotationOf(m_aimingSocket) : aimed;
+		m_aimingSocket.rotation = Quaternion.Slerp(rest, aimed, m_aimWeight);
+	}
+
+	private void FinishRelease ()
+	{
+		m_aimingSocket = null;
+		m_aimingHeld = null;
+		ResetSocketRotation(handGrabSocket);
+		ResetSocketRotation(offHandGrabSocket);
+	}
+
+	private Quaternion DefaultRotationOf ( Transform _socket )
+	{
+		return _socket == offHandGrabSocket ? m_defaultOffHandPivotRotation : m_defaultHandPivotRotation;
+	}
+
+	private void ResetSocketRotation ( Transform _socket )
+	{
+		if (_socket != null)
+			_socket.localRotation = DefaultRotationOf(_socket);
+	}
+
+	#endregion
+
+	#region Grip
 
 	private void UpdateGrip ( float _deltaTime )
 	{
@@ -292,25 +400,19 @@ public class HumanoidEntityIK : MonoBehaviour
 		return false;
 	}
 
-	private void AimSocket ()
+	#endregion
+
+	#region Recoil
+
+	public void Recoil ( float _strength, Transform _weapon, bool _isTwoHanded )
 	{
-		if (m_aimingSocket == null)
+		if (_strength <= 0f || !isActiveAndEnabled)
 			return;
 
-		Vector3 target;
-		if (m_aimedEntity != null)
-			target = m_aimedEntity.transform.position + Vector3.up;
-		else if (m_aimedPosition.HasValue)
-			target = m_aimedPosition.Value;
-		else
-			return;
-
-		Vector3 direction = target - m_aimingSocket.position;
-		if (direction.sqrMagnitude < .000001f)
-			return;
-
-		Quaternion look = Quaternion.LookRotation(direction);
-		m_aimingSocket.rotation = m_aimingHeld != null && m_aimingHeld.parent == m_aimingSocket ? look * Quaternion.Inverse(m_aimingHeld.localRotation) : look;
+		bool isLeftHand = IsHeldInLeftHand(_weapon);
+		m_recoilSide = _isTwoHanded ? 0f : isLeftHand ? -1f : 1f;
+		m_recoilArm = _isTwoHanded ? null : GetHumanBone(isLeftHand ? HumanBodyBones.LeftUpperArm : HumanBodyBones.RightUpperArm);
+		m_recoilSpeed += _strength * c_recoilImpulse * 2f * Mathf.PI * m_recoilFrequency;
 	}
 
 	private void UpdateRecoil ( float _deltaTime )
@@ -319,9 +421,9 @@ public class HumanoidEntityIK : MonoBehaviour
 			return;
 
 		float omega = 2f * Mathf.PI * m_recoilFrequency;
-		for (float remaining = Mathf.Min(_deltaTime, .1f); remaining > 0f; remaining -= RecoilStep)
+		for (float remaining = Mathf.Min(_deltaTime, .1f); remaining > 0f; remaining -= c_recoilStep)
 		{
-			float step = Mathf.Min(RecoilStep, remaining);
+			float step = Mathf.Min(c_recoilStep, remaining);
 			m_recoilSpeed += (-omega * omega * m_recoil - 2f * m_recoilDamping * omega * m_recoilSpeed) * step;
 			m_recoil = Mathf.Clamp(m_recoil + m_recoilSpeed * step, -m_maxRecoil, m_maxRecoil);
 		}
@@ -355,79 +457,5 @@ public class HumanoidEntityIK : MonoBehaviour
 		_pose.written = _bone.localRotation;
 	}
 
-	private Transform GetHumanBone ( HumanBodyBones _bone )
-	{
-		return animator != null && animator.isHuman ? animator.GetBoneTransform(_bone) : null;
-	}
-
-	public void Aim ( Vector3 _position )
-	{
-		Aim(handGrabSocket, _position);
-	}
-
-	public void Aim ( Transform _socket, Vector3 _position, Transform _held = null )
-	{
-		if (!isActiveAndEnabled)
-			return;
-
-		Transform socket = _socket != null ? _socket : handGrabSocket;
-		if (m_aimingSocket != null && m_aimingSocket != socket)
-			ResetSocketRotation(m_aimingSocket);
-
-		m_aimingSocket = socket;
-		m_aimingHeld = _held;
-		m_aimedPosition = _position;
-		m_aimedEntity = null;
-		bool isLeftHand = GetIKGoalOf(socket) == AvatarIKGoal.LeftHand;
-		leftHandTarget = isLeftHand ? _position : null;
-		rightHandTarget = isLeftHand ? null : _position;
-	}
-
-	public void Aim ( Entity _target )
-	{
-		if (!isActiveAndEnabled)
-			return;
-
-		m_aimingSocket = handGrabSocket;
-		m_aimingHeld = null;
-		m_aimedEntity = _target;
-		m_aimedPosition = null;
-	}
-
-	public virtual void ReleaseAim ()
-	{
-		m_aimedPosition = null;
-		m_aimedEntity = null;
-		rightHandTarget = null;
-		leftHandTarget = null;
-		m_aimingSocket = null;
-		m_aimingHeld = null;
-		ResetSocketRotation(handGrabSocket);
-		ResetSocketRotation(offHandGrabSocket);
-	}
-
-	private void ResetSocketRotation ( Transform _socket )
-	{
-		if (_socket != null)
-			_socket.localRotation = _socket == offHandGrabSocket ? m_defaultOffHandPivotRotation : m_defaultHandPivotRotation;
-	}
-
-	[Button, HideIf("handGrabSocket")]
-	public void CreateHandSocket ()
-	{
-		if (handGrabSocket)
-			return;
-
-		GameObject socket = new()
-		{
-			name = "GrabSocket"
-		};
-
-		socket.transform.parent = GetTransform(CharacterBodyPart.RightHand);
-		socket.transform.localScale = Vector3.one;
-		socket.transform.localPosition = Vector3.zero;
-		socket.transform.localRotation = Quaternion.Euler(-90, 0, 90);
-
-		handGrabSocket = socket.transform;
-	}
+	#endregion
 }

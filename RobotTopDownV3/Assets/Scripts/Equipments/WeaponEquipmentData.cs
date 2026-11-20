@@ -27,6 +27,8 @@ public class WeaponEquipmentData : EntityEquipmentData
     public string guardAnimation = "";
     [Tooltip("Rotation du buste en garde, en degrés, l'arme tenue dans la main principale : elle tourne le buste et les bras sans bouger la tête ni les jambes. Dans l'autre main, l'angle opposé.")]
     [Range(-60f, 60f)] public float guardTorsoYaw = 0f;
+    [Tooltip("Pose de visée pendant les tirs : les états « Aim <nom> R » et « Aim <nom> L » du calque d'attaque (Cannon), en miroir dans l'autre main. L'IK oriente ensuite le bras vers la cible. Vide = le bras se lève par IK seulement.")]
+    public string aimAnimation = "";
 
     public enum DamageType
 	{

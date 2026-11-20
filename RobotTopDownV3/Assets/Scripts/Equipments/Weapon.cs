@@ -32,7 +32,18 @@ public class Weapon : MonoBehaviour
 	private const float c_sprayJitter = .25f;
 	private const float c_attackProjectileTimeout = 4f;
 
-	public virtual Vector3 ProjectileOrigin => transform.position;
+	protected virtual Transform LaunchPoint => transform.parent != null ? transform.parent : transform;
+
+	public Pose LaunchPose
+	{
+		get
+		{
+			Transform point = LaunchPoint;
+			return m_user != null && m_user.Skin != null && m_user.Skin.IK != null ? m_user.Skin.IK.RenderedPoseOf(point) : new Pose(point.position, point.rotation);
+		}
+	}
+
+	public Vector3 ProjectileOrigin => LaunchPose.position;
 
 	public static void PlayOrientedVFX ( PoolData _pool, Vector3 _position, Vector3 _direction, string _context )
 	{
@@ -346,7 +357,10 @@ public class Weapon : MonoBehaviour
 		EntityActionData data = _attackAction.Data;
 		bool isSpray = data.attackProjectileMode == EntityActionData.AttackProjectileMode.Spray && data.attackProjectilePool != null && data.doesSprayRepeatPerformVFX;
 		if (!isSpray && IsAttackVisible())
-			PlayOrientedVFX(data.onPerformVFXPool, ProjectileOrigin, _strikePoint - ProjectileOrigin, data.name);
+		{
+			Vector3 origin = ProjectileOrigin;
+			PlayOrientedVFX(data.onPerformVFXPool, origin, _strikePoint - origin, data.name);
+		}
 		if (IsShot(data) && !(data.attackProjectileMode == EntityActionData.AttackProjectileMode.Spray && data.attackProjectilePool != null))
 			PlayShotRecoil(data);
 
@@ -371,6 +385,11 @@ public class Weapon : MonoBehaviour
 		Quaternion facing = direction.sqrMagnitude > .0001f ? Quaternion.LookRotation(direction) : m_user.transform.rotation;
 		Quaternion relativeRotation = m_onPerformPSRelativeRotations.TryGetValue(_ps, out Quaternion rotation) ? rotation : Quaternion.identity;
 		_ps.transform.SetPositionAndRotation(_strikePoint, facing * relativeRotation);
+	}
+
+	public Vector3 GetAimPoint ( AttackAction _attackAction, int _attackIndex )
+	{
+		return GetAimPoint(new WeaponTarget() { targetEntity = _attackAction.GetTargetEntityAt(_attackIndex), targetTile = _attackAction.GetTargetTileAt(_attackIndex) });
 	}
 
 	protected Vector3 GetAimPoint ( WeaponTarget _target )

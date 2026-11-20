@@ -16,6 +16,18 @@ MonoBehaviour:
   attackIntensity: 0.75
   attacks:
   - action: {fileID: 0}
+    trigger: OnPlace
+    speed: 0.75
+    intensity: 1
+  - action: {fileID: 0}
+    trigger: OnToss
+    speed: 0.75
+    intensity: 1
+  - action: {fileID: 0}
+    trigger: OnPush
+    speed: 0.75
+    intensity: 1
+  - action: {fileID: 0}
     trigger: OnSwing
     speed: 0.75
     intensity: 0.35
@@ -35,3 +47,8 @@ MonoBehaviour:
     trigger: OnSwing
     speed: 0.75
     intensity: 0.35
+  - action: {fileID: 11400000, guid: 31ab2897d4dc44646af823ef59294761, type: 2}
+    trigger: 
+    speed: 0.75
+    intensity: 0.35
+  gripAmount: 1

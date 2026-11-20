@@ -9,9 +9,8 @@ using UnityEngine;
 
 public static class AnimationLabAssets
 {
-	public const string HandParameter = "LeftHandAttack";
-	public const string MovingParameter = "IsMoving";
-	public const string AttackLayer = EntitySkinPlugin.AttackLayerName;
+	public const string HandParameter = AttackAnimationPlayer.LeftHandParameter;
+	public const string AttackLayer = AttackAnimationPlayer.LayerName;
 	public const string ProfileFolder = "Assets/Animations/Profiles";
 
 	public class HeldOption
@@ -115,17 +114,7 @@ public static class AnimationLabAssets
 
 	public static List<EntityActionData> GetAnimatedActions ( EntityEquipmentData _data, Dictionary<EntityActionEnumID, EntityActionData> _actions )
 	{
-		List<EntityActionData> result = new();
-		if (_data == null || _data.knownedActions == null)
-			return result;
-
-		foreach (EntityActionEnumID id in _data.knownedActions)
-		{
-			if (_actions.TryGetValue(id, out EntityActionData action) && !string.IsNullOrEmpty(action.performAnimationKey) && !result.Contains(action))
-				result.Add(action);
-		}
-
-		return result;
+		return KnownActions(_data, _actions).Where(action => !string.IsNullOrEmpty(action.performAnimationKey)).ToList();
 	}
 
 	public static List<EntityActionData> FindActionsUsing ( string _trigger, Dictionary<EntityActionEnumID, EntityActionData> _actions )
@@ -207,13 +196,8 @@ public static class AnimationLabAssets
 
 	public static void WriteHitDelay ( IEnumerable<EntityActionData> _actions, float _hitDelay )
 	{
-		float rounded = Mathf.Round(_hitDelay * 1000f) / 1000f;
 		foreach (EntityActionData action in _actions)
-		{
-			action.performAnimationHitDelay = rounded;
-			EditorUtility.SetDirty(action);
-		}
-
+			Modify(action, () => action.performAnimationHitDelay = Round(_hitDelay, 1000f));
 		AssetDatabase.SaveAssets();
 	}
 
@@ -225,14 +209,14 @@ public static class AnimationLabAssets
 			float recovery = Round(_timing.HitDelayFor(_timing.AssetNormalizedFor(action.recoveryHoldDelay)), 1000f);
 			bool rescalesHold = action.preparationAnimationMode == EntityActionData.PreparationAnimationMode.WindUp && !Mathf.Approximately(hold, action.preparationHoldDelay);
 			bool rescalesRecovery = action.recoveryAnimationMode != EntityActionData.RecoveryAnimationMode.None && !Mathf.Approximately(recovery, action.recoveryHoldDelay);
-			if (!rescalesHold && !rescalesRecovery)
-				continue;
-
-			if (rescalesHold)
-				action.preparationHoldDelay = hold;
-			if (rescalesRecovery)
-				action.recoveryHoldDelay = recovery;
-			EditorUtility.SetDirty(action);
+			if (rescalesHold || rescalesRecovery)
+				Modify(action, () =>
+				{
+					if (rescalesHold)
+						action.preparationHoldDelay = hold;
+					if (rescalesRecovery)
+						action.recoveryHoldDelay = recovery;
+				});
 		}
 
 		AssetDatabase.SaveAssets();
@@ -241,15 +225,31 @@ public static class AnimationLabAssets
 	public static void WritePhases ( EntityActionData _action, EntityActionData.PreparationAnimationMode _preparation, float _holdDelay, float _windUpRatio, string _preparationKey
 		, EntityActionData.RecoveryAnimationMode _recovery, float _recoveryDelay, string _recoveryKey )
 	{
-		_action.preparationAnimationMode = _preparation;
-		_action.preparationHoldDelay = Round(_holdDelay, 1000f);
-		_action.preparationWindUpRatio = Round(_windUpRatio, 100f);
-		_action.preparationAnimationKey = _preparationKey ?? "";
-		_action.recoveryAnimationMode = _recovery;
-		_action.recoveryHoldDelay = Round(_recoveryDelay, 1000f);
-		_action.afterPerformAnimationKey = _recoveryKey ?? "";
-		EditorUtility.SetDirty(_action);
-		AssetDatabase.SaveAssets();
+		Save(_action, () =>
+		{
+			_action.preparationAnimationMode = _preparation;
+			_action.preparationHoldDelay = Round(_holdDelay, 1000f);
+			_action.preparationWindUpRatio = Round(_windUpRatio, 100f);
+			_action.preparationAnimationKey = _preparationKey ?? "";
+			_action.recoveryAnimationMode = _recovery;
+			_action.recoveryHoldDelay = Round(_recoveryDelay, 1000f);
+			_action.afterPerformAnimationKey = _recoveryKey ?? "";
+		});
+	}
+
+	public static void WriteShotPhases ( EntityActionData _action, EntityActionData.PreparationAnimationMode _preparation, string _preparationKey, EntityActionData.RecoveryAnimationMode _recovery )
+	{
+		Save(_action, () =>
+		{
+			_action.preparationAnimationMode = _preparation;
+			_action.preparationAnimationKey = _preparationKey ?? "";
+			_action.recoveryAnimationMode = _recovery;
+		});
+	}
+
+	public static void SaveMovementAnimation ( EntityActionData _action, string _style )
+	{
+		Save(_action, () => _action.movementAnimation = _style == LocomotionAnimationPlayer.WalkStyle ? "" : _style ?? "");
 	}
 
 	public static List<string> TriggerNames ( RuntimeAnimatorController _runtimeController )
@@ -265,68 +265,158 @@ public static class AnimationLabAssets
 		return skin != null ? skin.AnimationProfile : null;
 	}
 
-	public static void SaveTuning ( EntityAnimationProfile _profile, EntityActionData _action, float _speed, float _intensity )
+	public static void SaveTuning ( EntityAnimationProfile _profile, EntityActionData _action, string _trigger, float _speed, float _intensity )
 	{
-		EntityAnimationProfile.AttackTuning tuning = _profile.FindOwn(_action);
-		if (tuning == null)
+		Save(_profile, () =>
 		{
-			tuning = new EntityAnimationProfile.AttackTuning { action = _action };
-			_profile.attacks.Add(tuning);
-		}
+			EntityAnimationProfile.AttackTuning tuning = _profile.FindOwn(_action, _trigger);
+			if (tuning == null)
+			{
+				tuning = new EntityAnimationProfile.AttackTuning { action = _action };
+				_profile.attacks.Add(tuning);
+			}
 
-		tuning.trigger = _action.performAnimationKey;
-		tuning.speed = Round(_speed, 100f);
-		tuning.intensity = Round(_intensity, 100f);
-		EditorUtility.SetDirty(_profile);
-		AssetDatabase.SaveAssets();
+			tuning.trigger = _trigger;
+			tuning.speed = Round(_speed, 100f);
+			tuning.intensity = Round(_intensity, 100f);
+		});
 	}
 
-	public static void RemoveTuning ( EntityAnimationProfile _profile, EntityActionData _action )
+	public static void RemoveTuning ( EntityAnimationProfile _profile, EntityActionData _action, string _trigger )
 	{
-		_profile.attacks.RemoveAll(tuning => tuning != null && tuning.action == _action);
-		EditorUtility.SetDirty(_profile);
-		AssetDatabase.SaveAssets();
+		Save(_profile, () => _profile.attacks.RemoveAll(tuning => EntityAnimationProfile.IsOwnEntry(tuning, _action, _trigger)));
 	}
 
 	public static void SaveDefaults ( EntityAnimationProfile _profile, float _speed, float _intensity )
 	{
-		_profile.attackSpeed = Round(_speed, 100f);
-		_profile.attackIntensity = Round(_intensity, 100f);
-		EditorUtility.SetDirty(_profile);
-		AssetDatabase.SaveAssets();
-	}
-
-	public static void SaveGuard ( WeaponEquipmentData _weapon, string _key, float _torsoYaw )
-	{
-		_weapon.guardAnimation = _key ?? "";
-		_weapon.guardTorsoYaw = Round(_torsoYaw, 1f);
-		EditorUtility.SetDirty(_weapon);
-		AssetDatabase.SaveAssets();
-	}
-
-	public static List<string> GuardKeys ( RuntimeAnimatorController _controller )
-	{
-		List<string> keys = new();
-		if (_controller is not AnimatorController controller || controller.layers.Length == 0)
-			return keys;
-
-		HashSet<string> names = new(controller.layers[0].stateMachine.states.Select(child => child.state.name));
-		foreach (string name in names)
+		Save(_profile, () =>
 		{
-			if (!name.StartsWith(GuardAnimationPlayer.StatePrefix) || !name.EndsWith(" R") || !names.Contains(name.Substring(0, name.Length - 2) + " L"))
-				continue;
-			keys.Add(name.Substring(GuardAnimationPlayer.StatePrefix.Length, name.Length - GuardAnimationPlayer.StatePrefix.Length - 2));
-		}
-
-		keys.Sort();
-		return keys;
+			_profile.attackSpeed = Round(_speed, 100f);
+			_profile.attackIntensity = Round(_intensity, 100f);
+		});
 	}
 
 	public static void SaveGripAmount ( EntityAnimationProfile _profile, float _amount )
 	{
-		_profile.gripAmount = Round(_amount, 100f);
-		EditorUtility.SetDirty(_profile);
+		Save(_profile, () => _profile.gripAmount = Round(_amount, 100f));
+	}
+
+	public static void SaveGuard ( WeaponEquipmentData _weapon, string _key, float _torsoYaw )
+	{
+		Save(_weapon, () =>
+		{
+			_weapon.guardAnimation = _key ?? "";
+			_weapon.guardTorsoYaw = Round(_torsoYaw, 1f);
+		});
+	}
+
+	public static void SaveAim ( WeaponEquipmentData _weapon, string _key )
+	{
+		Save(_weapon, () => _weapon.aimAnimation = _key ?? "");
+	}
+
+	public static List<string> GuardKeys ( RuntimeAnimatorController _controller )
+	{
+		return PairedStateKeys(_controller, null, GuardAnimationPlayer.StatePrefix);
+	}
+
+	public static List<string> AimKeys ( RuntimeAnimatorController _controller )
+	{
+		return PairedStateKeys(_controller, AttackLayer, AttackAnimationPlayer.AimStatePrefix);
+	}
+
+	public static List<string> MoveStyles ( RuntimeAnimatorController _controller )
+	{
+		return StateNames(_controller, LocomotionAnimationPlayer.LayerName)
+			.Where(name => name.StartsWith(LocomotionAnimationPlayer.StatePrefix))
+			.Select(name => name.Substring(LocomotionAnimationPlayer.StatePrefix.Length))
+			.OrderBy(name => name).ToList();
+	}
+
+	private static List<string> PairedStateKeys ( RuntimeAnimatorController _controller, string _layer, string _prefix )
+	{
+		HashSet<string> names = new(StateNames(_controller, _layer));
+		return names.Where(name => name.StartsWith(_prefix) && name.EndsWith(" R") && names.Contains(name.Substring(0, name.Length - 2) + " L"))
+			.Select(name => name.Substring(_prefix.Length, name.Length - _prefix.Length - 2))
+			.OrderBy(name => name).ToList();
+	}
+
+	private static IEnumerable<string> StateNames ( RuntimeAnimatorController _controller, string _layer )
+	{
+		if (_controller is not AnimatorController controller)
+			return Enumerable.Empty<string>();
+
+		AnimatorControllerLayer layer = string.IsNullOrEmpty(_layer) ? controller.layers.FirstOrDefault() : controller.layers.FirstOrDefault(candidate => candidate.name == _layer);
+		return layer != null ? layer.stateMachine.states.Select(child => child.state.name) : Enumerable.Empty<string>();
+	}
+
+	public static List<EntityActionData> GetShotActions ( EntityEquipmentData _data, Dictionary<EntityActionEnumID, EntityActionData> _actions )
+	{
+		return KnownActions(_data, _actions).Where(action => action.IsShot
+			|| action.type == EntityActionData.ActionType.Special && action.visualEffectType == EntityActionData.VisualEffectType.Projectile && action.projectilePool != null).ToList();
+	}
+
+	public static List<EntityActionData> GetMovementActions ( Dictionary<EntityActionEnumID, EntityActionData> _actions )
+	{
+		return _actions.Values.Distinct().Where(action => action.type == EntityActionData.ActionType.Movement && action.codeType != EntityActionData.ActionCodeType.Wait
+			&& action.codeType != EntityActionData.ActionCodeType.TurnEntity || action.codeType == EntityActionData.ActionCodeType.MoveThenAttack).OrderBy(action => action.name).ToList();
+	}
+
+	private static IEnumerable<EntityActionData> KnownActions ( EntityEquipmentData _data, Dictionary<EntityActionEnumID, EntityActionData> _actions )
+	{
+		if (_data == null || _data.knownedActions == null)
+			return Enumerable.Empty<EntityActionData>();
+
+		return _data.knownedActions.Select(id => _actions.TryGetValue(id, out EntityActionData action) ? action : null).Where(action => action != null).Distinct();
+	}
+
+	public static bool SaveWeaponTiming ( GameObject _prefab, float _aimDuration, float _bulletInterval, float _shootCooldown )
+	{
+		return EditPrefab(AssetDatabase.GetAssetPath(_prefab), root =>
+		{
+			BulletWeapon weapon = root.GetComponentInChildren<BulletWeapon>(true);
+			if (weapon == null)
+				return false;
+
+			SerializedObject serialized = new(weapon);
+			serialized.FindProperty("m_aimDuration").floatValue = Round(_aimDuration, 100f);
+			serialized.FindProperty("m_timeBetweenEachBullet").floatValue = Round(_bulletInterval, 100f);
+			serialized.FindProperty("m_shootCooldownDuration").floatValue = Round(_shootCooldown, 100f);
+			serialized.ApplyModifiedPropertiesWithoutUndo();
+			return true;
+		});
+	}
+
+	private static void Save ( Object _asset, System.Action _apply )
+	{
+		Modify(_asset, _apply);
 		AssetDatabase.SaveAssets();
+	}
+
+	private static void Modify ( Object _asset, System.Action _apply )
+	{
+		_apply();
+		EditorUtility.SetDirty(_asset);
+	}
+
+	private static bool EditPrefab ( string _path, System.Func<GameObject, bool> _edit )
+	{
+		if (string.IsNullOrEmpty(_path))
+			return false;
+
+		GameObject root = PrefabUtility.LoadPrefabContents(_path);
+		try
+		{
+			if (!_edit(root))
+				return false;
+
+			PrefabUtility.SaveAsPrefabAsset(root, _path);
+			return true;
+		}
+		finally
+		{
+			PrefabUtility.UnloadPrefabContents(root);
+		}
 	}
 
 	private static float Round ( float _value, float _steps )
@@ -418,52 +508,38 @@ public static class AnimationLabAssets
 
 	public static EntityAnimationProfile CreateProfile ( GameObject _unitPrefab, out string _path )
 	{
-		_path = null;
-		string prefabPath = AssetDatabase.GetAssetPath(_unitPrefab);
-		if (string.IsNullOrEmpty(prefabPath))
-			return null;
-
-		GameObject root = PrefabUtility.LoadPrefabContents(prefabPath);
-		try
+		string path = null;
+		EntityAnimationProfile profile = null;
+		EditPrefab(AssetDatabase.GetAssetPath(_unitPrefab), root =>
 		{
 			EntitySkinPlugin skin = root.GetComponentInChildren<EntitySkinPlugin>(true);
 			if (skin == null)
-				return null;
+				return false;
 
 			if (!AssetDatabase.IsValidFolder(ProfileFolder))
 				AssetDatabase.CreateFolder(System.IO.Path.GetDirectoryName(ProfileFolder).Replace('\\', '/'), System.IO.Path.GetFileName(ProfileFolder));
 
-			EntityAnimationProfile profile = ScriptableObject.CreateInstance<EntityAnimationProfile>();
-			_path = AssetDatabase.GenerateUniqueAssetPath(ProfileFolder + "/" + _unitPrefab.name + ".asset");
-			AssetDatabase.CreateAsset(profile, _path);
-
+			profile = ScriptableObject.CreateInstance<EntityAnimationProfile>();
+			path = AssetDatabase.GenerateUniqueAssetPath(ProfileFolder + "/" + _unitPrefab.name + ".asset");
+			AssetDatabase.CreateAsset(profile, path);
 			SerializedObject serialized = new(skin);
 			serialized.FindProperty("m_animationProfile").objectReferenceValue = profile;
 			serialized.ApplyModifiedPropertiesWithoutUndo();
-			PrefabUtility.SaveAsPrefabAsset(root, prefabPath);
-			AssetDatabase.SaveAssets();
-			return profile;
-		}
-		finally
-		{
-			PrefabUtility.UnloadPrefabContents(root);
-		}
+			return true;
+		});
+
+		AssetDatabase.SaveAssets();
+		_path = path;
+		return profile;
 	}
 
 	public static void SaveGrip ( GameObject _prefab, Vector3 _localPosition, Quaternion _localRotation )
 	{
-		string path = AssetDatabase.GetAssetPath(_prefab);
-		GameObject root = PrefabUtility.LoadPrefabContents(path);
-		try
+		EditPrefab(AssetDatabase.GetAssetPath(_prefab), root =>
 		{
-			root.transform.localPosition = _localPosition;
-			root.transform.localRotation = _localRotation;
-			PrefabUtility.SaveAsPrefabAsset(root, path);
-		}
-		finally
-		{
-			PrefabUtility.UnloadPrefabContents(root);
-		}
+			root.transform.SetLocalPositionAndRotation(_localPosition, _localRotation);
+			return true;
+		});
 	}
 
 	public static string FindSkinPrefabPath ( GameObject _unitPrefab )
@@ -487,25 +563,15 @@ public static class AnimationLabAssets
 	public static bool SaveMainSocket ( GameObject _unitPrefab, Vector3 _localPosition, Quaternion _localRotation, out string _path )
 	{
 		_path = FindSkinPrefabPath(_unitPrefab);
-		if (string.IsNullOrEmpty(_path))
-			return false;
-
-		GameObject root = PrefabUtility.LoadPrefabContents(_path);
-		try
+		return EditPrefab(_path, root =>
 		{
 			HumanoidEntityIK ik = root.GetComponentInChildren<HumanoidEntityIK>(true);
 			if (ik == null || ik.handGrabSocket == null)
 				return false;
 
-			ik.handGrabSocket.localPosition = _localPosition;
-			ik.handGrabSocket.localRotation = _localRotation;
-			PrefabUtility.SaveAsPrefabAsset(root, _path);
+			ik.handGrabSocket.SetLocalPositionAndRotation(_localPosition, _localRotation);
 			return true;
-		}
-		finally
-		{
-			PrefabUtility.UnloadPrefabContents(root);
-		}
+		});
 	}
 
 	public static Dictionary<string, string> Snapshot ( Object _target )
@@ -555,14 +621,12 @@ public static class AnimationLabAssets
 
 	public static int SaveLegs ( GameObject _unitPrefab, LegsAnimator _source, IReadOnlyCollection<string> _paths )
 	{
-		string path = AssetDatabase.GetAssetPath(_unitPrefab);
-		GameObject root = PrefabUtility.LoadPrefabContents(path);
 		int copied = 0;
-		try
+		EditPrefab(AssetDatabase.GetAssetPath(_unitPrefab), root =>
 		{
 			LegsAnimator target = root.GetComponentInChildren<LegsAnimator>(true);
 			if (target == null)
-				return 0;
+				return false;
 
 			SerializedObject source = new(_source);
 			SerializedObject destination = new(target);
@@ -578,12 +642,8 @@ public static class AnimationLabAssets
 			}
 
 			destination.ApplyModifiedPropertiesWithoutUndo();
-			PrefabUtility.SaveAsPrefabAsset(root, path);
-		}
-		finally
-		{
-			PrefabUtility.UnloadPrefabContents(root);
-		}
+			return true;
+		});
 
 		return copied;
 	}

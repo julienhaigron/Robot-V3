@@ -1,16 +1,17 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using DG.Tweening;
 using UnityEngine;
 
-public class AttackAnimationPlayer
+public class AttackAnimationPlayer : AnimatorLayerDriver
 {
 	public const string LeftHandParameter = "LeftHandAttack";
 	public const string SpeedParameter = "AttackSpeed";
 	public const string LayerName = "Top";
 	public const string IdleStateName = "Default";
+	public const string AimStatePrefix = "Aim ";
 	private const float c_cancelFade = .25f;
+	private const float c_aimFadeIn = .12f;
+	private const float c_aimFadeOut = .3f;
 	private const float c_maxWindUpBoost = 1.5f;
 	private const float c_minWindUp = .05f;
 
@@ -57,13 +58,9 @@ public class AttackAnimationPlayer
 
 	private enum Phase { None, WindUp, Preparation, Strike, Recovery }
 
-	private readonly Animator m_animator;
 	private readonly Func<EntityActionData, string, Tuning> m_tuningFor;
-	private HashSet<string> m_parameters;
-	private int m_layer = -2;
-	private bool m_isIdleStateChecked;
-	private bool m_hasIdleState;
-	private int m_idleState;
+	private readonly int m_idleState = Animator.StringToHash(IdleStateName);
+	private bool? m_hasIdleState;
 
 	private Phase m_phase;
 	private object m_owner;
@@ -75,42 +72,20 @@ public class AttackAnimationPlayer
 	private float m_windUpDuration;
 	private Tween m_ramp;
 	private Tween m_pending;
+	private int m_aimState;
 
 	public object Owner => m_owner;
+	public bool IsAiming => m_aimState != 0;
 	public bool IsHolding => m_phase is Phase.WindUp or Phase.Preparation or Phase.Recovery;
 
-	public AttackAnimationPlayer ( Animator _animator, Func<EntityActionData, string, Tuning> _tuningFor )
+	public AttackAnimationPlayer ( Animator _animator, Func<EntityActionData, string, Tuning> _tuningFor ) : base(_animator, LayerName)
 	{
-		m_animator = _animator;
 		m_tuningFor = _tuningFor;
 	}
 
-	private bool HasController => m_animator != null && m_animator.runtimeAnimatorController != null;
-
-	public int Layer
+	public static string AimStateName ( string _key, bool _isLeftHand )
 	{
-		get
-		{
-			if (m_layer == -2 && HasController)
-				m_layer = m_animator.GetLayerIndex(LayerName);
-			return m_layer == -2 ? -1 : m_layer;
-		}
-	}
-
-	public bool HasParameter ( string _name )
-	{
-		if (string.IsNullOrEmpty(_name) || !HasController)
-			return false;
-
-		if (m_parameters == null)
-		{
-			if (m_animator.parameterCount == 0)
-				return false;
-
-			m_parameters = new HashSet<string>(m_animator.parameters.Select(parameter => parameter.name));
-		}
-
-		return m_parameters.Contains(_name);
+		return HandStateName(AimStatePrefix, _key, _isLeftHand);
 	}
 
 	public Tuning ApplyTuning ( EntityActionData _data, string _key )
@@ -213,7 +188,7 @@ public class AttackAnimationPlayer
 	{
 		bool isHolding = IsHolding;
 		Stop();
-		if (isHolding && m_animator != null && m_animator.isActiveAndEnabled && HasIdleState())
+		if (isHolding && IsPlayable && HasIdleState())
 			m_animator.CrossFadeInFixedTime(m_idleState, c_cancelFade, Layer);
 	}
 
@@ -228,10 +203,33 @@ public class AttackAnimationPlayer
 
 	public bool IsTopIdle ()
 	{
-		if (m_animator == null || !m_animator.isActiveAndEnabled || Layer < 0 || !HasIdleState())
+		return IsPlayable && HasIdleState() && m_animator.GetCurrentAnimatorStateInfo(Layer).shortNameHash == m_idleState && !m_animator.IsInTransition(Layer);
+	}
+
+	public bool HasAimState ( string _key, bool _isLeftHand )
+	{
+		return !string.IsNullOrEmpty(_key) && HasState(AimStateName(_key, _isLeftHand));
+	}
+
+	public bool PlayAim ( EntityActionData _data, string _key, bool _isLeftHand )
+	{
+		if (!IsPlayable || !HasAimState(_key, _isLeftHand))
 			return false;
 
-		return m_animator.GetCurrentAnimatorStateInfo(Layer).shortNameHash == m_idleState && !m_animator.IsInTransition(Layer);
+		int state = Animator.StringToHash(AimStateName(_key, _isLeftHand));
+		Stop();
+		ApplyTuning(_data, AimStatePrefix + _key);
+		CrossFadeTo(state, c_aimFadeIn);
+		m_aimState = state;
+		return true;
+	}
+
+	public void ReleaseAim ()
+	{
+		int aimed = m_aimState;
+		m_aimState = 0;
+		if (aimed != 0 && IsPlayable && HasIdleState() && PlayingState() == aimed)
+			m_animator.CrossFadeInFixedTime(m_idleState, c_aimFadeOut, Layer);
 	}
 
 	private void ScheduleRecovery ( bool _isLeftHand, float _position, float _speed, float _impactDelay )
@@ -277,14 +275,9 @@ public class AttackAnimationPlayer
 
 	private bool HasIdleState ()
 	{
-		if (!m_isIdleStateChecked && HasController && Layer >= 0)
-		{
-			m_isIdleStateChecked = true;
-			m_idleState = Animator.StringToHash(IdleStateName);
+		if (m_hasIdleState == null && Layer >= 0)
 			m_hasIdleState = m_animator.HasState(Layer, m_idleState);
-		}
-
-		return m_hasIdleState;
+		return m_hasIdleState == true;
 	}
 
 	private void Fire ( string _key, bool _isLeftHand )
@@ -297,7 +290,7 @@ public class AttackAnimationPlayer
 
 	private void SetSpeed ( float _speed )
 	{
-		if (m_animator != null && HasParameter(SpeedParameter))
+		if (HasParameter(SpeedParameter))
 			m_animator.SetFloat(SpeedParameter, _speed);
 	}
 

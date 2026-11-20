@@ -1,8 +1,6 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
-using System.Linq;
 
 public class EntitySkinPlugin : EntityPlugin
 {
@@ -21,20 +19,20 @@ public class EntitySkinPlugin : EntityPlugin
 	public HumanoidEntityIK IK => m_humanoidEntityIK;
 
 	[SerializeField] private SerializableDictionary<EntityActionData.ActionType, string> m_animationKeyPerActionDictionary;
-	[SerializeField] private string m_idleAnimationKey;
 	[SerializeField] private EntityAnimationProfile m_animationProfile;
 	public EntityAnimationProfile AnimationProfile => m_animationProfile;
 
-	public const string LeftHandAttackParameter = AttackAnimationPlayer.LeftHandParameter;
-	public const string AttackSpeedParameter = AttackAnimationPlayer.SpeedParameter;
-	public const string AttackLayerName = AttackAnimationPlayer.LayerName;
 	private AttackAnimationPlayer m_attackPlayer;
 	public AttackAnimationPlayer AttackPlayer => m_attackPlayer ??= new AttackAnimationPlayer(m_animator, TuningFor);
-	private string m_aimingWeaponID;
-
 	private GuardAnimationPlayer m_guardPlayer;
-	public GuardAnimationPlayer GuardPlayer => m_guardPlayer ??= new GuardAnimationPlayer(m_animator);
+	private GuardAnimationPlayer GuardPlayer => m_guardPlayer ??= new GuardAnimationPlayer(m_animator);
+	private LocomotionAnimationPlayer m_locomotionPlayer;
+	private LocomotionAnimationPlayer LocomotionPlayer => m_locomotionPlayer ??= new LocomotionAnimationPlayer(m_animator);
+
+	private bool m_isAiming;
 	private bool m_isMoving;
+	private string m_moveStyle;
+	private AEntityAction m_performedAction;
 	private Weapon m_guardWeapon;
 
 	private bool m_isThermicLookWanted;
@@ -45,6 +43,8 @@ public class EntitySkinPlugin : EntityPlugin
 	private readonly List<Material[]> m_lookOriginalMaterials = new();
 	private readonly List<int> m_lookOriginalSortingOrders = new();
 	private readonly List<ShadowCastingMode> m_lookOriginalShadowModes = new();
+
+	private bool IsFlying => m_linkedEntity != null && m_linkedEntity.Status.Contains(EntityStatusEnumID.Flying);
 
 	public override void Init ( EntitySavedData _entityData )
 	{
@@ -67,6 +67,8 @@ public class EntitySkinPlugin : EntityPlugin
 		bool isLeftHand = weapon != null && m_humanoidEntityIK != null && m_humanoidEntityIK.IsHeldInLeftHand(weapon.transform);
 		GuardPlayer.Set(weapon != null ? weapon.Data.guardAnimation : null, isLeftHand, weapon != null ? weapon.Data.guardTorsoYaw : 0f);
 		GuardPlayer.Update(Time.deltaTime);
+		LocomotionPlayer.Set(m_isMoving, m_moveStyle, IsFlying);
+		LocomotionPlayer.Update();
 	}
 
 	private Weapon GuardWeapon ()
@@ -86,10 +88,10 @@ public class EntitySkinPlugin : EntityPlugin
 		return found;
 	}
 
-	private void RememberGuardWeapon ( AttackAction _action )
+	private bool TryGetLinkedWeapon ( AEntityAction _action, out Weapon _weapon )
 	{
-		if (m_linkedEntity.Equipment.Weapons.TryGetValue(_action.linkedEquipmentId ?? "", out Weapon weapon) && weapon != null)
-			m_guardWeapon = weapon;
+		_weapon = null;
+		return !string.IsNullOrEmpty(_action.linkedEquipmentId) && m_linkedEntity.Equipment.Weapons.TryGetValue(_action.linkedEquipmentId, out _weapon) && _weapon != null;
 	}
 
 	private void OnDestroy ()
@@ -100,15 +102,14 @@ public class EntitySkinPlugin : EntityPlugin
 
 	private AttackAnimationPlayer.Tuning TuningFor ( EntityActionData _data, string _key )
 	{
-		return m_animationProfile != null
-			? new AttackAnimationPlayer.Tuning(m_animationProfile.SpeedFor(_data, _key), m_animationProfile.IntensityFor(_data, _key))
-			: new AttackAnimationPlayer.Tuning(1f, 1f);
+		return m_animationProfile != null ? m_animationProfile.TuningFor(_data, _key) : new AttackAnimationPlayer.Tuning(1f, 1f);
 	}
 
-	public void OnStartActionPerform (AEntityAction _action)
+	public void OnStartActionPerform ( AEntityAction _action )
 	{
 		if (m_animator != null)
 			m_animator.speed = 1;
+		m_performedAction = _action;
 		if (!_action.Data.isModAction)
 			AttackPlayer.OnActionStarted(_action);
 		if (_action is AttackAction attackAction)
@@ -120,18 +121,34 @@ public class EntitySkinPlugin : EntityPlugin
 		if (_action.enumID == EntityActionEnumID.Wait)
 			return;
 
-		PlayActionAnimation(_action.Data);
+		PlayActionAnimation(_action.Data, null, IsLinkedItemInLeftHand(_action));
+	}
+
+	private bool IsLinkedItemInLeftHand ( AEntityAction _action )
+	{
+		if (m_humanoidEntityIK == null || string.IsNullOrEmpty(_action.linkedEquipmentId) || m_linkedEntity == null || m_linkedEntity.Equipment == null)
+			return false;
+
+		if (TryGetLinkedWeapon(_action, out Weapon weapon))
+			return m_humanoidEntityIK.IsHeldInLeftHand(weapon.transform);
+
+		return m_linkedEntity.Equipment.Tools.TryGetValue(_action.linkedEquipmentId, out ToolEquipment tool) && tool != null && m_humanoidEntityIK.IsHeldInLeftHand(tool.transform);
 	}
 
 	private void StartPreparation ( AttackAction _action )
 	{
 		EntityActionData data = _action.Data;
 		if (m_animator == null || _action.preparationDuration <= 0 || data.preparationAnimationMode == EntityActionData.PreparationAnimationMode.None
-			|| _action.IsPerformingAtTick(TurnManager.currentTick)
-			|| !m_linkedEntity.Equipment.Weapons.TryGetValue(_action.linkedEquipmentId ?? "", out Weapon weapon) || weapon == null)
+			|| _action.IsPerformingAtTick(TurnManager.currentTick) || !TryGetLinkedWeapon(_action, out Weapon weapon))
 			return;
 
 		m_guardWeapon = weapon;
+		if (data.AimsDuringPreparation)
+		{
+			VisualyAimAt(_action.linkedEquipmentId, weapon.GetAimPoint(_action, 0), data);
+			return;
+		}
+
 		bool isLeftHand = m_humanoidEntityIK != null && m_humanoidEntityIK.IsHeldInLeftHand(weapon.transform);
 		float seconds = Mathf.Max(1, _action.TimeAtStartPerform - TurnManager.currentTick) * GameConfig.current.game.actionDuration;
 		AttackPlayer.StartPreparation(_action, data, ResolveAnimationKey(data, weapon.Data.attackAnimationSuccessId), isLeftHand, AttackAnimationPlayer.Timing.From(data), seconds);
@@ -149,7 +166,8 @@ public class EntitySkinPlugin : EntityPlugin
 			return false;
 
 		EntityActionData data = _action.Data;
-		RememberGuardWeapon(_action);
+		if (TryGetLinkedWeapon(_action, out Weapon weapon))
+			m_guardWeapon = weapon;
 		return AttackPlayer.Strike(_action, data, ResolveAnimationKey(data, _fallbackKey), _isLeftHand, AttackAnimationPlayer.Timing.From(data), _isFinalStrike && _action.cooldownDuration > 0, out _impactDelay);
 	}
 
@@ -157,23 +175,15 @@ public class EntitySkinPlugin : EntityPlugin
 	{
 		return !string.IsNullOrEmpty(_data.performAnimationKey) ? _data.performAnimationKey
 			: !string.IsNullOrEmpty(_fallbackKey) ? _fallbackKey
-			: m_animationKeyPerActionDictionary.ContainsKey(_data.type) ? m_animationKeyPerActionDictionary[_data.type] : null;
-	}
-
-	public void OverrideAnimation(string _animationID )
-	{
-		m_animator.SetTrigger(_animationID);
+			: m_animationKeyPerActionDictionary.TryGetValue(_data.type, out string key) ? key : null;
 	}
 
 	public void OnEndActionPerform ()
 	{
-		//m_animator.speed = 0;
-		//freeze body anim
-		//m_animator.SetTrigger("OnEndAction");
-
 		if (m_attackPlayer != null && m_attackPlayer.Owner is AEntityAction action && !action.IsPerforming)
 			m_attackPlayer.EndAction(action);
 
+		m_performedAction = null;
 		ReleaseCurrentAim();
 	}
 
@@ -184,63 +194,43 @@ public class EntitySkinPlugin : EntityPlugin
 
 	public void ReleaseCurrentAim ()
 	{
-		if (string.IsNullOrEmpty(m_aimingWeaponID))
+		if (m_isAiming)
+			ReleaseAim();
+	}
+
+	public void VisualyAimAt ( string _weaponID, Vector3 _aimedPosition, EntityActionData _action )
+	{
+		if (m_humanoidEntityIK == null || !m_linkedEntity.Equipment.Weapons.TryGetValue(_weaponID, out Weapon weapon) || weapon == null)
 			return;
 
-		ReleaseAim(m_aimingWeaponID);
+		m_isAiming = true;
+		m_guardWeapon = weapon;
+		m_humanoidEntityIK.Aim(weapon.transform.parent, _aimedPosition, weapon.transform);
+		if (m_animator != null)
+			AttackPlayer.PlayAim(_action, weapon.Data.aimAnimation, m_humanoidEntityIK.IsHeldInLeftHand(weapon.transform));
 	}
 
-	public void VisualyAimAt(string _weaponID, Vector3 _aimedPosition )
+	public void ReleaseAim ()
 	{
-		m_aimingWeaponID = _weaponID;
-		Weapon weapon = m_linkedEntity.Equipment.Weapons[_weaponID];
-		if (weapon.Data.isTwoHanded)
-		{
-			//play aim anim + rotate entity
-			m_animator.SetTrigger("TwoHandAim");
-			//m_linkedEntity.Equipment.AimAtTile(_weaponID)
-		}
-		else
-		{
-			m_humanoidEntityIK.Aim(weapon.transform.parent, _aimedPosition, weapon.transform);
-		}
-
+		m_isAiming = false;
+		m_attackPlayer?.ReleaseAim();
+		if (m_humanoidEntityIK != null)
+			m_humanoidEntityIK.ReleaseAim();
 	}
 
-	public void SetIsMoving(bool _isMoving )
+	public void SetIsMoving ( bool _isMoving )
 	{
 		m_isMoving = _isMoving;
-		m_animator.SetBool("IsMoving", _isMoving);
+		if (_isMoving)
+			m_moveStyle = m_performedAction != null ? m_performedAction.Data.movementAnimation : null;
+		if (m_animator != null)
+			LocomotionPlayer.Set(_isMoving, m_moveStyle, IsFlying);
 	}
 
-	private void OnEntityDeath (int _entityID)
+	private void OnEntityDeath ( int _entityID )
 	{
-		//TODO : actual clean death with anim and PS
 		m_attackPlayer?.Stop();
 		Hide();
-	}
-
-	public void ReleaseAim ( string _weaponID )
-	{
-		m_aimingWeaponID = null;
-		//The weapon can be gone by the time the aim is dropped, a destroyed arm typically
-		if (!m_linkedEntity.Equipment.Weapons.ContainsKey(_weaponID))
-		{
-			m_humanoidEntityIK.ReleaseAim();
-			return;
-		}
-
-		Weapon weapon = m_linkedEntity.Equipment.Weapons[_weaponID];
-		if (weapon.Data.isTwoHanded)
-		{
-			//remove aim anim + rotate entity back to origin
-			m_animator.SetTrigger("ReleaseAim");
-		}
-		else
-		{
-			//add ik to according hand
-			m_humanoidEntityIK.ReleaseAim();
-		}
 	}
 
 	public void Show ( NeuronalMembraneEquipmentData.VisionTypes _type)

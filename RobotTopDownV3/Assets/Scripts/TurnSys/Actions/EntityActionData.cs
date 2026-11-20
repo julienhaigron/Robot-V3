@@ -44,16 +44,30 @@ public class EntityActionData : AParsableScriptableObject
 		Trigger
 	}
 
-	[ShowIf("@m_tokenPreparationDuration > 0"), Tooltip("Ticks de préparation. WindUp : la frappe s'arme lentement jusqu'à la pose armée et la tient, puis repart de là au tick d'action. Trigger : joue preparationAnimationKey.")]
+	[ShowIf("@m_tokenPreparationDuration > 0"), Tooltip("Ticks de préparation. WindUp : la frappe s'arme lentement jusqu'à la pose armée et la tient, puis repart de là au tick d'action ; un tir vise sa cible dès la préparation. Trigger : joue preparationAnimationKey.")]
 	public PreparationAnimationMode preparationAnimationMode;
-	[ShowIf("@m_tokenPreparationDuration > 0 && preparationAnimationMode == PreparationAnimationMode.WindUp"), Min(0f), Tooltip("Pose armée : secondes après le déclenchement de la frappe, à la vitesse du contrôleur, avant le délai d'impact.")]
+	[ShowIf("@m_tokenPreparationDuration > 0 && preparationAnimationMode == PreparationAnimationMode.WindUp && type != ActionType.DistanceAttack"), Min(0f), Tooltip("Pose armée : secondes après le déclenchement de la frappe, à la vitesse du contrôleur, avant le délai d'impact.")]
 	public float preparationHoldDelay = .2f;
-	[ShowIf("@m_tokenPreparationDuration > 0 && preparationAnimationMode == PreparationAnimationMode.WindUp"), Range(.1f, 1f), Tooltip("Part de la préparation passée à armer ; le reste tient la pose.")]
+	[ShowIf("@m_tokenPreparationDuration > 0 && preparationAnimationMode == PreparationAnimationMode.WindUp && type != ActionType.DistanceAttack"), Range(.1f, 1f), Tooltip("Part de la préparation passée à armer ; le reste tient la pose.")]
 	public float preparationWindUpRatio = .8f;
-	[ShowIf("@m_tokenCooldown > 0"), Tooltip("Ticks de refroidissement, après la dernière frappe. Hold : le geste ralentit et se fige à la pose de tenue, puis repart à la fin de l'action. Trigger : joue afterPerformAnimationKey à ce moment-là.")]
+	[ShowIf("@m_tokenCooldown > 0"), Tooltip("Ticks de refroidissement, après la dernière frappe. Hold : le geste ralentit et se fige à la pose de tenue, puis repart à la fin de l'action ; un tir garde la visée jusqu'à la fin de l'action. Trigger : joue afterPerformAnimationKey à ce moment-là.")]
 	public RecoveryAnimationMode recoveryAnimationMode;
-	[ShowIf("@m_tokenCooldown > 0 && recoveryAnimationMode != RecoveryAnimationMode.None"), Min(0f), Tooltip("Secondes après le déclenchement de la frappe, à la vitesse du contrôleur, après le délai d'impact.")]
+	[ShowIf("@m_tokenCooldown > 0 && recoveryAnimationMode != RecoveryAnimationMode.None && type != ActionType.DistanceAttack"), Min(0f), Tooltip("Secondes après le déclenchement de la frappe, à la vitesse du contrôleur, après le délai d'impact.")]
 	public float recoveryHoldDelay = .6f;
+
+	public bool IsShot => type == ActionType.DistanceAttack;
+	public bool AimsDuringPreparation => IsShot && preparationAnimationMode == PreparationAnimationMode.WindUp;
+	public bool HoldsAimDuringCooldown => IsShot && recoveryAnimationMode == RecoveryAnimationMode.Hold;
+
+	public bool KeepsAimAfterVolley ( bool _isLastPerformTick, int _cooldownTicks )
+	{
+		return KeepsAimAfterVolley(_isLastPerformTick, _cooldownTicks, HoldsAimDuringCooldown);
+	}
+
+	public static bool KeepsAimAfterVolley ( bool _isLastPerformTick, int _cooldownTicks, bool _holdsAimDuringCooldown )
+	{
+		return !_isLastPerformTick || _cooldownTicks > 0 && _holdsAimDuringCooldown;
+	}
 	[HideIf("@type == ActionType.MeleeAttack || type == ActionType.Movement"), Min(0f)] public float shotRecoilStrength = 1f;
 	public SfxId onPerformSingleAttackSFXID;
 	public SfxId onSingleAttackHitSFXID;
@@ -223,6 +237,8 @@ public class EntityActionData : AParsableScriptableObject
 	[ShowIf("@codeType == ActionCodeType.InvokeItem || codeType == ActionCodeType.MoveItem")] public AItemData invocatedItem;
 	[ShowIf("@codeType == ActionCodeType.InvokeEntity || codeType == ActionCodeType.InvokeItem")] public int invocationCountLimit = 1;
 	[ShowIf("@type == ActionType.Movement || codeType == ActionCodeType.MoveThenAttack ")] public int movementSpeed = 1;
+	[ShowIf("@type == ActionType.Movement || codeType == ActionCodeType.MoveThenAttack "), Tooltip("Style de déplacement : l'état « Move <nom> » du calque Locomotion (Walk, Run, Dash…). Vide = Walk. En vol, l'état « Move Fly » passe devant.")]
+	public string movementAnimation = "";
 
 
 	public enum MainActionType

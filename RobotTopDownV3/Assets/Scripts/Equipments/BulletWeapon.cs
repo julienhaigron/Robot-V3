@@ -22,7 +22,7 @@ public class BulletWeapon : Weapon
 	private WaitForSeconds m_aimDurationWFS;
 	private WaitForSeconds m_shootCooldownDurationWFS;
 
-	public override Vector3 ProjectileOrigin => m_bulletPoint != null ? m_bulletPoint.position : transform.position;
+	protected override Transform LaunchPoint => m_bulletPoint != null ? m_bulletPoint : transform;
 
 	public override void Init ( Entity _user, WeaponEquipmentData _data, string _id, bool _isFirstSide )
 	{
@@ -57,7 +57,7 @@ public class BulletWeapon : Weapon
 			Tile aimedTile = _attackAction.GetTargetTileAt(_attackIndex);
 			if (aimedTile != null && m_user.Skin != null)
 			{
-				m_user.Skin.VisualyAimAt(_attackAction.linkedEquipmentId, aimedTile.transform.position + Vector3.up * .5f);
+				m_user.Skin.VisualyAimAt(_attackAction.linkedEquipmentId, aimedTile.transform.position + Vector3.up * .5f, _attackAction.Data);
 				yield return m_aimDurationWFS;
 			}
 		}
@@ -69,10 +69,10 @@ public class BulletWeapon : Weapon
 	private IEnumerator AimSingleTargetAnim ( AttackAction _attackAction, AttackAction.SingleAttackInfo _attackInfo, Vector3 _targetPosition, bool _isCurvedShot )
 	{
 		if (_attackInfo.isAttackSuccessfull || _isCurvedShot)
-			m_user.Skin.VisualyAimAt(_attackAction.linkedEquipmentId, _targetPosition);
+			m_user.Skin.VisualyAimAt(_attackAction.linkedEquipmentId, _targetPosition, _attackAction.Data);
 		else
 		{
-			Vector3 OT = (_targetPosition - m_bulletPoint.position).normalized;
+			Vector3 OT = (_targetPosition - ProjectileOrigin).normalized;
 			Vector3 perpendicular = Vector3.Cross(OT, Vector3.up).normalized;
 			float distance = 1f;
 
@@ -83,7 +83,7 @@ public class BulletWeapon : Weapon
 			if (_attackInfo.hittedTileID != -1)
 				adjacentPos = GridManager.Instance.Tiles[_attackInfo.hittedTileID].transform.position + (Vector3.up * .25f);
 
-			m_user.Skin.VisualyAimAt(_attackAction.linkedEquipmentId, adjacentPos);
+			m_user.Skin.VisualyAimAt(_attackAction.linkedEquipmentId, adjacentPos, _attackAction.Data);
 		}
 
 		yield return m_aimDurationWFS;
@@ -144,15 +144,16 @@ public class BulletWeapon : Weapon
 			foreach (ParticleSystem ps in m_onPerformPS)
 				ps.Play();
 			SoundManager.Instance.Play(_attackAction.Data.onPerformSingleAttackSFXID);
+			Pose launch = LaunchPose;
 			if (IsAttackVisible())
-				PlayOrientedVFX(_attackAction.Data.onPerformVFXPool, m_bulletPoint.position, m_bulletPoint.forward, _attackAction.Data.name);
+				PlayOrientedVFX(_attackAction.Data.onPerformVFXPool, launch.position, launch.forward, _attackAction.Data.name);
 			if (i == 0)
 				PlayAttackAnimation(_attackAction, _attackInfo);
 			PlayShotRecoil(_attackAction.Data);
 
 			bool isLastBullet = i == hitAmount - 1 && _attackIndex == _lastSuccessfullAttackIndex;
 			Entity missedTarget = i == hitAmount - 1 ? _target.targetEntity : null;
-			m_bulletPool.Get<Projectile>(m_bulletPoint.position, m_bulletPoint.rotation).SetProjectileDataAndLaunch(bulletData
+			m_bulletPool.Get<Projectile>(launch.position, launch.rotation).SetProjectileDataAndLaunch(bulletData
 				, ( impactTile ) => ApplyBulletImpact(impactTile, _attackAction, _attackInfo, isLastBullet, _target.targetEntity), () => OnProjectileDespawn(isLastBullet, missedTarget, _attackInfo.didTargetDodge), curveTile);
 
 			yield return m_timeBetweenBulletsWFS;
@@ -237,8 +238,9 @@ public class BulletWeapon : Weapon
 
 	protected override IEnumerator OnEndAttackingCR ( AttackAction _attackAction )
 	{
-		m_user.Skin.ReleaseAim(_attackAction.linkedEquipmentId);
+		if (!_attackAction.Data.KeepsAimAfterVolley(_attackAction.IsLastPerformTick, _attackAction.cooldownDuration))
+			m_user.Skin.ReleaseAim();
 
 		yield return m_shootCooldownDurationWFS;
 	}
-}
+}
