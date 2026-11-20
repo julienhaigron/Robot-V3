@@ -11,6 +11,7 @@ public class Entity : MonoBehaviour
 	public Action onDeselect;
 	public Action<AEntityAction> onStartPerformAction;
 	public Action onEndPerformAction;
+	public Action<AEntityAction> onStartActionTick;
 	public Action onEndTick;
 	public Action onNewRoundBegin;
 	public Action<EntityStatusEnumID> onStatusAdded;
@@ -386,6 +387,8 @@ public class Entity : MonoBehaviour
 			}
 		}
 
+		m_ui.RefreshStatusDurations();
+
 		foreach (EntityEquipmentData.StatBonusBuff buff in m_statBuffs.ToArray())
 		{
 			buff.duration--;
@@ -407,6 +410,11 @@ public class Entity : MonoBehaviour
 		//m_isPerforming = true;
 		m_state = _state;
 		onStartPerformAction?.Invoke(_action);
+	}
+
+	public void StartActionTick ( AEntityAction _action )
+	{
+		onStartActionTick?.Invoke(_action);
 	}
 
 	public void EndTick ()
@@ -456,6 +464,11 @@ public class Entity : MonoBehaviour
 			m_skin.Hide();
 	}
 
+	public int GetRemainingStatusDuration ( EntityStatusEnumID _statusID )
+	{
+		return m_remainingDurationToActiveStatuses.TryGetValue(GameAssets.current.game.entityStatus[_statusID], out int duration) ? duration : 0;
+	}
+
 	private int GetAppliedStatusDuration ( AEntityStatus _status )
 	{
 		return m_appliedDurationToActiveStatuses.TryGetValue(_status, out int duration) ? duration : 0;
@@ -473,7 +486,10 @@ public class Entity : MonoBehaviour
 		m_appliedDurationToActiveStatuses[status] = _duration;
 
 		if (wasAlreadyActive)
+		{
+			m_ui.RefreshStatusDurations();
 			return;
+		}
 
 		ShowStatusVisual(_statusID, status);
 

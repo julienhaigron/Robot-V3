@@ -1103,21 +1103,16 @@ public class GridManager : Singleton<GridManager>
 		_cover = null;
 		int attackerPosition = GetExchangePositionID(_attacker, true);
 		int defenderPosition = GetExchangePositionID(_target, _didAttackerWinPFC);
-		//int attackOrientation = GetClosestOrientation(m_tiles[attackerPosition], m_tiles[defenderPosition]);
-
 		float highestCoverValue = -1;
 
-		List<Tile> tilesInLine = GetShotPath(Tiles[attackerPosition], Tiles[defenderPosition], _curveTile);
-		foreach (Tile tile in tilesInLine)
+		foreach (Tile tile in GetShotPath(Tiles[attackerPosition], Tiles[defenderPosition], _curveTile))
 		{
-			if (GameConfig.current.game.coverBonusPerGroundType.ContainsKey(tile.GroundType) && tile.Wall != null)
-			{
-				if (tile.Wall.RegisteredHealth > 0 && GameConfig.current.game.coverBonusPerGroundType[tile.GroundType] > highestCoverValue)
-					highestCoverValue = GameConfig.current.game.coverBonusPerGroundType[tile.GroundType];
+			if (tile.Wall == null || tile.Wall.RegisteredHealth <= 0 || !GameConfig.current.game.coverBonusPerGroundType.TryGetValue(tile.GroundType, out float coverValue))
+				continue;
 
-				if (_cover == null || UnityEngine.Random.Range(0f, 1f) >= (highestCoverValue / GameConfig.current.game.coverBonusPerGroundType[tile.GroundType]))
-					_cover = tile;
-			}
+			highestCoverValue = Mathf.Max(highestCoverValue, coverValue);
+			if (_cover == null || UnityEngine.Random.Range(0f, 1f) >= highestCoverValue / coverValue)
+				_cover = tile;
 		}
 
 		return _cover != null;

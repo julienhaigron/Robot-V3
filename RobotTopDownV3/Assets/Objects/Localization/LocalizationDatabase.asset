@@ -2310,3 +2310,15 @@ MonoBehaviour:
     values:
     - "Start"
     - "Commencer"
+  - key: entity_ui/phase_preparation
+    values:
+    - "PREP"
+    - "PREPA"
+  - key: entity_ui/phase_perform
+    values:
+    - "ACTIVE"
+    - "EXEC"
+  - key: entity_ui/phase_cooldown
+    values:
+    - "COOLDOWN"
+    - "REFROID"

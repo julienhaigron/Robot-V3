@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -9,7 +8,8 @@ public class EntityUIPlugin : EntityPlugin
 {
 	[SerializeField] private Billboard m_billboard;
 	[Title("InGame")]
-    [SerializeField] private HealthBar m_healthBar;
+	[SerializeField] private HealthBar m_healthBar;
+	[SerializeField] private ActionPhaseIndicator m_actionPhaseIndicator;
 	[SerializeField, FormerlySerializedAs("m_flyingNumberManagerDamage")] private FlyingTextManager m_flyingTextManagerDamage;
 	[SerializeField] private Color m_damageTextColor = Color.white;
 	[SerializeField] private string m_missText = "Miss";
@@ -30,12 +30,16 @@ public class EntityUIPlugin : EntityPlugin
 
 	public enum TargetMarkerState { None, Candidate, Preview, Designated }
 	private TargetMarkerState m_targetMarkerState = TargetMarkerState.None;
+	private bool m_isSelected;
+	private bool m_isHovered;
 
 	private void Awake ()
 	{
 		m_linkedEntity.Equipment.onHealthChangeDamage += OnTakeDamage;
 		m_linkedEntity.onStatusAdded += OnStatusAdded;
 		m_linkedEntity.onStatusRemoved += OnStatusRemoved;
+		PlayerController.onEntitySelected += OnEntitySelected;
+		PlayerController.onEntityHovered += OnEntityHovered;
 	}
 
 	private void OnDestroy ()
@@ -43,14 +47,19 @@ public class EntityUIPlugin : EntityPlugin
 		m_linkedEntity.Equipment.onHealthChangeDamage -= OnTakeDamage;
 		m_linkedEntity.onStatusAdded -= OnStatusAdded;
 		m_linkedEntity.onStatusRemoved -= OnStatusRemoved;
+		PlayerController.onEntitySelected -= OnEntitySelected;
+		PlayerController.onEntityHovered -= OnEntityHovered;
 	}
 
 	public override void Init ( EntitySavedData _entityData )
 	{
 		base.Init(_entityData);
 
+		m_isSelected = false;
+		m_isHovered = false;
 		m_healthBar.gameObject.SetActive(true);
-		m_healthBar.SetHealth(m_linkedEntity.Equipment.CurrentHealth, m_linkedEntity.Equipment.MaxHealth);
+		m_healthBar.Init(m_linkedEntity.IsAlliedTo(GameManager.Instance.PlayerID), m_linkedEntity.Equipment.CurrentHealth, m_linkedEntity.Equipment.MaxHealth);
+		m_actionPhaseIndicator.Init(m_linkedEntity);
 		SetKingMarker(false);
 		m_targetMarkerState = TargetMarkerState.None;
 		ApplyTargetMarker();
@@ -67,6 +76,7 @@ public class EntityUIPlugin : EntityPlugin
 	public void InitHangarMode ( EntitySavedData _entityData )
 	{
 		m_healthBar.gameObject.SetActive(false);
+		m_actionPhaseIndicator.HideImmediate();
 
 		m_billboard.SetRot();
 	}
@@ -138,12 +148,39 @@ public class EntityUIPlugin : EntityPlugin
 			HideUI();
 	}
 
+	private void OnEntitySelected ( int? _entityID )
+	{
+		m_isSelected = _entityID == m_linkedEntity.ID;
+		RefreshHealthValue();
+	}
+
+	private void OnEntityHovered ( int? _entityID )
+	{
+		m_isHovered = _entityID == m_linkedEntity.ID;
+		RefreshHealthValue();
+	}
+
+	private void RefreshHealthValue ()
+	{
+		m_healthBar.ShowValue(m_isSelected || m_isHovered);
+	}
+
 	#region Status
+
+	public void RefreshStatusDurations ()
+	{
+		foreach (EntityStatusDisplay display in m_statusDisplays)
+		{
+			if (display.IsActive)
+				display.SetDuration(m_linkedEntity.GetRemainingStatusDuration(display.StatusID));
+		}
+	}
 
 	private void OnStatusAdded ( EntityStatusEnumID _statusID )
 	{
 		EntityStatusDisplay newStatusDisplay = GetUnactiveStatusDisplay();
 		newStatusDisplay.SetStatus(_statusID);
+		newStatusDisplay.SetDuration(m_linkedEntity.GetRemainingStatusDuration(_statusID));
 	}
 
 	private void OnStatusRemoved ( EntityStatusEnumID _statusID )

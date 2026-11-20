@@ -215,6 +215,7 @@ public abstract class AEntityAction : INetworkSerializable
 		m_isWaitingForEndTick = true;
 		if (lifetime == 0)
 			OnStartPerform(_state);
+		PerformingEntity.StartActionTick(this);
 
 		if (IsPerformingAtTick(TurnManager.currentTick) || Data.isModAction)
 		{

@@ -9,6 +9,7 @@ public class EntityDisplacementPlugin : EntityPlugin
 	public static System.Action<Entity> onAnyEntitySpawn;
 
 	[SerializeField] private Transform m_bottomPosition;
+	public Vector3 FeetPosition => m_bottomPosition.position;
 
 	private TileCoordinates m_coordinate;
 	public TileCoordinates Coordinates => m_coordinate;

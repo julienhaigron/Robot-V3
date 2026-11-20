@@ -119,7 +119,7 @@ public class Projectile : PoolElement
 
 	private void Impact ( Tile _impactTile )
 	{
-		bool didHitWall = m_projectileData.targetType == ProjectileData.TargetType.Wall && m_projectileData.targetWall != null;
+		bool didHitWall = m_projectileData.targetType == ProjectileData.TargetType.Wall && m_projectileData.targetWall != null && m_projectileData.targetWall.Health > 0;
 
 		if (didHitWall && m_projectileData.damages != null && m_projectileData.damages.Count > 0)
 			m_projectileData.targetWall.TakeDamage(m_projectileData.damages);

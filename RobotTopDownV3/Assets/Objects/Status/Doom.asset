@@ -16,7 +16,8 @@ MonoBehaviour:
   durationType: 1
   doesNeedRoll: 1
   description: 
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 0878ff73b40e5f1e596e7cbb521d4144, type: 3}
+  color: {r: 0.647, g: 0.42, b: 1, a: 1}
   groundPrefab: {fileID: 0}
   entityPrefab: {fileID: 7398500000000000001, guid: 554649f97baf5f6c6ac0c75d8cd3fa43, type: 3}
   entityVisualAnchor: 2

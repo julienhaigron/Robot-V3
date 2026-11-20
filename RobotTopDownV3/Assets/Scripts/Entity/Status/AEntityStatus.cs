@@ -11,6 +11,7 @@ public abstract class AEntityStatus : ScriptableEnum<EntityStatusEnumID>
     [TextArea(2, 6)] public string description;
 
     public Sprite icon;
+    public Color color = Color.white;
     public GameObject groundPrefab;
 
     public enum EntityVisualAnchor { Center, Feet, AboveHead }

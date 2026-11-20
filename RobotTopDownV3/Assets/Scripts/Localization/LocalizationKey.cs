@@ -573,6 +573,9 @@ public enum LocalizationKey
     match_goal_assassinat,
     briefing_return_station,
     briefing_begin,
+    entity_ui_phase_preparation,
+    entity_ui_phase_perform,
+    entity_ui_phase_cooldown,
 }
 
 public static class LocalizationKeyExtensions
@@ -1153,6 +1156,9 @@ public static class LocalizationKeyExtensions
             case LocalizationKey.match_goal_assassinat: return "match_goal/assassinat";
             case LocalizationKey.briefing_return_station: return "briefing/return_station";
             case LocalizationKey.briefing_begin: return "briefing/begin";
+            case LocalizationKey.entity_ui_phase_preparation: return "entity_ui/phase_preparation";
+            case LocalizationKey.entity_ui_phase_perform: return "entity_ui/phase_perform";
+            case LocalizationKey.entity_ui_phase_cooldown: return "entity_ui/phase_cooldown";
             default: return string.Empty;
         }
     }
