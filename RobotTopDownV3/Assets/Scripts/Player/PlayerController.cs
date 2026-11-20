@@ -65,7 +65,7 @@ public class PlayerController : Singleton<PlayerController>
 
 	private SerializableDictionary<int, List<ActionDisplayOnTile>> m_actionDisplays = new();
 	private SerializableDictionary<int, List<ActionDisplayOnTile>> m_tempActionDisplays = new();
-	private SerializableDictionary<int, List<RotationActionDisplay>> m_rotationActionDisplays = new();
+	private SerializableDictionary<int, List<GroundDisplay>> m_orderDisplays = new();
 	private SerializableDictionary<int, GhostEntity> m_ghostEntities = new();
 	public SerializableDictionary<int, GhostEntity> GhostEntities => m_ghostEntities;
 	private SerializableDictionary<int, GhostItem> m_ghostItems = new();
@@ -706,11 +706,11 @@ public class PlayerController : Singleton<PlayerController>
 		entityDisplays.Add(_display);
 	}
 
-	public void AddRotationActionDisplay ( RotationActionDisplay _display, int _performingEntityID )
+	public void AddOrderDisplay ( GroundDisplay _display, int _performingEntityID )
 	{
-		if (!m_rotationActionDisplays.ContainsKey(_performingEntityID))
-			m_rotationActionDisplays.Add(_performingEntityID, new());
-		m_rotationActionDisplays[_performingEntityID].Add(_display);
+		if (!m_orderDisplays.ContainsKey(_performingEntityID))
+			m_orderDisplays.Add(_performingEntityID, new());
+		m_orderDisplays[_performingEntityID].Add(_display);
 	}
 
 	public void AddGhostEntityAt ( Entity _entity, Tile _position, int _orientation )
@@ -786,13 +786,13 @@ public class PlayerController : Singleton<PlayerController>
 			m_tempActionDisplays[entityID].Clear();
 		}
 
-		foreach (int entityID in m_rotationActionDisplays.Keys)
+		foreach (int entityID in m_orderDisplays.Keys)
 		{
-			foreach (RotationActionDisplay display in m_rotationActionDisplays[entityID])
+			foreach (GroundDisplay display in m_orderDisplays[entityID])
 			{
 				display.Discard();
 			}
-			m_rotationActionDisplays[entityID].Clear();
+			m_orderDisplays[entityID].Clear();
 		}
 	}
 
@@ -899,6 +899,36 @@ public class PlayerController : Singleton<PlayerController>
 		ClearTargetOutlines();
 		m_aoePreviewTiles.Clear();
 		RangeOverlay.ClearAll();
+		ShieldMarker.ClearAim();
+	}
+
+	public void RefreshAimedShields ( AEntityAction _hoveredAction )
+	{
+		ShieldMarker.ClearAim();
+		if (_hoveredAction == null || m_hoveredTile == null || GridManager.Instance == null
+			|| _hoveredAction.Data.GetMainActionType() != EntityActionData.MainActionType.Attack)
+			return;
+
+		Tile shotOrigin = GridManager.Instance.Tiles[m_turnManager.GetLastRegisteredPositionOfEntity(_hoveredAction.performingEntityID)];
+		if (m_aoePreviewTiles.Count == 0)
+			AimShieldsOn(m_hoveredTile, shotOrigin);
+		else
+		{
+			foreach (Tile tile in m_aoePreviewTiles)
+				AimShieldsOn(tile, shotOrigin);
+		}
+	}
+
+	private static void AimShieldsOn ( Tile _tile, Tile _shotOrigin )
+	{
+		if (!_tile.TryGetEntity(true, out Entity target))
+			return;
+
+		foreach (ToolEquipment tool in target.Equipment.Tools.Values)
+		{
+			if (tool is Shield shield && shield.Covers(_tile, _shotOrigin))
+				shield.SetAimed(true);
+		}
 	}
 
 	public void RefreshDesignationHover ()

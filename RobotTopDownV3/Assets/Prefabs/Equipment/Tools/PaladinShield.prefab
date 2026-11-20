@@ -195,9 +195,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   orientation: 0
-  m_orientationIndicatorPrefab: {fileID: 73470000000000002, guid: aa8d0a1521b825d6778304c307a1365c, type: 3}
-  m_orientationIndicatorHeight: 0.03
-  m_allyIndicatorColor: {r: 0.35, g: 0.85, b: 1, a: 1}
-  m_enemyIndicatorColor: {r: 1, g: 0.35, b: 0.3, a: 1}
+  m_markerPrefab: {fileID: 7330000000000000103, guid: d9f17a8778eee7193c4d63f81e312214, type: 3}
   m_turnVFXPool: {fileID: 11400000, guid: c2bdcc46554beccfefb480fee0b3cf93, type: 2}
   m_turnVFXDistance: 0.72

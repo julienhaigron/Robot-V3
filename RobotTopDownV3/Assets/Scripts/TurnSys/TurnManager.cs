@@ -1006,6 +1006,26 @@ public class TurnManager : Singleton<TurnManager>
 		return orientation;
 	}
 
+	public int GetPlannedShieldOrientation ( Shield _shield, int _tokenCount = int.MaxValue )
+	{
+		int orientation = _shield.orientation;
+		if (!m_recordedActionInput.TryGetValue(_shield.LinkedEntity.ID, out Queue<RecordedAction> queue) || queue == null)
+			return orientation;
+
+		int totalCost = 0;
+		foreach (RecordedAction recordedAction in queue)
+		{
+			totalCost += recordedAction.action.TotalDuration;
+			if (totalCost > _tokenCount)
+				break;
+
+			if (recordedAction.action is TurnShieldAction turn && turn.linkedEquipmentId == _shield.ID)
+				orientation = turn.targetedOrientation;
+		}
+
+		return orientation;
+	}
+
 	public int GetOrientationBeforeFreeRotation ( RecordedAction _host )
 	{
 		return GetFacingAfterMovementOf(_host, GetPlannedOrientationOf(_host.action.performingEntityID, _host.action.timeAtStart));
@@ -1517,6 +1537,7 @@ public class TurnManager : Singleton<TurnManager>
 
 		PlayerController.Instance.RedrawTargetOutlines();
 		PlayerController.Instance.RefreshTargetMarkers();
+		PlayerController.Instance.RefreshAimedShields(_selectedEntityID.HasValue && _specificTokenCount != -1 ? currentSelectedAction : null);
 		DrawFacingPicker();
 	}
 

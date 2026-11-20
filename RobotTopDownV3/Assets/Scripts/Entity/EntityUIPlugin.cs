@@ -12,6 +12,7 @@ public class EntityUIPlugin : EntityPlugin
 	[SerializeField] private ActionPhaseIndicator m_actionPhaseIndicator;
 	[SerializeField, FormerlySerializedAs("m_flyingNumberManagerDamage")] private FlyingTextManager m_flyingTextManagerDamage;
 	[SerializeField] private Color m_damageTextColor = Color.white;
+	[SerializeField] private Color m_absorbedTextColor = new(.35f, .85f, 1f);
 	[SerializeField] private string m_missText = "Miss";
 	[SerializeField] private Color m_missTextColor = Color.red;
 	[SerializeField] private string m_dodgeText = "Esquive";
@@ -138,14 +139,32 @@ public class EntityUIPlugin : EntityPlugin
 			ShowText(m_indestructibleText, m_indestructibleTextColor);
 		else
 		{
+			if (_damageInfo.absorbedDamage > 0)
+				ShowAbsorbedDamage(_damageInfo.absorbedDamage);
+
 			foreach (KeyValuePair<WeaponEquipmentData.DamageType, int> pair in _damageInfo.damages)
-				m_flyingTextManagerDamage.ShowNumber(pair.Value, GameAssets.current.ui.damageIconPerType[pair.Key], false, false, 1f, m_damageTextColor);
+			{
+				if (pair.Value > 0 || _damageInfo.absorbedDamage == 0)
+					m_flyingTextManagerDamage.ShowNumber(pair.Value, GameAssets.current.ui.damageIconPerType[pair.Key], false, false, 1f, m_damageTextColor);
+			}
 		}
 
 		m_healthBar.SetHealth(m_linkedEntity.Equipment.CurrentHealth, m_linkedEntity.Equipment.MaxHealth);
 
 		if (m_linkedEntity.Equipment.CurrentHealth <= 0)
 			HideUI();
+	}
+
+	private void ShowAbsorbedDamage ( int _amount )
+	{
+		foreach (ToolEquipment tool in m_linkedEntity.Equipment.Tools.Values)
+		{
+			if (tool is Shield shield && shield.Data != null && shield.Data.icon != null)
+			{
+				m_flyingTextManagerDamage.ShowNumber(_amount, shield.Data.icon, false, false, 1f, m_absorbedTextColor);
+				return;
+			}
+		}
 	}
 
 	private void OnEntitySelected ( int? _entityID )

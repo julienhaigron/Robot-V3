@@ -99,9 +99,14 @@ public class RotateEntityAction : AEntityAction
 	{
 	}
 
+	public static float GetFacingYaw ( int _orientation )
+	{
+		return 30f + _orientation * 60f;
+	}
+
 	public static Quaternion GetFacingRotation ( int _orientation )
 	{
-		return Quaternion.Euler(0f, 30f + _orientation * 60f, 0f);
+		return Quaternion.Euler(0f, GetFacingYaw(_orientation), 0f);
 	}
 
 	public override bool TileInteractPredicate ( Tile _tile )

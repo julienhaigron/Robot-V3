@@ -217,6 +217,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 		public Entity entityAttacker;
 		public Entity entityTargeted;
 		public Dictionary<WeaponEquipmentData.DamageType, int> damages;
+		public int absorbedDamage;
 		public bool critical;
 		public Vector3 hitPos;
 		public Vector3 hitNormal;
@@ -633,19 +634,21 @@ public class EntityEquipmentPlugin : EntityPlugin
 			onHealthChangeDamage?.Invoke(_damageInfo);
 			return;
 		}
-		//apply flat damage reduction (ex: Shield)
 		Dictionary<WeaponEquipmentData.DamageType, int> damages = new(_damageInfo.damages);
 		if (_damageInfo.entityAttacker != null)
 		{
+			Tile ownerTile = m_linkedEntity.Displacement.Coordinates.GetTile();
+			Tile attackerTile = _damageInfo.entityAttacker.Displacement.Coordinates.GetTile();
 			foreach (ToolEquipment tool in m_tools.Values)
 			{
-				if (tool is Shield shield
-					&& shield.orientation == GridManager.Instance.GetClosestOrientation(m_linkedEntity.Displacement.Coordinates.GetTile(), _damageInfo.entityAttacker.Displacement.Coordinates.GetTile()))
+				if (tool is not Shield shield || !shield.Covers(ownerTile, attackerTile))
+					continue;
+
+				foreach (WeaponEquipmentData.DamageType damageType in _damageInfo.damages.Keys)
 				{
-					foreach (WeaponEquipmentData.DamageType damageType in damages.Keys)
-					{
-						damages[damageType] -= shield.RemoveDamage(damages[damageType]);
-					}
+					int absorbed = shield.Absorb(damages[damageType]);
+					damages[damageType] -= absorbed;
+					_damageInfo.absorbedDamage += absorbed;
 				}
 			}
 		}
@@ -655,6 +658,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 			m_currentHealth -= pair.Value;
 		}
 
+		_damageInfo.damages = damages;
 		if (m_currentHealth <= 0)
 			Death(_damageInfo);
 

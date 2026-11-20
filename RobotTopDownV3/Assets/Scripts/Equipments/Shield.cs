@@ -1,10 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using DG.Tweening;
 using System;
-using System.Linq;
-using Sirenix.OdinInspector;
+using DG.Tweening;
+using UnityEngine;
 
 public class Shield : ToolEquipment
 {
@@ -12,116 +8,81 @@ public class Shield : ToolEquipment
 
 	public int orientation = 0;
 
-	[SerializeField] private Transform m_orientationIndicatorPrefab;
-	[SerializeField] private float m_orientationIndicatorHeight = .03f;
-	[SerializeField] private Color m_allyIndicatorColor = new(.35f, .85f, 1f, 1f);
-	[SerializeField] private Color m_enemyIndicatorColor = new(1f, .35f, .3f, 1f);
+	[SerializeField] private ShieldMarker m_markerPrefab;
 	[SerializeField] private PoolData m_turnVFXPool;
 	[SerializeField] private float m_turnVFXDistance = .72f;
 
 	private int m_currentHp;
+	private ShieldMarker m_marker;
+
 	public int CurrentHp => m_currentHp;
-
-	private Transform m_orientationIndicator;
-	private bool m_isIndicatorColorSet;
-
-	private static readonly int s_colorID = Shader.PropertyToID("_Color");
+	public int MaxHp => ShieldData != null ? ShieldData.hp : 0;
+	public bool IsShownToLocalPlayer => m_user != null && (m_user.IsAlliedTo(GameManager.Instance.PlayerID)
+		|| (m_user.IsVisible && m_user.HowIsUnitVisible != NeuronalMembraneEquipmentData.VisionTypes.Radar));
 
 	public override void Init ( Entity _user, ToolEquipmentData _data, string _id, bool _isFirstSide )
 	{
 		base.Init(_user, _data, _id, _isFirstSide);
 
 		orientation = _isFirstSide ? 5 : 2;
-		m_currentHp = ShieldData.hp;
+		m_currentHp = MaxHp;
 
-		if (m_orientationIndicatorPrefab != null && m_orientationIndicator == null)
-		{
-			m_orientationIndicator = Instantiate(m_orientationIndicatorPrefab);
-			m_orientationIndicator.gameObject.SetActive(false);
-		}
-		m_isIndicatorColorSet = false;
+		if (m_marker == null && m_markerPrefab != null)
+			m_marker = Instantiate(m_markerPrefab);
+		if (m_marker != null)
+			m_marker.Bind(this);
 	}
 
-	private void LateUpdate ()
+	public bool Covers ( Tile _ownerTile, Tile _attackerTile )
 	{
-		if (m_orientationIndicator == null)
-			return;
-
-		Tile tile = GetIndicatorTile();
-		bool isShown = tile != null && m_currentHp > 0 && !m_user.Equipment.IsDead
-			&& (m_user.IsAlliedTo(GameManager.Instance.PlayerID) || m_user.IsVisible);
-
-		if (m_orientationIndicator.gameObject.activeSelf != isShown)
-			m_orientationIndicator.gameObject.SetActive(isShown);
-		if (!isShown)
-			return;
-
-		if (!m_isIndicatorColorSet)
-			ApplyIndicatorColor(m_user.IsAlliedTo(GameManager.Instance.PlayerID) ? m_allyIndicatorColor : m_enemyIndicatorColor);
-
-		Vector3 position = m_user.Skin != null && m_user.Skin.Center != null ? m_user.Skin.Center.position : m_user.transform.position;
-		position.y = tile.transform.position.y + m_orientationIndicatorHeight;
-		m_orientationIndicator.SetPositionAndRotation(position, Quaternion.Euler(0f, 30f + orientation * 60f, 0f));
+		return m_currentHp > 0 && _ownerTile != null && _attackerTile != null
+			&& orientation == GridManager.Instance.GetClosestOrientation(_ownerTile, _attackerTile);
 	}
 
-	private void PlayTurnFlash ()
+	public int Absorb ( int _damage )
 	{
-		Tile tile = GetIndicatorTile();
-		if (m_turnVFXPool == null || tile == null || (!m_user.IsAlliedTo(GameManager.Instance.PlayerID) && !m_user.IsVisible))
-			return;
-
-		Quaternion facing = Quaternion.Euler(0f, 30f + orientation * 60f, 0f);
-		Vector3 center = m_user.Skin != null && m_user.Skin.Center != null ? m_user.Skin.Center.position : m_user.transform.position;
-		Vector3 position = new Vector3(center.x, tile.transform.position.y + m_orientationIndicatorHeight, center.z) + facing * Vector3.forward * m_turnVFXDistance;
-		Weapon.PlayOrientedVFX(m_turnVFXPool, position, facing * Vector3.forward, ShieldData != null ? ShieldData.name : name);
-	}
-
-	private Tile GetIndicatorTile ()
-	{
-		if (m_user == null || GameManager.Instance == null || GridManager.Instance == null || GridManager.Instance.Tiles == null || m_user.Displacement == null)
-			return null;
-
-		int tileID = m_user.Displacement.Coordinates.ID;
-		return tileID >= 0 && tileID < GridManager.Instance.Tiles.Length ? GridManager.Instance.Tiles[tileID] : null;
-	}
-
-	private void ApplyIndicatorColor ( Color _color )
-	{
-		m_isIndicatorColorSet = true;
-		MaterialPropertyBlock block = new();
-		foreach (Renderer renderer in m_orientationIndicator.GetComponentsInChildren<Renderer>(true))
-		{
-			renderer.GetPropertyBlock(block);
-			block.SetColor(s_colorID, _color);
-			renderer.SetPropertyBlock(block);
-		}
-	}
-
-	private void OnDestroy ()
-	{
-		if (m_orientationIndicator != null)
-			Destroy(m_orientationIndicator.gameObject);
-	}
-
-	public int RemoveDamage(int _damageAmount )
-	{
-		if (m_currentHp <= 0)
+		if (m_currentHp <= 0 || _damage <= 0)
 			return 0;
 
-		int amountRemoved = Mathf.Min(_damageAmount, m_currentHp);
-		m_currentHp -= amountRemoved;
-		return amountRemoved;
+		int absorbed = Mathf.Min(_damage, m_currentHp);
+		m_currentHp -= absorbed;
+		if (m_marker != null)
+			m_marker.RefreshHealth();
+		return absorbed;
+	}
+
+	public void SetAimed ( bool _isAimed )
+	{
+		if (m_marker != null)
+			m_marker.SetAimed(_isAimed);
 	}
 
 	public override void PerformAction ( SpecialAction _specialAction, Action _onPerformEnd )
 	{
-
-		if(_specialAction is TurnShieldAction turnAction)
+		if (_specialAction is TurnShieldAction turnAction)
 		{
 			orientation = turnAction.targetedOrientation;
-			PlayTurnFlash();
+			if (m_marker != null)
+				m_marker.SlideTo(orientation, PlayTurnFlash);
+			else
+				PlayTurnFlash();
 		}
 
 		DOVirtual.DelayedCall(GameConfig.current.game.actionDuration, () => _onPerformEnd?.Invoke());
+	}
+
+	private void PlayTurnFlash ()
+	{
+		if (m_turnVFXPool == null || m_user == null || !IsShownToLocalPlayer)
+			return;
+
+		Vector3 facing = RotateEntityAction.GetFacingRotation(orientation) * Vector3.forward;
+		Weapon.PlayOrientedVFX(m_turnVFXPool, GroundStrip.OnGround(m_user.Displacement.FeetPosition) + facing * m_turnVFXDistance, facing, ShieldData != null ? ShieldData.name : name);
+	}
+
+	private void OnDestroy ()
+	{
+		if (m_marker != null)
+			Destroy(m_marker.gameObject);
 	}
 }

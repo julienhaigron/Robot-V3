@@ -278,6 +278,7 @@ MonoBehaviour:
       - {fileID: 11400000, guid: e10dfc4daf2b9e24393e7012b171820f, type: 2}
     arrowPoolData: {fileID: 11400000, guid: 64f7846c9740e524a979a96964270b2f, type: 2}
     rotationHandlePoolData: {fileID: 11400000, guid: bae268804309e4a4383e6d6ca07a9aff, type: 2}
+    shieldMarkerPoolData: {fileID: 11400000, guid: 06a0512ae419a9cbceba8a585727ef41, type: 2}
     deathVFXPoolData: {fileID: 11400000, guid: b8d417f2c69e4a04b93615d7ea08c264, type: 2}
     doomDeathVFXPoolData: {fileID: 11400000, guid: e42b90d56af34c1489a7b3f052c7d618, type: 2}
   ui:

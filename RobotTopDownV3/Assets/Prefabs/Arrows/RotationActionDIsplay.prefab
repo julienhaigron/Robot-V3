@@ -59,6 +59,7 @@ MonoBehaviour:
   m_headLength: 0.225
   m_startDot: {fileID: 7320000000000000210}
   m_radius: 0.79
+  m_shieldTurnRadius: 1.14
   m_pathClearance: 0.2
   m_rotationColor: {r: 0.72, g: 0.35, b: 1, a: 1}
   m_startDotColor: {r: 0.96, g: 0.97, b: 0.98, a: 1}

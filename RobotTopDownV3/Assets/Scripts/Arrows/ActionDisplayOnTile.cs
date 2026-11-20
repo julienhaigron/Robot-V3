@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-public class ActionDisplayOnTile : GroundOrderDisplay
+public class ActionDisplayOnTile : GroundDisplay
 {
 	private const float c_numberLift = .06f;
 

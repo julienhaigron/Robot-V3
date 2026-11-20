@@ -44,12 +44,27 @@ public class TurnShieldAction : SpecialAction
 
 	public override void Display ( TurnManager.RecordedAction _recordedAction )
 	{
-		//TODO ?
+		if (TryGetShield(out Shield shield))
+			ShieldMarker.ShowPlanned(shield, GridManager.Instance.Tiles[supposedPositionAtActionStartID]
+				, TurnManager.Instance.GetPlannedShieldOrientation(shield, timeAtStart), targetedOrientation, TimeAtStartPerform + 1, false);
 	}
 
 	public override void GhostDisplay ( Entity.EntityState _state )
 	{
+		Tile pivot = GridManager.Instance.Tiles[TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntityID)];
+		Tile hovered = PlayerController.Instance.HoveredTile;
+		if (hovered == null || !TileInteractPredicate(hovered) || !TryGetShield(out Shield shield))
+			return;
 
+		ShieldMarker.ShowPlanned(shield, pivot, TurnManager.Instance.GetPlannedShieldOrientation(shield)
+			, GridManager.Instance.GetClosestOrientation(pivot, hovered), TimeAtStartPerform + 1, true);
+	}
+
+	private bool TryGetShield ( out Shield _shield )
+	{
+		_shield = PerformingEntity != null && linkedEquipmentId != null
+			&& PerformingEntity.Equipment.Tools.TryGetValue(linkedEquipmentId, out ToolEquipment tool) ? tool as Shield : null;
+		return _shield != null;
 	}
 
 	public override bool TileInteractPredicate ( Tile _tile )
