@@ -8,6 +8,8 @@ public class EntityAnchor : MonoBehaviour
 
 	private List<Entity> m_entities = new();
     public List<Entity> Entities => m_entities;
+	private readonly Dictionary<int, Entity> m_entitiesByID = new();
+	private int m_issuedEntityIDCount;
 	private Entity m_king;
     public Entity King => m_king;
 	public bool IsKingDead => m_king != null && m_king.Equipment.IsDead;
@@ -120,14 +122,45 @@ public class EntityAnchor : MonoBehaviour
 		return SpawnEntity(_entityData, _playerID, spawn);
 	}
 
+	public int ReserveEntityIDs ( int _playerID, int _count = 1 )
+	{
+		m_issuedEntityIDCount = Mathf.Max(m_issuedEntityIDCount, m_entities.Count);
+		int firstID = (100 * _playerID) + m_issuedEntityIDCount; //0 - 99 id slots for units per player
+		m_issuedEntityIDCount += _count;
+		return firstID;
+	}
+
 	public Entity SpawnEntity ( EntitySavedData _entityData, int _playerID, Spawn _spawn )
 	{
-		int entityID = (100 * _playerID) + m_entities.Count; //0 - 99 id slots for units per player
+		int entityID = ReserveEntityIDs(_playerID);
 		Entity entity = Instantiate(_entityData.FrameData.prefab, transform);
-		m_entities.Add(entity);
+		Register(entity, entityID);
 		entity.Init(_entityData, _spawn, entityID, _playerID);
 		onEntityAdded?.Invoke(entity);
 		return entity;
+	}
+
+	private void Register ( Entity _entity, int _entityID )
+	{
+		m_entities.Add(_entity);
+		m_entitiesByID[_entityID] = _entity;
+	}
+
+	public bool TryGetEntity ( int _entityID, out Entity _entity )
+	{
+		return m_entitiesByID.TryGetValue(_entityID, out _entity);
+	}
+
+	public void DestroyEntities ()
+	{
+		foreach (Entity entity in m_entities)
+		{
+			if (entity != null)
+				Destroy(entity.gameObject);
+		}
+
+		m_entities.Clear();
+		m_entitiesByID.Clear();
 	}
 
 	public void DesignateRandomKing ()
@@ -151,7 +184,7 @@ public class EntityAnchor : MonoBehaviour
 	public void SpawnEntityDuringPlay ( EntitySavedData _entityData, int _entityID, int _playerID, int _tileID, System.Action _onEndSpawn = null )
 	{
 		Entity entity = Instantiate(_entityData.FrameData.prefab, transform);
-		m_entities.Add(entity);
+		Register(entity, _entityID);
 		entity.Init(_entityData, new Spawn(GridManager.Instance.Tiles[_tileID].coordinates, Spawn.InitializationState.Success, true, true), _entityID, _playerID);
 		onEntityAdded?.Invoke(entity);
 

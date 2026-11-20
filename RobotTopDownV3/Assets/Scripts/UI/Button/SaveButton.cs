@@ -9,7 +9,6 @@ public class SaveButton : BaseButton
 {
 	public static System.Action onSaveListChanged;
 
-	[SerializeField] private Image m_icon;
 	[SerializeField] private TextMeshProUGUI m_name;
 
 	[Title("Optional")]

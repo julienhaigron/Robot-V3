@@ -14,10 +14,6 @@ namespace SandolkakosDigital.EditorUtils
         /// <summary>
         /// Check if the target GameObject is expanded (aka unfolded) in the Hierarchy view.
         /// </summary>
-        public static bool IsExpanded(GameObject go)
-        {
-            return GetExpandedGameObjects().Contains(go);
-        }
 
         /// <summary>
         /// Get a list of all GameObjects which are expanded (aka unfolded) in the Hierarchy view.

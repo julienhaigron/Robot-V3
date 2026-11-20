@@ -20,13 +20,8 @@ public class MoveEntityToTileTask : Task
 
     private void HandleEntityMoved ( Entity _entity )
     {
-        if (!_entity.IsAlliedTo(GameManager.Instance.PlayerID))
-            return;
-
-        if (_entity.Displacement.Coordinates.IsEqualTo(targetTile))
-            return;
-
-        Complete();
+        if (_entity.IsAlliedTo(GameManager.Instance.PlayerID) && _entity.Displacement.Coordinates.IsEqualTo(targetTile))
+            Complete();
     }
 
     protected override void OnComplete ()

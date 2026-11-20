@@ -31,37 +31,8 @@ public class EntityEquipmentPlugin : EntityPlugin
 	private bool m_isDead = false;
 	public bool IsDead => m_isDead;
 
-	/*private SerializableDictionary<string, int> m_equipmentInCooldown = new();
-	public SerializableDictionary<string, int> EquipmentInCooldown => m_equipmentInCooldown;*/
-
-	[Title("Stats")]
-	private float m_generalDamageBuff = 0f;
-	public float GeneralDamageBuff
-	{
-
-		get
-		{
-			return m_generalDamageBuff;
-		}
-		set
-		{
-			m_generalDamageBuff = value;
-		}
-	}
-
-	private float m_generalDamageResistance = 0f;
-	public float GeneralDamageResistance
-	{
-
-		get
-		{
-			return m_generalDamageResistance;
-		}
-		set
-		{
-			m_generalDamageResistance = value;
-		}
-	}
+	public float GeneralDamageBuff { get; private set; }
+	public float GeneralDamageResistance { get; private set; }
 
 	private SerializableDictionary<WeaponEquipmentData.DamageType, float> m_applyedDamageTypeBuffs = new();
 	public SerializableDictionary<WeaponEquipmentData.DamageType, float> ApplyedDamageTypeBuffs => m_applyedDamageTypeBuffs;
@@ -82,7 +53,6 @@ public class EntityEquipmentPlugin : EntityPlugin
 	{
 		m_linkedEntity.onSelect += OnEntitySelected;
 		m_linkedEntity.onDeselect += OnEntityDeselected;
-		m_linkedEntity.onNewRoundBegin += OnNewPhaseStart;
 		m_linkedEntity.onStartPerformAction += OnStartPerformAction;
 		TurnManager.onStartInputPhase += OnNewTurnBegin;
 	}
@@ -91,14 +61,12 @@ public class EntityEquipmentPlugin : EntityPlugin
 	{
 		m_linkedEntity.onSelect -= OnEntitySelected;
 		m_linkedEntity.onDeselect -= OnEntityDeselected;
-		m_linkedEntity.onNewRoundBegin -= OnNewPhaseStart;
 		m_linkedEntity.onStartPerformAction -= OnStartPerformAction;
 		TurnManager.onStartInputPhase -= OnNewTurnBegin;
 	}
 
 	public override void Init ( EntitySavedData _entityData )
 	{
-		//init weapon
 		if (_entityData.arms != null && _entityData.arms.Length > 0)
 		{
 			for (int armIndex = 0; armIndex < _entityData.arms.Length; armIndex++)
@@ -115,39 +83,22 @@ public class EntityEquipmentPlugin : EntityPlugin
 			}
 		}
 
-		//init health
 		m_maxHealth = m_linkedEntity.Data.GetMaxHealth();
 		m_currentHealth = _entityData.currentHp <= 0 ? m_maxHealth : Mathf.Min(_entityData.currentHp, m_maxHealth);
 		m_isDead = false;
 
-		//resistance
-		m_generalDamageBuff = m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.SecondaryStat.StatType.GeneralDamageBonus);
-		m_applyedDamageTypeBuffs.Add(WeaponEquipmentData.DamageType.Slash, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.SecondaryStat.StatType.SlashDamageBonus));
-		m_applyedDamageTypeBuffs.Add(WeaponEquipmentData.DamageType.Bludgeoning, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.SecondaryStat.StatType.BludgeoningDamageBonus));
-		m_applyedDamageTypeBuffs.Add(WeaponEquipmentData.DamageType.Piercing, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.SecondaryStat.StatType.PiercingDamageBonus));
-		m_applyedDamageTypeBuffs.Add(WeaponEquipmentData.DamageType.Electric, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.SecondaryStat.StatType.ElectricDamageBonus));
-		m_applyedDamageTypeBuffs.Add(WeaponEquipmentData.DamageType.Fire, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.SecondaryStat.StatType.FireDamageBonus));
-		m_applyedDamageTypeBuffs.Add(WeaponEquipmentData.DamageType.Laser, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.SecondaryStat.StatType.LaserDamageBonus));
-		m_applyedDamageTypeBuffs.Add(WeaponEquipmentData.DamageType.Magnetic, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.SecondaryStat.StatType.MagneticDamageBonus));
-		m_applyedDamageTypeBuffs.Add(WeaponEquipmentData.DamageType.Plasma, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.SecondaryStat.StatType.PlasmaDamageBonus));
-		m_applyedDamageTypeBuffs.Add(WeaponEquipmentData.DamageType.Radiation, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.SecondaryStat.StatType.RadiationDamageBonus));
-
-		m_generalDamageResistance = m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.SecondaryStat.StatType.GeneralDamageResistance);
-		m_applyedDamageTypeResitance.Add(WeaponEquipmentData.DamageType.Slash, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.SecondaryStat.StatType.SlashResitance));
-		m_applyedDamageTypeResitance.Add(WeaponEquipmentData.DamageType.Bludgeoning, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.SecondaryStat.StatType.BludgeoningResitance));
-		m_applyedDamageTypeResitance.Add(WeaponEquipmentData.DamageType.Piercing, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.SecondaryStat.StatType.PiercingResitance));
-		m_applyedDamageTypeResitance.Add(WeaponEquipmentData.DamageType.Electric, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.SecondaryStat.StatType.ElectricResitance));
-		m_applyedDamageTypeResitance.Add(WeaponEquipmentData.DamageType.Fire, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.SecondaryStat.StatType.FireResitance));
-		m_applyedDamageTypeResitance.Add(WeaponEquipmentData.DamageType.Laser, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.SecondaryStat.StatType.LaserResitance));
-		m_applyedDamageTypeResitance.Add(WeaponEquipmentData.DamageType.Magnetic, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.SecondaryStat.StatType.MagneticResitance));
-		m_applyedDamageTypeResitance.Add(WeaponEquipmentData.DamageType.Plasma, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.SecondaryStat.StatType.PlasmaResitance));
-		m_applyedDamageTypeResitance.Add(WeaponEquipmentData.DamageType.Radiation, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.SecondaryStat.StatType.RadiationResitance));
-
-		m_applyedDamageCategoryBuffs.Add(WeaponEquipmentData.DamageCategory.Physic, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.SecondaryStat.StatType.PhysicalDamageBonus));
-		m_applyedDamageCategoryBuffs.Add(WeaponEquipmentData.DamageCategory.Elemental, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.SecondaryStat.StatType.ElementalDamageBonus));
-
-		m_applyedDamageCategoryResitance.Add(WeaponEquipmentData.DamageCategory.Physic, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.SecondaryStat.StatType.PhysicalDamageResistance));
-		m_applyedDamageCategoryResitance.Add(WeaponEquipmentData.DamageCategory.Elemental, m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.SecondaryStat.StatType.ElementalDamageResistance));
+		EntitySavedData savedData = m_linkedEntity.Data;
+		GameConfig.GameSettings config = GameConfig.current.game;
+		GeneralDamageBuff = savedData.GetStatBonusFromAll(EntityEquipmentData.SecondaryStat.StatType.GeneralDamageBonus);
+		GeneralDamageResistance = savedData.GetStatBonusFromAll(EntityEquipmentData.SecondaryStat.StatType.GeneralDamageResistance);
+		foreach (KeyValuePair<WeaponEquipmentData.DamageType, EntityEquipmentData.SecondaryStat.StatType> pair in config.statTypePerDamageType)
+			m_applyedDamageTypeBuffs[pair.Key] = savedData.GetStatBonusFromAll(pair.Value);
+		foreach (KeyValuePair<WeaponEquipmentData.DamageType, EntityEquipmentData.SecondaryStat.StatType> pair in config.statTypePerDamageResistanceType)
+			m_applyedDamageTypeResitance[pair.Key] = savedData.GetStatBonusFromAll(pair.Value);
+		foreach (KeyValuePair<WeaponEquipmentData.DamageCategory, EntityEquipmentData.SecondaryStat.StatType> pair in config.statTypePerDamageCategory)
+			m_applyedDamageCategoryBuffs[pair.Key] = savedData.GetStatBonusFromAll(pair.Value);
+		foreach (KeyValuePair<WeaponEquipmentData.DamageCategory, EntityEquipmentData.SecondaryStat.StatType> pair in config.statTypePerResistanceCategory)
+			m_applyedDamageCategoryResitance[pair.Key] = savedData.GetStatBonusFromAll(pair.Value);
 
 		base.Init(_entityData);
 	}
@@ -185,16 +136,6 @@ public class EntityEquipmentPlugin : EntityPlugin
 		{
 			weaponCone.DisableAllCones();
 		}
-	}
-
-	private void OnNewPhaseStart ()
-	{
-		/*foreach (string equipment in m_equipmentInCooldown.Keys.ToList())
-		{
-			m_equipmentInCooldown[equipment]--;
-			if (m_equipmentInCooldown[equipment] <= 0)
-				m_equipmentInCooldown.Remove(equipment);
-		}*/
 	}
 
 	private void OnStartPerformAction ( AEntityAction _actionPerformed )
@@ -239,19 +180,6 @@ public class EntityEquipmentPlugin : EntityPlugin
 		return newWeapon;
 	}
 
-
-	/*public void AimAtTile(string _weaponID, Tile _tile, System.Action _onEndMovement = null )
-	{
-		//OLD : get angle and apply to cone
-		WeaponCone selectedWeaponCone = m_weaponConeDictionary[_weaponID];
-		Vector2 currentLocation = new Vector2( m_linkedEntity.Displacement.Coordinates.GetTile().transform.position.x, m_linkedEntity.Displacement.Coordinates.GetTile().transform.position.z);
-		Vector2 destination = new Vector2(_tile.transform.position.x, _tile.transform.position.z);
-
-		float angle = GridManager.Instance.GetAngleFrom(currentLocation, destination);
-		selectedWeaponCone.AimAtAngle(angle, false, _onEndMovement);
-
-		m_linkedEntity.Displacement.Rotate(_tile, false);
-	}*/
 
 	public List<Tile> GetTilesInWeaponRange ( AEntityAction _action, bool _isThisTurn = false, bool _ignoreVisibility = false )
 	{
@@ -411,7 +339,6 @@ public class EntityEquipmentPlugin : EntityPlugin
 
 	public bool AttackRoll ( AttackAction _attackAction, AttackAction.SingleAttackInfo _singleAttackInfo, Entity _targetEntity, out Tile _coverTile )
 	{
-		//WeaponEquipmentData usedWeapon = m_weapons[_attackAction.linkedEquipmentId].Data;
 		bool doesWinPFC = _attackAction.DoesWinExchangeAgainst(_targetEntity);
 		Tile curveTile = null;
 
@@ -435,30 +362,15 @@ public class EntityEquipmentPlugin : EntityPlugin
 		float evationRatio = _attackAction.Data.type == EntityActionData.ActionType.DistanceAttack
 				? _targetEntity.Data.BrainData.distanceEvasion + _targetEntity.GetAdditionaryStatBonus(EntityEquipmentData.SecondaryStat.StatType.DistanceEvasion, null)
 				: _targetEntity.Data.BrainData.meleeEvasion + _targetEntity.GetAdditionaryStatBonus(EntityEquipmentData.SecondaryStat.StatType.MeleeEvasion, null);
-		float coverRatio = isThereCoverBetween
-				? GameConfig.current.game.entityCoverBonus
-				: 0f;
-		//float distanceRatio = GameConfig.current.game.distanceTypeSpreadEvaluation[GetWeaponDistanceTypeFrom(_targetEntity, _attackAction, doesWinPFC)];
+		float coverRatio = isThereCoverBetween ? GameConfig.current.game.entityCoverBonus : 0f;
+		float targetEvasionScore = targetCamo + evationRatio + coverRatio;
 
-		float targetEvasionScore =
-			targetCamo
-			+ evationRatio
-			+ coverRatio;
-		//+ distanceRatio;
-
-		//float userPerception = m_linkedEntity.Data.GetStaticPerceptionBonus(true) + m_linkedEntity.GetAdditionaryStatBonus(EntityEquipmentData.StatBonus.StatType.VisualPerception, _attackAction);
-		float userAim = _attackAction.Data.type == EntityActionData.ActionType.DistanceAttack
-				? m_linkedEntity.Data.BrainData.distanceAccuracy + m_linkedEntity.GetAdditionaryStatBonus(EntityEquipmentData.SecondaryStat.StatType.DistanceAccuracy, _attackAction)
-				: m_linkedEntity.Data.BrainData.agility + m_linkedEntity.GetAdditionaryStatBonus(EntityEquipmentData.SecondaryStat.StatType.MeleeAccuracy, _attackAction);
+		float userAim = GetAimScore(_attackAction);
 		float flankBonus = GameConfig.current.game.entityFlankRatio[GridManager.Instance.GetHitTileSide(m_linkedEntity, _targetEntity, doesWinPFC, curveTile)]
 			+ m_linkedEntity.GetAdditionaryStatBonus(EntityEquipmentData.SecondaryStat.StatType.FlankBonus, _attackAction);
 		float modAction = m_linkedEntity.PreviousActionAttackModificator;
 
-		float userHitScore =
-			//userPerception
-			userAim
-			+ flankBonus
-			+ modAction;
+		float userHitScore = userAim + flankBonus + modAction;
 
 		float finalScore = userHitScore - targetEvasionScore;
 
@@ -485,19 +397,30 @@ public class EntityEquipmentPlugin : EntityPlugin
 		detailsBuilder.AppendLine(string.Format(localization.Get(LocalizationKey.roll_final_score)
 			, userHitScore.ToPercent(), targetEvasionScore.ToPercent(), finalScore.ToPercent()));
 
-		if (finalScore >= 1f)
-			detailsBuilder.AppendLine(localization.Get(LocalizationKey.roll_guaranteed_hit));
+		LogAttackRoll(detailsBuilder, finalScore, roll, isAttackSuccessful);
+		return isAttackSuccessful;
+	}
+
+	private float GetAimScore ( AttackAction _attackAction )
+	{
+		return _attackAction.Data.type == EntityActionData.ActionType.DistanceAttack
+			? m_linkedEntity.Data.BrainData.distanceAccuracy + m_linkedEntity.GetAdditionaryStatBonus(EntityEquipmentData.SecondaryStat.StatType.DistanceAccuracy, _attackAction)
+			: m_linkedEntity.Data.BrainData.agility + m_linkedEntity.GetAdditionaryStatBonus(EntityEquipmentData.SecondaryStat.StatType.MeleeAccuracy, _attackAction);
+	}
+
+	private static void LogAttackRoll ( StringBuilder _detailsBuilder, float _finalScore, float _roll, bool _isAttackSuccessful )
+	{
+		LocalizationManager localization = LocalizationManager.Instance;
+		if (_finalScore >= 1f)
+			_detailsBuilder.AppendLine(localization.Get(LocalizationKey.roll_guaranteed_hit));
 		else
 		{
-			detailsBuilder.AppendLine(string.Format(localization.Get(LocalizationKey.roll_roll), roll.ToPercent()));
-			detailsBuilder.AppendLine(localization.Get(isAttackSuccessful ? LocalizationKey.roll_hit_success : LocalizationKey.roll_hit_failed));
+			_detailsBuilder.AppendLine(string.Format(localization.Get(LocalizationKey.roll_roll), _roll.ToPercent()));
+			_detailsBuilder.AppendLine(localization.Get(_isAttackSuccessful ? LocalizationKey.roll_hit_success : LocalizationKey.roll_hit_failed));
 		}
 
-		string detailsDescription = detailsBuilder.ToString();
-		LogConsole.LogDetails details = new("attack_" + LogConsole.Instance.Counter, localization.Get(LocalizationKey.roll_title), detailsDescription);
-
-		LogConsole.AddLog(localization.Get(isAttackSuccessful ? LocalizationKey.log_attack_success : LocalizationKey.log_attack_failure), LogConsole.LogEventType.AttackRoll, details);
-		return isAttackSuccessful;
+		LogConsole.LogDetails details = new("attack_" + LogConsole.Instance.Counter, localization.Get(LocalizationKey.roll_title), _detailsBuilder.ToString());
+		LogConsole.AddLog(localization.Get(_isAttackSuccessful ? LocalizationKey.log_attack_success : LocalizationKey.log_attack_failure), LogConsole.LogEventType.AttackRoll, details);
 	}
 
 	public bool SabotagePointAttackRoll ( AttackAction _attackAction, AttackAction.SingleAttackInfo _singleAttackInfo, Tile _from, Tile _pointTile, out Tile _coverTile )
@@ -518,9 +441,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 			_coverTile = null;
 		}
 
-		float userAim = _attackAction.Data.type == EntityActionData.ActionType.DistanceAttack
-				? m_linkedEntity.Data.BrainData.distanceAccuracy + m_linkedEntity.GetAdditionaryStatBonus(EntityEquipmentData.SecondaryStat.StatType.DistanceAccuracy, _attackAction)
-				: m_linkedEntity.Data.BrainData.agility + m_linkedEntity.GetAdditionaryStatBonus(EntityEquipmentData.SecondaryStat.StatType.MeleeAccuracy, _attackAction);
+		float userAim = GetAimScore(_attackAction);
 		float modAction = m_linkedEntity.PreviousActionAttackModificator;
 		float demolisherBonus = m_linkedEntity.MatchRole == Entity.MatchRoleType.Demolisher ? GameConfig.current.game.demolisherSabotageHitBonus : 0f;
 		float finalScore = userAim + modAction + demolisherBonus;
@@ -537,37 +458,8 @@ public class EntityEquipmentPlugin : EntityPlugin
 		detailsBuilder.AppendPercentLine(LocalizationKey.roll_demolisher_bonus, demolisherBonus);
 		detailsBuilder.AppendLine();
 
-		if (finalScore >= 1f)
-			detailsBuilder.AppendLine(localization.Get(LocalizationKey.roll_guaranteed_hit));
-		else
-		{
-			detailsBuilder.AppendLine(string.Format(localization.Get(LocalizationKey.roll_roll), roll.ToPercent()));
-			detailsBuilder.AppendLine(localization.Get(isAttackSuccessful ? LocalizationKey.roll_hit_success : LocalizationKey.roll_hit_failed));
-		}
-
-		LogConsole.LogDetails details = new("attack_" + LogConsole.Instance.Counter, localization.Get(LocalizationKey.roll_title), detailsBuilder.ToString());
-		LogConsole.AddLog(localization.Get(isAttackSuccessful ? LocalizationKey.log_attack_success : LocalizationKey.log_attack_failure), LogConsole.LogEventType.AttackRoll, details);
+		LogAttackRoll(detailsBuilder, finalScore, roll, isAttackSuccessful);
 		return isAttackSuccessful;
-	}
-
-	public WeaponEquipmentData.DistanceType GetWeaponDistanceTypeFrom ( Entity _target, AEntityAction _action, bool _didAttackerWinPFC )
-	{
-		int attackerPosition = _didAttackerWinPFC ? TurnManager.Instance.GetPositionOfEntityAtEndOfRound(_target.ID) : TurnManager.Instance.GetPositionOfEntityAtEndOfRound(_target.ID);
-		int defenderPosition = !_didAttackerWinPFC ? TurnManager.Instance.GetPositionOfEntityAtEndOfRound(m_linkedEntity.ID) : TurnManager.Instance.GetPositionOfEntityAtEndOfRound(m_linkedEntity.ID);
-		float actualDistanceFromTarget = Vector3.Distance(GridManager.Instance.Tiles[attackerPosition].transform.position, GridManager.Instance.Tiles[defenderPosition].transform.position) / (Tile.outerRadius * 2f);
-
-		int maxDistance = _action.Data.GetMaxRange(_action, m_linkedEntity, _target);
-		float distanceRelativeToWeaponRangePercentage = actualDistanceFromTarget / (float)maxDistance;
-
-		float currentTotal = 0;
-		for (int i = 0; i < GameConfig.current.game.distanceTypeSpreadEvaluation.Keys.Count; i++)
-		{
-			if (distanceRelativeToWeaponRangePercentage < currentTotal + GameConfig.current.game.distanceTypeSpreadEvaluation[(WeaponEquipmentData.DistanceType)i])
-				return (WeaponEquipmentData.DistanceType)i;
-
-			currentTotal += GameConfig.current.game.distanceTypeSpreadEvaluation[(WeaponEquipmentData.DistanceType)i];
-		}
-		return WeaponEquipmentData.DistanceType.Long;
 	}
 
 	public bool StatusRoll ( Entity _target, AEntityStatus _effect, AEntityAction _action, EntityEquipmentData _equipmentData )
@@ -775,32 +667,4 @@ public class EntityEquipmentPlugin : EntityPlugin
 	}
 
 	#endregion
-
-	/*private void OnDrawGizmos ()
-	{
-		foreach(string weapongID in m_weapons.Keys)
-		{
-			Weapon selectedWeapon = m_weapons[weapongID];
-			//shoot ray from tile to other tiles in range
-			float angle = selectedWeapon.aimedRotation;
-
-			int nbOfRayPerAngle = 1;
-			int totalNbOfRay = selectedWeapon.Data.visionConeRange * nbOfRayPerAngle;
-			for (int i = 0; i < totalNbOfRay; i++)
-			{
-				//calculate angle
-				float rayAngle = Mathf.Lerp(angle + (selectedWeapon.Data.visionConeRange / 2), angle - (selectedWeapon.Data.visionConeRange / 2), (float)i / (float)totalNbOfRay);
-				rayAngle += 90f;
-				//get position in at angle Y at distance X from linkedEntity
-				if (rayAngle < 0)
-					rayAngle += 360;
-
-				float radians = rayAngle * Mathf.Deg2Rad;
-				Vector3 aimedPosition = new Vector3(Mathf.Sin(radians), 0, Mathf.Cos(radians));
-
-				Gizmos.color = Color.red;
-				Gizmos.DrawRay(m_linkedEntity.Displacement.Coordinates.GetTile().transform.position, aimedPosition * selectedWeapon.Data.range);
-			}
-		}
-	}*/
 }

@@ -16,7 +16,6 @@ public class UICanvasParent : MonoBehaviour
 	public Canvas WindowCanvas => m_canvas;
 
 	[SerializeField] protected GraphicRaycaster m_raycaster;
-	public GraphicRaycaster Raycaster => m_raycaster;
 
 
 	[FoldoutGroup("EditorBtns")]

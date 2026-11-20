@@ -9,7 +9,6 @@ using System;
 public class EntityActionQueue : MonoBehaviour
 {
 	[Title("Actions")]
-	[SerializeField] private CounterDisplay m_actionTokenDisplay;
 	[SerializeField] private EntityActionDisplay[] m_actionDisplays;
 	[SerializeField] private Transform m_backgroundV1;
 	[SerializeField] private Transform m_backgroundV2;
@@ -26,10 +25,8 @@ public class EntityActionQueue : MonoBehaviour
 	[SerializeField] private BaseButton m_leftActionTypeBtn;
 	[SerializeField] private BaseButton m_rightActionTypeBtn;
 	[SerializeField] private PriorityQueueActionSlot[] m_priorityQueueActionSlots;
-	public PriorityQueueActionSlot[] PriorityQueueSlots => m_priorityQueueActionSlots;
 
 	[SerializeField] private PriorityQueueActionDisplay[] m_priorityQueueActionDisplays;
-	public PriorityQueueActionDisplay[] PriorityQueueDisplays => m_priorityQueueActionDisplays;
 
 	[SerializeField] private float m_baseActionPriorityQueueHeight = 93f;
 	[SerializeField] private float m_baseActionPriorityQueueElementHeight = 54.5f;

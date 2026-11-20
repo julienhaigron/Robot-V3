@@ -12,7 +12,6 @@ public class ComponentDisplayGrid : ComponentContainer
     public List<ComponentDisplay> Items => m_items;
 
     private bool m_areMainComponentsHighlighted;
-    public bool AreMainComponentsHighlighted => m_areMainComponentsHighlighted;
 
     public override void Init ( ComponentContainer _container, EntitySavedData _unitData, GameDatas.PlayerSave.Component _componentSavedData, Func<GameDatas.PlayerSave.Component, bool> _predicate
         , ComponentDisplay.DisplayMode _displayMode, int _index = 0 )

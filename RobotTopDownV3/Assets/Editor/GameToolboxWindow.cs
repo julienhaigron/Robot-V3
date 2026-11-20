@@ -7,9 +7,6 @@ using UnityEditor;
 public class GameToolboxWindow : EditorWindow
 {
 
-	private int m_missingUnitCount;
-	private int m_missingActionCount;
-	private int m_missingComponentCount;
 
 	private const float SoftLockWarningDelay = 5f;
 	private Vector2 m_scroll;
@@ -322,11 +319,6 @@ public class GameToolboxWindow : EditorWindow
 	private void Title ( string _text )
 	{
 		EditorGUILayout.LabelField(_text);
-	}
-
-	private void SetSelection ( GameObject _target )
-	{
-		Selection.activeObject = _target;
 	}
 
 	#endregion

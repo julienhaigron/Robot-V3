@@ -30,11 +30,6 @@ public class HangarStructureUpgrade : StructureUpgrade
 		return maxHangarUnitAmountPerLevel[GetCurrentLevel()];
 	}
 
-	public int GetCurrentMaxComponentCapacity ()
-	{
-		return maxComponentCapacityPerLevel[GetCurrentLevel()];
-	}
-
 	public int GetCurrentMaxUnitAmount ()
 	{
 		return maxSquadUnitAmountPerLevel[GetCurrentLevel()];

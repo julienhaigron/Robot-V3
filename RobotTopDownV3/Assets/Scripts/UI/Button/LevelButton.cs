@@ -7,7 +7,6 @@ using Sirenix.OdinInspector;
 
 public class LevelButton : BaseButton
 {
-	[SerializeField] private Image m_icon;
 	[SerializeField] private TextMeshProUGUI m_name;
 
 	[ReadOnly, SerializeField] private MissionData m_level;

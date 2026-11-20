@@ -35,9 +35,7 @@ public class UniformHorizontalLayoutGroup : HorizontalLayoutGroup
 	[SerializeField] private bool m_shrinkSlotsToFit = true;
 
 	public SlotWidthMode slotWidthMode { get { return m_slotWidthMode; } set { SetProperty(ref m_slotWidthMode, value); } }
-	public float slotWidth { get { return m_slotWidth; } set { SetProperty(ref m_slotWidth, value); } }
 	public int slotCount { get { return m_slotCount; } set { SetProperty(ref m_slotCount, value); } }
-	public bool shrinkSlotsToFit { get { return m_shrinkSlotsToFit; } set { SetProperty(ref m_shrinkSlotsToFit, value); } }
 
 	public override void CalculateLayoutInputHorizontal ()
 	{

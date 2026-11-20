@@ -933,11 +933,6 @@ public partial class GameDatas : ScriptableObject
 		OverrideFromJson(gameDatasToOverride, jsonDatas);
 	}
 
-	public void Overrive ( string savePath = null )
-	{
-		Override(this, savePath);
-	}
-
 	[Title("Editor Tools")]
 	public static void SetDatasDirty ( GameDatas datas = null )
 	{

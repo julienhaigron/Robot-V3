@@ -119,36 +119,6 @@ public static class Utils
 		}
 	}
 
-	public static void CursorHandleCap ( int _controlID, Vector3 _position, Quaternion _rotation, float _size,
-		EventType _eventType )
-	{
-		switch (_eventType)
-		{
-			case EventType.MouseMove:
-			case EventType.Layout:
-				HandleUtility.AddControl(_controlID, HandleUtility.DistanceToCircle(_position, _size));
-				break;
-			case EventType.Repaint:
-				Graphics.DrawMeshNow(Resources.Load<Mesh>("Cursor"), StartCapDraw(_position, _rotation, _size));
-				break;
-		}
-	}
-
-	public static void FlagHandleCap ( int _controlID, Vector3 _position, Quaternion _rotation, float _size,
-		EventType _eventType )
-	{
-		switch (_eventType)
-		{
-			case EventType.MouseMove:
-			case EventType.Layout:
-				HandleUtility.AddControl(_controlID, HandleUtility.DistanceToCircle(_position, _size));
-				break;
-			case EventType.Repaint:
-				Graphics.DrawMeshNow(Resources.Load<Mesh>("Flag"), StartCapDraw(_position, _rotation, _size));
-				break;
-		}
-	}
-
 	public static void LinkHandleCap ( int _controlID, Vector3 _position, Quaternion _rotation, float _size,
 		EventType _eventType )
 	{

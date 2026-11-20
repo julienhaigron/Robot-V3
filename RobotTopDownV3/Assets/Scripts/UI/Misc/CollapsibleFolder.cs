@@ -19,7 +19,6 @@ public class CollapsibleFolder : MonoBehaviour
 
 	private float m_expandedHeight;
 	private bool m_isCollapsed;
-	public bool IsCollapsed => m_isCollapsed;
 	private Sequence m_sequence;
 
 	private void Awake ()

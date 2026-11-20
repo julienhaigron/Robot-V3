@@ -12,7 +12,6 @@ public sealed class InGamePanel : AUIPanel
 {
 	[Title("Actions")]
 	[SerializeField] private EntityActionQueue m_actionQueue;
-	public EntityActionQueue ActionQueue => m_actionQueue;
 
 	[SerializeField] private SquadUnitDisplayList m_squadUnitDisplayList;
 	[SerializeField] private UIEntityActionList m_entityActionList;

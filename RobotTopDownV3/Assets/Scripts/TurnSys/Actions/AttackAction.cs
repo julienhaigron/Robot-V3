@@ -12,8 +12,6 @@ public class AttackAction : AEntityAction
 	private HashSet<Tile> m_tilesInRange;
 	private List<int> m_orientations = new();
 
-	private bool m_didCheckConflict = false; //client only and used only for targetType == Tile
-
 	public class SingleAttackInfo : INetworkSerializable
 	{
 		public bool isAttackSuccessfull;
@@ -158,30 +156,9 @@ public class AttackAction : AEntityAction
 			attacksInfos[i] = new();
 	}
 
-	public override ActionConflictResultInfo CheckConflict ( AEntityAction _otherAction, bool _isCheck = true )
-	{
-		if (m_didCheckConflict)
-			return new() { isFirstActionConflicted = false, isSecondActionConflicted = false };
-
-		if (Data.targetType == EntityActionData.TargetType.Tile)
-			m_didCheckConflict = true;
-
-		return new() { isFirstActionConflicted = false, isSecondActionConflicted = false };
-	}
-
 	private void LogUseWeapon ()
 	{
-		List<string> targetNames = new();
-		if (targetedEntityIDs != null)
-		{
-			foreach (int targetID in targetedEntityIDs)
-			{
-				Entity target = GameManager.Instance.GetEntityFromID(targetID);
-				if (target != null && !targetNames.Contains(target.Data.name))
-					targetNames.Add(target.Data.name);
-			}
-		}
-
+		List<string> targetNames = GetTargetedEntityNames();
 		LocalizationManager localization = LocalizationManager.Instance;
 		string targetLabel = targetNames.Count > 0 ? string.Join(", ", targetNames)
 			: SabotagePoints.TryGetLivingPoint(GetTargetTileAt(0), out int sabotagePointOwnerID) ? SabotagePoints.GetLocalizedName(sabotagePointOwnerID)
@@ -193,7 +170,7 @@ public class AttackAction : AEntityAction
 			, new LogConsole.LogDetails("useweapon_" + LogConsole.Instance.Counter, Data.GetLocalizedName(), Data.GetDescription()));
 	}
 
-	private void LogDamages ( Dictionary<WeaponEquipmentData.DamageType, int> _damages, LogConsole.LogDetails _details, Entity _targetEntity, int _attackIndex )
+	private void LogDamages ( Dictionary<WeaponEquipmentData.DamageType, int> _damages, LogConsole.LogDetails _details, int _attackIndex )
 	{
 		int totalDamage = 0;
 		foreach (int value in _damages.Values)
@@ -228,10 +205,7 @@ public class AttackAction : AEntityAction
 		{
 			foreach (Entity entity in anchor.Entities)
 			{
-				if (entity.Equipment.IsDead || caught.Contains(entity))
-					continue;
-
-				if (zone.Contains(GetExchangeTileOf(entity)))
+				if (!entity.Equipment.IsDead && zone.Contains(GetExchangeTileOf(entity)))
 					caught.Add(entity);
 			}
 		}
@@ -243,7 +217,6 @@ public class AttackAction : AEntityAction
 	{
 		if (targetedEntityIDs != null || (Data.aoeType != EntityActionData.AOEType.Noone && targetTileIDs != null))
 		{
-			//targetedEntityID = PerformingEntity.AI.TargetedEntity.ID;
 			LogUseWeapon();
 
 			for (int attackCount = 0; attackCount < attacksInfos.Length; attackCount++)
@@ -314,26 +287,20 @@ public class AttackAction : AEntityAction
 						, GetExchangeResultAgainst(targetEntity), out LogConsole.LogDetails damageDetails, attackInfo.CurveTile);
 
 				if (attackInfo.isAttackSuccessfull)
-					LogDamages(damagesDealt, damageDetails, targetEntity, attackCount);
+					LogDamages(damagesDealt, damageDetails, attackCount);
 
 				if (coverHitted != null)
 					coverHitted.Wall.RegisterDamage(damagesDealt);
 
-				List<int> tmpDamages = new();
-				List<short> tmpDamageTypes = new();
+				attackInfo.damages = new int[damagesDealt.Count];
+				attackInfo.damageTypes = new short[damagesDealt.Count];
+				int damageIndex = 0;
 				foreach (KeyValuePair<WeaponEquipmentData.DamageType, int> pair in damagesDealt)
 				{
-					tmpDamages.Add(pair.Value);
-					tmpDamageTypes.Add((short)pair.Key);
+					attackInfo.damages[damageIndex] = pair.Value;
+					attackInfo.damageTypes[damageIndex++] = (short)pair.Key;
 				}
-				attackInfo.damages = tmpDamages.ToArray();
-				attackInfo.damageTypes = tmpDamageTypes.ToArray();
 			}
-		}
-		else if (targetedEntityIDs != null)
-		{
-			//TODO : handle this situation
-			Debug.Log("ERROR : no available target");
 		}
 	}
 
@@ -355,29 +322,14 @@ public class AttackAction : AEntityAction
 			return;
 		}
 
-		/*List<Tile> tilesInWeaponRange = Data.isAoe ? PerformingEntity.Equipment.GetTilesInAoERange(this, GridManager.Instance.Tiles[targetTileIDs[attackCount]], true) : PerformingEntity.Equipment.GetTilesInWeaponRange(this, linkedEquipmentId, true);
-		foreach (Tile tile in tilesInWeaponRange)
-		{
-			tile.UI.SetOutlineColor(Color.red);
-		}*/
 		PerformingEntity.Equipment.Weapons[linkedEquipmentId].PerformAttack(this, () =>
 		{
-			/*foreach (Tile tile in tilesInWeaponRange)
-			{
-				tile.UI.ResetOutline();
-			}*/
 			base.Perform(_state);
 			EndTick();
 		});
-
 	}
 
 	#region Input
-
-	public override void Display ( TurnManager.RecordedAction _recordedAction )
-	{
-		//TODO ?
-	}
 
 	public override void OnSelectActionTileInteractPredicatePrewarm ()
 	{
@@ -403,11 +355,7 @@ public class AttackAction : AEntityAction
 
 	public override bool TileInteractPredicate ( Tile _tile )
 	{
-		if (m_tilesInRange.Contains(_tile)
-			&& (Data.targetType == EntityActionData.TargetType.Tile || _tile.TryGetEntity(true, out Entity entity)))
-			return true;
-		else
-			return false;
+		return m_tilesInRange.Contains(_tile) && (Data.targetType == EntityActionData.TargetType.Tile || _tile.TryGetEntity(true, out _));
 	}
 
 	public override void RegisterInteraction ( Tile _tile )
@@ -432,17 +380,13 @@ public class AttackAction : AEntityAction
 
 		if (TurnManager.Instance.CurrentActionTargetTiles.Count == maxTargetAmount * Data.tokenDuration)
 		{
-			RotateEntityAction modAction = TurnManager.Instance.GetAction(GameAssets.current.game.entityActionsData[EntityActionEnumID.RotateEntity], performingEntityID, null, timeAtStart) as RotateEntityAction;
+			RotateEntityAction modAction = TurnManager.Instance.GetAction(EntityActionEnumID.RotateEntity, performingEntityID, null, timeAtStart) as RotateEntityAction;
 			modAction.targetTileIDs = new int[1];
 			modAction.targetTileIDs[0] = _tile.coordinates.ID;
 			modAction.targetedOrientationID = m_orientations.ToArray();
 			TurnManager.Instance.RegisterActionAndMod(performingEntityID, TurnManager.Instance.CurrentActionSelected, modAction, TurnManager.Instance.GetDefaultStateOf(performingEntityID));
 			TurnManager.Instance.RefreshActionDisplay(performingEntityID, true);
 		}
-	}
-
-	public override void GhostDisplay ( Entity.EntityState _state )
-	{
 	}
 
 	#endregion

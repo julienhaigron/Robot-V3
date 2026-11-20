@@ -37,7 +37,6 @@ public class UnitPreset : AParsableScriptableObject
 
     [ReadOnly, SerializeField]
     private int m_totalEnergyCostRemaining;
-    public int TotalEnergyCostRemaining => m_totalEnergyCostRemaining;
 
     [Button]
     private void RefreshTotalEnergyCostRemaining ()

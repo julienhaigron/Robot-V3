@@ -418,49 +418,6 @@ public class EntitySavedData : INetworkSerializable
 		return Mathf.RoundToInt(maxHealth * bonus);
 	}
 
-	public float GetStaticPerceptionBonus ( bool _isVisual )
-	{
-		float result = 0;
-
-		/*if(NeuronalMembraneData != null)
-		{
-			foreach (EntityEquipmentData.StatBonus statBonus in NeuronalMembraneData.visionTypes)
-			{
-				if (statBonus.type == EntityEquipmentData.StatBonus.StatType.VisualPerception && _isVisual)
-					result += statBonus.value;
-				else if (statBonus.type == EntityEquipmentData.StatBonus.StatType.SoundPerception && !_isVisual)
-					result += statBonus.value;
-			}
-		}*/
-		foreach (GameDatas.PlayerSave.Component container in auxiliar)
-		{
-			if (container != null && !container.isDamaged && container.TryGetData(out OccultorEquipmentData occultor))
-			{
-				foreach (EntityEquipmentData.SecondaryStat statBonus in occultor.statBonuses)
-				{
-					if (statBonus.type == EntityEquipmentData.SecondaryStat.StatType.VisualPerception && _isVisual)
-						result += statBonus.value;
-					else if (statBonus.type == EntityEquipmentData.SecondaryStat.StatType.RadarPerception && !_isVisual)
-						result += statBonus.value;
-				}
-			}
-		}
-		/*foreach (GameDatas.PlayerSave.Equipment container in chipsets)
-		{
-			if (GameAssets.current.equipments[container.dataID] is ChipsetEquipmentData chipset)
-			{
-				foreach (EntityEquipmentData.StatBonus statBonus in chipset.statBonuses)
-				{
-					if (statBonus.type == EntityEquipmentData.StatBonus.StatType.VisualPerception && _isVisual)
-						result += statBonus.value;
-					else if (statBonus.type == EntityEquipmentData.StatBonus.StatType.SoundPerception && !_isVisual)
-						result += statBonus.value;
-				}
-			}
-		}*/
-		return result;
-	}
-
 	public float GetStaticStealthBonus ( bool _isVisual )
 	{
 		float result = 0;

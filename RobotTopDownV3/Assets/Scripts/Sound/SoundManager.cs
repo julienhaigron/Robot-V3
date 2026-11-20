@@ -27,7 +27,6 @@ public class SoundManager : Singleton<SoundManager>
 	public static Action onMasterVolumeChanged;
 
 	public UISoundConfig UISounds => uiSounds;
-	public SfxId CurrentMusicId => currentMusicId;
 
 	public float MasterVolume => GameDatas.current.app.masterVolume;
 

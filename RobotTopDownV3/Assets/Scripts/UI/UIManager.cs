@@ -310,15 +310,6 @@ public sealed class UIManager : SingletonPersistant<UIManager>
 			this.activePopup = null;
 	}
 
-	public T GetPopup<T> () where T : AUIPopup
-	{
-		Type type = typeof(T);
-
-		if (this.popupsDictionary.ContainsKey(type) == false)
-			throw new Exception(this.GetType().Name + " - Do not have popup [" + type.Name + "].");
-		return (this.popupsDictionary[type] as T);
-	}
-
 	private void SetActivePopup ( AUIPopup _popup )
 	{
 		if (!m_popups.Contains(_popup))

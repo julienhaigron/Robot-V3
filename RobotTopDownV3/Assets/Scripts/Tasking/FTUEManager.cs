@@ -32,12 +32,10 @@ public class FTUEManager : Singleton<FTUEManager>
 	[SerializeField] private DialogueData[] m_day5TutoDialogues;
 
 	private Dictionary<string, TutorialHighlightZone> m_registerdTutorialHighlightZones = new();
-	public Dictionary<string, TutorialHighlightZone> RegisterdTutorialHighlightZones => m_registerdTutorialHighlightZones;
 
 
 	public const string FTUEID = "FTUESequence";
 	private bool m_isInit = false;
-	public bool IsInit => m_isInit;
 
 	public bool IsFTUERunning
 	{

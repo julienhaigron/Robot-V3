@@ -8,6 +8,7 @@ public class TaskManager : SingletonPersistant<TaskManager>
     private TaskContext m_context = null;
     public TaskContext Context => m_context;
     private List<TaskSequence> m_activeSequences = new();
+    private readonly List<TaskSequence> m_updatedSequences = new();
 
     public class TaskContext
     {
@@ -39,7 +40,9 @@ public class TaskManager : SingletonPersistant<TaskManager>
         if (m_context == null)
             return;
 
-		foreach (TaskSequence seq in m_activeSequences.ToArray())
+		m_updatedSequences.Clear();
+		m_updatedSequences.AddRange(m_activeSequences);
+		foreach (TaskSequence seq in m_updatedSequences)
 		{
 			if (seq.IsCompleted)
 			{

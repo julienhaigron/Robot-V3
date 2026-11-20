@@ -7,7 +7,6 @@ public class RepairStationPanel : AUIPanel
 {
 	[SerializeField] private RepareUnitDisplayGrid m_inventoryGrid;
 	[SerializeField] private RepareUnitSlot[] m_repairingSlots;
-	[SerializeField] private RepareUnitFullDisplay m_hoveredComponentFullInfoDisplay;
 
 	private System.Func<EntitySavedData, bool> InventoryGridPredicate => item => item != null && item.IsDamaged();
 

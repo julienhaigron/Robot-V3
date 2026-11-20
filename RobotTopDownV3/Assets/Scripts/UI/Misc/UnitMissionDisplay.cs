@@ -11,7 +11,6 @@ public class UnitMissionDisplay : MonoBehaviour, IPointerEnterHandler, IPointerE
 	public static System.Action<UnitMissionDisplay> onAnySquadToggled;
 
 	[SerializeField] private TextMeshProUGUI m_nameTMP;
-    [SerializeField] private Image m_mainIcon;
 	[SerializeField] private Image m_toggleBGImg;
 	[SerializeField] private Image m_toggleImg;
 	[SerializeField] private BaseButton m_selectBtn;
@@ -41,6 +40,24 @@ public class UnitMissionDisplay : MonoBehaviour, IPointerEnterHandler, IPointerE
 	}
 
 	//display every unit of the player inventory, instantiate missing displays if the player owns more units than there are displays
+	public static void RefreshSquadState ( List<UnitMissionDisplay> _displays, BaseButton _startButton )
+	{
+		foreach (UnitMissionDisplay display in _displays)
+			display.RefreshToggleInteractability();
+
+		_startButton.SetInteractability(GameDatas.current.currentPlayerSave.squadUnitsIndex.Count > 0);
+	}
+
+	public static UnitMissionDisplay RefreshAfterSquadToggle ( List<UnitMissionDisplay> _displays, UnitMissionDisplay _toggledDisplay, BaseButton _startButton )
+	{
+		EntitySavedData toggledUnit = _toggledDisplay.Data;
+		RefreshPlayerUnits(_displays);
+		RefreshSquadState(_displays, _startButton);
+
+		UnitMissionDisplay toggledDisplay = _displays.Find(display => display.Data == toggledUnit);
+		return toggledDisplay != null ? toggledDisplay : _toggledDisplay;
+	}
+
 	public static void RefreshPlayerUnits ( List<UnitMissionDisplay> _displays )
 	{
 		if (_displays == null || _displays.Count == 0)

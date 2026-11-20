@@ -17,10 +17,7 @@ public class Wall : MonoBehaviour
 	//saved infos
     [SerializeField] private Tile m_linkedTile;
 	public Tile LinkedTile { get { return m_linkedTile; } set { m_linkedTile = value; } }
-	
-	[SerializeField] private bool m_isDestructible = true;
-	public bool IsDestructible { get { return m_isDestructible; } set { m_isDestructible = value; } }
-	
+
 	[SerializeField] private int m_hp = 1;
 	public int Health { get { return m_hp; } set { m_hp = value; } }
 	

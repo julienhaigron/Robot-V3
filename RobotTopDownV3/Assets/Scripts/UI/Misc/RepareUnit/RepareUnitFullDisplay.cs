@@ -6,12 +6,8 @@ using System.Collections.Generic;
 
 public class RepareUnitFullDisplay : MonoBehaviour
 {
-	[SerializeField] private CanvasGroup m_canvasGroup;
 	//[SerializeField] private Image m_icon;
 	[SerializeField] private TextMeshProUGUI m_titleTMP;
-	[SerializeField] private Image m_corpIcon;
-	[SerializeField] private Image m_componentTypeIcon;
-	[SerializeField] private TextMeshProUGUI m_priceTMP;
 	[SerializeField] private StatDisplay[] m_statDisplays;
 
 	private RepareUnitDisplay m_currentDisplayedComponent;

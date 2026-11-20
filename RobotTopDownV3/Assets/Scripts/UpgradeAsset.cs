@@ -50,7 +50,6 @@ public class UpgradeAsset : ScriptableObject
     [PreviewField(ObjectFieldAlignment.Center, Height = 100f)]
     [SerializeField]
     protected Sprite m_outlineSprite;
-    public Sprite outlineSprite => m_outlineSprite;
 
 
     [TitleGroup("Value")]
@@ -173,11 +172,6 @@ public class UpgradeAsset : ScriptableObject
             fromLevel++;
         }
         return total;
-    }
-
-    public virtual bool HasEnoughCurrencyForCurrentUpgrade ()
-    {
-        return GameDatas.current.currentPlayerSave.currencies[currencyType] >= GetCurrentPrice();
     }
 
     public virtual bool IsMaxedOut ()

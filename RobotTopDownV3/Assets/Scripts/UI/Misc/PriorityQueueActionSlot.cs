@@ -10,7 +10,6 @@ public class PriorityQueueActionSlot : MonoBehaviour, IPointerEnterHandler
     [Title("Dependencies")]
 	[SerializeField] private Transform m_displayParent;
 	public Transform DisplayParent => m_displayParent;
-	[SerializeField] private Image m_backgroundImg;
     [SerializeField] private Canvas m_canvas;
     public Canvas Canvas => m_canvas;
 
@@ -37,11 +36,6 @@ public class PriorityQueueActionSlot : MonoBehaviour, IPointerEnterHandler
 
 		display.transform.SetParent(m_displayParent, false);
 		(display.transform as RectTransform).anchoredPosition = Vector2.zero;
-	}
-
-	public PriorityQueueActionDisplay GetDisplay ()
-	{
-		return m_display;
 	}
 
 	public void RemoveDisplay ()

@@ -109,43 +109,24 @@ public class EntityDisplacementPlugin : EntityPlugin
 
 	public void SetSpawn ( EntityAnchor.Spawn _spawn )
 	{
-		//MoveToTile(_spawn.coordinates.GetTile(), null);
 		Tile spawn = _spawn.coordinates.GetTile();
 		transform.position = spawn.transform.position - m_bottomPosition.localPosition;
 		m_traveledTileTotalCount = 0;
-
-		//Rotate((new int[3] { 3, 4, 5 }).RandomElement(), true);
-		if (!_spawn.isFirstSide)
-			Rotate(4, 0f);
-		else
-			Rotate(1, 0f);
+		Rotate(_spawn.isFirstSide ? 1 : 4, 0f);
 
 		spawn.SetEntity(m_linkedEntity, _isThisTurn: true);
 		m_coordinate.SetCoordinate(spawn.coordinates.X, spawn.coordinates.Z, spawn.coordinates.ID);
 
-		onAnyEntitySpawn.Invoke(m_linkedEntity);
+		onAnyEntitySpawn?.Invoke(m_linkedEntity);
 	}
 
-	public Tween MoveToTile( int _tileID,  System.Action onMovementDoneAction, bool _overrideMovementSpeed = false, float _overritenMovementSpeed = 0, bool _keepsOrientation = false )
+	public Tween MoveToTile ( int _tileID, System.Action onMovementDoneAction, bool _overrideMovementSpeed = false, float _overritenMovementSpeed = 0, bool _keepsOrientation = false )
 	{
 		Tile tile = GridManager.Instance.Tiles[_tileID];
-
-		Entity occupant = tile.GetBlockingEntityFor(m_linkedEntity);
-		if (occupant != null)
-		{
-			Debug.LogError("Movement refused: " + m_linkedEntity.Data.name + " cannot enter tile " + tile.coordinates.ID
-				+ ", still held by " + occupant.Data.name, gameObject);
-
-			RegisterOnCurrentTile();
-			onMovementDoneAction?.Invoke();
+		if (IsEntryRefused(tile, onMovementDoneAction))
 			return null;
-		}
 
-		ReleaseTileLeftBehind(tile);
-
-		float movementDuration
- = _overrideMovementSpeed ? _overritenMovementSpeed : GameConfig.current.game.actionDuration;
-
+		float movementDuration = _overrideMovementSpeed ? _overritenMovementSpeed : GameConfig.current.game.actionDuration;
 		if (!_keepsOrientation && ShouldFaceMovementDirection())
 			Rotate(tile, movementDuration);
 
@@ -155,53 +136,54 @@ public class EntityDisplacementPlugin : EntityPlugin
 		m_linkedEntity.Skin.SetIsMoving(true);
 		m_movementTween = transform.DOMove(tile.transform.position - m_bottomPosition.localPosition, movementDuration)
 			.SetEase(Ease.Linear).OnComplete(ConsumePendingMovementDoneAction);
-		tile.SetEntity(m_linkedEntity, _isThisTurn: false);
-		m_previousCoordinate = m_coordinate;
-		m_lastMovementTick = TurnManager.currentTick;
-		m_coordinate.SetCoordinate(tile.coordinates.X, tile.coordinates.Z, tile.coordinates.ID);
-
-		tile.OnEntityEnter(m_linkedEntity, false);
-
-		//refresh fow
+		EnterTile(tile, false);
 		onAnyEntityMovement?.Invoke(m_linkedEntity);
+
 		return m_movementTween;
 	}
 
-	public Tween TeleportToTile (int _tileID, System.Action onMovementDoneAction )
+	public void TeleportToTile ( int _tileID, System.Action onMovementDoneAction )
 	{
 		Tile tile = GridManager.Instance.Tiles[_tileID];
-
-		Entity teleportOccupant = tile.GetBlockingEntityFor(m_linkedEntity);
-		if (teleportOccupant != null)
-		{
-			Debug.LogError("Teleport refused: " + m_linkedEntity.Data.name + " cannot enter tile " + tile.coordinates.ID
-				+ ", still held by " + teleportOccupant.Data.name, gameObject);
-
-			RegisterOnCurrentTile();
-			onMovementDoneAction?.Invoke();
-			return null;
-		}
-
-		ReleaseTileLeftBehind(tile);
+		if (IsEntryRefused(tile, onMovementDoneAction))
+			return;
 
 		if (ShouldFaceMovementDirection())
 			Rotate(tile, GameConfig.current.game.actionDuration);
-		//Rotate(tile, Mathf.Max(GameConfig.current.game.entityRotationDuration, GameConfig.current.game.actionDuration));
 
 		KillMovementTweenAndReleasePendingAction();
 
 		transform.position = tile.transform.position - m_bottomPosition.localPosition;
-		tile.SetEntity(m_linkedEntity, _isThisTurn: false);
-		m_previousCoordinate = m_coordinate;
-		m_lastMovementTick = TurnManager.currentTick;
-		m_coordinate.SetCoordinate(tile.coordinates.X, tile.coordinates.Z, tile.coordinates.ID);
-
-		tile.OnEntityEnter(m_linkedEntity, true);
-
-		//refresh fow
+		EnterTile(tile, true);
 		onMovementDoneAction?.Invoke();
 		onAnyEntityMovement?.Invoke(m_linkedEntity);
-		return m_movementTween;
+	}
+
+	private bool IsEntryRefused ( Tile _tile, System.Action _onMovementDoneAction )
+	{
+		Entity occupant = _tile.GetBlockingEntityFor(m_linkedEntity);
+		if (occupant == null)
+		{
+			ReleaseTileLeftBehind(_tile);
+			return false;
+		}
+
+		Debug.LogError("Movement refused: " + m_linkedEntity.Data.name + " cannot enter tile " + _tile.coordinates.ID
+			+ ", still held by " + occupant.Data.name, gameObject);
+
+		RegisterOnCurrentTile();
+		_onMovementDoneAction?.Invoke();
+		return true;
+	}
+
+	private void EnterTile ( Tile _tile, bool _isTeleport )
+	{
+		_tile.SetEntity(m_linkedEntity, _isThisTurn: false);
+		m_previousCoordinate = m_coordinate;
+		m_lastMovementTick = TurnManager.currentTick;
+		m_coordinate.SetCoordinate(_tile.coordinates.X, _tile.coordinates.Z, _tile.coordinates.ID);
+
+		_tile.OnEntityEnter(m_linkedEntity, _isTeleport);
 	}
 
 	private bool ShouldFaceMovementDirection ()
@@ -212,7 +194,7 @@ public class EntityDisplacementPlugin : EntityPlugin
 
 	public void Rotate ( int _orientation, float _duration = 0f, System.Action _onEndPerform = null )
 	{
-		if (_orientation == m_currentOrientation /*&& !_isInstant*/)
+		if (_orientation == m_currentOrientation)
 		{
 			_onEndPerform?.Invoke();
 			return;
@@ -223,15 +205,15 @@ public class EntityDisplacementPlugin : EntityPlugin
 		if (m_rotationTween.IsActive())
 			m_rotationTween.Kill();
 
-		float angle = 30f + _orientation * 60f;
+		Quaternion facing = RotateEntityAction.GetFacingRotation(_orientation);
 		if (_duration == 0f)
 		{
-			m_linkedEntity.SkinParent.transform.localRotation = Quaternion.Euler(0, angle, 0);
+			m_linkedEntity.SkinParent.transform.localRotation = facing;
 			_onEndPerform?.Invoke();
 		}
 		else
-			m_rotationTween = m_linkedEntity.SkinParent.transform.DOLocalRotateQuaternion(Quaternion.Euler(0, angle, 0), _duration)
-				.OnComplete(action: ()=> { _onEndPerform?.Invoke(); });
+			m_rotationTween = m_linkedEntity.SkinParent.transform.DOLocalRotateQuaternion(facing, _duration)
+				.OnComplete(() => _onEndPerform?.Invoke());
 	}
 
 	public void Rotate(Tile _towards, float _duration, System.Action _onEndPerform = null )

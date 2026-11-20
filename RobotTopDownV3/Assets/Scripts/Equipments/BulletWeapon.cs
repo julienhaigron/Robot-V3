@@ -112,7 +112,6 @@ public class BulletWeapon : Weapon
 
 			Tile aimedTile = _attackAction.GetTargetTileAt(_attackIndex);
 			WeaponTarget target = targets.Find(candidate => candidate.targetTile == aimedTile) ?? targets[0];
-			//Entity targetEntity = GameManager.Instance.GetEntityFromID((int)_attackAction.targetedEntityIDs[_attackIndex]);
 			yield return ShootAtEntityAnim(_attackAction, _attackIndex, _attackInfo, _lastSuccessfullAttackIndex, target);
 		}
 		else
@@ -123,7 +122,7 @@ public class BulletWeapon : Weapon
 
 	private IEnumerator ShootAtEntityAnim ( AttackAction _attackAction, int _attackIndex, AttackAction.SingleAttackInfo _attackInfo, int _lastSuccessfullAttackIndex, WeaponTarget _target )
 	{
-		int hitAmount = _attackAction.Data.GetHitAmount(_attackAction, m_user, _target.targetEntity != null ? _target.targetEntity : _target.targetTile.GetCurrentEntity());
+		int hitAmount = _attackAction.Data.GetHitAmount(_attackAction, m_user, _target.ResolvedEntity);
 		ProjectileData bulletData = new()
 		{
 			owner = m_user,

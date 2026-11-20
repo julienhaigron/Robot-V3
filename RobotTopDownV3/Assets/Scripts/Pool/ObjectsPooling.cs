@@ -201,15 +201,4 @@ public class ObjectsPooling : Singleton<ObjectsPooling>
 		m_everyPoolElements[_pool].Add(element);
 		OnDiscarded(element);
 	}
-
-	public void DiscardEverything ()
-	{
-		foreach (KeyValuePair<PoolData, List<PoolElement>> item in m_everyPoolElements)
-		{
-			foreach (var element in item.Value)
-			{
-				OnDiscarded(element);
-			}
-		}
-	}
 }

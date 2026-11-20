@@ -1,9 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
+using System;
 using UnityEngine;
 using DG.Tweening;
-using System;
-using System.Linq;
 
 public class ToolEquipment : MonoBehaviour
 {
@@ -13,7 +10,6 @@ public class ToolEquipment : MonoBehaviour
 	public Entity LinkedEntity => m_user;
 	private string m_id;
 	public string ID => m_id;
-
 
 	public virtual void Init ( Entity _user, ToolEquipmentData _data, string _id, bool _isFirstSide )
 	{

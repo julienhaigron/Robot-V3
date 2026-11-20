@@ -25,7 +25,6 @@ public class Currency : ScriptableEnum<CurrencyType>
 
 	public bool showOnlyIfUpgradeOneTime = false;
 	public CurrencyMaxCapacityType maxCapacityType;
-	public bool IsUsingMaxCapacity => maxCapacityType != CurrencyMaxCapacityType.None;
 	[ShowIf("@maxCapacityType == CurrencyMaxCapacityType.UpgradeAsset || showOnlyIfUpgradeOneTime")]
 	public UpgradeAsset upgradeAsset;
 	[ShowIf("maxCapacityType", CurrencyMaxCapacityType.Flat)]
@@ -51,8 +50,6 @@ public class Currency : ScriptableEnum<CurrencyType>
 			}
 		}
 	}
-
-	public bool IsCapacityMaxed => GameDatas.current.currentPlayerSave.currencies[enumID] >= MaxCapacity;
 
 	public enum CurrencyMaxCapacityType
 	{

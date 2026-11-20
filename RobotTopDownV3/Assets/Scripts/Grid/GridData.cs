@@ -28,25 +28,4 @@ public class GridData : ScriptableObject
 	}
 
 	//[Button]
-	public void ResizeTileList ()
-	{
-		if(tiles.Length < width * height)
-		{
-			List<TileData> list = tiles.ToList();
-			for(int i = tiles.Length; i < width * height; i++)
-			{
-				list.Add(new TileData(TileGroundType.Empty, Wall.WallType.VerticalStrait, 0));
-			}
-			tiles = list.ToArray();
-		}
-		else if (tiles.Length > width * height)
-		{
-			List<TileData> list = tiles.ToList();
-			for (int i = tiles.Length; i > width * height; i--)
-			{
-				list.RemoveAt(list.Count - 1);
-			}
-			tiles = list.ToArray();
-		}
-	}
 }

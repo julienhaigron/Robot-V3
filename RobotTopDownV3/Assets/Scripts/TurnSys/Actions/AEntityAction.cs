@@ -21,7 +21,6 @@ public abstract class AEntityAction : INetworkSerializable
 
 	public int supposedPositionAtActionStartID; //tile
 	public int positionAtActionEndID; //tile
-									  //public int[] statusIds;
 	public AEntityPassiveEffect.PassiveEffectContainer[] effects;
 	public EntityActionData Data => GameAssets.current.game.entityActionsData[enumID];
 	public virtual bool IsPlayedFirst => Data.isPlayedFirst;
@@ -68,7 +67,6 @@ public abstract class AEntityAction : INetworkSerializable
 		serializer.SerializeValue(ref supposedPositionAtActionStartID);
 		serializer.SerializeValue(ref positionAtActionEndID);
 		serializer.SerializeValue(ref effects);
-		//serializer.SerializeValue(ref statusIds);
 		serializer.SerializeValue(ref preparationDuration);
 		serializer.SerializeValue(ref actualDuration);
 		serializer.SerializeValue(ref cooldownDuration);
@@ -182,7 +180,10 @@ public abstract class AEntityAction : INetworkSerializable
 		public bool isSecondActionConflicted;
 	}
 
-	public abstract ActionConflictResultInfo CheckConflict ( AEntityAction _otherAction, bool _isCheck = true );
+	public virtual ActionConflictResultInfo CheckConflict ( AEntityAction _otherAction, bool _isCheck = true )
+	{
+		return default;
+	}
 
 	/// <summary>
 	/// CheckForConflicts only ever pairs actions coming from two different entities, so an action with nobody
@@ -209,7 +210,10 @@ public abstract class AEntityAction : INetworkSerializable
 	/// called at the beginning of each performing tick
 	/// </summary>
 	/// <param name="_state"></param>
-	public abstract void Prepare ( Entity.EntityState _state );
+	public virtual void Prepare ( Entity.EntityState _state )
+	{
+
+	}
 
 	//returns true if action fully performed
 	public bool PerformTick ( Entity.EntityState _state )
@@ -299,12 +303,40 @@ public abstract class AEntityAction : INetworkSerializable
 
 	}
 
-	public abstract void Display ( TurnManager.RecordedAction _recordedAction );
+	public virtual void Display ( TurnManager.RecordedAction _recordedAction )
+	{
 
-	public abstract void GhostDisplay ( Entity.EntityState _state );
+	}
+
+	public virtual void GhostDisplay ( Entity.EntityState _state )
+	{
+
+	}
+
+	protected static bool WinsTieBreak ( EntityActionData.PFCResultType _result = EntityActionData.PFCResultType.Equal )
+	{
+		return _result == EntityActionData.PFCResultType.FirstWins
+			|| (_result != EntityActionData.PFCResultType.SecondWins && UnityEngine.Random.Range(0, 2) == 0);
+	}
+
+	protected List<string> GetTargetedEntityNames ()
+	{
+		List<string> targetNames = new();
+		if (targetedEntityIDs == null)
+			return targetNames;
+
+		foreach (int targetID in targetedEntityIDs)
+		{
+			Entity target = GameManager.Instance.GetEntityFromID(targetID);
+			if (target != null && !targetNames.Contains(target.Data.name))
+				targetNames.Add(target.Data.name);
+		}
+
+		return targetNames;
+	}
 
 	public override string ToString ()
 	{
-		return /*PerformingEntity.Data.name + "," + */enumID.ToString();
+		return enumID.ToString();
 	}
 }

@@ -82,10 +82,5 @@ public class GridEditorWindows : EditorWindow
 		EditorGUILayout.LabelField(_text);
 	}
 
-	private void SetSelection ( GameObject _target )
-	{
-		Selection.activeObject = _target;
-	}
-
 	#endregion
 }

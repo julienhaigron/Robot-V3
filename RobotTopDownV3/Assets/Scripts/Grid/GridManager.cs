@@ -1159,30 +1159,6 @@ public class GridManager : Singleton<GridManager>
 		return Mathf.FloorToInt(angle / 60f) % 6;
 	}
 
-	public float FromOrientationToAngle ( int _orientation )
-	{
-		float angle = 30f + _orientation * 60f;
-		angle -= 90f;
-		//float angle = (_orientation * 60f) + 60f;
-
-		/*angle -= 90f;
-
-		if (angle < 0f)
-			angle += 360f;
-		if (angle >= 360f)
-			angle -= 360f;*/
-
-		return angle;
-	}
-
-	public void ClearTileOutile ()
-	{
-		for (int i = 0; i < m_tiles.Length; i++)
-		{
-			m_tiles[i].UI.ResetOutline();
-		}
-	}
-
 	private bool IsBlockedByEntity ( Tile _tile, Tile _to, bool _isThisTurn, Entity _movingEntity, bool _canTraverseAllies, bool _canEndOnOccupiedTile )
 	{
 		if (_to == null || (_canEndOnOccupiedTile && _tile.coordinates.ID == _to.coordinates.ID))

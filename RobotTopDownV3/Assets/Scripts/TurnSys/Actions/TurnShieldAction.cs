@@ -1,8 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using Unity.Netcode;
 using System.Linq;
+using Unity.Netcode;
 
 public class TurnShieldAction : SpecialAction
 {
@@ -21,24 +18,11 @@ public class TurnShieldAction : SpecialAction
 		base.RegisterInteraction(_tile);
 	}
 
-	public override void Prepare ( Entity.EntityState _state )
-	{
-		base.Prepare(_state);
-
-	}
-
-	public override ActionConflictResultInfo CheckConflict ( AEntityAction _otherAction, bool _isCheck = true )
-	{
-		//no conflict ?
-		return new() { isFirstActionConflicted = false, isSecondActionConflicted = false };
-	}
-
 	protected override bool DoesOwnItsCompletion => true;
 
 	protected override void Perform ( Entity.EntityState _state )
 	{
-		//todo : apply effect
-		GameManager.Instance.GetEntityFromID(performingEntityID).Equipment.Tools[linkedEquipmentId].PerformAction(this, EndTick);
+		PerformingEntity.Equipment.Tools[linkedEquipmentId].PerformAction(this, EndTick);
 		base.Perform(_state);
 	}
 

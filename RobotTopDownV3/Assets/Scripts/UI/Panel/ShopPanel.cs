@@ -11,7 +11,6 @@ public class ShopPanel : AUIPanel
 
 	[SerializeField] private ComponentDisplayGrid m_shopGrid;
 	[SerializeField] private ComponentDisplayGrid m_inventoryGrid;
-	[SerializeField] private ComponentFullDisplay m_hoveredComponentFullInfoDisplay;
 	[SerializeField] private Image m_corpIcon;
 	[SerializeField] BaseButton m_rerollBtn;
 	[SerializeField] private TextMeshProUGUI m_rerollTMP;

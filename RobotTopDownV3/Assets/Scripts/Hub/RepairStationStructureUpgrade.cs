@@ -47,14 +47,4 @@ public class RepairStationStructureUpgrade : StructureUpgrade
 	{
 		return repairPriceBonusPerLevel[GetCurrentLevel()];
 	}
-
-	public int GetCurrentMaxRerollPerDayPerLevel ()
-	{
-		return maxRerollPerDayPerLevel[GetCurrentLevel()];
-	}
-
-	public int GetCurrentMaxLockperDayPerLevel ()
-	{
-		return maxLockperDayPerLevel[GetCurrentLevel()];
-	}
 }

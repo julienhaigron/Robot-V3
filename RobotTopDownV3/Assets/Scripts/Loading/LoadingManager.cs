@@ -20,7 +20,6 @@ public class LoadingManager : SingletonPersistant<LoadingManager>
 	private List<LoadingElement> m_awaitingLoadingElementList = new();
 	private Action m_onLoadFinished;
 	private Action m_onSceneLoaded;
-	private Coroutine m_loadingCR;
 	private bool m_isLoading = false;
 	public bool IsLoading => m_isLoading;
 	private ILoadingScreen m_screen;

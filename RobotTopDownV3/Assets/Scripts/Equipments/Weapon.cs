@@ -67,6 +67,8 @@ public class Weapon : MonoBehaviour
 	{
 		public Entity targetEntity;
 		public Tile targetTile;
+
+		public Entity ResolvedEntity => targetEntity != null ? targetEntity : targetTile != null ? targetTile.GetCurrentEntity() : null;
 	}
 
 	private sealed class AttackFlight
@@ -323,7 +325,7 @@ public class Weapon : MonoBehaviour
 
 		PlayHitVFX(_attackAction, _target);
 
-		Entity targetEntity = _target.targetEntity != null ? _target.targetEntity : _target.targetTile != null ? _target.targetTile.GetCurrentEntity() : null;
+		Entity targetEntity = _target.ResolvedEntity;
 		if (targetEntity == null)
 			return;
 
@@ -343,24 +345,16 @@ public class Weapon : MonoBehaviour
 
 	private void PlayHitVFX ( AttackAction _attackAction, WeaponTarget _target )
 	{
-		PoolData pool = _attackAction.Data.onSingleAttackHitVFXPool;
-		if (pool == null)
+		if (_attackAction.Data.onSingleAttackHitVFXPool == null)
 			return;
 
 		bool isZone = _attackAction.Data.aoeType != EntityActionData.AOEType.Noone;
-		Entity entity = _target.targetEntity != null ? _target.targetEntity : _target.targetTile != null ? _target.targetTile.GetCurrentEntity() : null;
+		Entity entity = _target.ResolvedEntity;
 		Vector3 position = !isZone && entity != null && entity.Skin != null && entity.Skin.Center != null
 			? entity.Skin.Center.position
 			: _target.targetTile != null ? _target.targetTile.transform.position : m_user.transform.position;
 
-		try
-		{
-			pool.Get(position, Quaternion.identity);
-		}
-		catch (Exception ex)
-		{
-			Debug.LogError("Hit VFX " + pool.name + " failed for " + _attackAction.Data.name + ": " + ex.Message);
-		}
+		PlayOrientedVFX(_attackAction.Data.onSingleAttackHitVFXPool, position, Vector3.zero, _attackAction.Data.name);
 	}
 
 	protected bool PlayAttackAnimation ( AttackAction _attackAction, AttackAction.SingleAttackInfo _attackInfo )
@@ -435,7 +429,7 @@ public class Weapon : MonoBehaviour
 
 	protected Vector3 GetAimPoint ( WeaponTarget _target )
 	{
-		Entity entity = _target.targetEntity != null ? _target.targetEntity : _target.targetTile != null ? _target.targetTile.GetCurrentEntity() : null;
+		Entity entity = _target.ResolvedEntity;
 		if (entity != null && entity.Skin != null && entity.Skin.Center != null)
 			return entity.Skin.Center.position;
 
@@ -589,8 +583,7 @@ public class Weapon : MonoBehaviour
 		List<WeaponTarget> remaining = new();
 		foreach (WeaponTarget target in _targets)
 		{
-			Entity entity = target.targetEntity != null ? target.targetEntity : target.targetTile != null ? target.targetTile.GetCurrentEntity() : null;
-			if (entity != null)
+			if (target.ResolvedEntity != null)
 				remaining.Add(target);
 		}
 
@@ -732,9 +725,8 @@ public class Weapon : MonoBehaviour
 	protected List<WeaponTarget> GetTargets ( AttackAction _attackAction, int _attackIndex )
 	{
 		List<WeaponTarget> targets = new();
-		EntityActionData attackData = GameAssets.current.game.entityActionsData[_attackAction.enumID];
 
-		if (attackData.aoeType != EntityActionData.AOEType.Noone)
+		if (_attackAction.Data.aoeType != EntityActionData.AOEType.Noone)
 		{
 			Tile aoeCenter = _attackAction.GetTargetTileAt(_attackIndex);
 			if (aoeCenter == null)
@@ -893,38 +885,23 @@ public class Weapon : MonoBehaviour
 		{
 			int baseDamage = pair.Value;
 
-			float actionFactor = _action.Data.GetDamageFactorAmountForType(
-					_action,
-					_user,
-					_target,
-					pair.Key
-				);
+			float actionFactor = _action.Data.GetDamageFactorAmountForType(_action, _user, _target, pair.Key);
 
 			EntityEquipmentData.SecondaryStat.StatType damageTypeStatType = GameConfig.current.game.statTypePerDamageType[pair.Key];
 			EntityEquipmentData.SecondaryStat.StatType resistanceTypeStatType = GameConfig.current.game.statTypePerDamageResistanceType[pair.Key];
 
 			float typeBuff = _user.GetAdditionaryStatBonus(damageTypeStatType, _action)
-				 + (_user.Equipment.ApplyedDamageTypeBuffs.ContainsKey(pair.Key)
-					? _user.Equipment.ApplyedDamageTypeBuffs[pair.Key]
-					: 0f)
-				- (hasTarget ? _target.GetAdditionaryStatBonus(resistanceTypeStatType, null) : 0f)
-				- (hasTarget && _target.Equipment.ApplyedDamageTypeResistance.ContainsKey(pair.Key)
-					? _target.Equipment.ApplyedDamageTypeResistance[pair.Key]
-					: 0f);
+				+ _user.Equipment.ApplyedDamageTypeBuffs.GetValueOrDefault(pair.Key)
+				- (hasTarget ? _target.GetAdditionaryStatBonus(resistanceTypeStatType, null) + _target.Equipment.ApplyedDamageTypeResistance.GetValueOrDefault(pair.Key) : 0f);
 			typeBuff = Mathf.Max(typeBuff, -1f);
 
-			var category = GameConfig.current.game.damageCategoryPerDamageType[pair.Key];
+			WeaponEquipmentData.DamageCategory category = GameConfig.current.game.damageCategoryPerDamageType[pair.Key];
 			EntityEquipmentData.SecondaryStat.StatType damageCategoryStatType = GameConfig.current.game.statTypePerDamageCategory[category];
-			EntityEquipmentData.SecondaryStat.StatType resistanceCategoryStatType = GameConfig.current.game.statTypePerDamageCategory[category];
+			EntityEquipmentData.SecondaryStat.StatType resistanceCategoryStatType = GameConfig.current.game.statTypePerResistanceCategory[category];
 
 			float categoryBuff = _user.GetAdditionaryStatBonus(damageCategoryStatType, _action)
-				+ (_user.Equipment.ApplyedDamageCategoryBuffs.ContainsKey(category)
-					? _user.Equipment.ApplyedDamageCategoryBuffs[category]
-					: 0f)
-				- (hasTarget ? _target.GetAdditionaryStatBonus(resistanceCategoryStatType, null) : 0f)
-				- (hasTarget && _target.Equipment.ApplyedDamageTypeCategoryResitance.ContainsKey(category)
-					? _target.Equipment.ApplyedDamageTypeCategoryResitance[category]
-					: 0f);
+				+ _user.Equipment.ApplyedDamageCategoryBuffs.GetValueOrDefault(category)
+				- (hasTarget ? _target.GetAdditionaryStatBonus(resistanceCategoryStatType, null) + _target.Equipment.ApplyedDamageTypeCategoryResitance.GetValueOrDefault(category) : 0f);
 
 			categoryBuff = Mathf.Max(categoryBuff, -1f);
 

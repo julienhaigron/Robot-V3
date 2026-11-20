@@ -75,7 +75,6 @@ public class AttackAnimationPlayer : AnimatorLayerDriver
 	private int m_aimState;
 
 	public object Owner => m_owner;
-	public bool IsAiming => m_aimState != 0;
 	public bool IsHolding => m_phase is Phase.WindUp or Phase.Preparation or Phase.Recovery;
 
 	public AttackAnimationPlayer ( Animator _animator, Func<EntityActionData, string, Tuning> _tuningFor ) : base(_animator, LayerName)

@@ -35,11 +35,6 @@ public abstract class AParsableScriptableObject : ScriptableObject, IParsingImpo
     public abstract void OnParse ( ImportedData _data );
 
 #if UNITY_EDITOR
-    [BoxGroup("Parsing"), Button]
-    public void RefreshParsedValues ()
-    {
-        CsvImporter.RefreshScriptable(this);
-	}
 #endif
 
 }

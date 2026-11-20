@@ -45,7 +45,6 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 	private Color m_baseOutlineColor = Color.white;
 	private Sequence m_tutorialHighlightSequence;
 	private bool m_isTutorialHighlighted;
-	public bool IsTutorialHighlighted => m_isTutorialHighlighted;
 
 	public enum DisplayMode { Hangar, RepairStation, RecyclingStation, ShopBuying, ShopSelling, Empty, Unit }
 	private DisplayMode m_currentDisplayMode;

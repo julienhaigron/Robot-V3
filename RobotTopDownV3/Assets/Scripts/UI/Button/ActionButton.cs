@@ -9,7 +9,6 @@ using UnityEngine.EventSystems;
 public class ActionButton : BaseButton, IPointerExitHandler
 {
 	protected static ActionButton m_selectedBtn;
-	public static ActionButton SelectedBtn => m_selectedBtn;
 
 	[SerializeField] protected Image m_icon;
 	/*[SerializeField] private TextMeshProUGUI m_name;

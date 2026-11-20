@@ -11,7 +11,6 @@ public abstract class ComponentContainer : MonoBehaviour, IDropHandler
     public Transform DisplayParent => m_displayParent;
 
     protected Func<GameDatas.PlayerSave.Component, bool> m_predicate;
-    public Func<GameDatas.PlayerSave.Component, bool> Predicate => m_predicate;
 
     protected EntitySavedData m_unitData;
     protected ComponentDisplay.DisplayMode m_displayMode;

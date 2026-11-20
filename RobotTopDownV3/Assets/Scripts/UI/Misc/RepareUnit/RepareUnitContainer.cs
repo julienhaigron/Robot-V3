@@ -11,7 +11,6 @@ public abstract class RepareUnitContainer : MonoBehaviour, IDropHandler
     public Transform DisplayParent => m_displayParent;
 
     protected Func<EntitySavedData, bool> m_predicate;
-    public Func<EntitySavedData, bool> Predicate => m_predicate;
 
     protected EntitySavedData m_unitData;
 

@@ -5,7 +5,6 @@ using System.Collections.Generic;
 
 public class ComponentFullDisplay : MonoBehaviour
 {
-	[SerializeField] private CanvasGroup m_canvasGroup;
 	//[SerializeField] private Image m_icon;
 	[SerializeField] private TextMeshProUGUI m_titleTMP;
 	[SerializeField] private Image m_corpIcon;

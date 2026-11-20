@@ -14,9 +14,8 @@ public class GhostItem : MonoBehaviour
 
 	public void ShowAtPositionAndOrientation(Tile _position, int _orientation )
 	{
-		transform.position = _position.transform.position/* - m_bottomPosition.localPosition*/;
-		float angle = 30f + _orientation * 60f;
-		m_visual.localRotation = Quaternion.Euler(0, angle, 0);
+		transform.position = _position.transform.position;
+		m_visual.localRotation = RotateEntityAction.GetFacingRotation(_orientation);
 
 		gameObject.SetActive(true);
 	}

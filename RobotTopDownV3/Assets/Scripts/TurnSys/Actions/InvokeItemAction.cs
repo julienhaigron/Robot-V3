@@ -1,19 +1,16 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using Unity.Netcode;
-using System.Linq;
+using UnityEngine;
 
 public class InvokeItemAction : SpecialAction
 {
-	public bool isActionCanceled;
 	public int itemID = -1;
+
+	protected override bool ClaimsTargetTiles => true;
+	protected override bool DoesOwnItsCompletion => true;
 
 	public override void NetworkSerialize<T> ( BufferSerializer<T> serializer )
 	{
 		base.NetworkSerialize(serializer);
-		//serializer.SerializeValue(ref newEntityID);
-		serializer.SerializeValue(ref isActionCanceled);
 		serializer.SerializeValue(ref itemID);
 	}
 
@@ -47,12 +44,7 @@ public class InvokeItemAction : SpecialAction
 		ReleasePlannedInvocation();
 
 		foreach (int tileID in targetTileIDs ?? System.Array.Empty<int>())
-		{
-			Tile targetTile = GridManager.Instance.Tiles[tileID];
-			targetTile.SetPlannedItemAt(null, timeAtStart);
-			/*targetTile.plannedContentsPerTick[timeAtStart].item.Cancel();
-			targetTile.plannedContentsPerTick[timeAtStart].item = null;*/
-		}
+			GridManager.Instance.Tiles[tileID].SetPlannedItemAt(null, timeAtStart);
 
 		base.CancelAction();
 	}
@@ -70,59 +62,6 @@ public class InvokeItemAction : SpecialAction
 		item.LinkedData.OnPlannedItemCanceled();
 	}
 
-	public override void Prepare ( Entity.EntityState _state )
-	{
-		base.Prepare(_state);
-		isActionCanceled = false;
-		//newEntityID = GameManager.Instance.PlayersEntityAnchor[GameManager.Instance.PlayerID].Entities[^1].ID + 1;
-		//GridManager.Instance.Tiles[targetTileID].SetItem(GameManager.Instance.GetEntityFromID(newEntityID), false);
-	}
-
-	public override ActionConflictResultInfo CheckConflict ( AEntityAction _otherAction, bool _isCheck = true )
-	{
-		EntityActionData.PFCResultType result = EntityActionData.PFC(Data, _otherAction.Data);
-		if (isActionCanceled)
-			return new() { isFirstActionConflicted = false, isSecondActionConflicted = false };
-
-		bool doesSelfHaveConflict = false;
-		bool doesOtherHaveConflict = false;
-
-		if (_otherAction is MoveToTargetAction _otherMoveToTargetAction && _otherMoveToTargetAction.targetTileIDs != null && targetTileIDs != null
-			&& _otherMoveToTargetAction.targetTileIDs.Any(e => targetTileIDs.Contains(e)))
-		{
-			if (result == EntityActionData.PFCResultType.FirstWins)
-			{
-				_otherMoveToTargetAction.ReleaseBookedTiles();
-				_otherMoveToTargetAction.targetTileIDs = null;
-				doesOtherHaveConflict = true;
-			}
-			else if (result == EntityActionData.PFCResultType.SecondWins)
-			{
-				isActionCanceled = true;
-				doesSelfHaveConflict = true;
-			}
-			else
-			{
-				int roll = Random.Range((int)0, 2);
-				if (roll == 0)
-				{
-					_otherMoveToTargetAction.ReleaseBookedTiles();
-					_otherMoveToTargetAction.targetTileIDs = null;
-					doesOtherHaveConflict = true;
-				}
-				else
-				{
-					isActionCanceled = true;
-					doesSelfHaveConflict = true;
-				}
-			}
-		}
-
-		return new() { isFirstActionConflicted = doesSelfHaveConflict, isSecondActionConflicted = doesOtherHaveConflict };
-	}
-
-	protected override bool DoesOwnItsCompletion => true;
-
 	protected override void Perform ( Entity.EntityState _state )
 	{
 		if (isActionCanceled)
@@ -131,6 +70,7 @@ public class InvokeItemAction : SpecialAction
 			EndTick();
 			return;
 		}
+
 		foreach (int tileID in targetTileIDs)
 		{
 			Tile targetTile = GridManager.Instance.Tiles[tileID];
@@ -149,14 +89,17 @@ public class InvokeItemAction : SpecialAction
 
 	public override void Display ( TurnManager.RecordedAction _recordedAction )
 	{
-		foreach (int tileID in targetTileIDs ?? System.Array.Empty<int>())
-			PlayerController.Instance.AddGhostItemAt(Data.invocatedItem, GridManager.Instance.Tiles[tileID], 0, itemID);
+		ShowPlannedItems();
 	}
 
 	public override void GhostDisplay ( Entity.EntityState _state )
 	{
+		ShowPlannedItems();
+	}
+
+	private void ShowPlannedItems ()
+	{
 		foreach (int tileID in targetTileIDs ?? System.Array.Empty<int>())
 			PlayerController.Instance.AddGhostItemAt(Data.invocatedItem, GridManager.Instance.Tiles[tileID], 0, itemID);
 	}
-
 }

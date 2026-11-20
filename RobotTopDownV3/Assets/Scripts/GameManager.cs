@@ -23,7 +23,6 @@ public class GameManager : SingletonPersistant<GameManager>
 	[SerializeField] private List<EntitySavedData> m_ennemiEntityDatas;*/
 
 	[Title("Online")]
-	[SerializeField] private GridData m_onlineMap;
 	[SerializeField] private List<EntitySavedData> m_playerOneEntityDatas;
 	[SerializeField] private List<EntitySavedData> m_playerTwoEntityDatas;
 	public enum GameMode { Offline, Online }
@@ -53,7 +52,6 @@ public class GameManager : SingletonPersistant<GameManager>
 	private List<Item> m_items = new();
 	public List<Item> Items => m_items;
 	private Dictionary<int, int> m_playersPoints = new();
-	public Dictionary<int, int> PlayersPoints => m_playersPoints;
 	public static Action onPlayersPointsChanged;
 
 	public static Action onMatchUnitRespawned;
@@ -194,14 +192,7 @@ public class GameManager : SingletonPersistant<GameManager>
 	private void ClearMatchEntities ()
 	{
 		foreach (EntityAnchor anchor in m_playersEntityAnchor)
-		{
-			foreach (Entity entity in anchor.Entities)
-			{
-				if (entity != null)
-					Destroy(entity.gameObject);
-			}
-			anchor.Entities.Clear();
-		}
+			anchor.DestroyEntities();
 	}
 
 	public void GoToStartScreen ()
@@ -353,11 +344,8 @@ public class GameManager : SingletonPersistant<GameManager>
 	{
 		foreach (EntityAnchor anchor in m_playersEntityAnchor)
 		{
-			foreach (Entity entity in anchor.Entities)
-			{
-				if (entity.ID == _entityID)
-					return entity;
-			}
+			if (anchor.TryGetEntity(_entityID, out Entity entity))
+				return entity;
 		}
 
 		return null;

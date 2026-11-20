@@ -27,11 +27,6 @@ public class AUITopCanvas : UICanvasParent
 		gameObject.SetActive(false);
 	}
 
-	protected virtual void DisableCanvas ()
-	{
-		SetCanvasEnable(false);
-	}
-
 	protected virtual void Awake ()
 	{
 

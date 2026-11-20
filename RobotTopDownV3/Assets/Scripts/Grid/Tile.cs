@@ -392,20 +392,6 @@ public class Tile : MonoBehaviour
 			m_plannedContentsPerTick[TurnManager.currentTick + 1].itemID = _item == null ? -1 : _item.ID;
 	}
 
-	public bool TryGetItem ( bool _isThisTurn, out Item _item )
-	{
-		if (_isThisTurn)
-		{
-			_item = m_plannedContentsPerTick[TurnManager.currentTick].Item;
-			return m_plannedContentsPerTick[TurnManager.currentTick].itemID != -1;
-		}
-		else
-		{
-			_item = m_plannedContentsPerTick[TurnManager.currentTick + 1].Item;
-			return m_plannedContentsPerTick[TurnManager.currentTick + 1].itemID != -1;
-		}
-	}
-
 	public Item GetItem ( bool _isThisTurn )
 	{
 		if (_isThisTurn)

@@ -47,11 +47,6 @@ public class StateLineSlot : MonoBehaviour, IPointerEnterHandler
 		}
 	}
 
-	public StateLineDisplay GetDisplay ()
-	{
-		return m_display;
-	}
-
 	public void RemoveDisplay ()
 	{
 		m_display = null;

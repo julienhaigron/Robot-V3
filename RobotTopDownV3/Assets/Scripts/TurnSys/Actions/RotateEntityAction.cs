@@ -1,8 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
-using System.Linq;
 
 public class RotateEntityAction : AEntityAction
 {
@@ -50,29 +47,12 @@ public class RotateEntityAction : AEntityAction
 		targetedOrientationID = new int[1] { GridManager.Instance.GetClosestOrientation(from, GridManager.Instance.Tiles[_targetTileIDs[0]]) };
 	}
 
-	public override void Prepare ( Entity.EntityState _state )
-	{
-
-	}
-
-	public override ActionConflictResultInfo CheckConflict ( AEntityAction _otherAction, bool _isCheck = true )
-	{
-		//no conflict ?
-
-		return new() { isFirstActionConflicted = false, isSecondActionConflicted = false };
-	}
-
 	protected override void Perform ( Entity.EntityState _state )
 	{
-		if(targetedOrientationID == null || targetedOrientationID.Length <= lifetime)
-		{
-			//shouldnt happen
+		if (targetedOrientationID == null || targetedOrientationID.Length <= lifetime)
 			EndTick();
-		}
 		else
-		{
 			PerformingEntity.Displacement.Rotate(targetedOrientationID[lifetime], Mathf.Min(GameConfig.current.game.entityRotationDuration, TickTimeLeft), EndTick);
-		}
 
 		base.Perform(_state);
 	}
@@ -93,10 +73,6 @@ public class RotateEntityAction : AEntityAction
 
 		RotationActionDisplay.Show(performingEntityID, GetPivotOn(_recordedAction)
 			, TurnManager.Instance.GetOrientationBeforeFreeRotation(_recordedAction), FacingOrientation, !isFacingOrder);
-	}
-
-	public override void GhostDisplay ( Entity.EntityState _state )
-	{
 	}
 
 	public static float GetFacingYaw ( int _orientation )

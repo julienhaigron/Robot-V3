@@ -57,7 +57,6 @@ public class Entity : MonoBehaviour
 	public List<AEntityPassiveEffect.PassiveEffectContainer> AllPassiveEffects => m_allPassiveEffects;
 
 	private List<EntityState> m_knownedStates = new();
-	public List<EntityState> KnownedStates => m_knownedStates;
 
 	private EntityState m_state;
 	public EntityState State => m_state;
@@ -73,7 +72,6 @@ public class Entity : MonoBehaviour
 	private const float c_feetHeight = .03f;
 	private Dictionary<AEntityStatus, int> m_appliedDurationToActiveStatuses = new();
 	private List<EntityEquipmentData.StatBonusBuff> m_statBuffs = new();
-	public List<EntityEquipmentData.StatBonusBuff> StatBuffs => m_statBuffs;
 	private Dictionary<EntityEquipmentData.SecondaryStat.StatType, float> m_activeStatBonusBuffs = new();
 
 	private int m_ownerID;
@@ -83,17 +81,14 @@ public class Entity : MonoBehaviour
 	private MatchRoleType m_matchRole = MatchRoleType.None;
 	public MatchRoleType MatchRole => m_matchRole;
 	public void SetMatchRole ( MatchRoleType _matchRole ) => m_matchRole = _matchRole;
-	//public EntityFaction Faction => m_data.FrameData.faction;
 
 	[SerializeField, ReadOnly] private EntityActionData m_lastActionPerformed;
 	public EntityActionData LastActionPerformedData => m_lastActionPerformed == null ? GameConfig.current.game.defaultStartAction : m_lastActionPerformed;
 	public float PreviousActionAttackModificator => LastActionPerformedData != null ? LastActionPerformedData.previousActionAttackModificator : 0f;
 	private AEntityAction m_lastPerformedAction;
 	public AEntityAction LastPerformedAction => m_lastPerformedAction;
-	//[SerializeField, ReadOnly] private bool m_isPerforming = false;
 
 	public int ID;
-	//public int PlayerOwnerID;
 
 	private bool m_isVisible = false;
 	public bool IsVisible => m_isVisible;
@@ -131,8 +126,11 @@ public class Entity : MonoBehaviour
 		m_skin.Init(_data);
 
 		m_componentLinkedToAction = GetAllActions();
-		m_knownedActions = GetActions().Keys.ToList();
-		m_knowedModActions = GetModActions();
+		foreach (EntityActionEnumID actionID in m_componentLinkedToAction.Keys)
+		{
+			if (GameAssets.current.game.entityActionsData.TryGetValue(actionID, out EntityActionData actionData))
+				(actionData.isModAction ? m_knowedModActions : m_knownedActions).Add(actionID);
+		}
 
 		m_ai.Init(_data);
 		foreach (EntityActionEnumID actionID in m_knownedActions)
@@ -165,124 +163,13 @@ public class Entity : MonoBehaviour
 	private Dictionary<EntityActionEnumID, List<string>> GetAllActions ()
 	{
 		Dictionary<EntityActionEnumID, List<string>> actionsPerComponents = new();
-
-		foreach (EntityActionEnumID actionID in m_data.FrameData.knownedActions)
-		{
-			if (actionID == EntityActionEnumID.Unknowned)
-				continue;
-
-			if (!actionsPerComponents.ContainsKey(actionID))
-				actionsPerComponents.Add(actionID, new());
-
-			actionsPerComponents[actionID].Add(m_data.FrameData.name);
-		}
-		foreach (EntityActionEnumID actionID in m_data.ReactorData.knownedActions)
-		{
-			if (actionID == EntityActionEnumID.Unknowned)
-				continue;
-
-			if (actionID != EntityActionEnumID.Unknowned && !actionsPerComponents.ContainsKey(actionID))
-				actionsPerComponents.Add(actionID, new());
-
-			actionsPerComponents[actionID].Add(m_data.ReactorData.name);
-		}
-		foreach (EntityActionEnumID actionID in m_data.NeuronalMembraneData.knownedActions)
-		{
-			if (actionID == EntityActionEnumID.Unknowned)
-				continue;
-
-			if (!actionsPerComponents.ContainsKey(actionID))
-				actionsPerComponents.Add(actionID, new());
-
-			actionsPerComponents[actionID].Add(m_data.NeuronalMembraneData.name);
-		}
-		foreach (EntityActionEnumID actionID in m_data.BrainData.knownedActions)
-		{
-			if (actionID == EntityActionEnumID.Unknowned)
-				continue;
-
-			if (!actionsPerComponents.ContainsKey(actionID))
-				actionsPerComponents.Add(actionID, new());
-
-			actionsPerComponents[actionID].Add(m_data.BrainData.name);
-		}
-
-		/*foreach (KeyValuePair<string, Weapon> pair in m_equipment.Weapons)
-		{
-			foreach (EntityActionEnumID actionID in pair.Value.Data.knownedActions)
-			{
-				if (actionID == EntityActionEnumID.Unknowned)
-					continue;
-
-				if (!actionsPerComponents.ContainsKey(actionID))
-					actionsPerComponents.Add(actionID, new());
-
-				actionsPerComponents[actionID].Add(pair.Key);
-			}
-		}
-
-		foreach (KeyValuePair<string, Tool> pair in m_equipment.Tools)
-		{
-			foreach (EntityActionEnumID actionID in pair.Value.Data.knownedActions)
-			{
-				if (actionID == EntityActionEnumID.Unknowned)
-					continue;
-
-				if (!actionsPerComponents.ContainsKey(actionID))
-					actionsPerComponents.Add(actionID, new());
-
-				actionsPerComponents[actionID].Add(pair.Key);
-			}
-		}*/
-
-		foreach (GameDatas.PlayerSave.Component container in m_data.arms ?? System.Array.Empty<GameDatas.PlayerSave.Component>())
-		{
-			if (container != null && !container.isDamaged && container.TryGetData(out EntityEquipmentData equipment))
-			{
-				foreach (EntityActionEnumID actionID in equipment.knownedActions)
-				{
-					if (actionID == EntityActionEnumID.Unknowned || actionsPerComponents.ContainsKey(actionID))
-						continue;
-
-					if (!actionsPerComponents.ContainsKey(actionID))
-						actionsPerComponents.Add(actionID, new());
-
-					actionsPerComponents[actionID].Add(container.ID);
-				}
-			}
-		}
-		foreach (GameDatas.PlayerSave.Component container in m_data.auxiliar ?? System.Array.Empty<GameDatas.PlayerSave.Component>())
-		{
-			if (container != null && !container.isDamaged && container.TryGetData(out EntityEquipmentData equipment))
-			{
-				foreach (EntityActionEnumID actionID in equipment.knownedActions)
-				{
-					if (actionID == EntityActionEnumID.Unknowned || actionsPerComponents.ContainsKey(actionID))
-						continue;
-
-					if (!actionsPerComponents.ContainsKey(actionID))
-						actionsPerComponents.Add(actionID, new());
-
-					actionsPerComponents[actionID].Add(equipment.name);
-				}
-			}
-		}
-		foreach (GameDatas.PlayerSave.Component container in m_data.chipsets ?? System.Array.Empty<GameDatas.PlayerSave.Component>())
-		{
-			if (container != null && !container.isDamaged && container.TryGetData(out EntityEquipmentData equipment))
-			{
-				foreach (EntityActionEnumID actionID in equipment.knownedActions)
-				{
-					if (actionID == EntityActionEnumID.Unknowned || actionsPerComponents.ContainsKey(actionID))
-						continue;
-
-					if (!actionsPerComponents.ContainsKey(actionID))
-						actionsPerComponents.Add(actionID, new());
-
-					actionsPerComponents[actionID].Add(equipment.name);
-				}
-			}
-		}
+		AddActionsOf(actionsPerComponents, m_data.FrameData.knownedActions, m_data.FrameData.name, false);
+		AddActionsOf(actionsPerComponents, m_data.ReactorData.knownedActions, m_data.ReactorData.name, false);
+		AddActionsOf(actionsPerComponents, m_data.NeuronalMembraneData.knownedActions, m_data.NeuronalMembraneData.name, false);
+		AddActionsOf(actionsPerComponents, m_data.BrainData.knownedActions, m_data.BrainData.name, false);
+		AddActionsOf(actionsPerComponents, m_data.arms, true);
+		AddActionsOf(actionsPerComponents, m_data.auxiliar, false);
+		AddActionsOf(actionsPerComponents, m_data.chipsets, false);
 
 		if (!actionsPerComponents.ContainsKey(EntityActionEnumID.Wait))
 			actionsPerComponents.Add(EntityActionEnumID.Wait, new() { null });
@@ -290,57 +177,30 @@ public class Entity : MonoBehaviour
 		return actionsPerComponents;
 	}
 
-	private Dictionary<EntityActionEnumID, List<string>> GetActions ()
+	private static void AddActionsOf ( Dictionary<EntityActionEnumID, List<string>> _actionsPerComponents, GameDatas.PlayerSave.Component[] _containers, bool _isNamedByContainerID )
 	{
-		Dictionary<EntityActionEnumID, List<string>> actionsPerComponents = GetAllActions();
-		foreach (EntityActionEnumID actionID in actionsPerComponents.Keys.ToArray())
+		foreach (GameDatas.PlayerSave.Component container in _containers ?? Array.Empty<GameDatas.PlayerSave.Component>())
 		{
-			if (actionID == EntityActionEnumID.Unknowned || !GameAssets.current.game.entityActionsData.ContainsKey(actionID) || GameAssets.current.game.entityActionsData[actionID].isModAction)
-				actionsPerComponents.Remove(actionID);
+			if (container != null && !container.isDamaged && container.TryGetData(out EntityEquipmentData equipment))
+				AddActionsOf(_actionsPerComponents, equipment.knownedActions, _isNamedByContainerID ? container.ID : equipment.name, true);
 		}
-
-		return actionsPerComponents;
 	}
 
-	private List<EntityActionEnumID> GetModActions ()
+	private static void AddActionsOf ( Dictionary<EntityActionEnumID, List<string>> _actionsPerComponents, IEnumerable<EntityActionEnumID> _actionIDs, string _componentID, bool _isFirstComponentKept )
 	{
-		List<EntityActionEnumID> actions = GetAllActions().Keys.ToList();
-
-		foreach (EntityActionEnumID actionID in actions.ToArray())
+		foreach (EntityActionEnumID actionID in _actionIDs)
 		{
-			if (actionID == EntityActionEnumID.Unknowned || !GameAssets.current.game.entityActionsData.ContainsKey(actionID) || !GameAssets.current.game.entityActionsData[actionID].isModAction)
-				actions.Remove(actionID);
-		}
+			if (actionID == EntityActionEnumID.Unknowned)
+				continue;
 
-		return actions;
+			if (!_actionsPerComponents.TryGetValue(actionID, out List<string> components))
+				_actionsPerComponents.Add(actionID, components = new());
+			else if (_isFirstComponentKept)
+				continue;
+
+			components.Add(_componentID);
+		}
 	}
-
-	/*public List<EntityActionEnumID> GetReplacementActionFor ( EntityActionEnumID _actionID )
-	{
-		EntityActionData data = GameAssets.current.game.entityActionsData[_actionID];
-		List<EntityActionEnumID> replacements = new();
-		foreach (EntityActionEnumID actionID in m_knownedActions)
-		{
-			switch (GameAssets.current.game.entityActionsData[_actionID].type)
-			{
-				case EntityActionData.ActionType.DistanceAttack:
-				case EntityActionData.ActionType.MeleeAttack:
-					if (data.type == EntityActionData.ActionType.DistanceAttack || data.type == EntityActionData.ActionType.MeleeAttack)
-						replacements.Add(actionID);
-					break;
-				case EntityActionData.ActionType.Movement:
-					if (data.type == EntityActionData.ActionType.Movement)
-						replacements.Add(actionID);
-					break;
-				case EntityActionData.ActionType.Special:
-					if (data.type == EntityActionData.ActionType.Special)
-						replacements.Add(actionID);
-					break;
-			}
-		}
-
-		return replacements;
-	}*/
 
 	public void InitHangarMode ( EntitySavedData _data )
 	{
@@ -407,7 +267,6 @@ public class Entity : MonoBehaviour
 			m_lastPerformedAction = _action;
 		}
 
-		//m_isPerforming = true;
 		m_state = _state;
 		onStartPerformAction?.Invoke(_action);
 	}
@@ -424,7 +283,6 @@ public class Entity : MonoBehaviour
 
 	public void EndPerformAction ()
 	{
-		//m_isPerforming = false;
 		onEndPerformAction?.Invoke();
 	}
 
@@ -445,18 +303,9 @@ public class Entity : MonoBehaviour
 
 	public void SetVisibility ( bool _isVisible, NeuronalMembraneEquipmentData.VisionTypes _visionType )
 	{
-		/*if((!m_isVisible && _isVisible) || (_isVisible && (int)_visionType < (int)m_howIsUnitVisible))
-			m_howIsUnitVisible = _visionType;
-		m_isVisible = _isVisible;
-
-		m_ui.gameObject.SetActive(m_isVisible && (int)m_howIsUnitVisible < (int)NeuronalMembraneEquipmentData.VisionTypes.Radar);
-		if (m_isVisible)
-			m_skin.Show(m_howIsUnitVisible);
-		else
-			m_skin.Hide();*/
 		m_isVisible = _isVisible;
 		if (_isVisible)
-			m_howIsUnitVisible = _visionType; // toujours la valeur courante, calcul�e en amont par la Tile
+			m_howIsUnitVisible = _visionType;
 		m_ui.gameObject.SetActive(m_isVisible && (int)m_howIsUnitVisible < (int)NeuronalMembraneEquipmentData.VisionTypes.Radar);
 		if (m_isVisible)
 			m_skin.Show(m_howIsUnitVisible);

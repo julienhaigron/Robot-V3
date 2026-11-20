@@ -7,14 +7,12 @@ public class LogPoolElement : PoolElement
 	[SerializeField] private TextMeshProUGUI m_text;
 	[SerializeField] private LayoutElement m_layoutElement;
 	[SerializeField] private GameObject m_highlight;
-	[SerializeField] private Vector2 m_preferedTextSizePrefreredValues;
 	[SerializeField] private FontStyles m_highlightFontStyle = FontStyles.Bold | FontStyles.Italic;
 
 	private LogConsole.LogEventType m_eventType;
 	public LogConsole.LogEventType EventType => m_eventType;
 
 	private bool m_isHighlighted = false;
-	public bool IsHighlighted => m_isHighlighted;
 
 	private FontStyles m_defaultFontStyle;
 	private bool m_didCacheDefaultFontStyle = false;

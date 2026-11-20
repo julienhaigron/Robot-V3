@@ -398,6 +398,7 @@ public class Projectile : PoolElement
 			m_onDespawnNoEntityHit?.Invoke();
 		m_onDespawnNoEntityHit = null;
 		m_onImpact = null;
+		transform.DOKill();
 
 		if (!m_rb.isKinematic)
 		{
@@ -431,7 +432,6 @@ public struct ProjectileData
 	public Tile targetTile;
 	public Entity targetEntity;
 	public Wall targetWall;
-	//public Vector3 destination;
 
 	public bool HasValidTarget
 	{
@@ -459,7 +459,7 @@ public struct ProjectileData
 			{
 				case TargetType.Tile:
 					if (targetTile != null)
-						return targetTile.coordinates.GetTile().transform.position;
+						return targetTile.transform.position;
 					break;
 				case TargetType.Entity:
 					if (targetEntity != null && targetEntity.Skin != null)

@@ -50,7 +50,6 @@ public class CounterDisplay : MonoBehaviour
 	private bool m_currentAndFinalValuesInitialized = false;
 	private StringBuilder m_sb = new StringBuilder();
 
-	public TMP_Text[] CounterTextArray => m_counterTextArray;
 	private string CounterText
 	{
 		get
@@ -83,8 +82,6 @@ public class CounterDisplay : MonoBehaviour
 	private Tweener m_textTween;
 	private float m_currentValue = 0f;
 	private float m_finalValue = 0f;
-	public float CurrentValue => m_currentValue;
-	public float FinalValue => m_finalValue;
 
 	public bool TextTweenIsPlaying
 	{

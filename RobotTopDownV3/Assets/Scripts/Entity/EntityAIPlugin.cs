@@ -25,7 +25,6 @@ public class EntityAIPlugin : EntityPlugin
 	}
 
 	private List<Entity> m_lastEntitiesTargeted = new();
-	public List<Entity> LastTargetedEntities => m_lastEntitiesTargeted;
 	private Tile m_lastTargetedSabotagePoint;
 
 	private Entity m_committedTarget;
@@ -199,8 +198,6 @@ public class EntityAIPlugin : EntityPlugin
 
 		if (hasEnemyInWeaponRange && currentActionMainType == EntityActionData.MainActionType.Movement)
 		{
-			// if eneemy in weapon range
-			//  => shoot directly
 			if (!TryReplaceActionWithAttack(_recordedAction, enemies, attackEnumID, equipmentID
 				, "Has enemy in range, action replaced with " + attackEnumID, ref resultInfo))
 				return resultInfo;
@@ -235,10 +232,7 @@ public class EntityAIPlugin : EntityPlugin
 
 				if (wouldReachEnemyOnceRotated)
 				{
-					RotateEntityAction rotateAction = (TurnManager.Instance.GetAction(EntityActionEnumID.RotateEntity, m_linkedEntity.ID, null, TurnManager.currentTick) as RotateEntityAction);
-					rotateAction.targetedOrientationID = new int[1] { orientationTowardTarget };
-					rotateAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.RotateEntity], null, m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID, TurnManager.currentTick);
-					resultInfo.ReplaceFreeAction(rotateAction, "Rotates toward target");
+					resultInfo.ReplaceFreeAction(GetRotationActionFor(_recordedAction, orientationTowardTarget), "Rotates toward target");
 
 					if (_recordedAction.action.Data.codeType == EntityActionData.ActionCodeType.Wait)
 						TryReplaceActionWithAttack(_recordedAction, enemiesOnceRotated, rotatedAttackEnumID, rotatedEquipmentID
@@ -285,9 +279,7 @@ public class EntityAIPlugin : EntityPlugin
 					}
 					else
 					{
-						WaitAction waitAction = (TurnManager.Instance.GetAction(EntityActionEnumID.Wait, m_linkedEntity.ID, null, TurnManager.currentTick) as WaitAction);
-						waitAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.Wait], null, m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID, TurnManager.currentTick);
-						resultInfo.ReplaceAction(waitAction, "Already in position to shoot target");
+						resultInfo.ReplaceAction(GetWaitActionFor(_recordedAction), "Already in position to shoot target");
 					}
 
 					if (tileIDs.Count == 0 && CanFireFrom(from, committedTarget, true))
@@ -299,10 +291,7 @@ public class EntityAIPlugin : EntityPlugin
 
 						if (firingOrientation != m_linkedEntity.Displacement.CurrentOrientation)
 						{
-							RotateEntityAction rotateAction = (TurnManager.Instance.GetAction(EntityActionEnumID.RotateEntity, m_linkedEntity.ID, null, TurnManager.currentTick) as RotateEntityAction);
-							rotateAction.targetedOrientationID = new int[1] { firingOrientation };
-							rotateAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.RotateEntity], null, m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID, TurnManager.currentTick);
-							resultInfo.ReplaceFreeAction(rotateAction, "Rotate to shoot target");
+							resultInfo.ReplaceFreeAction(GetRotationActionFor(_recordedAction, firingOrientation), "Rotate to shoot target");
 
 							if (TryGetEnemiesInWeaponRangeAt(_recordedAction.action, from, firingOrientation
 								, out List<Entity> enemiesOnceAimed, out EntityActionEnumID aimedAttackEnumID, out string aimedEquipmentID))
@@ -312,23 +301,6 @@ public class EntityAIPlugin : EntityPlugin
 					}
 				}
 			}
-			/*else if (_recordedAction.entityState == Entity.EntityState.NoAIChange)
-			{
-				//rotate weapon or move toward enemy if too far
-				if (!isAtCorrectOrientation)
-				{
-					TargetEntity(committedTarget);
-					RotateEntityAction rotateAction = (TurnManager.Instance.GetAction(EntityActionEnumID.RotateEntity, m_linkedEntity.ID, null, TurnManager.currentTick) as RotateEntityAction);
-					rotateAction.targetedOrientationID = orientationTowardTarget;
-					rotateAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.RotateEntity], null, m_linkedEntity.ID, _recordedAction.action.supposedPositionAtActionStartID, TurnManager.currentTick);
-					resultInfo.ReplaceFreeAction(rotateAction, "Unit in vision but not in correct orientation");
-				}
-
-				if (!isEntityInRangeWeaponsPossibleRange)
-					TargetEntity(null);
-
-
-			}*/
 		}
 		else if (!canMove && _recordedAction.type != EntityActionEnumID.Wait && (_recordedAction.action.Data.type == EntityActionData.ActionType.Movement || EntityActionData.IsRotationAction(_recordedAction.action.enumID)
 			 || _recordedAction.action.Data.codeType == EntityActionData.ActionCodeType.MoveThenAttack))
@@ -566,6 +538,15 @@ public class EntityAIPlugin : EntityPlugin
 		return m_linkedEntity.Displacement.Coordinates.GetTile();
 	}
 
+	private RotateEntityAction GetRotationActionFor ( TurnManager.RecordedAction _recordedAction, int _orientation )
+	{
+		RotateEntityAction rotateAction = TurnManager.Instance.GetAction(EntityActionEnumID.RotateEntity, m_linkedEntity.ID, null, TurnManager.currentTick) as RotateEntityAction;
+		rotateAction.targetedOrientationID = new int[1] { _orientation };
+		rotateAction.Init(GameAssets.current.game.entityActionsData[EntityActionEnumID.RotateEntity], null, m_linkedEntity.ID
+			, _recordedAction.action.supposedPositionAtActionStartID, TurnManager.currentTick);
+		return rotateAction;
+	}
+
 	private WaitAction GetWaitActionFor ( TurnManager.RecordedAction _recordedAction )
 	{
 		WaitAction waitAction = TurnManager.Instance.GetAction(EntityActionEnumID.Wait, m_linkedEntity.ID, null, TurnManager.currentTick) as WaitAction;
@@ -641,8 +622,6 @@ public class EntityAIPlugin : EntityPlugin
 	{
 		EntityActionData specialAction = GetFirstAvailableActionIn(EntityActionData.MainActionType.Special, _remainingTokens, _target);
 		return specialAction != null ? specialAction : GetFirstAvailableActionIn(EntityActionData.MainActionType.Attack, _remainingTokens, _target);
-		/*EntityActionData attackData = GetFirstAvailableActionIn(EntityActionData.MainActionType.Attack, _remainingTokens, _target);
-		return attackData != null ? attackData : GetFirstAvailableActionIn(EntityActionData.MainActionType.Special, _remainingTokens, _target);*/
 	}
 
 	private EntityActionData GetFirstAvailableActionIn ( EntityActionData.MainActionType _mainType, int _remainingTokens, Entity _target )

@@ -39,7 +39,6 @@ public class PlayerController : Singleton<PlayerController>
 	private int PlayerID => !GameManager.Instance.IsOnline ? 0 : OnlinePlayerInstance.Self.connectionIndex;
 
 	private Tween m_cameraRotationTween;
-	private Tile m_selectedTile;
 
 	private Quaternion m_targetRotation;
 	private float m_currentZoomDistance;
@@ -67,7 +66,6 @@ public class PlayerController : Singleton<PlayerController>
 	private SerializableDictionary<int, List<ActionDisplayOnTile>> m_tempActionDisplays = new();
 	private SerializableDictionary<int, List<GroundDisplay>> m_orderDisplays = new();
 	private SerializableDictionary<int, GhostEntity> m_ghostEntities = new();
-	public SerializableDictionary<int, GhostEntity> GhostEntities => m_ghostEntities;
 	private SerializableDictionary<int, GhostItem> m_ghostItems = new();
 
 	public override void Awake ()
@@ -471,7 +469,7 @@ public class PlayerController : Singleton<PlayerController>
 
 		AEntityAction action = EntityActionDisplay.SelectedDisplay != null
 			? (m_turnManager.hasModActionSelected ? EntityActionDisplay.SelectedDisplay.RecordedAction.freeAction : EntityActionDisplay.SelectedDisplay.RecordedAction.action)
-			: (m_turnManager.hasModActionSelected ? m_turnManager.CurrentModActionSelected : m_turnManager.CurrentActionSelected);
+			: m_turnManager.CurrentActionSelected;
 
 		/*if (action != null && _tile != null && (EntityActionDisplay.SelectedDisplay != null ?
 			(action.targetTileIDs != null && action.targetTileIDs.Contains(_tile.coordinates.ID))
@@ -625,7 +623,7 @@ public class PlayerController : Singleton<PlayerController>
 			}
 			AEntityAction currentSelectedAction = EntityActionDisplay.SelectedDisplay != null
 				? (m_turnManager.hasModActionSelected ? EntityActionDisplay.SelectedDisplay.RecordedAction.freeAction : EntityActionDisplay.SelectedDisplay.RecordedAction.action)
-				: (m_turnManager.hasModActionSelected ? m_turnManager.CurrentModActionSelected : m_turnManager.CurrentActionSelected);
+				: m_turnManager.CurrentActionSelected;
 
 			if (currentSelectedAction == null)
 				return;

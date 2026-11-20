@@ -22,7 +22,6 @@ public class DialogueManager : Singleton<DialogueManager>
 	private DialogueData m_currentDialogueData;
 	private Action m_onDialogueEnded;
 	private bool m_isTextAnimationOn = false;
-	private bool m_waitingForNextLine;
 	private int m_currentLineIndex;
 	private Tween m_currentTextTween;
 

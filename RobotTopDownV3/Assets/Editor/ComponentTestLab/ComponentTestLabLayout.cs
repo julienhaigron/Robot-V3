@@ -532,8 +532,6 @@ public class ComponentTestLabLayout
 
 	public int ToIndex ( Vector2Int _cell ) => _cell.y * Width + _cell.x;
 
-	public Vector2Int ToCell ( int _tile ) => new(_tile % Width, _tile / Width);
-
 	public static int GetDistance ( Vector2Int _a, Vector2Int _b )
 	{
 		int deltaX = (_a.x - _a.y / 2) - (_b.x - _b.y / 2);

@@ -1,23 +1,21 @@
-using System.Collections;
-using System.Collections.Generic;
+using System;
 using UnityEngine;
 using Unity.Netcode;
-using System.Linq;
 using DG.Tweening;
 
 public class MoveThenAttackAction : AttackAction
 {
 	private const float c_dashTimeShare = .45f;
 	public int positionAfterMovementID = -1;
-	public bool isActionCanceled = false;
 
 	private Tween m_movementTween;
+
+	private bool HasDash => positionAfterMovementID != -1;
 
 	public override void NetworkSerialize<T> ( BufferSerializer<T> serializer )
 	{
 		base.NetworkSerialize(serializer);
 		serializer.SerializeValue(ref positionAfterMovementID);
-		serializer.SerializeValue(ref isActionCanceled);
 	}
 
 	public override void RegisterInteraction ( Tile _tile )
@@ -36,8 +34,6 @@ public class MoveThenAttackAction : AttackAction
 		if (_targetTileIDs == null || _targetTileIDs.Length == 0)
 			return;
 
-		//Same destination rule as RegisterInteraction, and positionAtActionEndID with it for the same reason:
-		//without it the charge reports the unit as never moving.
 		Tile targetTile = GridManager.Instance.Tiles[_targetTileIDs[0]];
 		Tile stopTile = targetTile.Neighbors[GridManager.Instance.GetClosestOrientation(targetTile, GridManager.Instance.Tiles[supposedPositionAtActionStartID])];
 		if (stopTile == null)
@@ -51,15 +47,13 @@ public class MoveThenAttackAction : AttackAction
 	{
 		base.Prepare(_state);
 
-		if (!isActionCanceled && positionAfterMovementID != -1)
+		if (HasDash)
 			PerformingEntity.Displacement.Coordinates.GetTile().SetEntity(null, _isThisTurn: true);
 	}
 
 	protected override Tile GetAttackOriginTile ()
 	{
-		return !isActionCanceled && positionAfterMovementID != -1
-			? GridManager.Instance.Tiles[positionAfterMovementID]
-			: base.GetAttackOriginTile();
+		return HasDash ? GridManager.Instance.Tiles[positionAfterMovementID] : base.GetAttackOriginTile();
 	}
 
 	public override void CancelAction ()
@@ -80,19 +74,25 @@ public class MoveThenAttackAction : AttackAction
 
 	public void ReleaseBookedTile ()
 	{
-		if (positionAfterMovementID == -1 || positionAfterMovementID == PerformingEntity.Displacement.Coordinates.ID)
+		if (!HasDash || positionAfterMovementID == PerformingEntity.Displacement.Coordinates.ID)
 			return;
 
 		if (GridManager.Instance.Tiles[positionAfterMovementID].TryGetEntity(false, out Entity bookedEntity) && bookedEntity.ID == performingEntityID)
 			GridManager.Instance.Tiles[positionAfterMovementID].SetEntity(null, _isThisTurn: false);
 	}
 
-	public override bool DoesLeaveTileThisTick ( int _tileID )
+	private void DropDash ()
 	{
-		return !isActionCanceled && positionAfterMovementID != -1 && positionAfterMovementID != _tileID;
+		ReleaseBookedTile();
+		positionAfterMovementID = -1;
+		positionAtActionEndID = supposedPositionAtActionStartID;
 	}
 
-	//CheckConflict is null safe here too: every _otherAction use is a pattern match, which fails on null.
+	public override bool DoesLeaveTileThisTick ( int _tileID )
+	{
+		return HasDash && positionAfterMovementID != _tileID;
+	}
+
 	public override bool ConflictCheckAlone ( bool _isCheck = true )
 	{
 		return CheckConflict(null, _isCheck).isFirstActionConflicted;
@@ -100,91 +100,68 @@ public class MoveThenAttackAction : AttackAction
 
 	public override ActionConflictResultInfo CheckConflict ( AEntityAction _otherAction, bool _isCheck = true )
 	{
-		if (isActionCanceled || positionAfterMovementID == -1)
+		Entity performer = PerformingEntity;
+		if (!HasDash)
 		{
-			//entity move action canceled
-			if (GameManager.Instance.GetEntityFromID(performingEntityID).Displacement.Coordinates.GetTile().GetEntity(false) != null)
-				Debug.LogError("CRITICAL ERROR : performing entity " + GameManager.Instance.GetEntityFromID(performingEntityID).Data.name + " cant go back to where it was. Hope this never happens"); // solution? insta kill performing entity
+			Tile currentTile = performer.Displacement.Coordinates.GetTile();
+			Entity occupant = currentTile.GetEntity(false);
+			if (occupant != null && occupant != performer)
+				Debug.LogError("CRITICAL ERROR : performing entity " + performer.Data.name + " cant go back to where it was, " + occupant.Data.name + " took it");
 			else
-				GameManager.Instance.GetEntityFromID(performingEntityID).Displacement.Coordinates.GetTile().SetEntity(GameManager.Instance.GetEntityFromID(performingEntityID), _isThisTurn: false);
-			return new() { isFirstActionConflicted = false, isSecondActionConflicted = false };
+				currentTile.SetEntity(performer, _isThisTurn: false);
+			return default;
 		}
 
 		bool doesSelfHaveConflict = false;
 		bool doesOtherHaveConflict = false;
-		Entity user = GameManager.Instance.GetEntityFromID(performingEntityID);
-		int maxDist = Data.GetMaxRange(this, PerformingEntity, null) - 1;
 
-		/*if (_otherAction is MoveToNeighborAction && (_otherAction as MoveToNeighborAction).finalTargetTileID == positionAfterMovementID)
+		if (_otherAction is MoveToTargetAction otherMove && otherMove.targetTileIDs != null
+			&& (Array.IndexOf(otherMove.targetTileIDs, positionAfterMovementID) >= 0 || IsSwappingTilesWith(otherMove)))
 		{
-			int roll = UnityEngine.Random.Range((int)0, 2);
-			if (roll == 0)
+			if (WinsTieBreak())
 			{
-				(_otherAction as MoveToNeighborAction).finalTargetTileID = -1;
+				otherMove.DropPath();
 				doesOtherHaveConflict = true;
 			}
 			else
 			{
-				positionAfterMovementID = -1;
-				positionAtActionEndID = supposedPositionAtActionStartID;
-				isActionCanceled = true;
+				doesSelfHaveConflict = true;
+				DropDash();
 			}
 		}
-		else */if (_otherAction is MoveToTargetAction otherMoveToTarget && otherMoveToTarget.targetTileIDs != null
-			&& (otherMoveToTarget.targetTileIDs.Contains(positionAfterMovementID) || IsSwappingTilesWith(otherMoveToTarget)))
-		{
-			int roll = UnityEngine.Random.Range((int)0, 2);
-			if (roll == 0)
-			{
-				otherMoveToTarget.ReleaseBookedTiles();
-				otherMoveToTarget.targetTileIDs = null;
-				doesOtherHaveConflict = true;
-			}
-			else
-			{
-				ReleaseBookedTile();
-				positionAfterMovementID = -1;
-				positionAtActionEndID = supposedPositionAtActionStartID;
-				isActionCanceled = false;
-			}
-		}
-		else if (IsDestinationOccupiedOnNextTurnAction())
+		else if (IsDestinationOccupiedOnNextTurnAction() || IsDashTooLong())
 		{
 			doesSelfHaveConflict = true;
-			isActionCanceled = false;
-
-			/*if (finalTargetTile != null)
-				finalTargetTile.SetEntity(performingEntity, _isThisTurn: false);*/
-		}
-		//check if tile too far
-		else if (positionAfterMovementID != -1 && GridManager.Instance.GetDistanceBetween(GridManager.Instance.Tiles[supposedPositionAtActionStartID], GridManager.Instance.Tiles[(int)positionAfterMovementID], Data.movementSpeed, false) > maxDist)
-		{
-			doesSelfHaveConflict = true;
-			isActionCanceled = false;
+			if (!_isCheck)
+				DropDash();
 		}
 
-		if (doesSelfHaveConflict == false)
-		{
-			GridManager.Instance.Tiles[(int)positionAfterMovementID].SetEntity(GameManager.Instance.GetEntityFromID(performingEntityID), _isThisTurn: false);
-		}
+		if (!doesSelfHaveConflict)
+			GridManager.Instance.Tiles[positionAfterMovementID].SetEntity(performer, _isThisTurn: false);
 
 		return new() { isFirstActionConflicted = doesSelfHaveConflict, isSecondActionConflicted = doesOtherHaveConflict };
+	}
+
+	private bool IsDashTooLong ()
+	{
+		return GridManager.Instance.GetDistanceBetween(GridManager.Instance.Tiles[supposedPositionAtActionStartID], GridManager.Instance.Tiles[positionAfterMovementID], Data.movementSpeed, false)
+			> Data.GetMaxRange(this, PerformingEntity, null) - 1;
 	}
 
 	protected override void Perform ( Entity.EntityState _state )
 	{
 		float dashDuration = TickTimeLeft * c_dashTimeShare;
-		if (positionAfterMovementID != -1)
+		if (HasDash)
 		{
 			AttachMovementTrail();
-			m_movementTween = PerformingEntity.Displacement.MoveToTile((int)positionAfterMovementID, () =>
+			m_movementTween = PerformingEntity.Displacement.MoveToTile(positionAfterMovementID, () =>
 			{
 				DetachMovementTrail();
 				base.Perform(_state);
 			}, true, dashDuration);
 		}
 		else
-			DG.Tweening.DOVirtual.DelayedCall(dashDuration, () => base.Perform(_state));
+			DOVirtual.DelayedCall(dashDuration, () => base.Perform(_state));
 	}
 
 	public override void Display ( TurnManager.RecordedAction _recordedAction )
@@ -194,7 +171,7 @@ public class MoveThenAttackAction : AttackAction
 
 	public override void GhostDisplay ( Entity.EntityState _state )
 	{
-		if (positionAfterMovementID < 0)
+		if (!HasDash)
 			return;
 
 		Tile[] tiles = GridManager.Instance.Tiles;
@@ -203,24 +180,16 @@ public class MoveThenAttackAction : AttackAction
 
 	private bool IsDestinationOccupiedOnNextTurnAction ()
 	{
-		if (positionAfterMovementID == -1)
-			return false;
-
-		Entity entityOnDestination = GridManager.Instance.Tiles[(int)positionAfterMovementID].GetBlockingEntityFor(PerformingEntity);
-
-		return entityOnDestination != null || GridManager.Instance.Tiles[(int)positionAfterMovementID].IsObstacle(false);
+		Tile destination = GridManager.Instance.Tiles[positionAfterMovementID];
+		return destination.GetBlockingEntityFor(PerformingEntity) != null || destination.IsObstacle(false);
 	}
 
-	//Two units exchanging tiles never overlap in their destinations, so the check above cannot see it and both
-	//moves go through, walking each other over. A swap is a conflict of its own.
 	private bool IsSwappingTilesWith ( MoveToTargetAction _otherAction )
 	{
-		if (positionAfterMovementID == -1 || _otherAction.targetTileIDs == null)
+		if (_otherAction.targetTileIDs == null)
 			return false;
 
-		int myTileID = PerformingEntity.Displacement.Coordinates.ID;
-
 		return positionAfterMovementID == _otherAction.PerformingEntity.Displacement.Coordinates.ID
-			&& _otherAction.targetTileIDs.Contains(myTileID);
+			&& Array.IndexOf(_otherAction.targetTileIDs, PerformingEntity.Displacement.Coordinates.ID) >= 0;
 	}
 }

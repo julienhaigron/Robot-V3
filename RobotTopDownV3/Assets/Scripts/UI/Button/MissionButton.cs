@@ -21,7 +21,6 @@ public class MissionButton : BaseButton, IPointerExitHandler
 	private MissionData m_missionData;
 	public MissionData MissionData => m_missionData;
 	private GameDatas.ProceduralMatchData m_proceduralMatch;
-	public GameDatas.ProceduralMatchData ProceduralMatch => m_proceduralMatch;
 
 	private bool m_isSelected = false;
 	public bool IsSelected => m_isSelected;

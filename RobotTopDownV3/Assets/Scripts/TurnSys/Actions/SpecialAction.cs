@@ -10,6 +10,15 @@ public class SpecialAction : AEntityAction
 	private float m_visualBudget;
 	public const float WeaponAimDuration = .3f;
 	public const float WeaponAimHold = .4f;
+	public bool isActionCanceled;
+
+	protected virtual bool ClaimsTargetTiles => false;
+
+	public override void NetworkSerialize<T> ( BufferSerializer<T> serializer )
+	{
+		base.NetworkSerialize(serializer);
+		serializer.SerializeValue(ref isActionCanceled);
+	}
 
 	public override void Prepare ( Entity.EntityState _state )
 	{
@@ -23,17 +32,7 @@ public class SpecialAction : AEntityAction
 		if (user == null)
 			return;
 
-		List<string> targetNames = new();
-		if (targetedEntityIDs != null)
-		{
-			foreach (int targetID in targetedEntityIDs)
-			{
-				Entity target = GameManager.Instance.GetEntityFromID(targetID);
-				if (target != null && !targetNames.Contains(target.Data.name))
-					targetNames.Add(target.Data.name);
-			}
-		}
-
+		List<string> targetNames = GetTargetedEntityNames();
 		Entity firstTarget = targetNames.Count == 0 || targetedEntityIDs == null
 			? null : GameManager.Instance.GetEntityFromID(targetedEntityIDs[0]);
 
@@ -55,11 +54,25 @@ public class SpecialAction : AEntityAction
 		}
 	}
 
+	public override void ConflictCheckPrewarm ()
+	{
+		base.ConflictCheckPrewarm();
+		isActionCanceled = false;
+	}
+
 	public override ActionConflictResultInfo CheckConflict ( AEntityAction _otherAction, bool _isCheck = true )
 	{
-		//no conflict ?
+		if (!ClaimsTargetTiles || isActionCanceled || _otherAction is not MoveToTargetAction otherMove || !otherMove.TargetsAnyOf(targetTileIDs))
+			return default;
 
-		return new() { isFirstActionConflicted = false, isSecondActionConflicted = false };
+		if (WinsTieBreak(EntityActionData.PFC(Data, otherMove.Data)))
+		{
+			otherMove.DropPath();
+			return new() { isSecondActionConflicted = true };
+		}
+
+		isActionCanceled = true;
+		return new() { isFirstActionConflicted = true };
 	}
 
 	protected virtual bool DoesOwnItsCompletion => false;
@@ -382,15 +395,6 @@ public class SpecialAction : AEntityAction
 		}
 
 		return null;
-	}
-
-	public override void Display ( TurnManager.RecordedAction _recordedAction )
-	{
-		//TODO ?
-	}
-
-	public override void GhostDisplay ( Entity.EntityState _state )
-	{
 	}
 
 	private HashSet<Tile> m_tilesInRangeCache;

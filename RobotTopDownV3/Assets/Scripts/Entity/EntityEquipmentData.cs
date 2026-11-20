@@ -137,14 +137,6 @@ public class EntityEquipmentData : AParsableScriptableObject
 					break;
 			}
 		}
-
-		public StatDescription Compare (StatDescription _statDescription )
-		{
-			StatDescription result = new() { ID = ID, floatValue = floatValue, stringValue = stringValue };
-
-
-			return result;
-		}
 	}
 
 	public virtual StatDescription[] GetDesciption ()

@@ -7,7 +7,6 @@ public class RecyclePanel : AUIPanel
 {
 	[SerializeField] private ComponentDisplayGrid m_inventoryGrid;
 	[SerializeField] private RecyclingComponentSlot[] m_recyclingSlots;
-	[SerializeField] private ComponentFullDisplay m_hoveredComponentFullInfoDisplay;
 
 	private System.Func<GameDatas.PlayerSave.Component, bool> InventoryGridPredicate => item => item != null /*&& item.isDamaged*/;
 

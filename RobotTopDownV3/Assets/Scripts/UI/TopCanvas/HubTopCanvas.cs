@@ -21,8 +21,6 @@ public class HubTopCanvas : AUITopCanvas
 
 	[Title("Shop")]
 	[SerializeField] private CurrencyDisplay m_shopFactionCurrencyDisplay;
-	[SerializeField] private TextMeshProUGUI m_factionProgressionTMP;
-	[SerializeField] private MPImage m_factionProgressionFill;
 
 	private bool m_isStructureUpgradePopupOpened = false;
 

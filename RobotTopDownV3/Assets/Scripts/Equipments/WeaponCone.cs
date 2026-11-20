@@ -1,18 +1,11 @@
-using System.Collections;
-using System.Collections.Generic;
+using System;
 using UnityEngine;
 using DG.Tweening;
-using System;
 
 public class WeaponCone : MonoBehaviour
 {
-
-	[SerializeField] protected GameObject m_conesParent;
 	[SerializeField] protected GameObject m_activeCone;
 	[SerializeField] protected GameObject m_unactiveCone;
-
-	protected float m_aimedRotation = 0;
-	public float AimedRotation => m_aimedRotation;
 
 	protected WeaponEquipmentData m_data;
 	public WeaponEquipmentData Data => m_data;
@@ -21,15 +14,12 @@ public class WeaponCone : MonoBehaviour
 	{
 		m_data = _data;
 		AimAtAngle(_isFirstSide ? 90 : -90f, true, null);
-
-		//transform.localScale = _data.range * Vector3.one;
 		DisableAllCones();
 	}
 
 	public void AimAtAngle ( float _angle, bool _isInstant, Action _onComplete )
 	{
 		Quaternion rot = Quaternion.AngleAxis(_angle, Vector3.forward);
-		m_aimedRotation = _angle;
 		if (_isInstant)
 		{
 			m_activeCone.transform.localRotation = rot;

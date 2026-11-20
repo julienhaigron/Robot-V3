@@ -143,23 +143,13 @@ public class TournamentPanel : AUIPanel
 
 	private void RefreshSquadState ()
 	{
-		foreach (UnitMissionDisplay display in m_unitDisplays)
-			display.RefreshToggleInteractability();
-
-		m_startMissionBtn.SetInteractability(GameDatas.current.currentPlayerSave.squadUnitsIndex.Count > 0);
+		UnitMissionDisplay.RefreshSquadState(m_unitDisplays, m_startMissionBtn);
 	}
 
 	private void OnAnySquadToggled ( UnitMissionDisplay _display )
 	{
-		if (!m_unitDisplays.Contains(_display))
-			return;
-
-		EntitySavedData toggledUnit = _display.Data;
-		UnitMissionDisplay.RefreshPlayerUnits(m_unitDisplays);
-		RefreshSquadState();
-
-		UnitMissionDisplay toggledDisplay = m_unitDisplays.Find(display => display.Data == toggledUnit);
-		OnAnyUnitHovered(toggledDisplay != null ? toggledDisplay : _display);
+		if (m_unitDisplays.Contains(_display))
+			OnAnyUnitHovered(UnitMissionDisplay.RefreshAfterSquadToggle(m_unitDisplays, _display, m_startMissionBtn));
 	}
 
 	private void HideSquadDisplays ( UnitMissionDisplay[] _displays )

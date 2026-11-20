@@ -54,25 +54,6 @@ public class SlidingDoors : MonoBehaviour
 			m_refreshTween.Kill();
 	}
 
-	public void CloseThenOpen ( System.Action _onClosed )
-	{
-		KillRefreshTween();
-
-		if (!gameObject.activeInHierarchy)
-		{
-			_onClosed?.Invoke();
-			return;
-		}
-
-		SetClosed(true, _isInstant: false);
-
-		m_refreshTween = DOVirtual.DelayedCall(m_duration, () =>
-		{
-			_onClosed?.Invoke();
-			SetClosed(false, _isInstant: false);
-		});
-	}
-
 	public void SetClosed ( bool _isClosed, bool _isInstant )
 	{
 		if (m_hasState && m_isClosed == _isClosed)

@@ -1,75 +1,25 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using Unity.Netcode;
-using System.Linq;
 
 public class InvokeEntityAction : SpecialAction
 {
 	public int newEntityID;
-	public bool isActionCanceled;
+
+	protected override bool ClaimsTargetTiles => true;
+	protected override bool DoesOwnItsCompletion => true;
 
 	public override void NetworkSerialize<T> ( BufferSerializer<T> serializer )
 	{
 		base.NetworkSerialize(serializer);
 		serializer.SerializeValue(ref newEntityID);
-		serializer.SerializeValue(ref isActionCanceled);
 	}
 
 	public override void Prepare ( Entity.EntityState _state )
 	{
 		base.Prepare(_state);
-		isActionCanceled = false;
-		int ownerID = PerformingEntity.OwnerID;
-		List<Entity> ownerEntities = GameManager.Instance.PlayersEntityAnchor[ownerID].Entities;
-		newEntityID = ownerEntities.Count == 0 ? 100 * ownerID : ownerEntities.Max(entity => entity.ID) + 1;
-		foreach(int tileID in targetTileIDs)
-			GridManager.Instance.Tiles[tileID].SetEntity(GameManager.Instance.GetEntityFromID(newEntityID), false);
+
+		if (!isActionCanceled && targetTileIDs != null)
+			newEntityID = GameManager.Instance.PlayersEntityAnchor[PerformingEntity.OwnerID].ReserveEntityIDs(PerformingEntity.OwnerID, targetTileIDs.Length);
 	}
-
-	public override ActionConflictResultInfo CheckConflict ( AEntityAction _otherAction, bool _isCheck = true )
-	{
-		EntityActionData.PFCResultType result = EntityActionData.PFC(Data, _otherAction.Data);
-		if (isActionCanceled)
-			return new() { isFirstActionConflicted = false, isSecondActionConflicted = false };
-
-		bool doesSelfHaveConflict = false;
-		bool doesOtherHaveConflict = false;
-
-		if (_otherAction is MoveToTargetAction _otherMoveToTargetAction && _otherMoveToTargetAction.targetTileIDs != null && _otherMoveToTargetAction.targetTileIDs.Any(e => targetTileIDs.Contains(e)))
-		{
-			if (result == EntityActionData.PFCResultType.FirstWins)
-			{
-				_otherMoveToTargetAction.ReleaseBookedTiles();
-				_otherMoveToTargetAction.targetTileIDs = null;
-				doesOtherHaveConflict = true;
-			}
-			else if (result == EntityActionData.PFCResultType.SecondWins)
-			{
-				isActionCanceled = true;
-				doesSelfHaveConflict = true;
-			}
-			else
-			{
-				int roll = Random.Range((int)0, 2);
-				if (roll == 0)
-				{
-					_otherMoveToTargetAction.ReleaseBookedTiles();
-					_otherMoveToTargetAction.targetTileIDs = null;
-					doesOtherHaveConflict = true;
-				}
-				else
-				{
-					isActionCanceled = true;
-					doesSelfHaveConflict = true;
-				}
-			}
-		}
-
-		return new() { isFirstActionConflicted = doesSelfHaveConflict, isSecondActionConflicted = doesOtherHaveConflict };
-	}
-
-	protected override bool DoesOwnItsCompletion => true;
 
 	protected override void Perform ( Entity.EntityState _state )
 	{
@@ -80,22 +30,9 @@ public class InvokeEntityAction : SpecialAction
 		}
 
 		int ownerID = PerformingEntity.OwnerID;
-		int spawnIndex = 0;
-		foreach (int tileID in targetTileIDs)
-			GameManager.Instance.PlayersEntityAnchor[ownerID]
-				.SpawnEntityDuringPlay(Data.invocatedEntity.GetSavedData(), newEntityID + spawnIndex++, ownerID, tileID, EndTick);
+		for (int i = 0; i < targetTileIDs.Length; i++)
+			GameManager.Instance.PlayersEntityAnchor[ownerID].SpawnEntityDuringPlay(Data.invocatedEntity.GetSavedData(), newEntityID + i, ownerID, targetTileIDs[i], EndTick);
 
 		base.Perform(_state);
-		//DG.Tweening.DOVirtual.DelayedCall(GameConfig.current.game.actionDuration, EndTick);
-	}
-
-	public override void Display ( TurnManager.RecordedAction _recordedAction )
-	{
-		//TODO ?
-	}
-
-	public override void GhostDisplay ( Entity.EntityState _state )
-	{
-
 	}
 }

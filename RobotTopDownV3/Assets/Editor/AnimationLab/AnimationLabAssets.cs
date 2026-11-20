@@ -50,11 +50,6 @@ public static class AnimationLabAssets
 			return Mathf.Max(0f, (_impact - offset) * ClipLength / Mathf.Max(.01f, speed));
 		}
 
-		public float ImpactFor ( float _hitDelay )
-		{
-			return Mathf.Clamp01(offset + _hitDelay * Mathf.Max(.01f, speed) / ClipLength);
-		}
-
 		public float AssetDelayFor ( float _normalizedTime )
 		{
 			return Mathf.Max(0f, (_normalizedTime - assetOffset) * ClipLength / Mathf.Max(.01f, assetSpeed));

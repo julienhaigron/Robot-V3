@@ -17,7 +17,6 @@ public class EntityActionDisplay :
 
 	[Title("Dependencies")]
 	[SerializeField] private Image m_backgroundImg;
-	[SerializeField] private GameObject m_actionBackgroundSelectionOutlineGO;
 	[SerializeField] private Transform m_actionIconParent;
 	[SerializeField] private Transform m_actionIconPivot;
 	[SerializeField] private Image m_actionIconImg;
@@ -371,10 +370,7 @@ public class EntityActionDisplay :
 
 	private AEntityAction GetDisplayedFreeAction ()
 	{
-		return m_recordedAction.freeAction != null
-			&& m_recordedAction.freeActionType != EntityActionEnumID.Unknowned
-			&& m_recordedAction.freeActionType != EntityActionEnumID.Wait
-			? m_recordedAction.freeAction : null;
+		return m_recordedAction.HasFreeAction ? m_recordedAction.freeAction : null;
 	}
 
 	private void RefreshMissingTargetOn ( Image _icon, AEntityAction _action, GameObject _warningGO, Color _baseColor )

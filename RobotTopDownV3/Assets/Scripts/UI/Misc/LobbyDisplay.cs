@@ -13,9 +13,4 @@ public class LobbyDisplay : MonoBehaviour
         m_joinBtn.onClick += onJoin;
         m_endpoint = endpoint;
     }
-
-    public bool Matches ( System.Net.IPEndPoint endpoint )
-    {
-        return m_endpoint.Address.Equals(endpoint.Address) && m_endpoint.Port == endpoint.Port;
-    }
 }
