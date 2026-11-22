@@ -13,7 +13,7 @@ public class TournamentPanel : AUIPanel
 	[Title("Squad")]
 	[SerializeField] private List<UnitMissionDisplay> m_unitDisplays;
 	[SerializeField] private HangarEntityDisplay m_hoveredUnitDisplay;
-	[SerializeField] private StatDisplay[] m_hoveredUnitStatDisplays;
+	[SerializeField] private UnitStatBlock m_hoveredUnitStatBlock;
 
 	[Title("Other Squads")]
 	[SerializeField] private LocalizationText m_finalRoundLabel;
@@ -23,7 +23,7 @@ public class TournamentPanel : AUIPanel
 
 	[Title("Enemy")]
 	[SerializeField] private HangarEntityDisplay m_hoveredEnemyUnitDisplay;
-	[SerializeField] private StatDisplay[] m_hoveredEnemyUnitStatDisplays;
+	[SerializeField] private UnitStatBlock m_hoveredEnemyUnitStatBlock;
 	[SerializeField] private ComponentFullDisplay m_hoveredEnemyComponentDisplay;
 
 	[Title("Rewards")]
@@ -254,28 +254,12 @@ public class TournamentPanel : AUIPanel
 		{
 			m_hoveredEnemyUnitDisplay.Init(_display.Data, -1, true);
 			m_hoveredEnemyUnitDisplay.HideComponents();
-			InitStatDisplays(m_hoveredEnemyUnitStatDisplays, _display.Data);
+			m_hoveredEnemyUnitStatBlock.Init(_display.Data, true);
 		}
 		else if (m_unitDisplays.Contains(_display))
 		{
 			m_hoveredUnitDisplay.Init(_display.Data, _display.Index, _display.IsInSquad);
-			InitStatDisplays(m_hoveredUnitStatDisplays, _display.Data);
-		}
-	}
-
-	private static void InitStatDisplays ( StatDisplay[] _statDisplays, EntitySavedData _data )
-	{
-		SerializableDictionary<EntityEquipmentData.SecondaryStat.StatType, EntityEquipmentData.StatDescription> statsDescriptions = _data.GetStatsDesciptions();
-		List<EntityEquipmentData.SecondaryStat.StatType> keys = UIManager.Instance.GetPanel<EntityConfigPanel>().GetUnitSummaryStats(statsDescriptions);
-		for (int i = 0; i < _statDisplays.Length; i++)
-		{
-			if (keys.Count <= i)
-				_statDisplays[i].gameObject.SetActive(false);
-			else
-			{
-				_statDisplays[i].gameObject.SetActive(true);
-				_statDisplays[i].Init(statsDescriptions[keys[i]]);
-			}
+			m_hoveredUnitStatBlock.Init(_display.Data, true);
 		}
 	}
 }

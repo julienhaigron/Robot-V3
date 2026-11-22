@@ -121,6 +121,9 @@ public partial class GameConfig : ScriptableObject
 		public LayerMask wallLayerMask;
 		public float doubleClickDelay = 0.25f;
 		public EntityEquipmentData.SecondaryStat.StatType[] statsDisplayOrder;
+		public EntityEquipmentData.SecondaryStat.StatType[] damageStats;
+		public EntityEquipmentData.SecondaryStat.StatType[] resistanceStats;
+		public EntityEquipmentData.SecondaryStat.StatType[] statusStats;
 	}
 
 	[System.Serializable]

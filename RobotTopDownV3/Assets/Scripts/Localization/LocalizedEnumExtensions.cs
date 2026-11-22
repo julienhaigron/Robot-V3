@@ -8,6 +8,7 @@ using System.Text;
 public static class LocalizedEnumExtensions
 {
 	private static readonly Dictionary<EntityEquipmentData.SecondaryStat.StatType, string> m_statKeys = new();
+	private static readonly Dictionary<EntityEquipmentData.SecondaryStat.StatType, string> m_statShortKeys = new();
 	private static readonly Dictionary<NeuronalMembraneEquipmentData.VisionTypes, string> m_visionKeys = new();
 
 	public static string GetLocalizedTitle ( this EntityEquipmentData.SecondaryStat.StatType _type )
@@ -19,6 +20,17 @@ public static class LocalizedEnumExtensions
 		}
 
 		return LocalizationManager.Instance.Get(key);
+	}
+
+	public static string GetLocalizedShortTitle ( this EntityEquipmentData.SecondaryStat.StatType _type )
+	{
+		if (!m_statShortKeys.TryGetValue(_type, out string key))
+		{
+			key = "stat_short/" + ToSnakeCase(_type.ToString());
+			m_statShortKeys[_type] = key;
+		}
+
+		return LocalizationManager.Instance.Get(key, _type.GetLocalizedTitle());
 	}
 
 	public static string GetLocalizedTitle ( this NeuronalMembraneEquipmentData.VisionTypes _type )
@@ -55,6 +67,16 @@ public static class LocalizedEnumExtensions
 	public static string GetMoverVerb ( this EntityActionData.ActionType _type )
 	{
 		return LocalizationManager.Instance.Get("exchange/verb_" + ToSnakeCase(_type.ToString()));
+	}
+
+	public static string GetLocalizedTitle ( this Tile.TileDirectionType _side )
+	{
+		return LocalizationManager.Instance.Get("side/" + ToSnakeCase(_side.ToString()));
+	}
+
+	public static string GetLocalizedCoverName ( this TileGroundType _type )
+	{
+		return LocalizationManager.Instance.Get("cover/" + ToSnakeCase(_type.ToString()), string.Empty);
 	}
 
 	public static string GetLocalizedTitle ( this EntityActionData.AOEType _type )

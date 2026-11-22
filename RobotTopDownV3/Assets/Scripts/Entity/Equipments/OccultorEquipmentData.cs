@@ -16,6 +16,16 @@ public class OccultorEquipmentData : EntityEquipmentData
     [BoxGroup(GroupID = "Stat")]
     public SecondaryStat[] statBonuses;
 
+    public float GetCamo ( NeuronalMembraneEquipmentData.VisionTypes _vision )
+    {
+        return _vision switch
+        {
+            NeuronalMembraneEquipmentData.VisionTypes.Thermic => thermicCamo,
+            NeuronalMembraneEquipmentData.VisionTypes.Radar => soundCamo,
+            _ => visualCamo
+        };
+    }
+
 	public override StatDescription[] GetDesciption ()
     {
         List<StatDescription> description = base.GetDesciption().ToList();

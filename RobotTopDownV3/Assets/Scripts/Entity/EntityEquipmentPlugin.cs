@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using Sirenix.OdinInspector;
-using System.Text;
 public class EntityEquipmentPlugin : EntityPlugin
 {
 	public static System.Action<Entity> onAnyEntityDeath;
@@ -354,11 +353,11 @@ public class EntityEquipmentPlugin : EntityPlugin
 		_singleAttackInfo.curveTileID = curveTile == null ? -1 : curveTile.coordinates.ID;
 
 		bool isThereCoverBetween = GridManager.Instance.IsThereCoverBeween(strikeTile, targetTile, out _coverTile, curveTile);
+		string coverName = isThereCoverBetween ? _coverTile.GroundType.GetLocalizedCoverName() : null;
 
-		float targetCamo = _targetEntity.Data.GetStaticStealthBonus(true)
-			+ (_targetEntity.HowIsUnitVisible == NeuronalMembraneEquipmentData.VisionTypes.Optic ? _targetEntity.GetAdditionaryStatBonus(EntityEquipmentData.SecondaryStat.StatType.VisualCamo, null)
-			: _targetEntity.HowIsUnitVisible == NeuronalMembraneEquipmentData.VisionTypes.Radar ? _targetEntity.GetAdditionaryStatBonus(EntityEquipmentData.SecondaryStat.StatType.RadarCamo, null)
-			: _targetEntity.GetAdditionaryStatBonus(EntityEquipmentData.SecondaryStat.StatType.ThermicCamo, null));
+		NeuronalMembraneEquipmentData.VisionTypes seenWith = GridManager.Instance.GetBestVisionOf(m_linkedEntity.OwnerID, targetTile);
+		float targetCamo = _targetEntity.Data.GetStaticStealthBonus(seenWith)
+			+ _targetEntity.GetAdditionaryStatBonus(NeuronalMembraneEquipmentData.GetCamoStat(seenWith), null);
 
 		float evationRatio = _attackAction.Data.type == EntityActionData.ActionType.DistanceAttack
 				? _targetEntity.Data.BrainData.distanceEvasion + _targetEntity.GetAdditionaryStatBonus(EntityEquipmentData.SecondaryStat.StatType.DistanceEvasion, null)
@@ -367,7 +366,8 @@ public class EntityEquipmentPlugin : EntityPlugin
 		float targetEvasionScore = targetCamo + evationRatio + coverRatio;
 
 		float userAim = GetAimScore(_attackAction);
-		float flankBonus = GameConfig.current.game.entityFlankRatio[GridManager.Instance.GetHitTileSide(m_linkedEntity, _targetEntity, doesWinPFC, _singleAttackInfo.ShotOrigin)]
+		Tile.TileDirectionType side = GridManager.Instance.GetHitTileSide(m_linkedEntity, _targetEntity, doesWinPFC, _singleAttackInfo.ShotOrigin);
+		float flankBonus = GameConfig.current.game.entityFlankRatio[side]
 			+ m_linkedEntity.GetAdditionaryStatBonus(EntityEquipmentData.SecondaryStat.StatType.FlankBonus, _attackAction);
 		float modAction = m_linkedEntity.PreviousActionAttackModificator;
 
@@ -382,23 +382,21 @@ public class EntityEquipmentPlugin : EntityPlugin
 			_coverTile = null;
 
 		LocalizationManager localization = LocalizationManager.Instance;
-		StringBuilder detailsBuilder = new();
-		detailsBuilder.AppendLine(string.Format(localization.Get(LocalizationKey.roll_header), m_linkedEntity.Data.name, _targetEntity.Data.name));
-		detailsBuilder.AppendLine();
-		detailsBuilder.AppendLine(string.Format(localization.Get(LocalizationKey.roll_attacker_section), userHitScore.ToPercent()));
-		detailsBuilder.AppendPercentLine(LocalizationKey.roll_aim, userAim);
-		detailsBuilder.AppendPercentLine(LocalizationKey.roll_flank_bonus, flankBonus);
-		detailsBuilder.AppendPercentLine(LocalizationKey.roll_action_modifier, modAction);
-		detailsBuilder.AppendLine();
-		detailsBuilder.AppendLine(string.Format(localization.Get(LocalizationKey.roll_target_section), targetEvasionScore.ToPercent()));
-		detailsBuilder.AppendPercentLine(LocalizationKey.roll_camouflage, targetCamo);
-		detailsBuilder.AppendPercentLine(LocalizationKey.roll_evasion, evationRatio);
-		detailsBuilder.AppendPercentLine(LocalizationKey.roll_cover_bonus, coverRatio);
-		detailsBuilder.AppendLine();
-		detailsBuilder.AppendLine(string.Format(localization.Get(LocalizationKey.roll_final_score)
-			, userHitScore.ToPercent(), targetEvasionScore.ToPercent(), finalScore.ToPercent()));
+		LogCard card = LogCard.Roll(LogCard.Kind.HitRoll, LocalizationKey.log_card_hit_roll, m_linkedEntity.Data.name, _targetEntity.Data.name, finalScore, roll, isAttackSuccessful
+			, LocalizationKey.log_card_hit, LocalizationKey.log_card_miss);
+		card.equation = string.Format(localization.Get(LocalizationKey.log_card_hit_equation), userHitScore.ToPercentText(), targetEvasionScore.ToPercentText(), Mathf.Clamp01(finalScore).ToPercentText());
 
-		LogAttackRoll(detailsBuilder, finalScore, roll, isAttackSuccessful);
+		LogCard.Column attack = card.AddColumn(LogCard.ColumnKind.Attack, LocalizationKey.log_card_attack, userHitScore);
+		attack.Add(LocalizationKey.log_card_accuracy, userAim);
+		attack.Add(string.Format(localization.Get(LocalizationKey.log_card_flank), side.GetLocalizedTitle()), flankBonus);
+		attack.Add(LocalizationKey.log_card_previous_action, modAction);
+
+		LogCard.Column defense = card.AddColumn(LogCard.ColumnKind.Defense, LocalizationKey.log_card_defense, targetEvasionScore);
+		defense.Add(string.Format(localization.Get(LocalizationKey.log_card_stealth), seenWith.GetLocalizedTitle().ToLower()), -targetCamo);
+		defense.Add(LocalizationKey.log_card_evasion, -evationRatio);
+		defense.Add(string.IsNullOrEmpty(coverName) ? localization.Get(LocalizationKey.log_card_cover) : string.Format(localization.Get(LocalizationKey.log_card_cover_named), coverName), -coverRatio);
+
+		LogAttackRoll(card, isAttackSuccessful);
 		return isAttackSuccessful;
 	}
 
@@ -409,19 +407,10 @@ public class EntityEquipmentPlugin : EntityPlugin
 			: m_linkedEntity.Data.BrainData.agility + m_linkedEntity.GetAdditionaryStatBonus(EntityEquipmentData.SecondaryStat.StatType.MeleeAccuracy, _attackAction);
 	}
 
-	private static void LogAttackRoll ( StringBuilder _detailsBuilder, float _finalScore, float _roll, bool _isAttackSuccessful )
+	private static void LogAttackRoll ( LogCard _card, bool _isAttackSuccessful )
 	{
-		LocalizationManager localization = LocalizationManager.Instance;
-		if (_finalScore >= 1f)
-			_detailsBuilder.AppendLine(localization.Get(LocalizationKey.roll_guaranteed_hit));
-		else
-		{
-			_detailsBuilder.AppendLine(string.Format(localization.Get(LocalizationKey.roll_roll), _roll.ToPercent()));
-			_detailsBuilder.AppendLine(localization.Get(_isAttackSuccessful ? LocalizationKey.roll_hit_success : LocalizationKey.roll_hit_failed));
-		}
-
-		LogConsole.LogDetails details = new("attack_" + LogConsole.Instance.Counter, localization.Get(LocalizationKey.roll_title), _detailsBuilder.ToString());
-		LogConsole.AddLog(localization.Get(_isAttackSuccessful ? LocalizationKey.log_attack_success : LocalizationKey.log_attack_failure), LogConsole.LogEventType.AttackRoll, details);
+		LogConsole.AddLog(LocalizationManager.Instance.Get(_isAttackSuccessful ? LocalizationKey.log_attack_success : LocalizationKey.log_attack_failure)
+			, LogConsole.LogEventType.AttackRoll, new LogConsole.LogDetails(_card));
 	}
 
 	public bool SabotagePointAttackRoll ( AttackAction _attackAction, AttackAction.SingleAttackInfo _singleAttackInfo, Tile _pointTile, out Tile _coverTile )
@@ -451,16 +440,14 @@ public class EntityEquipmentPlugin : EntityPlugin
 		float roll = Random.Range(0f, 1f);
 		bool isAttackSuccessful = finalScore >= 1f || finalScore >= roll;
 
-		StringBuilder detailsBuilder = new();
-		detailsBuilder.AppendLine(string.Format(localization.Get(LocalizationKey.roll_header), m_linkedEntity.Data.name, pointName));
-		detailsBuilder.AppendLine();
-		detailsBuilder.AppendLine(string.Format(localization.Get(LocalizationKey.roll_attacker_section), finalScore.ToPercent()));
-		detailsBuilder.AppendPercentLine(LocalizationKey.roll_aim, userAim);
-		detailsBuilder.AppendPercentLine(LocalizationKey.roll_action_modifier, modAction);
-		detailsBuilder.AppendPercentLine(LocalizationKey.roll_demolisher_bonus, demolisherBonus);
-		detailsBuilder.AppendLine();
+		LogCard card = LogCard.Roll(LogCard.Kind.HitRoll, LocalizationKey.log_card_hit_roll, m_linkedEntity.Data.name, pointName, finalScore, roll, isAttackSuccessful
+			, LocalizationKey.log_card_hit, LocalizationKey.log_card_miss);
+		LogCard.Column attack = card.AddColumn(LogCard.ColumnKind.Attack, LocalizationKey.log_card_attack, finalScore);
+		attack.Add(LocalizationKey.log_card_accuracy, userAim);
+		attack.Add(LocalizationKey.log_card_previous_action, modAction);
+		attack.Add(LocalizationKey.log_card_demolisher, demolisherBonus);
 
-		LogAttackRoll(detailsBuilder, finalScore, roll, isAttackSuccessful);
+		LogAttackRoll(card, isAttackSuccessful);
 		return isAttackSuccessful;
 	}
 
@@ -475,27 +462,19 @@ public class EntityEquipmentPlugin : EntityPlugin
 		bool isAttackSuccessful = hitProba >= 1f || roll <= hitProba;
 
 		LocalizationManager localization = LocalizationManager.Instance;
-		StringBuilder detailsBuilder = new();
-		detailsBuilder.AppendLine(string.Format(localization.Get(LocalizationKey.status_roll_header), m_linkedEntity.Data.name, _effect.GetLocalizedName(), _target.Data.name));
-		detailsBuilder.AppendLine();
-		detailsBuilder.AppendLine(string.Format(localization.Get(LocalizationKey.status_roll_section), Mathf.Clamp01(hitProba).ToPercent()));
-		detailsBuilder.AppendPercentLine(LocalizationKey.status_roll_base_chance, actionProbability);
-		detailsBuilder.AppendPercentLine(LocalizationKey.status_roll_equipment_bonus, equipmentProbability);
-		detailsBuilder.AppendPercentLine(LocalizationKey.status_roll_chance_bonus, userStatusChance);
-		detailsBuilder.AppendPercentLine(LocalizationKey.status_roll_target_resistance, -targetResistance);
-		detailsBuilder.AppendLine();
-		if (hitProba >= 1f)
-			detailsBuilder.AppendLine(localization.Get(LocalizationKey.status_roll_guaranteed));
-		else
-		{
-			detailsBuilder.AppendLine(string.Format(localization.Get(LocalizationKey.roll_roll), roll.ToPercent()));
-			detailsBuilder.AppendLine(localization.Get(isAttackSuccessful ? LocalizationKey.status_roll_applied : LocalizationKey.status_roll_resisted));
-		}
+		LogCard card = LogCard.Roll(LogCard.Kind.StatusRoll, LocalizationKey.log_card_status_roll, m_linkedEntity.Data.name, _target.Data.name, hitProba, roll, isAttackSuccessful
+			, LocalizationKey.log_card_applied, LocalizationKey.log_card_resisted);
+		card.status = _effect;
+		card.description = _effect.GetLocalizedDescription();
 
-		string detailsDescription = detailsBuilder.ToString();
-		LogConsole.LogDetails details = new("status_roll_" + LogConsole.Instance.Counter, localization.Get(LocalizationKey.status_roll_title), detailsDescription);
+		LogCard.Column chance = card.AddColumn(LogCard.ColumnKind.Neutral, LocalizationKey.log_card_status_chance, Mathf.Clamp01(hitProba));
+		chance.Add(LocalizationKey.log_card_base_chance, actionProbability);
+		chance.Add(LocalizationKey.log_card_equipment, equipmentProbability);
+		chance.Add(LocalizationKey.log_card_chance_bonus, userStatusChance);
+		chance.Add(LocalizationKey.log_card_target_resistance, -targetResistance);
+
 		LogConsole.AddLog(string.Format(localization.Get(isAttackSuccessful ? LocalizationKey.status_roll_log_applied : LocalizationKey.status_roll_log_failed)
-			, m_linkedEntity.Data.name, _effect.GetLocalizedName(), _target.Data.name), LogConsole.LogEventType.Status, details);
+			, m_linkedEntity.Data.name, _effect.GetLocalizedName(), _target.Data.name), LogConsole.LogEventType.Status, new LogConsole.LogDetails(card));
 
 
 		return isAttackSuccessful;
@@ -586,54 +565,29 @@ public class EntityEquipmentPlugin : EntityPlugin
 		Death(deathInfo, _cause);
 	}
 
-	private static readonly HashSet<EntityEquipmentData.SecondaryStat.StatType> m_statsHiddenInDeathTooltip = new()
-	{
-		EntityEquipmentData.SecondaryStat.StatType.BaseHp,
-		EntityEquipmentData.SecondaryStat.StatType.EnergyCost,
-		EntityEquipmentData.SecondaryStat.StatType.EnergyProduced,
-		EntityEquipmentData.SecondaryStat.StatType.Action,
-		EntityEquipmentData.SecondaryStat.StatType.ChipsetSlot,
-		EntityEquipmentData.SecondaryStat.StatType.EquipmentSlot,
-		EntityEquipmentData.SecondaryStat.StatType.ArmourySlot,
-		EntityEquipmentData.SecondaryStat.StatType.OccultorSlot,
-	};
-
-	private string BuildDeathTooltip ( TakeDamageCallback _damageInfo )
+	private LogCard BuildDeathCard ( TakeDamageCallback _damageInfo )
 	{
 		LocalizationManager localization = LocalizationManager.Instance;
-		StringBuilder builder = new();
-		builder.AppendLine("<b>" + localization.Get(LocalizationKey.death_title) + "</b>");
-		builder.AppendLine(string.Format(localization.Get(LocalizationKey.death_tick), TurnManager.currentTick));
-
-		if (_damageInfo.entityAttacker != null && _damageInfo.entityAttacker != m_linkedEntity)
+		LogCard card = new(LogCard.Kind.Death, localization.Get(LocalizationKey.log_card_destroyed))
 		{
-			builder.AppendLine(string.Format(localization.Get(LocalizationKey.death_killed_by), _damageInfo.entityAttacker.Data.name));
-			if (_damageInfo.entityAttacker.LastPerformedAction != null)
-				builder.AppendLine(string.Format(localization.Get(LocalizationKey.death_action), _damageInfo.entityAttacker.LastPerformedAction.Data.GetLocalizedName()));
+			actor = m_linkedEntity.Data.name,
+			verdict = string.Format(localization.Get(LocalizationKey.log_card_tick), TurnManager.currentTick)
+		};
+
+		Entity attacker = _damageInfo.entityAttacker;
+		if (attacker != null && attacker != m_linkedEntity)
+			card.AddFact(LocalizationKey.log_card_by, attacker.LastPerformedAction == null ? attacker.Data.name
+				: attacker.Data.name + " · " + attacker.LastPerformedAction.Data.GetLocalizedName());
+
+		if (_damageInfo.damages != null && _damageInfo.damages.Count > 0)
+		{
+			int total = LogCard.Sum(_damageInfo.damages, out WeaponEquipmentData.DamageType? main);
+			card.AddFact(LocalizationKey.log_card_killing_blow, total + " " + main.Value.GetLocalizedTitle().ToLower()
+				+ (_damageInfo.critical ? localization.Get(LocalizationKey.log_card_critical) : ""));
 		}
 
-		if (_damageInfo.damages != null)
-		{
-			int total = 0;
-			foreach (int value in _damageInfo.damages.Values)
-				total += value;
-			builder.AppendLine(string.Format(localization.Get(LocalizationKey.death_killing_blow), total)
-				+ (_damageInfo.critical ? localization.Get(LocalizationKey.death_critical) : ""));
-		}
-
-		builder.AppendLine();
-		builder.AppendLine($"<b>{m_linkedEntity.Data.name}</b>");
-		builder.AppendLine(string.Format(localization.Get(LocalizationKey.death_health), Mathf.Max(0, m_currentHealth), m_maxHealth));
-
-		foreach (KeyValuePair<EntityEquipmentData.SecondaryStat.StatType, EntityEquipmentData.StatDescription> stat in m_linkedEntity.Data.GetStatsDesciptions())
-		{
-			if (m_statsHiddenInDeathTooltip.Contains(stat.Key))
-				continue;
-
-			builder.AppendLine($"{stat.Value.title}: {stat.Value.stringValue}");
-		}
-
-		return builder.ToString();
+		card.SetHealth(Mathf.Max(0, m_currentHealth), m_maxHealth);
+		return card;
 	}
 
 
@@ -652,7 +606,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 		GridManager.Instance.ClearEntityFromAllTiles(m_linkedEntity);
 
 		LogConsole.AddLog(string.Format(LocalizationManager.Instance.Get(LocalizationKey.log_death), m_linkedEntity.Data.name), LogConsole.LogEventType.Death
-			, new LogConsole.LogDetails("death_" + LogConsole.Instance.Counter, m_linkedEntity.Data.name, BuildDeathTooltip(_damageInfo)));
+			, new LogConsole.LogDetails(BuildDeathCard(_damageInfo)));
 
 		m_isDead = true;
 		onDeath?.Invoke(m_linkedEntity.ID);

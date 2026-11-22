@@ -178,7 +178,7 @@ public class AttackAction : AEntityAction
 				, targetLabel
 				, Data.GetLocalizedName()))
 			, LogConsole.LogEventType.UseWeapon
-			, new LogConsole.LogDetails("useweapon_" + LogConsole.Instance.Counter, Data.GetLocalizedName(), new ActionTooltipContent(Data, PerformingEntity.Data).GetPlainText()));
+			, new LogConsole.LogDetails(new ActionTooltipContent(Data, PerformingEntity.Data)));
 	}
 
 	private void LogDamages ( Dictionary<WeaponEquipmentData.DamageType, int> _damages, LogConsole.LogDetails _details, int _attackIndex )

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Text;
 using UnityEngine;
 
 public sealed class ActionTooltipContent
@@ -122,54 +121,6 @@ public sealed class ActionTooltipContent
 	}
 
 	private bool IsWalk => data.codeType == EntityActionData.ActionCodeType.TargetTileMove && !data.isModAction;
-
-	public string GetPlainText ()
-	{
-		LocalizationManager localization = LocalizationManager.Instance;
-		StringBuilder builder = new();
-		builder.AppendLine(TypeLabel + " · " + TargetLabel);
-
-		if (HasTempo)
-		{
-			List<string> phases = new();
-			if (preparation > 0)
-				phases.Add(localization.Get(LocalizationKey.entity_ui_phase_preparation) + " " + preparation);
-			phases.Add(localization.Get(LocalizationKey.entity_ui_phase_perform) + " " + Duration);
-			if (cooldown > 0)
-				phases.Add(localization.Get(LocalizationKey.entity_ui_phase_cooldown) + " " + cooldown);
-			builder.AppendLine(string.Join(" · ", phases));
-		}
-
-		List<string> stats = new();
-		if (HasSpeed)
-			stats.Add(localization.Get(LocalizationKey.tooltip_speed) + " " + SpeedValue);
-		if (HasRange)
-			stats.Add(localization.Get(LocalizationKey.tooltip_range) + " " + RangeValue);
-		if (HasDamage)
-			stats.Add(localization.Get(LocalizationKey.tooltip_damage) + " " + GetDamageText(null));
-		if (stats.Count > 0)
-			builder.AppendLine(string.Join(" · ", stats));
-
-		if (hasExchange)
-		{
-			List<ActionExchange.Row> rows = new();
-			exchange.GetRows(rows);
-			List<string> parts = new() { exchange.HasClass ? exchange.ClassName : localization.Get(LocalizationKey.exchange_title) };
-			foreach (ActionExchange.Row row in rows)
-				parts.Add(row.text);
-			builder.AppendLine(string.Join(" · ", parts));
-		}
-
-		if (keywords.Count > 0)
-		{
-			List<string> labels = new(keywords.Count);
-			foreach (ActionKeyword keyword in keywords)
-				labels.Add(keyword.Label);
-			builder.AppendLine(string.Join(" · ", labels));
-		}
-
-		return builder.ToString().TrimEnd();
-	}
 
 	public string GetDamageText ( System.Func<WeaponEquipmentData.DamageType, Color?> _colorOf )
 	{

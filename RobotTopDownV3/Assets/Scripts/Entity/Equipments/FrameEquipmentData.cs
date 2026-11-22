@@ -68,6 +68,8 @@ public class EntitySavedData : INetworkSerializable
 	public NeuronalMembraneEquipmentData NeuronalMembraneData => neuronalMembrane == null ? null : neuronalMembrane.GetData<NeuronalMembraneEquipmentData>();
 	public BrainEquipmentData BrainData => brain == null ? null : brain.GetData<BrainEquipmentData>();
 
+	public EntitySavedData ShallowCopy () => (EntitySavedData)MemberwiseClone();
+
 	public void NetworkSerialize<T> ( BufferSerializer<T> serializer ) where T : IReaderWriter
 	{
 		serializer.SerializeValue(ref name);
@@ -418,45 +420,25 @@ public class EntitySavedData : INetworkSerializable
 		return Mathf.RoundToInt(maxHealth * bonus);
 	}
 
-	public float GetStaticStealthBonus ( bool _isVisual )
+	public float GetStaticStealthBonus ( NeuronalMembraneEquipmentData.VisionTypes _vision )
 	{
 		float result = 0;
-		if (auxiliar != null)
-		{
-			foreach (GameDatas.PlayerSave.Component container in auxiliar)
-			{
-				if (container != null && !container.isDamaged && container.TryGetData(out OccultorEquipmentData occultor))
-				{
-					if (_isVisual)
-						result += occultor.visualCamo;
-					else
-						result += occultor.soundCamo;
+		if (auxiliar == null)
+			return result;
 
-					foreach (EntityEquipmentData.SecondaryStat statBonus in occultor.statBonuses)
-					{
-						if (statBonus.type == EntityEquipmentData.SecondaryStat.StatType.VisualCamo && _isVisual)
-							result += statBonus.value;
-						else if (statBonus.type == EntityEquipmentData.SecondaryStat.StatType.RadarCamo && !_isVisual)
-							result += statBonus.value;
-					}
-				}
-			}
+		EntityEquipmentData.SecondaryStat.StatType camoStat = NeuronalMembraneEquipmentData.GetCamoStat(_vision);
+		foreach (GameDatas.PlayerSave.Component container in auxiliar)
+		{
+			if (container == null || container.isDamaged || !container.TryGetData(out OccultorEquipmentData occultor))
+				continue;
+
+			result += occultor.GetCamo(_vision);
+			foreach (EntityEquipmentData.SecondaryStat statBonus in occultor.statBonuses)
+				if (statBonus.type == camoStat)
+					result += statBonus.value;
 		}
-		/*foreach (GameDatas.PlayerSave.Equipment container in chipsets)
-		{
-			if (GameAssets.current.equipments[container.dataID] is ChipsetEquipmentData chipset)
-			{
-				foreach (EntityEquipmentData.StatBonus statBonus in chipset.statBonuses)
-				{
-					if (statBonus.type == EntityEquipmentData.StatBonus.StatType.VisualCamo && _isVisual)
-						result += statBonus.value;
-					else if (statBonus.type == EntityEquipmentData.StatBonus.StatType.SoundCamo && !_isVisual)
-						result += statBonus.value;
-				}
-			}
-		}*/
-		return result;
 
+		return result;
 	}
 
 	public SerializableDictionary<EntityEquipmentData.SecondaryStat.StatType, EntityEquipmentData.StatDescription> GetStatsDesciptions ()

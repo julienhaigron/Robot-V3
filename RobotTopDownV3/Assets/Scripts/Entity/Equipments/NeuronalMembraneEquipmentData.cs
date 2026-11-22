@@ -22,6 +22,16 @@ public class NeuronalMembraneEquipmentData : EntityEquipmentData
         Radar
     }
 
+    public static SecondaryStat.StatType GetCamoStat ( VisionTypes _vision )
+    {
+        return _vision switch
+        {
+            VisionTypes.Thermic => SecondaryStat.StatType.ThermicCamo,
+            VisionTypes.Radar => SecondaryStat.StatType.RadarCamo,
+            _ => SecondaryStat.StatType.VisualCamo
+        };
+    }
+
 	public override StatDescription[] GetDesciption ()
     {
         List<StatDescription> description = base.GetDesciption().ToList();

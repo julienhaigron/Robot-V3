@@ -396,8 +396,8 @@ MonoBehaviour:
     - "Pr\xE9cision \xE0 distance"
   - key: stat/melee_accuracy
     values:
-    - Agility
-    - "Agilit\xE9"
+    - "Melee Accuracy"
+    - "Pr\xE9cision en m\xEAl\xE9e"
   - key: stat/energy_cost
     values:
     - Energy Cost
@@ -682,18 +682,6 @@ MonoBehaviour:
     values:
     - HP
     - PV
-  - key: stat_section/damages
-    values:
-    - Damages
-    - "D\xE9g\xE2ts"
-  - key: stat_section/resistances
-    values:
-    - Resistances
-    - "R\xE9sistances"
-  - key: stat_section/status
-    values:
-    - Status stats
-    - Stats de statut
   - key: action/chain_throw
     values:
     - Chain_Throw
@@ -1722,106 +1710,6 @@ MonoBehaviour:
     values:
     - Magnetic
     - "Magn\xE9tique"
-  - key: roll/title
-    values:
-    - Attack Details
-    - "D\xE9tails de l'attaque"
-  - key: roll/header
-    values:
-    - <b>{0}</b> attacks <b>{1}</b>
-    - <b>{0}</b> attaque <b>{1}</b>
-  - key: roll/attacker_section
-    values:
-    - '<b>Attacker Hit Score: {0}%</b>'
-    - '<b>Score de touche attaquant : {0} %</b>'
-  - key: roll/aim
-    values:
-    - 'Aim: {0}%'
-    - "Vis\xE9e : {0} %"
-  - key: roll/flank_bonus
-    values:
-    - 'Flank Bonus: {0}%'
-    - 'Bonus de flanc : {0} %'
-  - key: roll/action_modifier
-    values:
-    - 'Action Modifier: {0}%'
-    - 'Modificateur d''action : {0} %'
-  - key: roll/target_section
-    values:
-    - '<b>Target Evasion Score: {0}%</b>'
-    - '<b>Score d''esquive cible : {0} %</b>'
-  - key: roll/camouflage
-    values:
-    - 'Camouflage: {0}%'
-    - 'Camouflage : {0} %'
-  - key: roll/evasion
-    values:
-    - 'Evasion: {0}%'
-    - 'Esquive : {0} %'
-  - key: roll/cover_bonus
-    values:
-    - 'Cover: {0}%'
-    - 'Couvert : {0} %'
-  - key: roll/final_score
-    values:
-    - 'Threshold: {0}% - {1}% = {2}%'
-    - 'Seuil : {0} % - {1} % = {2} %'
-  - key: roll/guaranteed_hit
-    values:
-    - <color=green><b>Guaranteed Hit</b></color>
-    - <color=green><b>Touche garantie</b></color>
-  - key: roll/roll
-    values:
-    - 'Roll: {0}'
-    - 'Jet : {0}'
-  - key: roll/hit_success
-    values:
-    - <color=green><b>Hit Success</b></color>
-    - "<color=green><b>Touch\xE9</b></color>"
-  - key: roll/hit_failed
-    values:
-    - <color=red><b>Hit Failed</b></color>
-    - "<color=red><b>Manqu\xE9</b></color>"
-  - key: status_roll/title
-    values:
-    - Status Details
-    - "D\xE9tails du statut"
-  - key: status_roll/header
-    values:
-    - <b>{0}</b> tries to apply <b>{1}</b> on <b>{2}</b>
-    - <b>{0}</b> tente d'appliquer <b>{1}</b> sur <b>{2}</b>
-  - key: status_roll/section
-    values:
-    - '<b>Status Chance: {0}%</b>'
-    - '<b>Chance de statut : {0} %</b>'
-  - key: status_roll/base_chance
-    values:
-    - 'Base Chance: {0}%'
-    - 'Chance de base : {0} %'
-  - key: status_roll/equipment_bonus
-    values:
-    - 'Equipment Bonus: {0}%'
-    - "Bonus d'\xE9quipement : {0} %"
-  - key: status_roll/chance_bonus
-    values:
-    - 'Status Chance Bonus: {0}%'
-    - 'Bonus de chance de statut : {0} %'
-  - key: status_roll/target_resistance
-    values:
-    - 'Target Resistance: {0}%'
-    - "R\xE9sistance de la cible : {0} %"
-  - key: status_roll/guaranteed
-    values:
-    - <color=green><b>Guaranteed Apply</b></color>
-    - <color=green><b>Application garantie</b></color>
-  - key: status_roll/applied
-    values:
-    - <color=green><b>Status Applied</b></color>
-    - "<color=green><b>Statut appliqu\xE9</b></color>"
-  - key: status_roll/resisted
-    values:
-    - <color=red><b>Status Resisted</b></color>
-    - "<color=red><b>Statut r\xE9sist\xE9</b></color>"
   - key: status_roll/log_applied
     values:
     - '{0} applies {1} on {2}'
@@ -1830,86 +1718,6 @@ MonoBehaviour:
     values:
     - '{0} fails to apply {1} on {2}'
     - "{0} \xE9choue \xE0 appliquer {1} sur {2}"
-  - key: damage_detail/title
-    values:
-    - Damage Details
-    - "D\xE9tails des d\xE9g\xE2ts"
-  - key: damage_detail/header
-    values:
-    - <b>{0}</b> => <b>{1}</b>
-    - <b>{0}</b> => <b>{1}</b>
-  - key: damage_detail/base
-    values:
-    - 'Base Damage: {0}'
-    - "D\xE9g\xE2ts de base : {0}"
-  - key: damage_detail/action_factor
-    values:
-    - 'Action Factor: x{0} = {1}'
-    - 'Facteur d''action : x{0} = {1}'
-  - key: damage_detail/type_modifier
-    values:
-    - 'Type Modifier: {0}% = {1}'
-    - 'Modificateur de type : {0} % = {1}'
-  - key: damage_detail/category_modifier
-    values:
-    - 'Category Modifier: {0}% = {1}'
-    - "Modificateur de cat\xE9gorie : {0} % = {1}"
-  - key: damage_detail/general_modifier
-    values:
-    - 'General Modifier: {0}% = {1}'
-    - "Modificateur g\xE9n\xE9ral : {0} % = {1}"
-  - key: damage_detail/flank_modifier
-    values:
-    - 'Flank Modifier: {0}% = {1}'
-    - 'Modificateur de flanc : {0} % = {1}'
-  - key: damage_detail/final_modifier
-    values:
-    - 'Final Modifier: {0}% = {1}'
-    - 'Modificateur final : {0} % = {1}'
-  - key: damage_detail/final
-    values:
-    - '<color=red><b>Final Damage: {0}</b></color>'
-    - "<color=red><b>D\xE9g\xE2ts finaux : {0}</b></color>"
-  - key: death/title
-    values:
-    - Death
-    - Mort
-  - key: death/tick
-    values:
-    - 'Tick: {0}'
-    - 'Tick : {0}'
-  - key: death/killed_by
-    values:
-    - 'Killed by: {0}'
-    - "Tu\xE9 par : {0}"
-  - key: death/action
-    values:
-    - 'Action: {0}'
-    - 'Action : {0}'
-  - key: death/killing_blow
-    values:
-    - 'Killing blow: {0} damages'
-    - "Coup fatal : {0} d\xE9g\xE2ts"
-  - key: death/critical
-    values:
-    - (critical)
-    - (critique)
-  - key: death/health
-    values:
-    - 'Health: {0}/{1}'
-    - 'PV : {0}/{1}'
-  - key: status_tip/duration
-    values:
-    - 'Duration: {0} turns'
-    - "Dur\xE9e : {0} tours"
-  - key: status_tip/remaining
-    values:
-    - 'Remaining: {0} turns'
-    - 'Restant : {0} tours'
-  - key: status_tip/needs_roll
-    values:
-    - Applied through a status roll
-    - "Appliqu\xE9 via un jet de statut"
   - key: log/use_weapon
     values:
     - '{0} attacks {1} with <i>{2}</i>'
@@ -1946,10 +1754,6 @@ MonoBehaviour:
     values:
     - '{0} dies'
     - '{0} meurt'
-  - key: log/status_affected
-    values:
-    - '{0} is affected by <i>{1}</i>, {2} turns remaining'
-    - "{0} est affect\xE9 par <i>{1}</i>, {2} tours restants"
   - key: log/wall_blocks
     values:
     - '{0} cannot reach {1}, the shot hits a wall'
@@ -2074,10 +1878,6 @@ MonoBehaviour:
     values:
     - the enemy sabotage point
     - le point de sabotage ennemi
-  - key: roll/demolisher_bonus
-    values:
-    - 'Demolisher Bonus: {0}%'
-    - "Bonus de d\xE9molisseur : {0} %"
   - key: log/sabotage_point_damaged
     values:
     - '-> {0}: {1}/{2} HP'
@@ -2838,3 +2638,415 @@ MonoBehaviour:
     values:
     - "Cable"
     - "C\xE2ble"
+  - key: stat_block/accuracy
+    values:
+    - "Accuracy"
+    - "Pr\xE9cision"
+  - key: stat_block/evasion
+    values:
+    - "Evasion"
+    - "Esquive"
+  - key: stat_block/ranged
+    values:
+    - "Ranged"
+    - "Distance"
+  - key: stat_block/melee
+    values:
+    - "Melee"
+    - "M\xEAl\xE9e"
+  - key: stat_block/stealth
+    values:
+    - "Stealth"
+    - "Furtivit\xE9"
+  - key: stat_block/hidden
+    values:
+    - "Thermal sight needed to read its stats"
+    - "Vue thermique requise pour lire ses stats"
+  - key: stat_block/more
+    values:
+    - "Other bonuses"
+    - "Autres bonus"
+  - key: stat_tip/hp
+    values:
+    - "The unit's structure points. At 0, it is destroyed."
+    - "Points de structure de l'unit\xE9. \xC0 0, elle est d\xE9truite."
+  - key: stat_tip/energy
+    values:
+    - "Sum of the components' energy costs. It must stay within the reactor's output."
+    - "Somme des co\xFBts en \xE9nergie des composants. Elle doit rester sous la production du r\xE9acteur."
+  - key: stat_tip/vision_optic
+    values:
+    - "Sees units in full, up to {0} tiles. Walls and smoke block it."
+    - "Voit les unit\xE9s en entier, jusqu'\xE0 {0} cases. Les murs et la fum\xE9e la bloquent."
+  - key: stat_tip/vision_thermic
+    values:
+    - "Sees through walls and smoke, up to {0} tiles. Reads the stats of enemies seen only in thermal."
+    - "Voit \xE0 travers murs et fum\xE9e, jusqu'\xE0 {0} cases. Lit les stats des ennemis vus seulement en thermique."
+  - key: stat_tip/vision_radar
+    values:
+    - "Sees through walls and smoke, up to {0} tiles, but only shows blips."
+    - "Voit \xE0 travers murs et fum\xE9e, jusqu'\xE0 {0} cases, mais ne montre que des \xE9chos."
+  - key: stat_tip/ranged_accuracy
+    values:
+    - "Chance to hit with shots, before the target's evasion. Flank bonus up to +{0}."
+    - "Chance de toucher en tir, avant l'esquive de la cible. Bonus de flanc jusqu'\xE0 +{0}."
+  - key: stat_tip/melee_accuracy
+    values:
+    - "Chance to hit in melee, before the target's evasion. Flank bonus up to +{0}."
+    - "Chance de toucher en m\xEAl\xE9e, avant l'esquive de la cible. Bonus de flanc jusqu'\xE0 +{0}."
+  - key: stat_tip/ranged_evasion
+    values:
+    - "Taken off the hit chance of enemy shots. Cover adds {0}."
+    - "Retir\xE9e \xE0 la chance de toucher des tirs ennemis. Un couvert ajoute {0}."
+  - key: stat_tip/melee_evasion
+    values:
+    - "Taken off the hit chance of enemy melee attacks."
+    - "Retir\xE9e \xE0 la chance de toucher des attaques de m\xEAl\xE9e ennemies."
+  - key: stat_tip/stealth
+    values:
+    - "Taken off the enemy's hit chance, for the vision the enemy sees this unit with."
+    - "Retir\xE9e \xE0 la chance de toucher ennemie, selon la vision avec laquelle l'ennemi voit l'unit\xE9."
+  - key: stat_tip/bonus_damage
+    values:
+    - "Offensive bonus, applied to the unit's attacks."
+    - "Bonus offensif, appliqu\xE9 aux attaques de l'unit\xE9."
+  - key: stat_tip/bonus_resistance
+    values:
+    - "Reduces the damage the unit takes."
+    - "R\xE9duit les d\xE9g\xE2ts subis par l'unit\xE9."
+  - key: stat_tip/bonus_status
+    values:
+    - "Affects the statuses the unit inflicts or suffers."
+    - "Agit sur les statuts que l'unit\xE9 inflige ou subit."
+  - key: stat_short/flank_bonus
+    values:
+    - "flank hit"
+    - "toucher de flanc"
+  - key: stat_short/fire_damage_bonus
+    values:
+    - "fire damage"
+    - "d\xE9g\xE2ts de feu"
+  - key: stat_short/electric_damage_bonus
+    values:
+    - "electric damage"
+    - "d\xE9g\xE2ts \xE9lectriques"
+  - key: stat_short/laser_damage_bonus
+    values:
+    - "laser damage"
+    - "d\xE9g\xE2ts laser"
+  - key: stat_short/magnetic_damage_bonus
+    values:
+    - "magnetic damage"
+    - "d\xE9g\xE2ts magn\xE9tiques"
+  - key: stat_short/plasma_damage_bonus
+    values:
+    - "plasma damage"
+    - "d\xE9g\xE2ts plasma"
+  - key: stat_short/radiation_damage_bonus
+    values:
+    - "radiation damage"
+    - "d\xE9g\xE2ts de radiation"
+  - key: stat_short/slash_damage_bonus
+    values:
+    - "slash damage"
+    - "d\xE9g\xE2ts tranchants"
+  - key: stat_short/piercing_damage_bonus
+    values:
+    - "piercing damage"
+    - "d\xE9g\xE2ts perforants"
+  - key: stat_short/bludgeoning_damage_bonus
+    values:
+    - "blunt damage"
+    - "d\xE9g\xE2ts contondants"
+  - key: stat_short/physical_damage_bonus
+    values:
+    - "physical damage"
+    - "d\xE9g\xE2ts physiques"
+  - key: stat_short/elemental_damage_bonus
+    values:
+    - "elemental damage"
+    - "d\xE9g\xE2ts \xE9l\xE9mentaires"
+  - key: stat_short/general_damage_bonus
+    values:
+    - "damage"
+    - "d\xE9g\xE2ts"
+  - key: stat_short/flank_damage_bonus
+    values:
+    - "flank damage"
+    - "d\xE9g\xE2ts de flanc"
+  - key: stat_short/final_damage_bonus
+    values:
+    - "final damage"
+    - "d\xE9g\xE2ts finaux"
+  - key: stat_short/fire_resitance
+    values:
+    - "fire res."
+    - "r\xE9s. feu"
+  - key: stat_short/electric_resitance
+    values:
+    - "electric res."
+    - "r\xE9s. \xE9lectrique"
+  - key: stat_short/laser_resitance
+    values:
+    - "laser res."
+    - "r\xE9s. laser"
+  - key: stat_short/magnetic_resitance
+    values:
+    - "magnetic res."
+    - "r\xE9s. magn\xE9tique"
+  - key: stat_short/plasma_resitance
+    values:
+    - "plasma res."
+    - "r\xE9s. plasma"
+  - key: stat_short/radiation_resitance
+    values:
+    - "radiation res."
+    - "r\xE9s. radiations"
+  - key: stat_short/slash_resitance
+    values:
+    - "slash res."
+    - "r\xE9s. tranchant"
+  - key: stat_short/piercing_resitance
+    values:
+    - "piercing res."
+    - "r\xE9s. perforant"
+  - key: stat_short/bludgeoning_resitance
+    values:
+    - "blunt res."
+    - "r\xE9s. contondant"
+  - key: stat_short/general_damage_resistance
+    values:
+    - "resistance"
+    - "r\xE9sistance"
+  - key: stat_short/physical_damage_resistance
+    values:
+    - "physical res."
+    - "r\xE9s. physique"
+  - key: stat_short/elemental_damage_resistance
+    values:
+    - "elemental res."
+    - "r\xE9s. \xE9l\xE9mentaire"
+  - key: stat_short/flank_resistance
+    values:
+    - "flank res."
+    - "r\xE9s. de flanc"
+  - key: stat_short/status_chance
+    values:
+    - "status chance"
+    - "chance de statut"
+  - key: stat_short/status_damage_bonus
+    values:
+    - "status damage"
+    - "d\xE9g\xE2ts de statut"
+  - key: stat_short/status_resistance
+    values:
+    - "status res."
+    - "r\xE9s. aux statuts"
+  - key: stat_short/status_duration_reduction
+    values:
+    - "shorter statuses"
+    - "statuts \xE9court\xE9s"
+  - key: stat_short/status_applied_duration_raise
+    values:
+    - "longer statuses"
+    - "statuts prolong\xE9s"
+  - key: log_card/hit_roll
+    values:
+    - "Hit roll"
+    - "Jet de touche"
+  - key: log_card/status_roll
+    values:
+    - "Status roll"
+    - "Jet de statut"
+  - key: log_card/damage
+    values:
+    - "Damage"
+    - "D\xE9g\xE2ts"
+  - key: log_card/destroyed
+    values:
+    - "Destroyed"
+    - "D\xE9truit"
+  - key: log_card/hit
+    values:
+    - "Hit"
+    - "Touch\xE9"
+  - key: log_card/miss
+    values:
+    - "Missed"
+    - "Manqu\xE9"
+  - key: log_card/applied
+    values:
+    - "Applied"
+    - "Appliqu\xE9"
+  - key: log_card/resisted
+    values:
+    - "Resisted"
+    - "R\xE9sist\xE9"
+  - key: log_card/guaranteed
+    values:
+    - "Certain"
+    - "Garanti"
+  - key: log_card/attack
+    values:
+    - "Attack"
+    - "Attaque"
+  - key: log_card/defense
+    values:
+    - "Defense"
+    - "D\xE9fense"
+  - key: log_card/status_chance
+    values:
+    - "Status chance"
+    - "Chance de statut"
+  - key: log_card/accuracy
+    values:
+    - "Accuracy"
+    - "Pr\xE9cision"
+  - key: log_card/flank
+    values:
+    - "Flank ({0})"
+    - "Flanc ({0})"
+  - key: log_card/previous_action
+    values:
+    - "Previous action"
+    - "Action pr\xE9c\xE9dente"
+  - key: log_card/demolisher
+    values:
+    - "Demolisher"
+    - "D\xE9molisseur"
+  - key: log_card/stealth
+    values:
+    - "Stealth ({0})"
+    - "Furtivit\xE9 ({0})"
+  - key: log_card/evasion
+    values:
+    - "Evasion"
+    - "Esquive"
+  - key: log_card/cover
+    values:
+    - "Cover"
+    - "Couvert"
+  - key: log_card/cover_named
+    values:
+    - "Cover ({0})"
+    - "Couvert ({0})"
+  - key: log_card/base_chance
+    values:
+    - "Base chance"
+    - "Chance de base"
+  - key: log_card/equipment
+    values:
+    - "Equipment"
+    - "\xC9quipement"
+  - key: log_card/chance_bonus
+    values:
+    - "Chance bonus"
+    - "Bonus de chance"
+  - key: log_card/target_resistance
+    values:
+    - "Target resistance"
+    - "R\xE9sistance de la cible"
+  - key: log_card/hit_equation
+    values:
+    - "Hit chance {0} - {1} = {2}"
+    - "Chance de toucher {0} - {1} = {2}"
+  - key: log_card/chance
+    values:
+    - "Chance {0}"
+    - "Chance {0}"
+  - key: log_card/roll
+    values:
+    - "Roll {0}"
+    - "Jet {0}"
+  - key: log_card/step_action
+    values:
+    - "action"
+    - "action"
+  - key: log_card/step_type
+    values:
+    - "type"
+    - "type"
+  - key: log_card/step_category
+    values:
+    - "category"
+    - "cat\xE9gorie"
+  - key: log_card/step_general
+    values:
+    - "general"
+    - "g\xE9n\xE9ral"
+  - key: log_card/step_flank
+    values:
+    - "flank \xB7 {0}"
+    - "flanc \xB7 {0}"
+  - key: log_card/step_final
+    values:
+    - "final"
+    - "final"
+  - key: log_card/remaining_ticks
+    values:
+    - "{0} / {1} ticks left"
+    - "{0} / {1} ticks restants"
+  - key: log_card/remaining_rounds
+    values:
+    - "{0} / {1} rounds left"
+    - "{0} / {1} tours restants"
+  - key: log_card/needs_roll
+    values:
+    - "Applied through a status roll"
+    - "Appliqu\xE9 via un jet de statut"
+  - key: log_card/by
+    values:
+    - "By"
+    - "Par"
+  - key: log_card/killing_blow
+    values:
+    - "Killing blow"
+    - "Coup fatal"
+  - key: log_card/critical
+    values:
+    - " (critical)"
+    - " (critique)"
+  - key: log_card/health
+    values:
+    - "HP"
+    - "PV"
+  - key: log_card/tick
+    values:
+    - "Tick {0}"
+    - "Tick {0}"
+  - key: side/front
+    values:
+    - "front"
+    - "face"
+  - key: side/forward_side
+    values:
+    - "front side"
+    - "c\xF4t\xE9 avant"
+  - key: side/back_side
+    values:
+    - "rear side"
+    - "c\xF4t\xE9 arri\xE8re"
+  - key: side/back
+    values:
+    - "back"
+    - "dos"
+  - key: cover/cover
+    values:
+    - "obstacle"
+    - "obstacle"
+  - key: cover/player_structure
+    values:
+    - "structure"
+    - "structure"
+  - key: cover/enemy_structure
+    values:
+    - "structure"
+    - "structure"
+  - key: log/status_affected_ticks
+    values:
+    - "{0} is affected by <i>{1}</i>, {2} ticks remaining"
+    - "{0} est affect\xE9 par <i>{1}</i>, {2} ticks restants"
+  - key: log/status_affected_rounds
+    values:
+    - "{0} is affected by <i>{1}</i>, {2} rounds remaining"
+    - "{0} est affect\xE9 par <i>{1}</i>, {2} tours restants"

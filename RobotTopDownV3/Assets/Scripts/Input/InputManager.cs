@@ -15,7 +15,7 @@ public class InputManager : MonoBehaviour
 	public static Action onEmptyRightClick;
 	public static Action<Tile> onTileHovered;
 
-	public static Action<string> onTMPLinkHovered;
+	public static Action<string, TMP_Text> onTMPLinkHovered;
 	public static Action onTMPLinkUnhovered;
 
 	private Vector3 m_mousePosition;
@@ -176,9 +176,7 @@ public class InputManager : MonoBehaviour
 						TMP_LinkInfo linkInfo =
 							tmpText.textInfo.linkInfo[linkIndex];
 
-						onTMPLinkHovered?.Invoke(
-							linkInfo.GetLinkID()
-						);
+						onTMPLinkHovered?.Invoke(linkInfo.GetLinkID(), tmpText);
 					}
 
 					return;

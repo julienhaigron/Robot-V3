@@ -13,30 +13,9 @@ public static class Utils
 		return Mathf.RoundToInt(_ratio * 100f);
 	}
 
-	public static void AppendPercentLine ( this StringBuilder _builder, LocalizationKey _key, float _ratio )
+	public static string ToPercentText ( this float _ratio )
 	{
-		int percent = _ratio.ToPercent();
-		if (percent == 0)
-			return;
-
-		_builder.AppendLine(string.Format(LocalizationManager.Instance.Get(_key), percent));
-	}
-
-	public static void AppendPercentLine ( this StringBuilder _builder, LocalizationKey _key, float _ratio, float _runningValue )
-	{
-		int percent = _ratio.ToPercent();
-		if (percent == 0)
-			return;
-
-		_builder.AppendLine(string.Format(LocalizationManager.Instance.Get(_key), percent.ToString("+0;-0"), _runningValue.ToString("0.##")));
-	}
-
-	public static void AppendFactorLine ( this StringBuilder _builder, LocalizationKey _key, float _factor, float _runningValue )
-	{
-		if (Mathf.Approximately(_factor, 1f))
-			return;
-
-		_builder.AppendLine(string.Format(LocalizationManager.Instance.Get(_key), _factor.ToString("0.##"), _runningValue.ToString("0.##")));
+		return string.Format(LocalizationManager.Instance.Get(LocalizationKey.tooltip_percent), _ratio.ToPercent());
 	}
 
 	public static T RandomElement<T> ( this List<T> _list )

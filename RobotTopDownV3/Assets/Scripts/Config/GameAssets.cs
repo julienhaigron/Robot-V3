@@ -117,12 +117,11 @@ public class GameAssets : ScriptableObject
         public SerializableDictionary<EntityEquipmentData.EquipmentType, Sprite> componentIcons = new();
         public SerializableDictionary<EntityEquipmentData.EntityFaction, Sprite> corporationsIcons = new();
         public SerializableDictionary<EntityActionData.MainActionType, Sprite> mainActionTypeIcons = new();
-        public Sprite defaultStatSprite;
-        public SerializableDictionary<EntityEquipmentData.SecondaryStat.StatType, Sprite> statsIcons = new();
-        
+
         [Title("Colors")]
         public SerializableDictionary<EntityEquipmentData.EntityFaction, Color> corporationsColors = new();
         public SerializableDictionary<EntityEquipmentData.EquipmentType, Color> componentColors = new();
+        public SerializableDictionary<WeaponEquipmentData.DamageType, Color> damageTypeColors = new();
 
         [Title("Missing Target Warning")]
         public Sprite missingTargetIcon;
@@ -260,18 +259,6 @@ public class GameAssets : ScriptableObject
                 EditorUtility.SetDirty(action);
             }
         }
-
-        EditorUtility.SetDirty(current);
-    }
-
-    [Button]
-    public void LoadStatTypes ()
-    {
-        current.ui.statsIcons.Clear();
-        for (int i = 0; i < (int)EntityEquipmentData.SecondaryStat.StatType.OccultorSlot; i++)
-		{
-            current.ui.statsIcons.Add((EntityEquipmentData.SecondaryStat.StatType)i, current.ui.defaultStatSprite);
-		}
 
         EditorUtility.SetDirty(current);
     }

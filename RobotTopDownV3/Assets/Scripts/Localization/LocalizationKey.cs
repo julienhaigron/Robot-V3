@@ -166,9 +166,6 @@ public enum LocalizationKey
     unit_config,
     ingame_log_toggle,
     ingame_hp,
-    stat_section_damages,
-    stat_section_resistances,
-    stat_section_status,
     action_chain_throw,
     action_charged_punch,
     action_charged_strike,
@@ -426,53 +423,8 @@ public enum LocalizationKey
     damage_type_radiation,
     damage_type_electric,
     damage_type_magnetic,
-    roll_title,
-    roll_header,
-    roll_attacker_section,
-    roll_aim,
-    roll_flank_bonus,
-    roll_action_modifier,
-    roll_target_section,
-    roll_camouflage,
-    roll_evasion,
-    roll_cover_bonus,
-    roll_final_score,
-    roll_guaranteed_hit,
-    roll_roll,
-    roll_hit_success,
-    roll_hit_failed,
-    status_roll_title,
-    status_roll_header,
-    status_roll_section,
-    status_roll_base_chance,
-    status_roll_equipment_bonus,
-    status_roll_chance_bonus,
-    status_roll_target_resistance,
-    status_roll_guaranteed,
-    status_roll_applied,
-    status_roll_resisted,
     status_roll_log_applied,
     status_roll_log_failed,
-    damage_detail_title,
-    damage_detail_header,
-    damage_detail_base,
-    damage_detail_action_factor,
-    damage_detail_type_modifier,
-    damage_detail_category_modifier,
-    damage_detail_general_modifier,
-    damage_detail_flank_modifier,
-    damage_detail_final_modifier,
-    damage_detail_final,
-    death_title,
-    death_tick,
-    death_killed_by,
-    death_action,
-    death_killing_blow,
-    death_critical,
-    death_health,
-    status_tip_duration,
-    status_tip_remaining,
-    status_tip_needs_roll,
     log_use_weapon,
     log_use_weapon_ground,
     log_use_tool,
@@ -482,7 +434,6 @@ public enum LocalizationKey
     log_damages,
     log_damages_on_target,
     log_death,
-    log_status_affected,
     log_wall_blocks,
     log_round,
     log_effect,
@@ -514,7 +465,6 @@ public enum LocalizationKey
     ingame_sabotage_score,
     sabotage_point_ally,
     sabotage_point_enemy,
-    roll_demolisher_bonus,
     log_sabotage_point_damaged,
     log_sabotage_point_destroyed_ally,
     log_sabotage_point_destroyed_enemy,
@@ -705,6 +655,109 @@ public enum LocalizationKey
     item_markingtrap,
     item_amplificateurdefensif,
     item_cable,
+    stat_block_accuracy,
+    stat_block_evasion,
+    stat_block_ranged,
+    stat_block_melee,
+    stat_block_stealth,
+    stat_block_hidden,
+    stat_block_more,
+    stat_tip_hp,
+    stat_tip_energy,
+    stat_tip_vision_optic,
+    stat_tip_vision_thermic,
+    stat_tip_vision_radar,
+    stat_tip_ranged_accuracy,
+    stat_tip_melee_accuracy,
+    stat_tip_ranged_evasion,
+    stat_tip_melee_evasion,
+    stat_tip_stealth,
+    stat_tip_bonus_damage,
+    stat_tip_bonus_resistance,
+    stat_tip_bonus_status,
+    stat_short_flank_bonus,
+    stat_short_fire_damage_bonus,
+    stat_short_electric_damage_bonus,
+    stat_short_laser_damage_bonus,
+    stat_short_magnetic_damage_bonus,
+    stat_short_plasma_damage_bonus,
+    stat_short_radiation_damage_bonus,
+    stat_short_slash_damage_bonus,
+    stat_short_piercing_damage_bonus,
+    stat_short_bludgeoning_damage_bonus,
+    stat_short_physical_damage_bonus,
+    stat_short_elemental_damage_bonus,
+    stat_short_general_damage_bonus,
+    stat_short_flank_damage_bonus,
+    stat_short_final_damage_bonus,
+    stat_short_fire_resitance,
+    stat_short_electric_resitance,
+    stat_short_laser_resitance,
+    stat_short_magnetic_resitance,
+    stat_short_plasma_resitance,
+    stat_short_radiation_resitance,
+    stat_short_slash_resitance,
+    stat_short_piercing_resitance,
+    stat_short_bludgeoning_resitance,
+    stat_short_general_damage_resistance,
+    stat_short_physical_damage_resistance,
+    stat_short_elemental_damage_resistance,
+    stat_short_flank_resistance,
+    stat_short_status_chance,
+    stat_short_status_damage_bonus,
+    stat_short_status_resistance,
+    stat_short_status_duration_reduction,
+    stat_short_status_applied_duration_raise,
+    log_card_hit_roll,
+    log_card_status_roll,
+    log_card_damage,
+    log_card_destroyed,
+    log_card_hit,
+    log_card_miss,
+    log_card_applied,
+    log_card_resisted,
+    log_card_guaranteed,
+    log_card_attack,
+    log_card_defense,
+    log_card_status_chance,
+    log_card_accuracy,
+    log_card_flank,
+    log_card_previous_action,
+    log_card_demolisher,
+    log_card_stealth,
+    log_card_evasion,
+    log_card_cover,
+    log_card_cover_named,
+    log_card_base_chance,
+    log_card_equipment,
+    log_card_chance_bonus,
+    log_card_target_resistance,
+    log_card_hit_equation,
+    log_card_chance,
+    log_card_roll,
+    log_card_step_action,
+    log_card_step_type,
+    log_card_step_category,
+    log_card_step_general,
+    log_card_step_flank,
+    log_card_step_final,
+    log_card_remaining_ticks,
+    log_card_remaining_rounds,
+    log_card_needs_roll,
+    log_card_by,
+    log_card_killing_blow,
+    log_card_critical,
+    log_card_health,
+    log_card_tick,
+    side_front,
+    side_forward_side,
+    side_back_side,
+    side_back,
+    cover_cover,
+    cover_player_structure,
+    cover_enemy_structure,
+    log_status_affected_ticks,
+    log_status_affected_rounds,
 }
 
 public static class LocalizationKeyExtensions
@@ -878,9 +931,6 @@ public static class LocalizationKeyExtensions
             case LocalizationKey.unit_config: return "unit/config";
             case LocalizationKey.ingame_log_toggle: return "ingame/log_toggle";
             case LocalizationKey.ingame_hp: return "ingame/hp";
-            case LocalizationKey.stat_section_damages: return "stat_section/damages";
-            case LocalizationKey.stat_section_resistances: return "stat_section/resistances";
-            case LocalizationKey.stat_section_status: return "stat_section/status";
             case LocalizationKey.action_chain_throw: return "action/chain_throw";
             case LocalizationKey.action_charged_punch: return "action/charged_punch";
             case LocalizationKey.action_charged_strike: return "action/charged_strike";
@@ -1138,53 +1188,8 @@ public static class LocalizationKeyExtensions
             case LocalizationKey.damage_type_radiation: return "damage_type/radiation";
             case LocalizationKey.damage_type_electric: return "damage_type/electric";
             case LocalizationKey.damage_type_magnetic: return "damage_type/magnetic";
-            case LocalizationKey.roll_title: return "roll/title";
-            case LocalizationKey.roll_header: return "roll/header";
-            case LocalizationKey.roll_attacker_section: return "roll/attacker_section";
-            case LocalizationKey.roll_aim: return "roll/aim";
-            case LocalizationKey.roll_flank_bonus: return "roll/flank_bonus";
-            case LocalizationKey.roll_action_modifier: return "roll/action_modifier";
-            case LocalizationKey.roll_target_section: return "roll/target_section";
-            case LocalizationKey.roll_camouflage: return "roll/camouflage";
-            case LocalizationKey.roll_evasion: return "roll/evasion";
-            case LocalizationKey.roll_cover_bonus: return "roll/cover_bonus";
-            case LocalizationKey.roll_final_score: return "roll/final_score";
-            case LocalizationKey.roll_guaranteed_hit: return "roll/guaranteed_hit";
-            case LocalizationKey.roll_roll: return "roll/roll";
-            case LocalizationKey.roll_hit_success: return "roll/hit_success";
-            case LocalizationKey.roll_hit_failed: return "roll/hit_failed";
-            case LocalizationKey.status_roll_title: return "status_roll/title";
-            case LocalizationKey.status_roll_header: return "status_roll/header";
-            case LocalizationKey.status_roll_section: return "status_roll/section";
-            case LocalizationKey.status_roll_base_chance: return "status_roll/base_chance";
-            case LocalizationKey.status_roll_equipment_bonus: return "status_roll/equipment_bonus";
-            case LocalizationKey.status_roll_chance_bonus: return "status_roll/chance_bonus";
-            case LocalizationKey.status_roll_target_resistance: return "status_roll/target_resistance";
-            case LocalizationKey.status_roll_guaranteed: return "status_roll/guaranteed";
-            case LocalizationKey.status_roll_applied: return "status_roll/applied";
-            case LocalizationKey.status_roll_resisted: return "status_roll/resisted";
             case LocalizationKey.status_roll_log_applied: return "status_roll/log_applied";
             case LocalizationKey.status_roll_log_failed: return "status_roll/log_failed";
-            case LocalizationKey.damage_detail_title: return "damage_detail/title";
-            case LocalizationKey.damage_detail_header: return "damage_detail/header";
-            case LocalizationKey.damage_detail_base: return "damage_detail/base";
-            case LocalizationKey.damage_detail_action_factor: return "damage_detail/action_factor";
-            case LocalizationKey.damage_detail_type_modifier: return "damage_detail/type_modifier";
-            case LocalizationKey.damage_detail_category_modifier: return "damage_detail/category_modifier";
-            case LocalizationKey.damage_detail_general_modifier: return "damage_detail/general_modifier";
-            case LocalizationKey.damage_detail_flank_modifier: return "damage_detail/flank_modifier";
-            case LocalizationKey.damage_detail_final_modifier: return "damage_detail/final_modifier";
-            case LocalizationKey.damage_detail_final: return "damage_detail/final";
-            case LocalizationKey.death_title: return "death/title";
-            case LocalizationKey.death_tick: return "death/tick";
-            case LocalizationKey.death_killed_by: return "death/killed_by";
-            case LocalizationKey.death_action: return "death/action";
-            case LocalizationKey.death_killing_blow: return "death/killing_blow";
-            case LocalizationKey.death_critical: return "death/critical";
-            case LocalizationKey.death_health: return "death/health";
-            case LocalizationKey.status_tip_duration: return "status_tip/duration";
-            case LocalizationKey.status_tip_remaining: return "status_tip/remaining";
-            case LocalizationKey.status_tip_needs_roll: return "status_tip/needs_roll";
             case LocalizationKey.log_use_weapon: return "log/use_weapon";
             case LocalizationKey.log_use_weapon_ground: return "log/use_weapon_ground";
             case LocalizationKey.log_use_tool: return "log/use_tool";
@@ -1194,7 +1199,6 @@ public static class LocalizationKeyExtensions
             case LocalizationKey.log_damages: return "log/damages";
             case LocalizationKey.log_damages_on_target: return "log/damages_on_target";
             case LocalizationKey.log_death: return "log/death";
-            case LocalizationKey.log_status_affected: return "log/status_affected";
             case LocalizationKey.log_wall_blocks: return "log/wall_blocks";
             case LocalizationKey.log_round: return "log/round";
             case LocalizationKey.log_effect: return "log/effect";
@@ -1226,7 +1230,6 @@ public static class LocalizationKeyExtensions
             case LocalizationKey.ingame_sabotage_score: return "ingame/sabotage_score";
             case LocalizationKey.sabotage_point_ally: return "sabotage/point_ally";
             case LocalizationKey.sabotage_point_enemy: return "sabotage/point_enemy";
-            case LocalizationKey.roll_demolisher_bonus: return "roll/demolisher_bonus";
             case LocalizationKey.log_sabotage_point_damaged: return "log/sabotage_point_damaged";
             case LocalizationKey.log_sabotage_point_destroyed_ally: return "log/sabotage_point_destroyed_ally";
             case LocalizationKey.log_sabotage_point_destroyed_enemy: return "log/sabotage_point_destroyed_enemy";
@@ -1417,6 +1420,109 @@ public static class LocalizationKeyExtensions
             case LocalizationKey.item_markingtrap: return "item/markingtrap";
             case LocalizationKey.item_amplificateurdefensif: return "item/amplificateurdefensif";
             case LocalizationKey.item_cable: return "item/cable";
+            case LocalizationKey.stat_block_accuracy: return "stat_block/accuracy";
+            case LocalizationKey.stat_block_evasion: return "stat_block/evasion";
+            case LocalizationKey.stat_block_ranged: return "stat_block/ranged";
+            case LocalizationKey.stat_block_melee: return "stat_block/melee";
+            case LocalizationKey.stat_block_stealth: return "stat_block/stealth";
+            case LocalizationKey.stat_block_hidden: return "stat_block/hidden";
+            case LocalizationKey.stat_block_more: return "stat_block/more";
+            case LocalizationKey.stat_tip_hp: return "stat_tip/hp";
+            case LocalizationKey.stat_tip_energy: return "stat_tip/energy";
+            case LocalizationKey.stat_tip_vision_optic: return "stat_tip/vision_optic";
+            case LocalizationKey.stat_tip_vision_thermic: return "stat_tip/vision_thermic";
+            case LocalizationKey.stat_tip_vision_radar: return "stat_tip/vision_radar";
+            case LocalizationKey.stat_tip_ranged_accuracy: return "stat_tip/ranged_accuracy";
+            case LocalizationKey.stat_tip_melee_accuracy: return "stat_tip/melee_accuracy";
+            case LocalizationKey.stat_tip_ranged_evasion: return "stat_tip/ranged_evasion";
+            case LocalizationKey.stat_tip_melee_evasion: return "stat_tip/melee_evasion";
+            case LocalizationKey.stat_tip_stealth: return "stat_tip/stealth";
+            case LocalizationKey.stat_tip_bonus_damage: return "stat_tip/bonus_damage";
+            case LocalizationKey.stat_tip_bonus_resistance: return "stat_tip/bonus_resistance";
+            case LocalizationKey.stat_tip_bonus_status: return "stat_tip/bonus_status";
+            case LocalizationKey.stat_short_flank_bonus: return "stat_short/flank_bonus";
+            case LocalizationKey.stat_short_fire_damage_bonus: return "stat_short/fire_damage_bonus";
+            case LocalizationKey.stat_short_electric_damage_bonus: return "stat_short/electric_damage_bonus";
+            case LocalizationKey.stat_short_laser_damage_bonus: return "stat_short/laser_damage_bonus";
+            case LocalizationKey.stat_short_magnetic_damage_bonus: return "stat_short/magnetic_damage_bonus";
+            case LocalizationKey.stat_short_plasma_damage_bonus: return "stat_short/plasma_damage_bonus";
+            case LocalizationKey.stat_short_radiation_damage_bonus: return "stat_short/radiation_damage_bonus";
+            case LocalizationKey.stat_short_slash_damage_bonus: return "stat_short/slash_damage_bonus";
+            case LocalizationKey.stat_short_piercing_damage_bonus: return "stat_short/piercing_damage_bonus";
+            case LocalizationKey.stat_short_bludgeoning_damage_bonus: return "stat_short/bludgeoning_damage_bonus";
+            case LocalizationKey.stat_short_physical_damage_bonus: return "stat_short/physical_damage_bonus";
+            case LocalizationKey.stat_short_elemental_damage_bonus: return "stat_short/elemental_damage_bonus";
+            case LocalizationKey.stat_short_general_damage_bonus: return "stat_short/general_damage_bonus";
+            case LocalizationKey.stat_short_flank_damage_bonus: return "stat_short/flank_damage_bonus";
+            case LocalizationKey.stat_short_final_damage_bonus: return "stat_short/final_damage_bonus";
+            case LocalizationKey.stat_short_fire_resitance: return "stat_short/fire_resitance";
+            case LocalizationKey.stat_short_electric_resitance: return "stat_short/electric_resitance";
+            case LocalizationKey.stat_short_laser_resitance: return "stat_short/laser_resitance";
+            case LocalizationKey.stat_short_magnetic_resitance: return "stat_short/magnetic_resitance";
+            case LocalizationKey.stat_short_plasma_resitance: return "stat_short/plasma_resitance";
+            case LocalizationKey.stat_short_radiation_resitance: return "stat_short/radiation_resitance";
+            case LocalizationKey.stat_short_slash_resitance: return "stat_short/slash_resitance";
+            case LocalizationKey.stat_short_piercing_resitance: return "stat_short/piercing_resitance";
+            case LocalizationKey.stat_short_bludgeoning_resitance: return "stat_short/bludgeoning_resitance";
+            case LocalizationKey.stat_short_general_damage_resistance: return "stat_short/general_damage_resistance";
+            case LocalizationKey.stat_short_physical_damage_resistance: return "stat_short/physical_damage_resistance";
+            case LocalizationKey.stat_short_elemental_damage_resistance: return "stat_short/elemental_damage_resistance";
+            case LocalizationKey.stat_short_flank_resistance: return "stat_short/flank_resistance";
+            case LocalizationKey.stat_short_status_chance: return "stat_short/status_chance";
+            case LocalizationKey.stat_short_status_damage_bonus: return "stat_short/status_damage_bonus";
+            case LocalizationKey.stat_short_status_resistance: return "stat_short/status_resistance";
+            case LocalizationKey.stat_short_status_duration_reduction: return "stat_short/status_duration_reduction";
+            case LocalizationKey.stat_short_status_applied_duration_raise: return "stat_short/status_applied_duration_raise";
+            case LocalizationKey.log_card_hit_roll: return "log_card/hit_roll";
+            case LocalizationKey.log_card_status_roll: return "log_card/status_roll";
+            case LocalizationKey.log_card_damage: return "log_card/damage";
+            case LocalizationKey.log_card_destroyed: return "log_card/destroyed";
+            case LocalizationKey.log_card_hit: return "log_card/hit";
+            case LocalizationKey.log_card_miss: return "log_card/miss";
+            case LocalizationKey.log_card_applied: return "log_card/applied";
+            case LocalizationKey.log_card_resisted: return "log_card/resisted";
+            case LocalizationKey.log_card_guaranteed: return "log_card/guaranteed";
+            case LocalizationKey.log_card_attack: return "log_card/attack";
+            case LocalizationKey.log_card_defense: return "log_card/defense";
+            case LocalizationKey.log_card_status_chance: return "log_card/status_chance";
+            case LocalizationKey.log_card_accuracy: return "log_card/accuracy";
+            case LocalizationKey.log_card_flank: return "log_card/flank";
+            case LocalizationKey.log_card_previous_action: return "log_card/previous_action";
+            case LocalizationKey.log_card_demolisher: return "log_card/demolisher";
+            case LocalizationKey.log_card_stealth: return "log_card/stealth";
+            case LocalizationKey.log_card_evasion: return "log_card/evasion";
+            case LocalizationKey.log_card_cover: return "log_card/cover";
+            case LocalizationKey.log_card_cover_named: return "log_card/cover_named";
+            case LocalizationKey.log_card_base_chance: return "log_card/base_chance";
+            case LocalizationKey.log_card_equipment: return "log_card/equipment";
+            case LocalizationKey.log_card_chance_bonus: return "log_card/chance_bonus";
+            case LocalizationKey.log_card_target_resistance: return "log_card/target_resistance";
+            case LocalizationKey.log_card_hit_equation: return "log_card/hit_equation";
+            case LocalizationKey.log_card_chance: return "log_card/chance";
+            case LocalizationKey.log_card_roll: return "log_card/roll";
+            case LocalizationKey.log_card_step_action: return "log_card/step_action";
+            case LocalizationKey.log_card_step_type: return "log_card/step_type";
+            case LocalizationKey.log_card_step_category: return "log_card/step_category";
+            case LocalizationKey.log_card_step_general: return "log_card/step_general";
+            case LocalizationKey.log_card_step_flank: return "log_card/step_flank";
+            case LocalizationKey.log_card_step_final: return "log_card/step_final";
+            case LocalizationKey.log_card_remaining_ticks: return "log_card/remaining_ticks";
+            case LocalizationKey.log_card_remaining_rounds: return "log_card/remaining_rounds";
+            case LocalizationKey.log_card_needs_roll: return "log_card/needs_roll";
+            case LocalizationKey.log_card_by: return "log_card/by";
+            case LocalizationKey.log_card_killing_blow: return "log_card/killing_blow";
+            case LocalizationKey.log_card_critical: return "log_card/critical";
+            case LocalizationKey.log_card_health: return "log_card/health";
+            case LocalizationKey.log_card_tick: return "log_card/tick";
+            case LocalizationKey.side_front: return "side/front";
+            case LocalizationKey.side_forward_side: return "side/forward_side";
+            case LocalizationKey.side_back_side: return "side/back_side";
+            case LocalizationKey.side_back: return "side/back";
+            case LocalizationKey.cover_cover: return "cover/cover";
+            case LocalizationKey.cover_player_structure: return "cover/player_structure";
+            case LocalizationKey.cover_enemy_structure: return "cover/enemy_structure";
+            case LocalizationKey.log_status_affected_ticks: return "log/status_affected_ticks";
+            case LocalizationKey.log_status_affected_rounds: return "log/status_affected_rounds";
             default: return string.Empty;
         }
     }

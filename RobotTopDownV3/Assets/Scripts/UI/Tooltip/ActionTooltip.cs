@@ -47,12 +47,6 @@ public class ActionTooltip : MonoBehaviour
 		public Sprite sprite;
 	}
 
-	[Serializable]
-	private struct DamageColor
-	{
-		public WeaponEquipmentData.DamageType type;
-		public Color color;
-	}
 
 	[Header("Layout")]
 	[SerializeField] private CanvasGroup m_canvasGroup;
@@ -115,7 +109,6 @@ public class ActionTooltip : MonoBehaviour
 	[SerializeField] private Sprite m_chipFrameSprite;
 	[SerializeField] private Sprite m_unitChipFrameSprite;
 	[SerializeField] private IconEntry[] m_icons;
-	[SerializeField] private DamageColor[] m_damageColors;
 
 	private readonly List<ActionExchange.Row> m_rows = new();
 	private readonly List<string> m_overflowLabels = new();
@@ -402,12 +395,9 @@ public class ActionTooltip : MonoBehaviour
 		};
 	}
 
-	private Color? DamageColorOf ( WeaponEquipmentData.DamageType _type )
+	private static Color? DamageColorOf ( WeaponEquipmentData.DamageType _type )
 	{
-		foreach (DamageColor entry in m_damageColors)
-			if (entry.type == _type)
-				return entry.color;
-		return null;
+		return GameAssets.current.ui.damageTypeColors.TryGetValue(_type, out Color color) ? color : null;
 	}
 
 	private Sprite IconOf ( ActionKeyword _keyword )

@@ -1,0 +1,316 @@
+using System;
+using System.Collections.Generic;
+using System.Text;
+using TMPro;
+using UnityEngine;
+using UnityEngine.UI;
+using StatType = EntityEquipmentData.SecondaryStat.StatType;
+using StatDescription = EntityEquipmentData.StatDescription;
+using StatDescriptions = SerializableDictionary<EntityEquipmentData.SecondaryStat.StatType, EntityEquipmentData.StatDescription>;
+using VisionType = NeuronalMembraneEquipmentData.VisionTypes;
+
+public class UnitStatBlock : MonoBehaviour
+{
+	[Serializable]
+	private struct StatCell
+	{
+		public TextMeshProUGUI value;
+		public TextMeshProUGUI delta;
+		public RectTransform fill;
+		public Image deltaSegment;
+		public ToolTipTrigger tooltip;
+	}
+
+	[Serializable]
+	private struct BonusChip
+	{
+		public GameObject root;
+		public Image fill;
+		public Image frame;
+		public Image icon;
+		public TextMeshProUGUI label;
+		public ToolTipTrigger tooltip;
+	}
+
+	private readonly struct Bonus
+	{
+		public readonly StatDescription description;
+		public readonly Color color;
+		public readonly LocalizationKey tip;
+
+		public Bonus ( StatDescription _description, Color _color, LocalizationKey _tip )
+		{
+			description = _description;
+			color = _color;
+			tip = _tip;
+		}
+	}
+
+	private static readonly VisionType[] s_visions = { VisionType.Optic, VisionType.Thermic, VisionType.Radar };
+
+	[Header("Vitals")]
+	[SerializeField] private bool m_showHp = true;
+	[SerializeField] private bool m_showEnergyCap;
+	[SerializeField] private GameObject m_hpPill;
+	[SerializeField] private TextMeshProUGUI m_hpTMP;
+	[SerializeField] private TextMeshProUGUI m_hpDeltaTMP;
+	[SerializeField] private ToolTipTrigger m_hpTooltip;
+	[SerializeField] private TextMeshProUGUI m_energyTMP;
+	[SerializeField] private TextMeshProUGUI m_energyCapTMP;
+	[SerializeField] private TextMeshProUGUI m_energyDeltaTMP;
+	[SerializeField] private ToolTipTrigger m_energyTooltip;
+	[SerializeField] private Image m_visionIcon;
+	[SerializeField] private TextMeshProUGUI m_visionTMP;
+	[SerializeField] private ToolTipTrigger m_visionTooltip;
+
+	[Header("Combat matrix")]
+	[SerializeField] private StatCell m_rangedAccuracy;
+	[SerializeField] private StatCell m_rangedEvasion;
+	[SerializeField] private StatCell m_meleeAccuracy;
+	[SerializeField] private StatCell m_meleeEvasion;
+
+	[Header("Stealth, bonuses, hidden stats")]
+	[SerializeField] private GameObject m_stealthRow;
+	[SerializeField] private Image[] m_stealthIcons;
+	[SerializeField] private TextMeshProUGUI[] m_stealthValues;
+	[SerializeField] private ToolTipTrigger m_stealthTooltip;
+	[SerializeField] private GameObject m_bonusRoot;
+	[SerializeField] private BonusChip[] m_bonusChips;
+	[SerializeField] private GameObject m_hiddenLine;
+
+	[Header("Style")]
+	[SerializeField] private Color m_opticColor = new(.93f, .95f, .97f);
+	[SerializeField] private Color m_thermalColor = new(1f, .42f, .24f);
+	[SerializeField] private Color m_radarColor = new(.49f, 1f, .42f);
+	[SerializeField] private Color m_neutralColor = new(.6f, .64f, .72f);
+	[SerializeField] private Color m_upColor = new(.32f, .89f, .49f);
+	[SerializeField] private Color m_downColor = new(1f, .42f, .42f);
+	[SerializeField] private Color m_damageColor = new(1f, .55f, .26f);
+	[SerializeField] private Color m_resistanceColor = new(.36f, .78f, 1f);
+	[SerializeField] private Color m_statusColor = new(.96f, .84f, .43f);
+	[SerializeField] private Color m_chipBaseColor = new(.05f, .04f, .11f, .96f);
+	[SerializeField, Range(0f, 1f)] private float m_chipFillTint = .16f;
+	[SerializeField, Range(0f, 1f)] private float m_chipFrameAlpha = .55f;
+
+	private readonly List<Bonus> m_bonuses = new();
+	private EntitySavedData m_data;
+	private EntitySavedData m_preview;
+	private bool m_areStatsVisible;
+
+	private void Awake ()
+	{
+		for (int i = 0; i < s_visions.Length; i++)
+			m_stealthIcons[i].color = VisionColor(s_visions[i]);
+	}
+
+	private void OnEnable ()
+	{
+		LocalizationManager.onLanguageChanged += Refresh;
+	}
+
+	private void OnDisable ()
+	{
+		LocalizationManager.onLanguageChanged -= Refresh;
+	}
+
+	private void Refresh ()
+	{
+		if (m_data != null)
+			Init(m_data, m_areStatsVisible, m_preview);
+	}
+
+	public void Init ( EntitySavedData _data, bool _areStatsVisible, EntitySavedData _preview = null )
+	{
+		m_data = _data;
+		m_preview = _preview;
+		m_areStatsVisible = _areStatsVisible;
+
+		EntitySavedData shownData = _preview ?? _data;
+		StatDescriptions current = _data.GetStatsDesciptions();
+		StatDescriptions shown = _preview == null ? current : _preview.GetStatsDesciptions();
+		bool isPreview = _preview != null && _areStatsVisible;
+		LocalizationManager localization = LocalizationManager.Instance;
+
+		int maxHp = shownData.GetMaxHealth();
+		m_hpPill.SetActive(m_showHp);
+		m_hpTMP.text = _areStatsVisible ? maxHp.ToString() : "?";
+		SetDelta(m_hpDeltaTMP, isPreview, maxHp - _data.GetMaxHealth(), false);
+		m_hpTooltip.Init(StatType.BaseHp.GetLocalizedTitle(), localization.Get(LocalizationKey.stat_tip_hp));
+
+		ReactorEquipmentData reactor = shownData.ReactorData;
+		bool hasCap = m_showEnergyCap && _areStatsVisible && reactor != null;
+		m_energyTMP.text = _areStatsVisible ? Mathf.RoundToInt(Value(shown, StatType.EnergyCost)).ToString() : "?";
+		m_energyCapTMP.gameObject.SetActive(hasCap);
+		if (hasCap)
+			m_energyCapTMP.text = "/ " + reactor.energyProduced;
+		SetDelta(m_energyDeltaTMP, isPreview, Delta(shown, current, StatType.EnergyCost, 1f), true);
+		m_energyTooltip.Init(StatType.EnergyCost.GetLocalizedTitle(), localization.Get(LocalizationKey.stat_tip_energy));
+
+		NeuronalMembraneEquipmentData membrane = _areStatsVisible ? shownData.NeuronalMembraneData : null;
+		m_visionIcon.color = membrane == null ? m_neutralColor : VisionColor(membrane.visionType);
+		m_visionTMP.text = membrane != null ? membrane.visionType.GetLocalizedTitle() : _areStatsVisible ? "-" : "?";
+		m_visionTooltip.Init(StatType.VisionType.GetLocalizedTitle(), membrane == null ? "" : VisionTip(membrane.visionType));
+
+		string flank = MaxFlankRatio().ToPercentText();
+		SetCell(m_rangedAccuracy, StatType.DistanceAccuracy, string.Format(localization.Get(LocalizationKey.stat_tip_ranged_accuracy), flank), current, shown, _areStatsVisible, isPreview);
+		SetCell(m_rangedEvasion, StatType.DistanceEvasion, string.Format(localization.Get(LocalizationKey.stat_tip_ranged_evasion), GameConfig.current.game.entityCoverBonus.ToPercentText()), current, shown, _areStatsVisible, isPreview);
+		SetCell(m_meleeAccuracy, StatType.MeleeAccuracy, string.Format(localization.Get(LocalizationKey.stat_tip_melee_accuracy), flank), current, shown, _areStatsVisible, isPreview);
+		SetCell(m_meleeEvasion, StatType.MeleeEvasion, localization.Get(LocalizationKey.stat_tip_melee_evasion), current, shown, _areStatsVisible, isPreview);
+
+		bool hasStealth = false;
+		StringBuilder stealthTip = new(localization.Get(LocalizationKey.stat_tip_stealth));
+		for (int i = 0; i < s_visions.Length; i++)
+		{
+			float stealth = Value(shown, NeuronalMembraneEquipmentData.GetCamoStat(s_visions[i]));
+			hasStealth |= stealth != 0f;
+			m_stealthValues[i].text = stealth.ToPercentText();
+			stealthTip.Append('\n').Append(s_visions[i].GetLocalizedTitle()).Append(' ').Append(m_stealthValues[i].text);
+		}
+		m_stealthRow.SetActive(_areStatsVisible && hasStealth);
+		m_stealthTooltip.Init(localization.Get(LocalizationKey.stat_block_stealth), stealthTip.ToString());
+
+		SetBonuses(shown, _areStatsVisible);
+		m_hiddenLine.SetActive(!_areStatsVisible);
+	}
+
+	private void SetCell ( StatCell _cell, StatType _stat, string _tip, StatDescriptions _current, StatDescriptions _shown, bool _isVisible, bool _isPreview )
+	{
+		float value = _isVisible ? Value(_shown, _stat) : 0f;
+		float baseValue = Value(_current, _stat);
+		_cell.value.text = _isVisible ? Mathf.RoundToInt(value * 100f).ToString() : "?";
+		_cell.fill.anchorMax = new Vector2(Mathf.Clamp01(value), 1f);
+		SetDelta(_cell.delta, _isPreview, Delta(_shown, _current, _stat, 100f), false);
+
+		bool hasSegment = _isPreview && !Mathf.Approximately(value, baseValue);
+		_cell.deltaSegment.gameObject.SetActive(hasSegment);
+		if (hasSegment)
+		{
+			RectTransform segment = _cell.deltaSegment.rectTransform;
+			segment.anchorMin = new Vector2(Mathf.Clamp01(Mathf.Min(value, baseValue)), 0f);
+			segment.anchorMax = new Vector2(Mathf.Clamp01(Mathf.Max(value, baseValue)), 1f);
+			_cell.deltaSegment.color = value > baseValue ? m_upColor : m_downColor;
+		}
+
+		_cell.tooltip.Init(_stat.GetLocalizedTitle(), _tip);
+	}
+
+	private void SetDelta ( TextMeshProUGUI _tmp, bool _isShown, int _delta, bool _isCost )
+	{
+		bool isVisible = _isShown && _delta != 0;
+		_tmp.gameObject.SetActive(isVisible);
+		if (!isVisible)
+			return;
+
+		_tmp.text = (_delta > 0 ? "+" : "-") + Mathf.Abs(_delta);
+		_tmp.color = (_delta > 0) != _isCost ? m_upColor : m_downColor;
+	}
+
+	private void SetBonuses ( StatDescriptions _stats, bool _isVisible )
+	{
+		m_bonuses.Clear();
+		if (_isVisible)
+		{
+			GameConfig.UI ui = GameConfig.current.ui;
+			AddBonuses(ui.damageStats, m_damageColor, LocalizationKey.stat_tip_bonus_damage, _stats);
+			AddBonuses(ui.resistanceStats, m_resistanceColor, LocalizationKey.stat_tip_bonus_resistance, _stats);
+			AddBonuses(ui.statusStats, m_statusColor, LocalizationKey.stat_tip_bonus_status, _stats);
+		}
+
+		bool hasOverflow = m_bonuses.Count > m_bonusChips.Length;
+		int regularCount = hasOverflow ? m_bonusChips.Length - 1 : m_bonuses.Count;
+		for (int i = 0; i < m_bonusChips.Length; i++)
+		{
+			m_bonusChips[i].root.SetActive(i < m_bonuses.Count);
+			if (i < regularCount)
+				SetChip(m_bonusChips[i], m_bonuses[i]);
+			else if (hasOverflow && i == regularCount)
+				SetOverflowChip(m_bonusChips[i], regularCount);
+		}
+
+		m_bonusRoot.SetActive(m_bonuses.Count > 0);
+	}
+
+	private void AddBonuses ( StatType[] _family, Color _color, LocalizationKey _tip, StatDescriptions _stats )
+	{
+		foreach (StatType stat in _family)
+			if (_stats.TryGetValue(stat, out StatDescription description) && description.floatValue != 0f)
+				m_bonuses.Add(new Bonus(description, _color, _tip));
+	}
+
+	private void SetChip ( BonusChip _chip, Bonus _bonus )
+	{
+		Paint(_chip, _bonus.color);
+		_chip.label.text = FormatBonus(_bonus.description) + " " + _bonus.description.ID.GetLocalizedShortTitle();
+		_chip.tooltip.Init(_bonus.description.title, LocalizationManager.Instance.Get(_bonus.tip));
+	}
+
+	private void SetOverflowChip ( BonusChip _chip, int _from )
+	{
+		Paint(_chip, m_neutralColor);
+		_chip.label.text = "+" + (m_bonuses.Count - _from);
+
+		StringBuilder lines = new();
+		for (int i = _from; i < m_bonuses.Count; i++)
+		{
+			if (lines.Length > 0)
+				lines.Append('\n');
+			lines.Append(m_bonuses[i].description.title).Append(' ').Append(FormatBonus(m_bonuses[i].description));
+		}
+		_chip.tooltip.Init(LocalizationManager.Instance.Get(LocalizationKey.stat_block_more), lines.ToString());
+	}
+
+	private void Paint ( BonusChip _chip, Color _color )
+	{
+		_chip.fill.color = Color.Lerp(m_chipBaseColor, new Color(_color.r, _color.g, _color.b, m_chipBaseColor.a), m_chipFillTint);
+		_chip.frame.color = new Color(_color.r, _color.g, _color.b, m_chipFrameAlpha);
+		_chip.icon.color = _color;
+	}
+
+	private Color VisionColor ( VisionType _vision )
+	{
+		return _vision switch
+		{
+			VisionType.Thermic => m_thermalColor,
+			VisionType.Radar => m_radarColor,
+			_ => m_opticColor
+		};
+	}
+
+	private static string VisionTip ( VisionType _vision )
+	{
+		LocalizationKey key = _vision switch
+		{
+			VisionType.Thermic => LocalizationKey.stat_tip_vision_thermic,
+			VisionType.Radar => LocalizationKey.stat_tip_vision_radar,
+			_ => LocalizationKey.stat_tip_vision_optic
+		};
+		GameConfig.current.game.rangePerVisionType.TryGetValue(_vision, out int range);
+		return string.Format(LocalizationManager.Instance.Get(key), range);
+	}
+
+	private static float MaxFlankRatio ()
+	{
+		float max = 0f;
+		foreach (float ratio in GameConfig.current.game.entityFlankRatio.Values)
+			max = Mathf.Max(max, ratio);
+		return max;
+	}
+
+	private static float Value ( StatDescriptions _stats, StatType _stat )
+	{
+		return _stats.TryGetValue(_stat, out StatDescription description) ? description.floatValue : 0f;
+	}
+
+	private static int Delta ( StatDescriptions _shown, StatDescriptions _current, StatType _stat, float _scale )
+	{
+		return Mathf.RoundToInt(Value(_shown, _stat) * _scale) - Mathf.RoundToInt(Value(_current, _stat) * _scale);
+	}
+
+	private static string FormatBonus ( StatDescription _description )
+	{
+		string sign = _description.floatValue > 0f ? "+" : "";
+		return sign + (_description.Format == EntityEquipmentData.SecondaryStat.StatTypeFormat.Percentage
+			? _description.floatValue.ToPercentText()
+			: Mathf.RoundToInt(_description.floatValue).ToString());
+	}
+}

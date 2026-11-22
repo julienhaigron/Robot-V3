@@ -502,10 +502,12 @@ public class Tile : MonoBehaviour
 
 	private bool HasVision ( NeuronalMembraneEquipmentData.VisionTypes _visionType )
 	{
-		if (_visionType == NeuronalMembraneEquipmentData.VisionTypes.Optic && m_opticVisionBlockerCount > 0)
-			return false;
+		return CanBeSeenWith(_visionType) && m_visionTypeCounts.ContainsKey(_visionType);
+	}
 
-		return m_visionTypeCounts.ContainsKey(_visionType);
+	public bool CanBeSeenWith ( NeuronalMembraneEquipmentData.VisionTypes _visionType )
+	{
+		return _visionType != NeuronalMembraneEquipmentData.VisionTypes.Optic || m_opticVisionBlockerCount <= 0;
 	}
 
 	public Entity GetBlockingEntityFor ( Entity _mover )

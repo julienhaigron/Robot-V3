@@ -32,7 +32,7 @@ public class EntityConfigPanel : AUIPanel
 	[SerializeField] private Color m_unitReadyColor = new(0.47058827f, 0.9686275f, 0.28627452f, 1f);
 	[SerializeField] private Color m_unitNotReadyColor = new(1f, 0.30980393f, 0.42745098f, 1f);
 	[SerializeField] private ActionButton[] m_actionBtns;
-	[SerializeField] private StatDisplay[] m_unitStatDisplays;
+	[SerializeField] private UnitStatBlock m_statBlock;
 	[SerializeField] private Image m_dominentCorpoIcon;
 	[SerializeField] private EntityEquipmentData.SecondaryStat.StatType[] m_displayStaticStatsFilter;
 	[SerializeField] private EntityEquipmentData.SecondaryStat.StatType[] m_displayConditionalStatsFilter;
@@ -128,12 +128,63 @@ public class EntityConfigPanel : AUIPanel
 	private void OnEnable ()
 	{
 		LocalizationManager.onLanguageChanged += OnLanguageChanged;
+		ComponentDisplay.onDisplayHovered += OnComponentHovered;
+		ComponentDisplay.onDisplayUnhovered += OnComponentUnhovered;
 		RefreshFilterVisuals();
 	}
 
 	private void OnDisable ()
 	{
 		LocalizationManager.onLanguageChanged -= OnLanguageChanged;
+		ComponentDisplay.onDisplayHovered -= OnComponentHovered;
+		ComponentDisplay.onDisplayUnhovered -= OnComponentUnhovered;
+	}
+
+	private void OnComponentHovered ( ComponentDisplay _display )
+	{
+		if (m_entityData == null || _display.CurrentContainer != m_inventoryGrid)
+			return;
+
+		EntitySavedData loadout = GetLoadoutWith(_display);
+		if (loadout != null)
+			m_statBlock.Init(m_entityData, true, loadout);
+	}
+
+	private void OnComponentUnhovered ( ComponentDisplay _display )
+	{
+		if (m_entityData != null && _display.CurrentContainer == m_inventoryGrid)
+			m_statBlock.Init(m_entityData, true);
+	}
+
+	private EntitySavedData GetLoadoutWith ( ComponentDisplay _display )
+	{
+		if (GetContainerFor(_display) is not ComponentSlot slot)
+			return null;
+
+		EntitySavedData loadout = m_entityData.ShallowCopy();
+		foreach (KeyValuePair<EntityEquipmentData.EquipmentType, ComponentSlot> pair in m_mainComponentSlotDictionary)
+		{
+			if (pair.Value != slot)
+				continue;
+
+			SetMainComponent(loadout, pair.Key, _display.SavedData);
+			FitSubComponentsToMain(loadout, pair.Key);
+			return loadout;
+		}
+
+		foreach (KeyValuePair<EntityEquipmentData.EquipmentType, SubSlotContainer> pair in m_subComponentSlotDictionary)
+		{
+			if (!pair.Value.slots.Contains(slot))
+				continue;
+
+			GameDatas.PlayerSave.Component[] components = GetSubComponents(loadout, pair.Key);
+			if (slot.CurrentDisplay != null)
+				components = WithComponent(components, slot.CurrentDisplay.SavedData, false);
+			SetSubComponents(loadout, pair.Key, WithComponent(components, _display.SavedData, true));
+			return loadout;
+		}
+
+		return null;
 	}
 
 	private void OnLanguageChanged ()
@@ -356,20 +407,7 @@ public class EntityConfigPanel : AUIPanel
 
 	private bool HasDamagedSubComponent ( EntityEquipmentData.EquipmentType _mainType )
 	{
-		GameDatas.PlayerSave.Component[] subComponents = null;
-		switch (_mainType)
-		{
-			case EntityEquipmentData.EquipmentType.Frame:
-				subComponents = m_entityData == null ? null : m_entityData.auxiliar;
-				break;
-			case EntityEquipmentData.EquipmentType.Brain:
-				subComponents = m_entityData == null ? null : m_entityData.chipsets;
-				break;
-			case EntityEquipmentData.EquipmentType.NeuronalMembrane:
-				subComponents = m_entityData == null ? null : m_entityData.arms;
-				break;
-		}
-
+		GameDatas.PlayerSave.Component[] subComponents = m_entityData == null ? null : GetSubComponents(m_entityData, _mainType);
 		if (subComponents == null)
 			return false;
 
@@ -509,19 +547,7 @@ public class EntityConfigPanel : AUIPanel
 				m_actionBtns[i].SetVisible(_isVisible: false, _isInstant: true);
 		}
 
-		//set unit stats
-		SerializableDictionary<EntityEquipmentData.SecondaryStat.StatType, EntityEquipmentData.StatDescription> statsDescriptions = m_entityData.GetStatsDesciptions();
-		List<EntityEquipmentData.SecondaryStat.StatType> keys = GetDisplayedStats(statsDescriptions);
-		for (int i = 0; i < m_unitStatDisplays.Length; i++)
-		{
-			if (keys.Count <= i)
-				m_unitStatDisplays[i].gameObject.SetActive(false);
-			else
-			{
-				m_unitStatDisplays[i].gameObject.SetActive(true);
-				m_unitStatDisplays[i].Init(statsDescriptions[keys[i]]);
-			}
-		}
+		m_statBlock.Init(m_entityData, true);
 
 		//inventory
 		//m_inventoryGrid.RefreshPredicate(InventoryGridPredicate);
@@ -620,22 +646,57 @@ public class EntityConfigPanel : AUIPanel
 
 	private void OnSubSlotChanged ( ComponentDisplay _display, EntityEquipmentData.EquipmentType _type, bool _isAdded )
 	{
-		switch (_type)
-		{
-			case EntityEquipmentData.EquipmentType.Frame:
-				m_entityData.auxiliar = WithComponent(m_entityData.auxiliar, _display.SavedData, _isAdded);
-				break;
-			case EntityEquipmentData.EquipmentType.Brain:
-				m_entityData.chipsets = WithComponent(m_entityData.chipsets, _display.SavedData, _isAdded);
-				break;
-			case EntityEquipmentData.EquipmentType.NeuronalMembrane:
-				m_entityData.arms = WithComponent(m_entityData.arms, _display.SavedData, _isAdded);
-				break;
-		}
+		SetSubComponents(m_entityData, _type, WithComponent(GetSubComponents(m_entityData, _type), _display.SavedData, _isAdded));
 
 		if (System.Array.IndexOf(s_subSlotTypes, _type) >= 0)
 			RefreshSubSlotsOf(_type);
 		RefreshVisuals();
+	}
+
+	private static GameDatas.PlayerSave.Component[] GetSubComponents ( EntitySavedData _data, EntityEquipmentData.EquipmentType _mainType )
+	{
+		return _mainType switch
+		{
+			EntityEquipmentData.EquipmentType.Frame => _data.auxiliar,
+			EntityEquipmentData.EquipmentType.Brain => _data.chipsets,
+			EntityEquipmentData.EquipmentType.NeuronalMembrane => _data.arms,
+			_ => null
+		};
+	}
+
+	private static void SetSubComponents ( EntitySavedData _data, EntityEquipmentData.EquipmentType _mainType, GameDatas.PlayerSave.Component[] _components )
+	{
+		switch (_mainType)
+		{
+			case EntityEquipmentData.EquipmentType.Frame:
+				_data.auxiliar = _components;
+				break;
+			case EntityEquipmentData.EquipmentType.Brain:
+				_data.chipsets = _components;
+				break;
+			case EntityEquipmentData.EquipmentType.NeuronalMembrane:
+				_data.arms = _components;
+				break;
+		}
+	}
+
+	private static void SetMainComponent ( EntitySavedData _data, EntityEquipmentData.EquipmentType _type, GameDatas.PlayerSave.Component _component )
+	{
+		switch (_type)
+		{
+			case EntityEquipmentData.EquipmentType.Frame:
+				_data.frame = _component;
+				break;
+			case EntityEquipmentData.EquipmentType.Brain:
+				_data.brain = _component;
+				break;
+			case EntityEquipmentData.EquipmentType.NeuronalMembrane:
+				_data.neuronalMembrane = _component;
+				break;
+			case EntityEquipmentData.EquipmentType.Reactor:
+				_data.reactor = _component;
+				break;
+		}
 	}
 
 	private static GameDatas.PlayerSave.Component[] WithComponent ( GameDatas.PlayerSave.Component[] _slots, GameDatas.PlayerSave.Component _component, bool _isAdded )
@@ -650,60 +711,41 @@ public class EntityConfigPanel : AUIPanel
 
 	private void OnItemAddedOnMainSlot ( ComponentDisplay _display, EntityEquipmentData.EquipmentType _type )
 	{
-		switch (_type)
-		{
-			case EntityEquipmentData.EquipmentType.Frame:
-				m_entityData.frame = _display.SavedData;
-				break;
-			case EntityEquipmentData.EquipmentType.Brain:
-				m_entityData.brain = _display.SavedData;
-				break;
-			case EntityEquipmentData.EquipmentType.NeuronalMembrane:
-				m_entityData.neuronalMembrane = _display.SavedData;
-				break;
-			case EntityEquipmentData.EquipmentType.Reactor:
-				m_entityData.reactor = _display.SavedData;
-				break;
-		}
+		SetMainComponent(m_entityData, _type, _display.SavedData);
+		foreach (GameDatas.PlayerSave.Component component in FitSubComponentsToMain(m_entityData, _type))
+			GameDatas.current.currentPlayerSave.AddEquipmentToInventory(component);
 
-		FitSubComponentsToMain(_type);
 		InitSubSlots(_type);
 		RefreshVisuals();
 	}
 
-	private void FitSubComponentsToMain ( EntityEquipmentData.EquipmentType _mainType )
+	private static List<GameDatas.PlayerSave.Component> FitSubComponentsToMain ( EntitySavedData _data, EntityEquipmentData.EquipmentType _mainType )
 	{
-		List<GameDatas.PlayerSave.Component> remaining;
+		List<GameDatas.PlayerSave.Component> remaining = GetEquippedComponents(GetSubComponents(_data, _mainType));
 		List<GameDatas.PlayerSave.Component> kept;
 
 		switch (_mainType)
 		{
 			case EntityEquipmentData.EquipmentType.Frame:
-				remaining = GetEquippedComponents(m_entityData.auxiliar);
 				kept = TakeFirst(remaining, type => type == EntityEquipmentData.EquipmentType.Armor
-					, m_entityData.FrameData == null ? 0 : m_entityData.FrameData.armouringSlotAvailable);
+					, _data.FrameData == null ? 0 : _data.FrameData.armouringSlotAvailable);
 				kept.AddRange(TakeFirst(remaining, type => type == EntityEquipmentData.EquipmentType.Occultor
-					, m_entityData.FrameData == null ? 0 : m_entityData.FrameData.occultorSlotAvailable));
-				m_entityData.auxiliar = kept.ToArray();
+					, _data.FrameData == null ? 0 : _data.FrameData.occultorSlotAvailable));
 				break;
 			case EntityEquipmentData.EquipmentType.Brain:
-				remaining = GetEquippedComponents(m_entityData.chipsets);
 				kept = TakeFirst(remaining, type => type == EntityEquipmentData.EquipmentType.Chipset
-					, m_entityData.BrainData == null ? 0 : m_entityData.BrainData.chipsetSlotAvailable);
-				m_entityData.chipsets = kept.ToArray();
+					, _data.BrainData == null ? 0 : _data.BrainData.chipsetSlotAvailable);
 				break;
 			case EntityEquipmentData.EquipmentType.NeuronalMembrane:
-				remaining = GetEquippedComponents(m_entityData.arms);
 				kept = TakeFirst(remaining, type => type == EntityEquipmentData.EquipmentType.Weapon || type == EntityEquipmentData.EquipmentType.Tool
-					, m_entityData.NeuronalMembraneData == null ? 0 : m_entityData.NeuronalMembraneData.equipmentSlotAvailable);
-				m_entityData.arms = kept.ToArray();
+					, _data.NeuronalMembraneData == null ? 0 : _data.NeuronalMembraneData.equipmentSlotAvailable);
 				break;
 			default:
-				return;
+				return remaining;
 		}
 
-		foreach (GameDatas.PlayerSave.Component component in remaining)
-			GameDatas.current.currentPlayerSave.AddEquipmentToInventory(component);
+		SetSubComponents(_data, _mainType, kept.ToArray());
+		return remaining;
 	}
 
 	private static List<GameDatas.PlayerSave.Component> GetEquippedComponents ( GameDatas.PlayerSave.Component[] _components )
@@ -824,19 +866,6 @@ public class EntityConfigPanel : AUIPanel
 
 		List<EntityEquipmentData.SecondaryStat.StatType> order = GameConfig.current.ui.statsDisplayOrder.ToList();
 		return keys.OrderBy(e => order.IndexOf(e) < 0 ? int.MaxValue : order.IndexOf(e)).ToList();
-	}
-
-	private static readonly HashSet<EntityEquipmentData.SecondaryStat.StatType> s_slotAmountStats = new()
-	{
-		EntityEquipmentData.SecondaryStat.StatType.ChipsetSlot,
-		EntityEquipmentData.SecondaryStat.StatType.EquipmentSlot,
-		EntityEquipmentData.SecondaryStat.StatType.ArmourySlot,
-		EntityEquipmentData.SecondaryStat.StatType.OccultorSlot,
-	};
-
-	public List<EntityEquipmentData.SecondaryStat.StatType> GetUnitSummaryStats ( SerializableDictionary<EntityEquipmentData.SecondaryStat.StatType, EntityEquipmentData.StatDescription> _statsDescriptions )
-	{
-		return GetDisplayedStats(_statsDescriptions).Where(stat => !s_slotAmountStats.Contains(stat)).ToList();
 	}
 
 	private void OnInputFieldChange ()

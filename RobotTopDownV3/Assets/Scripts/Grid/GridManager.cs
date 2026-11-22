@@ -1473,6 +1473,25 @@ public class GridManager : Singleton<GridManager>
 		return m_entitiesVisions.TryGetValue(_ownerID, out PlayerVisionRangeInfo visionInfo) && IsTileSeenBy(visionInfo, _tile);
 	}
 
+	public NeuronalMembraneEquipmentData.VisionTypes GetBestVisionOf ( int _ownerID, Tile _tile )
+	{
+		NeuronalMembraneEquipmentData.VisionTypes best = NeuronalMembraneEquipmentData.VisionTypes.Radar;
+		if (_tile == null || !m_entitiesVisions.TryGetValue(_ownerID, out PlayerVisionRangeInfo visionInfo))
+			return best;
+
+		foreach (KeyValuePair<Entity, HashSet<Tile>> allyVision in visionInfo.entitiesVisionRange)
+		{
+			if (allyVision.Key == null || allyVision.Key.Equipment.IsDead || !allyVision.Value.Contains(_tile))
+				continue;
+
+			NeuronalMembraneEquipmentData.VisionTypes vision = allyVision.Key.Data.NeuronalMembraneData.visionType;
+			if ((int)vision < (int)best && _tile.CanBeSeenWith(vision))
+				best = vision;
+		}
+
+		return best;
+	}
+
 	private bool IsTileSeenBy ( PlayerVisionRangeInfo _visionInfo, Tile _tile )
 	{
 		if (_tile == null)

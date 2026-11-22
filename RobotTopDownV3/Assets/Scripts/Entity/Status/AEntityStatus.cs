@@ -18,23 +18,6 @@ public abstract class AEntityStatus : ScriptableEnum<EntityStatusEnumID>
     public GameObject entityPrefab;
     public EntityVisualAnchor entityVisualAnchor = EntityVisualAnchor.Center;
 
-    public string GetTooltip ( int _duration, int _remainingDuration )
-    {
-        System.Text.StringBuilder builder = new();
-        builder.AppendLine($"<b>{this.GetLocalizedName()}</b>");
-        builder.AppendLine(string.Format(LocalizationManager.Instance.Get(LocalizationKey.status_tip_duration), _duration));
-        builder.AppendLine(string.Format(LocalizationManager.Instance.Get(LocalizationKey.status_tip_remaining), _remainingDuration));
-        if (doesNeedRoll)
-            builder.AppendLine(LocalizationManager.Instance.Get(LocalizationKey.status_tip_needs_roll));
-        if (!string.IsNullOrWhiteSpace(this.GetLocalizedDescription()))
-        {
-            builder.AppendLine();
-            builder.AppendLine(this.GetLocalizedDescription());
-        }
-
-        return builder.ToString();
-    }
-
     public bool DoesConsumeDurationThisTick ()
     {
         return durationType == DurationType.Tick

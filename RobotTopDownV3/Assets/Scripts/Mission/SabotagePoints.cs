@@ -31,8 +31,9 @@ public static class SabotagePoints
 		int health = Mathf.Max(0, _wall.Health);
 		string pointName = GetLocalizedName(ownerID);
 		string healthText = string.Format(LocalizationManager.Instance.Get(LocalizationKey.log_sabotage_point_damaged), pointName, health, GameConfig.current.game.sabotagePointHealth);
-		LogConsole.AddLog(healthText, LogConsole.LogEventType.Damage
-			, new LogConsole.LogDetails("sabotage_" + LogConsole.Instance.Counter, pointName, healthText));
+		LogCard card = new(LogCard.Kind.Sabotage, pointName);
+		card.SetHealth(health, GameConfig.current.game.sabotagePointHealth);
+		LogConsole.AddLog(healthText, LogConsole.LogEventType.Damage, new LogConsole.LogDetails(card));
 
 		if (health == 0)
 		{

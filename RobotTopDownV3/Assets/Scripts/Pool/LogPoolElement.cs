@@ -1,17 +1,22 @@
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 using TMPro;
 
-public class LogPoolElement : PoolElement
+public class LogPoolElement : PoolElement, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
 	[SerializeField] private TextMeshProUGUI m_text;
 	[SerializeField] private LayoutElement m_layoutElement;
 	[SerializeField] private GameObject m_highlight;
 	[SerializeField] private FontStyles m_highlightFontStyle = FontStyles.Bold | FontStyles.Italic;
+	[SerializeField] private GameObject m_detailMarker;
+	[SerializeField] private GameObject m_hover;
+	[SerializeField] private Image m_hoverBar;
 
 	private LogConsole.LogEventType m_eventType;
 	public LogConsole.LogEventType EventType => m_eventType;
 
+	private LogConsole.LogDetails m_details;
 	private bool m_isHighlighted = false;
 
 	private FontStyles m_defaultFontStyle;
@@ -20,10 +25,35 @@ public class LogPoolElement : PoolElement
 	public void Init ( LogConsole.Log _log, bool _isHighlighted )
 	{
 		m_eventType = _log.eventType;
+		m_details = _log.details;
 		m_text.SetText(_log.ToString());
+		m_detailMarker.SetActive(m_details != null);
+		m_hoverBar.color = GameConfig.current.meta.colorsPerType[_log.eventType];
+		m_hover.SetActive(false);
 
 		ApplyHighlight(_isHighlighted);
 		RefreshPreferredHeight();
+	}
+
+	public void OnPointerEnter ( PointerEventData _eventData )
+	{
+		m_hover.SetActive(m_details != null);
+	}
+
+	public void OnPointerExit ( PointerEventData _eventData )
+	{
+		m_hover.SetActive(false);
+	}
+
+	public void OnPointerClick ( PointerEventData _eventData )
+	{
+		if (m_details != null && _eventData.button == PointerEventData.InputButton.Left)
+			ToolTipManager.Instance.TogglePin(m_details);
+	}
+
+	private void OnDisable ()
+	{
+		m_hover.SetActive(false);
 	}
 
 	public void SetHighlighted ( bool _isHighlighted )

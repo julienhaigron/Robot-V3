@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 using System;
-using System.Text;
 using System.Linq;
 using Sirenix.OdinInspector;
 
@@ -877,15 +876,16 @@ public class Weapon : MonoBehaviour
 		Dictionary<WeaponEquipmentData.DamageType, int> damages = new();
 		bool didWinPFC = _pfcResultType == EntityActionData.PFCResultType.FirstWins;
 		bool hasTarget = _target != null;
-		string targetName = hasTarget ? _target.Data.name : "tile";
-		float flankMod = GameConfig.current.game.entityFlankRatio[hasTarget
-			? GridManager.Instance.GetHitTileSide(_user, _target, didWinPFC, _shotOrigin)
-			: Tile.TileDirectionType.Front];
-		StringBuilder detailsBuilder = new();
+		Tile.TileDirectionType side = hasTarget ? GridManager.Instance.GetHitTileSide(_user, _target, didWinPFC, _shotOrigin) : Tile.TileDirectionType.Front;
+		float flankMod = GameConfig.current.game.entityFlankRatio[side];
 
 		LocalizationManager localization = LocalizationManager.Instance;
-		detailsBuilder.AppendLine(string.Format(localization.Get(LocalizationKey.damage_detail_header), _user.Data.name, targetName));
-		detailsBuilder.AppendLine();
+		LogCard card = new(LogCard.Kind.Damage, localization.Get(LocalizationKey.log_card_damage))
+		{
+			actor = _user.Data.name,
+			target = hasTarget ? _target.Data.name : localization.Get(LocalizationKey.log_use_weapon_ground)
+		};
+		string flankLabel = string.Format(localization.Get(LocalizationKey.log_card_step_flank), side.GetLocalizedTitle());
 
 		foreach (KeyValuePair<WeaponEquipmentData.DamageType, int> pair in _action.Data.baseDamages)
 		{
@@ -932,37 +932,34 @@ public class Weapon : MonoBehaviour
 					-1f
 				);
 
-			detailsBuilder.AppendLine("<b>" + pair.Key.GetLocalizedTitle() + "</b>");
-			detailsBuilder.AppendLine(string.Format(localization.Get(LocalizationKey.damage_detail_base), baseDamage));
+			LogCard.DamageLine line = card.AddDamage(pair.Key, baseDamage);
 
 			float damage = baseDamage * actionFactor;
-			detailsBuilder.AppendFactorLine(LocalizationKey.damage_detail_action_factor, actionFactor, damage);
+			line.AddFactor(actionFactor, damage);
 
 			damage *= 1 + typeBuff;
-			detailsBuilder.AppendPercentLine(LocalizationKey.damage_detail_type_modifier, typeBuff, damage);
+			line.AddPercent(LocalizationKey.log_card_step_type, typeBuff, damage);
 
 			damage *= 1 + categoryBuff;
-			detailsBuilder.AppendPercentLine(LocalizationKey.damage_detail_category_modifier, categoryBuff, damage);
+			line.AddPercent(LocalizationKey.log_card_step_category, categoryBuff, damage);
 
 			damage *= 1 + generalDamage;
-			detailsBuilder.AppendPercentLine(LocalizationKey.damage_detail_general_modifier, generalDamage, damage);
+			line.AddPercent(LocalizationKey.log_card_step_general, generalDamage, damage);
 
 			damage *= 1 + flankBonus;
-			detailsBuilder.AppendPercentLine(LocalizationKey.damage_detail_flank_modifier, flankBonus, damage);
+			line.AddPercent(flankLabel, flankBonus, damage);
 
 			damage *= 1 + finalBonus;
-			detailsBuilder.AppendPercentLine(LocalizationKey.damage_detail_final_modifier, finalBonus, damage);
+			line.AddPercent(LocalizationKey.log_card_step_final, finalBonus, damage);
 
 			int finalDamage = Mathf.RoundToInt(damage);
+			line.final = finalDamage;
 
 			damages.Add(pair.Key, finalDamage);
-
-			detailsBuilder.AppendLine(string.Format(localization.Get(LocalizationKey.damage_detail_final), finalDamage));
-			detailsBuilder.AppendLine();
 		}
 
-		string detailsDescription = detailsBuilder.ToString();
-		_details = new("damage_" + LogConsole.Instance.Counter, localization.Get(LocalizationKey.damage_detail_title), detailsDescription);
+		card.SetDamageVerdict(damages);
+		_details = new LogConsole.LogDetails(card);
 
 		return damages;
 	}

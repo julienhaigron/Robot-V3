@@ -40,7 +40,7 @@ public class SpecialAction : AEntityAction
 				, Data.GetLocalizedName()
 				, targetNames.Count == 0 ? localization.Get(LocalizationKey.log_use_weapon_ground) : string.Join(", ", targetNames)))
 			, LogConsole.LogEventType.UseTool
-			, new LogConsole.LogDetails("usetool_" + LogConsole.Instance.Counter, Data.GetLocalizedName(), new ActionTooltipContent(Data, user.Data).GetPlainText()));
+			, new LogConsole.LogDetails(new ActionTooltipContent(Data, user.Data)));
 
 		foreach (ApplyStatusPassiveEffect statusEffect in Data.GetAppliedStatusEffects(this, user, firstTarget))
 		{
@@ -48,7 +48,7 @@ public class SpecialAction : AEntityAction
 
 			LogConsole.AddLog(string.Format(localization.Get(LocalizationKey.log_effect), status.GetLocalizedName())
 				, LogConsole.LogEventType.UseTool
-				, new LogConsole.LogDetails("effect_" + LogConsole.Instance.Counter, status.GetLocalizedName(), status.GetTooltip(statusEffect.duration, statusEffect.duration)));
+				, new LogConsole.LogDetails(LogCard.Status(status, null, statusEffect.duration, statusEffect.duration)));
 		}
 	}
 

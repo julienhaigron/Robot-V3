@@ -16,7 +16,7 @@ public class MissionPanel : AUIPanel
 	[Title("Squad")]
 	[SerializeField] private List<UnitMissionDisplay> m_unitDisplays;
 	[SerializeField] private HangarEntityDisplay m_hoveredUnitDisplay;
-	[SerializeField] private StatDisplay[] m_hoveredUnitStatDisplays;
+	[SerializeField] private UnitStatBlock m_hoveredUnitStatBlock;
 
 	[Title("SingleMissionDetails")]
 	[SerializeField] private TextMeshProUGUI m_currentMissionNameTMP;
@@ -201,20 +201,6 @@ public class MissionPanel : AUIPanel
 	private void RefreshHoveredUnit ( UnitMissionDisplay _display )
 	{
 		m_hoveredUnitDisplay.Init(_display.Data, _display.Index, _display.IsInSquad);
-
-		//set unit stats
-		SerializableDictionary<EntityEquipmentData.SecondaryStat.StatType, EntityEquipmentData.StatDescription> statsDescriptions = _display.Data.GetStatsDesciptions();
-		List<EntityEquipmentData.SecondaryStat.StatType> keys = UIManager.Instance.GetPanel<EntityConfigPanel>().GetUnitSummaryStats(statsDescriptions);
-
-		for (int i = 0; i < m_hoveredUnitStatDisplays.Length; i++)
-		{
-			if (keys.Count <= i)
-				m_hoveredUnitStatDisplays[i].gameObject.SetActive(false);
-			else
-			{
-				m_hoveredUnitStatDisplays[i].gameObject.SetActive(true);
-				m_hoveredUnitStatDisplays[i].Init(statsDescriptions[keys[i]]);
-			}
-		}
+		m_hoveredUnitStatBlock.Init(_display.Data, true);
 	}
 }

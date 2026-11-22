@@ -5,6 +5,7 @@ using UnityEngine;
 public class LogConsole : SingletonPersistant<LogConsole>
 {
 	public static System.Action<Log> onLogAdded;
+	public static System.Action onCleared;
 
 	private List<Log> m_allLogs = new();
 	public List<Log> AllLogs => m_allLogs;
@@ -30,25 +31,25 @@ public class LogConsole : SingletonPersistant<LogConsole>
 
 	public enum LogEventType { PreGame, InputPhase, AICheck, ActionResolution, ActionConflict, DebugSys, AttackRoll, Damage, Status, UseWeapon, UseTool, Death, Round }
 
-	[System.Serializable]
 	public class LogDetails
 	{
-		public string ID;
-		public string title;
-		public string description;
+		public readonly string ID;
+		public readonly LogCard card;
+		public readonly ActionTooltipContent action;
 
-		public LogDetails(string _ID, string _title, string _description )
+		public LogDetails ( LogCard _card ) : this()
 		{
-			Instance.Counter++;
-			ID = _ID;
-			title = _title;
-			description = _description;
+			card = _card;
 		}
 
-		public struct EntityStatAndRollInfo
+		public LogDetails ( ActionTooltipContent _action ) : this()
 		{
-			public float baseDef;
-			//public int
+			action = _action;
+		}
+
+		private LogDetails ()
+		{
+			ID = "log_" + Instance.Counter++;
 		}
 	}
 
@@ -57,6 +58,7 @@ public class LogConsole : SingletonPersistant<LogConsole>
 		Instance.m_allLogs.Clear();
 		Instance.m_logs.Clear();
 		Instance.m_logsDetails.Clear();
+		onCleared?.Invoke();
 	}
 
 	public static void AddLog (string _message, LogEventType _eventType, LogDetails _details = null )

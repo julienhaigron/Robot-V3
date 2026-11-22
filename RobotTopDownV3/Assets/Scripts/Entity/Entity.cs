@@ -237,9 +237,7 @@ public class Entity : MonoBehaviour
 				if (!status.DoesConsumeDurationThisTick())
 					continue;
 
-				LogConsole.AddLog(string.Format(LocalizationManager.Instance.Get(LocalizationKey.log_status_affected), m_data.name, status.GetLocalizedName(), remainingDuration)
-					, LogConsole.LogEventType.Status
-					, new LogConsole.LogDetails("status_effect_" + LogConsole.Instance.Counter, status.GetLocalizedName(), status.GetTooltip(GetAppliedStatusDuration(status), remainingDuration)));
+				LogStatus(status, GetAppliedStatusDuration(status), remainingDuration);
 
 				string tickEffect = status.GetTickEffectText(remainingDuration, this);
 				if (!string.IsNullOrEmpty(tickEffect))
@@ -342,11 +340,17 @@ public class Entity : MonoBehaviour
 
 		ShowStatusVisual(_statusID, status);
 
-		LogConsole.AddLog(string.Format(LocalizationManager.Instance.Get(LocalizationKey.log_status_affected), m_data.name, status.GetLocalizedName(), _duration)
-			, LogConsole.LogEventType.Status
-			, new LogConsole.LogDetails("status_effect_" + LogConsole.Instance.Counter, status.GetLocalizedName(), status.GetTooltip(_duration, _duration)));
+		LogStatus(status, _duration, _duration);
 
 		onStatusAdded?.Invoke(_statusID);
+	}
+
+	private void LogStatus ( AEntityStatus _status, int _duration, int _remaining )
+	{
+		LocalizationKey key = _status.durationType == AEntityStatus.DurationType.Tick ? LocalizationKey.log_status_affected_ticks : LocalizationKey.log_status_affected_rounds;
+		LogConsole.AddLog(string.Format(LocalizationManager.Instance.Get(key), m_data.name, _status.GetLocalizedName(), _remaining)
+			, LogConsole.LogEventType.Status
+			, new LogConsole.LogDetails(LogCard.Status(_status, m_data.name, _duration, _remaining)));
 	}
 
 	public void RemoveStatus ( EntityStatusEnumID _statusID )

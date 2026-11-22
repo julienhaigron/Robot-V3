@@ -9,6 +9,7 @@ using DG.Tweening;
 public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler
 {
 	public static System.Action<ComponentDisplay> onDisplayHovered;
+	public static System.Action<ComponentDisplay> onDisplayUnhovered;
 
 	[SerializeField] private CanvasGroup m_canvasGroup;
 	[SerializeField] private Image m_outlineImg;
@@ -352,12 +353,11 @@ public class ComponentDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 	public void OnPointerEnter ( PointerEventData eventData )
 	{
 		onDisplayHovered?.Invoke(this);
-		//ToolTipManager.Instance.Show(m_componentData.GetLocalizedName(), null);
 	}
 
 	public void OnPointerExit ( PointerEventData eventData )
 	{
-		//ToolTipManager.Instance.Hide();
+		onDisplayUnhovered?.Invoke(this);
 	}
 
 	#endregion
