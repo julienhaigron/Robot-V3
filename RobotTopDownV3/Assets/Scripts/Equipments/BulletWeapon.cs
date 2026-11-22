@@ -206,26 +206,20 @@ public class BulletWeapon : Weapon
 				continue;
 
 			wasDesignatedTargetHit |= entity == _designatedTarget;
-			ApplyDamageAndEffects(entity, damages, _attackInfo);
+			ApplyDamageAndEffects(_attackAction, entity, damages, _attackInfo);
 		}
 
 		if (!wasDesignatedTargetHit && _designatedTarget != null && !_designatedTarget.Equipment.IsDead
 			&& impactedTiles.Contains(_attackAction.GetExchangeTileOf(_designatedTarget)))
-			ApplyDamageAndEffects(_designatedTarget, damages, _attackInfo);
+			ApplyDamageAndEffects(_attackAction, _designatedTarget, damages, _attackInfo);
 
 		if (_isLastBullet)
 			EndAttack(m_lastPerformedAction);
 	}
 
-	private void ApplyDamageAndEffects ( Entity _entity, Dictionary<WeaponEquipmentData.DamageType, int> _damages, AttackAction.SingleAttackInfo _attackInfo )
+	private void ApplyDamageAndEffects ( AttackAction _attackAction, Entity _entity, Dictionary<WeaponEquipmentData.DamageType, int> _damages, AttackAction.SingleAttackInfo _attackInfo )
 	{
-		_entity.Equipment.TakeDamage(new EntityEquipmentPlugin.TakeDamageCallback()
-		{
-			entityAttacker = m_user,
-			entityTargeted = _entity,
-			damages = _damages
-		});
-
+		DealDamage(_attackAction, _attackInfo, _entity, _damages);
 		ApplyStatuses(_entity, _attackInfo);
 
 		foreach (AEntityPassiveEffect.PassiveEffectContainer pe in m_lastPerformedAction.effects)

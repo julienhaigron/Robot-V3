@@ -6,7 +6,7 @@ public class Shield : ToolEquipment
 {
 	public ShieldEquipmentData ShieldData => m_data as ShieldEquipmentData;
 
-	public int orientation = 0;
+	public int Orientation { get; private set; }
 
 	[SerializeField] private ShieldMarker m_markerPrefab;
 	[SerializeField] private PoolData m_turnVFXPool;
@@ -20,11 +20,11 @@ public class Shield : ToolEquipment
 	public bool IsShownToLocalPlayer => m_user != null && (m_user.IsAlliedTo(GameManager.Instance.PlayerID)
 		|| (m_user.IsVisible && m_user.HowIsUnitVisible != NeuronalMembraneEquipmentData.VisionTypes.Radar));
 
-	public override void Init ( Entity _user, ToolEquipmentData _data, string _id, bool _isFirstSide )
+	public override void Init ( Entity _user, ToolEquipmentData _data, string _id )
 	{
-		base.Init(_user, _data, _id, _isFirstSide);
+		base.Init(_user, _data, _id);
 
-		orientation = _isFirstSide ? 5 : 2;
+		Orientation = _user.Displacement.CurrentOrientation;
 		m_currentHp = MaxHp;
 
 		if (m_marker == null && m_markerPrefab != null)
@@ -33,10 +33,9 @@ public class Shield : ToolEquipment
 			m_marker.Bind(this);
 	}
 
-	public bool Covers ( Tile _ownerTile, Tile _attackerTile )
+	public bool Covers ( int _incomingSide )
 	{
-		return m_currentHp > 0 && _ownerTile != null && _attackerTile != null
-			&& orientation == GridManager.Instance.GetClosestOrientation(_ownerTile, _attackerTile);
+		return m_currentHp > 0 && _incomingSide == Orientation;
 	}
 
 	public int Absorb ( int _damage )
@@ -61,9 +60,9 @@ public class Shield : ToolEquipment
 	{
 		if (_specialAction is TurnShieldAction turnAction)
 		{
-			orientation = turnAction.targetedOrientation;
+			Orientation = turnAction.targetedOrientation;
 			if (m_marker != null)
-				m_marker.SlideTo(orientation, PlayTurnFlash);
+				m_marker.SlideTo(Orientation, PlayTurnFlash);
 			else
 				PlayTurnFlash();
 		}
@@ -76,7 +75,7 @@ public class Shield : ToolEquipment
 		if (m_turnVFXPool == null || m_user == null || !IsShownToLocalPlayer)
 			return;
 
-		Vector3 facing = RotateEntityAction.GetFacingRotation(orientation) * Vector3.forward;
+		Vector3 facing = RotateEntityAction.GetFacingRotation(Orientation) * Vector3.forward;
 		Weapon.PlayOrientedVFX(m_turnVFXPool, GroundStrip.OnGround(m_user.Displacement.FeetPosition) + facing * m_turnVFXDistance, facing, ShieldData != null ? ShieldData.name : name);
 	}
 

@@ -625,7 +625,7 @@ public class TeamBrain
 		if (m_lastContactTile != null)
 			return m_lastContactTile;
 
-		Tile spawnCenter = GetEnemySpawnCenter();
+		Tile spawnCenter = GetEnemySpawnCenter(m_ownerID);
 		if (spawnCenter != null && !m_lastSeenRound.ContainsKey(spawnCenter))
 			return spawnCenter;
 
@@ -661,13 +661,13 @@ public class TeamBrain
 		return best;
 	}
 
-	private Tile GetEnemySpawnCenter ()
+	public static Tile GetEnemySpawnCenter ( int _ownerID )
 	{
 		List<Tile> spawnTiles = new();
 		EntityAnchor[] anchors = GameManager.Instance.PlayersEntityAnchor;
 		for (int ownerID = 0; ownerID < anchors.Length; ownerID++)
 		{
-			if (ownerID == m_ownerID)
+			if (ownerID == _ownerID)
 				continue;
 
 			foreach (EntityAnchor.Spawn spawn in anchors[ownerID].AllSpawns)

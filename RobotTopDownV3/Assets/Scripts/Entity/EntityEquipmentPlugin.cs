@@ -77,9 +77,9 @@ public class EntityEquipmentPlugin : EntityPlugin
 
 				Transform socket = m_linkedEntity.Skin.IK.GetGrabSocket(armIndex);
 				if (data is WeaponEquipmentData weaponData)
-					AddWeapon(weaponData, stringContainer.ID, socket, m_linkedEntity.Displacement.Spawn.isFirstSide);
+					AddWeapon(weaponData, stringContainer.ID, socket);
 				else if (data is ToolEquipmentData toolData)
-					AddTool(toolData, stringContainer.ID, socket, m_linkedEntity.Displacement.Spawn.isFirstSide);
+					AddTool(toolData, stringContainer.ID, socket);
 			}
 		}
 
@@ -158,24 +158,26 @@ public class EntityEquipmentPlugin : EntityPlugin
 		public Entity entityAttacker;
 		public Entity entityTargeted;
 		public Dictionary<WeaponEquipmentData.DamageType, int> damages;
+		public Tile shotOrigin;
+		public Tile hitTile;
 		public int absorbedDamage;
 		public bool critical;
 		public Vector3 hitPos;
 		public Vector3 hitNormal;
 	}
 
-	private Weapon AddWeapon ( WeaponEquipmentData _data, string _id, Transform _socket, bool _isFirstSide )
+	private Weapon AddWeapon ( WeaponEquipmentData _data, string _id, Transform _socket )
 	{
 		Weapon newWeapon = Instantiate(_data.prefab, _socket);
 		if (m_linkedEntity.Skin.IK != null)
 			m_linkedEntity.Skin.IK.FitInHand(newWeapon.transform);
-		newWeapon.Init(m_linkedEntity, _data, _id, _isFirstSide);
+		newWeapon.Init(m_linkedEntity, _data, _id);
 		newWeapon.transform.localScale = Vector3.one;
 		m_weapons.Add(newWeapon.ID, newWeapon);
 
 		WeaponCone weaponCone = Instantiate(GameAssets.current.game.weaponCone, m_weaponConesParent);
 		m_weaponConeDictionary.Add(newWeapon.ID, weaponCone);
-		weaponCone.Init(m_linkedEntity, _data, m_linkedEntity.Displacement.Spawn.isFirstSide);
+		weaponCone.Init(m_linkedEntity, _data);
 
 		return newWeapon;
 	}
@@ -268,13 +270,10 @@ public class EntityEquipmentPlugin : EntityPlugin
 			&& GridManager.Instance.TryGetCurvedShotTile(_from, _to, _action.Data.GetMaxRange(_action, m_linkedEntity, null), out _curveTile);
 	}
 
-	private bool TryCurveShot ( AttackAction _attackAction, Entity _targetEntity, bool _doesWinPFC, out Tile _curveTile )
+	public Tile GetShotOrigin ( AEntityAction _action, Tile _from, Tile _to )
 	{
-		_curveTile = null;
-
-		return CanCurveShot(_attackAction)
-			&& GridManager.Instance.TryGetCurvedShotTile(_attackAction.PerformingEntity, _targetEntity, _doesWinPFC
-				, _attackAction.Data.GetMaxRange(_attackAction, m_linkedEntity, null), out _curveTile);
+		Tile strikeTile = _action is AttackAction attackAction ? attackAction.GetPlannedStrikeTile(_from, _to) : _from;
+		return GridManager.Instance.IsThereBlockingWallBetween(strikeTile, _to, true, out _) && TryCurveShot(_action, strikeTile, _to, out Tile curveTile) ? curveTile : strikeTile;
 	}
 
 	public HashSet<Tile> GetWeaponConeTilesAt ( Tile _from, int _orientation )
@@ -340,10 +339,12 @@ public class EntityEquipmentPlugin : EntityPlugin
 	public bool AttackRoll ( AttackAction _attackAction, AttackAction.SingleAttackInfo _singleAttackInfo, Entity _targetEntity, out Tile _coverTile )
 	{
 		bool doesWinPFC = _attackAction.DoesWinExchangeAgainst(_targetEntity);
+		Tile strikeTile = _singleAttackInfo.StrikeTile;
+		Tile targetTile = _attackAction.GetExchangeTileOf(_targetEntity);
 		Tile curveTile = null;
 
-		if (GridManager.Instance.IsThereBlockingWallBetween(_attackAction.PerformingEntity, _targetEntity, doesWinPFC, out _coverTile)
-			&& !TryCurveShot(_attackAction, _targetEntity, doesWinPFC, out curveTile))
+		if (GridManager.Instance.IsThereBlockingWallBetween(strikeTile, targetTile, true, out _coverTile)
+			&& !TryCurveShot(_attackAction, strikeTile, targetTile, out curveTile))
 		{
 			LogConsole.AddLog(string.Format(LocalizationManager.Instance.Get(LocalizationKey.log_wall_blocks)
 				, m_linkedEntity.Data.name, _targetEntity.Data.name), LogConsole.LogEventType.AttackRoll);
@@ -352,7 +353,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 
 		_singleAttackInfo.curveTileID = curveTile == null ? -1 : curveTile.coordinates.ID;
 
-		bool isThereCoverBetween = GridManager.Instance.IsThereCoverBeween(_attackAction.PerformingEntity, _targetEntity, doesWinPFC, out _coverTile, curveTile);
+		bool isThereCoverBetween = GridManager.Instance.IsThereCoverBeween(strikeTile, targetTile, out _coverTile, curveTile);
 
 		float targetCamo = _targetEntity.Data.GetStaticStealthBonus(true)
 			+ (_targetEntity.HowIsUnitVisible == NeuronalMembraneEquipmentData.VisionTypes.Optic ? _targetEntity.GetAdditionaryStatBonus(EntityEquipmentData.SecondaryStat.StatType.VisualCamo, null)
@@ -366,7 +367,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 		float targetEvasionScore = targetCamo + evationRatio + coverRatio;
 
 		float userAim = GetAimScore(_attackAction);
-		float flankBonus = GameConfig.current.game.entityFlankRatio[GridManager.Instance.GetHitTileSide(m_linkedEntity, _targetEntity, doesWinPFC, curveTile)]
+		float flankBonus = GameConfig.current.game.entityFlankRatio[GridManager.Instance.GetHitTileSide(m_linkedEntity, _targetEntity, doesWinPFC, _singleAttackInfo.ShotOrigin)]
 			+ m_linkedEntity.GetAdditionaryStatBonus(EntityEquipmentData.SecondaryStat.StatType.FlankBonus, _attackAction);
 		float modAction = m_linkedEntity.PreviousActionAttackModificator;
 
@@ -423,15 +424,16 @@ public class EntityEquipmentPlugin : EntityPlugin
 		LogConsole.AddLog(localization.Get(_isAttackSuccessful ? LocalizationKey.log_attack_success : LocalizationKey.log_attack_failure), LogConsole.LogEventType.AttackRoll, details);
 	}
 
-	public bool SabotagePointAttackRoll ( AttackAction _attackAction, AttackAction.SingleAttackInfo _singleAttackInfo, Tile _from, Tile _pointTile, out Tile _coverTile )
+	public bool SabotagePointAttackRoll ( AttackAction _attackAction, AttackAction.SingleAttackInfo _singleAttackInfo, Tile _pointTile, out Tile _coverTile )
 	{
 		SabotagePoints.TryGetLivingPoint(_pointTile, out int ownerID);
 		string pointName = SabotagePoints.GetLocalizedName(ownerID);
 		LocalizationManager localization = LocalizationManager.Instance;
+		Tile strikeTile = _singleAttackInfo.StrikeTile;
 
-		if (GridManager.Instance.IsThereBlockingWallBetween(_from, _pointTile, true, out _coverTile))
+		if (GridManager.Instance.IsThereBlockingWallBetween(strikeTile, _pointTile, true, out _coverTile))
 		{
-			if (!TryCurveShot(_attackAction, _from, _pointTile, out Tile curveTile))
+			if (!TryCurveShot(_attackAction, strikeTile, _pointTile, out Tile curveTile))
 			{
 				LogConsole.AddLog(string.Format(localization.Get(LocalizationKey.log_wall_blocks), m_linkedEntity.Data.name, pointName), LogConsole.LogEventType.AttackRoll);
 				return false;
@@ -503,12 +505,12 @@ public class EntityEquipmentPlugin : EntityPlugin
 
 	#region Tool
 
-	private ToolEquipment AddTool ( ToolEquipmentData _data, string _id, Transform _socket, bool _isFirstSide )
+	private ToolEquipment AddTool ( ToolEquipmentData _data, string _id, Transform _socket )
 	{
 		ToolEquipment newTool = Instantiate(_data.prefab, _socket);
 		if (m_linkedEntity.Skin.IK != null)
 			m_linkedEntity.Skin.IK.FitInHand(newTool.transform);
-		newTool.Init(m_linkedEntity, _data, _id, _isFirstSide);
+		newTool.Init(m_linkedEntity, _data, _id);
 		newTool.transform.localScale = Vector3.one;
 		m_tools.Add(newTool.ID, newTool);
 
@@ -527,21 +529,17 @@ public class EntityEquipmentPlugin : EntityPlugin
 			return;
 		}
 		Dictionary<WeaponEquipmentData.DamageType, int> damages = new(_damageInfo.damages);
-		if (_damageInfo.entityAttacker != null)
+		int incomingSide = GetIncomingSide(_damageInfo);
+		foreach (ToolEquipment tool in m_tools.Values)
 		{
-			Tile ownerTile = m_linkedEntity.Displacement.Coordinates.GetTile();
-			Tile attackerTile = _damageInfo.entityAttacker.Displacement.Coordinates.GetTile();
-			foreach (ToolEquipment tool in m_tools.Values)
-			{
-				if (tool is not Shield shield || !shield.Covers(ownerTile, attackerTile))
-					continue;
+			if (tool is not Shield shield || !shield.Covers(incomingSide))
+				continue;
 
-				foreach (WeaponEquipmentData.DamageType damageType in _damageInfo.damages.Keys)
-				{
-					int absorbed = shield.Absorb(damages[damageType]);
-					damages[damageType] -= absorbed;
-					_damageInfo.absorbedDamage += absorbed;
-				}
+			foreach (WeaponEquipmentData.DamageType damageType in _damageInfo.damages.Keys)
+			{
+				int absorbed = shield.Absorb(damages[damageType]);
+				damages[damageType] -= absorbed;
+				_damageInfo.absorbedDamage += absorbed;
 			}
 		}
 
@@ -555,6 +553,16 @@ public class EntityEquipmentPlugin : EntityPlugin
 			Death(_damageInfo);
 
 		onHealthChangeDamage?.Invoke(_damageInfo);
+	}
+
+	private int GetIncomingSide ( TakeDamageCallback _damageInfo )
+	{
+		if (_damageInfo.entityAttacker == null)
+			return -1;
+
+		Tile shotOrigin = _damageInfo.shotOrigin != null ? _damageInfo.shotOrigin : _damageInfo.entityAttacker.Displacement.Coordinates.GetTile();
+		Tile hitTile = _damageInfo.hitTile != null ? _damageInfo.hitTile : m_linkedEntity.Displacement.Coordinates.GetTile();
+		return GridManager.Instance.GetIncomingSide(shotOrigin, hitTile);
 	}
 
 	public enum DeathCause { Default, Doom }

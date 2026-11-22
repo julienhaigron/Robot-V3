@@ -92,7 +92,7 @@ public class Weapon : MonoBehaviour
 		}
 	}
 
-	public virtual void Init ( Entity _user, WeaponEquipmentData _data, string _id, bool _isFirstSide )
+	public virtual void Init ( Entity _user, WeaponEquipmentData _data, string _id )
 	{
 		m_user = _user;
 		m_data = _data;
@@ -332,15 +332,21 @@ public class Weapon : MonoBehaviour
 		int hitAmount = _attackAction.Data.GetHitAmount(_attackAction, m_user, targetEntity);
 		for (int i = 0; i < hitAmount; i++)
 		{
-			targetEntity.Equipment.TakeDamage(new EntityEquipmentPlugin.TakeDamageCallback()
-			{
-				entityAttacker = m_user,
-				entityTargeted = targetEntity,
-				damages = _damages
-			});
-
+			DealDamage(_attackAction, _attackInfo, targetEntity, _damages);
 			ApplyStatuses(targetEntity, _attackInfo);
 		}
+	}
+
+	protected void DealDamage ( AttackAction _attackAction, AttackAction.SingleAttackInfo _attackInfo, Entity _entity, Dictionary<WeaponEquipmentData.DamageType, int> _damages )
+	{
+		_entity.Equipment.TakeDamage(new EntityEquipmentPlugin.TakeDamageCallback()
+		{
+			entityAttacker = m_user,
+			entityTargeted = _entity,
+			damages = _damages,
+			shotOrigin = _attackInfo.ShotOrigin,
+			hitTile = _attackAction.GetExchangeTileOf(_entity)
+		});
 	}
 
 	private void PlayHitVFX ( AttackAction _attackAction, WeaponTarget _target )

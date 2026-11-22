@@ -36,7 +36,8 @@ MonoBehaviour:
     reactor: {fileID: 0}
     brain: {fileID: 0}
     membrane: {fileID: 0}
-    arms: []
+    arms:
+    - {fileID: 11400000, guid: 26eb3e4f4cd727d40bc4390f43ae0169, type: 2}
     auxiliary: []
     chipsets: []
   performedActions: []

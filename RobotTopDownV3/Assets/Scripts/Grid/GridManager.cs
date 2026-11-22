@@ -871,14 +871,6 @@ public class GridManager : Singleton<GridManager>
 			: TurnManager.Instance.GetEntityPositionAtEndOfTick(_entity.ID, departureID);
 	}
 
-	public bool IsThereBlockingWallBetween ( Entity _attacker, Entity _target, bool _didAttackerWinPFC, out Tile _wallTile )
-	{
-		int attackerPosition = GetExchangePositionID(_attacker, true);
-		int defenderPosition = GetExchangePositionID(_target, _didAttackerWinPFC);
-
-		return IsThereBlockingWallBetween(Tiles[attackerPosition], Tiles[defenderPosition], _didAttackerWinPFC, out _wallTile);
-	}
-
 	public bool IsThereBlockingWallBetween ( Tile _from, Tile _to, bool _isThisTurn, out Tile _wallTile )
 	{
 		_wallTile = null;
@@ -1032,14 +1024,6 @@ public class GridManager : Singleton<GridManager>
 		return IsInLineOfSight(_from, _to) || TryGetCurveTile(_from, _to, _maxPathLength, false, out _);
 	}
 
-	public bool TryGetCurvedShotTile ( Entity _attacker, Entity _target, bool _didAttackerWinPFC, int _maxPathLength, out Tile _curveTile )
-	{
-		int attackerPosition = GetExchangePositionID(_attacker, true);
-		int defenderPosition = GetExchangePositionID(_target, _didAttackerWinPFC);
-
-		return TryGetCurvedShotTile(Tiles[attackerPosition], Tiles[defenderPosition], _maxPathLength, out _curveTile);
-	}
-
 	public bool TryGetCurvedShotTile ( Tile _from, Tile _to, int _maxPathLength, out Tile _curveTile )
 	{
 		return TryGetCurveTile(_from, _to, _maxPathLength, true, out _curveTile);
@@ -1098,14 +1082,12 @@ public class GridManager : Singleton<GridManager>
 		return Vector2.Distance(_point, _start + segment * t);
 	}
 
-	public bool IsThereCoverBeween ( Entity _attacker, Entity _target, bool _didAttackerWinPFC, out Tile _cover, Tile _curveTile = null )
+	public bool IsThereCoverBeween ( Tile _from, Tile _to, out Tile _cover, Tile _curveTile = null )
 	{
 		_cover = null;
-		int attackerPosition = GetExchangePositionID(_attacker, true);
-		int defenderPosition = GetExchangePositionID(_target, _didAttackerWinPFC);
 		float highestCoverValue = -1;
 
-		foreach (Tile tile in GetShotPath(Tiles[attackerPosition], Tiles[defenderPosition], _curveTile))
+		foreach (Tile tile in GetShotPath(_from, _to, _curveTile))
 		{
 			if (tile.Wall == null || tile.Wall.RegisteredHealth <= 0 || !GameConfig.current.game.coverBonusPerGroundType.TryGetValue(tile.GroundType, out float coverValue))
 				continue;
@@ -1122,9 +1104,11 @@ public class GridManager : Singleton<GridManager>
 	{
 		int attackerPosition = _shotOrigin != null ? _shotOrigin.coordinates.ID : GetExchangePositionID(_from, true);
 		int defenderPosition = GetExchangePositionID(_to, _didAttackerWinPFC);
-		int hitOrientation = GetClosestOrientation(m_tiles[attackerPosition], m_tiles[defenderPosition]);
-		int targetOrientation = _to.Displacement.CurrentOrientation;
-		int delta = (hitOrientation + 3 - targetOrientation + 6) % 6;
+		int incomingSide = GetIncomingSide(m_tiles[attackerPosition], m_tiles[defenderPosition]);
+		if (incomingSide < 0)
+			return Tile.TileDirectionType.Front;
+
+		int delta = (incomingSide - _to.Displacement.CurrentOrientation + 6) % 6;
 
 		switch (delta)
 		{
@@ -1146,6 +1130,11 @@ public class GridManager : Singleton<GridManager>
 				// Ne devrait jamais arriver
 				return Tile.TileDirectionType.Front;
 		}
+	}
+
+	public int GetIncomingSide ( Tile _shotOrigin, Tile _hitTile )
+	{
+		return _shotOrigin == null || _hitTile == null || _shotOrigin == _hitTile ? -1 : (GetClosestOrientation(_shotOrigin, _hitTile) + 3) % 6;
 	}
 
 	public int GetClosestOrientation ( Tile _from, Tile _to )

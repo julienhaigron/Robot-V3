@@ -83,7 +83,7 @@ public class ShieldMarker : GroundDisplay
 	{
 		m_shield = _shield;
 		s_bound.Add(this);
-		m_yaw = RotateEntityAction.GetFacingYaw(_shield.orientation);
+		m_yaw = RotateEntityAction.GetFacingYaw(_shield.Orientation);
 		m_slideStart = m_drainStart = m_flashStart = m_breakStart = -1f;
 		m_onSlideEnd = null;
 		m_fill = m_drainFrom = HealthShare;

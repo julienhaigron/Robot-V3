@@ -71,6 +71,7 @@ public static class ComponentTestLabMap
 			data.width = _layout.Width;
 			data.height = _layout.Height;
 			data.tiles = _layout.GroundTypes.Select(groundType => new GridData.TileData(groundType, Wall.WallType.VerticalStrait, 0)).ToArray();
+			data.unitsFaceEnemySpawn = false;
 			EditorUtility.SetDirty(data);
 			AssetDatabase.SaveAssetIfDirty(data);
 		}
@@ -118,7 +119,7 @@ public static class ComponentTestLabMap
 
 	private static bool IsDataUpToDate ( GridData _data, ComponentTestLabLayout _layout )
 	{
-		if (_data.width != _layout.Width || _data.height != _layout.Height || _data.tiles == null || _data.tiles.Length != _layout.GroundTypes.Length)
+		if (_data.unitsFaceEnemySpawn || _data.width != _layout.Width || _data.height != _layout.Height || _data.tiles == null || _data.tiles.Length != _layout.GroundTypes.Length)
 			return false;
 
 		for (int i = 0; i < _data.tiles.Length; i++)

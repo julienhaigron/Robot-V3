@@ -18,9 +18,20 @@ public class MoveThenAttackAction : AttackAction
 		serializer.SerializeValue(ref positionAfterMovementID);
 	}
 
+	private static Tile GetDashStopTile ( Tile _target, Tile _from )
+	{
+		return _target.Neighbors[GridManager.Instance.GetClosestOrientation(_target, _from)];
+	}
+
+	public override Tile GetPlannedStrikeTile ( Tile _from, Tile _target )
+	{
+		Tile stopTile = _target != _from ? GetDashStopTile(_target, _from) : null;
+		return stopTile != null ? stopTile : _from;
+	}
+
 	public override void RegisterInteraction ( Tile _tile )
 	{
-		positionAfterMovementID = _tile.Neighbors[GridManager.Instance.GetClosestOrientation(_tile, GridManager.Instance.Tiles[supposedPositionAtActionStartID])].coordinates.ID;
+		positionAfterMovementID = GetDashStopTile(_tile, GridManager.Instance.Tiles[supposedPositionAtActionStartID]).coordinates.ID;
 
 		positionAtActionEndID = positionAfterMovementID;
 
@@ -34,8 +45,7 @@ public class MoveThenAttackAction : AttackAction
 		if (_targetTileIDs == null || _targetTileIDs.Length == 0)
 			return;
 
-		Tile targetTile = GridManager.Instance.Tiles[_targetTileIDs[0]];
-		Tile stopTile = targetTile.Neighbors[GridManager.Instance.GetClosestOrientation(targetTile, GridManager.Instance.Tiles[supposedPositionAtActionStartID])];
+		Tile stopTile = GetDashStopTile(GridManager.Instance.Tiles[_targetTileIDs[0]], GridManager.Instance.Tiles[supposedPositionAtActionStartID]);
 		if (stopTile == null)
 			return;
 

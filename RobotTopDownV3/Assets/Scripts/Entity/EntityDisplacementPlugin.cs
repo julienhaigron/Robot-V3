@@ -19,11 +19,8 @@ public class EntityDisplacementPlugin : EntityPlugin
 	private int m_lastMovementTick = -1;
 	public bool DidMoveThisTick => m_lastMovementTick == TurnManager.currentTick;
 
-	private int m_currentOrientation;
+	private int m_currentOrientation = -1;
 	public int CurrentOrientation => m_currentOrientation;
-
-	private EntityAnchor.Spawn m_spawn;
-	public EntityAnchor.Spawn Spawn => m_spawn;
 
 	private bool m_didMoveThisTurn = false;
 	public bool DidMoveThisTurn => m_didMoveThisTurn;
@@ -112,12 +109,22 @@ public class EntityDisplacementPlugin : EntityPlugin
 		Tile spawn = _spawn.coordinates.GetTile();
 		transform.position = spawn.transform.position - m_bottomPosition.localPosition;
 		m_traveledTileTotalCount = 0;
-		Rotate(_spawn.isFirstSide ? 1 : 4, 0f);
+		Rotate(GetSpawnOrientation(spawn, _spawn.isFirstSide));
 
 		spawn.SetEntity(m_linkedEntity, _isThisTurn: true);
 		m_coordinate.SetCoordinate(spawn.coordinates.X, spawn.coordinates.Z, spawn.coordinates.ID);
 
 		onAnyEntitySpawn?.Invoke(m_linkedEntity);
+	}
+
+	private int GetSpawnOrientation ( Tile _spawn, bool _isFirstSide )
+	{
+		GridData map = GridManager.Instance.GridData;
+		Tile enemySpawn = map != null && map.unitsFaceEnemySpawn ? TeamBrain.GetEnemySpawnCenter(m_linkedEntity.OwnerID) : null;
+		if (enemySpawn != null && enemySpawn != _spawn)
+			return GridManager.Instance.GetClosestOrientation(_spawn, enemySpawn);
+
+		return _isFirstSide ? 1 : 4;
 	}
 
 	public Tween MoveToTile ( int _tileID, System.Action onMovementDoneAction, bool _overrideMovementSpeed = false, float _overritenMovementSpeed = 0, bool _keepsOrientation = false )

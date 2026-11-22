@@ -998,7 +998,7 @@ public class TurnManager : Singleton<TurnManager>
 
 	public int GetPlannedShieldOrientation ( Shield _shield, int _tokenCount = int.MaxValue )
 	{
-		int orientation = _shield.orientation;
+		int orientation = _shield.Orientation;
 		if (!m_recordedActionInput.TryGetValue(_shield.LinkedEntity.ID, out Queue<RecordedAction> queue) || queue == null)
 			return orientation;
 

@@ -10,10 +10,10 @@ public class WeaponCone : MonoBehaviour
 	protected WeaponEquipmentData m_data;
 	public WeaponEquipmentData Data => m_data;
 
-	public virtual void Init ( Entity _user, WeaponEquipmentData _data, bool _isFirstSide )
+	public virtual void Init ( Entity _user, WeaponEquipmentData _data )
 	{
 		m_data = _data;
-		AimAtAngle(_isFirstSide ? 90 : -90f, true, null);
+		AimAtAngle(-90f, true, null);
 		DisableAllCones();
 	}
 

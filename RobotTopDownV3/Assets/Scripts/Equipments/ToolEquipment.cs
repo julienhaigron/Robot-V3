@@ -11,7 +11,7 @@ public class ToolEquipment : MonoBehaviour
 	private string m_id;
 	public string ID => m_id;
 
-	public virtual void Init ( Entity _user, ToolEquipmentData _data, string _id, bool _isFirstSide )
+	public virtual void Init ( Entity _user, ToolEquipmentData _data, string _id )
 	{
 		m_user = _user;
 		m_data = _data;

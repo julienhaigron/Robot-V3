@@ -8019,3 +8019,4 @@ MonoBehaviour:
   - groundType: 0
     wallType: 0
     orientation: 0
+  unitsFaceEnemySpawn: 0

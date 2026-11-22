@@ -907,7 +907,12 @@ public class PlayerController : Singleton<PlayerController>
 			|| _hoveredAction.Data.GetMainActionType() != EntityActionData.MainActionType.Attack)
 			return;
 
-		Tile shotOrigin = GridManager.Instance.Tiles[m_turnManager.GetLastRegisteredPositionOfEntity(_hoveredAction.performingEntityID)];
+		Entity shooter = _hoveredAction.PerformingEntity;
+		if (shooter == null)
+			return;
+
+		Tile shooterTile = GridManager.Instance.Tiles[m_turnManager.GetLastRegisteredPositionOfEntity(_hoveredAction.performingEntityID)];
+		Tile shotOrigin = shooter.Equipment.GetShotOrigin(_hoveredAction, shooterTile, m_hoveredTile);
 		if (m_aoePreviewTiles.Count == 0)
 			AimShieldsOn(m_hoveredTile, shotOrigin);
 		else
@@ -922,9 +927,10 @@ public class PlayerController : Singleton<PlayerController>
 		if (!_tile.TryGetEntity(true, out Entity target))
 			return;
 
+		int incomingSide = GridManager.Instance.GetIncomingSide(_shotOrigin, _tile);
 		foreach (ToolEquipment tool in target.Equipment.Tools.Values)
 		{
-			if (tool is Shield shield && shield.Covers(_tile, _shotOrigin))
+			if (tool is Shield shield && shield.Covers(incomingSide))
 				shield.SetAimed(true);
 		}
 	}

@@ -591,9 +591,9 @@ public static class AISpecialEvaluator
 		if (threat == null)
 			return false;
 
-		int orientation = GridManager.Instance.GetClosestOrientation(_context.casterTile, threat.Displacement.Coordinates.GetTile());
+		int orientation = GridManager.Instance.GetIncomingSide(threat.Displacement.Coordinates.GetTile(), _context.casterTile);
 		Tile neighbor = _context.casterTile.Neighbors[orientation];
-		if (orientation == shield.orientation || neighbor == null)
+		if (orientation == shield.Orientation || neighbor == null)
 			return false;
 
 		_choice = new SpecialChoice

@@ -386,19 +386,7 @@ public static class ComponentTestLabSession
 	{
 		_slot.entity = _entity;
 		if (_slot.isUnit)
-		{
 			_entity.onStartPerformAction += _action => OnActionPerformed(_slot, _action);
-			return;
-		}
-
-		Tile from = GridManager.Instance.Tiles[_slot.tileID];
-		Tile to = GridManager.Instance.Tiles[_slot.station.data.unitTile];
-		int orientation = GridManager.Instance.GetClosestOrientation(from, to);
-		foreach (ToolEquipment tool in _entity.Equipment.Tools.Values)
-		{
-			if (tool is Shield shield)
-				shield.orientation = orientation;
-		}
 	}
 
 	private static void OnAnyEntityDeath ( Entity _entity )
