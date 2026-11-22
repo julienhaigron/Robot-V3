@@ -31,6 +31,11 @@ public static class LocalizedDataExtensions
 		return _data == null ? "" : LocalizationManager.Instance.Get(KeyOf(_data, "effect"), _data.displayName);
 	}
 
+	public static string GetLocalizedName ( this AItemData _data )
+	{
+		return _data == null ? "" : LocalizationManager.Instance.Get(KeyOf(_data, "item"), _data.name);
+	}
+
 	public static string GetLocalizedName ( this MissionData _data )
 	{
 		return _data == null ? "" : LocalizationManager.Instance.Get(KeyOf(_data, "mission"), _data.missionName);

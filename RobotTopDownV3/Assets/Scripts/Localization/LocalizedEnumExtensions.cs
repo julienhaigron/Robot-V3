@@ -32,14 +32,29 @@ public static class LocalizedEnumExtensions
 		return LocalizationManager.Instance.Get(key);
 	}
 
-	public static string GetLocalizedTitle ( this EntityActionData.MainActionType _type )
+	public static string GetLocalizedTitle ( this EntityActionData.ActionType _type )
 	{
-		return LocalizationManager.Instance.Get("main_action/" + ToSnakeCase(_type.ToString()));
+		return LocalizationManager.Instance.Get("action_type/" + ToSnakeCase(_type.ToString()));
 	}
 
-	public static string GetLocalizedTitle ( this EntityActionData.TargetType _type )
+	public static string GetExchangeClassName ( this EntityActionData.ActionSubType _subType )
 	{
-		return LocalizationManager.Instance.Get("target_type/" + ToSnakeCase(_type.ToString()));
+		return LocalizationManager.Instance.Get("exchange/class_" + ToSnakeCase(_subType.ToString()), _subType.ToString());
+	}
+
+	public static string GetExchangeClassName ( this EntityActionData.ActionType _type )
+	{
+		return LocalizationManager.Instance.Get("exchange/class_" + ToSnakeCase(_type.ToString()), _type.ToString());
+	}
+
+	public static string GetMoversLabel ( this EntityActionData.ActionType _type )
+	{
+		return LocalizationManager.Instance.Get("exchange/movers_" + ToSnakeCase(_type.ToString()));
+	}
+
+	public static string GetMoverVerb ( this EntityActionData.ActionType _type )
+	{
+		return LocalizationManager.Instance.Get("exchange/verb_" + ToSnakeCase(_type.ToString()));
 	}
 
 	public static string GetLocalizedTitle ( this EntityActionData.AOEType _type )

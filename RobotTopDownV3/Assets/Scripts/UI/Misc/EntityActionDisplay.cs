@@ -170,8 +170,8 @@ public class EntityActionDisplay :
 		if (m_recordedAction == null || !gameObject.activeInHierarchy)
 			return;
 
-		EntityActionData data = m_recordedAction.action.Data;
-		ToolTipManager.Instance.Show(data.GetLocalizedName(), GetTooltipDescription(), gameObject);
+		AEntityAction action = m_recordedAction.action;
+		ToolTipManager.Instance.ShowAction(new ActionTooltipContent(action.Data, action.PerformingEntity != null ? action.PerformingEntity.Data : null), gameObject, GetTooltipNotes());
 
 		if (m_selectedDisplay == this || TurnManager.Instance.currentPhase != TurnManager.TurnPhase.Recording)
 			return;
@@ -350,22 +350,22 @@ public class EntityActionDisplay :
 		return m_recordedAction != null && GetDisplayedFreeAction() is RotateEntityAction { isFacingOrder: false };
 	}
 
-	private string GetTooltipDescription ()
+	private string GetTooltipNotes ()
 	{
 		AEntityAction action = m_recordedAction.action;
-		string description = action.Data.GetDescription();
-		if (GetDisplayedFreeAction() is RotateEntityAction rotation)
-			description += "\n" + LocalizationManager.Instance.Get(rotation.isFacingOrder
-				? LocalizationKey.action_desc_facing_order : LocalizationKey.action_desc_facing_locked);
+		string notes = GetDisplayedFreeAction() is RotateEntityAction rotation
+			? LocalizationManager.Instance.Get(rotation.isFacingOrder ? LocalizationKey.action_desc_facing_order : LocalizationKey.action_desc_facing_locked)
+			: null;
 
 		if (!TurnManager.CanDesignateTargetsOf(action) || !action.HasDesignatedTargets)
-			return description;
+			return notes;
 
 		string targetNames = string.Join(", ", action.designatedEntityIDs
 			.Select(GameManager.Instance.GetEntityFromID)
 			.Where(entity => entity != null)
 			.Select(entity => entity.Data.name));
-		return description + "\n" + string.Format(LocalizationManager.Instance.Get(LocalizationKey.action_desc_designated_target), targetNames);
+		string designation = string.Format(LocalizationManager.Instance.Get(LocalizationKey.action_desc_designated_target), targetNames);
+		return notes == null ? designation : notes + "\n" + designation;
 	}
 
 	private AEntityAction GetDisplayedFreeAction ()

@@ -10,13 +10,14 @@ public class ToolTipManager : Singleton<ToolTipManager>
 	[SerializeField] private GameObject m_tooltipPanel;
 	[SerializeField] private TextMeshProUGUI m_tooltipTitleTMP;
 	[SerializeField] private TextMeshProUGUI m_tooltipDescriptionTMP;
-	//[SerializeField] private RectTransform m_backgroundRect;
+	[SerializeField] private ActionTooltip m_actionTooltip;
 
 	[Header("Settings")]
 	[SerializeField] private Vector2 m_offset = new Vector2(15, -15);
 	[SerializeField] private float m_fadeDuration = 0.2f;
 
 	private bool m_isActive = false;
+	private bool m_isActionShown = false;
 	private GameObject m_owner;
 	private bool m_hasOwner;
 	private CanvasGroup m_canvasGroup;
@@ -34,6 +35,7 @@ public class ToolTipManager : Singleton<ToolTipManager>
 
 		m_isActive = false;
 		m_tooltipPanel.SetActive(false);
+		m_actionTooltip.gameObject.SetActive(false);
 
 		InputManager.onTMPLinkHovered += OnTMPHover;
 		InputManager.onTMPLinkUnhovered += OnTMPUnhover;
@@ -55,6 +57,9 @@ public class ToolTipManager : Singleton<ToolTipManager>
 			return;
 		}
 
+		if (m_isActionShown)
+			return;
+
 		RectTransformUtility.ScreenPointToLocalPointInRectangle(
 			m_tooltipParentRtfm,
 			Input.mousePosition,
@@ -72,21 +77,28 @@ public class ToolTipManager : Singleton<ToolTipManager>
 	[Button]
 	public void Show ( string _title, string _description, GameObject _owner = null )
 	{
-		m_isActive = true;
-		m_owner = _owner;
-		m_hasOwner = _owner != null;
+		HideAction();
+		SetOwner(_owner);
 		m_tooltipTitleTMP.text = _title;
 		m_tooltipDescriptionTMP.text = _description;
-
-		/*// Resize background selon le texte
-        Vector2 textSize = m_tooltipTitleTMP.GetPreferredValues(_title) + m_tooltipDescriptionTMP.GetPreferredValues(_description);
-        m_backgroundRect.sizeDelta = textSize + new Vector2(10, 10); // padding*/
 
 		m_tooltipPanel.SetActive(true);
 
 		if (m_fadeCoroutine != null)
 			StopCoroutine(m_fadeCoroutine);
 		m_fadeCoroutine = StartCoroutine(FadeCanvas(1f));
+	}
+
+	public void ShowAction ( ActionTooltipContent _content, GameObject _owner, string _footer = null )
+	{
+		if (m_fadeCoroutine != null)
+			StopCoroutine(m_fadeCoroutine);
+		m_canvasGroup.alpha = 0f;
+		m_tooltipPanel.SetActive(false);
+
+		SetOwner(_owner);
+		m_isActionShown = true;
+		m_actionTooltip.Show(_content, _owner == null ? null : _owner.transform as RectTransform, _footer);
 	}
 
 	public bool IsShownFor ( GameObject _owner )
@@ -99,9 +111,26 @@ public class ToolTipManager : Singleton<ToolTipManager>
 		m_isActive = false;
 		m_owner = null;
 		m_hasOwner = false;
+		HideAction();
 		if (m_fadeCoroutine != null)
 			StopCoroutine(m_fadeCoroutine);
 		m_fadeCoroutine = StartCoroutine(FadeCanvas(0f, true));
+	}
+
+	private void SetOwner ( GameObject _owner )
+	{
+		m_isActive = true;
+		m_owner = _owner;
+		m_hasOwner = _owner != null;
+	}
+
+	private void HideAction ()
+	{
+		if (!m_isActionShown)
+			return;
+
+		m_isActionShown = false;
+		m_actionTooltip.Hide();
 	}
 
 	private IEnumerator FadeCanvas ( float _targetAlpha, bool _deactivateOnEnd = false )

@@ -4,7 +4,6 @@ public class InvokeEntityAction : SpecialAction
 {
 	public int newEntityID;
 
-	protected override bool ClaimsTargetTiles => true;
 	protected override bool DoesOwnItsCompletion => true;
 
 	public override void NetworkSerialize<T> ( BufferSerializer<T> serializer )

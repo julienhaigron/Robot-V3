@@ -409,12 +409,6 @@ public enum LocalizationKey
     unit_start_status,
     unit_wummy_1,
     unit_wummy_2,
-    main_action_attack,
-    main_action_movement,
-    main_action_special,
-    target_type_self,
-    target_type_other_entity,
-    target_type_tile,
     aoe_type_noone,
     aoe_type_circle,
     aoe_type_ray,
@@ -432,15 +426,6 @@ public enum LocalizationKey
     damage_type_radiation,
     damage_type_electric,
     damage_type_magnetic,
-    action_desc_type,
-    action_desc_cost,
-    action_desc_speed,
-    action_desc_target,
-    action_desc_automatic_target,
-    action_desc_aoe,
-    action_desc_hit_amount,
-    action_desc_damages,
-    action_desc_effects,
     roll_title,
     roll_header,
     roll_attacker_section,
@@ -576,6 +561,150 @@ public enum LocalizationKey
     entity_ui_phase_preparation,
     entity_ui_phase_perform,
     entity_ui_phase_cooldown,
+    action_type_distance_attack,
+    action_type_melee_attack,
+    action_type_movement,
+    action_type_special,
+    action_type_rotation,
+    tooltip_target_self,
+    tooltip_target_auto,
+    tooltip_target_enemy,
+    tooltip_target_destination,
+    tooltip_target_tiles,
+    tooltip_target_tile,
+    tooltip_cost_tick,
+    tooltip_cost_ticks,
+    tooltip_cost_per_tile,
+    tooltip_range,
+    tooltip_damage,
+    tooltip_speed,
+    tooltip_speed_value,
+    tooltip_hint_queue,
+    tooltip_hint_destination,
+    tooltip_hint_tiles,
+    tooltip_hint_tile,
+    tooltip_more,
+    tooltip_more_one,
+    tooltip_unit_tag,
+    tooltip_percent,
+    tooltip_duration_tick,
+    tooltip_duration_ticks,
+    tooltip_duration_round,
+    tooltip_duration_rounds,
+    tooltip_and,
+    tooltip_or,
+    exchange_title,
+    exchange_class_poursuite,
+    exchange_class_engagement,
+    exchange_class_barrage,
+    exchange_class_reflexe,
+    exchange_class_movement,
+    exchange_class_special,
+    exchange_movers_movement,
+    exchange_movers_melee_attack,
+    exchange_movers_distance_attack,
+    exchange_movers_special,
+    exchange_verb_movement,
+    exchange_verb_melee_attack,
+    exchange_verb_distance_attack,
+    exchange_verb_special,
+    exchange_row_intercepts,
+    exchange_row_no_intercept,
+    exchange_row_intercepted_by,
+    exchange_row_never_intercepted,
+    exchange_row_claim_hold,
+    exchange_row_claim_yield,
+    exchange_row_claim_coin,
+    exchange_reach_range,
+    exchange_reach_area,
+    exchange_text_intercepts,
+    exchange_text_misses_after,
+    exchange_text_misses,
+    exchange_text_mover,
+    exchange_text_mover_dodge,
+    exchange_text_mover_never,
+    exchange_text_claim_hold,
+    exchange_text_claim_yield,
+    exchange_text_claim_coin,
+    keyword_auto_target,
+    keyword_auto_target_desc,
+    keyword_multi_target,
+    keyword_multi_target_desc,
+    keyword_multi_hit,
+    keyword_multi_hit_desc,
+    keyword_rush,
+    keyword_rush_desc,
+    keyword_leap,
+    keyword_leap_desc,
+    keyword_shield,
+    keyword_shield_desc,
+    keyword_deploy,
+    keyword_deploy_desc,
+    keyword_deploy_limit,
+    keyword_relocate,
+    keyword_relocate_desc,
+    keyword_free,
+    keyword_free_desc,
+    keyword_pulse,
+    keyword_pulse_desc,
+    keyword_blast_desc,
+    keyword_ray_desc,
+    keyword_cone_desc,
+    keyword_cone_wide,
+    keyword_cone_narrow,
+    keyword_distance_exact,
+    keyword_distance_range,
+    keyword_arc_desc,
+    keyword_chain_desc,
+    keyword_lingering,
+    keyword_lingering_desc,
+    keyword_status_gain,
+    keyword_status_remove,
+    keyword_status_chance_note,
+    keyword_push,
+    keyword_push_desc,
+    keyword_pull,
+    keyword_pull_desc,
+    keyword_self_destruct,
+    keyword_self_destruct_desc,
+    keyword_steady,
+    keyword_steady_chip,
+    keyword_steady_desc,
+    keyword_hunt,
+    keyword_hunt_chip,
+    keyword_hunt_desc,
+    keyword_unique,
+    keyword_unique_desc,
+    keyword_no_attack,
+    keyword_no_attack_desc,
+    keyword_curved_shot,
+    keyword_curved_shot_desc,
+    keyword_quick_draw,
+    keyword_quick_draw_desc,
+    bonus_range,
+    bonus_area,
+    bonus_targets,
+    bonus_hits,
+    bonus_damage_factor,
+    bonus_damage_percent,
+    bonus_cooldown,
+    bonus_preparation,
+    bonus_quick_draw,
+    bonus_applies,
+    bonus_fallback,
+    status_stun_desc,
+    status_marked_desc,
+    status_burn1_desc,
+    status_smoked_desc,
+    status_rooted_desc,
+    status_flying_desc,
+    status_doom_desc,
+    item_explosivemine,
+    item_portal,
+    item_choctrap,
+    item_markingtrap,
+    item_amplificateurdefensif,
+    item_cable,
 }
 
 public static class LocalizationKeyExtensions
@@ -992,12 +1121,6 @@ public static class LocalizationKeyExtensions
             case LocalizationKey.unit_start_status: return "unit/start_status";
             case LocalizationKey.unit_wummy_1: return "unit/wummy_1";
             case LocalizationKey.unit_wummy_2: return "unit/wummy_2";
-            case LocalizationKey.main_action_attack: return "main_action/attack";
-            case LocalizationKey.main_action_movement: return "main_action/movement";
-            case LocalizationKey.main_action_special: return "main_action/special";
-            case LocalizationKey.target_type_self: return "target_type/self";
-            case LocalizationKey.target_type_other_entity: return "target_type/other_entity";
-            case LocalizationKey.target_type_tile: return "target_type/tile";
             case LocalizationKey.aoe_type_noone: return "aoe_type/noone";
             case LocalizationKey.aoe_type_circle: return "aoe_type/circle";
             case LocalizationKey.aoe_type_ray: return "aoe_type/ray";
@@ -1015,15 +1138,6 @@ public static class LocalizationKeyExtensions
             case LocalizationKey.damage_type_radiation: return "damage_type/radiation";
             case LocalizationKey.damage_type_electric: return "damage_type/electric";
             case LocalizationKey.damage_type_magnetic: return "damage_type/magnetic";
-            case LocalizationKey.action_desc_type: return "action_desc/type";
-            case LocalizationKey.action_desc_cost: return "action_desc/cost";
-            case LocalizationKey.action_desc_speed: return "action_desc/speed";
-            case LocalizationKey.action_desc_target: return "action_desc/target";
-            case LocalizationKey.action_desc_automatic_target: return "action_desc/automatic_target";
-            case LocalizationKey.action_desc_aoe: return "action_desc/aoe";
-            case LocalizationKey.action_desc_hit_amount: return "action_desc/hit_amount";
-            case LocalizationKey.action_desc_damages: return "action_desc/damages";
-            case LocalizationKey.action_desc_effects: return "action_desc/effects";
             case LocalizationKey.roll_title: return "roll/title";
             case LocalizationKey.roll_header: return "roll/header";
             case LocalizationKey.roll_attacker_section: return "roll/attacker_section";
@@ -1159,6 +1273,150 @@ public static class LocalizationKeyExtensions
             case LocalizationKey.entity_ui_phase_preparation: return "entity_ui/phase_preparation";
             case LocalizationKey.entity_ui_phase_perform: return "entity_ui/phase_perform";
             case LocalizationKey.entity_ui_phase_cooldown: return "entity_ui/phase_cooldown";
+            case LocalizationKey.action_type_distance_attack: return "action_type/distance_attack";
+            case LocalizationKey.action_type_melee_attack: return "action_type/melee_attack";
+            case LocalizationKey.action_type_movement: return "action_type/movement";
+            case LocalizationKey.action_type_special: return "action_type/special";
+            case LocalizationKey.action_type_rotation: return "action_type/rotation";
+            case LocalizationKey.tooltip_target_self: return "tooltip/target_self";
+            case LocalizationKey.tooltip_target_auto: return "tooltip/target_auto";
+            case LocalizationKey.tooltip_target_enemy: return "tooltip/target_enemy";
+            case LocalizationKey.tooltip_target_destination: return "tooltip/target_destination";
+            case LocalizationKey.tooltip_target_tiles: return "tooltip/target_tiles";
+            case LocalizationKey.tooltip_target_tile: return "tooltip/target_tile";
+            case LocalizationKey.tooltip_cost_tick: return "tooltip/cost_tick";
+            case LocalizationKey.tooltip_cost_ticks: return "tooltip/cost_ticks";
+            case LocalizationKey.tooltip_cost_per_tile: return "tooltip/cost_per_tile";
+            case LocalizationKey.tooltip_range: return "tooltip/range";
+            case LocalizationKey.tooltip_damage: return "tooltip/damage";
+            case LocalizationKey.tooltip_speed: return "tooltip/speed";
+            case LocalizationKey.tooltip_speed_value: return "tooltip/speed_value";
+            case LocalizationKey.tooltip_hint_queue: return "tooltip/hint_queue";
+            case LocalizationKey.tooltip_hint_destination: return "tooltip/hint_destination";
+            case LocalizationKey.tooltip_hint_tiles: return "tooltip/hint_tiles";
+            case LocalizationKey.tooltip_hint_tile: return "tooltip/hint_tile";
+            case LocalizationKey.tooltip_more: return "tooltip/more";
+            case LocalizationKey.tooltip_more_one: return "tooltip/more_one";
+            case LocalizationKey.tooltip_unit_tag: return "tooltip/unit_tag";
+            case LocalizationKey.tooltip_percent: return "tooltip/percent";
+            case LocalizationKey.tooltip_duration_tick: return "tooltip/duration_tick";
+            case LocalizationKey.tooltip_duration_ticks: return "tooltip/duration_ticks";
+            case LocalizationKey.tooltip_duration_round: return "tooltip/duration_round";
+            case LocalizationKey.tooltip_duration_rounds: return "tooltip/duration_rounds";
+            case LocalizationKey.tooltip_and: return "tooltip/and";
+            case LocalizationKey.tooltip_or: return "tooltip/or";
+            case LocalizationKey.exchange_title: return "exchange/title";
+            case LocalizationKey.exchange_class_poursuite: return "exchange/class_poursuite";
+            case LocalizationKey.exchange_class_engagement: return "exchange/class_engagement";
+            case LocalizationKey.exchange_class_barrage: return "exchange/class_barrage";
+            case LocalizationKey.exchange_class_reflexe: return "exchange/class_reflexe";
+            case LocalizationKey.exchange_class_movement: return "exchange/class_movement";
+            case LocalizationKey.exchange_class_special: return "exchange/class_special";
+            case LocalizationKey.exchange_movers_movement: return "exchange/movers_movement";
+            case LocalizationKey.exchange_movers_melee_attack: return "exchange/movers_melee_attack";
+            case LocalizationKey.exchange_movers_distance_attack: return "exchange/movers_distance_attack";
+            case LocalizationKey.exchange_movers_special: return "exchange/movers_special";
+            case LocalizationKey.exchange_verb_movement: return "exchange/verb_movement";
+            case LocalizationKey.exchange_verb_melee_attack: return "exchange/verb_melee_attack";
+            case LocalizationKey.exchange_verb_distance_attack: return "exchange/verb_distance_attack";
+            case LocalizationKey.exchange_verb_special: return "exchange/verb_special";
+            case LocalizationKey.exchange_row_intercepts: return "exchange/row_intercepts";
+            case LocalizationKey.exchange_row_no_intercept: return "exchange/row_no_intercept";
+            case LocalizationKey.exchange_row_intercepted_by: return "exchange/row_intercepted_by";
+            case LocalizationKey.exchange_row_never_intercepted: return "exchange/row_never_intercepted";
+            case LocalizationKey.exchange_row_claim_hold: return "exchange/row_claim_hold";
+            case LocalizationKey.exchange_row_claim_yield: return "exchange/row_claim_yield";
+            case LocalizationKey.exchange_row_claim_coin: return "exchange/row_claim_coin";
+            case LocalizationKey.exchange_reach_range: return "exchange/reach_range";
+            case LocalizationKey.exchange_reach_area: return "exchange/reach_area";
+            case LocalizationKey.exchange_text_intercepts: return "exchange/text_intercepts";
+            case LocalizationKey.exchange_text_misses_after: return "exchange/text_misses_after";
+            case LocalizationKey.exchange_text_misses: return "exchange/text_misses";
+            case LocalizationKey.exchange_text_mover: return "exchange/text_mover";
+            case LocalizationKey.exchange_text_mover_dodge: return "exchange/text_mover_dodge";
+            case LocalizationKey.exchange_text_mover_never: return "exchange/text_mover_never";
+            case LocalizationKey.exchange_text_claim_hold: return "exchange/text_claim_hold";
+            case LocalizationKey.exchange_text_claim_yield: return "exchange/text_claim_yield";
+            case LocalizationKey.exchange_text_claim_coin: return "exchange/text_claim_coin";
+            case LocalizationKey.keyword_auto_target: return "keyword/auto_target";
+            case LocalizationKey.keyword_auto_target_desc: return "keyword/auto_target_desc";
+            case LocalizationKey.keyword_multi_target: return "keyword/multi_target";
+            case LocalizationKey.keyword_multi_target_desc: return "keyword/multi_target_desc";
+            case LocalizationKey.keyword_multi_hit: return "keyword/multi_hit";
+            case LocalizationKey.keyword_multi_hit_desc: return "keyword/multi_hit_desc";
+            case LocalizationKey.keyword_rush: return "keyword/rush";
+            case LocalizationKey.keyword_rush_desc: return "keyword/rush_desc";
+            case LocalizationKey.keyword_leap: return "keyword/leap";
+            case LocalizationKey.keyword_leap_desc: return "keyword/leap_desc";
+            case LocalizationKey.keyword_shield: return "keyword/shield";
+            case LocalizationKey.keyword_shield_desc: return "keyword/shield_desc";
+            case LocalizationKey.keyword_deploy: return "keyword/deploy";
+            case LocalizationKey.keyword_deploy_desc: return "keyword/deploy_desc";
+            case LocalizationKey.keyword_deploy_limit: return "keyword/deploy_limit";
+            case LocalizationKey.keyword_relocate: return "keyword/relocate";
+            case LocalizationKey.keyword_relocate_desc: return "keyword/relocate_desc";
+            case LocalizationKey.keyword_free: return "keyword/free";
+            case LocalizationKey.keyword_free_desc: return "keyword/free_desc";
+            case LocalizationKey.keyword_pulse: return "keyword/pulse";
+            case LocalizationKey.keyword_pulse_desc: return "keyword/pulse_desc";
+            case LocalizationKey.keyword_blast_desc: return "keyword/blast_desc";
+            case LocalizationKey.keyword_ray_desc: return "keyword/ray_desc";
+            case LocalizationKey.keyword_cone_desc: return "keyword/cone_desc";
+            case LocalizationKey.keyword_cone_wide: return "keyword/cone_wide";
+            case LocalizationKey.keyword_cone_narrow: return "keyword/cone_narrow";
+            case LocalizationKey.keyword_distance_exact: return "keyword/distance_exact";
+            case LocalizationKey.keyword_distance_range: return "keyword/distance_range";
+            case LocalizationKey.keyword_arc_desc: return "keyword/arc_desc";
+            case LocalizationKey.keyword_chain_desc: return "keyword/chain_desc";
+            case LocalizationKey.keyword_lingering: return "keyword/lingering";
+            case LocalizationKey.keyword_lingering_desc: return "keyword/lingering_desc";
+            case LocalizationKey.keyword_status_gain: return "keyword/status_gain";
+            case LocalizationKey.keyword_status_remove: return "keyword/status_remove";
+            case LocalizationKey.keyword_status_chance_note: return "keyword/status_chance_note";
+            case LocalizationKey.keyword_push: return "keyword/push";
+            case LocalizationKey.keyword_push_desc: return "keyword/push_desc";
+            case LocalizationKey.keyword_pull: return "keyword/pull";
+            case LocalizationKey.keyword_pull_desc: return "keyword/pull_desc";
+            case LocalizationKey.keyword_self_destruct: return "keyword/self_destruct";
+            case LocalizationKey.keyword_self_destruct_desc: return "keyword/self_destruct_desc";
+            case LocalizationKey.keyword_steady: return "keyword/steady";
+            case LocalizationKey.keyword_steady_chip: return "keyword/steady_chip";
+            case LocalizationKey.keyword_steady_desc: return "keyword/steady_desc";
+            case LocalizationKey.keyword_hunt: return "keyword/hunt";
+            case LocalizationKey.keyword_hunt_chip: return "keyword/hunt_chip";
+            case LocalizationKey.keyword_hunt_desc: return "keyword/hunt_desc";
+            case LocalizationKey.keyword_unique: return "keyword/unique";
+            case LocalizationKey.keyword_unique_desc: return "keyword/unique_desc";
+            case LocalizationKey.keyword_no_attack: return "keyword/no_attack";
+            case LocalizationKey.keyword_no_attack_desc: return "keyword/no_attack_desc";
+            case LocalizationKey.keyword_curved_shot: return "keyword/curved_shot";
+            case LocalizationKey.keyword_curved_shot_desc: return "keyword/curved_shot_desc";
+            case LocalizationKey.keyword_quick_draw: return "keyword/quick_draw";
+            case LocalizationKey.keyword_quick_draw_desc: return "keyword/quick_draw_desc";
+            case LocalizationKey.bonus_range: return "bonus/range";
+            case LocalizationKey.bonus_area: return "bonus/area";
+            case LocalizationKey.bonus_targets: return "bonus/targets";
+            case LocalizationKey.bonus_hits: return "bonus/hits";
+            case LocalizationKey.bonus_damage_factor: return "bonus/damage_factor";
+            case LocalizationKey.bonus_damage_percent: return "bonus/damage_percent";
+            case LocalizationKey.bonus_cooldown: return "bonus/cooldown";
+            case LocalizationKey.bonus_preparation: return "bonus/preparation";
+            case LocalizationKey.bonus_quick_draw: return "bonus/quick_draw";
+            case LocalizationKey.bonus_applies: return "bonus/applies";
+            case LocalizationKey.bonus_fallback: return "bonus/fallback";
+            case LocalizationKey.status_stun_desc: return "status/stun_desc";
+            case LocalizationKey.status_marked_desc: return "status/marked_desc";
+            case LocalizationKey.status_burn1_desc: return "status/burn1_desc";
+            case LocalizationKey.status_smoked_desc: return "status/smoked_desc";
+            case LocalizationKey.status_rooted_desc: return "status/rooted_desc";
+            case LocalizationKey.status_flying_desc: return "status/flying_desc";
+            case LocalizationKey.status_doom_desc: return "status/doom_desc";
+            case LocalizationKey.item_explosivemine: return "item/explosivemine";
+            case LocalizationKey.item_portal: return "item/portal";
+            case LocalizationKey.item_choctrap: return "item/choctrap";
+            case LocalizationKey.item_markingtrap: return "item/markingtrap";
+            case LocalizationKey.item_amplificateurdefensif: return "item/amplificateurdefensif";
+            case LocalizationKey.item_cable: return "item/cable";
             default: return string.Empty;
         }
     }

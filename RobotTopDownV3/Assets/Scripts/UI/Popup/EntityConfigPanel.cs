@@ -502,7 +502,7 @@ public class EntityConfigPanel : AUIPanel
 		{
 			if (actions.Count > i)
 			{
-				m_actionBtns[i].InitEntityConfigPanelMode(actions[i]);
+				m_actionBtns[i].InitEntityConfigPanelMode(actions[i], m_entityData);
 				m_actionBtns[i].SetVisible(_isVisible: true, _isInstant: true);
 			}
 			else

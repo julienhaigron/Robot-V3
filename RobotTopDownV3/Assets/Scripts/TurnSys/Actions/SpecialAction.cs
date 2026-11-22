@@ -12,8 +12,6 @@ public class SpecialAction : AEntityAction
 	public const float WeaponAimHold = .4f;
 	public bool isActionCanceled;
 
-	protected virtual bool ClaimsTargetTiles => false;
-
 	public override void NetworkSerialize<T> ( BufferSerializer<T> serializer )
 	{
 		base.NetworkSerialize(serializer);
@@ -42,7 +40,7 @@ public class SpecialAction : AEntityAction
 				, Data.GetLocalizedName()
 				, targetNames.Count == 0 ? localization.Get(LocalizationKey.log_use_weapon_ground) : string.Join(", ", targetNames)))
 			, LogConsole.LogEventType.UseTool
-			, new LogConsole.LogDetails("usetool_" + LogConsole.Instance.Counter, Data.GetLocalizedName(), Data.GetDescription()));
+			, new LogConsole.LogDetails("usetool_" + LogConsole.Instance.Counter, Data.GetLocalizedName(), new ActionTooltipContent(Data, user.Data).GetPlainText()));
 
 		foreach (ApplyStatusPassiveEffect statusEffect in Data.GetAppliedStatusEffects(this, user, firstTarget))
 		{
@@ -62,7 +60,7 @@ public class SpecialAction : AEntityAction
 
 	public override ActionConflictResultInfo CheckConflict ( AEntityAction _otherAction, bool _isCheck = true )
 	{
-		if (!ClaimsTargetTiles || isActionCanceled || _otherAction is not MoveToTargetAction otherMove || !otherMove.TargetsAnyOf(targetTileIDs))
+		if (!Data.ClaimsTargetTiles || isActionCanceled || _otherAction is not MoveToTargetAction otherMove || !otherMove.TargetsAnyOf(targetTileIDs))
 			return default;
 
 		if (WinsTieBreak(EntityActionData.PFC(Data, otherMove.Data)))

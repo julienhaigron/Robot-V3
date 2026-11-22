@@ -5,7 +5,6 @@ public class InvokeItemAction : SpecialAction
 {
 	public int itemID = -1;
 
-	protected override bool ClaimsTargetTiles => true;
 	protected override bool DoesOwnItsCompletion => true;
 
 	public override void NetworkSerialize<T> ( BufferSerializer<T> serializer )

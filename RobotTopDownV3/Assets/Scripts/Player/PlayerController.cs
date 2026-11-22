@@ -644,7 +644,7 @@ public class PlayerController : Singleton<PlayerController>
 
 			m_turnManager.RefreshActionDisplay(m_selectedEntity.ID, false, specificTokenCount);
 
-			if (isTargetValid && IsMovementPreview(currentSelectedAction))
+			if (isTargetValid && currentSelectedAction.Data.MovesItsUnit)
 				ShowVisionPreview(m_selectedEntity, _tile);
 			else
 				RangeOverlay.ClearVisionPreview();
@@ -857,21 +857,13 @@ public class PlayerController : Singleton<PlayerController>
 	private void OnActionDisplaySelected ( EntityActionDisplay _display, bool _isModAction )
 	{
 		AEntityAction action = _display == null || _isModAction ? null : _display.RecordedAction.action;
-		if (action == null || !IsMovementPreview(action) || action.positionAtActionEndID < 0)
+		if (action == null || !action.Data.MovesItsUnit || action.positionAtActionEndID < 0)
 		{
 			RangeOverlay.ClearVisionPreview();
 			return;
 		}
 
 		ShowVisionPreview(action.PerformingEntity, GridManager.Instance.Tiles[action.positionAtActionEndID]);
-	}
-
-	private static bool IsMovementPreview ( AEntityAction _action )
-	{
-		EntityActionData.ActionCodeType codeType = _action.Data.codeType;
-		return codeType == EntityActionData.ActionCodeType.TargetTileMove
-			|| codeType == EntityActionData.ActionCodeType.MoveThenAttack
-			|| codeType == EntityActionData.ActionCodeType.JumpMove;
 	}
 
 	private void ShowVisionPreview ( Entity _entity, Tile _from )

@@ -28,6 +28,7 @@ public class ActionButton : BaseButton, IPointerExitHandler
 
 	protected string m_linkedEquipmentData;
 	private bool m_isOnlyVisual = false;
+	private EntitySavedData m_unitData;
 
 	protected void Awake ()
 	{
@@ -59,9 +60,10 @@ public class ActionButton : BaseButton, IPointerExitHandler
 		RefreshVisual();
 	}
 
-	public void InitEntityConfigPanelMode( EntityActionEnumID _action )
+	public void InitEntityConfigPanelMode( EntityActionEnumID _action, EntitySavedData _unitData )
 	{
 		m_actionType = _action;
+		m_unitData = _unitData;
 		EntityActionData data = GameAssets.current.game.entityActionsData[_action];
 		m_icon.sprite = data.icon;
 		m_isOnlyVisual = true;
@@ -216,12 +218,9 @@ public class ActionButton : BaseButton, IPointerExitHandler
 	{
 		base.OnPointerEnter(eventData);
 
-		//GridManager.Instance.ClearTileOutile();
 		EntityActionData data = GameAssets.current.game.entityActionsData[m_actionType];
-		string description = data.DoesResolveItsOwnTarget()
-			? data.GetDescription() + "\n" + LocalizationManager.Instance.Get(LocalizationKey.action_desc_designation_hint)
-			: data.GetDescription();
-		ToolTipManager.Instance.Show(data.GetLocalizedName(), description, gameObject);
+		ActionTooltipContent content = new(data, TooltipUnit);
+		ToolTipManager.Instance.ShowAction(content, gameObject, m_isOnlyVisual ? null : content.Hint);
 
 		if (PlayerController.Instance != null)
 		{
@@ -247,6 +246,9 @@ public class ActionButton : BaseButton, IPointerExitHandler
 			PlayerController.Instance.SetInteractableOutlinesHidden(false);
 		}
 	}
+
+	private EntitySavedData TooltipUnit => m_isOnlyVisual ? m_unitData
+		: PlayerController.Instance != null && PlayerController.Instance.SelectedEntity != null ? PlayerController.Instance.SelectedEntity.Data : null;
 
 	private void DisplayRangePreview ( EntityActionData _data )
 	{

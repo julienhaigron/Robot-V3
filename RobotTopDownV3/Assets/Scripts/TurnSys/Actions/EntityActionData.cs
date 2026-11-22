@@ -261,6 +261,10 @@ public class EntityActionData : AParsableScriptableObject
 			&& (aoeType == AOEType.Noone || (aoeType == AOEType.Circle && aoECenterType == AOECenterType.Target && targetType != TargetType.Self));
 	}
 
+	public bool MovesItsUnit => codeType == ActionCodeType.TargetTileMove || codeType == ActionCodeType.JumpMove || codeType == ActionCodeType.MoveThenAttack;
+
+	public bool ClaimsTargetTiles => codeType == ActionCodeType.InvokeItem || codeType == ActionCodeType.InvokeEntity;
+
 	public bool DoesNeedATargetTile ()
 	{
 		return targetType != TargetType.Self
@@ -393,53 +397,6 @@ public class EntityActionData : AParsableScriptableObject
 	}
 
 	#region Getters
-
-	public string GetDescription ()
-	{
-		MainActionType mainType = GetMainActionType();
-		LocalizationManager localization = LocalizationManager.Instance;
-		System.Text.StringBuilder description = new System.Text.StringBuilder();
-
-		description.AppendLine(string.Format(localization.Get(LocalizationKey.action_desc_type), mainType.GetLocalizedTitle()));
-		description.AppendLine(string.Format(localization.Get(LocalizationKey.action_desc_cost), m_tokenPreparationDuration, tokenDuration, m_tokenCooldown));
-		description.AppendLine();
-
-		if (mainType == MainActionType.Movement)
-			description.AppendLine(string.Format(localization.Get(LocalizationKey.action_desc_speed), movementSpeed));
-		else
-		{
-			description.AppendLine(string.Format(localization.Get(LocalizationKey.action_desc_target), maxTargetAmount, targetType.GetLocalizedTitle()));
-
-			if (DoesResolveItsOwnTarget())
-				description.AppendLine(localization.Get(LocalizationKey.action_desc_automatic_target));
-
-			if (aoeType != AOEType.Noone)
-				description.AppendLine(string.Format(localization.Get(LocalizationKey.action_desc_aoe), aoeType.GetLocalizedTitle(), aoeMinEffectRange, aoeMaxEffectRange));
-
-			if (mainType == MainActionType.Attack)
-				description.AppendLine(string.Format(localization.Get(LocalizationKey.action_desc_hit_amount), hitAmount));
-
-			if (baseDamages != null && baseDamages.Keys.Count > 0)
-			{
-				List<string> damageParts = new();
-				foreach (KeyValuePair<WeaponEquipmentData.DamageType, int> pair in baseDamages)
-					damageParts.Add(pair.Value + " " + pair.Key.GetLocalizedTitle());
-
-				description.AppendLine(string.Format(localization.Get(LocalizationKey.action_desc_damages), string.Join(", ", damageParts)));
-			}
-		}
-
-		if (passiveEffects != null && passiveEffects.Length > 0)
-		{
-			List<string> effectParts = new();
-			foreach (AEntityPassiveEffect.PassiveEffectContainer passiveEffect in passiveEffects)
-				effectParts.Add(passiveEffect.ToString());
-
-			description.AppendLine(string.Format(localization.Get(LocalizationKey.action_desc_effects), string.Join(", ", effectParts)));
-		}
-
-		return description.ToString();
-	}
 
 	public bool ContainsEffect (Entity _user, EntityPassiveEffectEnumID _enumID, out AEntityPassiveEffect.PassiveEffectContainer _passiveEffect )
 	{

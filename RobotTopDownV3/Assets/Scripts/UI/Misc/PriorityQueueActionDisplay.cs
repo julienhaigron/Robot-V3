@@ -51,8 +51,8 @@ public class PriorityQueueActionDisplay :
 		if (eventData.pointerDrag != null)
 			return;
 
-		EntityActionData data = GameAssets.current.game.entityActionsData[m_actionEnumID];
-		ToolTipManager.Instance.Show(data.GetLocalizedName(), data.GetDescription(), gameObject);
+		Entity unit = PlayerController.Instance != null ? PlayerController.Instance.SelectedEntity : null;
+		ToolTipManager.Instance.ShowAction(new ActionTooltipContent(GameAssets.current.game.entityActionsData[m_actionEnumID], unit != null ? unit.Data : null), gameObject);
 	}
 
 	public void OnPointerExit ( PointerEventData eventData )
