@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
 using System;
 using Sirenix.OdinInspector;
 
@@ -8,6 +7,7 @@ public class ComponentSlot : ComponentContainer
 {
     [SerializeField] private Image m_outline;
     [SerializeField] private Vector2 m_displaySize = new Vector2(124f, 124f);
+    [SerializeField] private GameObject m_lockIcon;
 
     [Title("SubComponent")]
     [SerializeField] private Image m_subComponentTypeIconIMG;
@@ -30,9 +30,25 @@ public class ComponentSlot : ComponentContainer
     private GameDatas.PlayerSave.Component m_equipmentSavedData;
     public GameDatas.PlayerSave.Component Equipment => m_equipmentSavedData;
     private bool m_canInteract = true;
-    private Func<ComponentDisplay, bool> m_releasePredicate;
+    private Func<ComponentDisplay, ComponentGesture.Refusal> m_releasePredicate;
     private bool m_isSwapping;
     public bool IsSwapping => m_isSwapping;
+    private Color? m_baseOutlineColor;
+    private bool m_isLocked;
+    private bool m_isPending;
+
+    protected override Graphic HighlightGraphic => m_outline;
+    protected override Color? RestHighlightColor => m_isPending ? ComponentGestureFeedback.PendingColor : m_isLocked ? ComponentGestureFeedback.LockedColor : BaseOutlineColor;
+    public override ComponentDisplay Occupant => m_currentDisplay;
+
+    private Color BaseOutlineColor
+    {
+        get
+        {
+            m_baseOutlineColor ??= m_outline != null ? m_outline.color : Color.white;
+            return m_baseOutlineColor.Value;
+        }
+    }
 
     public override void Init ( ComponentContainer _container, EntitySavedData _unitData, GameDatas.PlayerSave.Component _componentSavedData, Func<GameDatas.PlayerSave.Component, bool> _predicate
         , ComponentDisplay.DisplayMode _displayMode, int _index = 0 )
@@ -73,14 +89,14 @@ public class ComponentSlot : ComponentContainer
             m_subComponentTypeIconIMG.enabled = m_currentDisplay == null;
     }
 
-    public void SetReleasePredicate ( Func<ComponentDisplay, bool> _releasePredicate )
+    public void SetReleasePredicate ( Func<ComponentDisplay, ComponentGesture.Refusal> _releasePredicate )
 	{
         m_releasePredicate = _releasePredicate;
     }
 
-    public override bool CanRelease ( ComponentDisplay _display )
+    public override ComponentGesture.Refusal GetReleaseRefusal ( ComponentDisplay _display )
 	{
-        return m_releasePredicate == null || m_releasePredicate(_display);
+        return m_releasePredicate == null ? ComponentGesture.Refusal.None : m_releasePredicate(_display);
     }
 
     public void SetInteractability (bool _canInterract)
@@ -90,13 +106,57 @@ public class ComponentSlot : ComponentContainer
 
     public void SetOutlineColor(Color _color )
 	{
-        m_outline.color = _color;
+        m_baseOutlineColor = _color;
+        RefreshHighlight();
     }
 
-    public override bool IsValid ( ComponentDisplay _display )
+    public void RefreshLock ()
+    {
+        SetLocked(m_currentDisplay != null && !CanRelease(m_currentDisplay));
+    }
+
+    public void SetLocked ( bool _isLocked )
+    {
+        m_isLocked = _isLocked;
+        if (m_lockIcon != null)
+            m_lockIcon.SetActive(_isLocked);
+        RefreshHighlight();
+    }
+
+    protected void SetPending ( bool _isPending )
+    {
+        m_isPending = _isPending;
+        RefreshHighlight();
+    }
+
+    public override ComponentGesture.Refusal GetRefusal ( ComponentDisplay _display )
 	{
-		return m_currentDisplay != _display && base.IsValid(_display) && m_canInteract && CanRelease(m_currentDisplay);
+        if (m_currentDisplay == _display)
+            return ComponentGesture.Refusal.Silent;
+
+        if (!m_canInteract)
+            return ComponentGesture.Refusal.TournamentLocked;
+
+        ComponentGesture.Refusal refusal = base.GetRefusal(_display);
+        if (refusal != ComponentGesture.Refusal.None)
+            return refusal;
+
+        ComponentGesture.Refusal occupant = GetReleaseRefusal(m_currentDisplay);
+        return occupant is ComponentGesture.Refusal.Damaged or ComponentGesture.Refusal.DamagedSubComponent ? ComponentGesture.Refusal.OccupantLocked : occupant;
 	}
+
+    protected override ComponentGesture.Kind GetIncomingKind ( ComponentDisplay _display )
+    {
+        if (m_displayMode == ComponentDisplay.DisplayMode.RecyclingStation)
+            return ComponentGesture.Kind.Deposit;
+
+        return m_currentDisplay != null ? ComponentGesture.Kind.Swap : ComponentGesture.Kind.Equip;
+    }
+
+    public override ComponentDisplay FindDisplay ( GameDatas.PlayerSave.Component _component )
+    {
+        return _component != null && m_currentDisplay != null && m_currentDisplay.SavedData == _component ? m_currentDisplay : null;
+    }
 
     public void Cleanup ()
     {
@@ -108,6 +168,7 @@ public class ComponentSlot : ComponentContainer
         m_equipmentSavedData = null;
         m_unitData = null;
         RefreshSubComponentTypeIcon();
+        SetLocked(false);
     }
 
     #region DnD

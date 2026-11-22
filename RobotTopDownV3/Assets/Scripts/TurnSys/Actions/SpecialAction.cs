@@ -35,21 +35,13 @@ public class SpecialAction : AEntityAction
 			? null : GameManager.Instance.GetEntityFromID(targetedEntityIDs[0]);
 
 		LocalizationManager localization = LocalizationManager.Instance;
-
-		LogConsole.AddLog(TagLogMessage(string.Format(localization.Get(LocalizationKey.log_use_tool), user.Data.name
-				, Data.GetLocalizedName()
-				, targetNames.Count == 0 ? localization.Get(LocalizationKey.log_use_weapon_ground) : string.Join(", ", targetNames)))
-			, LogConsole.LogEventType.UseTool
-			, new LogConsole.LogDetails(new ActionTooltipContent(Data, user.Data)));
-
+		string targetLabel = targetNames.Count == 0 ? localization.Get(LocalizationKey.log_use_weapon_ground) : string.Join(", ", targetNames);
+		LogCard entry = LogCard.Action(Data, user.Data.name, targetLabel);
 		foreach (ApplyStatusPassiveEffect statusEffect in Data.GetAppliedStatusEffects(this, user, firstTarget))
-		{
-			AEntityStatus status = statusEffect.Status;
+			entry.steps.Add(LogCard.Status(statusEffect.Status, null, statusEffect.duration, statusEffect.duration));
 
-			LogConsole.AddLog(string.Format(localization.Get(LocalizationKey.log_effect), status.GetLocalizedName())
-				, LogConsole.LogEventType.UseTool
-				, new LogConsole.LogDetails(LogCard.Status(status, null, statusEffect.duration, statusEffect.duration)));
-		}
+		string header = string.Format(localization.Get(LocalizationKey.log_use_tool), user.Data.name, Data.GetLocalizedName(), targetLabel);
+		LogConsole.AddLog(TagLogMessage(entry.Finish(header)), LogConsole.LogEventType.UseTool, entry.HasDetails ? new LogConsole.LogDetails(entry) : null);
 	}
 
 	public override void ConflictCheckPrewarm ()

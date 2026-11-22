@@ -335,7 +335,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 		return GridManager.Instance.GetTilesInAoERange(_action.Data.aoeType, m_linkedEntity, from, _targetTile, minDistance, maxDistance, extraValue, _isThisTurn, orientation, _entityOnTile);
 	}
 
-	public bool AttackRoll ( AttackAction _attackAction, AttackAction.SingleAttackInfo _singleAttackInfo, Entity _targetEntity, out Tile _coverTile )
+	public bool AttackRoll ( AttackAction _attackAction, AttackAction.SingleAttackInfo _singleAttackInfo, Entity _targetEntity, LogCard _entry, out Tile _coverTile )
 	{
 		bool doesWinPFC = _attackAction.DoesWinExchangeAgainst(_targetEntity);
 		Tile strikeTile = _singleAttackInfo.StrikeTile;
@@ -345,8 +345,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 		if (GridManager.Instance.IsThereBlockingWallBetween(strikeTile, targetTile, true, out _coverTile)
 			&& !TryCurveShot(_attackAction, strikeTile, targetTile, out curveTile))
 		{
-			LogConsole.AddLog(string.Format(LocalizationManager.Instance.Get(LocalizationKey.log_wall_blocks)
-				, m_linkedEntity.Data.name, _targetEntity.Data.name), LogConsole.LogEventType.AttackRoll);
+			_entry.steps.Add(LogCard.Note(LocalizationKey.log_card_wall, _targetEntity.Data.name));
 			return false;
 		}
 
@@ -396,7 +395,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 		defense.Add(LocalizationKey.log_card_evasion, -evationRatio);
 		defense.Add(string.IsNullOrEmpty(coverName) ? localization.Get(LocalizationKey.log_card_cover) : string.Format(localization.Get(LocalizationKey.log_card_cover_named), coverName), -coverRatio);
 
-		LogAttackRoll(card, isAttackSuccessful);
+		_entry.steps.Add(card);
 		return isAttackSuccessful;
 	}
 
@@ -407,24 +406,17 @@ public class EntityEquipmentPlugin : EntityPlugin
 			: m_linkedEntity.Data.BrainData.agility + m_linkedEntity.GetAdditionaryStatBonus(EntityEquipmentData.SecondaryStat.StatType.MeleeAccuracy, _attackAction);
 	}
 
-	private static void LogAttackRoll ( LogCard _card, bool _isAttackSuccessful )
-	{
-		LogConsole.AddLog(LocalizationManager.Instance.Get(_isAttackSuccessful ? LocalizationKey.log_attack_success : LocalizationKey.log_attack_failure)
-			, LogConsole.LogEventType.AttackRoll, new LogConsole.LogDetails(_card));
-	}
-
-	public bool SabotagePointAttackRoll ( AttackAction _attackAction, AttackAction.SingleAttackInfo _singleAttackInfo, Tile _pointTile, out Tile _coverTile )
+	public bool SabotagePointAttackRoll ( AttackAction _attackAction, AttackAction.SingleAttackInfo _singleAttackInfo, Tile _pointTile, LogCard _entry, out Tile _coverTile )
 	{
 		SabotagePoints.TryGetLivingPoint(_pointTile, out int ownerID);
 		string pointName = SabotagePoints.GetLocalizedName(ownerID);
-		LocalizationManager localization = LocalizationManager.Instance;
 		Tile strikeTile = _singleAttackInfo.StrikeTile;
 
 		if (GridManager.Instance.IsThereBlockingWallBetween(strikeTile, _pointTile, true, out _coverTile))
 		{
 			if (!TryCurveShot(_attackAction, strikeTile, _pointTile, out Tile curveTile))
 			{
-				LogConsole.AddLog(string.Format(localization.Get(LocalizationKey.log_wall_blocks), m_linkedEntity.Data.name, pointName), LogConsole.LogEventType.AttackRoll);
+				_entry.steps.Add(LogCard.Note(LocalizationKey.log_card_wall, pointName));
 				return false;
 			}
 
@@ -447,11 +439,11 @@ public class EntityEquipmentPlugin : EntityPlugin
 		attack.Add(LocalizationKey.log_card_previous_action, modAction);
 		attack.Add(LocalizationKey.log_card_demolisher, demolisherBonus);
 
-		LogAttackRoll(card, isAttackSuccessful);
+		_entry.steps.Add(card);
 		return isAttackSuccessful;
 	}
 
-	public bool StatusRoll ( Entity _target, AEntityStatus _effect, AEntityAction _action, EntityEquipmentData _equipmentData )
+	public bool StatusRoll ( Entity _target, AEntityStatus _effect, AEntityAction _action, EntityEquipmentData _equipmentData, LogCard _entry )
 	{
 		float actionProbability = _action.Data.statusHitProbability;
 		float equipmentProbability = _equipmentData.statusHitProbability;
@@ -461,7 +453,6 @@ public class EntityEquipmentPlugin : EntityPlugin
 		float roll = Random.Range(0f, 1f);
 		bool isAttackSuccessful = hitProba >= 1f || roll <= hitProba;
 
-		LocalizationManager localization = LocalizationManager.Instance;
 		LogCard card = LogCard.Roll(LogCard.Kind.StatusRoll, LocalizationKey.log_card_status_roll, m_linkedEntity.Data.name, _target.Data.name, hitProba, roll, isAttackSuccessful
 			, LocalizationKey.log_card_applied, LocalizationKey.log_card_resisted);
 		card.status = _effect;
@@ -473,10 +464,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 		chance.Add(LocalizationKey.log_card_chance_bonus, userStatusChance);
 		chance.Add(LocalizationKey.log_card_target_resistance, -targetResistance);
 
-		LogConsole.AddLog(string.Format(localization.Get(isAttackSuccessful ? LocalizationKey.status_roll_log_applied : LocalizationKey.status_roll_log_failed)
-			, m_linkedEntity.Data.name, _effect.GetLocalizedName(), _target.Data.name), LogConsole.LogEventType.Status, new LogConsole.LogDetails(card));
-
-
+		_entry.steps.Add(card);
 		return isAttackSuccessful;
 	}
 

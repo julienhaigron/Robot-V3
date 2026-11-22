@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.Serialization;
 using TMPro;
 using System.Collections.Generic;
+using DG.Tweening;
 
 public class RecyclingComponentSlot : ComponentSlot
 {
@@ -11,13 +12,15 @@ public class RecyclingComponentSlot : ComponentSlot
 	[SerializeField] private GameObject m_currencyIconGO;
 
 	private bool m_isRecycleBtnHovered;
+	private Tween m_recycleBtnCall;
 
 	public GameDatas.PlayerSave.DayData.RecyclingComponentData RecyclingData => GetRecyclingDataAt(Index);
 	public bool IsRecycling => IsRecyclingData(RecyclingData);
 	public bool IsFree => CurrentDisplay == null && !IsRecycling;
 
-	private void Awake ()
+	protected override void Awake ()
 	{
+		base.Awake();
 		m_recycleBtn.onClick += OnClickRecycle;
 		m_recycleBtn.onHoverChanged += OnRecycleBtnHoverChanged;
 	}
@@ -28,15 +31,18 @@ public class RecyclingComponentSlot : ComponentSlot
 		m_recycleBtn.onHoverChanged -= OnRecycleBtnHoverChanged;
 	}
 
-	private void OnEnable ()
+	protected override void OnEnable ()
 	{
+		base.OnEnable();
 		LocalizationManager.onLanguageChanged += RefreshRecyclingState;
 	}
 
-	private void OnDisable ()
+	protected override void OnDisable ()
 	{
+		base.OnDisable();
 		LocalizationManager.onLanguageChanged -= RefreshRecyclingState;
 		m_isRecycleBtnHovered = false;
+		SetRecycleBtnCalling(false);
 	}
 
 	public void Init ( ComponentContainer _inventory, int _index )
@@ -82,13 +88,17 @@ public class RecyclingComponentSlot : ComponentSlot
 		if (duration <= 0)
 		{
 			System.Tuple<CurrencyType, ulong> price = componentData.GetRecyclingPrice();
+			ComponentGestureFeedback.HoldCurrency(price.Item1);
 			playerSave.AddCurrency(price.Item1, price.Item2);
+			ComponentGestureFeedback.PlayMoney(CurrentDisplay.transform.position, price.Item1, (long)price.Item2);
 			Cleanup();
 		}
 		else
 			playerSave.dayData.currentlyRecyclingComponents[Index] = new() { component = component, remainingTime = duration };
 
 		RefreshRecyclingState();
+		if (duration > 0)
+			Pulse(ComponentGestureFeedback.ColorOf(ComponentGesture.Kind.Deposit));
 	}
 
 	private void OnRecycleBtnHoverChanged ( bool _isHovered )
@@ -103,6 +113,7 @@ public class RecyclingComponentSlot : ComponentSlot
 		bool isRecycling = IsRecyclingData(recyclingData);
 		EntityEquipmentData componentData = CurrentDisplay == null ? null : CurrentDisplay.ComponentData;
 		bool isShowingDuration = componentData != null && (isRecycling || m_isRecycleBtnHovered);
+		bool isPending = componentData != null && !isRecycling;
 
 		m_infoSectionGO.SetActive(componentData != null);
 
@@ -117,12 +128,30 @@ public class RecyclingComponentSlot : ComponentSlot
 		else
 			m_infoTMP.text = "+ " + componentData.GetRecyclingPrice().Item2;
 
-		m_recycleBtn.SetInteractability(componentData != null && !isRecycling);
+		m_recycleBtn.SetInteractability(isPending);
+		SetLocked(componentData != null && isRecycling);
+		SetPending(componentData != null);
+		SetRecycleBtnCalling(isPending && isActiveAndEnabled);
+		if (CurrentDisplay != null)
+			CurrentDisplay.SetDimmed(isRecycling);
 	}
 
-	public override bool CanRelease ( ComponentDisplay _display )
+	private void SetRecycleBtnCalling ( bool _isCalling )
 	{
-		return !IsRecycling && base.CanRelease(_display);
+		if (_isCalling == (m_recycleBtnCall != null))
+			return;
+
+		m_recycleBtnCall?.Kill();
+		m_recycleBtnCall = null;
+		m_recycleBtn.transform.localScale = Vector3.one;
+		if (_isCalling)
+			m_recycleBtnCall = m_recycleBtn.transform.DOScale(ComponentGestureFeedback.CallScale, ComponentGestureFeedback.CallPeriod)
+				.SetLoops(-1, LoopType.Yoyo).SetEase(Ease.InOutSine).SetUpdate(true);
+	}
+
+	public override ComponentGesture.Refusal GetReleaseRefusal ( ComponentDisplay _display )
+	{
+		return IsRecycling ? ComponentGesture.Refusal.Recycling : base.GetReleaseRefusal(_display);
 	}
 
 	public override void RegisterInteraction ( ComponentDisplay _display )

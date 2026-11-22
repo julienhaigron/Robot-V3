@@ -14,6 +14,7 @@ public class ComponentFullDisplay : MonoBehaviour
 	[SerializeField] private ScrollRect m_statsScrollRect;
 	[SerializeField] private CurrencyDisplay m_priceDisplay;
 	[SerializeField] private TextMeshProUGUI m_recyclingDurationTMP;
+	[SerializeField] private TextMeshProUGUI m_gestureTMP;
 	[SerializeField] private Color m_recyclingPriceTextColor = new(0.47058827f, 0.9686275f, 0.28627452f, 1f);
 	[SerializeField] private Color m_recyclingPriceIconColor = new(0.4784314f, 0.9843138f, 0.28627452f, 1f);
 
@@ -29,6 +30,7 @@ public class ComponentFullDisplay : MonoBehaviour
 
 	public void Init ( GameDatas.PlayerSave.Component _componentSavedData, ComponentDisplay.DisplayMode _displayMode = ComponentDisplay.DisplayMode.Hangar )
 	{
+		ShowGesture(null);
 		EntityEquipmentData componentData = _componentSavedData != null ? _componentSavedData.GetData<EntityEquipmentData>() : null;
 		m_componentTypeIcon.sprite = componentData == null ? null : GameAssets.current.ui.componentIcons[componentData.GetEquipmentType()];
 		m_componentTypeIcon.gameObject.SetActive(componentData != null);
@@ -117,13 +119,33 @@ public class ComponentFullDisplay : MonoBehaviour
 		m_recyclingDurationTMP.text = string.Format(LocalizationManager.Instance.Get(key), duration);
 	}
 
-	private void OnComponentHovered ( ComponentDisplay _display )
+	private void ShowGesture ( ComponentDisplay _display )
 	{
-		if (!gameObject.activeInHierarchy || _display == m_currentDisplayedComponent)
+		if (m_gestureTMP == null)
 			return;
 
-		m_currentDisplayedComponent = _display;
+		ComponentContainer origin = _display != null ? _display.CurrentContainer : null;
+		ComponentGesture gesture = origin != null ? origin.ResolveGesture(_display) : ComponentGesture.Refused(ComponentGesture.Refusal.Silent);
+		m_gestureTMP.gameObject.SetActive(!gesture.IsSilent);
+		if (gesture.IsSilent)
+			return;
 
-		Init(_display.SavedData, _display.CurrentDisplayMode);
+		string label = gesture.GetLabel(_display.ComponentData);
+		m_gestureTMP.text = gesture.IsValid ? string.Format(LocalizationManager.Instance.Get(LocalizationKey.component_gesture_double_click), label) : label;
+		m_gestureTMP.color = gesture.IsValid ? ComponentGestureFeedback.ColorOf(gesture.kind) : ComponentGestureFeedback.RefusalColor;
+	}
+
+	private void OnComponentHovered ( ComponentDisplay _display )
+	{
+		if (!gameObject.activeInHierarchy)
+			return;
+
+		if (_display != m_currentDisplayedComponent)
+		{
+			m_currentDisplayedComponent = _display;
+			Init(_display.SavedData, _display.CurrentDisplayMode);
+		}
+
+		ShowGesture(_display);
 	}
 }

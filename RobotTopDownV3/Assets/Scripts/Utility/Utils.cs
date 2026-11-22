@@ -8,6 +8,14 @@ using UnityEditor;
 
 public static class Utils
 {
+	private static readonly Vector3[] s_worldCorners = new Vector3[4];
+
+	public static Rect GetWorldRect ( this RectTransform _rect )
+	{
+		_rect.GetWorldCorners(s_worldCorners);
+		return Rect.MinMaxRect(s_worldCorners[0].x, s_worldCorners[0].y, s_worldCorners[2].x, s_worldCorners[2].y);
+	}
+
 	public static int ToPercent ( this float _ratio )
 	{
 		return Mathf.RoundToInt(_ratio * 100f);

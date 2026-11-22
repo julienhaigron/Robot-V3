@@ -101,6 +101,7 @@ public class EntityConfigPanel : AUIPanel
 
 		m_inventoryGrid.onItemAdded += ( container, item ) => { GameDatas.current.currentPlayerSave.AddEquipmentToInventory(item.SavedData); RefreshVisuals(); };
 		m_inventoryGrid.onItemRemoved += ( container, item ) => { GameDatas.current.currentPlayerSave.RemoveEquipmentFromInventory(item.SavedData); RefreshVisuals(); };
+		m_inventoryGrid.SetGestureTargetProvider(_display => GetContainerFor(_display, true));
 
 		foreach (KeyValuePair<EntityEquipmentData.EquipmentType, BaseButton> pair in m_componentTypeFilterBtnDictionary)
 			pair.Value.onClick = () => OnClickFilterType(pair.Key);
@@ -423,12 +424,31 @@ public class EntityConfigPanel : AUIPanel
 		foreach (KeyValuePair<EntityEquipmentData.EquipmentType, ComponentSlot> pair in m_mainComponentSlotDictionary)
 		{
 			EntityEquipmentData.EquipmentType mainType = pair.Key;
-			pair.Value.SetReleasePredicate(display => !IsEditLocked && IsUndamaged(display) && !HasDamagedSubComponent(mainType));
+			pair.Value.SetReleasePredicate(display => GetReleaseRefusal(display, mainType));
 		}
 
 		foreach (SubSlotContainer slotContainer in m_subComponentSlotDictionary.Values)
 			foreach (ComponentSlot slot in slotContainer.slots)
-				slot.SetReleasePredicate(display => !IsEditLocked && IsUndamaged(display));
+				slot.SetReleasePredicate(display => GetReleaseRefusal(display, null));
+	}
+
+	private ComponentGesture.Refusal GetReleaseRefusal ( ComponentDisplay _display, EntityEquipmentData.EquipmentType? _mainType )
+	{
+		if (IsEditLocked)
+			return ComponentGesture.Refusal.TournamentLocked;
+		if (!IsUndamaged(_display))
+			return ComponentGesture.Refusal.Damaged;
+		return _mainType.HasValue && HasDamagedSubComponent(_mainType.Value) ? ComponentGesture.Refusal.DamagedSubComponent : ComponentGesture.Refusal.None;
+	}
+
+	private void RefreshSlotLocks ()
+	{
+		foreach (ComponentSlot slot in m_mainComponentSlotDictionary.Values)
+			slot.RefreshLock();
+
+		foreach (SubSlotContainer slotContainer in m_subComponentSlotDictionary.Values)
+			foreach (ComponentSlot slot in slotContainer.slots)
+				slot.RefreshLock();
 	}
 
 	private void InitSubSlots ( EntityEquipmentData.EquipmentType? _type )
@@ -492,15 +512,21 @@ public class EntityConfigPanel : AUIPanel
 		return item => item != null && item.TryGetData(out EntityEquipmentData data) && System.Array.IndexOf(_types, data.GetEquipmentType()) >= 0;
 	}
 
-	public ComponentContainer GetContainerFor ( ComponentDisplay _display )
+	public ComponentContainer GetContainerFor ( ComponentDisplay _display, bool _includeLocked = false )
 	{
 		if (_display == null || _display.SavedData == null)
 			return null;
 
+		ComponentSlot lockedSlot = null;
 		foreach (ComponentSlot mainSlot in m_mainComponentSlotDictionary.Values)
 		{
-			if (mainSlot.gameObject.activeInHierarchy && mainSlot.IsValid(_display))
+			if (!mainSlot.gameObject.activeInHierarchy || !mainSlot.Accepts(_display.SavedData))
+				continue;
+
+			if (mainSlot.IsValid(_display))
 				return mainSlot;
+
+			lockedSlot ??= mainSlot;
 		}
 
 		ComponentSlot occupiedSlot = null;
@@ -508,18 +534,19 @@ public class EntityConfigPanel : AUIPanel
 		{
 			foreach (ComponentSlot slot in slotContainer.slots)
 			{
-				if (!slot.gameObject.activeInHierarchy || !slot.IsValid(_display))
+				if (!slot.gameObject.activeInHierarchy || !slot.Accepts(_display.SavedData))
 					continue;
 
-				if (slot.CurrentDisplay == null)
+				if (!slot.IsValid(_display))
+					lockedSlot ??= slot;
+				else if (slot.CurrentDisplay == null)
 					return slot;
-
-				if (occupiedSlot == null)
-					occupiedSlot = slot;
+				else
+					occupiedSlot ??= slot;
 			}
 		}
 
-		return occupiedSlot;
+		return occupiedSlot != null ? occupiedSlot : _includeLocked ? lockedSlot : null;
 	}
 
 	public static System.Action onConfigChanged;
@@ -549,18 +576,13 @@ public class EntityConfigPanel : AUIPanel
 
 		m_statBlock.Init(m_entityData, true);
 
-		//inventory
-		//m_inventoryGrid.RefreshPredicate(InventoryGridPredicate);
 		m_inventoryGrid.Cleanup();
-		for (int i = 0; i < GameConfig.current.game.maxInventoryCapacity; i++)
-		{
-			if (GameDatas.current.currentPlayerSave.equipmentInventory.Count > i && InventoryGridPredicate(GameDatas.current.currentPlayerSave.equipmentInventory[i]))
-				m_inventoryGrid.CreateNewDisplay(null, GameDatas.current.currentPlayerSave.equipmentInventory[i], ComponentDisplay.DisplayMode.Hangar);
-			else
-			{
-				m_inventoryGrid.CreateNewDisplay(null, null, ComponentDisplay.DisplayMode.Empty);
-			}
-		}
+		int capacity = GameConfig.current.game.maxInventoryCapacity;
+		foreach (GameDatas.PlayerSave.Component component in GameDatas.current.currentPlayerSave.equipmentInventory.Take(capacity).Where(InventoryGridPredicate))
+			m_inventoryGrid.CreateNewDisplay(null, component, ComponentDisplay.DisplayMode.Hangar);
+		m_inventoryGrid.Pad(capacity);
+		RefreshSlotLocks();
+
 		EntityEquipmentData.EntityFaction dominentCorpo = m_entityData.GetDominentFaction(out float percentage);
 		m_dominentCorpoIcon.sprite = GameAssets.current.ui.corporationsIcons[dominentCorpo];
 		m_dominentCorpoIcon.color = GameAssets.current.ui.corporationsColors[dominentCorpo];

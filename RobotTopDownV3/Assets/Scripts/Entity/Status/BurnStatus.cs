@@ -19,7 +19,7 @@ public class BurnStatus : AEntityStatus
 
 	public override string GetTickEffectText ( int _remainingDuration, Entity _entity )
 	{
-		return string.Format(LocalizationManager.Instance.Get(LocalizationKey.log_damages), damageAmount);
+		return string.Format(LocalizationManager.Instance.Get(LocalizationKey.log_exchange_damage), damageAmount);
 	}
 
 	public override void PerformStatusEffectAtBeginingOfRound ( Tile _tile )

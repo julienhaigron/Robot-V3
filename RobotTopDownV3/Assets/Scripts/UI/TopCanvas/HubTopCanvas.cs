@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using MPUIKIT;
+using DG.Tweening;
 
 public class HubTopCanvas : AUITopCanvas
 {
@@ -22,7 +23,16 @@ public class HubTopCanvas : AUITopCanvas
 	[Title("Shop")]
 	[SerializeField] private CurrencyDisplay m_shopFactionCurrencyDisplay;
 
+	[Title("Currency feedback")]
+	[SerializeField] private float m_currencyRollDuration = .45f;
+	[SerializeField] private float m_currencyBumpScale = .15f;
+
 	private bool m_isStructureUpgradePopupOpened = false;
+	private CurrencyType m_shopCurrency = CurrencyType.Unknown;
+	private readonly Dictionary<CurrencyType, ulong> m_shownCurrencies = new();
+	private readonly Dictionary<CurrencyType, Tween> m_currencyRolls = new();
+	private readonly Dictionary<CurrencyType, Tween> m_currencyBumps = new();
+	private readonly HashSet<CurrencyType> m_deferredCurrencies = new();
 
 	protected override void Awake ()
 	{
@@ -74,21 +84,68 @@ public class HubTopCanvas : AUITopCanvas
 
 	private void OnCurrencyChange ( CurrencyType _type )
 	{
-		if (!m_currencyDisplays.ContainsKey(_type))
+		if (m_currencyDisplays.ContainsKey(_type) && !m_deferredCurrencies.Contains(_type))
+			RollCurrency(_type, false);
+	}
+
+	public RectTransform GetCurrencyAnchor ( CurrencyType _type )
+	{
+		CurrencyDisplay display = GetShownDisplay(_type);
+		return display != null ? (RectTransform)display.transform : null;
+	}
+
+	private CurrencyDisplay GetShownDisplay ( CurrencyType _type )
+	{
+		if (_type == m_shopCurrency && m_shopFactionCurrencyDisplay.gameObject.activeInHierarchy)
+			return m_shopFactionCurrencyDisplay;
+
+		return m_currencyDisplays.TryGetValue(_type, out CurrencyDisplay display) && display.gameObject.activeInHierarchy ? display : null;
+	}
+
+	public void DeferRoll ( CurrencyType _type )
+	{
+		m_deferredCurrencies.Add(_type);
+	}
+
+	public void SettleCurrency ( CurrencyType _type, bool _bump )
+	{
+		m_deferredCurrencies.Remove(_type);
+		if (m_currencyDisplays.ContainsKey(_type))
+			RollCurrency(_type, _bump);
+	}
+
+	private void RollCurrency ( CurrencyType _type, bool _bump )
+	{
+		CurrencyDisplay display = GetShownDisplay(_type);
+		ulong target = GameDatas.current.currentPlayerSave.currencies[_type];
+		ulong shown = m_shownCurrencies.TryGetValue(_type, out ulong value) ? value : target;
+
+		if (m_currencyRolls.TryGetValue(_type, out Tween roll))
+			roll?.Kill();
+
+		if (!m_visible || display == null || shown == target)
+		{
+			SetCurrencyText(_type, target);
+			return;
+		}
+
+		m_currencyRolls[_type] = DOVirtual.Float(shown, target, m_currencyRollDuration, _value => SetCurrencyText(_type, (ulong)Mathf.Round(_value)))
+			.SetEase(Ease.OutCubic).SetUpdate(true).OnComplete(() => SetCurrencyText(_type, target));
+
+		if (!_bump)
 			return;
 
-		switch (_type)
-		{
-			case CurrencyType.SoftCurrency:
-				m_currencyDisplays[_type].Text.text = GameDatas.current.currentPlayerSave.currencies[_type].ToString();
-				break;
-			case CurrencyType.PsyCredit:
-			case CurrencyType.CommandoCredit:
-			case CurrencyType.PaladinCredit:
-				//int percentage = 0;
-				m_currencyDisplays[_type].Text.text = /*percentage + " % - " + */GameDatas.current.currentPlayerSave.currencies[_type].ToString() + "r";
-				break;
-		}
+		if (m_currencyBumps.TryGetValue(_type, out Tween bump))
+			bump?.Kill(true);
+		m_currencyBumps[_type] = display.transform.DOPunchScale(Vector3.one * m_currencyBumpScale, .35f, 6, 1f).SetUpdate(true);
+	}
+
+	private void SetCurrencyText ( CurrencyType _type, ulong _value )
+	{
+		m_shownCurrencies[_type] = _value;
+		m_currencyDisplays[_type].Text.text = _type == CurrencyType.SoftCurrency ? _value.ToString() : _value + "r";
+		if (_type == m_shopCurrency)
+			m_shopFactionCurrencyDisplay.Init(_type, _value.ToString(), true);
 	}
 
 	private void OnNewDay ()
@@ -200,30 +257,17 @@ public class HubTopCanvas : AUITopCanvas
 				if (displayPair.Key != CurrencyType.SoftCurrency)
 					displayPair.Value.Hide();
 
-			EntityEquipmentData.EntityFaction selectedFaction = UIManager.Instance.GetPanel<ShopPanel>().CurrentFaction;
-
-			switch (selectedFaction)
-			{
-				case EntityEquipmentData.EntityFaction.Psy:
-					m_shopFactionCurrencyDisplay.Init(CurrencyType.PsyCredit, GameDatas.current.currentPlayerSave.currencies[CurrencyType.PsyCredit].ToString(), true);
-					break;
-				case EntityEquipmentData.EntityFaction.Paladin:
-					m_shopFactionCurrencyDisplay.Init(CurrencyType.PaladinCredit, GameDatas.current.currentPlayerSave.currencies[CurrencyType.PaladinCredit].ToString(), true);
-					break;
-				case EntityEquipmentData.EntityFaction.Commando:
-					m_shopFactionCurrencyDisplay.Init(CurrencyType.CommandoCredit, GameDatas.current.currentPlayerSave.currencies[CurrencyType.CommandoCredit].ToString(), true);
-					break;
-			}
 			m_upgradeStructureBtn.gameObject.SetActive(true);
 			m_shopFactionCurrencyDisplay.Show();
-			CurrencyType associatedCurrency = _shopPanel.AssociatedCurrency;
-			m_shopFactionCurrencyDisplay.Init(associatedCurrency, GameDatas.current.currentPlayerSave.currencies[associatedCurrency].ToString(), true);
+			m_shopCurrency = _shopPanel.AssociatedCurrency;
+			SetCurrencyText(m_shopCurrency, GameDatas.current.currentPlayerSave.currencies[m_shopCurrency]);
 			/*int percentage = 0;
 			m_factionProgressionTMP.text = percentage + " %";
 			m_factionProgressionFill.fillAmount = (float)percentage / 100f;*/
 		}
 		else
 		{
+			m_shopCurrency = CurrencyType.Unknown;
 			foreach (CurrencyDisplay display in m_currencyDisplays.Values)
 				display.Show();
 			m_shopFactionCurrencyDisplay.Hide();
@@ -232,12 +276,9 @@ public class HubTopCanvas : AUITopCanvas
 				m_upgradeStructureBtn.gameObject.SetActive(true);
 			else
 				m_upgradeStructureBtn.gameObject.SetActive(false);
-			m_currencyDisplays[CurrencyType.SoftCurrency].Text.text = GameDatas.current.currentPlayerSave.currencies[CurrencyType.SoftCurrency].ToString();
 
-			//int percentage = 0;
-			m_currencyDisplays[CurrencyType.CommandoCredit].Text.text = /*percentage + " % - " + */GameDatas.current.currentPlayerSave.currencies[CurrencyType.CommandoCredit].ToString() + "r";
-			m_currencyDisplays[CurrencyType.PaladinCredit].Text.text = /*percentage + " % - " + */GameDatas.current.currentPlayerSave.currencies[CurrencyType.PaladinCredit].ToString() + "r";
-			m_currencyDisplays[CurrencyType.PsyCredit].Text.text = /*percentage + " % - " + */GameDatas.current.currentPlayerSave.currencies[CurrencyType.PsyCredit].ToString() + "r";
+			foreach (CurrencyType type in new[] { CurrencyType.SoftCurrency, CurrencyType.CommandoCredit, CurrencyType.PaladinCredit, CurrencyType.PsyCredit })
+				SetCurrencyText(type, GameDatas.current.currentPlayerSave.currencies[type]);
 		}
 
 		RefreshDayDisplay();

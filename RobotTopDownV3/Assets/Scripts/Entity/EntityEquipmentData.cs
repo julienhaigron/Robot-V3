@@ -79,6 +79,17 @@ public class EntityEquipmentData : AParsableScriptableObject
 		Starting
 	}
 
+	public static CurrencyType GetFactionCurrency ( EntityFaction _faction )
+	{
+		return _faction switch
+		{
+			EntityFaction.Psy => CurrencyType.PsyCredit,
+			EntityFaction.Paladin => CurrencyType.PaladinCredit,
+			EntityFaction.Commando => CurrencyType.CommandoCredit,
+			_ => CurrencyType.SoftCurrency
+		};
+	}
+
 	[System.Serializable]
 	public class StatDescription
 	{
@@ -221,6 +232,11 @@ public class EntityEquipmentData : AParsableScriptableObject
 	public System.Tuple<CurrencyType, ulong> GetSellingPrice ()
 	{
 		return new System.Tuple<CurrencyType, ulong>(CurrencyType.SoftCurrency, creditCost / 2ul);
+	}
+
+	public System.Tuple<CurrencyType, ulong> GetShopBuyingPrice ()
+	{
+		return new System.Tuple<CurrencyType, ulong>(GetFactionCurrency(faction), creditCost);
 	}
 
 	public System.Tuple<CurrencyType, ulong> GetShopSellingPrice ()

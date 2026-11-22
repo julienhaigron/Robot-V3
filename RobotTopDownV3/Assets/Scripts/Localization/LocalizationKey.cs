@@ -423,18 +423,10 @@ public enum LocalizationKey
     damage_type_radiation,
     damage_type_electric,
     damage_type_magnetic,
-    status_roll_log_applied,
-    status_roll_log_failed,
     log_use_weapon,
     log_use_weapon_ground,
     log_use_tool,
-    log_use_tool_effects,
-    log_attack_success,
-    log_attack_failure,
-    log_damages,
-    log_damages_on_target,
     log_death,
-    log_wall_blocks,
     log_round,
     log_effect,
     log_doom_triggers,
@@ -758,6 +750,26 @@ public enum LocalizationKey
     cover_enemy_structure,
     log_status_affected_ticks,
     log_status_affected_rounds,
+    log_exchange_damage,
+    log_exchange_target,
+    log_card_wall,
+    log_card_more,
+    component_gesture_buy,
+    component_gesture_sell,
+    component_gesture_equip,
+    component_gesture_swap,
+    component_gesture_remove,
+    component_gesture_take_back,
+    component_gesture_deposit,
+    component_gesture_double_click,
+    component_refusal_too_expensive,
+    component_refusal_damaged,
+    component_refusal_damaged_sub_component,
+    component_refusal_occupant_locked,
+    component_refusal_tournament_locked,
+    component_refusal_no_free_slot,
+    component_refusal_recycling,
+    component_refusal_wrong_type,
 }
 
 public static class LocalizationKeyExtensions
@@ -1188,18 +1200,10 @@ public static class LocalizationKeyExtensions
             case LocalizationKey.damage_type_radiation: return "damage_type/radiation";
             case LocalizationKey.damage_type_electric: return "damage_type/electric";
             case LocalizationKey.damage_type_magnetic: return "damage_type/magnetic";
-            case LocalizationKey.status_roll_log_applied: return "status_roll/log_applied";
-            case LocalizationKey.status_roll_log_failed: return "status_roll/log_failed";
             case LocalizationKey.log_use_weapon: return "log/use_weapon";
             case LocalizationKey.log_use_weapon_ground: return "log/use_weapon_ground";
             case LocalizationKey.log_use_tool: return "log/use_tool";
-            case LocalizationKey.log_use_tool_effects: return "log/use_tool_effects";
-            case LocalizationKey.log_attack_success: return "log/attack_success";
-            case LocalizationKey.log_attack_failure: return "log/attack_failure";
-            case LocalizationKey.log_damages: return "log/damages";
-            case LocalizationKey.log_damages_on_target: return "log/damages_on_target";
             case LocalizationKey.log_death: return "log/death";
-            case LocalizationKey.log_wall_blocks: return "log/wall_blocks";
             case LocalizationKey.log_round: return "log/round";
             case LocalizationKey.log_effect: return "log/effect";
             case LocalizationKey.log_doom_triggers: return "log/doom_triggers";
@@ -1523,6 +1527,26 @@ public static class LocalizationKeyExtensions
             case LocalizationKey.cover_enemy_structure: return "cover/enemy_structure";
             case LocalizationKey.log_status_affected_ticks: return "log/status_affected_ticks";
             case LocalizationKey.log_status_affected_rounds: return "log/status_affected_rounds";
+            case LocalizationKey.log_exchange_damage: return "log/exchange_damage";
+            case LocalizationKey.log_exchange_target: return "log/exchange_target";
+            case LocalizationKey.log_card_wall: return "log_card/wall";
+            case LocalizationKey.log_card_more: return "log_card/more";
+            case LocalizationKey.component_gesture_buy: return "component_gesture/buy";
+            case LocalizationKey.component_gesture_sell: return "component_gesture/sell";
+            case LocalizationKey.component_gesture_equip: return "component_gesture/equip";
+            case LocalizationKey.component_gesture_swap: return "component_gesture/swap";
+            case LocalizationKey.component_gesture_remove: return "component_gesture/remove";
+            case LocalizationKey.component_gesture_take_back: return "component_gesture/take_back";
+            case LocalizationKey.component_gesture_deposit: return "component_gesture/deposit";
+            case LocalizationKey.component_gesture_double_click: return "component_gesture/double_click";
+            case LocalizationKey.component_refusal_too_expensive: return "component_refusal/too_expensive";
+            case LocalizationKey.component_refusal_damaged: return "component_refusal/damaged";
+            case LocalizationKey.component_refusal_damaged_sub_component: return "component_refusal/damaged_sub_component";
+            case LocalizationKey.component_refusal_occupant_locked: return "component_refusal/occupant_locked";
+            case LocalizationKey.component_refusal_tournament_locked: return "component_refusal/tournament_locked";
+            case LocalizationKey.component_refusal_no_free_slot: return "component_refusal/no_free_slot";
+            case LocalizationKey.component_refusal_recycling: return "component_refusal/recycling";
+            case LocalizationKey.component_refusal_wrong_type: return "component_refusal/wrong_type";
             default: return string.Empty;
         }
     }

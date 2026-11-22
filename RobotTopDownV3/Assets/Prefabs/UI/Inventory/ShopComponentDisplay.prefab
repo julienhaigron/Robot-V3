@@ -577,6 +577,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: RTD::ComponentDisplay
   m_canvasGroup: {fileID: 4247666706934973399}
+  m_visual: {fileID: 3148064092060739015}
   m_outlineImg: {fileID: 1785746737483043691}
   m_icon: {fileID: 1859022535642274209}
   m_titleTMP: {fileID: 7976625015440776609}

@@ -167,40 +167,34 @@ public class AttackAction : AEntityAction
 			attacksInfos[i] = new();
 	}
 
-	private void LogUseWeapon ()
+	private string GetTargetLabel ()
 	{
 		List<string> targetNames = GetTargetedEntityNames();
-		LocalizationManager localization = LocalizationManager.Instance;
-		string targetLabel = targetNames.Count > 0 ? string.Join(", ", targetNames)
+		return targetNames.Count > 0 ? string.Join(", ", targetNames)
 			: SabotagePoints.TryGetLivingPoint(GetTargetTileAt(0), out int sabotagePointOwnerID) ? SabotagePoints.GetLocalizedName(sabotagePointOwnerID)
-			: localization.Get(LocalizationKey.log_use_weapon_ground);
-		LogConsole.AddLog(TagLogMessage(string.Format(localization.Get(LocalizationKey.log_use_weapon), PerformingEntity.Data.name
-				, targetLabel
-				, Data.GetLocalizedName()))
-			, LogConsole.LogEventType.UseWeapon
-			, new LogConsole.LogDetails(new ActionTooltipContent(Data, PerformingEntity.Data)));
+			: LocalizationManager.Instance.Get(LocalizationKey.log_use_weapon_ground);
 	}
 
-	private void LogDamages ( Dictionary<WeaponEquipmentData.DamageType, int> _damages, LogConsole.LogDetails _details, int _attackIndex )
+	private void LogEntry ( LogCard _entry )
 	{
-		int totalDamage = 0;
-		foreach (int value in _damages.Values)
-			totalDamage += value;
+		string header = string.Format(LocalizationManager.Instance.Get(LocalizationKey.log_use_weapon), PerformingEntity.Data.name, _entry.target, Data.GetLocalizedName());
+		LogConsole.AddLog(TagLogMessage(_entry.Finish(header)), LogConsole.LogEventType.UseWeapon, _entry.HasDetails ? new LogConsole.LogDetails(_entry) : null);
+	}
 
-		LocalizationManager localization = LocalizationManager.Instance;
-
-		if (Data.aoeType == EntityActionData.AOEType.Noone)
+	private void AddDamageStep ( LogCard _entry, LogCard _damage, int _attackIndex )
+	{
+		if (Data.aoeType != EntityActionData.AOEType.Noone)
 		{
-			LogConsole.AddLog(string.Format(localization.Get(LocalizationKey.log_damages), totalDamage), LogConsole.LogEventType.Damage, _details);
-			return;
+			List<string> caughtNames = new();
+			foreach (Entity caughtEntity in GetEntitiesCaughtInAoEAt(_attackIndex))
+				caughtNames.Add(caughtEntity.Data.name);
+			if (caughtNames.Count == 0)
+				return;
+
+			_damage.target = string.Join(", ", caughtNames);
 		}
 
-		foreach (Entity caughtEntity in GetEntitiesCaughtInAoEAt(_attackIndex))
-		{
-			LogConsole.AddLog(string.Format(localization.Get(LocalizationKey.log_damages_on_target), caughtEntity.Data.name, totalDamage)
-				, LogConsole.LogEventType.Damage
-				, _details);
-		}
+		_entry.steps.Add(_damage);
 	}
 
 	private List<Entity> GetEntitiesCaughtInAoEAt ( int _attackIndex )
@@ -228,7 +222,7 @@ public class AttackAction : AEntityAction
 	{
 		if (targetedEntityIDs != null || (Data.aoeType != EntityActionData.AOEType.Noone && targetTileIDs != null))
 		{
-			LogUseWeapon();
+			LogCard entry = LogCard.Action(Data, PerformingEntity.Data.name, GetTargetLabel());
 
 			for (int attackCount = 0; attackCount < attacksInfos.Length; attackCount++)
 			{
@@ -258,17 +252,17 @@ public class AttackAction : AEntityAction
 				{
 					Tile targetTile = GetTargetTileAt(attackCount);
 					attackInfo.isAttackSuccessfull = SabotagePoints.TryGetLivingPoint(targetTile, out _)
-						? PerformingEntity.Equipment.SabotagePointAttackRoll(this, attackInfo, targetTile, out coverHitted)
+						? PerformingEntity.Equipment.SabotagePointAttackRoll(this, attackInfo, targetTile, entry, out coverHitted)
 						: true;
 				}
 				else if (DidDesignatedTargetEscapeReach(attackCount))
 				{
 					attackInfo.isAttackSuccessfull = false;
 					attackInfo.didTargetDodge = true;
-					LogConsole.AddLog(LocalizationManager.Instance.Get(LocalizationKey.log_attack_failure), LogConsole.LogEventType.AttackRoll);
+					entry.steps.Add(LogCard.Miss(PerformingEntity.Data.name, targetEntity.Data.name));
 				}
 				else
-					attackInfo.isAttackSuccessfull = PerformingEntity.Equipment.AttackRoll(this, attackInfo, targetEntity, out coverHitted);
+					attackInfo.isAttackSuccessfull = PerformingEntity.Equipment.AttackRoll(this, attackInfo, targetEntity, entry, out coverHitted);
 
 				attackInfo.hittedTileID = coverHitted == null ? -1 : coverHitted.coordinates.ID;
 
@@ -289,17 +283,17 @@ public class AttackAction : AEntityAction
 							attackInfo.areStatusesSuccess[i] = true;
 						else
 							attackInfo.areStatusesSuccess[i] = PerformingEntity.Equipment.StatusRoll(targetEntity, GameAssets.current.game.entityStatus[(EntityStatusEnumID)attackInfo.statusIds[i]]
-							, this, PerformingEntity.Equipment.Weapons[linkedEquipmentId].Data);
+							, this, PerformingEntity.Equipment.Weapons[linkedEquipmentId].Data, entry);
 					}
 
 				}
 
 				Dictionary<WeaponEquipmentData.DamageType, int> damagesDealt =
 					PerformingEntity.Equipment.Weapons[linkedEquipmentId].GetDamages(PerformingEntity, targetEntity, this
-						, GetExchangeResultAgainst(targetEntity), out LogConsole.LogDetails damageDetails, attackInfo.ShotOrigin);
+						, GetExchangeResultAgainst(targetEntity), out LogCard damageCard, attackInfo.ShotOrigin);
 
 				if (attackInfo.isAttackSuccessfull)
-					LogDamages(damagesDealt, damageDetails, attackCount);
+					AddDamageStep(entry, damageCard, attackCount);
 
 				if (coverHitted != null)
 					coverHitted.Wall.RegisterDamage(damagesDealt);
@@ -313,6 +307,8 @@ public class AttackAction : AEntityAction
 					attackInfo.damageTypes[damageIndex++] = (short)pair.Key;
 				}
 			}
+
+			LogEntry(entry);
 		}
 	}
 

@@ -1710,14 +1710,6 @@ MonoBehaviour:
     values:
     - Magnetic
     - "Magn\xE9tique"
-  - key: status_roll/log_applied
-    values:
-    - '{0} applies {1} on {2}'
-    - '{0} applique {1} sur {2}'
-  - key: status_roll/log_failed
-    values:
-    - '{0} fails to apply {1} on {2}'
-    - "{0} \xE9choue \xE0 appliquer {1} sur {2}"
   - key: log/use_weapon
     values:
     - '{0} attacks {1} with <i>{2}</i>'
@@ -1730,34 +1722,10 @@ MonoBehaviour:
     values:
     - '{0} uses <i>{1}</i> on {2}'
     - '{0} utilise <i>{1}</i> sur {2}'
-  - key: log/use_tool_effects
-    values:
-    - '-> Effects: {0}'
-    - '-> Effets : {0}'
-  - key: log/attack_success
-    values:
-    - -> Success
-    - "-> R\xE9ussite"
-  - key: log/attack_failure
-    values:
-    - -> Failure
-    - "-> \xC9chec"
-  - key: log/damages
-    values:
-    - -> {0} damages
-    - "-> {0} d\xE9g\xE2ts"
-  - key: log/damages_on_target
-    values:
-    - -> {0} takes {1} damages
-    - "-> {0} subit {1} d\xE9g\xE2ts"
   - key: log/death
     values:
     - '{0} dies'
     - '{0} meurt'
-  - key: log/wall_blocks
-    values:
-    - '{0} cannot reach {1}, the shot hits a wall'
-    - '{0} ne peut pas atteindre {1}, le tir touche un mur'
   - key: log/round
     values:
     - Round {0}
@@ -3050,3 +3018,83 @@ MonoBehaviour:
     values:
     - "{0} is affected by <i>{1}</i>, {2} rounds remaining"
     - "{0} est affect\xE9 par <i>{1}</i>, {2} tours restants"
+  - key: log/exchange_damage
+    values:
+    - "{0} damage"
+    - "{0} d\xE9g\xE2ts"
+  - key: log/exchange_target
+    values:
+    - "{0}: {1}"
+    - "{0} : {1}"
+  - key: log_card/wall
+    values:
+    - "Blocked by a wall"
+    - "Bloqu\xE9 par un mur"
+  - key: log_card/more
+    values:
+    - "+{0} more steps"
+    - "+{0} autres \xE9tapes"
+  - key: component_gesture/buy
+    values:
+    - "Buy \xB7 {0}"
+    - "Acheter \xB7 {0}"
+  - key: component_gesture/sell
+    values:
+    - "Sell \xB7 +{0}"
+    - "Vendre \xB7 +{0}"
+  - key: component_gesture/equip
+    values:
+    - "Equip"
+    - "\xC9quiper"
+  - key: component_gesture/swap
+    values:
+    - "Swap"
+    - "\xC9changer"
+  - key: component_gesture/remove
+    values:
+    - "Remove"
+    - "Retirer"
+  - key: component_gesture/take_back
+    values:
+    - "Take back"
+    - "Reprendre"
+  - key: component_gesture/deposit
+    values:
+    - "Drop in \xB7 +{0}"
+    - "D\xE9poser \xB7 +{0}"
+  - key: component_gesture/double_click
+    values:
+    - "Double-click: {0}"
+    - "Double-clic : {0}"
+  - key: component_refusal/too_expensive
+    values:
+    - "Too expensive"
+    - "Trop cher"
+  - key: component_refusal/damaged
+    values:
+    - "Damaged: repair it first"
+    - "Endommag\xE9 : \xE0 r\xE9parer"
+  - key: component_refusal/damaged_sub_component
+    values:
+    - "A sub-component is damaged"
+    - "Sous-composant endommag\xE9"
+  - key: component_refusal/occupant_locked
+    values:
+    - "Installed component is locked"
+    - "Composant en place verrouill\xE9"
+  - key: component_refusal/tournament_locked
+    values:
+    - "Unit registered in the tournament"
+    - "Unit\xE9 inscrite au tournoi"
+  - key: component_refusal/no_free_slot
+    values:
+    - "No free slot"
+    - "Aucun emplacement libre"
+  - key: component_refusal/recycling
+    values:
+    - "Recycling in progress"
+    - "Recyclage en cours"
+  - key: component_refusal/wrong_type
+    values:
+    - "Incompatible type"
+    - "Type incompatible"

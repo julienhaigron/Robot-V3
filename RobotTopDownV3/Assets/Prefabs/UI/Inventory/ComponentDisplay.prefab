@@ -481,6 +481,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_canvasGroup: {fileID: 2193921125457550762}
+  m_visual: {fileID: 1691539285977783497}
   m_outlineImg: {fileID: 1420230151193463271}
   m_icon: {fileID: 1542007063141976917}
   m_titleTMP: {fileID: 8711913412624370913}

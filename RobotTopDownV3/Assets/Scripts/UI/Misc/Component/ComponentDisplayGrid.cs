@@ -1,17 +1,23 @@
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
 using System.Collections.Generic;
-using System.Collections;
 using System;
 using System.Linq;
+using DG.Tweening;
 
 public class ComponentDisplayGrid : ComponentContainer
 {
+    [SerializeField] private Graphic m_highlight;
+    [SerializeField] private float m_revealMargin = 8f;
+
     private List<ComponentDisplay> m_items = new();
     public List<ComponentDisplay> Items => m_items;
 
     private bool m_areMainComponentsHighlighted;
+    private int m_capacity;
+    private Tween m_revealTween;
+
+    protected override Graphic HighlightGraphic => m_highlight;
 
     public override void Init ( ComponentContainer _container, EntitySavedData _unitData, GameDatas.PlayerSave.Component _componentSavedData, Func<GameDatas.PlayerSave.Component, bool> _predicate
         , ComponentDisplay.DisplayMode _displayMode, int _index = 0 )
@@ -24,9 +30,15 @@ public class ComponentDisplayGrid : ComponentContainer
             m_predicate = null;
     }
 
+    protected override void OnDisable ()
+    {
+        base.OnDisable();
+        m_revealTween?.Kill();
+    }
+
     public ComponentDisplay CreateNewDisplay ( EntitySavedData _unitData, GameDatas.PlayerSave.Component _componentSavedData, ComponentDisplay.DisplayMode _displayMode )
 	{
-        ComponentDisplay newDisplay = Instantiate(_displayMode == ComponentDisplay.DisplayMode.ShopBuying 
+        ComponentDisplay newDisplay = Instantiate(_displayMode == ComponentDisplay.DisplayMode.ShopBuying
             ? GameAssets.current.ui.shopComponentDisplay : GameAssets.current.ui.baseComponentDisplay, m_displayParent);
         newDisplay.Init(_unitData, _componentSavedData, _displayMode);
 
@@ -38,6 +50,13 @@ public class ComponentDisplayGrid : ComponentContainer
         RefreshMainComponentHighlight(newDisplay);
 
         return newDisplay;
+    }
+
+    public void Pad ( int _capacity )
+    {
+        m_capacity = _capacity;
+        while (m_items.Count < m_capacity)
+            CreateNewDisplay(null, null, ComponentDisplay.DisplayMode.Empty);
     }
 
     public void SetMainComponentsHighlighted ( bool _isHighlighted )
@@ -68,7 +87,10 @@ public class ComponentDisplayGrid : ComponentContainer
 
     private long GetAcquisitionDate ( ComponentDisplay _display )
     {
-        return _display == null || _display.SavedData == null ? long.MaxValue : _display.SavedData.acquisitionDateTicks;
+        if (_display == null || _display.SavedData == null)
+            return long.MaxValue;
+
+        return _display.SavedData.acquisitionDateTicks > 0 ? _display.SavedData.acquisitionDateTicks : long.MaxValue - 1;
     }
 
     public void RefreshPredicate ( Func<GameDatas.PlayerSave.Component, bool> _newPredicate )
@@ -99,13 +121,59 @@ public class ComponentDisplayGrid : ComponentContainer
             Destroy(display.gameObject);
 
         m_items.Clear();
+        m_capacity = 0;
+    }
+
+    public override ComponentDisplay FindDisplay ( GameDatas.PlayerSave.Component _component )
+    {
+        return _component == null ? null : m_items.Find(item => item != null && item.SavedData == _component);
+    }
+
+    public override void Reveal ( ComponentDisplay _display )
+    {
+        ScrollRect scroll = m_displayParent != null ? m_displayParent.GetComponentInParent<ScrollRect>() : null;
+        if (scroll == null || scroll.content == null || _display == null || !m_items.Contains(_display))
+            return;
+
+        RectTransform content = scroll.content;
+        RectTransform viewport = scroll.viewport != null ? scroll.viewport : (RectTransform)scroll.transform;
+        LayoutRebuilder.ForceRebuildLayoutImmediate(content);
+
+        Bounds bounds = RectTransformUtility.CalculateRelativeRectTransformBounds(viewport, _display.transform);
+        Rect view = viewport.rect;
+        float offset = bounds.max.y > view.yMax ? bounds.max.y - view.yMax + m_revealMargin
+            : bounds.min.y < view.yMin ? bounds.min.y - view.yMin - m_revealMargin : 0f;
+        if (Mathf.Approximately(offset, 0f))
+            return;
+
+        scroll.StopMovement();
+        m_revealTween?.Kill();
+        m_revealTween = content.DOAnchorPosY(content.anchoredPosition.y - offset, ComponentGestureFeedback.RevealDuration).SetEase(Ease.OutCubic).SetUpdate(true);
+    }
+
+    public override void ReturnDisplay ( ComponentDisplay _display )
+    {
+        _display.transform.SetParent(m_displayParent);
+        _display.transform.localPosition = Vector3.zero;
+        SortByAcquisitionDate();
     }
 
 	#region DnD
 
-	public override bool IsValid ( ComponentDisplay _display )
+	public override ComponentGesture.Refusal GetRefusal ( ComponentDisplay _display )
     {
-        return !m_items.Contains(_display) && base.IsValid(_display);
+        return m_items.Contains(_display) ? ComponentGesture.Refusal.Silent : base.GetRefusal(_display);
+    }
+
+    protected override ComponentGesture.Kind GetIncomingKind ( ComponentDisplay _display )
+    {
+        return m_displayMode switch
+        {
+            ComponentDisplay.DisplayMode.ShopBuying => ComponentGesture.Kind.Sell,
+            ComponentDisplay.DisplayMode.ShopSelling => ComponentGesture.Kind.Buy,
+            ComponentDisplay.DisplayMode.RecyclingStation => ComponentGesture.Kind.TakeBack,
+            _ => ComponentGesture.Kind.Remove
+        };
     }
 
     public override void RegisterInteraction ( ComponentDisplay _component )
@@ -117,6 +185,25 @@ public class ComponentDisplayGrid : ComponentContainer
         _component.transform.localPosition = Vector3.zero;
         RefreshMainComponentHighlight(_component);
         base.RegisterInteraction(_component);
+
+        if (!m_items.Contains(_component))
+            return;
+
+        ConsumePadding();
+        SortByAcquisitionDate();
+    }
+
+    private void ConsumePadding ()
+    {
+        if (m_items.Count <= m_capacity)
+            return;
+
+        ComponentDisplay empty = m_items.FindLast(item => item != null && item.SavedData == null);
+        if (empty == null)
+            return;
+
+        m_items.Remove(empty);
+        Destroy(empty.gameObject);
     }
 
 	public override void RemoveDisplay ( ComponentDisplay _display )
@@ -125,6 +212,9 @@ public class ComponentDisplayGrid : ComponentContainer
         {
             _display.SetTutorialHighlighted(false);
             base.RemoveDisplay(_display);
+
+            if (m_items.Count < m_capacity)
+                CreateNewDisplay(null, null, ComponentDisplay.DisplayMode.Empty);
         }
 	}
 

@@ -26,7 +26,7 @@ public class LogPoolElement : PoolElement, IPointerEnterHandler, IPointerExitHan
 	{
 		m_eventType = _log.eventType;
 		m_details = _log.details;
-		m_text.SetText(_log.ToString());
+		m_text.SetText(_log.Format(false));
 		m_detailMarker.SetActive(m_details != null);
 		m_hoverBar.color = GameConfig.current.meta.colorsPerType[_log.eventType];
 		m_hover.SetActive(false);
@@ -37,12 +37,16 @@ public class LogPoolElement : PoolElement, IPointerEnterHandler, IPointerExitHan
 
 	public void OnPointerEnter ( PointerEventData _eventData )
 	{
-		m_hover.SetActive(m_details != null);
+		if (m_details == null)
+			return;
+
+		m_hover.SetActive(true);
+		ToolTipManager.Instance.ShowLog(m_details, gameObject);
 	}
 
 	public void OnPointerExit ( PointerEventData _eventData )
 	{
-		m_hover.SetActive(false);
+		Unhover();
 	}
 
 	public void OnPointerClick ( PointerEventData _eventData )
@@ -53,7 +57,15 @@ public class LogPoolElement : PoolElement, IPointerEnterHandler, IPointerExitHan
 
 	private void OnDisable ()
 	{
+		Unhover();
+	}
+
+	private void Unhover ()
+	{
 		m_hover.SetActive(false);
+		ToolTipManager tooltips = ToolTipManager.Instance;
+		if (tooltips != null)
+			tooltips.HideLog(gameObject);
 	}
 
 	public void SetHighlighted ( bool _isHighlighted )

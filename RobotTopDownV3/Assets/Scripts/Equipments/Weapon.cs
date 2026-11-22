@@ -871,7 +871,7 @@ public class Weapon : MonoBehaviour
 		m_targetedTiles.Clear();
 	}
 
-	public virtual Dictionary<WeaponEquipmentData.DamageType, int> GetDamages ( Entity _user, Entity _target, AEntityAction _action, EntityActionData.PFCResultType _pfcResultType, out LogConsole.LogDetails _details, Tile _shotOrigin = null )
+	public virtual Dictionary<WeaponEquipmentData.DamageType, int> GetDamages ( Entity _user, Entity _target, AEntityAction _action, EntityActionData.PFCResultType _pfcResultType, out LogCard _card, Tile _shotOrigin = null )
 	{
 		Dictionary<WeaponEquipmentData.DamageType, int> damages = new();
 		bool didWinPFC = _pfcResultType == EntityActionData.PFCResultType.FirstWins;
@@ -959,7 +959,7 @@ public class Weapon : MonoBehaviour
 		}
 
 		card.SetDamageVerdict(damages);
-		_details = new LogConsole.LogDetails(card);
+		_card = card;
 
 		return damages;
 	}

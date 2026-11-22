@@ -35,21 +35,11 @@ public class LogConsole : SingletonPersistant<LogConsole>
 	{
 		public readonly string ID;
 		public readonly LogCard card;
-		public readonly ActionTooltipContent action;
 
-		public LogDetails ( LogCard _card ) : this()
-		{
-			card = _card;
-		}
-
-		public LogDetails ( ActionTooltipContent _action ) : this()
-		{
-			action = _action;
-		}
-
-		private LogDetails ()
+		public LogDetails ( LogCard _card )
 		{
 			ID = "log_" + Instance.Counter++;
+			card = _card;
 		}
 	}
 
@@ -100,14 +90,18 @@ public class LogConsole : SingletonPersistant<LogConsole>
 
 		public override string ToString ()
 		{
+			return Format(true);
+		}
+
+		public string Format ( bool _withDetailLink )
+		{
+			string colored = "<color=#" + ColorUtility.ToHtmlStringRGB(GameConfig.current.meta.colorsPerType[eventType]) + ">" + message + "</color>";
 			if (eventType == LogEventType.Round)
-				return "<align=center><color=#" + ColorUtility.ToHtmlStringRGB(GameConfig.current.meta.colorsPerType[eventType]) + ">" + message + "</color></align>\n";
+				return "<align=center>" + colored + "</align>\n";
+			if (details == null)
+				return "- " + eventType + ": " + colored + "\n";
 
-			if(details != null)
-				return "- " + (details == null ? "" : ("<link=" + details.ID + ">")) + "<color=#" + ColorUtility.ToHtmlStringRGB(GameConfig.current.meta.colorsPerType[eventType]) + ">" + message + "</color>" + (details == null ? "\n" : "</link>\n");
-			else
-				return "- " + eventType.ToString() + /*" [" + recordTime.ToString("HH:mm") + "]*/": " + "<color=#" + ColorUtility.ToHtmlStringRGB(GameConfig.current.meta.colorsPerType[eventType]) + ">" + message + "</color>\n";
-
+			return _withDetailLink ? "- <link=" + details.ID + ">" + colored + "</link>\n" : "- " + colored + "\n";
 		}
 	}
 

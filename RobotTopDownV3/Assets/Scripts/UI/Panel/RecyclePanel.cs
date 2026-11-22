@@ -29,6 +29,7 @@ public class RecyclePanel : AUIPanel
 
 		m_inventoryGrid.Cleanup();
 		m_inventoryGrid.Init(null, null, null, InventoryGridPredicate, ComponentDisplay.DisplayMode.RecyclingStation);
+		m_inventoryGrid.SetGestureTargetProvider(_display => GetFreeContainer());
 	}
 
 	public ComponentSlot GetFreeContainer ()

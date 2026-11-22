@@ -29,6 +29,7 @@ public class ToolTipManager : Singleton<ToolTipManager>
 	private int[] m_pinStamps;
 	private int m_pinCount;
 	private LogConsole.LogDetails m_hoveredLog;
+	private GameObject m_hoveredLogOwner;
 
 	private LogTooltip HoverLogTooltip => m_logTooltips[0];
 
@@ -172,27 +173,33 @@ public class ToolTipManager : Singleton<ToolTipManager>
 
 	private void OnTMPHover ( string _id, TMP_Text _text )
 	{
-		if (!LogConsole.Instance.LogsDetails.TryGetValue(_id, out LogConsole.LogDetails details))
-			return;
-
-		if (details.action != null)
-		{
-			ShowAction(details.action, _text.gameObject);
-			return;
-		}
-
-		m_hoveredLog = details;
-		if (PinSlotOf(details) > 0)
-			HoverLogTooltip.Hide();
-		else
-			HoverLogTooltip.Show(details.card);
+		if (LogConsole.Instance.LogsDetails.TryGetValue(_id, out LogConsole.LogDetails details))
+			ShowLog(details, _text.gameObject);
 	}
 
 	private void OnTMPUnhover ()
 	{
+		HideLog(m_hoveredLogOwner);
+	}
+
+	public void ShowLog ( LogConsole.LogDetails _details, GameObject _owner )
+	{
+		m_hoveredLog = _details;
+		m_hoveredLogOwner = _owner;
+		if (PinSlotOf(_details) > 0)
+			HoverLogTooltip.Hide();
+		else
+			HoverLogTooltip.Show(_details.card);
+	}
+
+	public void HideLog ( GameObject _owner )
+	{
+		if (m_hoveredLog == null || m_hoveredLogOwner != _owner)
+			return;
+
 		m_hoveredLog = null;
+		m_hoveredLogOwner = null;
 		HoverLogTooltip.Hide();
-		Hide();
 	}
 
 	public void TogglePin ( LogConsole.LogDetails _details )

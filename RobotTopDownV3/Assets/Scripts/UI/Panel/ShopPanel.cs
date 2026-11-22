@@ -18,27 +18,7 @@ public class ShopPanel : AUIPanel
 
 	private EntityEquipmentData.EntityFaction m_currentFaction;
 	public EntityEquipmentData.EntityFaction CurrentFaction => m_currentFaction;
-	public CurrencyType AssociatedCurrency
-	{
-		get
-		{
-			switch (m_currentFaction)
-			{
-				case EntityEquipmentData.EntityFaction.Psy:
-					return CurrencyType.PsyCredit;
-				case EntityEquipmentData.EntityFaction.Paladin:
-					return CurrencyType.PaladinCredit;
-				case EntityEquipmentData.EntityFaction.Commando:
-					return CurrencyType.CommandoCredit;
-				case EntityEquipmentData.EntityFaction.Dummy:
-				case EntityEquipmentData.EntityFaction.Noone:
-				case EntityEquipmentData.EntityFaction.Starting:
-				case EntityEquipmentData.EntityFaction.Scout:
-				default:
-					return CurrencyType.SoftCurrency;
-			}
-		}
-	}
+	public CurrencyType AssociatedCurrency => EntityEquipmentData.GetFactionCurrency(m_currentFaction);
 
 	private void Awake ()
 	{
@@ -58,32 +38,18 @@ public class ShopPanel : AUIPanel
 		GameDatas.current.currentPlayerSave.EnsureShopsAreSplit();
 		RefreshShopBuyableItems();
 
-		CurrencyType associatedCurrency = AssociatedCurrency;
-		m_inventoryGrid.Init(m_shopGrid, null, null, item => GameDatas.current.currentPlayerSave.currencies.ContainsKey(associatedCurrency) 
-			&& item.TryGetData(out EntityEquipmentData data) && data.GetPrice().Item2 <= GameDatas.current.currentPlayerSave.currencies[associatedCurrency]
+		m_inventoryGrid.Init(m_shopGrid, null, null, item => item.TryGetData(out EntityEquipmentData data) && CanAfford(data.GetShopBuyingPrice())
 			, ComponentDisplay.DisplayMode.ShopSelling);
+		m_inventoryGrid.SetPredicateRefusal(ComponentGesture.Refusal.TooExpensive);
 		m_inventoryGrid.Cleanup();
 
-		for(int i = 0; i < GameConfig.current.game.maxInventoryCapacity; i++)
-		{
-			if(GameDatas.current.currentPlayerSave.equipmentInventory.Count > i)
-				m_inventoryGrid.CreateNewDisplay(null, GameDatas.current.currentPlayerSave.equipmentInventory[i], ComponentDisplay.DisplayMode.ShopSelling);
-			else
-			{
-				m_inventoryGrid.CreateNewDisplay(null, null, ComponentDisplay.DisplayMode.Empty);
-			}
-		}
+		int capacity = GameConfig.current.game.maxInventoryCapacity;
+		foreach (GameDatas.PlayerSave.Component component in GameDatas.current.currentPlayerSave.equipmentInventory.Take(capacity))
+			m_inventoryGrid.CreateNewDisplay(null, component, ComponentDisplay.DisplayMode.ShopSelling);
+		m_inventoryGrid.Pad(capacity);
 
 		RefreshShopActions();
 		onShopInitialized?.Invoke(this);
-
-		/*foreach (ComponentDisplay display in m_shopGrid.Items)
-		{
-			if (display.SavedData.GetData<EntityEquipmentData>().GetPrice().Item2 >= GameDatas.current.currentPlayerSave.currencies[associatedCurrency])
-				display.SetInteractability(false);
-			else
-				display.SetInteractability(true);
-		}*/
 	}
 
 	private void SellItem( ComponentContainer _container, ComponentDisplay _display )
@@ -92,6 +58,7 @@ public class ShopPanel : AUIPanel
 
 		System.Tuple<CurrencyType, ulong> price = _display.ComponentData.GetShopSellingPrice();
 		GameDatas.current.currentPlayerSave.AddCurrency(price.Item1, price.Item2);
+		_container.Discard(_display);
 		RefreshShopActions();
 	}
 
@@ -100,9 +67,14 @@ public class ShopPanel : AUIPanel
 		RemoveFromShop(_display.ShopSavedData);
 		GameDatas.current.currentPlayerSave.AddEquipmentToInventory(_display.SavedData);
 
-		System.Tuple<CurrencyType, ulong> price = _display.ComponentData.GetPrice();
+		System.Tuple<CurrencyType, ulong> price = _display.ComponentData.GetShopBuyingPrice();
 		GameDatas.current.currentPlayerSave.RemoveCurrency(price.Item1, price.Item2, GameDatas.PlayerSave.CurrencyRemoveMode.Spent);
 		RefreshShopActions();
+	}
+
+	private static bool CanAfford ( System.Tuple<CurrencyType, ulong> _price )
+	{
+		return GameDatas.current.currentPlayerSave.currencies.TryGetValue(_price.Item1, out ulong owned) && _price.Item2 <= owned;
 	}
 
 	private void RemoveFromShop ( GameDatas.PlayerSave.DayData.ShopComponentData _shopData )
@@ -202,6 +174,7 @@ public class ShopPanel : AUIPanel
 		{
 			GameDatas.PlayerSave.DayData.ShopComponentData shopData = display.ShopSavedData;
 			display.SetFreezeInteractability(shopData != null && CurrentDayData.itemsInShop.Contains(shopData) && (shopData.isFrozen || remainingFreezes > 0));
+			display.SetAffordable(m_inventoryGrid.GetRefusal(display) != ComponentGesture.Refusal.TooExpensive);
 		}
 	}
 
