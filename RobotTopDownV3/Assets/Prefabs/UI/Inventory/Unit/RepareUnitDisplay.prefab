@@ -557,13 +557,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: RTD::RepareUnitDisplay
   m_canvasGroup: {fileID: 2193921125457550762}
-  m_outlineImg: {fileID: 1420230151193463271}
+  m_visual: {fileID: 1691539285977783497}
   m_icon: {fileID: 1542007063141976917}
-  m_titleTMP: {fileID: 8711913412624370913}
   m_corpIcon: {fileID: 6890882406316987311}
-  m_componentTypeIcon: {fileID: 7191509894469378144}
-  m_priceBackground: {fileID: 2407912802454250105}
-  m_priceTMP: {fileID: 4758915025133466046}
   m_descriptionTMP: {fileID: 324957359373003063}
   m_damagedGO: {fileID: 2959479319852435592}
   CurrentContainer: {fileID: 0}

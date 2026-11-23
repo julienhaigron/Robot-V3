@@ -51,7 +51,7 @@ public class MatchExtraction : MonoBehaviour, ILoadingScreen
 			transition.BlockInput(true);
 
 		List<Entity> squad = MatchBriefing.GetPlayerSquad();
-		Material hologram = GameAssets.current.game.baseGhost != null ? GameAssets.current.game.baseGhost.HologramMaterial : null;
+		Material hologram = GhostEntity.DefaultHologram;
 		if (hologram != null)
 		{
 			foreach (Entity entity in squad)

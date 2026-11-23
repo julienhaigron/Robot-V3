@@ -101,7 +101,7 @@ public class EntityConfigPanel : AUIPanel
 
 		m_inventoryGrid.onItemAdded += ( container, item ) => { GameDatas.current.currentPlayerSave.AddEquipmentToInventory(item.SavedData); RefreshVisuals(); };
 		m_inventoryGrid.onItemRemoved += ( container, item ) => { GameDatas.current.currentPlayerSave.RemoveEquipmentFromInventory(item.SavedData); RefreshVisuals(); };
-		m_inventoryGrid.SetGestureTargetProvider(_display => GetContainerFor(_display, true));
+		m_inventoryGrid.SetGestureTargetProvider(_display => GetContainerFor((ComponentDisplay)_display, true));
 
 		foreach (KeyValuePair<EntityEquipmentData.EquipmentType, BaseButton> pair in m_componentTypeFilterBtnDictionary)
 			pair.Value.onClick = () => OnClickFilterType(pair.Key);
@@ -341,7 +341,7 @@ public class EntityConfigPanel : AUIPanel
 		//m_mainComponentSlotDictionary[EntityEquipmentData.EquipmentType.Brain].SetOutlineColor(GameAssets.current.ui.componentColors[EntityEquipmentData.EquipmentType.Brain]);
 
 		m_mainComponentSlotDictionary[EntityEquipmentData.EquipmentType.NeuronalMembrane].Init(m_inventoryGrid, _entity, _entity.neuronalMembrane
-			, item => item != null && item.TryGetData(out EntityEquipmentData _data) && _data.GetEquipmentType() == EntityEquipmentData.EquipmentType.NeuronalMembrane, ComponentDisplay.DisplayMode.Hangar);
+			, item => item != null && item.TryGetData(out EntityEquipmentData _data) && _data.GetEquipmentType() == EntityEquipmentData.EquipmentType.NeuronalMembrane, ComponentDisplay.DisplayMode.Unit);
 		//m_mainComponentSlotDictionary[EntityEquipmentData.EquipmentType.NeuronalMembrane].SetOutlineColor(GameAssets.current.ui.componentColors[EntityEquipmentData.EquipmentType.NeuronalMembrane]);
 
 		m_mainComponentSlotDictionary[EntityEquipmentData.EquipmentType.Reactor].Init(m_inventoryGrid, _entity, _entity.reactor
@@ -432,13 +432,13 @@ public class EntityConfigPanel : AUIPanel
 				slot.SetReleasePredicate(display => GetReleaseRefusal(display, null));
 	}
 
-	private ComponentGesture.Refusal GetReleaseRefusal ( ComponentDisplay _display, EntityEquipmentData.EquipmentType? _mainType )
+	private Gesture.Refusal GetReleaseRefusal ( ComponentDisplay _display, EntityEquipmentData.EquipmentType? _mainType )
 	{
 		if (IsEditLocked)
-			return ComponentGesture.Refusal.TournamentLocked;
+			return Gesture.Refusal.TournamentLocked;
 		if (!IsUndamaged(_display))
-			return ComponentGesture.Refusal.Damaged;
-		return _mainType.HasValue && HasDamagedSubComponent(_mainType.Value) ? ComponentGesture.Refusal.DamagedSubComponent : ComponentGesture.Refusal.None;
+			return Gesture.Refusal.Damaged;
+		return _mainType.HasValue && HasDamagedSubComponent(_mainType.Value) ? Gesture.Refusal.DamagedSubComponent : Gesture.Refusal.None;
 	}
 
 	private void RefreshSlotLocks ()

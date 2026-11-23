@@ -40,7 +40,7 @@ public class ShopPanel : AUIPanel
 
 		m_inventoryGrid.Init(m_shopGrid, null, null, item => item.TryGetData(out EntityEquipmentData data) && CanAfford(data.GetShopBuyingPrice())
 			, ComponentDisplay.DisplayMode.ShopSelling);
-		m_inventoryGrid.SetPredicateRefusal(ComponentGesture.Refusal.TooExpensive);
+		m_inventoryGrid.SetPredicateRefusal(Gesture.Refusal.TooExpensive);
 		m_inventoryGrid.Cleanup();
 
 		int capacity = GameConfig.current.game.maxInventoryCapacity;
@@ -174,7 +174,7 @@ public class ShopPanel : AUIPanel
 		{
 			GameDatas.PlayerSave.DayData.ShopComponentData shopData = display.ShopSavedData;
 			display.SetFreezeInteractability(shopData != null && CurrentDayData.itemsInShop.Contains(shopData) && (shopData.isFrozen || remainingFreezes > 0));
-			display.SetAffordable(m_inventoryGrid.GetRefusal(display) != ComponentGesture.Refusal.TooExpensive);
+			display.SetAffordable(m_inventoryGrid.GetRefusal(display) != Gesture.Refusal.TooExpensive);
 		}
 	}
 

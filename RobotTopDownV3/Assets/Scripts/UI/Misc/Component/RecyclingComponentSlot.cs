@@ -42,7 +42,7 @@ public class RecyclingComponentSlot : ComponentSlot
 		base.OnDisable();
 		LocalizationManager.onLanguageChanged -= RefreshRecyclingState;
 		m_isRecycleBtnHovered = false;
-		SetRecycleBtnCalling(false);
+		GestureFeedback.SetCalling(m_recycleBtn.transform, ref m_recycleBtnCall, false);
 	}
 
 	public void Init ( ComponentContainer _inventory, int _index )
@@ -87,10 +87,13 @@ public class RecyclingComponentSlot : ComponentSlot
 
 		if (duration <= 0)
 		{
+			ComponentDisplay display = CurrentDisplay;
+			Rect from = display.VisualWorldRect;
 			System.Tuple<CurrencyType, ulong> price = componentData.GetRecyclingPrice();
-			ComponentGestureFeedback.HoldCurrency(price.Item1);
+			GestureFeedback.HoldCurrency(price.Item1);
 			playerSave.AddCurrency(price.Item1, price.Item2);
-			ComponentGestureFeedback.PlayMoney(CurrentDisplay.transform.position, price.Item1, (long)price.Item2);
+			GestureFeedback.PlayMoney(from.center, price.Item1, (long)price.Item2);
+			GestureFeedback.PlayDeparture(display, this, from, GestureFeedback.ColorOf(Gesture.Kind.Deposit), from);
 			Cleanup();
 		}
 		else
@@ -98,7 +101,7 @@ public class RecyclingComponentSlot : ComponentSlot
 
 		RefreshRecyclingState();
 		if (duration > 0)
-			Pulse(ComponentGestureFeedback.ColorOf(ComponentGesture.Kind.Deposit));
+			Pulse(GestureFeedback.ColorOf(Gesture.Kind.Deposit));
 	}
 
 	private void OnRecycleBtnHoverChanged ( bool _isHovered )
@@ -131,27 +134,14 @@ public class RecyclingComponentSlot : ComponentSlot
 		m_recycleBtn.SetInteractability(isPending);
 		SetLocked(componentData != null && isRecycling);
 		SetPending(componentData != null);
-		SetRecycleBtnCalling(isPending && isActiveAndEnabled);
+		GestureFeedback.SetCalling(m_recycleBtn.transform, ref m_recycleBtnCall, isPending && isActiveAndEnabled);
 		if (CurrentDisplay != null)
 			CurrentDisplay.SetDimmed(isRecycling);
 	}
 
-	private void SetRecycleBtnCalling ( bool _isCalling )
+	public override Gesture.Refusal GetReleaseRefusal ( GestureDisplay _display )
 	{
-		if (_isCalling == (m_recycleBtnCall != null))
-			return;
-
-		m_recycleBtnCall?.Kill();
-		m_recycleBtnCall = null;
-		m_recycleBtn.transform.localScale = Vector3.one;
-		if (_isCalling)
-			m_recycleBtnCall = m_recycleBtn.transform.DOScale(ComponentGestureFeedback.CallScale, ComponentGestureFeedback.CallPeriod)
-				.SetLoops(-1, LoopType.Yoyo).SetEase(Ease.InOutSine).SetUpdate(true);
-	}
-
-	public override ComponentGesture.Refusal GetReleaseRefusal ( ComponentDisplay _display )
-	{
-		return IsRecycling ? ComponentGesture.Refusal.Recycling : base.GetReleaseRefusal(_display);
+		return IsRecycling ? Gesture.Refusal.Recycling : base.GetReleaseRefusal(_display);
 	}
 
 	public override void RegisterInteraction ( ComponentDisplay _display )

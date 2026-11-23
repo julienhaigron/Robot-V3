@@ -1399,7 +1399,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_displayParent: {fileID: 864956830718926311}
   m_highlight: {fileID: 2524745266474837278}
-  m_revealMargin: 8
 --- !u!114 &7542753409084731221
 MonoBehaviour:
   m_ObjectHideFlags: 0

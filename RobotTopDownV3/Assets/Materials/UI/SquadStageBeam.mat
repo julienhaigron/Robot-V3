@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: BriefingHoloMap
-  m_Shader: {fileID: 4800000, guid: 11393907a604cec1968733b55b6754db, type: 3}
+  m_Name: SquadStageBeam
+  m_Shader: {fileID: 4800000, guid: 1f10d54d9588a654fe0febb47cf62863, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -25,16 +25,13 @@ Material:
     m_TexEnvs: []
     m_Ints: []
     m_Floats:
-    - _FrontWidth: 0.03
-    - _LineWidth: 0.05
-    - _ScanlineOpacity: 0.18
+    - _Base: 0.035
+    - _Bottom: 0.08
+    - _CapFill: 0.06
+    - _CapRing: 0.9
+    - _Intensity: 1
+    - _Top: 0.26
     m_Colors:
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
-    - _CoverColor: {r: 0.5, g: 0.83, b: 1, a: 0.2}
-    - _FloorColor: {r: 0.5, g: 0.83, b: 1, a: 0.07}
-    - _LineColor: {r: 0.5, g: 0.83, b: 1, a: 0.9}
-    - _ObjectiveColor: {r: 0.91, g: 0.7, b: 0.23, a: 0.5}
-    - _SpawnColor: {r: 0.36, g: 0.55, b: 0.9, a: 0.6}
-    - _WallColor: {r: 0.5, g: 0.83, b: 1, a: 0.34}
+    - _Color: {r: 0.5, g: 0.83, b: 1, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

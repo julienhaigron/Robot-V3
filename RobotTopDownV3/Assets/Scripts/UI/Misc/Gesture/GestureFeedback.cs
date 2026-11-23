@@ -4,16 +4,16 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ComponentGestureFeedback : MonoBehaviour
+public class GestureFeedback : MonoBehaviour
 {
 	[Serializable]
 	private struct KindColor
 	{
-		public ComponentGesture.Kind kind;
+		public Gesture.Kind kind;
 		public Color color;
 	}
 
-	private static ComponentGestureFeedback s_instance;
+	private static GestureFeedback s_instance;
 
 	[Header("Hint")]
 	[SerializeField] private CanvasGroup m_hintGroup;
@@ -50,14 +50,15 @@ public class ComponentGestureFeedback : MonoBehaviour
 	[SerializeField] private float m_flightDuration = .26f;
 	[SerializeField] private float m_flightArc = 28f;
 	[SerializeField] private float m_revealDuration = .2f;
+	[SerializeField] private float m_revealMargin = 8f;
 	[SerializeField] private float m_pulseDuration = .5f;
 	[SerializeField] private float m_shakeStrength = 6f;
 	[SerializeField] private float m_callScale = 1.06f;
 	[SerializeField] private float m_callPeriod = .6f;
 
-	private ComponentDisplay m_hintOwner;
-	private ComponentDisplay m_hovered;
-	private ComponentContainer m_hintTarget;
+	private GestureDisplay m_hintOwner;
+	private GestureDisplay m_hovered;
+	private GestureContainer m_hintTarget;
 	private float m_refusalEnd;
 	private float m_hintAlpha;
 	private Tween m_hintPunch;
@@ -68,10 +69,9 @@ public class ComponentGestureFeedback : MonoBehaviour
 	public static float FlightDuration => s_instance != null ? s_instance.m_flightDuration : 0f;
 	public static float FlightArc => s_instance != null ? s_instance.m_flightArc : 0f;
 	public static float RevealDuration => s_instance != null ? s_instance.m_revealDuration : 0f;
+	public static float RevealMargin => s_instance != null ? s_instance.m_revealMargin : 0f;
 	public static float PulseDuration => s_instance != null ? s_instance.m_pulseDuration : 0f;
 	public static float ShakeStrength => s_instance != null ? s_instance.m_shakeStrength : 0f;
-	public static float CallScale => s_instance != null ? s_instance.m_callScale : 1f;
-	public static float CallPeriod => s_instance != null ? s_instance.m_callPeriod : 1f;
 	public static Color RefusalColor => s_instance != null ? s_instance.m_refusalColor : Color.white;
 	public static Color DropValidColor => s_instance != null ? s_instance.m_dropValidColor : Color.white;
 	public static Color DropOverColor => s_instance != null ? s_instance.m_dropOverColor : Color.white;
@@ -99,7 +99,7 @@ public class ComponentGestureFeedback : MonoBehaviour
 		m_moneyTween?.Kill();
 	}
 
-	public static Color ColorOf ( ComponentGesture.Kind _kind )
+	public static Color ColorOf ( Gesture.Kind _kind )
 	{
 		if (s_instance != null)
 		{
@@ -113,27 +113,27 @@ public class ComponentGestureFeedback : MonoBehaviour
 		return Color.white;
 	}
 
-	public static void ShowHint ( ComponentDisplay _display )
+	public static void ShowHint ( GestureDisplay _display )
 	{
 		if (s_instance != null)
 			s_instance.DoShowHint(_display);
 	}
 
-	public static void HideHint ( ComponentDisplay _display )
+	public static void HideHint ( GestureDisplay _display )
 	{
 		if (s_instance != null)
 			s_instance.DoHideHint(_display);
 	}
 
-	public static void Refuse ( ComponentDisplay _display, ComponentGesture _gesture )
+	public static void Refuse ( GestureDisplay _display, Gesture _gesture )
 	{
 		if (s_instance != null)
 			s_instance.DoRefuse(_display, _gesture);
 	}
 
-	public static void PlayArrival ( ComponentContainer _container, GameDatas.PlayerSave.Component _component, Rect _from, Color _color )
+	public static void PlayArrival ( GestureContainer _container, object _content, Rect _from, Color _color )
 	{
-		ComponentDisplay landed = _container != null ? _container.FindDisplay(_component) : null;
+		GestureDisplay landed = _container != null ? _container.FindDisplay(_content) : null;
 		if (landed == null)
 			return;
 
@@ -146,15 +146,27 @@ public class ComponentGestureFeedback : MonoBehaviour
 		});
 	}
 
-	public static void PlayDeparture ( ComponentDisplay _display, ComponentContainer _container, Rect _from, Color _color )
+	public static void PlayDeparture ( GestureDisplay _display, GestureContainer _container, Rect _from, Color _color, Rect? _to = null )
 	{
-		Rect to = _container != null ? ((RectTransform)_container.transform).GetWorldRect() : _from;
+		Rect to = _to ?? (_container != null ? ((RectTransform)_container.transform).GetWorldRect() : _from);
 		_display.FlyAway(_from, to, () =>
 		{
 			if (_container != null)
 				_container.Pulse(_color);
 			SoundManager.PlayUISafe(SfxId.None, _config => _config.dragDrop);
 		});
+	}
+
+	public static void SetCalling ( Transform _target, ref Tween _call, bool _isCalling )
+	{
+		if (_isCalling == (_call != null))
+			return;
+
+		_call?.Kill();
+		_call = null;
+		_target.localScale = Vector3.one;
+		if (_isCalling && s_instance != null)
+			_call = _target.DOScale(s_instance.m_callScale, s_instance.m_callPeriod).SetLoops(-1, LoopType.Yoyo).SetEase(Ease.InOutSine).SetUpdate(true);
 	}
 
 	public static void HoldCurrency ( CurrencyType _type )
@@ -170,15 +182,15 @@ public class ComponentGestureFeedback : MonoBehaviour
 			s_instance.DoPlayMoney(_fromWorld, _type, _amount);
 	}
 
-	private void DoShowHint ( ComponentDisplay _display )
+	private void DoShowHint ( GestureDisplay _display )
 	{
 		m_hovered = _display;
 		if (IsHoldingRefusal && m_hintOwner == _display)
 			return;
 
 		ClearHintTarget();
-		ComponentContainer origin = _display.CurrentContainer;
-		ComponentGesture gesture = origin != null ? origin.ResolveGesture(_display) : ComponentGesture.Refused(ComponentGesture.Refusal.Silent);
+		GestureContainer origin = _display.CurrentContainer;
+		Gesture gesture = origin != null ? origin.ResolveGesture(_display) : Gesture.Refused(Gesture.Refusal.Silent);
 		if (gesture.IsSilent)
 		{
 			HideHintNow();
@@ -186,15 +198,15 @@ public class ComponentGestureFeedback : MonoBehaviour
 		}
 
 		Color color = gesture.IsValid ? ColorOf(gesture.kind) : m_refusalColor;
-		ShowHintFor(_display, gesture.GetLabel(_display.ComponentData), color);
+		ShowHintFor(_display, gesture.GetLabel(_display), color);
 		if (!gesture.IsValid)
 			return;
 
 		m_hintTarget = gesture.target;
-		m_hintTarget.SetHighlight(ComponentContainer.Highlight.Target, color);
+		m_hintTarget.SetHighlight(GestureContainer.Highlight.Target, color);
 	}
 
-	private void DoHideHint ( ComponentDisplay _display )
+	private void DoHideHint ( GestureDisplay _display )
 	{
 		if (m_hovered == _display)
 			m_hovered = null;
@@ -207,21 +219,21 @@ public class ComponentGestureFeedback : MonoBehaviour
 			HideHintNow();
 	}
 
-	private void DoRefuse ( ComponentDisplay _display, ComponentGesture _gesture )
+	private void DoRefuse ( GestureDisplay _display, Gesture _gesture )
 	{
-		if (_gesture.IsSilent || _gesture.refusal == ComponentGesture.Refusal.None || _display == null)
+		if (_gesture.IsSilent || _gesture.refusal == Gesture.Refusal.None || _display == null)
 			return;
 
 		_display.Shake();
 		SoundManager.PlayUISafe(SfxId.None, _config => _config.buttonBlocked);
 		ClearHintTarget();
-		ShowHintFor(_display, _gesture.GetLabel(_display.ComponentData), m_refusalColor);
+		ShowHintFor(_display, _gesture.GetLabel(_display), m_refusalColor);
 		m_refusalEnd = Time.unscaledTime + m_refusalHold;
 		m_hintPunch?.Kill(true);
 		m_hintPunch = m_hint.DOPunchScale(Vector3.one * .12f, .3f, 6, 1f).SetUpdate(true);
 	}
 
-	private void ShowHintFor ( ComponentDisplay _display, string _text, Color _color )
+	private void ShowHintFor ( GestureDisplay _display, string _text, Color _color )
 	{
 		m_hintOwner = _display;
 		m_hintTMP.text = _text;

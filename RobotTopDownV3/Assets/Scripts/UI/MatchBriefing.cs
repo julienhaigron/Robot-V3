@@ -10,21 +10,27 @@ using Sirenix.OdinInspector;
 
 public class MatchBriefing : MonoBehaviour, ILoadingScreen
 {
-	private const byte k_floorCode = 1;
-	private const byte k_wallCode = 2;
-	private const byte k_coverCode = 3;
-	private const byte k_objectiveCode = 4;
-	private const byte k_squadSpawnCode = 5;
+	private const int k_standbyLabel = -1;
+	private const int k_onlineLabel = 101;
 
-	private static readonly int s_revealID = Shader.PropertyToID("_BriefingMapReveal");
+	[Serializable]
+	private struct UnitLabel
+	{
+		public RectTransform rect;
+		public TextMeshProUGUI name;
+		public TextMeshProUGUI status;
+	}
 
 	[Title("Briefing")]
 	[SerializeField] private float m_minimumDuration = 2.8f;
 	[SerializeField] private float m_fadeInDuration = .3f;
+	[SerializeField] private float m_readyBeatDuration = .9f;
+	[SerializeField] private Color m_transferColor = new(.5f, .82f, 1f);
+	[SerializeField] private Color m_onlineColor = new(.56f, .9f, .7f);
 
 	[Title("Arrival")]
 	[SerializeField] private float m_briefingFadeOutDuration = .7f;
-	[SerializeField] private float m_mapZoomOnFadeOut = 1.12f;
+	[SerializeField] private float m_squadZoomOnFadeOut = 1.12f;
 	[SerializeField] private float m_descentDelay = .2f;
 	[SerializeField] private float m_descentDuration = 2.2f;
 	[SerializeField] private float m_macroFramingMargin = 1.1f;
@@ -35,9 +41,11 @@ public class MatchBriefing : MonoBehaviour, ILoadingScreen
 
 	[Title("References")]
 	[SerializeField] private CanvasGroup m_briefingGroup;
-	[SerializeField] private RectTransform m_mapRect;
-	[SerializeField] private RawImage m_map;
-	[SerializeField] private AspectRatioFitter m_mapFitter;
+	[SerializeField] private RectTransform m_squadRect;
+	[SerializeField] private RawImage m_squadView;
+	[SerializeField] private SquadStage m_squadStage;
+	[SerializeField] private UnitLabel[] m_unitLabels;
+	[SerializeField] private CanvasGroup m_readyBanner;
 	[SerializeField] private TextMeshProUGUI m_labelTMP;
 	[SerializeField] private TextMeshProUGUI m_titleTMP;
 	[SerializeField] private TextMeshProUGUI m_goalTMP;
@@ -50,25 +58,27 @@ public class MatchBriefing : MonoBehaviour, ILoadingScreen
 	[SerializeField] private CanvasGroup m_bannerGroup;
 	[SerializeField] private TextMeshProUGUI m_bannerTMP;
 
-	private Texture2D m_mapData;
 	private bool m_isShown;
 	private bool m_isStartRequested;
 	private float m_elapsed;
 	private float m_loadProgress;
 	private float m_displayedProgress;
 	private int m_shownPercent = -1;
+	private int[] m_labelStates;
+	private bool m_isReadyShown;
 
 	private void Awake ()
 	{
 		m_startButton.onClick += OnClickStart;
+		m_labelStates = new int[m_unitLabels.Length];
 	}
 
 	private void OnDestroy ()
 	{
 		if (m_startButton != null)
 			m_startButton.onClick -= OnClickStart;
-		if (m_mapData != null)
-			Destroy(m_mapData);
+		if (m_squadStage != null)
+			Destroy(m_squadStage.gameObject);
 	}
 
 	private void Update ()
@@ -79,11 +89,47 @@ public class MatchBriefing : MonoBehaviour, ILoadingScreen
 		m_elapsed += Time.unscaledDeltaTime;
 		float target = Mathf.Min(m_minimumDuration > 0f ? m_elapsed / m_minimumDuration : 1f, m_loadProgress);
 		float displayedProgress = Mathf.Max(m_displayedProgress, Mathf.Clamp01(target));
-		if (displayedProgress == m_displayedProgress)
-			return;
+		if (displayedProgress != m_displayedProgress)
+		{
+			m_displayedProgress = displayedProgress;
+			ApplyProgress();
+		}
 
-		m_displayedProgress = displayedProgress;
-		ApplyProgress();
+		RefreshUnitLabels();
+		if (m_squadStage.IsReady && !m_isReadyShown)
+		{
+			m_isReadyShown = true;
+			m_readyBanner.DOFade(1f, m_bannerFadeDuration).SetUpdate(true);
+		}
+	}
+
+	private void RefreshUnitLabels ()
+	{
+		Rect area = m_squadRect.rect;
+		for (int i = 0; i < m_unitLabels.Length; i++)
+		{
+			UnitLabel label = m_unitLabels[i];
+			bool isUsed = i < m_squadStage.UnitCount;
+			if (label.rect.gameObject.activeSelf != isUsed)
+				label.rect.gameObject.SetActive(isUsed);
+			if (!isUsed)
+				continue;
+
+			Vector2 anchor = m_squadStage.GetLabelAnchor(i);
+			label.rect.anchoredPosition = new Vector2((anchor.x - .5f) * area.width, (anchor.y - .5f) * area.height);
+
+			float reveal = m_squadStage.GetReveal(i);
+			int state = reveal <= 0f ? k_standbyLabel : reveal >= 1f ? k_onlineLabel : Mathf.Clamp(Mathf.RoundToInt(reveal * 100f), 0, 99);
+			if (state == m_labelStates[i])
+				continue;
+
+			m_labelStates[i] = state;
+			LocalizationManager localization = LocalizationManager.Instance;
+			label.status.text = state == k_standbyLabel ? localization.Get(LocalizationKey.briefing_unit_standby)
+				: state == k_onlineLabel ? localization.Get(LocalizationKey.briefing_unit_online)
+				: string.Format(localization.Get(LocalizationKey.briefing_unit_transfer), state);
+			label.status.color = state == k_onlineLabel ? m_onlineColor : m_transferColor;
+		}
 	}
 
 	public void Prepare ( MissionData _mission )
@@ -105,7 +151,6 @@ public class MatchBriefing : MonoBehaviour, ILoadingScreen
 		m_squadTMP.text = squad.ToString();
 
 		m_bannerTMP.text = "<size=125%>" + localization.Get(LocalizationKey.briefing_start) + "</size>\n<size=80%>" + m_goalTMP.text + "</size>";
-		BuildMap(_mission.map);
 	}
 
 	private void OnClickStart ()
@@ -123,15 +168,27 @@ public class MatchBriefing : MonoBehaviour, ILoadingScreen
 		m_loadProgress = 0f;
 		m_displayedProgress = 0f;
 		m_shownPercent = -1;
-		ApplyProgress();
 
-		m_mapRect.localScale = Vector3.one;
+		m_squadRect.localScale = Vector3.one;
 		m_startButton.SetVisible(false, true);
 		m_bannerGroup.alpha = 0f;
 		m_bannerGroup.gameObject.SetActive(false);
 		m_briefingGroup.blocksRaycasts = true;
 		m_briefingGroup.alpha = 1f;
 		m_briefingGroup.gameObject.SetActive(true);
+		m_squadView.texture = m_squadStage.Show(GameDatas.current.currentPlayerSave.GetSquadEntitiesData(), GetPixelSize(m_squadRect));
+		m_isReadyShown = false;
+		m_readyBanner.DOKill();
+		m_readyBanner.alpha = 0f;
+		for (int i = 0; i < m_unitLabels.Length; i++)
+		{
+			m_labelStates[i] = int.MinValue;
+			if (i < m_squadStage.UnitCount)
+				m_unitLabels[i].name.text = m_squadStage.GetUnitName(i);
+		}
+
+		ApplyProgress();
+		RefreshUnitLabels();
 
 		PanelTransition transition = UIManager.Instance.PanelTransition;
 		if (transition != null && transition.TryPlayCoverSweep(() => _onCovered?.Invoke()))
@@ -158,7 +215,7 @@ public class MatchBriefing : MonoBehaviour, ILoadingScreen
 	private IEnumerator PlayArrival ( Action _onHidden )
 	{
 		SetProgress(1f);
-		while (m_displayedProgress < 1f)
+		while (m_displayedProgress < 1f || !m_squadStage.IsReady || Time.unscaledTime - m_squadStage.ReadyTime < m_readyBeatDuration)
 			yield return null;
 
 		m_isStartRequested = false;
@@ -177,13 +234,13 @@ public class MatchBriefing : MonoBehaviour, ILoadingScreen
 			CameraManager.Instance.PlaceCameraAt(macroPosition, gameplayRotation);
 
 		List<Entity> squad = GetPlayerSquad();
-		Material hologram = GameAssets.current.game.baseGhost != null ? GameAssets.current.game.baseGhost.HologramMaterial : null;
+		Material hologram = GhostEntity.DefaultHologram;
 		foreach (Entity entity in squad)
 			entity.Skin.SetForcedLook(hologram);
 
 		m_briefingGroup.blocksRaycasts = false;
-		m_briefingGroup.DOFade(0f, m_briefingFadeOutDuration).SetUpdate(true);
-		m_mapRect.DOScale(m_mapZoomOnFadeOut, m_briefingFadeOutDuration).SetUpdate(true);
+		m_briefingGroup.DOFade(0f, m_briefingFadeOutDuration).SetUpdate(true).OnComplete(HideSquad);
+		m_squadRect.DOScale(m_squadZoomOnFadeOut, m_briefingFadeOutDuration).SetUpdate(true);
 		yield return Wait(m_descentDelay);
 
 		float descentDuration = hasDescent ? m_descentDuration : 0f;
@@ -203,7 +260,7 @@ public class MatchBriefing : MonoBehaviour, ILoadingScreen
 
 		m_isShown = false;
 		m_briefingGroup.gameObject.SetActive(false);
-		m_mapRect.localScale = Vector3.one;
+		m_squadRect.localScale = Vector3.one;
 		_onHidden?.Invoke();
 
 		m_bannerGroup.gameObject.SetActive(true);
@@ -211,6 +268,12 @@ public class MatchBriefing : MonoBehaviour, ILoadingScreen
 		yield return Wait(m_bannerHoldDuration);
 		yield return m_bannerGroup.DOFade(0f, m_bannerFadeDuration).SetUpdate(true).WaitForCompletion();
 		m_bannerGroup.gameObject.SetActive(false);
+	}
+
+	private void HideSquad ()
+	{
+		m_squadStage.Hide();
+		m_squadView.texture = null;
 	}
 
 	public static List<Entity> GetPlayerSquad ()
@@ -237,62 +300,15 @@ public class MatchBriefing : MonoBehaviour, ILoadingScreen
 
 	#endregion
 
-	#region Map
-
-	private void BuildMap ( GridData _grid )
+	private static Vector2Int GetPixelSize ( RectTransform _rect )
 	{
-		bool hasMap = _grid != null && _grid.width > 0 && _grid.height > 0 && _grid.tiles != null;
-		m_map.gameObject.SetActive(hasMap);
-		if (!hasMap)
-			return;
-
-		int width = _grid.width;
-		int height = _grid.height;
-		if (m_mapData == null || m_mapData.width != width || m_mapData.height != height)
-		{
-			if (m_mapData != null)
-				Destroy(m_mapData);
-
-			m_mapData = new Texture2D(width, height, TextureFormat.RGBA32, false, true)
-			{
-				name = "BriefingMapData",
-				filterMode = FilterMode.Point,
-				wrapMode = TextureWrapMode.Clamp
-			};
-		}
-
-		byte[] bytes = new byte[width * height * 4];
-		for (int i = 0; i < width * height && i < _grid.tiles.Length; i++)
-			bytes[i * 4] = GetTileCode(_grid.tiles[i]);
-
-		m_mapData.SetPixelData(bytes, 0);
-		m_mapData.Apply(false);
-		m_map.texture = m_mapData;
-
-		float mapWidth = (2f * width + 1f) * Tile.innerRadius;
-		float mapHeight = (1.5f * height + .5f) * Tile.outerRadius;
-		m_mapFitter.aspectRatio = mapWidth / Mathf.Max(mapHeight, .001f);
-	}
-
-	private static byte GetTileCode ( GridData.TileData _tile )
-	{
-		if (_tile == null)
-			return k_floorCode;
-
-		return _tile.groundType switch
-		{
-			TileGroundType.Void => 0,
-			TileGroundType.Wall or TileGroundType.PlayerStructure => k_wallCode,
-			TileGroundType.Cover => k_coverCode,
-			TileGroundType.Zone or TileGroundType.ControlPoint or TileGroundType.PlayerCommPoint or TileGroundType.EnemyStructure => k_objectiveCode,
-			TileGroundType.StaticPlayerSpawn or TileGroundType.DynamicPlayerSpawn => k_squadSpawnCode,
-			_ => k_floorCode,
-		};
+		Rect rect = _rect.GetWorldRect();
+		return new Vector2Int(Mathf.Clamp(Mathf.RoundToInt(rect.width), 16, 4096), Mathf.Clamp(Mathf.RoundToInt(rect.height), 16, 4096));
 	}
 
 	private void ApplyProgress ()
 	{
-		Shader.SetGlobalFloat(s_revealID, m_displayedProgress);
+		m_squadStage.SetProgress(m_displayedProgress);
 		m_progressFill.anchorMax = new Vector2(m_displayedProgress, 1f);
 
 		int percent = Mathf.RoundToInt(m_displayedProgress * 100f);
@@ -302,6 +318,4 @@ public class MatchBriefing : MonoBehaviour, ILoadingScreen
 		m_shownPercent = percent;
 		m_loadingTMP.text = string.Format(LocalizationManager.Instance.Get(LocalizationKey.briefing_loading), percent);
 	}
-
-	#endregion
 }

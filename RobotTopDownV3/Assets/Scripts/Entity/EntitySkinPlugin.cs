@@ -28,7 +28,18 @@ public class EntitySkinPlugin : EntityPlugin
 	private GuardAnimationPlayer GuardPlayer => m_guardPlayer ??= new GuardAnimationPlayer(m_animator);
 	private LocomotionAnimationPlayer m_locomotionPlayer;
 	private LocomotionAnimationPlayer LocomotionPlayer => m_locomotionPlayer ??= new LocomotionAnimationPlayer(m_animator);
+	private StandbyAnimationPlayer m_standbyPlayer;
+	private StandbyAnimationPlayer StandbyPlayer => m_standbyPlayer ??= new StandbyAnimationPlayer(m_animator);
 
+	private static readonly HumanBodyBones[] s_poseBones =
+	{
+		HumanBodyBones.Hips, HumanBodyBones.Neck, HumanBodyBones.Head,
+		HumanBodyBones.LeftShoulder, HumanBodyBones.RightShoulder, HumanBodyBones.LeftUpperArm, HumanBodyBones.RightUpperArm,
+		HumanBodyBones.LeftLowerArm, HumanBodyBones.RightLowerArm, HumanBodyBones.LeftHand, HumanBodyBones.RightHand,
+		HumanBodyBones.LeftFoot, HumanBodyBones.RightFoot, HumanBodyBones.LeftToes, HumanBodyBones.RightToes
+	};
+
+	private bool m_isGuardHeld;
 	private bool m_isAiming;
 	private bool m_isMoving;
 	private string m_moveStyle;
@@ -63,12 +74,57 @@ public class EntitySkinPlugin : EntityPlugin
 		if (m_animator == null || m_linkedEntity == null || m_linkedEntity.Equipment == null)
 			return;
 
-		Weapon weapon = m_isMoving ? null : GuardWeapon();
+		Weapon weapon = m_isMoving || m_isGuardHeld ? null : GuardWeapon();
 		bool isLeftHand = weapon != null && m_humanoidEntityIK != null && m_humanoidEntityIK.IsHeldInLeftHand(weapon.transform);
 		GuardPlayer.Set(weapon != null ? weapon.Data.guardAnimation : null, isLeftHand, weapon != null ? weapon.Data.guardTorsoYaw : 0f);
 		GuardPlayer.Update(Time.deltaTime);
 		LocomotionPlayer.Set(m_isMoving, m_moveStyle, IsFlying);
 		LocomotionPlayer.Update();
+		StandbyPlayer.Update();
+	}
+
+	public void SetPresentation ( bool _isGuardHeld, float _standby )
+	{
+		m_isGuardHeld = _isGuardHeld;
+		StandbyPlayer.Weight = Mathf.Clamp01(_standby);
+		StandbyPlayer.Update();
+	}
+
+	public Bounds GetPoseBounds ( float _margin )
+	{
+		Vector3 origin = m_linkedEntity != null ? m_linkedEntity.transform.position : transform.position;
+		Bounds bounds = new(origin, Vector3.zero);
+		bool isHuman = m_animator != null && m_animator.isHuman && m_animator.isActiveAndEnabled;
+		if (isHuman)
+		{
+			m_animator.Update(0f);
+			foreach (HumanBodyBones bone in s_poseBones)
+			{
+				Transform boneTransform = m_animator.GetBoneTransform(bone);
+				if (boneTransform != null)
+					bounds.Encapsulate(boneTransform.position);
+			}
+
+			Transform head = m_animator.GetBoneTransform(HumanBodyBones.Head);
+			if (head != null)
+			{
+				foreach (Transform child in head.GetComponentsInChildren<Transform>())
+					bounds.Encapsulate(child.position);
+			}
+		}
+
+		bounds.Expand(new Vector3(_margin, _margin, _margin) * 2f);
+		bounds.SetMinMax(new Vector3(bounds.min.x, origin.y, bounds.min.z), bounds.max);
+
+		List<Renderer> renderers = new();
+		CollectSkinRenderers(renderers);
+		foreach (Renderer renderer in renderers)
+		{
+			if ((renderer is MeshRenderer || !isHuman) && renderer.enabled && renderer.gameObject.activeInHierarchy)
+				bounds.Encapsulate(renderer.bounds);
+		}
+
+		return bounds;
 	}
 
 	private Weapon GuardWeapon ()
@@ -272,15 +328,12 @@ public class EntitySkinPlugin : EntityPlugin
 
 		RestoreLook();
 		m_appliedLook = wantedLook;
-		if (wantedLook == null || m_visualRoot == null)
+		if (wantedLook == null)
 			return;
 
-		foreach (Renderer renderer in m_visualRoot.GetComponentsInChildren<Renderer>(true))
+		CollectSkinRenderers(m_lookRenderers);
+		foreach (Renderer renderer in m_lookRenderers)
 		{
-			if (!IsSkinRenderer(renderer))
-				continue;
-
-			m_lookRenderers.Add(renderer);
 			m_lookOriginalMaterials.Add(renderer.sharedMaterials);
 			m_lookOriginalSortingOrders.Add(renderer.sortingOrder);
 			m_lookOriginalShadowModes.Add(renderer.shadowCastingMode);
@@ -305,6 +358,18 @@ public class EntitySkinPlugin : EntityPlugin
 		m_lookOriginalMaterials.Clear();
 		m_lookOriginalSortingOrders.Clear();
 		m_lookOriginalShadowModes.Clear();
+	}
+
+	public void CollectSkinRenderers ( List<Renderer> _renderers )
+	{
+		if (m_visualRoot == null)
+			return;
+
+		foreach (Renderer renderer in m_visualRoot.GetComponentsInChildren<Renderer>(true))
+		{
+			if (IsSkinRenderer(renderer))
+				_renderers.Add(renderer);
+		}
 	}
 
 	private bool IsSkinRenderer ( Renderer _renderer )

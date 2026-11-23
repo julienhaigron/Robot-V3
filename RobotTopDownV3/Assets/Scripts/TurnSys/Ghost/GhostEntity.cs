@@ -5,7 +5,7 @@ public class GhostEntity : MonoBehaviour
 {
 	[SerializeField] private Transform m_visual;
 	[SerializeField] private Material m_hologramMaterial;
-	public Material HologramMaterial => m_hologramMaterial;
+	public static Material DefaultHologram => GameAssets.current.game.baseGhost != null ? GameAssets.current.game.baseGhost.m_hologramMaterial : null;
 
 	public void Init ( Entity _linkedEntity )
 	{

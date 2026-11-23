@@ -1060,7 +1060,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1208172847269455168, guid: 87360dbed894a503474e5b90e1f14865, type: 3}
       propertyPath: m_Name
-      value: ComponentGestureFeedback
+      value: GestureFeedback
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

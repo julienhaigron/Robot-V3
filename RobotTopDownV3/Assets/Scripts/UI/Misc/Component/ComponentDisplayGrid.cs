@@ -3,19 +3,16 @@ using UnityEngine.UI;
 using System.Collections.Generic;
 using System;
 using System.Linq;
-using DG.Tweening;
 
 public class ComponentDisplayGrid : ComponentContainer
 {
     [SerializeField] private Graphic m_highlight;
-    [SerializeField] private float m_revealMargin = 8f;
 
     private List<ComponentDisplay> m_items = new();
     public List<ComponentDisplay> Items => m_items;
 
     private bool m_areMainComponentsHighlighted;
     private int m_capacity;
-    private Tween m_revealTween;
 
     protected override Graphic HighlightGraphic => m_highlight;
 
@@ -28,12 +25,6 @@ public class ComponentDisplayGrid : ComponentContainer
             RefreshPredicate(_predicate);
         else
             m_predicate = null;
-    }
-
-    protected override void OnDisable ()
-    {
-        base.OnDisable();
-        m_revealTween?.Kill();
     }
 
     public ComponentDisplay CreateNewDisplay ( EntitySavedData _unitData, GameDatas.PlayerSave.Component _componentSavedData, ComponentDisplay.DisplayMode _displayMode )
@@ -124,34 +115,17 @@ public class ComponentDisplayGrid : ComponentContainer
         m_capacity = 0;
     }
 
-    public override ComponentDisplay FindDisplay ( GameDatas.PlayerSave.Component _component )
+    public override GestureDisplay FindDisplay ( object _content )
     {
-        return _component == null ? null : m_items.Find(item => item != null && item.SavedData == _component);
+        return _content is GameDatas.PlayerSave.Component component ? m_items.Find(item => item != null && item.SavedData == component) : null;
     }
 
-    public override void Reveal ( ComponentDisplay _display )
+    public override void Reveal ( GestureDisplay _display )
     {
-        ScrollRect scroll = m_displayParent != null ? m_displayParent.GetComponentInParent<ScrollRect>() : null;
-        if (scroll == null || scroll.content == null || _display == null || !m_items.Contains(_display))
-            return;
-
-        RectTransform content = scroll.content;
-        RectTransform viewport = scroll.viewport != null ? scroll.viewport : (RectTransform)scroll.transform;
-        LayoutRebuilder.ForceRebuildLayoutImmediate(content);
-
-        Bounds bounds = RectTransformUtility.CalculateRelativeRectTransformBounds(viewport, _display.transform);
-        Rect view = viewport.rect;
-        float offset = bounds.max.y > view.yMax ? bounds.max.y - view.yMax + m_revealMargin
-            : bounds.min.y < view.yMin ? bounds.min.y - view.yMin - m_revealMargin : 0f;
-        if (Mathf.Approximately(offset, 0f))
-            return;
-
-        scroll.StopMovement();
-        m_revealTween?.Kill();
-        m_revealTween = content.DOAnchorPosY(content.anchoredPosition.y - offset, ComponentGestureFeedback.RevealDuration).SetEase(Ease.OutCubic).SetUpdate(true);
+        RevealInScroll(_display);
     }
 
-    public override void ReturnDisplay ( ComponentDisplay _display )
+    public override void ReturnDisplay ( GestureDisplay _display )
     {
         _display.transform.SetParent(m_displayParent);
         _display.transform.localPosition = Vector3.zero;
@@ -160,19 +134,19 @@ public class ComponentDisplayGrid : ComponentContainer
 
 	#region DnD
 
-	public override ComponentGesture.Refusal GetRefusal ( ComponentDisplay _display )
+	public override Gesture.Refusal GetRefusal ( GestureDisplay _display )
     {
-        return m_items.Contains(_display) ? ComponentGesture.Refusal.Silent : base.GetRefusal(_display);
+        return _display is ComponentDisplay display && m_items.Contains(display) ? Gesture.Refusal.Silent : base.GetRefusal(_display);
     }
 
-    protected override ComponentGesture.Kind GetIncomingKind ( ComponentDisplay _display )
+    protected override Gesture.Kind GetIncomingKind ( GestureDisplay _display )
     {
         return m_displayMode switch
         {
-            ComponentDisplay.DisplayMode.ShopBuying => ComponentGesture.Kind.Sell,
-            ComponentDisplay.DisplayMode.ShopSelling => ComponentGesture.Kind.Buy,
-            ComponentDisplay.DisplayMode.RecyclingStation => ComponentGesture.Kind.TakeBack,
-            _ => ComponentGesture.Kind.Remove
+            ComponentDisplay.DisplayMode.ShopBuying => Gesture.Kind.Sell,
+            ComponentDisplay.DisplayMode.ShopSelling => Gesture.Kind.Buy,
+            ComponentDisplay.DisplayMode.RecyclingStation => Gesture.Kind.TakeBack,
+            _ => Gesture.Kind.Remove
         };
     }
 

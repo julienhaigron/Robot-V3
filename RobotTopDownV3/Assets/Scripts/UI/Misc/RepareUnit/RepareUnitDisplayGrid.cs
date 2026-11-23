@@ -1,20 +1,20 @@
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
 using System.Collections.Generic;
-using System.Collections;
 using System;
 using System.Linq;
 
 public class RepareUnitDisplayGrid : RepareUnitContainer
 {
-    private List<RepareUnitDisplay> m_items = new();
-    public List<RepareUnitDisplay> Items => m_items;
+    [SerializeField] private Graphic m_highlight;
 
-    public override void Init ( RepareUnitContainer _container, EntitySavedData _unitData, Func<EntitySavedData, bool> _predicate
-        , int _index = 0 )
+    private readonly List<RepareUnitDisplay> m_items = new();
+
+    protected override Graphic HighlightGraphic => m_highlight;
+
+    public override void Init ( RepareUnitContainer _container, Func<EntitySavedData, bool> _predicate, int _index = 0 )
     {
-        base.Init(_container, _unitData, _predicate, _index);
+        base.Init(_container, _predicate, _index);
 
         if (_predicate != null)
             RefreshPredicate(_predicate);
@@ -22,10 +22,10 @@ public class RepareUnitDisplayGrid : RepareUnitContainer
             m_predicate = null;
     }
 
-    public RepareUnitDisplay CreateNewDisplay ( EntitySavedData _unitData)
+    public RepareUnitDisplay CreateNewDisplay ( EntitySavedData _unitData )
 	{
         RepareUnitDisplay newDisplay = Instantiate(GameAssets.current.ui.repareUnitDisplay, m_displayParent);
-        newDisplay.Init(_unitData, false);
+        newDisplay.Init(_unitData);
 
         m_items.Add(newDisplay);
         newDisplay.CurrentContainer = this;
@@ -52,7 +52,6 @@ public class RepareUnitDisplayGrid : RepareUnitContainer
                 CreateNewDisplay(unit);
     }
 
-
     public void Cleanup ()
 	{
         foreach (RepareUnitDisplay display in m_items)
@@ -61,21 +60,36 @@ public class RepareUnitDisplayGrid : RepareUnitContainer
         m_items.Clear();
     }
 
-	#region DnD
-
-	public override bool IsValid ( RepareUnitDisplay _display )
+    public override GestureDisplay FindDisplay ( object _content )
     {
-        return !m_items.Contains(_display) && base.IsValid(_display);
+        return _content is EntitySavedData unit ? m_items.Find(item => item != null && item.SavedData == unit) : null;
     }
 
-    public override void RegisterInteraction ( RepareUnitDisplay _component )
+    public override void Reveal ( GestureDisplay _display )
     {
-        m_items.Add(_component);
-        _component.CurrentContainer = this;
+        RevealInScroll(_display);
+    }
 
-        _component.transform.SetParent(m_displayParent);
-        _component.transform.localPosition = Vector3.zero;
-        base.RegisterInteraction(_component);
+	#region DnD
+
+	public override Gesture.Refusal GetRefusal ( GestureDisplay _display )
+    {
+        return _display is RepareUnitDisplay display && m_items.Contains(display) ? Gesture.Refusal.Silent : base.GetRefusal(_display);
+    }
+
+    protected override Gesture.Kind GetIncomingKind ( GestureDisplay _display )
+    {
+        return Gesture.Kind.TakeBack;
+    }
+
+    public override void RegisterInteraction ( RepareUnitDisplay _display )
+    {
+        m_items.Add(_display);
+        _display.CurrentContainer = this;
+
+        _display.transform.SetParent(m_displayParent);
+        _display.transform.localPosition = Vector3.zero;
+        base.RegisterInteraction(_display);
     }
 
 	public override void RemoveDisplay ( RepareUnitDisplay _display )

@@ -124,15 +124,15 @@ public class ComponentFullDisplay : MonoBehaviour
 		if (m_gestureTMP == null)
 			return;
 
-		ComponentContainer origin = _display != null ? _display.CurrentContainer : null;
-		ComponentGesture gesture = origin != null ? origin.ResolveGesture(_display) : ComponentGesture.Refused(ComponentGesture.Refusal.Silent);
+		GestureContainer origin = _display != null ? _display.CurrentContainer : null;
+		Gesture gesture = origin != null ? origin.ResolveGesture(_display) : Gesture.Refused(Gesture.Refusal.Silent);
 		m_gestureTMP.gameObject.SetActive(!gesture.IsSilent);
 		if (gesture.IsSilent)
 			return;
 
-		string label = gesture.GetLabel(_display.ComponentData);
+		string label = gesture.GetLabel(_display);
 		m_gestureTMP.text = gesture.IsValid ? string.Format(LocalizationManager.Instance.Get(LocalizationKey.component_gesture_double_click), label) : label;
-		m_gestureTMP.color = gesture.IsValid ? ComponentGestureFeedback.ColorOf(gesture.kind) : ComponentGestureFeedback.RefusalColor;
+		m_gestureTMP.color = gesture.IsValid ? GestureFeedback.ColorOf(gesture.kind) : GestureFeedback.RefusalColor;
 	}
 
 	private void OnComponentHovered ( ComponentDisplay _display )

@@ -30,7 +30,7 @@ public class ComponentSlot : ComponentContainer
     private GameDatas.PlayerSave.Component m_equipmentSavedData;
     public GameDatas.PlayerSave.Component Equipment => m_equipmentSavedData;
     private bool m_canInteract = true;
-    private Func<ComponentDisplay, ComponentGesture.Refusal> m_releasePredicate;
+    private Func<ComponentDisplay, Gesture.Refusal> m_releasePredicate;
     private bool m_isSwapping;
     public bool IsSwapping => m_isSwapping;
     private Color? m_baseOutlineColor;
@@ -38,8 +38,8 @@ public class ComponentSlot : ComponentContainer
     private bool m_isPending;
 
     protected override Graphic HighlightGraphic => m_outline;
-    protected override Color? RestHighlightColor => m_isPending ? ComponentGestureFeedback.PendingColor : m_isLocked ? ComponentGestureFeedback.LockedColor : BaseOutlineColor;
-    public override ComponentDisplay Occupant => m_currentDisplay;
+    protected override Color? RestHighlightColor => m_isPending ? GestureFeedback.PendingColor : m_isLocked ? GestureFeedback.LockedColor : BaseOutlineColor;
+    public override GestureDisplay Occupant => m_currentDisplay;
 
     private Color BaseOutlineColor
     {
@@ -89,14 +89,14 @@ public class ComponentSlot : ComponentContainer
             m_subComponentTypeIconIMG.enabled = m_currentDisplay == null;
     }
 
-    public void SetReleasePredicate ( Func<ComponentDisplay, ComponentGesture.Refusal> _releasePredicate )
+    public void SetReleasePredicate ( Func<ComponentDisplay, Gesture.Refusal> _releasePredicate )
 	{
         m_releasePredicate = _releasePredicate;
     }
 
-    public override ComponentGesture.Refusal GetReleaseRefusal ( ComponentDisplay _display )
+    public override Gesture.Refusal GetReleaseRefusal ( GestureDisplay _display )
 	{
-        return m_releasePredicate == null ? ComponentGesture.Refusal.None : m_releasePredicate(_display);
+        return m_releasePredicate != null && _display is ComponentDisplay display ? m_releasePredicate(display) : Gesture.Refusal.None;
     }
 
     public void SetInteractability (bool _canInterract)
@@ -129,33 +129,33 @@ public class ComponentSlot : ComponentContainer
         RefreshHighlight();
     }
 
-    public override ComponentGesture.Refusal GetRefusal ( ComponentDisplay _display )
+    public override Gesture.Refusal GetRefusal ( GestureDisplay _display )
 	{
         if (m_currentDisplay == _display)
-            return ComponentGesture.Refusal.Silent;
+            return Gesture.Refusal.Silent;
 
         if (!m_canInteract)
-            return ComponentGesture.Refusal.TournamentLocked;
+            return Gesture.Refusal.TournamentLocked;
 
-        ComponentGesture.Refusal refusal = base.GetRefusal(_display);
-        if (refusal != ComponentGesture.Refusal.None)
+        Gesture.Refusal refusal = base.GetRefusal(_display);
+        if (refusal != Gesture.Refusal.None)
             return refusal;
 
-        ComponentGesture.Refusal occupant = GetReleaseRefusal(m_currentDisplay);
-        return occupant is ComponentGesture.Refusal.Damaged or ComponentGesture.Refusal.DamagedSubComponent ? ComponentGesture.Refusal.OccupantLocked : occupant;
+        Gesture.Refusal occupant = GetReleaseRefusal(m_currentDisplay);
+        return occupant is Gesture.Refusal.Damaged or Gesture.Refusal.DamagedSubComponent ? Gesture.Refusal.OccupantLocked : occupant;
 	}
 
-    protected override ComponentGesture.Kind GetIncomingKind ( ComponentDisplay _display )
+    protected override Gesture.Kind GetIncomingKind ( GestureDisplay _display )
     {
         if (m_displayMode == ComponentDisplay.DisplayMode.RecyclingStation)
-            return ComponentGesture.Kind.Deposit;
+            return Gesture.Kind.Deposit;
 
-        return m_currentDisplay != null ? ComponentGesture.Kind.Swap : ComponentGesture.Kind.Equip;
+        return m_currentDisplay != null ? Gesture.Kind.Swap : Gesture.Kind.Equip;
     }
 
-    public override ComponentDisplay FindDisplay ( GameDatas.PlayerSave.Component _component )
+    public override GestureDisplay FindDisplay ( object _content )
     {
-        return _component != null && m_currentDisplay != null && m_currentDisplay.SavedData == _component ? m_currentDisplay : null;
+        return _content is GameDatas.PlayerSave.Component component && m_currentDisplay != null && m_currentDisplay.SavedData == component ? m_currentDisplay : null;
     }
 
     public void Cleanup ()
@@ -214,7 +214,7 @@ public class ComponentSlot : ComponentContainer
     private void Swap ( ComponentDisplay _display )
     {
         ComponentDisplay temp = m_currentDisplay;
-        ComponentContainer previousContainer = _display.CurrentContainer;
+        GestureContainer previousContainer = _display.CurrentContainer;
         RemoveDisplay(CurrentDisplay);
 
         SetEquipment(_display);

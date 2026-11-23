@@ -8,10 +8,12 @@ public class RepairStationPanel : AUIPanel
 	[SerializeField] private RepareUnitDisplayGrid m_inventoryGrid;
 	[SerializeField] private RepareUnitSlot[] m_repairingSlots;
 
-	private System.Func<EntitySavedData, bool> InventoryGridPredicate => item => item != null && item.IsDamaged();
+	private System.Func<EntitySavedData, bool> InventoryGridPredicate => item => item != null && item.IsDamaged() && !item.isRepairing;
 
 	private void Awake ()
 	{
+		m_inventoryGrid.SetGestureTargetProvider(_display => GetFreeContainer());
+
 		for (int i = 0; i < m_repairingSlots.Length; i++)
 		{
 			m_repairingSlots[i].onItemAdded += OnItemAddedOnSlot;
@@ -50,16 +52,12 @@ public class RepairStationPanel : AUIPanel
 			else
 			{
 				m_repairingSlots[i].gameObject.SetActive(true);
-				int slotIndex = i;
-
 				m_repairingSlots[i].SetInteractability(!IsSlotUsedToday(i));
-				m_repairingSlots[i].Init(m_inventoryGrid, repairingComponent != null && repairingComponent.unit != null && !string.IsNullOrEmpty(repairingComponent.unit.name) ? repairingComponent.unit : null
-					, item => item != null && IsSlotFree(slotIndex)
-					, i);
+				m_repairingSlots[i].Init(m_inventoryGrid, repairingComponent != null && repairingComponent.unit != null && !string.IsNullOrEmpty(repairingComponent.unit.name) ? repairingComponent.unit : null, i);
 			}
 		}
 
-		m_inventoryGrid.Init(null, null, InventoryGridPredicate);
+		m_inventoryGrid.Init(null, InventoryGridPredicate);
 	}
 
 	protected override void OnHideStarted ()
@@ -82,14 +80,6 @@ public class RepairStationPanel : AUIPanel
 			SetSlotData(i, null);
 			m_repairingSlots[i].Cleanup();
 		}
-	}
-
-	private static bool IsSlotFree ( int _index )
-	{
-		List<GameDatas.PlayerSave.DayData.RepairingUnitData> slots = GameDatas.current.currentPlayerSave.dayData.repairingComponents;
-
-		return _index >= 0 && _index < slots.Count
-			&& (slots[_index] == null || slots[_index].unit == null || string.IsNullOrEmpty(slots[_index].unit.name));
 	}
 
 	private bool IsSlotUsedToday ( int _index )
@@ -131,7 +121,8 @@ public class RepairStationPanel : AUIPanel
 
 	private void OnClickRepair ( RepareUnitSlot _slot, bool _isFullRepair )
 	{
-		EntitySavedData unit = _slot.CurrentDisplay == null ? null : _slot.CurrentDisplay.SavedData;
+		RepareUnitDisplay display = _slot.CurrentDisplay;
+		EntitySavedData unit = display == null ? null : display.SavedData;
 
 		if (unit == null || unit.GetComponentsToRepair(_isFullRepair).Count == 0)
 			return;
@@ -141,6 +132,8 @@ public class RepairStationPanel : AUIPanel
 		if (GameDatas.current.currentPlayerSave.currencies[price.Item1] < price.Item2)
 			return;
 
+		Rect from = display.VisualWorldRect;
+		GestureFeedback.HoldCurrency(price.Item1);
 		GameDatas.current.currentPlayerSave.RemoveCurrency(price.Item1, price.Item2, GameDatas.PlayerSave.CurrencyRemoveMode.Spent);
 
 		foreach (GameDatas.PlayerSave.Component eq in unit.GetComponentsToRepair(_isFullRepair))
@@ -148,10 +141,17 @@ public class RepairStationPanel : AUIPanel
 
 		unit.isRepairing = false;
 		SetSlotData(_slot.Index, null, _doLockSlot: true);
-		_slot.Cleanup();
+		_slot.Discard(display);
 		_slot.SetInteractability(false, _isInstant: false);
+		GestureFeedback.PlayMoney(from.center, price.Item1, -(long)price.Item2);
 
 		Init();
+
+		Color color = GestureFeedback.ColorOf(Gesture.Kind.Deposit);
+		if (m_inventoryGrid.FindDisplay(unit) != null)
+			GestureFeedback.PlayArrival(m_inventoryGrid, unit, from, color);
+		else
+			GestureFeedback.PlayDeparture(display, _slot, from, color, from);
 	}
 
 	private void OnItemRemovedOnSlot ( RepareUnitContainer _container, RepareUnitDisplay _display)

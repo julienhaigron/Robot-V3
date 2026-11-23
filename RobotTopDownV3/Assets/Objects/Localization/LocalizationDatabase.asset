@@ -3098,3 +3098,31 @@ MonoBehaviour:
     values:
     - "Incompatible type"
     - "Type incompatible"
+  - key: component_gesture/drop_in
+    values:
+    - "Drop in"
+    - "D\xE9poser"
+  - key: component_refusal/slot_occupied
+    values:
+    - "Slot occupied"
+    - "Emplacement occup\xE9"
+  - key: component_refusal/used_today
+    values:
+    - "Already used today"
+    - "D\xE9j\xE0 utilis\xE9 aujourd'hui"
+  - key: briefing/unit_standby
+    values:
+    - "STANDBY"
+    - "VEILLE"
+  - key: briefing/unit_transfer
+    values:
+    - "TRANSFER {0} %"
+    - "TRANSFERT {0} %"
+  - key: briefing/unit_online
+    values:
+    - "ONLINE"
+    - "EN LIGNE"
+  - key: briefing/squad_ready
+    values:
+    - "SQUAD OPERATIONAL"
+    - "ESCOUADE OP\xC9RATIONNELLE"

@@ -770,6 +770,13 @@ public enum LocalizationKey
     component_refusal_no_free_slot,
     component_refusal_recycling,
     component_refusal_wrong_type,
+    component_gesture_drop_in,
+    component_refusal_slot_occupied,
+    component_refusal_used_today,
+    briefing_unit_standby,
+    briefing_unit_transfer,
+    briefing_unit_online,
+    briefing_squad_ready,
 }
 
 public static class LocalizationKeyExtensions
@@ -1547,6 +1554,13 @@ public static class LocalizationKeyExtensions
             case LocalizationKey.component_refusal_no_free_slot: return "component_refusal/no_free_slot";
             case LocalizationKey.component_refusal_recycling: return "component_refusal/recycling";
             case LocalizationKey.component_refusal_wrong_type: return "component_refusal/wrong_type";
+            case LocalizationKey.component_gesture_drop_in: return "component_gesture/drop_in";
+            case LocalizationKey.component_refusal_slot_occupied: return "component_refusal/slot_occupied";
+            case LocalizationKey.component_refusal_used_today: return "component_refusal/used_today";
+            case LocalizationKey.briefing_unit_standby: return "briefing/unit_standby";
+            case LocalizationKey.briefing_unit_transfer: return "briefing/unit_transfer";
+            case LocalizationKey.briefing_unit_online: return "briefing/unit_online";
+            case LocalizationKey.briefing_squad_ready: return "briefing/squad_ready";
             default: return string.Empty;
         }
     }
