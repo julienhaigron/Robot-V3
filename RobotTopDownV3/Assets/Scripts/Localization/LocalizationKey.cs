@@ -778,10 +778,20 @@ public enum LocalizationKey
     briefing_squad_ready,
     stat_block_resistances,
     stat_tip_resistances,
-    stat_tip_resistances_conditional,
     stat_short_visual_perception,
     stat_short_radar_perception,
     stat_short_thermic_perception,
+    stat_tip_conditional,
+    condition_did_not_move_this_turn,
+    condition_did_not_attack_this_turn,
+    condition_is_target_marked,
+    condition_no_ennemy8_cell_distance,
+    condition_ennemy2_cell3_distance,
+    condition_traveled6_tiles,
+    condition_is_in_preaparation,
+    condition_is_in_cooldown,
+    condition_cells12_from_start,
+    condition_did_not_use_this_game,
 }
 
 public static class LocalizationKeyExtensions
@@ -1567,10 +1577,20 @@ public static class LocalizationKeyExtensions
             case LocalizationKey.briefing_squad_ready: return "briefing/squad_ready";
             case LocalizationKey.stat_block_resistances: return "stat_block/resistances";
             case LocalizationKey.stat_tip_resistances: return "stat_tip/resistances";
-            case LocalizationKey.stat_tip_resistances_conditional: return "stat_tip/resistances_conditional";
             case LocalizationKey.stat_short_visual_perception: return "stat_short/visual_perception";
             case LocalizationKey.stat_short_radar_perception: return "stat_short/radar_perception";
             case LocalizationKey.stat_short_thermic_perception: return "stat_short/thermic_perception";
+            case LocalizationKey.stat_tip_conditional: return "stat_tip/conditional";
+            case LocalizationKey.condition_did_not_move_this_turn: return "condition/did_not_move_this_turn";
+            case LocalizationKey.condition_did_not_attack_this_turn: return "condition/did_not_attack_this_turn";
+            case LocalizationKey.condition_is_target_marked: return "condition/is_target_marked";
+            case LocalizationKey.condition_no_ennemy8_cell_distance: return "condition/no_ennemy8_cell_distance";
+            case LocalizationKey.condition_ennemy2_cell3_distance: return "condition/ennemy2_cell3_distance";
+            case LocalizationKey.condition_traveled6_tiles: return "condition/traveled6_tiles";
+            case LocalizationKey.condition_is_in_preaparation: return "condition/is_in_preaparation";
+            case LocalizationKey.condition_is_in_cooldown: return "condition/is_in_cooldown";
+            case LocalizationKey.condition_cells12_from_start: return "condition/cells12_from_start";
+            case LocalizationKey.condition_did_not_use_this_game: return "condition/did_not_use_this_game";
             default: return string.Empty;
         }
     }

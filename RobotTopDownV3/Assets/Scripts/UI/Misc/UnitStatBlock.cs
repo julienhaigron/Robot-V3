@@ -45,9 +45,9 @@ public class UnitStatBlock : MonoBehaviour
 	{
 		public readonly StatDescription description;
 		public readonly Color color;
-		public readonly LocalizationKey tip;
+		public readonly string tip;
 
-		public Bonus ( StatDescription _description, Color _color, LocalizationKey _tip )
+		public Bonus ( StatDescription _description, Color _color, string _tip )
 		{
 			description = _description;
 			color = _color;
@@ -105,6 +105,7 @@ public class UnitStatBlock : MonoBehaviour
 	[SerializeField] private Color m_chipBaseColor = new(.05f, .04f, .11f, .96f);
 	[SerializeField, Range(0f, 1f)] private float m_chipFillTint = .16f;
 	[SerializeField, Range(0f, 1f)] private float m_chipFrameAlpha = .55f;
+	[SerializeField, Range(0f, 1f)] private float m_conditionalFrameAlpha = .22f;
 
 	private readonly List<Bonus> m_bonuses = new();
 	private EntitySavedData m_data;
@@ -184,7 +185,7 @@ public class UnitStatBlock : MonoBehaviour
 		m_stealthTooltip.Init(localization.Get(LocalizationKey.stat_block_stealth), stealthTip.ToString());
 
 		SetResistances(shownData, _areStatsVisible);
-		SetBonuses(shown, _areStatsVisible);
+		SetBonuses(shown, shownData, _areStatsVisible);
 		m_hiddenLine.SetActive(!_areStatsVisible);
 	}
 
@@ -244,19 +245,7 @@ public class UnitStatBlock : MonoBehaviour
 			tip.Append('\n').Append(type.GetLocalizedTitle()).Append(' ').Append(item.value.text);
 		}
 
-		bool hasConditional = false;
-		foreach (ChipsetEquipmentData.ConditionalStatBonus chipsetBonus in _data.GetChipsetBonuses())
-		{
-			if (chipsetBonus.conditionType == Condition.ConditionType.Noone || !IsDamageResistance(chipsetBonus.bonus.type))
-				continue;
-
-			if (!hasConditional)
-				tip.Append("\n\n").Append(localization.Get(LocalizationKey.stat_tip_resistances_conditional));
-			hasConditional = true;
-			tip.Append('\n').Append(chipsetBonus.bonus.type.GetLocalizedTitle()).Append(' ').Append(FormatBonus(chipsetBonus.bonus.GetDescription()));
-		}
-
-		m_resistanceRow.SetActive(_isVisible && (hasResistance || hasConditional));
+		m_resistanceRow.SetActive(hasResistance);
 		m_resistanceTooltip.Init(localization.Get(LocalizationKey.stat_block_resistances), tip.ToString());
 	}
 
@@ -268,15 +257,16 @@ public class UnitStatBlock : MonoBehaviour
 			|| config.statTypePerResistanceCategory.ContainsValue(_stat);
 	}
 
-	private void SetBonuses ( StatDescriptions _stats, bool _isVisible )
+	private void SetBonuses ( StatDescriptions _stats, EntitySavedData _data, bool _isVisible )
 	{
 		m_bonuses.Clear();
 		if (_isVisible)
 		{
 			GameConfig.UI ui = GameConfig.current.ui;
-			AddBonuses(ui.damageStats, m_damageColor, LocalizationKey.stat_tip_bonus_damage, _stats);
-			AddBonuses(ui.resistanceStats, m_resistanceColor, LocalizationKey.stat_tip_bonus_resistance, _stats);
-			AddBonuses(ui.statusStats, m_statusColor, LocalizationKey.stat_tip_bonus_status, _stats);
+			AddBonuses(ui.damageStats, _stats);
+			AddBonuses(ui.resistanceStats, _stats);
+			AddBonuses(ui.statusStats, _stats);
+			AddConditionalBonuses(_data);
 		}
 
 		bool hasOverflow = m_bonuses.Count > m_bonusChips.Length;
@@ -293,39 +283,77 @@ public class UnitStatBlock : MonoBehaviour
 		m_bonusRoot.SetActive(m_bonuses.Count > 0);
 	}
 
-	private void AddBonuses ( StatType[] _family, Color _color, LocalizationKey _tip, StatDescriptions _stats )
+	private void AddBonuses ( StatType[] _family, StatDescriptions _stats )
 	{
 		foreach (StatType stat in _family)
 			if (_stats.TryGetValue(stat, out StatDescription description) && description.floatValue != 0f)
-				m_bonuses.Add(new Bonus(description, _color, _tip));
+				AddBonus(description);
+	}
+
+	private void AddConditionalBonuses ( EntitySavedData _data )
+	{
+		foreach (ChipsetEquipmentData.ConditionalStatBonus chipsetBonus in _data.GetChipsetBonuses())
+		{
+			if (chipsetBonus.conditionType == Condition.ConditionType.Noone || chipsetBonus.bonus.value == 0f)
+				continue;
+
+			StatDescription description = chipsetBonus.bonus.GetDescription();
+			description.condition = chipsetBonus.conditionType;
+			AddBonus(description);
+		}
+	}
+
+	private void AddBonus ( StatDescription _description )
+	{
+		GameConfig.UI ui = GameConfig.current.ui;
+		LocalizationManager localization = LocalizationManager.Instance;
+		StatType stat = _description.ID;
+		if (Array.IndexOf(ui.damageStats, stat) >= 0)
+			m_bonuses.Add(new Bonus(_description, m_damageColor, localization.Get(LocalizationKey.stat_tip_bonus_damage)));
+		else if (Array.IndexOf(ui.statusStats, stat) >= 0)
+			m_bonuses.Add(new Bonus(_description, m_statusColor, localization.Get(LocalizationKey.stat_tip_bonus_status)));
+		else if (Array.IndexOf(ui.resistanceStats, stat) >= 0 || IsDamageResistance(stat))
+			m_bonuses.Add(new Bonus(_description, m_resistanceColor, localization.Get(LocalizationKey.stat_tip_bonus_resistance)));
+		else
+			m_bonuses.Add(new Bonus(_description, m_neutralColor, string.Empty));
 	}
 
 	private void SetChip ( BonusChip _chip, Bonus _bonus )
 	{
-		Paint(_chip, _bonus.color);
-		_chip.label.text = FormatBonus(_bonus.description) + " " + _bonus.description.ID.GetLocalizedShortTitle();
-		_chip.tooltip.Init(_bonus.description.title, LocalizationManager.Instance.Get(_bonus.tip));
+		StatDescription description = _bonus.description;
+		Paint(_chip, _bonus.color, description.IsConditional);
+		_chip.label.text = FormatBonus(description) + " " + description.ID.GetLocalizedShortTitle();
+		_chip.label.fontStyle = description.IsConditional ? FontStyles.Italic : FontStyles.Normal;
+
+		string tip = _bonus.tip;
+		if (description.IsConditional)
+		{
+			string condition = string.Format(LocalizationManager.Instance.Get(LocalizationKey.stat_tip_conditional), description.condition.GetLocalizedTitle());
+			tip = string.IsNullOrEmpty(tip) ? condition : tip + "\n" + condition;
+		}
+		_chip.tooltip.Init(description.title, tip);
 	}
 
 	private void SetOverflowChip ( BonusChip _chip, int _from )
 	{
-		Paint(_chip, m_neutralColor);
+		Paint(_chip, m_neutralColor, false);
 		_chip.label.text = "+" + (m_bonuses.Count - _from);
+		_chip.label.fontStyle = FontStyles.Normal;
 
 		StringBuilder lines = new();
 		for (int i = _from; i < m_bonuses.Count; i++)
 		{
 			if (lines.Length > 0)
 				lines.Append('\n');
-			lines.Append(m_bonuses[i].description.title).Append(' ').Append(FormatBonus(m_bonuses[i].description));
+			lines.Append(m_bonuses[i].description.FullTitle).Append(' ').Append(FormatBonus(m_bonuses[i].description));
 		}
 		_chip.tooltip.Init(LocalizationManager.Instance.Get(LocalizationKey.stat_block_more), lines.ToString());
 	}
 
-	private void Paint ( BonusChip _chip, Color _color )
+	private void Paint ( BonusChip _chip, Color _color, bool _isConditional )
 	{
 		_chip.fill.color = Color.Lerp(m_chipBaseColor, new Color(_color.r, _color.g, _color.b, m_chipBaseColor.a), m_chipFillTint);
-		_chip.frame.color = new Color(_color.r, _color.g, _color.b, m_chipFrameAlpha);
+		_chip.frame.color = new Color(_color.r, _color.g, _color.b, _isConditional ? m_conditionalFrameAlpha : m_chipFrameAlpha);
 		_chip.icon.color = _color;
 	}
 

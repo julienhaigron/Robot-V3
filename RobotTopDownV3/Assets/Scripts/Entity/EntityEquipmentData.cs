@@ -95,6 +95,10 @@ public class EntityEquipmentData : AParsableScriptableObject
 		public string title => ID.GetLocalizedTitle();
 		public string stringValue;
 		public float floatValue;
+		public Condition.ConditionType condition;
+
+		public bool IsConditional => condition != Condition.ConditionType.Noone;
+		public string FullTitle => IsConditional ? title + " <i>(" + condition.GetLocalizedTitle() + ")</i>" : title;
 
 		public SecondaryStat.StatTypeFormat Format => GameConfig.current.meta.formatPerStartTypeDictionary[ID];
 

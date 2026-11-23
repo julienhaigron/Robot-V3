@@ -222,6 +222,7 @@ MonoBehaviour:
   m_chipBaseColor: {r: 0.0470588, g: 0.0431373, b: 0.1058824, a: 0.96}
   m_chipFillTint: 0.16
   m_chipFrameAlpha: 0.55
+  m_conditionalFrameAlpha: 0.22
 --- !u!1 &7084699841808270018
 GameObject:
   m_ObjectHideFlags: 0

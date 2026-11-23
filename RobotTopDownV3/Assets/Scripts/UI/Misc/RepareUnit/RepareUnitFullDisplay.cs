@@ -52,12 +52,7 @@ public class RepareUnitFullDisplay : MonoBehaviour
 				continue;
 
 			foreach (EntityEquipmentData.StatDescription stat in componentData.GetDesciption())
-			{
-				if (stats.ContainsKey(stat.ID))
-					stats[stat.ID].Add(stat);
-				else
-					stats.Add(stat.ID, stat);
-			}
+				EntitySavedData.MergeDescription(stats, stat);
 		}
 
 		stats.Remove(EntityEquipmentData.SecondaryStat.StatType.EnergyCost);

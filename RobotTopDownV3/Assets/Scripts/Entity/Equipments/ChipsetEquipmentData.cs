@@ -23,7 +23,9 @@ public class ChipsetEquipmentData : EntityEquipmentData
 		List<StatDescription> description = base.GetDesciption().ToList();
 		foreach (ConditionalStatBonus bonus in statBonuses)
 		{
-			description.Add(bonus.bonus.GetDescription());
+			StatDescription bonusDescription = bonus.bonus.GetDescription();
+			bonusDescription.condition = bonus.conditionType;
+			description.Add(bonusDescription);
 		}
 
 		return description.ToArray();

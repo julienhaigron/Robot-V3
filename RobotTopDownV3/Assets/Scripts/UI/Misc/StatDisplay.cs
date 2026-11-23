@@ -22,7 +22,7 @@ public class StatDisplay : MonoBehaviour
 	public void Init ( EntityEquipmentData.StatDescription _statDesciption )
 	{
 		m_currentDescription = _statDesciption;
-		m_titleTMP.text = _statDesciption.title;
+		m_titleTMP.text = _statDesciption.FullTitle;
 		if (string.IsNullOrEmpty(_statDesciption.stringValue))
 		{
 			for (int i = 0; i < m_slots.Length; i++)
@@ -45,6 +45,6 @@ public class StatDisplay : MonoBehaviour
 		if (m_currentDescription == null)
 			return;
 
-		m_titleTMP.text = m_currentDescription.title;
+		m_titleTMP.text = m_currentDescription.FullTitle;
 	}
 }

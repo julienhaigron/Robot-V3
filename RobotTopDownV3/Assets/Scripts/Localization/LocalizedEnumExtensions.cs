@@ -99,6 +99,11 @@ public static class LocalizedEnumExtensions
 		return LocalizationManager.Instance.Get("damage_type/" + ToSnakeCase(_type.ToString()));
 	}
 
+	public static string GetLocalizedTitle ( this Condition.ConditionType _type )
+	{
+		return LocalizationManager.Instance.Get("condition/" + ToSnakeCase(_type.ToString()));
+	}
+
 	private static string ToSnakeCase ( string _name )
 
 	{

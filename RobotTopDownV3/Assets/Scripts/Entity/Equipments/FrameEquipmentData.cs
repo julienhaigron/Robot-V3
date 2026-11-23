@@ -478,117 +478,25 @@ public class EntitySavedData : INetworkSerializable
 	public SerializableDictionary<EntityEquipmentData.SecondaryStat.StatType, EntityEquipmentData.StatDescription> GetStatsDesciptions ()
 	{
 		SerializableDictionary<EntityEquipmentData.SecondaryStat.StatType, EntityEquipmentData.StatDescription> statsDictionary = new();
-		if (FrameData != null)
+		foreach (GameDatas.PlayerSave.Component component in GetAllEquipments())
 		{
-			foreach (EntityEquipmentData.StatDescription stat in FrameData.GetDesciption())
-			{
-				if (statsDictionary.ContainsKey(stat.ID))
-					statsDictionary[stat.ID].Add(stat);
-				else
-					statsDictionary.Add(stat.ID, stat);
-			}
-		}
-		if (ReactorData != null)
-		{
-			foreach (EntityEquipmentData.StatDescription stat in ReactorData.GetDesciption())
-			{
-				if (statsDictionary.ContainsKey(stat.ID))
-					statsDictionary[stat.ID].Add(stat);
-				else
-					statsDictionary.Add(stat.ID, stat);
-			}
-		}
-		if (NeuronalMembraneData != null)
-		{
-			foreach (EntityEquipmentData.StatDescription stat in NeuronalMembraneData.GetDesciption())
-			{
-				if (statsDictionary.ContainsKey(stat.ID))
-					statsDictionary[stat.ID].Add(stat);
-				else
-					statsDictionary.Add(stat.ID, stat);
-			}
-		}
-		if (BrainData != null)
-		{
-			foreach (EntityEquipmentData.StatDescription stat in BrainData.GetDesciption())
-			{
-				if (statsDictionary.ContainsKey(stat.ID))
-					statsDictionary[stat.ID].Add(stat);
-				else
-					statsDictionary.Add(stat.ID, stat);
-			}
-		}
+			if (!component.TryGetData(out EntityEquipmentData data))
+				continue;
 
-		if (auxiliar != null)
-		{
-			foreach (GameDatas.PlayerSave.Component container in auxiliar)
-			{
-				if (container != null && container.TryGetData(out OccultorEquipmentData occultor))
-				{
-					foreach (EntityEquipmentData.StatDescription stat in occultor.GetDesciption())
-					{
-						if (statsDictionary.ContainsKey(stat.ID))
-							statsDictionary[stat.ID].Add(stat);
-						else
-							statsDictionary.Add(stat.ID, stat);
-					}
-				}
-				else if (container != null && container.TryGetData(out ArmorEquipmentData armor))
-				{
-					foreach (EntityEquipmentData.StatDescription stat in armor.GetDesciption())
-					{
-						if (statsDictionary.ContainsKey(stat.ID))
-							statsDictionary[stat.ID].Add(stat);
-						else
-							statsDictionary.Add(stat.ID, stat);
-					}
-				}
-			}
-		}
-		if (arms != null)
-		{
-			foreach (GameDatas.PlayerSave.Component container in arms)
-			{
-				if (container != null && container.TryGetData(out WeaponEquipmentData weapon))
-				{
-					foreach (EntityEquipmentData.StatDescription stat in weapon.GetDesciption())
-					{
-						if (statsDictionary.ContainsKey(stat.ID))
-							statsDictionary[stat.ID].Add(stat);
-						else
-							statsDictionary.Add(stat.ID, stat);
-					}
-				}
-				else if (container != null && container.TryGetData(out ToolEquipmentData tool))
-				{
-					foreach (EntityEquipmentData.StatDescription stat in tool.GetDesciption())
-					{
-						if (statsDictionary.ContainsKey(stat.ID))
-							statsDictionary[stat.ID].Add(stat);
-						else
-							statsDictionary.Add(stat.ID, stat);
-					}
-				}
-			}
-		}
-		if (chipsets != null)
-		{
-			foreach (GameDatas.PlayerSave.Component container in chipsets)
-			{
-				if (container != null && container.TryGetData(out ChipsetEquipmentData chipset))
-				{
-					foreach (EntityEquipmentData.StatDescription stat in chipset.GetDesciption())
-					{
-						if (statsDictionary.ContainsKey(stat.ID))
-							statsDictionary[stat.ID].Add(stat);
-						else
-							statsDictionary.Add(stat.ID, stat);
-					}
-				}
-			}
+			foreach (EntityEquipmentData.StatDescription stat in data.GetDesciption())
+				if (!stat.IsConditional)
+					MergeDescription(statsDictionary, stat);
 		}
 
 		return statsDictionary;
+	}
+
+	public static void MergeDescription ( SerializableDictionary<EntityEquipmentData.SecondaryStat.StatType, EntityEquipmentData.StatDescription> _stats, EntityEquipmentData.StatDescription _stat )
+	{
+		if (_stats.TryGetValue(_stat.ID, out EntityEquipmentData.StatDescription merged))
+			merged.Add(_stat);
+		else
+			_stats.Add(_stat.ID, _stat);
 	}
 
 }
