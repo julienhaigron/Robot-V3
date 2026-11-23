@@ -22,7 +22,7 @@ public abstract class GestureContainer : MonoBehaviour, IDropHandler, IPointerEn
 
     private CanvasGroup m_canvasGroup;
     private AUIPanel m_panel;
-    private Highlight m_highlight;
+    private Highlight m_highlightState;
     private Color m_targetColor;
     private Tween m_pulseTween;
     private Tween m_revealTween;
@@ -178,13 +178,13 @@ public abstract class GestureContainer : MonoBehaviour, IDropHandler, IPointerEn
 
     public void OnPointerEnter ( PointerEventData _eventData )
     {
-        if (m_highlight == Highlight.DropValid)
+        if (m_highlightState == Highlight.DropValid)
             SetHighlight(Highlight.DropOver);
     }
 
     public void OnPointerExit ( PointerEventData _eventData )
     {
-        if (m_highlight == Highlight.DropOver)
+        if (m_highlightState == Highlight.DropOver)
             SetHighlight(Highlight.DropValid);
     }
 
@@ -205,34 +205,34 @@ public abstract class GestureContainer : MonoBehaviour, IDropHandler, IPointerEn
     {
         foreach (GestureContainer container in s_enabledContainers)
         {
-            if (container.m_highlight >= Highlight.DropValid)
+            if (container.m_highlightState >= Highlight.DropValid)
                 container.SetHighlight(Highlight.None);
         }
     }
 
     public void SetHighlight ( Highlight _highlight, Color _color = default )
     {
-        m_highlight = _highlight;
+        m_highlightState = _highlight;
         m_targetColor = _color;
         RefreshHighlight();
     }
 
     public void ClearTargetHighlight ()
     {
-        if (m_highlight == Highlight.Target)
+        if (m_highlightState == Highlight.Target)
             SetHighlight(Highlight.None);
     }
 
     protected void RefreshHighlight ()
     {
         if (m_canvasGroup != null)
-            m_canvasGroup.alpha = m_highlight == Highlight.DropInvalid ? GestureFeedback.DimmedAlpha : 1f;
+            m_canvasGroup.alpha = m_highlightState == Highlight.DropInvalid ? GestureFeedback.DimmedAlpha : 1f;
 
         Graphic graphic = HighlightGraphic;
         if (graphic == null || m_pulseTween != null)
             return;
 
-        Color? color = m_highlight switch
+        Color? color = m_highlightState switch
         {
             Highlight.Target => m_targetColor,
             Highlight.DropValid => GestureFeedback.DropValidColor,

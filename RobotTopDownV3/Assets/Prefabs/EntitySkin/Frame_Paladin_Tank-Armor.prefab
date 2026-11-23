@@ -303,6 +303,12 @@ MonoBehaviour:
       _uObject: {fileID: 0}
       VariableType: 0
       _rangeHelper: {x: 2, y: 20, z: 0, w: 0}
+  - Enabled: 1
+    Parent: {fileID: 3894988364515184562}
+    ModuleReference: {fileID: 11400000, guid: e4ee7a9d98b6bbe47183a3f5e459bf77, type: 2}
+    customStringList: []
+    customObjectList: []
+    variables: []
   ImpulsesPowerMultiplier: 1
   ImpulsesDurationMultiplier: 1
   ImpulsesDampUpPushes: 0
