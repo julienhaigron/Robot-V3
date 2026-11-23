@@ -422,6 +422,11 @@ public class Entity : MonoBehaviour
 		onStatBonusRemoved?.Invoke(_statBuff);
 	}
 
+	public float GetDefensiveStatBonus ( EntityEquipmentData.SecondaryStat.StatType _type )
+	{
+		return GetAdditionaryStatBonus(_type, TurnManager.Instance.GetActionInProgressOf(ID));
+	}
+
 	public float GetAdditionaryStatBonus ( EntityEquipmentData.SecondaryStat.StatType _type, AEntityAction _relatedAction )
 	{
 		float bonus = 0f;

@@ -41,17 +41,20 @@ public class Condition
 				return isLive ? liveCheck2 : recordedCheck2;
 			case ConditionType.IsTargetMarked:
 				return _targetEntity != null && _targetEntity.Status.Contains(EntityStatusEnumID.Marked);
-			/*case ConditionType.NoEnnemy8CellDistance:
-				return _entity
-			case ConditionType.Ennemy2Cell3Distance:*/
+			case ConditionType.NoEnnemy8CellDistance:
+				return !IsEnemyWithin(_entity, GetPositionOf(_action, _entity, isLive), 1, 8);
+			case ConditionType.Ennemy2Cell3Distance:
+				return IsEnemyWithin(_entity, GetPositionOf(_action, _entity, isLive), 2, 3);
 			case ConditionType.Traveled6Tiles:
 				bool recordCheck3 = TurnManager.Instance.TrackedEventsPerEntity[_entity.ID].traveledTileCountThisTurn >= 6;
 				bool liveCheck3 = _entity.Displacement.TraveledTileCountThisTurn >= 6;
 				return isLive ? liveCheck3 : recordCheck3;
 			case ConditionType.IsInPreaparation:
 				return _action.lifetime < _action.preparationDuration;
+			case ConditionType.IsInCooldown:
+				return _action.lifetime >= _action.preparationDuration + _action.actualDuration;
 			case ConditionType.Cells12FromStart:
-				bool recordCheck4 = TurnManager.Instance.TrackedEventsPerEntity[_entity.ID].traveledTileCountThisTurn >= 12;
+				bool recordCheck4 = _entity.Displacement.TraveledTileTotalCount + TurnManager.Instance.TrackedEventsPerEntity[_entity.ID].traveledTileCountThisTurn >= 12;
 				bool liveCheck4 = _entity.Displacement.TraveledTileTotalCount >= 12;
 				return isLive ? liveCheck4 : recordCheck4;
 			case ConditionType.DidNotUseThisGame:
@@ -59,5 +62,28 @@ public class Condition
 				bool recordCheck5 = liveCheck5 && !TurnManager.Instance.TrackedEventsPerEntity[_entity.ID].usedActionThisTurn.Contains(_action.enumID);
 				return isLive ? liveCheck5 : recordCheck5;
 		}
+	}
+
+	private static TileCoordinates GetPositionOf ( AEntityAction _action, Entity _entity, bool _isLive )
+	{
+		return _isLive ? _entity.Displacement.Coordinates : GridManager.Instance.Tiles[_action.supposedPositionAtActionStartID].coordinates;
+	}
+
+	private static bool IsEnemyWithin ( Entity _entity, TileCoordinates _from, int _minDistance, int _maxDistance )
+	{
+		foreach (EntityAnchor anchor in GameManager.Instance.PlayersEntityAnchor)
+		{
+			foreach (Entity other in anchor.Entities)
+			{
+				if (other.Equipment.IsDead || other.IsAlliedTo(_entity.OwnerID))
+					continue;
+
+				int distance = _from.DistanceTo(other.Displacement.Coordinates);
+				if (distance >= _minDistance && distance <= _maxDistance)
+					return true;
+			}
+		}
+
+		return false;
 	}
 }

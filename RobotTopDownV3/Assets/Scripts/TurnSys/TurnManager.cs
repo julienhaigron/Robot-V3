@@ -1229,6 +1229,15 @@ public class TurnManager : Singleton<TurnManager>
 		return GetRecordedActionPerformedAtTick(_entityID)?.action;
 	}
 
+	public AEntityAction GetActionInProgressOf ( int _entityID )
+	{
+		RecordedAction queued = m_actionsToPlay.TryGetValue(_entityID, out Queue<RecordedAction> queue) && queue != null && queue.Count > 0
+			&& queue.Peek().action.timeAtStart <= currentTick ? queue.Peek() : null;
+		RecordedAction beingDone = m_actionsBeingDone.TryGetValue(_entityID, out Tuple<RecordedAction, bool> tuple) ? tuple?.Item1 : null;
+
+		return (currentPhase == TurnPhase.Calculating ? queued ?? beingDone : beingDone ?? queued)?.action;
+	}
+
 	public int GetEntityPositionAtEndOfTick ( int _entityID, int _defaultTileID )
 	{
 		RecordedAction recordedAction = GetRecordedActionPerformedAtTick(_entityID);

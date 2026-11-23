@@ -26,11 +26,17 @@ MonoBehaviour:
   afterPerformAnimationKey: 
   performAnimationKey: 
   performAnimationHitDelay: 0
+  preparationAnimationMode: 0
+  preparationHoldDelay: 0.2
+  preparationWindUpRatio: 0.8
+  recoveryAnimationMode: 0
+  recoveryHoldDelay: 0.6
   shotRecoilStrength: 0.15
   onPerformSingleAttackSFXID: 0
   onSingleAttackHitSFXID: 0
   onSingleAttackHitVFXPool: {fileID: 11400000, guid: 8d9664d0ceee941f86e5533780f823af, type: 2}
   onPerformVFXPool: {fileID: 11400000, guid: 94295570e653ccdb414e3f81986dd1af, type: 2}
+  movementTrailPool: {fileID: 0}
   visualEffectType: 0
   visualEffectDuration: 0.3
   projectilePool: {fileID: 0}
@@ -78,3 +84,4 @@ MonoBehaviour:
   invocatedItem: {fileID: 0}
   invocationCountLimit: 1
   movementSpeed: 1
+  movementAnimation: 

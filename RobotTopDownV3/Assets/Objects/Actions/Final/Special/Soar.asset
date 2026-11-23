@@ -24,15 +24,32 @@ MonoBehaviour:
   isPlayedFirst: 1
   preparationAnimationKey: 
   afterPerformAnimationKey: 
+  performAnimationKey: 
+  performAnimationHitDelay: 0.3
+  preparationAnimationMode: 0
+  preparationHoldDelay: 0.2
+  preparationWindUpRatio: 0.8
+  recoveryAnimationMode: 0
+  recoveryHoldDelay: 0.6
+  shotRecoilStrength: 1
   onPerformSingleAttackSFXID: 0
   onSingleAttackHitSFXID: 0
   onSingleAttackHitVFXPool: {fileID: 0}
+  onPerformVFXPool: {fileID: 0}
+  movementTrailPool: {fileID: 0}
   visualEffectType: 1
   visualEffectDuration: 0.3
   projectilePool: {fileID: 0}
   projectileSpeed: 10
   spellVfxPrefab: {fileID: 7392000000000000001, guid: f5de1e9d3e5e9c0dc2d590e045e103d0, type: 3}
   spellVfxLifetime: 2
+  attackProjectileMode: 0
+  attackProjectilePool: {fileID: 0}
+  attackProjectileSpeed: 20
+  doesAttackProjectileReturn: 0
+  attackProjectileSprayCount: 10
+  attackProjectileSprayInterval: 0.04
+  doesSprayRepeatPerformVFX: 1
   conditionType: 0
   previousActionAttackModificator: 0
   type: 3
@@ -67,3 +84,4 @@ MonoBehaviour:
   invocatedItem: {fileID: 0}
   invocationCountLimit: 1
   movementSpeed: 1
+  movementAnimation: 

@@ -24,6 +24,7 @@ MonoBehaviour:
   recyclingDurationAmount: 1
   reparingDurationAmount: 1
   canDropRandomly: 1
+  requiresBlueprint: 1
   prefab: {fileID: 7320000000000000001, guid: 604db8eef758dc25895436c6fbdb1ca2, type: 3}
   range: 0
   attackAnimationSuccessId: 

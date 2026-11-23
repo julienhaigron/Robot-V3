@@ -356,11 +356,11 @@ public class EntityEquipmentPlugin : EntityPlugin
 
 		NeuronalMembraneEquipmentData.VisionTypes seenWith = GridManager.Instance.GetBestVisionOf(m_linkedEntity.OwnerID, targetTile);
 		float targetCamo = _targetEntity.Data.GetStaticStealthBonus(seenWith)
-			+ _targetEntity.GetAdditionaryStatBonus(NeuronalMembraneEquipmentData.GetCamoStat(seenWith), null);
+			+ _targetEntity.GetDefensiveStatBonus(NeuronalMembraneEquipmentData.GetCamoStat(seenWith));
 
 		float evationRatio = _attackAction.Data.type == EntityActionData.ActionType.DistanceAttack
-				? _targetEntity.Data.BrainData.distanceEvasion + _targetEntity.GetAdditionaryStatBonus(EntityEquipmentData.SecondaryStat.StatType.DistanceEvasion, null)
-				: _targetEntity.Data.BrainData.meleeEvasion + _targetEntity.GetAdditionaryStatBonus(EntityEquipmentData.SecondaryStat.StatType.MeleeEvasion, null);
+				? _targetEntity.Data.BrainData.distanceEvasion + _targetEntity.GetDefensiveStatBonus(EntityEquipmentData.SecondaryStat.StatType.DistanceEvasion)
+				: _targetEntity.Data.BrainData.meleeEvasion + _targetEntity.GetDefensiveStatBonus(EntityEquipmentData.SecondaryStat.StatType.MeleeEvasion);
 		float coverRatio = isThereCoverBetween ? GameConfig.current.game.entityCoverBonus : 0f;
 		float targetEvasionScore = targetCamo + evationRatio + coverRatio;
 
@@ -448,7 +448,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 		float actionProbability = _action.Data.statusHitProbability;
 		float equipmentProbability = _equipmentData.statusHitProbability;
 		float userStatusChance = m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.SecondaryStat.StatType.StatusChance) + m_linkedEntity.GetAdditionaryStatBonus(EntityEquipmentData.SecondaryStat.StatType.StatusChance, _action);
-		float targetResistance = _target.Data.GetStatBonusFromAll(EntityEquipmentData.SecondaryStat.StatType.StatusResistance) + _target.GetAdditionaryStatBonus(EntityEquipmentData.SecondaryStat.StatType.StatusResistance, null);
+		float targetResistance = _target.Data.GetStatBonusFromAll(EntityEquipmentData.SecondaryStat.StatType.StatusResistance) + _target.GetDefensiveStatBonus(EntityEquipmentData.SecondaryStat.StatType.StatusResistance);
 		float hitProba = actionProbability + equipmentProbability + userStatusChance - targetResistance;
 		float roll = Random.Range(0f, 1f);
 		bool isAttackSuccessful = hitProba >= 1f || roll <= hitProba;

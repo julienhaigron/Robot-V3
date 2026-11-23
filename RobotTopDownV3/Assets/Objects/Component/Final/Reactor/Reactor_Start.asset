@@ -24,4 +24,5 @@ MonoBehaviour:
   recyclingDurationAmount: 1
   reparingDurationAmount: 1
   canDropRandomly: 0
+  requiresBlueprint: 1
   energyProduced: 100

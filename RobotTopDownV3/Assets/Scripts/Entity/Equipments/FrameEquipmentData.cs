@@ -414,7 +414,7 @@ public class EntitySavedData : INetworkSerializable
 
 	public int GetMaxHealth ()
 	{
-		float bonus = 1 + GetStatBonusFrom(EntityEquipmentData.SecondaryStat.StatType.BaseHp);
+		float bonus = 1 + GetStatBonusFromAll(EntityEquipmentData.SecondaryStat.StatType.BaseHp);
 		float maxHealth = FrameData == null ? 0 : FrameData.maxHealth;
 
 		return Mathf.RoundToInt(maxHealth * bonus);

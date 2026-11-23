@@ -24,6 +24,7 @@ MonoBehaviour:
   recyclingDurationAmount: 1
   reparingDurationAmount: 1
   canDropRandomly: 1
+  requiresBlueprint: 1
   prefab: {fileID: 4024176136403563100, guid: f8425188d46ae8d6c3549af2a52112e7, type: 3}
   attackAnimationSuccessId: 
   attackAnimationFailureId: 
@@ -31,3 +32,4 @@ MonoBehaviour:
   singleAttackAnimationDuration: 0.3
   guardAnimation: Torch
   guardTorsoYaw: 26
+  aimAnimation: 

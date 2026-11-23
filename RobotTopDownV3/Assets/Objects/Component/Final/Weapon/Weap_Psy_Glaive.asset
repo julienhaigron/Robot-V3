@@ -32,3 +32,4 @@ MonoBehaviour:
   singleAttackAnimationDuration: 0.3
   guardAnimation: Throw
   guardTorsoYaw: 35
+  aimAnimation: 

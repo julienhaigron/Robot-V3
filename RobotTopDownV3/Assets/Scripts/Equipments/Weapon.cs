@@ -898,7 +898,7 @@ public class Weapon : MonoBehaviour
 
 			float typeBuff = _user.GetAdditionaryStatBonus(damageTypeStatType, _action)
 				+ _user.Equipment.ApplyedDamageTypeBuffs.GetValueOrDefault(pair.Key)
-				- (hasTarget ? _target.GetAdditionaryStatBonus(resistanceTypeStatType, null) + _target.Equipment.ApplyedDamageTypeResistance.GetValueOrDefault(pair.Key) : 0f);
+				- (hasTarget ? _target.GetDefensiveStatBonus(resistanceTypeStatType) + _target.Equipment.ApplyedDamageTypeResistance.GetValueOrDefault(pair.Key) : 0f);
 			typeBuff = Mathf.Max(typeBuff, -1f);
 
 			WeaponEquipmentData.DamageCategory category = GameConfig.current.game.damageCategoryPerDamageType[pair.Key];
@@ -907,14 +907,14 @@ public class Weapon : MonoBehaviour
 
 			float categoryBuff = _user.GetAdditionaryStatBonus(damageCategoryStatType, _action)
 				+ _user.Equipment.ApplyedDamageCategoryBuffs.GetValueOrDefault(category)
-				- (hasTarget ? _target.GetAdditionaryStatBonus(resistanceCategoryStatType, null) + _target.Equipment.ApplyedDamageTypeCategoryResitance.GetValueOrDefault(category) : 0f);
+				- (hasTarget ? _target.GetDefensiveStatBonus(resistanceCategoryStatType) + _target.Equipment.ApplyedDamageTypeCategoryResitance.GetValueOrDefault(category) : 0f);
 
 			categoryBuff = Mathf.Max(categoryBuff, -1f);
 
 			float generalDamage =
 				Mathf.Max(
 					_user.Equipment.GeneralDamageBuff + _user.GetAdditionaryStatBonus(EntityEquipmentData.SecondaryStat.StatType.GeneralDamageBonus, _action)
-					- (hasTarget ? _target.Equipment.GeneralDamageResistance + _target.GetAdditionaryStatBonus(EntityEquipmentData.SecondaryStat.StatType.GeneralDamageResistance, null) : 0f),
+					- (hasTarget ? _target.Equipment.GeneralDamageResistance + _target.GetDefensiveStatBonus(EntityEquipmentData.SecondaryStat.StatType.GeneralDamageResistance) : 0f),
 					-1f
 				);
 
@@ -922,7 +922,7 @@ public class Weapon : MonoBehaviour
 				Mathf.Max(
 					flankMod
 					+ _user.Data.GetStatBonusFromAll(EntityEquipmentData.SecondaryStat.StatType.FlankDamageBonus) + _user.GetAdditionaryStatBonus(EntityEquipmentData.SecondaryStat.StatType.FlankDamageBonus, _action)
-					- (hasTarget ? _target.Data.GetStatBonusFromAll(EntityEquipmentData.SecondaryStat.StatType.FlankResistance) + _target.GetAdditionaryStatBonus(EntityEquipmentData.SecondaryStat.StatType.FlankResistance, null) : 0f),
+					- (hasTarget ? _target.Data.GetStatBonusFromAll(EntityEquipmentData.SecondaryStat.StatType.FlankResistance) + _target.GetDefensiveStatBonus(EntityEquipmentData.SecondaryStat.StatType.FlankResistance) : 0f),
 					-1f
 				);
 

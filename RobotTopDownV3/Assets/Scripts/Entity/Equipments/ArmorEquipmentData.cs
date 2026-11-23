@@ -7,7 +7,7 @@ using System.Linq;
 [CreateAssetMenu(fileName = "ArmorData", menuName = "ScriptableObject/Equipment/ArmorData", order = 1)]
 public class ArmorEquipmentData : EntityEquipmentData
 {
-    [BoxGroup(GroupID = "Stat")]
+    [BoxGroup(GroupID = "Stat"), Parsing("SecondaryStat")]
     public SecondaryStat[] statBonuses;
 
 	public override StatDescription[] GetDesciption ()

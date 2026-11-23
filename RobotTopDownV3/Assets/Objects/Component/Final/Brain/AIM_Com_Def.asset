@@ -24,6 +24,7 @@ MonoBehaviour:
   recyclingDurationAmount: 1
   reparingDurationAmount: 1
   canDropRandomly: 1
+  requiresBlueprint: 1
   chipsetSlotAvailable: 2
   agility: 0.15
   distanceAccuracy: 0.15

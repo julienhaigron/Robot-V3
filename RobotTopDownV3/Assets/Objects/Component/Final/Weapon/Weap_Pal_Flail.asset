@@ -32,3 +32,4 @@ MonoBehaviour:
   singleAttackAnimationDuration: 0.3
   guardAnimation: Axe
   guardTorsoYaw: -38
+  aimAnimation: 

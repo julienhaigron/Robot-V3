@@ -25,4 +25,8 @@ MonoBehaviour:
   reparingDurationAmount: 1
   canDropRandomly: 1
   requiresBlueprint: 0
-  statBonuses: []
+  statBonuses:
+  - type: 17
+    value: 0.15
+  - type: 7
+    value: 0.15
