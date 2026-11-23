@@ -30,21 +30,6 @@ public class EntityEquipmentPlugin : EntityPlugin
 	private bool m_isDead = false;
 	public bool IsDead => m_isDead;
 
-	public float GeneralDamageBuff { get; private set; }
-	public float GeneralDamageResistance { get; private set; }
-
-	private SerializableDictionary<WeaponEquipmentData.DamageType, float> m_applyedDamageTypeBuffs = new();
-	public SerializableDictionary<WeaponEquipmentData.DamageType, float> ApplyedDamageTypeBuffs => m_applyedDamageTypeBuffs;
-
-	private SerializableDictionary<WeaponEquipmentData.DamageType, float> m_applyedDamageTypeResitance = new();
-	public SerializableDictionary<WeaponEquipmentData.DamageType, float> ApplyedDamageTypeResistance => m_applyedDamageTypeResitance;
-
-	private SerializableDictionary<WeaponEquipmentData.DamageCategory, float> m_applyedDamageCategoryBuffs = new();
-	public SerializableDictionary<WeaponEquipmentData.DamageCategory, float> ApplyedDamageCategoryBuffs => m_applyedDamageCategoryBuffs;
-
-	private SerializableDictionary<WeaponEquipmentData.DamageCategory, float> m_applyedDamageCategoryResitance = new();
-	public SerializableDictionary<WeaponEquipmentData.DamageCategory, float> ApplyedDamageTypeCategoryResitance => m_applyedDamageCategoryResitance;
-
 	private bool m_didAttackThisTurn = false;
 	public bool DidAttackThisTurn => m_didAttackThisTurn;
 
@@ -85,19 +70,6 @@ public class EntityEquipmentPlugin : EntityPlugin
 		m_maxHealth = m_linkedEntity.Data.GetMaxHealth();
 		m_currentHealth = _entityData.currentHp <= 0 ? m_maxHealth : Mathf.Min(_entityData.currentHp, m_maxHealth);
 		m_isDead = false;
-
-		EntitySavedData savedData = m_linkedEntity.Data;
-		GameConfig.GameSettings config = GameConfig.current.game;
-		GeneralDamageBuff = savedData.GetStatBonusFromAll(EntityEquipmentData.SecondaryStat.StatType.GeneralDamageBonus);
-		GeneralDamageResistance = savedData.GetStatBonusFromAll(EntityEquipmentData.SecondaryStat.StatType.GeneralDamageResistance);
-		foreach (KeyValuePair<WeaponEquipmentData.DamageType, EntityEquipmentData.SecondaryStat.StatType> pair in config.statTypePerDamageType)
-			m_applyedDamageTypeBuffs[pair.Key] = savedData.GetStatBonusFromAll(pair.Value);
-		foreach (KeyValuePair<WeaponEquipmentData.DamageType, EntityEquipmentData.SecondaryStat.StatType> pair in config.statTypePerDamageResistanceType)
-			m_applyedDamageTypeResitance[pair.Key] = savedData.GetStatBonusFromAll(pair.Value);
-		foreach (KeyValuePair<WeaponEquipmentData.DamageCategory, EntityEquipmentData.SecondaryStat.StatType> pair in config.statTypePerDamageCategory)
-			m_applyedDamageCategoryBuffs[pair.Key] = savedData.GetStatBonusFromAll(pair.Value);
-		foreach (KeyValuePair<WeaponEquipmentData.DamageCategory, EntityEquipmentData.SecondaryStat.StatType> pair in config.statTypePerResistanceCategory)
-			m_applyedDamageCategoryResitance[pair.Key] = savedData.GetStatBonusFromAll(pair.Value);
 
 		base.Init(_entityData);
 	}
@@ -355,22 +327,24 @@ public class EntityEquipmentPlugin : EntityPlugin
 		string coverName = isThereCoverBetween ? _coverTile.GroundType.GetLocalizedCoverName() : null;
 
 		NeuronalMembraneEquipmentData.VisionTypes seenWith = GridManager.Instance.GetBestVisionOf(m_linkedEntity.OwnerID, targetTile);
-		float targetCamo = _targetEntity.Data.GetStaticStealthBonus(seenWith)
-			+ _targetEntity.GetDefensiveStatBonus(NeuronalMembraneEquipmentData.GetCamoStat(seenWith));
+		float targetCamo = _targetEntity.Data.GetOccultorCamo(seenWith)
+			+ _targetEntity.GetStatBonus(NeuronalMembraneEquipmentData.GetCamoStat(seenWith));
+		EntityEquipmentData.SecondaryStat.StatType perceptionStat = NeuronalMembraneEquipmentData.GetPerceptionStat(seenWith);
+		float perception = Mathf.Clamp(m_linkedEntity.GetStatBonus(perceptionStat, _attackAction), 0f, Mathf.Max(targetCamo, 0f));
 
 		float evationRatio = _attackAction.Data.type == EntityActionData.ActionType.DistanceAttack
-				? _targetEntity.Data.BrainData.distanceEvasion + _targetEntity.GetDefensiveStatBonus(EntityEquipmentData.SecondaryStat.StatType.DistanceEvasion)
-				: _targetEntity.Data.BrainData.meleeEvasion + _targetEntity.GetDefensiveStatBonus(EntityEquipmentData.SecondaryStat.StatType.MeleeEvasion);
+				? _targetEntity.Data.BrainData.distanceEvasion + _targetEntity.GetStatBonus(EntityEquipmentData.SecondaryStat.StatType.DistanceEvasion)
+				: _targetEntity.Data.BrainData.meleeEvasion + _targetEntity.GetStatBonus(EntityEquipmentData.SecondaryStat.StatType.MeleeEvasion);
 		float coverRatio = isThereCoverBetween ? GameConfig.current.game.entityCoverBonus : 0f;
 		float targetEvasionScore = targetCamo + evationRatio + coverRatio;
 
 		float userAim = GetAimScore(_attackAction);
 		Tile.TileDirectionType side = GridManager.Instance.GetHitTileSide(m_linkedEntity, _targetEntity, doesWinPFC, _singleAttackInfo.ShotOrigin);
 		float flankBonus = GameConfig.current.game.entityFlankRatio[side]
-			+ m_linkedEntity.GetAdditionaryStatBonus(EntityEquipmentData.SecondaryStat.StatType.FlankBonus, _attackAction);
+			+ (side == Tile.TileDirectionType.Front ? 0f : m_linkedEntity.GetStatBonus(EntityEquipmentData.SecondaryStat.StatType.FlankBonus, _attackAction));
 		float modAction = m_linkedEntity.PreviousActionAttackModificator;
 
-		float userHitScore = userAim + flankBonus + modAction;
+		float userHitScore = userAim + flankBonus + modAction + perception;
 
 		float finalScore = userHitScore - targetEvasionScore;
 
@@ -389,6 +363,8 @@ public class EntityEquipmentPlugin : EntityPlugin
 		attack.Add(LocalizationKey.log_card_accuracy, userAim);
 		attack.Add(string.Format(localization.Get(LocalizationKey.log_card_flank), side.GetLocalizedTitle()), flankBonus);
 		attack.Add(LocalizationKey.log_card_previous_action, modAction);
+		if (perception > 0f)
+			attack.Add(perceptionStat.GetLocalizedTitle(), perception);
 
 		LogCard.Column defense = card.AddColumn(LogCard.ColumnKind.Defense, LocalizationKey.log_card_defense, targetEvasionScore);
 		defense.Add(string.Format(localization.Get(LocalizationKey.log_card_stealth), seenWith.GetLocalizedTitle().ToLower()), -targetCamo);
@@ -402,8 +378,8 @@ public class EntityEquipmentPlugin : EntityPlugin
 	private float GetAimScore ( AttackAction _attackAction )
 	{
 		return _attackAction.Data.type == EntityActionData.ActionType.DistanceAttack
-			? m_linkedEntity.Data.BrainData.distanceAccuracy + m_linkedEntity.GetAdditionaryStatBonus(EntityEquipmentData.SecondaryStat.StatType.DistanceAccuracy, _attackAction)
-			: m_linkedEntity.Data.BrainData.agility + m_linkedEntity.GetAdditionaryStatBonus(EntityEquipmentData.SecondaryStat.StatType.MeleeAccuracy, _attackAction);
+			? m_linkedEntity.Data.BrainData.distanceAccuracy + m_linkedEntity.GetStatBonus(EntityEquipmentData.SecondaryStat.StatType.DistanceAccuracy, _attackAction)
+			: m_linkedEntity.Data.BrainData.agility + m_linkedEntity.GetStatBonus(EntityEquipmentData.SecondaryStat.StatType.MeleeAccuracy, _attackAction);
 	}
 
 	public bool SabotagePointAttackRoll ( AttackAction _attackAction, AttackAction.SingleAttackInfo _singleAttackInfo, Tile _pointTile, LogCard _entry, out Tile _coverTile )
@@ -443,13 +419,12 @@ public class EntityEquipmentPlugin : EntityPlugin
 		return isAttackSuccessful;
 	}
 
-	public bool StatusRoll ( Entity _target, AEntityStatus _effect, AEntityAction _action, EntityEquipmentData _equipmentData, LogCard _entry )
+	public bool StatusRoll ( Entity _target, AEntityStatus _effect, AEntityAction _action, LogCard _entry )
 	{
 		float actionProbability = _action.Data.statusHitProbability;
-		float equipmentProbability = _equipmentData.statusHitProbability;
-		float userStatusChance = m_linkedEntity.Data.GetStatBonusFromAll(EntityEquipmentData.SecondaryStat.StatType.StatusChance) + m_linkedEntity.GetAdditionaryStatBonus(EntityEquipmentData.SecondaryStat.StatType.StatusChance, _action);
-		float targetResistance = _target.Data.GetStatBonusFromAll(EntityEquipmentData.SecondaryStat.StatType.StatusResistance) + _target.GetDefensiveStatBonus(EntityEquipmentData.SecondaryStat.StatType.StatusResistance);
-		float hitProba = actionProbability + equipmentProbability + userStatusChance - targetResistance;
+		float userStatusChance = m_linkedEntity.GetStatBonus(EntityEquipmentData.SecondaryStat.StatType.StatusChance, _action);
+		float targetResistance = _target.GetStatBonus(EntityEquipmentData.SecondaryStat.StatType.StatusResistance);
+		float hitProba = actionProbability + userStatusChance - targetResistance;
 		float roll = Random.Range(0f, 1f);
 		bool isAttackSuccessful = hitProba >= 1f || roll <= hitProba;
 
@@ -460,7 +435,6 @@ public class EntityEquipmentPlugin : EntityPlugin
 
 		LogCard.Column chance = card.AddColumn(LogCard.ColumnKind.Neutral, LocalizationKey.log_card_status_chance, Mathf.Clamp01(hitProba));
 		chance.Add(LocalizationKey.log_card_base_chance, actionProbability);
-		chance.Add(LocalizationKey.log_card_equipment, equipmentProbability);
 		chance.Add(LocalizationKey.log_card_chance_bonus, userStatusChance);
 		chance.Add(LocalizationKey.log_card_target_resistance, -targetResistance);
 
@@ -520,6 +494,15 @@ public class EntityEquipmentPlugin : EntityPlugin
 			Death(_damageInfo);
 
 		onHealthChangeDamage?.Invoke(_damageInfo);
+	}
+
+	public Dictionary<WeaponEquipmentData.DamageType, int> GetDamagesAfterResistances ( Dictionary<WeaponEquipmentData.DamageType, int> _damages )
+	{
+		Dictionary<WeaponEquipmentData.DamageType, int> resisted = new();
+		foreach (KeyValuePair<WeaponEquipmentData.DamageType, int> pair in _damages)
+			resisted.Add(pair.Key, Mathf.RoundToInt(pair.Value * new DamageModifiers(null, m_linkedEntity, null, pair.Key, Tile.TileDirectionType.Front).Multiplier));
+
+		return resisted;
 	}
 
 	private int GetIncomingSide ( TakeDamageCallback _damageInfo )

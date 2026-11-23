@@ -28,7 +28,7 @@ public class DamageOnDeathPassiveEffect : AEntityPassiveEffect
 			victim.Equipment.TakeDamage(new EntityEquipmentPlugin.TakeDamageCallback()
 			{
 				critical = false,
-				damages = damages,
+				damages = victim.Equipment.GetDamagesAfterResistances(damages),
 				entityAttacker = _deadEntity,
 				entityTargeted = victim,
 				hitNormal = Vector3.zero,

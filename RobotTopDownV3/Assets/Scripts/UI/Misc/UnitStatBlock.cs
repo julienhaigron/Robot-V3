@@ -8,6 +8,7 @@ using StatType = EntityEquipmentData.SecondaryStat.StatType;
 using StatDescription = EntityEquipmentData.StatDescription;
 using StatDescriptions = SerializableDictionary<EntityEquipmentData.SecondaryStat.StatType, EntityEquipmentData.StatDescription>;
 using VisionType = NeuronalMembraneEquipmentData.VisionTypes;
+using DamageType = WeaponEquipmentData.DamageType;
 
 public class UnitStatBlock : MonoBehaviour
 {
@@ -32,6 +33,14 @@ public class UnitStatBlock : MonoBehaviour
 		public ToolTipTrigger tooltip;
 	}
 
+	[Serializable]
+	private struct ResistanceItem
+	{
+		public GameObject root;
+		public Image icon;
+		public TextMeshProUGUI value;
+	}
+
 	private readonly struct Bonus
 	{
 		public readonly StatDescription description;
@@ -47,6 +56,7 @@ public class UnitStatBlock : MonoBehaviour
 	}
 
 	private static readonly VisionType[] s_visions = { VisionType.Optic, VisionType.Thermic, VisionType.Radar };
+	private static readonly DamageType[] s_damageTypes = (DamageType[])Enum.GetValues(typeof(DamageType));
 
 	[Header("Vitals")]
 	[SerializeField] private bool m_showHp = true;
@@ -74,6 +84,9 @@ public class UnitStatBlock : MonoBehaviour
 	[SerializeField] private Image[] m_stealthIcons;
 	[SerializeField] private TextMeshProUGUI[] m_stealthValues;
 	[SerializeField] private ToolTipTrigger m_stealthTooltip;
+	[SerializeField] private GameObject m_resistanceRow;
+	[SerializeField] private ResistanceItem[] m_resistanceItems;
+	[SerializeField] private ToolTipTrigger m_resistanceTooltip;
 	[SerializeField] private GameObject m_bonusRoot;
 	[SerializeField] private BonusChip[] m_bonusChips;
 	[SerializeField] private GameObject m_hiddenLine;
@@ -83,6 +96,7 @@ public class UnitStatBlock : MonoBehaviour
 	[SerializeField] private Color m_thermalColor = new(1f, .42f, .24f);
 	[SerializeField] private Color m_radarColor = new(.49f, 1f, .42f);
 	[SerializeField] private Color m_neutralColor = new(.6f, .64f, .72f);
+	[SerializeField] private Color m_textColor = new(.93f, .95f, .97f);
 	[SerializeField] private Color m_upColor = new(.32f, .89f, .49f);
 	[SerializeField] private Color m_downColor = new(1f, .42f, .42f);
 	[SerializeField] private Color m_damageColor = new(1f, .55f, .26f);
@@ -149,7 +163,7 @@ public class UnitStatBlock : MonoBehaviour
 		NeuronalMembraneEquipmentData membrane = _areStatsVisible ? shownData.NeuronalMembraneData : null;
 		m_visionIcon.color = membrane == null ? m_neutralColor : VisionColor(membrane.visionType);
 		m_visionTMP.text = membrane != null ? membrane.visionType.GetLocalizedTitle() : _areStatsVisible ? "-" : "?";
-		m_visionTooltip.Init(StatType.VisionType.GetLocalizedTitle(), membrane == null ? "" : VisionTip(membrane.visionType));
+		m_visionTooltip.Init(StatType.VisionType.GetLocalizedTitle(), membrane == null ? "" : VisionTip(membrane.visionType, shownData.GetVisionRange()));
 
 		string flank = MaxFlankRatio().ToPercentText();
 		SetCell(m_rangedAccuracy, StatType.DistanceAccuracy, string.Format(localization.Get(LocalizationKey.stat_tip_ranged_accuracy), flank), current, shown, _areStatsVisible, isPreview);
@@ -169,6 +183,7 @@ public class UnitStatBlock : MonoBehaviour
 		m_stealthRow.SetActive(_areStatsVisible && hasStealth);
 		m_stealthTooltip.Init(localization.Get(LocalizationKey.stat_block_stealth), stealthTip.ToString());
 
+		SetResistances(shownData, _areStatsVisible);
 		SetBonuses(shown, _areStatsVisible);
 		m_hiddenLine.SetActive(!_areStatsVisible);
 	}
@@ -203,6 +218,54 @@ public class UnitStatBlock : MonoBehaviour
 
 		_tmp.text = (_delta > 0 ? "+" : "-") + Mathf.Abs(_delta);
 		_tmp.color = (_delta > 0) != _isCost ? m_upColor : m_downColor;
+	}
+
+	private void SetResistances ( EntitySavedData _data, bool _isVisible )
+	{
+		LocalizationManager localization = LocalizationManager.Instance;
+		StringBuilder tip = new(localization.Get(LocalizationKey.stat_tip_resistances));
+		bool hasResistance = false;
+		for (int i = 0; i < m_resistanceItems.Length && i < s_damageTypes.Length; i++)
+		{
+			DamageType type = s_damageTypes[i];
+			float resistance = 1f - _data.GetPermanentDamageTakenFactor(type);
+			bool isShown = _isVisible && Mathf.Abs(resistance) >= .005f;
+			ResistanceItem item = m_resistanceItems[i];
+			item.root.SetActive(isShown);
+			if (!isShown)
+				continue;
+
+			hasResistance = true;
+			if (GameAssets.current.ui.damageIconPerType.TryGetValue(type, out Sprite sprite))
+				item.icon.sprite = sprite;
+			item.icon.color = GameAssets.current.ui.damageTypeColors.TryGetValue(type, out Color color) ? color : m_neutralColor;
+			item.value.text = resistance.ToPercentText();
+			item.value.color = resistance < 0f ? m_downColor : m_textColor;
+			tip.Append('\n').Append(type.GetLocalizedTitle()).Append(' ').Append(item.value.text);
+		}
+
+		bool hasConditional = false;
+		foreach (ChipsetEquipmentData.ConditionalStatBonus chipsetBonus in _data.GetChipsetBonuses())
+		{
+			if (chipsetBonus.conditionType == Condition.ConditionType.Noone || !IsDamageResistance(chipsetBonus.bonus.type))
+				continue;
+
+			if (!hasConditional)
+				tip.Append("\n\n").Append(localization.Get(LocalizationKey.stat_tip_resistances_conditional));
+			hasConditional = true;
+			tip.Append('\n').Append(chipsetBonus.bonus.type.GetLocalizedTitle()).Append(' ').Append(FormatBonus(chipsetBonus.bonus.GetDescription()));
+		}
+
+		m_resistanceRow.SetActive(_isVisible && (hasResistance || hasConditional));
+		m_resistanceTooltip.Init(localization.Get(LocalizationKey.stat_block_resistances), tip.ToString());
+	}
+
+	private static bool IsDamageResistance ( StatType _stat )
+	{
+		GameConfig.GameSettings config = GameConfig.current.game;
+		return _stat == StatType.GeneralDamageResistance
+			|| config.statTypePerDamageResistanceType.ContainsValue(_stat)
+			|| config.statTypePerResistanceCategory.ContainsValue(_stat);
 	}
 
 	private void SetBonuses ( StatDescriptions _stats, bool _isVisible )
@@ -276,7 +339,7 @@ public class UnitStatBlock : MonoBehaviour
 		};
 	}
 
-	private static string VisionTip ( VisionType _vision )
+	private static string VisionTip ( VisionType _vision, int _range )
 	{
 		LocalizationKey key = _vision switch
 		{
@@ -284,8 +347,7 @@ public class UnitStatBlock : MonoBehaviour
 			VisionType.Radar => LocalizationKey.stat_tip_vision_radar,
 			_ => LocalizationKey.stat_tip_vision_optic
 		};
-		GameConfig.current.game.rangePerVisionType.TryGetValue(_vision, out int range);
-		return string.Format(LocalizationManager.Instance.Get(key), range);
+		return string.Format(LocalizationManager.Instance.Get(key), _range);
 	}
 
 	private static float MaxFlankRatio ()

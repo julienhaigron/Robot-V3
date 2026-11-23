@@ -283,7 +283,7 @@ public class AttackAction : AEntityAction
 							attackInfo.areStatusesSuccess[i] = true;
 						else
 							attackInfo.areStatusesSuccess[i] = PerformingEntity.Equipment.StatusRoll(targetEntity, GameAssets.current.game.entityStatus[(EntityStatusEnumID)attackInfo.statusIds[i]]
-							, this, PerformingEntity.Equipment.Weapons[linkedEquipmentId].Data, entry);
+							, this, entry);
 					}
 
 				}

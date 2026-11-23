@@ -15,6 +15,6 @@ MonoBehaviour:
   itemPrefab: {fileID: 6520863086066432982, guid: f98df88e922d1d84d9f0a8b9fbe0ed00, type: 3}
   range: 1
   damages:
-    keys: 
-    values: 
+    keys: 02000000
+    values: 14000000
   explosionVFXPool: {fileID: 11400000, guid: 9bb9dc68157929806597e756d3c1574c, type: 2}

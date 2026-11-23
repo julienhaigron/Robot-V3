@@ -49,7 +49,7 @@ public class MineItemData : AItemData
 			entity.Equipment.TakeDamage(new EntityEquipmentPlugin.TakeDamageCallback()
 			{
 				critical = false,
-				damages = damages,
+				damages = entity.Equipment.GetDamagesAfterResistances(damages),
 				entityAttacker = null,
 				entityTargeted = entity,
 				hitNormal = Vector3.zero,

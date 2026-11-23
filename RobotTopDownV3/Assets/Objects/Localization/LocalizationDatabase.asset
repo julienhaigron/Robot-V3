@@ -2902,10 +2902,6 @@ MonoBehaviour:
     values:
     - "Base chance"
     - "Chance de base"
-  - key: log_card/equipment
-    values:
-    - "Equipment"
-    - "\xC9quipement"
   - key: log_card/chance_bonus
     values:
     - "Chance bonus"
@@ -3126,3 +3122,27 @@ MonoBehaviour:
     values:
     - "SQUAD OPERATIONAL"
     - "ESCOUADE OP\xC9RATIONNELLE"
+  - key: stat_block/resistances
+    values:
+    - "Resistances"
+    - "R\xE9sistances"
+  - key: stat_tip/resistances
+    values:
+    - "Share of the damage negated, per damage type. The type's resistance, its category's (physical or elemental) and the general resistance multiply."
+    - "Part des d\xE9g\xE2ts annul\xE9e, par type de d\xE9g\xE2ts. La r\xE9sistance du type, celle de sa cat\xE9gorie (physique ou \xE9l\xE9mentaire) et la r\xE9sistance g\xE9n\xE9rale se multiplient."
+  - key: stat_tip/resistances_conditional
+    values:
+    - "Only under their condition (chipsets):"
+    - "Seulement sous leur condition (chipsets) :"
+  - key: stat_short/visual_perception
+    values:
+    - "optic perception"
+    - "perception optique"
+  - key: stat_short/radar_perception
+    values:
+    - "radar perception"
+    - "perception radar"
+  - key: stat_short/thermic_perception
+    values:
+    - "thermal perception"
+    - "perception thermique"

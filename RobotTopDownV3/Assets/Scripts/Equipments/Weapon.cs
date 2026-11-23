@@ -813,7 +813,7 @@ public class Weapon : MonoBehaviour
 			for (int i = 0; i < _attackInfo.areStatusesSuccess.Length; i++)
 			{
 				if (_attackInfo.areStatusesSuccess[i])
-					_target.AddStatus((EntityStatusEnumID)_attackInfo.statusIds[i], _attackInfo.statusDurations[i]);
+					_target.AddStatus((EntityStatusEnumID)_attackInfo.statusIds[i], _attackInfo.statusDurations[i], m_user);
 			}
 		}
 	}
@@ -877,7 +877,6 @@ public class Weapon : MonoBehaviour
 		bool didWinPFC = _pfcResultType == EntityActionData.PFCResultType.FirstWins;
 		bool hasTarget = _target != null;
 		Tile.TileDirectionType side = hasTarget ? GridManager.Instance.GetHitTileSide(_user, _target, didWinPFC, _shotOrigin) : Tile.TileDirectionType.Front;
-		float flankMod = GameConfig.current.game.entityFlankRatio[side];
 
 		LocalizationManager localization = LocalizationManager.Instance;
 		LogCard card = new(LogCard.Kind.Damage, localization.Get(LocalizationKey.log_card_damage))
@@ -892,65 +891,27 @@ public class Weapon : MonoBehaviour
 			int baseDamage = pair.Value;
 
 			float actionFactor = _action.Data.GetDamageFactorAmountForType(_action, _user, _target, pair.Key);
-
-			EntityEquipmentData.SecondaryStat.StatType damageTypeStatType = GameConfig.current.game.statTypePerDamageType[pair.Key];
-			EntityEquipmentData.SecondaryStat.StatType resistanceTypeStatType = GameConfig.current.game.statTypePerDamageResistanceType[pair.Key];
-
-			float typeBuff = _user.GetAdditionaryStatBonus(damageTypeStatType, _action)
-				+ _user.Equipment.ApplyedDamageTypeBuffs.GetValueOrDefault(pair.Key)
-				- (hasTarget ? _target.GetDefensiveStatBonus(resistanceTypeStatType) + _target.Equipment.ApplyedDamageTypeResistance.GetValueOrDefault(pair.Key) : 0f);
-			typeBuff = Mathf.Max(typeBuff, -1f);
-
-			WeaponEquipmentData.DamageCategory category = GameConfig.current.game.damageCategoryPerDamageType[pair.Key];
-			EntityEquipmentData.SecondaryStat.StatType damageCategoryStatType = GameConfig.current.game.statTypePerDamageCategory[category];
-			EntityEquipmentData.SecondaryStat.StatType resistanceCategoryStatType = GameConfig.current.game.statTypePerResistanceCategory[category];
-
-			float categoryBuff = _user.GetAdditionaryStatBonus(damageCategoryStatType, _action)
-				+ _user.Equipment.ApplyedDamageCategoryBuffs.GetValueOrDefault(category)
-				- (hasTarget ? _target.GetDefensiveStatBonus(resistanceCategoryStatType) + _target.Equipment.ApplyedDamageTypeCategoryResitance.GetValueOrDefault(category) : 0f);
-
-			categoryBuff = Mathf.Max(categoryBuff, -1f);
-
-			float generalDamage =
-				Mathf.Max(
-					_user.Equipment.GeneralDamageBuff + _user.GetAdditionaryStatBonus(EntityEquipmentData.SecondaryStat.StatType.GeneralDamageBonus, _action)
-					- (hasTarget ? _target.Equipment.GeneralDamageResistance + _target.GetDefensiveStatBonus(EntityEquipmentData.SecondaryStat.StatType.GeneralDamageResistance) : 0f),
-					-1f
-				);
-
-			float flankBonus =
-				Mathf.Max(
-					flankMod
-					+ _user.Data.GetStatBonusFromAll(EntityEquipmentData.SecondaryStat.StatType.FlankDamageBonus) + _user.GetAdditionaryStatBonus(EntityEquipmentData.SecondaryStat.StatType.FlankDamageBonus, _action)
-					- (hasTarget ? _target.Data.GetStatBonusFromAll(EntityEquipmentData.SecondaryStat.StatType.FlankResistance) + _target.GetDefensiveStatBonus(EntityEquipmentData.SecondaryStat.StatType.FlankResistance) : 0f),
-					-1f
-				);
-
-			float finalBonus =
-				Mathf.Max(
-					_user.Data.GetStatBonusFromAll(EntityEquipmentData.SecondaryStat.StatType.FinalDamageBonus) + _user.GetAdditionaryStatBonus(EntityEquipmentData.SecondaryStat.StatType.FinalDamageBonus, _action),
-					-1f
-				);
+			DamageModifiers modifiers = new(_user, _target, _action, pair.Key, side);
 
 			LogCard.DamageLine line = card.AddDamage(pair.Key, baseDamage);
 
 			float damage = baseDamage * actionFactor;
 			line.AddFactor(actionFactor, damage);
 
-			damage *= 1 + typeBuff;
-			line.AddPercent(LocalizationKey.log_card_step_type, typeBuff, damage);
+			damage *= 1 + modifiers.type;
+			line.AddPercent(LocalizationKey.log_card_step_type, modifiers.type, damage);
 
-			damage *= 1 + categoryBuff;
-			line.AddPercent(LocalizationKey.log_card_step_category, categoryBuff, damage);
+			damage *= 1 + modifiers.category;
+			line.AddPercent(LocalizationKey.log_card_step_category, modifiers.category, damage);
 
-			damage *= 1 + generalDamage;
-			line.AddPercent(LocalizationKey.log_card_step_general, generalDamage, damage);
+			damage *= 1 + modifiers.general;
+			line.AddPercent(LocalizationKey.log_card_step_general, modifiers.general, damage);
 
-			damage *= 1 + flankBonus;
-			line.AddPercent(flankLabel, flankBonus, damage);
+			damage *= 1 + modifiers.flank;
+			line.AddPercent(flankLabel, modifiers.flank, damage);
 
-			damage *= 1 + finalBonus;
-			line.AddPercent(LocalizationKey.log_card_step_final, finalBonus, damage);
+			damage *= 1 + modifiers.final;
+			line.AddPercent(LocalizationKey.log_card_step_final, modifiers.final, damage);
 
 			int finalDamage = Mathf.RoundToInt(damage);
 			line.final = finalDamage;

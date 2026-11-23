@@ -13,7 +13,7 @@ public class DealCircleDamagePassiveEffect : AEntityPassiveEffect
 		EntityEquipmentPlugin.TakeDamageCallback damageCallback = new EntityEquipmentPlugin.TakeDamageCallback()
 		{
 			critical = false,
-			damages = damages,
+			damages = _targetEntity.Equipment.GetDamagesAfterResistances(damages),
 			entityAttacker = _entity,
 			entityTargeted = null,
 			hitNormal = Vector3.zero,

@@ -282,6 +282,37 @@ public class EntitySavedData : INetworkSerializable
 		return totalBonus;
 	}
 
+	public float GetPermanentStatBonus ( EntityEquipmentData.SecondaryStat.StatType _stat )
+	{
+		float bonus = GetStatBonusFromAll(_stat);
+		foreach (ChipsetEquipmentData.ConditionalStatBonus chipsetBonus in GetChipsetBonuses())
+			if (chipsetBonus.conditionType == Condition.ConditionType.Noone && chipsetBonus.bonus.type == _stat)
+				bonus += chipsetBonus.bonus.value;
+
+		return bonus;
+	}
+
+	public IEnumerable<ChipsetEquipmentData.ConditionalStatBonus> GetChipsetBonuses ()
+	{
+		if (chipsets == null)
+			yield break;
+
+		foreach (GameDatas.PlayerSave.Component container in chipsets)
+			if (container != null && !container.isDamaged && container.TryGetData(out ChipsetEquipmentData chipset))
+				foreach (ChipsetEquipmentData.ConditionalStatBonus bonus in chipset.statBonuses)
+					yield return bonus;
+	}
+
+	public float GetPermanentDamageTakenFactor ( WeaponEquipmentData.DamageType _type )
+	{
+		GameConfig.GameSettings config = GameConfig.current.game;
+		WeaponEquipmentData.DamageCategory category = config.damageCategoryPerDamageType[_type];
+
+		return (1f + DamageModifiers.Combine(0f, GetPermanentStatBonus(config.statTypePerDamageResistanceType[_type])))
+			* (1f + DamageModifiers.Combine(0f, GetPermanentStatBonus(config.statTypePerResistanceCategory[category])))
+			* (1f + DamageModifiers.Combine(0f, GetPermanentStatBonus(EntityEquipmentData.SecondaryStat.StatType.GeneralDamageResistance)));
+	}
+
 	public List<AEntityPassiveEffect.PassiveEffectContainer> GetPassiveEffects ( EntityActionEnumID _actionID )
 	{
 		List<AEntityPassiveEffect.PassiveEffectContainer> passiveEffects = new();
@@ -414,28 +445,31 @@ public class EntitySavedData : INetworkSerializable
 
 	public int GetMaxHealth ()
 	{
-		float bonus = 1 + GetStatBonusFromAll(EntityEquipmentData.SecondaryStat.StatType.BaseHp);
+		float bonus = 1 + GetPermanentStatBonus(EntityEquipmentData.SecondaryStat.StatType.BaseHp);
 		float maxHealth = FrameData == null ? 0 : FrameData.maxHealth;
 
 		return Mathf.RoundToInt(maxHealth * bonus);
 	}
 
-	public float GetStaticStealthBonus ( NeuronalMembraneEquipmentData.VisionTypes _vision )
+	public int GetVisionRange ()
+	{
+		if (NeuronalMembraneData == null)
+			return 0;
+
+		int baseRange = GameConfig.current.game.rangePerVisionType[NeuronalMembraneData.visionType];
+		return Mathf.Max(0, baseRange + Mathf.RoundToInt(GetPermanentStatBonus(EntityEquipmentData.SecondaryStat.StatType.VisionRange)));
+	}
+
+	public float GetOccultorCamo ( NeuronalMembraneEquipmentData.VisionTypes _vision )
 	{
 		float result = 0;
 		if (auxiliar == null)
 			return result;
 
-		EntityEquipmentData.SecondaryStat.StatType camoStat = NeuronalMembraneEquipmentData.GetCamoStat(_vision);
 		foreach (GameDatas.PlayerSave.Component container in auxiliar)
 		{
-			if (container == null || container.isDamaged || !container.TryGetData(out OccultorEquipmentData occultor))
-				continue;
-
-			result += occultor.GetCamo(_vision);
-			foreach (EntityEquipmentData.SecondaryStat statBonus in occultor.statBonuses)
-				if (statBonus.type == camoStat)
-					result += statBonus.value;
+			if (container != null && !container.isDamaged && container.TryGetData(out OccultorEquipmentData occultor))
+				result += occultor.GetCamo(_vision);
 		}
 
 		return result;

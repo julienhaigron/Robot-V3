@@ -354,19 +354,9 @@ public sealed class ActionTooltipContent
 		get
 		{
 			float chance = data.statusHitProbability;
-			if (unit == null)
-				return Mathf.Clamp01(chance);
+			if (unit != null)
+				chance += unit.GetStatBonusFromAll(EntityEquipmentData.SecondaryStat.StatType.StatusChance);
 
-			foreach (GameDatas.PlayerSave.Component component in unit.GetAllEquipments())
-			{
-				if (component.TryGetData(out EntityEquipmentData equipment) && System.Array.IndexOf(equipment.knownedActions, data.enumID) >= 0)
-				{
-					chance += equipment.statusHitProbability;
-					break;
-				}
-			}
-
-			chance += unit.GetStatBonusFromAll(EntityEquipmentData.SecondaryStat.StatType.StatusChance);
 			return Mathf.Clamp01(chance);
 		}
 	}

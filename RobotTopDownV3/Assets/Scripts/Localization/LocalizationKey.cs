@@ -721,7 +721,6 @@ public enum LocalizationKey
     log_card_cover,
     log_card_cover_named,
     log_card_base_chance,
-    log_card_equipment,
     log_card_chance_bonus,
     log_card_target_resistance,
     log_card_hit_equation,
@@ -777,6 +776,12 @@ public enum LocalizationKey
     briefing_unit_transfer,
     briefing_unit_online,
     briefing_squad_ready,
+    stat_block_resistances,
+    stat_tip_resistances,
+    stat_tip_resistances_conditional,
+    stat_short_visual_perception,
+    stat_short_radar_perception,
+    stat_short_thermic_perception,
 }
 
 public static class LocalizationKeyExtensions
@@ -1505,7 +1510,6 @@ public static class LocalizationKeyExtensions
             case LocalizationKey.log_card_cover: return "log_card/cover";
             case LocalizationKey.log_card_cover_named: return "log_card/cover_named";
             case LocalizationKey.log_card_base_chance: return "log_card/base_chance";
-            case LocalizationKey.log_card_equipment: return "log_card/equipment";
             case LocalizationKey.log_card_chance_bonus: return "log_card/chance_bonus";
             case LocalizationKey.log_card_target_resistance: return "log_card/target_resistance";
             case LocalizationKey.log_card_hit_equation: return "log_card/hit_equation";
@@ -1561,6 +1565,12 @@ public static class LocalizationKeyExtensions
             case LocalizationKey.briefing_unit_transfer: return "briefing/unit_transfer";
             case LocalizationKey.briefing_unit_online: return "briefing/unit_online";
             case LocalizationKey.briefing_squad_ready: return "briefing/squad_ready";
+            case LocalizationKey.stat_block_resistances: return "stat_block/resistances";
+            case LocalizationKey.stat_tip_resistances: return "stat_tip/resistances";
+            case LocalizationKey.stat_tip_resistances_conditional: return "stat_tip/resistances_conditional";
+            case LocalizationKey.stat_short_visual_perception: return "stat_short/visual_perception";
+            case LocalizationKey.stat_short_radar_perception: return "stat_short/radar_perception";
+            case LocalizationKey.stat_short_thermic_perception: return "stat_short/thermic_perception";
             default: return string.Empty;
         }
     }

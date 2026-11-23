@@ -1287,7 +1287,7 @@ public class GridManager : Singleton<GridManager>
 	public List<Tile> GetVisionTilesOf ( Entity _entity, Tile _from )
 	{
 		NeuronalMembraneEquipmentData.VisionTypes visionType = _entity.Data.NeuronalMembraneData.visionType;
-		int range = GameConfig.current.game.rangePerVisionType[visionType];
+		int range = _entity.Data.GetVisionRange();
 
 		return GetTilesInVisionRange(_from, 0, range, visionType != NeuronalMembraneEquipmentData.VisionTypes.Optic, true, true);
 	}

@@ -71,6 +71,7 @@ public class Entity : MonoBehaviour
 	private const float c_aboveHeadHeight = 1.4f;
 	private const float c_feetHeight = .03f;
 	private Dictionary<AEntityStatus, int> m_appliedDurationToActiveStatuses = new();
+	private readonly Dictionary<AEntityStatus, float> m_statusDamageFactors = new();
 	private List<EntityEquipmentData.StatBonusBuff> m_statBuffs = new();
 	private Dictionary<EntityEquipmentData.SecondaryStat.StatType, float> m_activeStatBonusBuffs = new();
 
@@ -321,16 +322,21 @@ public class Entity : MonoBehaviour
 		return m_appliedDurationToActiveStatuses.TryGetValue(_status, out int duration) ? duration : 0;
 	}
 
-	public void AddStatus ( EntityStatusEnumID _statusID, int _duration )
+	public void AddStatus ( EntityStatusEnumID _statusID, int _baseDuration, Entity _source = null )
 	{
 		AEntityStatus status = GameAssets.current.game.entityStatus[_statusID];
+		int duration = GetStatusDuration(_baseDuration, _source);
+		if (duration <= 0 && _baseDuration > 0)
+			return;
 
 		bool wasAlreadyActive = m_status.Contains(_statusID);
 		if (!wasAlreadyActive)
 			m_status.Add(_statusID);
 
-		m_remainingDurationToActiveStatuses[status] = _duration;
-		m_appliedDurationToActiveStatuses[status] = _duration;
+		m_remainingDurationToActiveStatuses[status] = duration;
+		m_appliedDurationToActiveStatuses[status] = duration;
+		if (_source != null || !m_statusDamageFactors.ContainsKey(status))
+			m_statusDamageFactors[status] = 1f + (_source == null ? 0f : _source.GetStatBonus(EntityEquipmentData.SecondaryStat.StatType.StatusDamageBonus));
 
 		if (wasAlreadyActive)
 		{
@@ -340,9 +346,21 @@ public class Entity : MonoBehaviour
 
 		ShowStatusVisual(_statusID, status);
 
-		LogStatus(status, _duration, _duration);
+		LogStatus(status, duration, duration);
 
 		onStatusAdded?.Invoke(_statusID);
+	}
+
+	private int GetStatusDuration ( int _baseDuration, Entity _source )
+	{
+		float raise = _source == null ? 0f : _source.GetStatBonus(EntityEquipmentData.SecondaryStat.StatType.StatusAppliedDurationRaise);
+		float reduction = _source == this ? 0f : GetStatBonus(EntityEquipmentData.SecondaryStat.StatType.StatusDurationReduction);
+		return Mathf.Max(0, Mathf.FloorToInt(_baseDuration * (1f + raise - reduction) + .5f));
+	}
+
+	public float GetStatusDamageFactor ( EntityStatusEnumID _statusID )
+	{
+		return m_statusDamageFactors.TryGetValue(GameAssets.current.game.entityStatus[_statusID], out float factor) ? factor : 1f;
 	}
 
 	private void LogStatus ( AEntityStatus _status, int _duration, int _remaining )
@@ -359,6 +377,7 @@ public class Entity : MonoBehaviour
 		m_status.Remove(_statusID);
 		m_remainingDurationToActiveStatuses.Remove(GameAssets.current.game.entityStatus[_statusID]);
 		m_appliedDurationToActiveStatuses.Remove(GameAssets.current.game.entityStatus[_statusID]);
+		m_statusDamageFactors.Remove(GameAssets.current.game.entityStatus[_statusID]);
 		HideStatusVisual(_statusID);
 
 		onStatusRemoved?.Invoke(_statusID);
@@ -422,9 +441,14 @@ public class Entity : MonoBehaviour
 		onStatBonusRemoved?.Invoke(_statBuff);
 	}
 
-	public float GetDefensiveStatBonus ( EntityEquipmentData.SecondaryStat.StatType _type )
+	public float GetStatBonus ( EntityEquipmentData.SecondaryStat.StatType _type )
 	{
-		return GetAdditionaryStatBonus(_type, TurnManager.Instance.GetActionInProgressOf(ID));
+		return GetStatBonus(_type, TurnManager.Instance.GetActionInProgressOf(ID));
+	}
+
+	public float GetStatBonus ( EntityEquipmentData.SecondaryStat.StatType _type, AEntityAction _relatedAction )
+	{
+		return m_data.GetStatBonusFromAll(_type) + GetAdditionaryStatBonus(_type, _relatedAction);
 	}
 
 	public float GetAdditionaryStatBonus ( EntityEquipmentData.SecondaryStat.StatType _type, AEntityAction _relatedAction )
@@ -434,19 +458,10 @@ public class Entity : MonoBehaviour
 		if (m_activeStatBonusBuffs.ContainsKey(_type))
 			bonus += m_activeStatBonusBuffs[_type];
 
-		if (m_data.chipsets != null)
+		foreach (ChipsetEquipmentData.ConditionalStatBonus conditionalStatBonus in m_data.GetChipsetBonuses())
 		{
-			foreach (GameDatas.PlayerSave.Component eq in m_data.chipsets)
-			{
-				if (eq != null && !eq.isDamaged && eq.TryGetData(out ChipsetEquipmentData _chipsedData))
-				{
-					foreach (ChipsetEquipmentData.ConditionalStatBonus conditionalStatBonus in _chipsedData.statBonuses)
-					{
-						if (conditionalStatBonus.bonus.type == _type && Condition.UseConditionPredicate(_relatedAction, this, null, conditionalStatBonus.conditionType))
-							bonus += conditionalStatBonus.bonus.value;
-					}
-				}
-			}
+			if (conditionalStatBonus.bonus.type == _type && Condition.UseConditionPredicate(_relatedAction, this, null, conditionalStatBonus.conditionType))
+				bonus += conditionalStatBonus.bonus.value;
 		}
 
 		return bonus;

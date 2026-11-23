@@ -32,6 +32,16 @@ public class NeuronalMembraneEquipmentData : EntityEquipmentData
         };
     }
 
+    public static SecondaryStat.StatType GetPerceptionStat ( VisionTypes _vision )
+    {
+        return _vision switch
+        {
+            VisionTypes.Thermic => SecondaryStat.StatType.ThermicPerception,
+            VisionTypes.Radar => SecondaryStat.StatType.RadarPerception,
+            _ => SecondaryStat.StatType.VisualPerception
+        };
+    }
+
 	public override StatDescription[] GetDesciption ()
     {
         List<StatDescription> description = base.GetDesciption().ToList();

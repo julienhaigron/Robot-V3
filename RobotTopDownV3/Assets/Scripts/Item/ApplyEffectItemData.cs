@@ -70,7 +70,7 @@ public class ApplyEffectItemData : AItemData
 		foreach (Entity entity in entities)
 		{
 			if (type == EffectType.Status)
-				entity.AddStatus(givenStatus.enumID, givenStatusDuration);
+				entity.AddStatus(givenStatus.enumID, givenStatusDuration, _usedItem.Invocator);
 			else
 				entity.AddAdditionaryStatBonus(givenStatBonus);
 		}

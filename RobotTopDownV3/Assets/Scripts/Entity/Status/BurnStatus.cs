@@ -11,15 +11,21 @@ public class BurnStatus : AEntityStatus
 	{
 		base.ApplyStatusEffect(_remainingDuration, _entity);
 
-		Dictionary<WeaponEquipmentData.DamageType, int> damage = new();
-		damage.Add(WeaponEquipmentData.DamageType.Fire, damageAmount);
-
-		_entity.Equipment.TakeDamage(new EntityEquipmentPlugin.TakeDamageCallback() { damages = damage, entityTargeted = _entity });
+		_entity.Equipment.TakeDamage(new EntityEquipmentPlugin.TakeDamageCallback() { damages = GetTickDamages(_entity), entityTargeted = _entity });
 	}
 
 	public override string GetTickEffectText ( int _remainingDuration, Entity _entity )
 	{
-		return string.Format(LocalizationManager.Instance.Get(LocalizationKey.log_exchange_damage), damageAmount);
+		return string.Format(LocalizationManager.Instance.Get(LocalizationKey.log_exchange_damage), GetTickDamages(_entity)[WeaponEquipmentData.DamageType.Fire]);
+	}
+
+	private Dictionary<WeaponEquipmentData.DamageType, int> GetTickDamages ( Entity _entity )
+	{
+		Dictionary<WeaponEquipmentData.DamageType, int> damages = new()
+		{
+			{ WeaponEquipmentData.DamageType.Fire, Mathf.RoundToInt(damageAmount * _entity.GetStatusDamageFactor(enumID)) }
+		};
+		return _entity.Equipment.GetDamagesAfterResistances(damages);
 	}
 
 	public override void PerformStatusEffectAtBeginingOfRound ( Tile _tile )

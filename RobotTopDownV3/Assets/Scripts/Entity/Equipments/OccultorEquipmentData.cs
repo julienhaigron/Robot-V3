@@ -13,7 +13,7 @@ public class OccultorEquipmentData : EntityEquipmentData
     public float visualCamo = .2f;
     [BoxGroup(GroupID = "Stat"), Parsing("Thermic camo")]
     public float thermicCamo = .2f;
-    [BoxGroup(GroupID = "Stat")]
+    [BoxGroup(GroupID = "Stat"), Parsing("SecondaryStat")]
     public SecondaryStat[] statBonuses;
 
     public float GetCamo ( NeuronalMembraneEquipmentData.VisionTypes _vision )

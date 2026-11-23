@@ -124,13 +124,14 @@ public class PushOrPullPassiveEffect : AEntityPassiveEffect
 		if (_entity.Equipment.IsDead)
 			return;
 
-		LogConsole.AddLog(_collisionDescription + " and takes " + _damage + " collision damage", LogConsole.LogEventType.Damage);
+		Dictionary<WeaponEquipmentData.DamageType, int> damages = _entity.Equipment.GetDamagesAfterResistances(BuildCollisionDamages(_damage));
+		LogConsole.AddLog(_collisionDescription + " and takes " + damages[WeaponEquipmentData.DamageType.Bludgeoning] + " collision damage", LogConsole.LogEventType.Damage);
 
 		_entity.Equipment.TakeDamage(new EntityEquipmentPlugin.TakeDamageCallback()
 		{
 			entityAttacker = null,
 			entityTargeted = _entity,
-			damages = BuildCollisionDamages(_damage)
+			damages = damages
 		});
 	}
 

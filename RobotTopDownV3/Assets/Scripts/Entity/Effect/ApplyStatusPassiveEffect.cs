@@ -12,7 +12,7 @@ public class ApplyStatusPassiveEffect : AEntityPassiveEffect
 
 	public override void ApplyEffect ( Entity _entity, Entity _targetEntity, PassiveEffectContainer _effectContainer )
 	{
-		_targetEntity.AddStatus(statusApplied, duration);
+		_targetEntity.AddStatus(statusApplied, duration, _entity);
 		base.ApplyEffect(_entity, _targetEntity, _effectContainer);
 	}
 

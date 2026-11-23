@@ -21,8 +21,6 @@ public class EntityEquipmentData : AParsableScriptableObject
 	public EntityActionEnumID[] knownedActions;
 	[BoxGroup(GroupID = "PassiveEffects"), Parsing("Passive Ability")]
 	public AEntityPassiveEffect.PassiveEffectContainer[] passiveEffects;
-	[BoxGroup(GroupID = "Status")]
-	[Range(0f, 1f)] public float statusHitProbability = .5f;
 	[Parsing("Credit Cost")]
 	public ulong creditCost;
 
