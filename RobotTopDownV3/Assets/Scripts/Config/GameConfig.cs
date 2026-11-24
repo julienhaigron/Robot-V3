@@ -124,6 +124,19 @@ public partial class GameConfig : ScriptableObject
 		public EntityEquipmentData.SecondaryStat.StatType[] damageStats;
 		public EntityEquipmentData.SecondaryStat.StatType[] resistanceStats;
 		public EntityEquipmentData.SecondaryStat.StatType[] statusStats;
+		public Color opticVisionColor = new(.93f, .95f, .97f);
+		public Color thermalVisionColor = new(1f, .42f, .24f);
+		public Color radarVisionColor = new(.49f, 1f, .42f);
+
+		public Color GetVisionColor ( NeuronalMembraneEquipmentData.VisionTypes _vision )
+		{
+			return _vision switch
+			{
+				NeuronalMembraneEquipmentData.VisionTypes.Thermic => thermalVisionColor,
+				NeuronalMembraneEquipmentData.VisionTypes.Radar => radarVisionColor,
+				_ => opticVisionColor
+			};
+		}
 	}
 
 	[System.Serializable]

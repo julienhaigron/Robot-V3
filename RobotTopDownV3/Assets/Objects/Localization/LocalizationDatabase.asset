@@ -558,14 +558,6 @@ MonoBehaviour:
     values:
     - Info!
     - Infos !
-  - key: return_hub/content
-    values:
-    - 'Report:
-
-      {0}'
-    - 'Rapport :
-
-      {0}'
   - key: return_hub/nothing
     values:
     - Nothing to report today.
@@ -3354,3 +3346,19 @@ MonoBehaviour:
     values:
     - VISION LAYERS
     - COUCHES DE VISION
+  - key: hub/day
+    values:
+    - "DAY {0}"
+    - "JOUR {0}"
+  - key: return_hub/report_title
+    values:
+    - "DAY REPORT"
+    - "RAPPORT DU JOUR"
+  - key: return_hub/recycled
+    values:
+    - "{0} finished recycling"
+    - "{0} : recyclage termin\xE9"
+  - key: return_hub/day_header
+    values:
+    - "Day {0}:"
+    - "Jour {0} :"

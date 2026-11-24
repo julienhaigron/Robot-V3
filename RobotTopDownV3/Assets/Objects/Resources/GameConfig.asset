@@ -98,6 +98,8 @@ MonoBehaviour:
       archetypes: 0500000004000000
     - strategy: 3
       archetypes: 0600000002000000
+    expensiveEnemyChance: 0.35
+    expensiveEnemyEnergyRatio: 2
     challengerTournamentInterval: 2
   input:
     interactionRayCastLength: 100
@@ -145,11 +147,11 @@ MonoBehaviour:
     damageStats: 1500000018000000190000001a0000001b0000001c0000001d0000002000000021000000220000002300000024000000160000001e00000027000000040000000500000006000000
     resistanceStats: 0d000000
     statusStats: 130000001f0000000e0000001200000014000000
+    opticVisionColor: {r: 0.9333333, g: 0.945098, b: 0.9686275, a: 1}
+    thermalVisionColor: {r: 1, g: 0.4156863, b: 0.2392157, a: 1}
+    radarVisionColor: {r: 0.4862745, g: 1, b: 0.4196078, a: 1}
   datas:
     editorLoadDatasFromGamedatasFile: 1
-  online:
-    disconnectionWaitDuration: 60
-    reconnectionAttemptInterval: 2
   parsing:
     baseParsableScriptablePerType:
       keys: []
@@ -176,3 +178,6 @@ MonoBehaviour:
       - 709140422
       - 0
       - 1776854952
+  online:
+    disconnectionWaitDuration: 60
+    reconnectionAttemptInterval: 2

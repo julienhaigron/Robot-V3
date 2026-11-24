@@ -92,9 +92,6 @@ public class UnitStatBlock : MonoBehaviour
 	[SerializeField] private GameObject m_hiddenLine;
 
 	[Header("Style")]
-	[SerializeField] private Color m_opticColor = new(.93f, .95f, .97f);
-	[SerializeField] private Color m_thermalColor = new(1f, .42f, .24f);
-	[SerializeField] private Color m_radarColor = new(.49f, 1f, .42f);
 	[SerializeField] private Color m_neutralColor = new(.6f, .64f, .72f);
 	[SerializeField] private Color m_textColor = new(.93f, .95f, .97f);
 	[SerializeField] private Color m_upColor = new(.32f, .89f, .49f);
@@ -115,7 +112,7 @@ public class UnitStatBlock : MonoBehaviour
 	private void Awake ()
 	{
 		for (int i = 0; i < s_visions.Length; i++)
-			m_stealthIcons[i].color = VisionColor(s_visions[i]);
+			m_stealthIcons[i].color = GameConfig.current.ui.GetVisionColor(s_visions[i]);
 	}
 
 	private void OnEnable ()
@@ -162,7 +159,7 @@ public class UnitStatBlock : MonoBehaviour
 		m_energyTooltip.Init(StatType.EnergyCost.GetLocalizedTitle(), localization.Get(LocalizationKey.stat_tip_energy));
 
 		NeuronalMembraneEquipmentData membrane = _areStatsVisible ? shownData.NeuronalMembraneData : null;
-		m_visionIcon.color = membrane == null ? m_neutralColor : VisionColor(membrane.visionType);
+		m_visionIcon.color = membrane == null ? m_neutralColor : GameConfig.current.ui.GetVisionColor(membrane.visionType);
 		m_visionTMP.text = membrane != null ? membrane.visionType.GetLocalizedTitle() : _areStatsVisible ? "-" : "?";
 		m_visionTooltip.Init(StatType.VisionType.GetLocalizedTitle(), membrane == null ? "" : VisionTip(membrane.visionType, shownData.GetVisionRange()));
 
@@ -355,16 +352,6 @@ public class UnitStatBlock : MonoBehaviour
 		_chip.fill.color = Color.Lerp(m_chipBaseColor, new Color(_color.r, _color.g, _color.b, m_chipBaseColor.a), m_chipFillTint);
 		_chip.frame.color = new Color(_color.r, _color.g, _color.b, _isConditional ? m_conditionalFrameAlpha : m_chipFrameAlpha);
 		_chip.icon.color = _color;
-	}
-
-	private Color VisionColor ( VisionType _vision )
-	{
-		return _vision switch
-		{
-			VisionType.Thermic => m_thermalColor,
-			VisionType.Radar => m_radarColor,
-			_ => m_opticColor
-		};
 	}
 
 	private static string VisionTip ( VisionType _vision, int _range )

@@ -8,6 +8,9 @@ using DG.Tweening;
 public class HangarEntityDisplay : MonoBehaviour
 {
 	[SerializeField] private TextMeshProUGUI m_nameTMP;
+	[SerializeField] private TextMeshProUGUI m_visionTMP;
+	[SerializeField] private TextMeshProUGUI m_hpTMP;
+	[SerializeField] private TextMeshProUGUI m_energyTMP;
 	[SerializeField] private SerializableDictionary<EntityEquipmentData.EquipmentType, DamagedSlotDisplay> m_mainComponentSlots;
 	[SerializeField] private DamagedSlotDisplay[] m_subSlots;
 	[SerializeField] private BaseButton m_selectBtn;
@@ -21,6 +24,8 @@ public class HangarEntityDisplay : MonoBehaviour
 	[SerializeField] private Color m_selectedSubColor;
 	[SerializeField] private Color m_unselectedMainColor;
 	[SerializeField] private Color m_unselectedSubColor;
+	[SerializeField] private Color m_valueColor = Color.white;
+	[SerializeField] private Color m_energyExceededColor = new(1f, .36f, .36f);
 
 	public System.Action<GameDatas.PlayerSave.Component> onComponentHovered;
 
@@ -55,6 +60,7 @@ public class HangarEntityDisplay : MonoBehaviour
 		m_nameTMP.text = _data.name;
 		m_isSelected = _isSelected;
 		m_factionIMG.sprite = GameAssets.current.ui.corporationsIcons[_data.GetDominentFaction(out float percentage)];
+		RefreshStats(_data);
 
 		bool hasBrokenSub = _data.auxiliar != null && _data.auxiliar.Any(e => e != null && e.isDamaged);
 		InitComponentSlot(m_mainComponentSlots[EntityEquipmentData.EquipmentType.Frame], _data.frame, hasBrokenSub);
@@ -76,6 +82,20 @@ public class HangarEntityDisplay : MonoBehaviour
 
 		m_selectBtn.SetInteractability(!GameDatas.current.currentPlayerSave.IsInTournament);
 		RefreshToggleVisual(true);
+	}
+
+	private void RefreshStats ( EntitySavedData _data )
+	{
+		m_hpTMP.text = _data.GetMaxHealth().ToString();
+
+		NeuronalMembraneEquipmentData membrane = _data.NeuronalMembraneData;
+		m_visionTMP.text = membrane == null ? "-" : _data.GetVisionRange().ToString();
+		m_visionTMP.color = membrane == null ? m_valueColor : GameConfig.current.ui.GetVisionColor(membrane.visionType);
+
+		int energyUsed = _data.GetTotalEnergyUsed();
+		ReactorEquipmentData reactor = _data.ReactorData;
+		m_energyTMP.text = reactor == null ? energyUsed.ToString() : energyUsed + " / " + reactor.energyProduced;
+		m_energyTMP.color = reactor != null && energyUsed > reactor.energyProduced ? m_energyExceededColor : m_valueColor;
 	}
 
 	public void HideComponents ()

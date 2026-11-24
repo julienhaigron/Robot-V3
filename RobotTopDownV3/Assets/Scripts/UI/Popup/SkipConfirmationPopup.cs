@@ -89,9 +89,10 @@ public class SkipConfirmationPopup : AUIPopup
 			}
 			GameDatas.current.currentPlayerSave.NewDay();
 
-			string finishedThisDay = GameDatas.current.currentPlayerSave.ProcessRecycledComponents(out recycledComponent);
+			string finishedThisDay = GameDatas.current.currentPlayerSave.ProcessRecycledComponents(out List<GameDatas.PlayerSave.DayData.RecyclingComponentData> recycledThisDay);
+			recycledComponent.AddRange(recycledThisDay);
 			if (!string.IsNullOrEmpty(finishedThisDay))
-				dayReport += "Day " + GameDatas.current.currentPlayerSave.dayCount + ":\n" + finishedThisDay;
+				dayReport += string.Format(LocalizationManager.Instance.Get(LocalizationKey.return_hub_day_header), GameDatas.current.currentPlayerSave.dayCount + 1) + "\n" + finishedThisDay;
 		}
 		
 		ApplicationManager.Instance.SaveApplication();

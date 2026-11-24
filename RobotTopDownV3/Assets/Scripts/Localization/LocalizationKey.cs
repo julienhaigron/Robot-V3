@@ -137,7 +137,6 @@ public enum LocalizationKey
     vision_radar,
     entity_config_inventory,
     return_hub_title,
-    return_hub_content,
     return_hub_nothing,
     entity_config_upgrades,
     ingame_validate_targets,
@@ -820,6 +819,10 @@ public enum LocalizationKey
     fow_last_seen_round,
     fow_last_seen_rounds,
     ingame_vision_layers,
+    hub_day,
+    return_hub_report_title,
+    return_hub_recycled,
+    return_hub_day_header,
 }
 
 public static class LocalizationKeyExtensions
@@ -964,7 +967,6 @@ public static class LocalizationKeyExtensions
             case LocalizationKey.vision_radar: return "vision/radar";
             case LocalizationKey.entity_config_inventory: return "entity_config/inventory";
             case LocalizationKey.return_hub_title: return "return_hub/title";
-            case LocalizationKey.return_hub_content: return "return_hub/content";
             case LocalizationKey.return_hub_nothing: return "return_hub/nothing";
             case LocalizationKey.entity_config_upgrades: return "entity_config/upgrades";
             case LocalizationKey.ingame_validate_targets: return "ingame/validate_targets";
@@ -1647,6 +1649,10 @@ public static class LocalizationKeyExtensions
             case LocalizationKey.fow_last_seen_round: return "fow/last_seen_round";
             case LocalizationKey.fow_last_seen_rounds: return "fow/last_seen_rounds";
             case LocalizationKey.ingame_vision_layers: return "ingame/vision_layers";
+            case LocalizationKey.hub_day: return "hub/day";
+            case LocalizationKey.return_hub_report_title: return "return_hub/report_title";
+            case LocalizationKey.return_hub_recycled: return "return_hub/recycled";
+            case LocalizationKey.return_hub_day_header: return "return_hub/day_header";
             default: return string.Empty;
         }
     }

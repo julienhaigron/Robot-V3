@@ -662,6 +662,7 @@ GameObject:
   - component: {fileID: 4277010354372179354}
   - component: {fileID: 8040375279575443080}
   - component: {fileID: 4819236132749209127}
+  - component: {fileID: 7153904610023311798}
   m_Layer: 0
   m_Name: RecyclingComponentInfoDisplay
   m_TagString: Untagged
@@ -717,6 +718,7 @@ MonoBehaviour:
   m_icon: {fileID: 8116042235581679782}
   m_nameTMP: {fileID: 533993010703226716}
   m_priceTMP: {fileID: 3749789893405018389}
+  m_canvasGroup: {fileID: 7153904610023311798}
 --- !u!114 &4819236132749209127
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -747,3 +749,15 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1.75
+--- !u!225 &7153904610023311798
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9153758355515762704}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0

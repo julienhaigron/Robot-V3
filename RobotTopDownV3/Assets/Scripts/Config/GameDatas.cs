@@ -401,7 +401,7 @@ public partial class GameDatas : ScriptableObject
 
 				_recycledComponent.Add(data);
 				EntityEquipmentData componentData = data.component.GetData<EntityEquipmentData>();
-				report += componentData.GetLocalizedName() + " finished recycling \n";
+				report += string.Format(LocalizationManager.Instance.Get(LocalizationKey.return_hub_recycled), componentData.GetLocalizedName()) + "\n";
 
 				System.Tuple<CurrencyType, ulong> sellingPrice = componentData.GetRecyclingPrice();
 				AddCurrency(sellingPrice.Item1, sellingPrice.Item2);

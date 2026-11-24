@@ -209,9 +209,6 @@ MonoBehaviour:
     label: {fileID: 8722656331050037277}
     tooltip: {fileID: 2208580411252237873}
   m_hiddenLine: {fileID: 8995883316165093278}
-  m_opticColor: {r: 0.9333333, g: 0.945098, b: 0.9686275, a: 1}
-  m_thermalColor: {r: 1, g: 0.4156863, b: 0.2392157, a: 1}
-  m_radarColor: {r: 0.4862745, g: 1, b: 0.4196078, a: 1}
   m_neutralColor: {r: 0.6039216, g: 0.6392157, b: 0.7215686, a: 1}
   m_textColor: {r: 0.9333333, g: 0.945098, b: 0.9686275, a: 1}
   m_upColor: {r: 0.3215686, g: 0.8901961, b: 0.4901961, a: 1}
