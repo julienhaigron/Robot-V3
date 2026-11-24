@@ -3346,6 +3346,10 @@ MonoBehaviour:
     values:
     - VISION LAYERS
     - COUCHES DE VISION
+  - key: ingame/vision_layers_tip
+    values:
+    - "Inside the fog, shows what your squad senses: thermal coverage in warm tones, radar-only coverage in green, tiles with no vision darkened."
+    - "Dans le brouillard, montre ce que l'escouade per\xE7oit : couverture thermique en teinte chaude, radar seul en vert, cases sans vision assombries."
   - key: hub/day
     values:
     - "DAY {0}"

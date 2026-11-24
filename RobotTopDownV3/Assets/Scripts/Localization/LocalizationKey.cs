@@ -819,6 +819,7 @@ public enum LocalizationKey
     fow_last_seen_round,
     fow_last_seen_rounds,
     ingame_vision_layers,
+    ingame_vision_layers_tip,
     hub_day,
     return_hub_report_title,
     return_hub_recycled,
@@ -1650,6 +1651,7 @@ public static class LocalizationKeyExtensions
             case LocalizationKey.fow_last_seen_round: return "fow/last_seen_round";
             case LocalizationKey.fow_last_seen_rounds: return "fow/last_seen_rounds";
             case LocalizationKey.ingame_vision_layers: return "ingame/vision_layers";
+            case LocalizationKey.ingame_vision_layers_tip: return "ingame/vision_layers_tip";
             case LocalizationKey.hub_day: return "hub/day";
             case LocalizationKey.return_hub_report_title: return "return_hub/report_title";
             case LocalizationKey.return_hub_recycled: return "return_hub/recycled";

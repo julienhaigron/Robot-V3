@@ -6,6 +6,9 @@ public class LocalizationManager : Singleton<LocalizationManager>
 {
     public static event System.Action onLanguageChanged;
 
+    private const char NO_BREAK_SPACE = ' ';
+    private static readonly string[] s_frenchSpacedMarks = { ":", ";", "!", "?", "%", "»" };
+
     [SerializeField] private LocalizationDatabase m_database;
 
     public SystemLanguage CurrentLanguage;
@@ -78,8 +81,16 @@ public class LocalizationManager : Singleton<LocalizationManager>
             if (string.IsNullOrEmpty(value))
                 value = entry.key;
 
-            m_localizedDict[entry.key] = value;
+            m_localizedDict[entry.key] = CurrentLanguage == SystemLanguage.French ? WithFrenchSpacing(value) : value;
         }
+    }
+
+    private static string WithFrenchSpacing ( string _value )
+    {
+        foreach (string mark in s_frenchSpacedMarks)
+            _value = _value.Replace(" " + mark, NO_BREAK_SPACE + mark);
+
+        return _value.Replace("« ", "«" + NO_BREAK_SPACE);
     }
 
 

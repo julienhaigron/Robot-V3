@@ -65,18 +65,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: RTD::ActionTooltip
   m_canvasGroup: {fileID: 8704135653442122519}
   m_card: {fileID: 3348437207575213431}
+  m_screenMargin: 16
+  m_fadeDuration: 0.12
   m_column: {fileID: 4185583862633342228}
   m_anchorGap: 12
   m_columnGap: 10
-  m_screenMargin: 16
   m_columnDelay: 0.35
-  m_fadeDuration: 0.12
   m_icon: {fileID: 6489697696422795245}
   m_nameTMP: {fileID: 2924563635109972888}
   m_typeTMP: {fileID: 3267778541983519023}
+  m_typeLayout: {fileID: 6208738417448245152}
   m_targetTMP: {fileID: 5387493763670044287}
   m_costTMP: {fileID: 1440412794123899082}
   m_costUnitTMP: {fileID: 5446945541526992988}
+  m_costLayout: {fileID: 3806803093965653459}
   m_strip: {fileID: 8255594108642854356}
   m_preparationPhase:
     root: {fileID: 7977593136067719744}
@@ -1023,6 +1025,7 @@ GameObject:
   - component: {fileID: 7680516014745421280}
   - component: {fileID: 7619495944015808367}
   - component: {fileID: 3267778541983519023}
+  - component: {fileID: 6208738417448245152}
   m_Layer: 5
   m_Name: TypeTMP
   m_TagString: Untagged
@@ -1160,6 +1163,7 @@ GameObject:
   - component: {fileID: 6094231670303226409}
   - component: {fileID: 2037503025794333433}
   - component: {fileID: 5387493763670044287}
+  - component: {fileID: 4773542813060103248}
   m_Layer: 5
   m_Name: TargetTMP
   m_TagString: Untagged
@@ -1214,7 +1218,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: ""
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: b5698a72fb0f50b4ca828f2b1f649314, type: 2}
   m_sharedMaterial: {fileID: 5197844472800135217, guid: b5698a72fb0f50b4ca828f2b1f649314, type: 2}
@@ -1260,7 +1264,7 @@ MonoBehaviour:
   m_charWidthMaxAdj: 0
   m_TextWrappingMode: 0
   m_wordWrappingRatios: 0.4
-  m_overflowMode: 0
+  m_overflowMode: 1
   m_linkedTextComponent: {fileID: 0}
   parentLinkedComponent: {fileID: 0}
   m_enableKerning: 0
@@ -1296,6 +1300,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5574549338523143050}
   - component: {fileID: 4357315119930246742}
+  - component: {fileID: 3806803093965653459}
   m_Layer: 5
   m_Name: Cost
   m_TagString: Untagged
@@ -4717,7 +4722,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "Exchange"
+  m_text: Exchange
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: b5698a72fb0f50b4ca828f2b1f649314, type: 2}
   m_sharedMaterial: {fileID: 5197844472800135217, guid: b5698a72fb0f50b4ca828f2b1f649314, type: 2}
@@ -10733,3 +10738,63 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &3806803093965653459
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4449545809937188399}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 306cc8c2b49d7114eaa3623786fc2126, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.LayoutElement
+  m_IgnoreLayout: 0
+  m_MinWidth: -1
+  m_MinHeight: -1
+  m_PreferredWidth: -1
+  m_PreferredHeight: -1
+  m_FlexibleWidth: -1
+  m_FlexibleHeight: -1
+  m_LayoutPriority: 1
+--- !u!114 &4773542813060103248
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7157672683874329045}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 306cc8c2b49d7114eaa3623786fc2126, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.LayoutElement
+  m_IgnoreLayout: 0
+  m_MinWidth: -1
+  m_MinHeight: -1
+  m_PreferredWidth: -1
+  m_PreferredHeight: -1
+  m_FlexibleWidth: 1
+  m_FlexibleHeight: -1
+  m_LayoutPriority: 1
+--- !u!114 &6208738417448245152
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8189350422493613771}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 306cc8c2b49d7114eaa3623786fc2126, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.LayoutElement
+  m_IgnoreLayout: 0
+  m_MinWidth: -1
+  m_MinHeight: -1
+  m_PreferredWidth: -1
+  m_PreferredHeight: -1
+  m_FlexibleWidth: -1
+  m_FlexibleHeight: -1
+  m_LayoutPriority: 1

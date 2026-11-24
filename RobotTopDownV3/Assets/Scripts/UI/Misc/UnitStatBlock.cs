@@ -165,13 +165,15 @@ public class UnitStatBlock : MonoBehaviour
 		SetCell(m_meleeEvasion, StatType.MeleeEvasion, localization.Get(LocalizationKey.stat_tip_melee_evasion), current, shown, _areStatsVisible, isPreview);
 
 		StringBuilder stealthTip = new(localization.Get(LocalizationKey.stat_tip_stealth));
+		if (_areStatsVisible)
+			stealthTip.Append(TextTooltip.ROWS_GAP);
 		for (int i = 0; i < s_visions.Length && i < m_stealthTiles.Length; i++)
 		{
 			float stealth = Value(shown, NeuronalMembraneEquipmentData.GetCamoStat(s_visions[i]));
 			string vision = s_visions[i].GetLocalizedTitle();
 			SetTile(m_stealthTiles[i], GameConfig.current.ui.GetVisionColor(s_visions[i]), stealth, vision, _areStatsVisible);
 			if (_areStatsVisible)
-				stealthTip.Append('\n').Append(vision).Append(' ').Append(stealth.ToPercentText());
+				stealthTip.Append(TextTooltip.Row(vision, stealth.ToPercentText()));
 		}
 		m_stealthTooltip.Init(localization.Get(LocalizationKey.stat_block_stealth), stealthTip.ToString());
 
@@ -216,6 +218,8 @@ public class UnitStatBlock : MonoBehaviour
 		GameConfig.GameSettings config = GameConfig.current.game;
 		LocalizationManager localization = LocalizationManager.Instance;
 		StringBuilder tip = new(localization.Get(LocalizationKey.stat_tip_resistances));
+		if (_isVisible)
+			tip.Append(TextTooltip.ROWS_GAP);
 		DamageType[] types = s_damageTypes.OrderBy(type => config.damageCategoryPerDamageType[type]).ThenBy(type => type).ToArray();
 		for (int i = 0; i < m_resistanceTiles.Length && i < types.Length; i++)
 		{
@@ -226,7 +230,7 @@ public class UnitStatBlock : MonoBehaviour
 			Color color = GameAssets.current.ui.damageTypeColors.TryGetValue(type, out Color typeColor) ? typeColor : m_neutralColor;
 			SetTile(m_resistanceTiles[i], color, resistance, type.GetLocalizedTitle(), _isVisible);
 			if (_isVisible)
-				tip.Append('\n').Append(type.GetLocalizedTitle()).Append(' ').Append(resistance.ToPercentText());
+				tip.Append(TextTooltip.Row(type.GetLocalizedTitle(), resistance.ToPercentText()));
 		}
 
 		WeaponEquipmentData.DamageCategory firstCategory = config.damageCategoryPerDamageType[types[0]];
@@ -241,7 +245,7 @@ public class UnitStatBlock : MonoBehaviour
 		_tile.icon.color = new Color(_color.r, _color.g, _color.b, alpha);
 		_tile.value.color = new Color(textColor.r, textColor.g, textColor.b, alpha);
 		_tile.value.text = _isVisible ? Mathf.RoundToInt(_value * 100f).ToString() : "?";
-		_tile.tooltip.Init(_name, _isVisible ? _value.ToPercentText() : "?");
+		_tile.tooltip.Init(_name, _isVisible ? _value.ToPercentText() : "?", _tile.icon.sprite, _color);
 	}
 
 	private static bool IsDamageResistance ( StatType _stat )
@@ -370,7 +374,7 @@ public class UnitStatBlock : MonoBehaviour
 			string condition = string.Format(LocalizationManager.Instance.Get(LocalizationKey.stat_tip_conditional), description.condition.GetLocalizedTitle());
 			tip = string.IsNullOrEmpty(tip) ? condition : tip + "\n" + condition;
 		}
-		_chip.tooltip.Init(description.title, tip);
+		_chip.tooltip.Init(description.title, tip, _chip.icon.sprite, _bonus.color);
 	}
 
 	private void SetOverflowChip ( BonusChip _chip, int _from )

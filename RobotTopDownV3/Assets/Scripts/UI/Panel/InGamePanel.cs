@@ -22,7 +22,7 @@ public sealed class InGamePanel : AUIPanel
 	[SerializeField] private BaseButton m_optionsButton;
 	[SerializeField] private BaseButton m_visionLayersButton;
 	[SerializeField] private Image m_visionLayersIcon;
-	[SerializeField] private GameObject m_visionLayersHint;
+	[SerializeField] private ToolTipTrigger m_visionLayersTooltip;
 	[SerializeField] private Color m_visionLayersOnColor = new(0.35f, 0.85f, 1f, 1f);
 	[SerializeField] private Color m_visionLayersOffColor = new(1f, 1f, 1f, 0.45f);
 	[SerializeField] private TextMeshProUGUI m_phaseTitleTmp;
@@ -61,6 +61,7 @@ public sealed class InGamePanel : AUIPanel
 		TurnManager.onEndInputPhase += OnEndInputPhase;
 		LocalizationManager.onLanguageChanged += RefreshPhaseLabel;
 		LocalizationManager.onLanguageChanged += RefreshObjectiveDisplay;
+		LocalizationManager.onLanguageChanged += RefreshVisionLayersTooltip;
 		GameManager.onPlayersPointsChanged += RefreshObjectiveDisplay;
 		SabotagePoints.onAnyChanged += RefreshObjectiveDisplay;
 		Item.onAnyItemPlaced += OnAnyItemPlaced;
@@ -73,7 +74,6 @@ public sealed class InGamePanel : AUIPanel
 		m_followUnitsButton.onClick += OnClickFollowUnitsBtn;
 		m_optionsButton.onClick += OnClickOptionsBtn;
 		m_visionLayersButton.onClick += OnClickVisionLayersBtn;
-		m_visionLayersButton.onHoverChanged += m_visionLayersHint.SetActive;
 	}
 
 	private void OnActionAdded ( TurnManager.RecordedAction _recordedAction )
@@ -149,6 +149,7 @@ public sealed class InGamePanel : AUIPanel
 		TurnManager.onEndInputPhase -= OnEndInputPhase;
 		LocalizationManager.onLanguageChanged -= RefreshPhaseLabel;
 		LocalizationManager.onLanguageChanged -= RefreshObjectiveDisplay;
+		LocalizationManager.onLanguageChanged -= RefreshVisionLayersTooltip;
 		GameManager.onPlayersPointsChanged -= RefreshObjectiveDisplay;
 		SabotagePoints.onAnyChanged -= RefreshObjectiveDisplay;
 		Item.onAnyItemPlaced -= OnAnyItemPlaced;
@@ -161,7 +162,6 @@ public sealed class InGamePanel : AUIPanel
 		m_followUnitsButton.onClick -= OnClickFollowUnitsBtn;
 		m_optionsButton.onClick -= OnClickOptionsBtn;
 		m_visionLayersButton.onClick -= OnClickVisionLayersBtn;
-		m_visionLayersButton.onHoverChanged -= m_visionLayersHint.SetActive;
 	}
 
 	public void Init ()
@@ -171,7 +171,7 @@ public sealed class InGamePanel : AUIPanel
 		RefreshVisual(false, true);
 		RefreshFollowUnitsButton(true);
 		RefreshVisionLayersButton();
-		m_visionLayersHint.SetActive(false);
+		RefreshVisionLayersTooltip();
 		m_logConsole.Init();
 		m_tutoConsole.Init();
 		m_entityActionList.Init();
@@ -286,6 +286,12 @@ public sealed class InGamePanel : AUIPanel
 	private void RefreshVisionLayersButton ()
 	{
 		m_visionLayersIcon.color = FogOfWarRenderer.Instance.AreVisionLayersShown ? m_visionLayersOnColor : m_visionLayersOffColor;
+	}
+
+	private void RefreshVisionLayersTooltip ()
+	{
+		m_visionLayersTooltip.Init(LocalizationManager.Instance.Get(LocalizationKey.ingame_vision_layers)
+			, LocalizationManager.Instance.Get(LocalizationKey.ingame_vision_layers_tip), m_visionLayersIcon.sprite, m_visionLayersOnColor);
 	}
 
 	private void OnClickEndPhaseBtn ()

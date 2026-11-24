@@ -4,7 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ActionTooltip : MonoBehaviour
+public class ActionTooltip : TooltipCard
 {
 	[Serializable]
 	private struct PhaseView
@@ -49,22 +49,20 @@ public class ActionTooltip : MonoBehaviour
 
 
 	[Header("Layout")]
-	[SerializeField] private CanvasGroup m_canvasGroup;
-	[SerializeField] private RectTransform m_card;
 	[SerializeField] private RectTransform m_column;
 	[SerializeField] private float m_anchorGap = 12f;
 	[SerializeField] private float m_columnGap = 10f;
-	[SerializeField] private float m_screenMargin = 16f;
 	[SerializeField] private float m_columnDelay = .35f;
-	[SerializeField] private float m_fadeDuration = .12f;
 
 	[Header("Head")]
 	[SerializeField] private Image m_icon;
 	[SerializeField] private TextMeshProUGUI m_nameTMP;
 	[SerializeField] private TextMeshProUGUI m_typeTMP;
+	[SerializeField] private LayoutElement m_typeLayout;
 	[SerializeField] private TextMeshProUGUI m_targetTMP;
 	[SerializeField] private TextMeshProUGUI m_costTMP;
 	[SerializeField] private TextMeshProUGUI m_costUnitTMP;
+	[SerializeField] private LayoutElement m_costLayout;
 
 	[Header("Tempo and stats")]
 	[SerializeField] private GameObject m_strip;
@@ -112,21 +110,18 @@ public class ActionTooltip : MonoBehaviour
 
 	private readonly List<ActionExchange.Row> m_rows = new();
 	private readonly List<string> m_overflowLabels = new();
-	private readonly Vector3[] m_corners = new Vector3[4];
 	private Dictionary<string, Sprite> m_iconById;
 	private RectTransform m_anchor;
 	private Camera m_anchorCamera;
 	private float m_columnTime;
 	private bool m_isColumnPending;
-	private float m_targetAlpha;
 
 	public void Show ( ActionTooltipContent _content, RectTransform _anchor, string _footer )
 	{
 		m_anchor = _anchor;
-		Canvas anchorCanvas = _anchor == null ? null : _anchor.GetComponentInParent<Canvas>();
-		m_anchorCamera = anchorCanvas == null || anchorCanvas.rootCanvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : anchorCanvas.rootCanvas.worldCamera;
+		m_anchorCamera = CameraOf(_anchor);
 
-		gameObject.SetActive(true);
+		Open();
 		BindHead(_content);
 		BindTempo(_content);
 		BindStats(_content);
@@ -140,27 +135,18 @@ public class ActionTooltip : MonoBehaviour
 		m_columnTime = Time.unscaledTime + m_columnDelay;
 
 		LayoutRebuilder.ForceRebuildLayoutImmediate(m_card);
-		PlaceCard();
-		m_targetAlpha = 1f;
+		PlaceAbove(m_anchor == null ? new Rect(ScreenRect().center, Vector2.zero) : LocalRectOf(m_anchor, m_anchorCamera), m_anchorGap);
 	}
 
-	public void Hide ()
+	public override void Hide ()
 	{
-		m_targetAlpha = 0f;
+		base.Hide();
 		m_isColumnPending = false;
 		m_anchor = null;
 	}
 
-	private void Update ()
+	protected override void OnShownUpdate ()
 	{
-		if (!Mathf.Approximately(m_canvasGroup.alpha, m_targetAlpha))
-			m_canvasGroup.alpha = Mathf.MoveTowards(m_canvasGroup.alpha, m_targetAlpha, m_fadeDuration > 0f ? Time.unscaledDeltaTime / m_fadeDuration : 1f);
-		else if (m_targetAlpha <= 0f)
-		{
-			gameObject.SetActive(false);
-			return;
-		}
-
 		if (!m_isColumnPending || Time.unscaledTime < m_columnTime)
 			return;
 
@@ -175,9 +161,11 @@ public class ActionTooltip : MonoBehaviour
 		m_icon.sprite = _content.data.icon;
 		m_nameTMP.text = _content.Name;
 		m_typeTMP.text = _content.TypeLabel;
+		m_typeLayout.minWidth = m_typeTMP.GetPreferredValues(_content.TypeLabel).x;
 		m_targetTMP.text = _content.TargetLabel;
 		m_costTMP.text = _content.CostValue;
 		m_costUnitTMP.text = _content.CostUnit;
+		m_costLayout.minWidth = Mathf.Max(m_costTMP.GetPreferredValues(_content.CostValue).x, m_costUnitTMP.GetPreferredValues(_content.CostUnit).x);
 	}
 
 	private void BindTempo ( ActionTooltipContent _content )
@@ -317,20 +305,6 @@ public class ActionTooltip : MonoBehaviour
 		return count > 0;
 	}
 
-	private void PlaceCard ()
-	{
-		Rect screen = ScreenRect();
-		Rect anchor = m_anchor == null ? new Rect(screen.center, Vector2.zero) : AnchorRect();
-		Vector2 size = m_card.rect.size;
-
-		float x = Mathf.Clamp(anchor.xMin, screen.xMin + m_screenMargin, Mathf.Max(screen.xMin + m_screenMargin, screen.xMax - m_screenMargin - size.x));
-		float y = anchor.yMax + m_anchorGap;
-		if (y + size.y > screen.yMax - m_screenMargin)
-			y = Mathf.Max(screen.yMin + m_screenMargin, anchor.yMin - m_anchorGap - size.y);
-
-		m_card.localPosition = new Vector3(x, y, 0f);
-	}
-
 	private void PlaceColumn ()
 	{
 		Rect screen = ScreenRect();
@@ -345,27 +319,6 @@ public class ActionTooltip : MonoBehaviour
 
 		float y = Mathf.Min(cardPosition.y, screen.yMax - m_screenMargin - size.y);
 		m_column.localPosition = new Vector3(x, Mathf.Max(screen.yMin + m_screenMargin, y), 0f);
-	}
-
-	private Rect ScreenRect ()
-	{
-		return LocalRect(new Vector2(0f, 0f), new Vector2(Screen.width, Screen.height));
-	}
-
-	private Rect AnchorRect ()
-	{
-		m_anchor.GetWorldCorners(m_corners);
-		Vector2 min = RectTransformUtility.WorldToScreenPoint(m_anchorCamera, m_corners[0]);
-		Vector2 max = RectTransformUtility.WorldToScreenPoint(m_anchorCamera, m_corners[2]);
-		return LocalRect(min, max);
-	}
-
-	private Rect LocalRect ( Vector2 _screenMin, Vector2 _screenMax )
-	{
-		RectTransform root = (RectTransform)transform;
-		RectTransformUtility.ScreenPointToLocalPointInRectangle(root, _screenMin, null, out Vector2 min);
-		RectTransformUtility.ScreenPointToLocalPointInRectangle(root, _screenMax, null, out Vector2 max);
-		return Rect.MinMaxRect(min.x, min.y, max.x, max.y);
 	}
 
 	private Color ColorOf ( ActionKeyword _keyword )

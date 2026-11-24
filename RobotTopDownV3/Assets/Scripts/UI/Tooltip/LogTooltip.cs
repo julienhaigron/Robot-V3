@@ -3,7 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class LogTooltip : MonoBehaviour
+public class LogTooltip : TooltipCard
 {
 	[Serializable]
 	private struct KindStyle
@@ -15,11 +15,7 @@ public class LogTooltip : MonoBehaviour
 
 	public event Action<LogTooltip> onCloseRequested;
 
-	[SerializeField] private CanvasGroup m_canvasGroup;
-	[SerializeField] private RectTransform m_card;
 	[SerializeField] private Vector2 m_cursorOffset = new(15f, -15f);
-	[SerializeField] private float m_screenMargin = 12f;
-	[SerializeField] private float m_fadeDuration = .12f;
 
 	[Header("Head")]
 	[SerializeField] private Image m_iconFill;
@@ -46,10 +42,7 @@ public class LogTooltip : MonoBehaviour
 	[SerializeField] private KindStyle[] m_kinds;
 	[SerializeField] private LogCardStyle m_style = new();
 
-	private float m_targetAlpha;
 	private bool m_isFollowingCursor = true;
-
-	public bool IsShown => gameObject.activeSelf && m_targetAlpha > 0f;
 
 	private void Awake ()
 	{
@@ -58,19 +51,13 @@ public class LogTooltip : MonoBehaviour
 
 	public void Show ( LogCard _card )
 	{
-		gameObject.SetActive(true);
+		Open();
 		BindHead(_card);
 		BindSteps(_card);
 
 		LayoutRebuilder.ForceRebuildLayoutImmediate(m_card);
 		if (m_isFollowingCursor)
-			PlaceAtCursor();
-		m_targetAlpha = 1f;
-	}
-
-	public void Hide ()
-	{
-		m_targetAlpha = 0f;
+			PlaceAtCursor(m_cursorOffset);
 	}
 
 	public void SetPinned ( bool _isPinned )
@@ -86,38 +73,10 @@ public class LogTooltip : MonoBehaviour
 		m_card.localPosition = _other.m_card.localPosition;
 	}
 
-	private void Update ()
+	protected override void OnShownUpdate ()
 	{
-		if (!Mathf.Approximately(m_canvasGroup.alpha, m_targetAlpha))
-			m_canvasGroup.alpha = Mathf.MoveTowards(m_canvasGroup.alpha, m_targetAlpha, m_fadeDuration > 0f ? Time.unscaledDeltaTime / m_fadeDuration : 1f);
-		else if (m_targetAlpha <= 0f)
-		{
-			gameObject.SetActive(false);
-			return;
-		}
-
-		if (m_isFollowingCursor && m_targetAlpha > 0f)
-			PlaceAtCursor();
-	}
-
-	private void PlaceAtCursor ()
-	{
-		RectTransform root = (RectTransform)transform;
-		Vector2 cursor = Input.mousePosition;
-		bool isRightSide = cursor.x > Screen.width * .5f;
-		m_card.pivot = new Vector2(isRightSide ? 1f : 0f, 0f);
-
-		RectTransformUtility.ScreenPointToLocalPointInRectangle(root, cursor, null, out Vector2 position);
-		RectTransformUtility.ScreenPointToLocalPointInRectangle(root, Vector2.zero, null, out Vector2 screenMin);
-		RectTransformUtility.ScreenPointToLocalPointInRectangle(root, new Vector2(Screen.width, Screen.height), null, out Vector2 screenMax);
-		position += new Vector2(isRightSide ? -m_cursorOffset.x : m_cursorOffset.x, m_cursorOffset.y);
-
-		Vector2 size = m_card.rect.size;
-		float left = isRightSide ? position.x - size.x : position.x;
-		left = Mathf.Clamp(left, screenMin.x + m_screenMargin, Mathf.Max(screenMin.x + m_screenMargin, screenMax.x - m_screenMargin - size.x));
-		position.x = isRightSide ? left + size.x : left;
-		position.y = Mathf.Clamp(position.y, screenMin.y + m_screenMargin, Mathf.Max(screenMin.y + m_screenMargin, screenMax.y - m_screenMargin - size.y));
-		m_card.localPosition = position;
+		if (m_isFollowingCursor)
+			PlaceAtCursor(m_cursorOffset);
 	}
 
 	private void BindHead ( LogCard _card )

@@ -147,7 +147,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f9720c0eaf2b35b4aa4b014923a59f25, type: 3}
   m_Name: 
   m_EditorClassIdentifier: RTD::TopLayer
-  m_structureShortcutsFolder: {fileID: 0}
 --- !u!114 &1173951268231750926
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -160,16 +159,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbbab4c9efd26b642a7d83c867021f84, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_tooltipPanel: {fileID: 2600365319845872510}
-  m_tooltipTitleTMP: {fileID: 5156995696289117262}
-  m_tooltipDescriptionTMP: {fileID: 5260099924271217400}
+  m_textTooltip: {fileID: 1893878451762237501}
   m_actionTooltip: {fileID: 3164054562408297446}
   m_logTooltips:
   - {fileID: 6058277817734662632}
   - {fileID: 5763528174477804350}
   - {fileID: 3309174385795578991}
-  m_offset: {x: -10, y: 10}
-  m_fadeDuration: 0.2
 --- !u!114 &1155012189743850741
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -419,11 +414,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2085863394632114787, guid: ee68b42770717e74cbc24828a44e68e2, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 380
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2085863394632114787, guid: ee68b42770717e74cbc24828a44e68e2, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 380
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2085863394632114787, guid: ee68b42770717e74cbc24828a44e68e2, type: 3}
       propertyPath: m_LocalPosition.x
@@ -486,33 +481,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ee68b42770717e74cbc24828a44e68e2, type: 3}
---- !u!1 &2600365319845872510 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 8640761160988121496, guid: ee68b42770717e74cbc24828a44e68e2, type: 3}
-  m_PrefabInstance: {fileID: 6051848363989064422}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &5156995696289117262 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1471876937212178088, guid: ee68b42770717e74cbc24828a44e68e2, type: 3}
-  m_PrefabInstance: {fileID: 6051848363989064422}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &5260099924271217400 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1946642485805998110, guid: ee68b42770717e74cbc24828a44e68e2, type: 3}
-  m_PrefabInstance: {fileID: 6051848363989064422}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!224 &5696496837999032453 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2085863394632114787, guid: ee68b42770717e74cbc24828a44e68e2, type: 3}
@@ -526,6 +494,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 216642337410610055}
     m_Modifications:
+    - target: {fileID: 7741633312096322116, guid: 0625cdccf6c6ffcabaea803f77c0c5d2, type: 3}
+      propertyPath: m_Name
+      value: ActionTooltip
+      objectReference: {fileID: 0}
     - target: {fileID: 8442027122341099492, guid: 0625cdccf6c6ffcabaea803f77c0c5d2, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -605,10 +577,6 @@ PrefabInstance:
     - target: {fileID: 8442027122341099492, guid: 0625cdccf6c6ffcabaea803f77c0c5d2, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7741633312096322116, guid: 0625cdccf6c6ffcabaea803f77c0c5d2, type: 3}
-      propertyPath: m_Name
-      value: ActionTooltip
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -639,6 +607,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 216642337410610055}
     m_Modifications:
+    - target: {fileID: 4146634967756812895, guid: e684d14080c2125d477a0f64375cf815, type: 3}
+      propertyPath: m_Name
+      value: LogTooltip
+      objectReference: {fileID: 0}
     - target: {fileID: 5311432487824102826, guid: e684d14080c2125d477a0f64375cf815, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -718,10 +690,6 @@ PrefabInstance:
     - target: {fileID: 5311432487824102826, guid: e684d14080c2125d477a0f64375cf815, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4146634967756812895, guid: e684d14080c2125d477a0f64375cf815, type: 3}
-      propertyPath: m_Name
-      value: LogTooltip
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -752,6 +720,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 216642337410610055}
     m_Modifications:
+    - target: {fileID: 4146634967756812895, guid: e684d14080c2125d477a0f64375cf815, type: 3}
+      propertyPath: m_Name
+      value: LogTooltipPin1
+      objectReference: {fileID: 0}
     - target: {fileID: 5311432487824102826, guid: e684d14080c2125d477a0f64375cf815, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -831,10 +803,6 @@ PrefabInstance:
     - target: {fileID: 5311432487824102826, guid: e684d14080c2125d477a0f64375cf815, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4146634967756812895, guid: e684d14080c2125d477a0f64375cf815, type: 3}
-      propertyPath: m_Name
-      value: LogTooltipPin1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -865,6 +833,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 216642337410610055}
     m_Modifications:
+    - target: {fileID: 4146634967756812895, guid: e684d14080c2125d477a0f64375cf815, type: 3}
+      propertyPath: m_Name
+      value: LogTooltipPin2
+      objectReference: {fileID: 0}
     - target: {fileID: 5311432487824102826, guid: e684d14080c2125d477a0f64375cf815, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -944,10 +916,6 @@ PrefabInstance:
     - target: {fileID: 5311432487824102826, guid: e684d14080c2125d477a0f64375cf815, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4146634967756812895, guid: e684d14080c2125d477a0f64375cf815, type: 3}
-      propertyPath: m_Name
-      value: LogTooltipPin2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -978,6 +946,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 216642337410610055}
     m_Modifications:
+    - target: {fileID: 1208172847269455168, guid: 87360dbed894a503474e5b90e1f14865, type: 3}
+      propertyPath: m_Name
+      value: GestureFeedback
+      objectReference: {fileID: 0}
     - target: {fileID: 1732379012716000488, guid: 87360dbed894a503474e5b90e1f14865, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -1058,10 +1030,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 1208172847269455168, guid: 87360dbed894a503474e5b90e1f14865, type: 3}
-      propertyPath: m_Name
-      value: GestureFeedback
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1072,3 +1040,14 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 1732379012716000488, guid: 87360dbed894a503474e5b90e1f14865, type: 3}
   m_PrefabInstance: {fileID: 6055668158979763648}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1893878451762237501 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5310892327803734747, guid: ee68b42770717e74cbc24828a44e68e2, type: 3}
+  m_PrefabInstance: {fileID: 6051848363989064422}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac0764c1b49a5dd4197df0740dbf63ed, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: RTD::TextTooltip
