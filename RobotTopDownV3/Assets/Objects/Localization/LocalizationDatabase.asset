@@ -3362,3 +3362,7 @@ MonoBehaviour:
     values:
     - "Day {0}:"
     - "Jour {0} :"
+  - key: stat_block/no_bonus
+    values:
+    - No bonus
+    - Aucun bonus

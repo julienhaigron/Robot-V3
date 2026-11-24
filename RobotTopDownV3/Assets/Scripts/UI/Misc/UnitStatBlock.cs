@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using TMPro;
 using UnityEngine;
@@ -34,11 +35,11 @@ public class UnitStatBlock : MonoBehaviour
 	}
 
 	[Serializable]
-	private struct ResistanceItem
+	private struct DefenseTile
 	{
-		public GameObject root;
 		public Image icon;
 		public TextMeshProUGUI value;
+		public ToolTipTrigger tooltip;
 	}
 
 	private readonly struct Bonus
@@ -79,15 +80,14 @@ public class UnitStatBlock : MonoBehaviour
 	[SerializeField] private StatCell m_meleeAccuracy;
 	[SerializeField] private StatCell m_meleeEvasion;
 
-	[Header("Stealth, bonuses, hidden stats")]
-	[SerializeField] private GameObject m_stealthRow;
-	[SerializeField] private Image[] m_stealthIcons;
-	[SerializeField] private TextMeshProUGUI[] m_stealthValues;
+	[Header("Defense, bonuses, hidden stats")]
+	[SerializeField] private DefenseTile[] m_stealthTiles;
 	[SerializeField] private ToolTipTrigger m_stealthTooltip;
-	[SerializeField] private GameObject m_resistanceRow;
-	[SerializeField] private ResistanceItem[] m_resistanceItems;
+	[SerializeField] private DefenseTile[] m_resistanceTiles;
+	[SerializeField] private Transform m_resistanceSeparator;
 	[SerializeField] private ToolTipTrigger m_resistanceTooltip;
-	[SerializeField] private GameObject m_bonusRoot;
+	[SerializeField] private HorizontalLayoutGroup m_bonusRow;
+	[SerializeField] private TextMeshProUGUI m_noBonusTMP;
 	[SerializeField] private BonusChip[] m_bonusChips;
 	[SerializeField] private GameObject m_hiddenLine;
 
@@ -103,17 +103,12 @@ public class UnitStatBlock : MonoBehaviour
 	[SerializeField, Range(0f, 1f)] private float m_chipFillTint = .16f;
 	[SerializeField, Range(0f, 1f)] private float m_chipFrameAlpha = .55f;
 	[SerializeField, Range(0f, 1f)] private float m_conditionalFrameAlpha = .22f;
+	[SerializeField, Range(0f, 1f)] private float m_zeroAlpha = .32f;
 
 	private readonly List<Bonus> m_bonuses = new();
 	private EntitySavedData m_data;
 	private EntitySavedData m_preview;
 	private bool m_areStatsVisible;
-
-	private void Awake ()
-	{
-		for (int i = 0; i < s_visions.Length; i++)
-			m_stealthIcons[i].color = GameConfig.current.ui.GetVisionColor(s_visions[i]);
-	}
 
 	private void OnEnable ()
 	{
@@ -169,21 +164,19 @@ public class UnitStatBlock : MonoBehaviour
 		SetCell(m_meleeAccuracy, StatType.MeleeAccuracy, string.Format(localization.Get(LocalizationKey.stat_tip_melee_accuracy), flank), current, shown, _areStatsVisible, isPreview);
 		SetCell(m_meleeEvasion, StatType.MeleeEvasion, localization.Get(LocalizationKey.stat_tip_melee_evasion), current, shown, _areStatsVisible, isPreview);
 
-		bool hasStealth = false;
 		StringBuilder stealthTip = new(localization.Get(LocalizationKey.stat_tip_stealth));
-		for (int i = 0; i < s_visions.Length; i++)
+		for (int i = 0; i < s_visions.Length && i < m_stealthTiles.Length; i++)
 		{
 			float stealth = Value(shown, NeuronalMembraneEquipmentData.GetCamoStat(s_visions[i]));
-			hasStealth |= stealth != 0f;
-			m_stealthValues[i].text = stealth.ToPercentText();
-			stealthTip.Append('\n').Append(s_visions[i].GetLocalizedTitle()).Append(' ').Append(m_stealthValues[i].text);
+			string vision = s_visions[i].GetLocalizedTitle();
+			SetTile(m_stealthTiles[i], GameConfig.current.ui.GetVisionColor(s_visions[i]), stealth, vision, _areStatsVisible);
+			if (_areStatsVisible)
+				stealthTip.Append('\n').Append(vision).Append(' ').Append(stealth.ToPercentText());
 		}
-		m_stealthRow.SetActive(_areStatsVisible && hasStealth);
 		m_stealthTooltip.Init(localization.Get(LocalizationKey.stat_block_stealth), stealthTip.ToString());
 
 		SetResistances(shownData, _areStatsVisible);
 		SetBonuses(shown, shownData, _areStatsVisible);
-		m_hiddenLine.SetActive(!_areStatsVisible);
 	}
 
 	private void SetCell ( StatCell _cell, StatType _stat, string _tip, StatDescriptions _current, StatDescriptions _shown, bool _isVisible, bool _isPreview )
@@ -220,30 +213,35 @@ public class UnitStatBlock : MonoBehaviour
 
 	private void SetResistances ( EntitySavedData _data, bool _isVisible )
 	{
+		GameConfig.GameSettings config = GameConfig.current.game;
 		LocalizationManager localization = LocalizationManager.Instance;
 		StringBuilder tip = new(localization.Get(LocalizationKey.stat_tip_resistances));
-		bool hasResistance = false;
-		for (int i = 0; i < m_resistanceItems.Length && i < s_damageTypes.Length; i++)
+		DamageType[] types = s_damageTypes.OrderBy(type => config.damageCategoryPerDamageType[type]).ThenBy(type => type).ToArray();
+		for (int i = 0; i < m_resistanceTiles.Length && i < types.Length; i++)
 		{
-			DamageType type = s_damageTypes[i];
+			DamageType type = types[i];
 			float resistance = 1f - _data.GetPermanentDamageTakenFactor(type);
-			bool isShown = _isVisible && Mathf.Abs(resistance) >= .005f;
-			ResistanceItem item = m_resistanceItems[i];
-			item.root.SetActive(isShown);
-			if (!isShown)
-				continue;
-
-			hasResistance = true;
 			if (GameAssets.current.ui.damageIconPerType.TryGetValue(type, out Sprite sprite))
-				item.icon.sprite = sprite;
-			item.icon.color = GameAssets.current.ui.damageTypeColors.TryGetValue(type, out Color color) ? color : m_neutralColor;
-			item.value.text = resistance.ToPercentText();
-			item.value.color = resistance < 0f ? m_downColor : m_textColor;
-			tip.Append('\n').Append(type.GetLocalizedTitle()).Append(' ').Append(item.value.text);
+				m_resistanceTiles[i].icon.sprite = sprite;
+			Color color = GameAssets.current.ui.damageTypeColors.TryGetValue(type, out Color typeColor) ? typeColor : m_neutralColor;
+			SetTile(m_resistanceTiles[i], color, resistance, type.GetLocalizedTitle(), _isVisible);
+			if (_isVisible)
+				tip.Append('\n').Append(type.GetLocalizedTitle()).Append(' ').Append(resistance.ToPercentText());
 		}
 
-		m_resistanceRow.SetActive(hasResistance);
+		WeaponEquipmentData.DamageCategory firstCategory = config.damageCategoryPerDamageType[types[0]];
+		m_resistanceSeparator.SetSiblingIndex(types.Count(type => config.damageCategoryPerDamageType[type] == firstCategory));
 		m_resistanceTooltip.Init(localization.Get(LocalizationKey.stat_block_resistances), tip.ToString());
+	}
+
+	private void SetTile ( DefenseTile _tile, Color _color, float _value, string _name, bool _isVisible )
+	{
+		float alpha = _isVisible && Mathf.Abs(_value) >= .005f ? 1f : m_zeroAlpha;
+		Color textColor = _isVisible && _value < 0f ? m_downColor : m_textColor;
+		_tile.icon.color = new Color(_color.r, _color.g, _color.b, alpha);
+		_tile.value.color = new Color(textColor.r, textColor.g, textColor.b, alpha);
+		_tile.value.text = _isVisible ? Mathf.RoundToInt(_value * 100f).ToString() : "?";
+		_tile.tooltip.Init(_name, _isVisible ? _value.ToPercentText() : "?");
 	}
 
 	private static bool IsDamageResistance ( StatType _stat )
@@ -266,18 +264,62 @@ public class UnitStatBlock : MonoBehaviour
 			AddConditionalBonuses(_data);
 		}
 
-		bool hasOverflow = m_bonuses.Count > m_bonusChips.Length;
-		int regularCount = hasOverflow ? m_bonusChips.Length - 1 : m_bonuses.Count;
+		int regularCount = CountFittingChips();
+		bool hasOverflow = regularCount < m_bonuses.Count;
 		for (int i = 0; i < m_bonusChips.Length; i++)
 		{
-			m_bonusChips[i].root.SetActive(i < m_bonuses.Count);
+			bool isOverflowChip = hasOverflow && i == regularCount;
+			m_bonusChips[i].root.SetActive(i < regularCount || isOverflowChip);
 			if (i < regularCount)
 				SetChip(m_bonusChips[i], m_bonuses[i]);
-			else if (hasOverflow && i == regularCount)
+			else if (isOverflowChip)
 				SetOverflowChip(m_bonusChips[i], regularCount);
 		}
 
-		m_bonusRoot.SetActive(m_bonuses.Count > 0);
+		m_bonusRow.gameObject.SetActive(_isVisible);
+		m_noBonusTMP.gameObject.SetActive(m_bonuses.Count == 0);
+		m_hiddenLine.SetActive(!_isVisible);
+	}
+
+	private int CountFittingChips ()
+	{
+		float available = ((RectTransform)transform).rect.width;
+		float spacing = m_bonusRow.spacing;
+		int total = m_bonuses.Count;
+		int count = Mathf.Min(total, m_bonusChips.Length);
+		while (count > 0 && ChipsWidth(count, spacing) > available)
+			count--;
+		if (count == total)
+			return count;
+
+		count = Mathf.Min(count, m_bonusChips.Length - 1);
+		while (count > 0 && ChipsWidth(count, spacing) + spacing + ChipWidth(m_bonusChips[count], OverflowLabel(count)) > available)
+			count--;
+		return count;
+	}
+
+	private float ChipsWidth ( int _count, float _spacing )
+	{
+		float width = 0f;
+		for (int i = 0; i < _count; i++)
+			width += (i > 0 ? _spacing : 0f) + ChipWidth(m_bonusChips[i], ChipLabel(m_bonuses[i].description));
+		return width;
+	}
+
+	private static float ChipWidth ( BonusChip _chip, string _label )
+	{
+		HorizontalLayoutGroup layout = _chip.root.GetComponent<HorizontalLayoutGroup>();
+		return layout.padding.horizontal + layout.spacing + LayoutUtility.GetPreferredWidth(_chip.icon.rectTransform) + _chip.label.GetPreferredValues(_label).x;
+	}
+
+	private string OverflowLabel ( int _from )
+	{
+		return "+" + (m_bonuses.Count - _from);
+	}
+
+	private static string ChipLabel ( StatDescription _description )
+	{
+		return FormatBonus(_description) + " " + _description.ID.GetLocalizedShortTitle();
 	}
 
 	private void AddBonuses ( StatType[] _family, StatDescriptions _stats )
@@ -319,7 +361,7 @@ public class UnitStatBlock : MonoBehaviour
 	{
 		StatDescription description = _bonus.description;
 		Paint(_chip, _bonus.color, description.IsConditional);
-		_chip.label.text = FormatBonus(description) + " " + description.ID.GetLocalizedShortTitle();
+		_chip.label.text = ChipLabel(description);
 		_chip.label.fontStyle = description.IsConditional ? FontStyles.Italic : FontStyles.Normal;
 
 		string tip = _bonus.tip;
@@ -334,7 +376,7 @@ public class UnitStatBlock : MonoBehaviour
 	private void SetOverflowChip ( BonusChip _chip, int _from )
 	{
 		Paint(_chip, m_neutralColor, false);
-		_chip.label.text = "+" + (m_bonuses.Count - _from);
+		_chip.label.text = OverflowLabel(_from);
 		_chip.label.fontStyle = FontStyles.Normal;
 
 		StringBuilder lines = new();

@@ -10,6 +10,7 @@ public class RecyclingComponentSlot : ComponentSlot
 	[SerializeField, FormerlySerializedAs("m_timerSectionGO"), FormerlySerializedAs("m_priceSectionGO")] private GameObject m_infoSectionGO;
 	[SerializeField, FormerlySerializedAs("m_timerTMP"), FormerlySerializedAs("m_priceTMP")] private TextMeshProUGUI m_infoTMP;
 	[SerializeField] private GameObject m_currencyIconGO;
+	[SerializeField] private SlidingDoors m_doors;
 
 	private bool m_isRecycleBtnHovered;
 	private Tween m_recycleBtnCall;
@@ -97,7 +98,10 @@ public class RecyclingComponentSlot : ComponentSlot
 			Cleanup();
 		}
 		else
+		{
 			playerSave.dayData.currentlyRecyclingComponents[Index] = new() { component = component, remainingTime = duration };
+			m_doors.SetClosed(true, _isInstant: false);
+		}
 
 		RefreshRecyclingState();
 		if (duration > 0)
@@ -132,6 +136,7 @@ public class RecyclingComponentSlot : ComponentSlot
 			m_infoTMP.text = "+ " + componentData.GetRecyclingPrice().Item2;
 
 		m_recycleBtn.SetInteractability(isPending);
+		m_doors.SetClosed(isRecycling, _isInstant: true);
 		SetLocked(componentData != null && isRecycling);
 		SetPending(componentData != null);
 		GestureFeedback.SetCalling(m_recycleBtn.transform, ref m_recycleBtnCall, isPending && isActiveAndEnabled);

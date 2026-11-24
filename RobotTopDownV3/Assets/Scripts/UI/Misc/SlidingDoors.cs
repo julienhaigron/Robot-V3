@@ -1,113 +1,128 @@
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Serialization;
 using DG.Tweening;
 
 public class SlidingDoors : MonoBehaviour
 {
 	[SerializeField] private RectTransform m_firstDoor;
 	[SerializeField] private RectTransform m_secondDoor;
-	[SerializeField] private Vector2 m_openedOffset = new Vector2(63f, 0f);
-	[SerializeField] private float m_duration = .35f;
-	[SerializeField] private Ease m_ease = Ease.InOutQuad;
+	[SerializeField] private CanvasGroup m_closedBadge;
+	[SerializeField] private Vector2 m_openedOffset = new Vector2(64f, 0f);
 	[SerializeField] private bool m_doBlockRaycastsWhenClosed = true;
 
-	private Graphic[] m_graphics;
+	[Header("Close")]
+	[SerializeField, FormerlySerializedAs("m_duration")] private float m_closeDuration = .3f;
+	[SerializeField] private Ease m_closeEase = Ease.InCubic;
+	[SerializeField] private float m_impactDuration = .12f;
+	[SerializeField] private float m_impactShake = 2.5f;
+	[SerializeField] private float m_badgeDuration = .18f;
+	[SerializeField] private float m_badgeStartScale = 1.4f;
 
+	[Header("Open")]
+	[SerializeField] private float m_openDuration = .4f;
+	[SerializeField] private Ease m_openEase = Ease.OutCubic;
+
+	private Graphic[] m_graphics;
 	private Vector2 m_firstClosedPosition;
 	private Vector2 m_secondClosedPosition;
-	private Tween m_firstTween;
-	private Tween m_secondTween;
-	private Tween m_refreshTween;
-
+	private Sequence m_sequence;
 	private bool m_isClosed;
-	private bool m_hasState;
+
+	private Vector2 FirstTarget => m_isClosed ? m_firstClosedPosition : m_firstClosedPosition - m_openedOffset;
+	private Vector2 SecondTarget => m_isClosed ? m_secondClosedPosition : m_secondClosedPosition + m_openedOffset;
 
 	private void Awake ()
 	{
-		m_graphics = GetComponentsInChildren<Graphic>(true);
-
-		if (m_firstDoor != null)
-			m_firstClosedPosition = m_firstDoor.anchoredPosition;
-
-		if (m_secondDoor != null)
-			m_secondClosedPosition = m_secondDoor.anchoredPosition;
-
-		SetClosed(false, _isInstant: true);
+		Initialize();
 	}
 
 	private void OnDisable ()
 	{
-		KillRefreshTween();
-		KillTweens();
-		ApplyPositions(_isInstant: true);
+		KillSequence();
+		ApplyInstant();
 	}
 
-	private void OnDestroy ()
+	private void Initialize ()
 	{
-		KillRefreshTween();
-		KillTweens();
-	}
+		if (m_graphics != null)
+			return;
 
-	private void KillRefreshTween ()
-	{
-		if (m_refreshTween.IsActive())
-			m_refreshTween.Kill();
+		m_graphics = GetComponentsInChildren<Graphic>(true);
+		m_firstClosedPosition = m_firstDoor.anchoredPosition;
+		m_secondClosedPosition = m_secondDoor.anchoredPosition;
+		RefreshRaycasts();
+		ApplyInstant();
 	}
 
 	public void SetClosed ( bool _isClosed, bool _isInstant )
 	{
-		if (m_hasState && m_isClosed == _isClosed)
+		Initialize();
+
+		if (m_isClosed == _isClosed)
 			return;
 
 		m_isClosed = _isClosed;
-		m_hasState = true;
 
-		KillTweens();
+		KillSequence();
 		RefreshRaycasts();
-		ApplyPositions(_isInstant || !gameObject.activeInHierarchy);
+
+		if (_isInstant || !gameObject.activeInHierarchy)
+			ApplyInstant();
+		else if (m_isClosed)
+			PlayClose();
+		else
+			PlayOpen();
 	}
 
 	private void RefreshRaycasts ()
 	{
-		if (m_graphics == null)
-			return;
-
 		foreach (Graphic graphic in m_graphics)
-		{
-			if (graphic != null)
-				graphic.raycastTarget = m_doBlockRaycastsWhenClosed && m_isClosed;
-		}
+			graphic.raycastTarget = m_doBlockRaycastsWhenClosed && m_isClosed;
 	}
 
-	private void ApplyPositions ( bool _isInstant )
+	private void ApplyInstant ()
 	{
-		if (!m_hasState)
-			return;
-
-		MoveDoor(m_firstDoor, m_isClosed ? m_firstClosedPosition : m_firstClosedPosition - m_openedOffset, _isInstant, ref m_firstTween);
-		MoveDoor(m_secondDoor, m_isClosed ? m_secondClosedPosition : m_secondClosedPosition + m_openedOffset, _isInstant, ref m_secondTween);
+		m_firstDoor.anchoredPosition = FirstTarget;
+		m_secondDoor.anchoredPosition = SecondTarget;
+		m_closedBadge.alpha = m_isClosed ? 1f : 0f;
+		m_closedBadge.transform.localScale = Vector3.one;
 	}
 
-	private void MoveDoor ( RectTransform _door, Vector2 _target, bool _isInstant, ref Tween _tween )
+	private void PlayClose ()
 	{
-		if (_door == null)
-			return;
+		SoundManager.PlayUISafe(SfxId.None, _config => _config.slotDoorsClose);
+		m_closedBadge.alpha = 0f;
+		m_closedBadge.transform.localScale = Vector3.one * m_badgeStartScale;
 
-		if (_isInstant)
-		{
-			_door.anchoredPosition = _target;
-			return;
-		}
-
-		_tween = _door.DOAnchorPos(_target, m_duration).SetEase(m_ease);
+		m_sequence = DOTween.Sequence()
+			.Join(m_firstDoor.DOAnchorPos(FirstTarget, m_closeDuration).SetEase(m_closeEase))
+			.Join(m_secondDoor.DOAnchorPos(SecondTarget, m_closeDuration).SetEase(m_closeEase))
+			.Append(DOVirtual.Float(0f, 1f, m_impactDuration, Shake))
+			.Append(m_closedBadge.DOFade(1f, m_badgeDuration))
+			.Join(m_closedBadge.transform.DOScale(1f, m_badgeDuration).SetEase(Ease.OutBack));
 	}
 
-	private void KillTweens ()
+	private void PlayOpen ()
 	{
-		if (m_firstTween.IsActive())
-			m_firstTween.Kill();
+		SoundManager.PlayUISafe(SfxId.None, _config => _config.slotDoorsOpen);
 
-		if (m_secondTween.IsActive())
-			m_secondTween.Kill();
+		m_sequence = DOTween.Sequence()
+			.Append(m_closedBadge.DOFade(0f, m_badgeDuration))
+			.Append(m_firstDoor.DOAnchorPos(FirstTarget, m_openDuration).SetEase(m_openEase))
+			.Join(m_secondDoor.DOAnchorPos(SecondTarget, m_openDuration).SetEase(m_openEase));
+	}
+
+	private void Shake ( float _progress )
+	{
+		Vector2 offset = new Vector2(Mathf.Sin(_progress * Mathf.PI * 4f) * m_impactShake * (1f - _progress), 0f);
+		m_firstDoor.anchoredPosition = m_firstClosedPosition + offset;
+		m_secondDoor.anchoredPosition = m_secondClosedPosition + offset;
+	}
+
+	private void KillSequence ()
+	{
+		if (m_sequence.IsActive())
+			m_sequence.Kill();
 	}
 }

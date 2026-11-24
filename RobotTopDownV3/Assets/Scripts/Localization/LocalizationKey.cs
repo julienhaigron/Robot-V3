@@ -823,6 +823,7 @@ public enum LocalizationKey
     return_hub_report_title,
     return_hub_recycled,
     return_hub_day_header,
+    stat_block_no_bonus,
 }
 
 public static class LocalizationKeyExtensions
@@ -1653,6 +1654,7 @@ public static class LocalizationKeyExtensions
             case LocalizationKey.return_hub_report_title: return "return_hub/report_title";
             case LocalizationKey.return_hub_recycled: return "return_hub/recycled";
             case LocalizationKey.return_hub_day_header: return "return_hub/day_header";
+            case LocalizationKey.stat_block_no_bonus: return "stat_block/no_bonus";
             default: return string.Empty;
         }
     }

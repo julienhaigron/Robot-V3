@@ -180,7 +180,8 @@ public class PlayerController : Singleton<PlayerController>
 	private bool CanControlCamera ()
 	{
 		return m_turnManager.currentPhase != TurnManager.TurnPhase.Off
-			&& UIManager.Instance.currentPanel is InGamePanel;
+			&& UIManager.Instance.currentPanel is InGamePanel
+			&& !UIManager.Instance.HaveAnActivePopup();
 	}
 
 	private void HandleCameraMovement ()
@@ -229,7 +230,7 @@ public class PlayerController : Singleton<PlayerController>
 		else if (mousePosition.y >= Screen.height - margin)
 			edgeInput.y = 1f;
 
-		return UIManager.Instance.HaveAnActivePopup() ? Vector2.zero : edgeInput;
+		return edgeInput;
 	}
 
 	private void MoveCameraBy ( Vector3 _move )

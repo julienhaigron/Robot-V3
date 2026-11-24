@@ -30,4 +30,8 @@ public class UISoundConfig : ScriptableObject
 	public SfxId transitionDoorsClose = SfxId.None;
 	public SfxId transitionDoorsOpen = SfxId.None;
 	public SfxId transitionHoloSweep = SfxId.None;
+
+	[Header("Slot doors")]
+	public SfxId slotDoorsClose = SfxId.None;
+	public SfxId slotDoorsOpen = SfxId.None;
 }

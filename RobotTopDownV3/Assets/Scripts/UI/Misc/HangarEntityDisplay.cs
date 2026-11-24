@@ -89,7 +89,7 @@ public class HangarEntityDisplay : MonoBehaviour
 		m_hpTMP.text = _data.GetMaxHealth().ToString();
 
 		NeuronalMembraneEquipmentData membrane = _data.NeuronalMembraneData;
-		m_visionTMP.text = membrane == null ? "-" : _data.GetVisionRange().ToString();
+		m_visionTMP.text = membrane == null ? "-" : membrane.visionType.GetLocalizedTitle();
 		m_visionTMP.color = membrane == null ? m_valueColor : GameConfig.current.ui.GetVisionColor(membrane.visionType);
 
 		int energyUsed = _data.GetTotalEnergyUsed();

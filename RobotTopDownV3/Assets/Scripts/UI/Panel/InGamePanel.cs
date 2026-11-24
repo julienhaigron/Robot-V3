@@ -19,6 +19,7 @@ public sealed class InGamePanel : AUIPanel
 
 	[SerializeField] private BaseButton m_endPhaseButton;
 	[SerializeField] private BaseButton m_followUnitsButton;
+	[SerializeField] private BaseButton m_optionsButton;
 	[SerializeField] private BaseButton m_visionLayersButton;
 	[SerializeField] private Image m_visionLayersIcon;
 	[SerializeField] private GameObject m_visionLayersHint;
@@ -70,6 +71,7 @@ public sealed class InGamePanel : AUIPanel
 		CameraManager.onFollowUnitsChanged += OnFollowUnitsChanged;
 		m_endPhaseButton.onClick += OnClickEndPhaseBtn;
 		m_followUnitsButton.onClick += OnClickFollowUnitsBtn;
+		m_optionsButton.onClick += OnClickOptionsBtn;
 		m_visionLayersButton.onClick += OnClickVisionLayersBtn;
 		m_visionLayersButton.onHoverChanged += m_visionLayersHint.SetActive;
 	}
@@ -157,6 +159,7 @@ public sealed class InGamePanel : AUIPanel
 		CameraManager.onFollowUnitsChanged -= OnFollowUnitsChanged;
 		m_endPhaseButton.onClick -= OnClickEndPhaseBtn;
 		m_followUnitsButton.onClick -= OnClickFollowUnitsBtn;
+		m_optionsButton.onClick -= OnClickOptionsBtn;
 		m_visionLayersButton.onClick -= OnClickVisionLayersBtn;
 		m_visionLayersButton.onHoverChanged -= m_visionLayersHint.SetActive;
 	}
@@ -267,6 +270,11 @@ public sealed class InGamePanel : AUIPanel
 	private void OnClickFollowUnitsBtn ()
 	{
 		CameraManager.Instance.FollowUnits();
+	}
+
+	private void OnClickOptionsBtn ()
+	{
+		UIManager.Instance.OpenPopup<OptionPopup>();
 	}
 
 	private void OnClickVisionLayersBtn ()

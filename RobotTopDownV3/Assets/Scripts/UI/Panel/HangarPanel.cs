@@ -20,12 +20,12 @@ public class HangarPanel : AUIPanel
 
 	private void OnEnable ()
 	{
-		LocalizationManager.onLanguageChanged += RefreshTexts;
+		LocalizationManager.onLanguageChanged += RefreshDisplay;
 	}
 
 	private void OnDisable ()
 	{
-		LocalizationManager.onLanguageChanged -= RefreshTexts;
+		LocalizationManager.onLanguageChanged -= RefreshDisplay;
 	}
 
 	private void OnClickCreateNewEntity ()
