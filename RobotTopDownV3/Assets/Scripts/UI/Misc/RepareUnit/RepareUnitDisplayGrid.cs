@@ -7,10 +7,31 @@ using System.Linq;
 public class RepareUnitDisplayGrid : RepareUnitContainer
 {
     [SerializeField] private Graphic m_highlight;
+    [SerializeField] private TMPro.TextMeshProUGUI m_headerTMP;
 
     private readonly List<RepareUnitDisplay> m_items = new();
 
     protected override Graphic HighlightGraphic => m_highlight;
+
+    public EntitySavedData FirstUnit => m_items.Count > 0 ? m_items[0].SavedData : null;
+
+    protected override void OnEnable ()
+    {
+        base.OnEnable();
+        LocalizationManager.onLanguageChanged += RefreshHeader;
+    }
+
+    protected override void OnDisable ()
+    {
+        base.OnDisable();
+        LocalizationManager.onLanguageChanged -= RefreshHeader;
+    }
+
+    private void RefreshHeader ()
+    {
+        if (m_headerTMP != null)
+            m_headerTMP.text = string.Format(LocalizationManager.Instance.Get(LocalizationKey.hub_damaged_units), m_items.Count);
+    }
 
     public override void Init ( RepareUnitContainer _container, Func<EntitySavedData, bool> _predicate, int _index = 0 )
     {
@@ -50,6 +71,8 @@ public class RepareUnitDisplayGrid : RepareUnitContainer
         foreach (EntitySavedData unit in GameDatas.current.currentPlayerSave.allBuiltUnits)
             if (m_predicate != null && m_predicate(unit) && !m_items.Any(item => item.SavedData == unit))
                 CreateNewDisplay(unit);
+
+        RefreshHeader();
     }
 
     public void Cleanup ()
@@ -58,6 +81,7 @@ public class RepareUnitDisplayGrid : RepareUnitContainer
             Destroy(display.gameObject);
 
         m_items.Clear();
+        RefreshHeader();
     }
 
     public override GestureDisplay FindDisplay ( object _content )
@@ -89,13 +113,17 @@ public class RepareUnitDisplayGrid : RepareUnitContainer
 
         _display.transform.SetParent(m_displayParent);
         _display.transform.localPosition = Vector3.zero;
+        RefreshHeader();
         base.RegisterInteraction(_display);
     }
 
 	public override void RemoveDisplay ( RepareUnitDisplay _display )
 	{
-        if (m_items.Remove(_display))
-            base.RemoveDisplay(_display);
+        if (!m_items.Remove(_display))
+            return;
+
+        RefreshHeader();
+        base.RemoveDisplay(_display);
 	}
 
 	#endregion

@@ -17,8 +17,7 @@ public class Shield : ToolEquipment
 
 	public int CurrentHp => m_currentHp;
 	public int MaxHp => ShieldData != null ? ShieldData.hp : 0;
-	public bool IsShownToLocalPlayer => m_user != null && (m_user.IsAlliedTo(GameManager.Instance.PlayerID)
-		|| (m_user.IsVisible && m_user.HowIsUnitVisible != NeuronalMembraneEquipmentData.VisionTypes.Radar));
+	public bool IsShownToLocalPlayer => m_user != null && m_user.IsShownToLocalPlayer;
 
 	public override void Init ( Entity _user, ToolEquipmentData _data, string _id )
 	{

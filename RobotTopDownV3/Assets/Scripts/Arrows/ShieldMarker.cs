@@ -175,13 +175,6 @@ public class ShieldMarker : GroundDisplay
 		m_number.transform.rotation = BillboardManager.TargetRot;
 	}
 
-	private static bool IsOnGrid ( Entity _owner )
-	{
-		GridManager grid = GridManager.Instance;
-		int tileID = _owner.Displacement.Coordinates.ID;
-		return grid != null && grid.Tiles != null && tileID >= 0 && tileID < grid.Tiles.Length;
-	}
-
 	private float UpdateYaw ()
 	{
 		if (m_slideStart < 0f)

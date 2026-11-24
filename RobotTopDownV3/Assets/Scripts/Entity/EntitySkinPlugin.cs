@@ -391,10 +391,7 @@ public class EntitySkinPlugin : EntityPlugin
 		if (_renderer is not MeshRenderer && _renderer is not SkinnedMeshRenderer)
 			return false;
 
-		if (IsUnder(_renderer, m_radarRoot) || IsUnder(_renderer, m_thermicRoot))
-			return false;
-
-		return _renderer.GetComponentInParent<WeaponCone>(true) == null;
+		return !IsUnder(_renderer, m_radarRoot) && !IsUnder(_renderer, m_thermicRoot);
 	}
 
 	private static bool IsUnder ( Renderer _renderer, GameObject _root )

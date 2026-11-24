@@ -1131,13 +1131,13 @@ public class GridManager : Singleton<GridManager>
 		if (incomingSide < 0)
 			return Tile.TileDirectionType.Front;
 
-		int delta = (incomingSide - _to.Displacement.CurrentOrientation + 6) % 6;
+		return GetSideFromDelta((incomingSide - _to.Displacement.CurrentOrientation + 6) % 6);
+	}
 
-		switch (delta)
+	public static Tile.TileDirectionType GetSideFromDelta ( int _delta )
+	{
+		switch (_delta)
 		{
-			case 0:
-				return Tile.TileDirectionType.Front;
-
 			case 1:
 			case 5:
 				return Tile.TileDirectionType.ForwardSide;
@@ -1150,7 +1150,6 @@ public class GridManager : Singleton<GridManager>
 				return Tile.TileDirectionType.Back;
 
 			default:
-				// Ne devrait jamais arriver
 				return Tile.TileDirectionType.Front;
 		}
 	}

@@ -1403,7 +1403,7 @@ public class TurnManager : Singleton<TurnManager>
 
 		PlayerController.Instance.RedrawTargetOutlines();
 		PlayerController.Instance.RefreshTargetMarkers();
-		PlayerController.Instance.RefreshAimedShields(_selectedEntityID.HasValue && _specificTokenCount != -1 ? currentSelectedAction : null);
+		PlayerController.Instance.RefreshAimedTargets(_selectedEntityID.HasValue && _specificTokenCount != -1 ? currentSelectedAction : null);
 		DrawFacingPicker();
 	}
 

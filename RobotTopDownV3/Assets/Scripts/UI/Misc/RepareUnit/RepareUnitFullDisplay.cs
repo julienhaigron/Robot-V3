@@ -6,40 +6,139 @@ using System.Collections.Generic;
 
 public class RepareUnitFullDisplay : MonoBehaviour
 {
-	//[SerializeField] private Image m_icon;
+	[System.Serializable]
+	private struct DamageRow
+	{
+		public GameObject root;
+		public Image icon;
+		public TextMeshProUGUI nameTMP;
+		public TextMeshProUGUI kindTMP;
+	}
+
+	[SerializeField] private GameObject m_contentRoot;
+	[SerializeField] private GameObject m_emptyGO;
+
+	[Header("Header")]
+	[SerializeField] private Image m_icon;
 	[SerializeField] private TextMeshProUGUI m_titleTMP;
+	[SerializeField] private Image m_factionIcon;
+	[SerializeField] private TextMeshProUGUI m_summaryTMP;
+	[SerializeField] private GameObject m_outOfServiceGO;
+
+	[Header("Damage and losses")]
+	[SerializeField] private DamageRow[] m_damageRows;
+	[SerializeField] private TextMeshProUGUI m_moreDamagesTMP;
 	[SerializeField] private StatDisplay[] m_statDisplays;
 
-	private RepareUnitDisplay m_currentDisplayedComponent;
+	[Header("Repairs")]
+	[SerializeField] private TextMeshProUGUI m_necessaryPriceTMP;
+	[SerializeField] private TextMeshProUGUI m_necessaryDescriptionTMP;
+	[SerializeField] private TextMeshProUGUI m_fullPriceTMP;
+	[SerializeField] private TextMeshProUGUI m_fullDescriptionTMP;
+
+	[SerializeField] private Color m_damagedIconColor = new(.91f, .27f, .24f);
+	[SerializeField] private Color m_mainKindColor = new(.91f, .27f, .24f);
+	[SerializeField] private Color m_secondaryKindColor = new(.6f, .61f, .69f);
+
+	private EntitySavedData m_unit;
 
 	private void Awake ()
 	{
-		RepareUnitDisplay.onDisplayHovered += OnComponentHovered;
+		RepareUnitDisplay.onDisplayHovered += OnDisplayHovered;
 	}
 
-	public void Init ( EntitySavedData _componentSavedData )
+	private void OnDestroy ()
 	{
-		if (_componentSavedData == null)
+		RepareUnitDisplay.onDisplayHovered -= OnDisplayHovered;
+	}
+
+	private void OnEnable ()
+	{
+		LocalizationManager.onLanguageChanged += Refresh;
+	}
+
+	private void OnDisable ()
+	{
+		LocalizationManager.onLanguageChanged -= Refresh;
+	}
+
+	public void Show ( EntitySavedData _unit )
+	{
+		m_unit = _unit;
+		Refresh();
+	}
+
+	private void OnDisplayHovered ( RepareUnitDisplay _display )
+	{
+		if (gameObject.activeInHierarchy && _display.SavedData != null && _display.SavedData != m_unit)
+			Show(_display.SavedData);
+	}
+
+	private void Refresh ()
+	{
+		bool hasUnit = m_unit != null && !string.IsNullOrEmpty(m_unit.name);
+		m_contentRoot.SetActive(hasUnit);
+		m_emptyGO.SetActive(!hasUnit);
+		if (!hasUnit)
 			return;
 
-		//EntityEquipmentData componentData = _componentSavedData.GetData<EntityEquipmentData>();
-		/*m_componentTypeIcon.sprite = componentData == null ? null : GameAssets.current.ui.componentIcons[componentData.GetEquipmentType()];
-		m_corpIcon.sprite = componentData == null ? null : GameAssets.current.ui.corporationsIcons[componentData.faction];*/
-		//m_icon.sprite = componentData.icon;
-		m_titleTMP.text = _componentSavedData == null ? null : _componentSavedData.name;
-		//m_priceTMP.text = componentData == null ? null : componentData.GetSellingPrice().Item2.ToString();
+		UnitRepairInfo info = new(m_unit);
 
-		SerializableDictionary<EntityEquipmentData.SecondaryStat.StatType, EntityEquipmentData.StatDescription> damagedStats = GetDamagedComponentsStats(_componentSavedData);
+		m_icon.sprite = m_unit.FrameData != null ? m_unit.FrameData.icon : null;
+		m_titleTMP.text = m_unit.name;
+		m_factionIcon.sprite = GameAssets.current.ui.corporationsIcons[m_unit.GetDominentFaction(out _)];
+		m_summaryTMP.text = string.Format(LocalizationManager.Instance.Get(info.parts.Count == 1 ? LocalizationKey.hub_repair_summary_one : LocalizationKey.hub_repair_summary),
+			m_unit.FrameData != null ? m_unit.FrameData.GetLocalizedName() : string.Empty, info.componentCount, info.parts.Count);
+		m_outOfServiceGO.SetActive(info.IsOutOfService);
+
+		RefreshDamageRows(info);
+		RefreshLosses();
+
+		m_necessaryPriceTMP.text = info.IsOutOfService ? info.necessaryPrice.ToString() : "—";
+		m_necessaryDescriptionTMP.text = info.IsOutOfService
+			? string.Format(LocalizationManager.Instance.Get(LocalizationKey.hub_necessary_description),
+				string.Join(", ", info.parts.Where(part => part.isMain).Select(part => EntityEquipmentData.GetLocalizedTypeName(part.Type)).Distinct()))
+			: LocalizationManager.Instance.Get(LocalizationKey.hub_necessary_none);
+		m_fullPriceTMP.text = info.parts.Count > 0 ? info.fullPrice.ToString() : "—";
+		m_fullDescriptionTMP.text = string.Format(LocalizationManager.Instance.Get(info.parts.Count == 1 ? LocalizationKey.hub_full_description_one : LocalizationKey.hub_full_description), info.parts.Count);
+	}
+
+	private void RefreshDamageRows ( UnitRepairInfo _info )
+	{
+		string mainLabel = LocalizationManager.Instance.Get(LocalizationKey.hub_repair_main);
+		string secondaryLabel = LocalizationManager.Instance.Get(LocalizationKey.hub_repair_secondary);
+
+		for (int i = 0; i < m_damageRows.Length; i++)
+		{
+			bool isShown = i < _info.parts.Count;
+			m_damageRows[i].root.SetActive(isShown);
+			if (!isShown)
+				continue;
+
+			UnitRepairInfo.DamagedPart part = _info.parts[i];
+			m_damageRows[i].icon.sprite = GameAssets.current.ui.componentIcons[part.Type];
+			m_damageRows[i].icon.color = m_damagedIconColor;
+			m_damageRows[i].nameTMP.text = part.data.GetLocalizedName();
+			m_damageRows[i].kindTMP.text = part.isMain ? mainLabel : secondaryLabel;
+			m_damageRows[i].kindTMP.color = part.isMain ? m_mainKindColor : m_secondaryKindColor;
+		}
+
+		int hiddenCount = _info.parts.Count - m_damageRows.Length;
+		m_moreDamagesTMP.gameObject.SetActive(hiddenCount > 0);
+		if (hiddenCount > 0)
+			m_moreDamagesTMP.text = string.Format(LocalizationManager.Instance.Get(hiddenCount == 1 ? LocalizationKey.hub_repair_more_one : LocalizationKey.hub_repair_more), hiddenCount);
+	}
+
+	private void RefreshLosses ()
+	{
+		SerializableDictionary<EntityEquipmentData.SecondaryStat.StatType, EntityEquipmentData.StatDescription> damagedStats = GetDamagedComponentsStats(m_unit);
 		List<EntityEquipmentData.SecondaryStat.StatType> keys = UIManager.Instance.GetPanel<EntityConfigPanel>().GetDisplayedStats(damagedStats);
 		for (int i = 0; i < m_statDisplays.Length; i++)
 		{
-			if (keys.Count <= i)
-				m_statDisplays[i].gameObject.SetActive(false);
-			else
-			{
-				m_statDisplays[i].gameObject.SetActive(true);
+			bool isShown = i < keys.Count;
+			m_statDisplays[i].gameObject.SetActive(isShown);
+			if (isShown)
 				m_statDisplays[i].Init(damagedStats[keys[i]]);
-			}
 		}
 	}
 
@@ -57,15 +156,5 @@ public class RepareUnitFullDisplay : MonoBehaviour
 
 		stats.Remove(EntityEquipmentData.SecondaryStat.StatType.EnergyCost);
 		return stats;
-	}
-
-	private void OnComponentHovered ( RepareUnitDisplay _display )
-	{
-		if (!gameObject.activeInHierarchy || _display == m_currentDisplayedComponent)
-			return;
-
-		m_currentDisplayedComponent = _display;
-
-		Init(_display.SavedData);
 	}
 }

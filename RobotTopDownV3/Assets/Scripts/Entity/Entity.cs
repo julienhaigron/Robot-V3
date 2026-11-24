@@ -95,6 +95,8 @@ public class Entity : MonoBehaviour
 	public bool IsVisible => m_isVisible;
 	private NeuronalMembraneEquipmentData.VisionTypes m_howIsUnitVisible = NeuronalMembraneEquipmentData.VisionTypes.Radar;
 	public NeuronalMembraneEquipmentData.VisionTypes HowIsUnitVisible => m_howIsUnitVisible;
+	public bool IsShownToLocalPlayer => IsAlliedTo(GameManager.Instance.PlayerID)
+		|| (m_isVisible && m_howIsUnitVisible != NeuronalMembraneEquipmentData.VisionTypes.Radar);
 
 
 	[Serializable]

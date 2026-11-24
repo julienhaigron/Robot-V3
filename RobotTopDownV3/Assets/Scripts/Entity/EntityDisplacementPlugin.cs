@@ -32,6 +32,7 @@ public class EntityDisplacementPlugin : EntityPlugin
 	private Tween m_movementTween;
 	private Tween m_rotationTween;
 	private System.Action m_pendingMovementDoneAction;
+	private FacingMarker m_facingMarker;
 
 
 	private void Awake ()
@@ -49,6 +50,8 @@ public class EntityDisplacementPlugin : EntityPlugin
 			m_movementTween.Kill();
 		if (m_rotationTween.IsActive())
 			m_rotationTween.Kill();
+		if (m_facingMarker != null)
+			Destroy(m_facingMarker.gameObject);
 	}
 
 	public void CancelMovement ( Tween _movement )
@@ -113,6 +116,10 @@ public class EntityDisplacementPlugin : EntityPlugin
 
 		spawn.SetEntity(m_linkedEntity, _isThisTurn: true);
 		m_coordinate.SetCoordinate(spawn.coordinates.X, spawn.coordinates.Z, spawn.coordinates.ID);
+
+		if (m_facingMarker == null)
+			m_facingMarker = Instantiate(GameAssets.current.game.facingMarker);
+		m_facingMarker.Bind(m_linkedEntity);
 
 		onAnyEntitySpawn?.Invoke(m_linkedEntity);
 	}

@@ -890,11 +890,13 @@ public class PlayerController : Singleton<PlayerController>
 		m_aoePreviewTiles.Clear();
 		RangeOverlay.ClearAll();
 		ShieldMarker.ClearAim();
+		FacingMarker.ClearAim();
 	}
 
-	public void RefreshAimedShields ( AEntityAction _hoveredAction )
+	public void RefreshAimedTargets ( AEntityAction _hoveredAction )
 	{
 		ShieldMarker.ClearAim();
+		FacingMarker.ClearAim();
 		if (_hoveredAction == null || m_hoveredTile == null || GridManager.Instance == null
 			|| _hoveredAction.Data.GetMainActionType() != EntityActionData.MainActionType.Attack)
 			return;
@@ -906,20 +908,21 @@ public class PlayerController : Singleton<PlayerController>
 		Tile shooterTile = GridManager.Instance.Tiles[m_turnManager.GetLastRegisteredPositionOfEntity(_hoveredAction.performingEntityID)];
 		Tile shotOrigin = shooter.Equipment.GetShotOrigin(_hoveredAction, shooterTile, m_hoveredTile);
 		if (m_aoePreviewTiles.Count == 0)
-			AimShieldsOn(m_hoveredTile, shotOrigin);
+			AimOn(m_hoveredTile, shotOrigin);
 		else
 		{
 			foreach (Tile tile in m_aoePreviewTiles)
-				AimShieldsOn(tile, shotOrigin);
+				AimOn(tile, shotOrigin);
 		}
 	}
 
-	private static void AimShieldsOn ( Tile _tile, Tile _shotOrigin )
+	private static void AimOn ( Tile _tile, Tile _shotOrigin )
 	{
 		if (!_tile.TryGetEntity(true, out Entity target))
 			return;
 
 		int incomingSide = GridManager.Instance.GetIncomingSide(_shotOrigin, _tile);
+		FacingMarker.Aim(target, incomingSide);
 		foreach (ToolEquipment tool in target.Equipment.Tools.Values)
 		{
 			if (tool is Shield shield && shield.Covers(incomingSide))

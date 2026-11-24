@@ -7,6 +7,7 @@ public class RepairStationPanel : AUIPanel
 {
 	[SerializeField] private RepareUnitDisplayGrid m_inventoryGrid;
 	[SerializeField] private RepareUnitSlot[] m_repairingSlots;
+	[SerializeField] private RepareUnitFullDisplay m_unitDetails;
 
 	private System.Func<EntitySavedData, bool> InventoryGridPredicate => item => item != null && item.IsDamaged() && !item.isRepairing;
 
@@ -58,6 +59,18 @@ public class RepairStationPanel : AUIPanel
 		}
 
 		m_inventoryGrid.Init(null, InventoryGridPredicate);
+		m_unitDetails.Show(GetFirstShownUnit());
+	}
+
+	private EntitySavedData GetFirstShownUnit ()
+	{
+		foreach (RepareUnitSlot slot in m_repairingSlots)
+		{
+			if (slot.gameObject.activeSelf && slot.CurrentDisplay != null && slot.CurrentDisplay.SavedData != null)
+				return slot.CurrentDisplay.SavedData;
+		}
+
+		return m_inventoryGrid.FirstUnit;
 	}
 
 	protected override void OnHideStarted ()
@@ -117,6 +130,7 @@ public class RepairStationPanel : AUIPanel
 		if (!GameDatas.current.currentPlayerSave.IsInTournament)
 			GameDatas.current.currentPlayerSave.squadUnitsIndex.Remove(_display.SavedData.index);
 		m_repairingSlots[_container.Index].RefreshRepairData();
+		m_unitDetails.Show(_display.SavedData);
 	}
 
 	private void OnClickRepair ( RepareUnitSlot _slot, bool _isFullRepair )

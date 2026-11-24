@@ -78,7 +78,7 @@ public class GameAssets : ScriptableObject
         public GameObject sabotagePointVisual;
         public List<Entity.EntityState> states;
 
-        public WeaponCone weaponCone;
+        public FacingMarker facingMarker;
 
         public SerializableDictionary<EntityActionEnumID, EntityActionData> entityActionsData = new SerializableDictionary<EntityActionEnumID, EntityActionData>();
         public SerializableDictionary<EntityPassiveEffectEnumID, AEntityPassiveEffect> entityEffects = new SerializableDictionary<EntityPassiveEffectEnumID, AEntityPassiveEffect>();

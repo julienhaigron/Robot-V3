@@ -206,14 +206,78 @@ MonoBehaviour:
     values:
     - REPAIR
     - "R\xC9PARATION"
-  - key: hub/single_repair
+  - key: hub/necessary_short
     values:
-    - Necessary Repair
-    - "R\xE9paration n\xE9cessaire"
-  - key: hub/full_repair
+    - Necessary
+    - "N\xE9cessaire"
+  - key: hub/full_short
     values:
-    - Full Repair
-    - "R\xE9paration compl\xE8te"
+    - Full
+    - "Compl\xE8te"
+  - key: hub/damaged_units
+    values:
+    - "Damaged units \xB7 {0}"
+    - "Unit\xE9s endommag\xE9es \xB7 {0}"
+  - key: hub/repair_drop_hint
+    values:
+    - Drop a unit
+    - "D\xE9poser une unit\xE9"
+  - key: hub/repair_empty
+    values:
+    - No damaged unit.
+    - "Aucune unit\xE9 endommag\xE9e."
+  - key: hub/out_of_service
+    values:
+    - Out of service
+    - Hors service
+  - key: hub/repair_summary
+    values:
+    - "{0} frame \xB7 {1} components, {2} damaged"
+    - "Ch\xE2ssis {0} \xB7 {1} composants, {2} endommag\xE9s"
+  - key: hub/repair_summary_one
+    values:
+    - "{0} frame \xB7 {1} components, 1 damaged"
+    - "Ch\xE2ssis {0} \xB7 {1} composants, 1 endommag\xE9"
+  - key: hub/repair_damages
+    values:
+    - Damage
+    - Avaries
+  - key: hub/repair_losses
+    values:
+    - Losses
+    - Pertes
+  - key: hub/repair_main
+    values:
+    - Main
+    - Principal
+  - key: hub/repair_secondary
+    values:
+    - Secondary
+    - Secondaire
+  - key: hub/repair_more
+    values:
+    - +{0} more
+    - +{0} autres
+  - key: hub/repair_more_one
+    values:
+    - +{0} more
+    - +{0} autre
+  - key: hub/necessary_description
+    values:
+    - '{0}: the unit can deploy again.'
+    - "{0} : l'unit\xE9 redevient d\xE9ployable."
+  - key: hub/necessary_none
+    values:
+    - No main component damaged.
+    - "Aucun composant principal touch\xE9."
+  - key: hub/full_description
+    values:
+    - All {0} damaged components.
+    - Les {0} avaries.
+  - key: hub/full_description_one
+    values:
+    - The only damaged component.
+    - La seule avarie.
   - key: hub/recycle
     values:
     - RECYCLING

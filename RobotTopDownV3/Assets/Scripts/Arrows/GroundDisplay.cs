@@ -62,6 +62,13 @@ public abstract class GroundDisplay : PoolElement
 		return GroundStrip.OnGround(_position);
 	}
 
+	protected static bool IsOnGrid ( Entity _entity )
+	{
+		GridManager grid = GridManager.Instance;
+		int tileID = _entity.Displacement.Coordinates.ID;
+		return grid != null && grid.Tiles != null && tileID >= 0 && tileID < grid.Tiles.Length;
+	}
+
 	protected static void PlaceFlat ( SpriteRenderer _renderer, Vector3 _position, Vector3 _direction, Color _color )
 	{
 		_renderer.enabled = true;

@@ -11,9 +11,6 @@ public class EntityEquipmentPlugin : EntityPlugin
 
 	private Dictionary<string, Weapon> m_weapons = new();
 	public Dictionary<string, Weapon> Weapons => m_weapons;
-	[SerializeField] private Transform m_weaponConesParent;
-
-	private Dictionary<string, WeaponCone> m_weaponConeDictionary = new();
 
 	private Dictionary<string, ToolEquipment> m_tools = new();
 	public Dictionary<string, ToolEquipment> Tools => m_tools;
@@ -35,16 +32,12 @@ public class EntityEquipmentPlugin : EntityPlugin
 
 	private void Awake ()
 	{
-		m_linkedEntity.onSelect += OnEntitySelected;
-		m_linkedEntity.onDeselect += OnEntityDeselected;
 		m_linkedEntity.onStartPerformAction += OnStartPerformAction;
 		TurnManager.onStartInputPhase += OnNewTurnBegin;
 	}
 
 	private void OnDestroy ()
 	{
-		m_linkedEntity.onSelect -= OnEntitySelected;
-		m_linkedEntity.onDeselect -= OnEntityDeselected;
 		m_linkedEntity.onStartPerformAction -= OnStartPerformAction;
 		TurnManager.onStartInputPhase -= OnNewTurnBegin;
 	}
@@ -75,39 +68,6 @@ public class EntityEquipmentPlugin : EntityPlugin
 	}
 
 	#region Callbacks
-
-	private void OnEntitySelected ()
-	{
-		if (m_isDead)
-			return;
-
-		foreach (WeaponCone weaponCone in m_weaponConeDictionary.Values)
-		{
-			weaponCone.ActivateActiveCone();
-		}
-	}
-
-	private void OnEntityDeselected ()
-	{
-		if (m_isDead)
-		{
-			DisableWeaponCones();
-			return;
-		}
-
-		foreach (WeaponCone weaponCone in m_weaponConeDictionary.Values)
-		{
-			weaponCone.ActivateUnactiveCone();
-		}
-	}
-
-	private void DisableWeaponCones ()
-	{
-		foreach (WeaponCone weaponCone in m_weaponConeDictionary.Values)
-		{
-			weaponCone.DisableAllCones();
-		}
-	}
 
 	private void OnStartPerformAction ( AEntityAction _actionPerformed )
 	{
@@ -145,10 +105,6 @@ public class EntityEquipmentPlugin : EntityPlugin
 		newWeapon.Init(m_linkedEntity, _data, _id);
 		newWeapon.transform.localScale = Vector3.one;
 		m_weapons.Add(newWeapon.ID, newWeapon);
-
-		WeaponCone weaponCone = Instantiate(GameAssets.current.game.weaponCone, m_weaponConesParent);
-		m_weaponConeDictionary.Add(newWeapon.ID, weaponCone);
-		weaponCone.Init(m_linkedEntity, _data);
 
 		return newWeapon;
 	}
@@ -582,8 +538,6 @@ public class EntityEquipmentPlugin : EntityPlugin
 		m_isDead = true;
 		onDeath?.Invoke(m_linkedEntity.ID);
 		onAnyEntityDeath?.Invoke(m_linkedEntity);
-
-		DisableWeaponCones();
 	}
 
 	private void PlayDeathVFX ( DeathCause _cause )

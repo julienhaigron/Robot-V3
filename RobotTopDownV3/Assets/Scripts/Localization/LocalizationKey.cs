@@ -49,8 +49,24 @@ public enum LocalizationKey
     hub_shop_psy,
     hub_mission_panel,
     hub_repair,
-    hub_single_repair,
-    hub_full_repair,
+    hub_necessary_short,
+    hub_full_short,
+    hub_damaged_units,
+    hub_repair_drop_hint,
+    hub_repair_empty,
+    hub_out_of_service,
+    hub_repair_summary,
+    hub_repair_summary_one,
+    hub_repair_damages,
+    hub_repair_losses,
+    hub_repair_main,
+    hub_repair_secondary,
+    hub_repair_more,
+    hub_repair_more_one,
+    hub_necessary_description,
+    hub_necessary_none,
+    hub_full_description,
+    hub_full_description_one,
     hub_recycle,
     hub_recycling_duration,
     hub_recycling_time_one,
@@ -855,8 +871,24 @@ public static class LocalizationKeyExtensions
             case LocalizationKey.hub_shop_psy: return "hub/shop_psy";
             case LocalizationKey.hub_mission_panel: return "hub/mission_panel";
             case LocalizationKey.hub_repair: return "hub/repair";
-            case LocalizationKey.hub_single_repair: return "hub/single_repair";
-            case LocalizationKey.hub_full_repair: return "hub/full_repair";
+            case LocalizationKey.hub_necessary_short: return "hub/necessary_short";
+            case LocalizationKey.hub_full_short: return "hub/full_short";
+            case LocalizationKey.hub_damaged_units: return "hub/damaged_units";
+            case LocalizationKey.hub_repair_drop_hint: return "hub/repair_drop_hint";
+            case LocalizationKey.hub_repair_empty: return "hub/repair_empty";
+            case LocalizationKey.hub_out_of_service: return "hub/out_of_service";
+            case LocalizationKey.hub_repair_summary: return "hub/repair_summary";
+            case LocalizationKey.hub_repair_summary_one: return "hub/repair_summary_one";
+            case LocalizationKey.hub_repair_damages: return "hub/repair_damages";
+            case LocalizationKey.hub_repair_losses: return "hub/repair_losses";
+            case LocalizationKey.hub_repair_main: return "hub/repair_main";
+            case LocalizationKey.hub_repair_secondary: return "hub/repair_secondary";
+            case LocalizationKey.hub_repair_more: return "hub/repair_more";
+            case LocalizationKey.hub_repair_more_one: return "hub/repair_more_one";
+            case LocalizationKey.hub_necessary_description: return "hub/necessary_description";
+            case LocalizationKey.hub_necessary_none: return "hub/necessary_none";
+            case LocalizationKey.hub_full_description: return "hub/full_description";
+            case LocalizationKey.hub_full_description_one: return "hub/full_description_one";
             case LocalizationKey.hub_recycle: return "hub/recycle";
             case LocalizationKey.hub_recycling_duration: return "hub/recycling_duration";
             case LocalizationKey.hub_recycling_time_one: return "hub/recycling_time_one";
