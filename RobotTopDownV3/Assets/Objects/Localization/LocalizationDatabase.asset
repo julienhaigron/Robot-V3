@@ -134,6 +134,34 @@ MonoBehaviour:
     values:
     - Window size
     - "Taille de la fen\xEAtre"
+  - key: option/quality
+    values:
+    - Quality
+    - "Qualit\xE9"
+  - key: option/quality_very_low
+    values:
+    - Very low
+    - "Tr\xE8s basse"
+  - key: option/quality_low
+    values:
+    - Low
+    - Basse
+  - key: option/quality_medium
+    values:
+    - Medium
+    - Moyenne
+  - key: option/quality_high
+    values:
+    - High
+    - Haute
+  - key: option/quality_very_high
+    values:
+    - Very high
+    - "Tr\xE8s haute"
+  - key: option/quality_ultra
+    values:
+    - Ultra
+    - Ultra
   - key: language/english
     values:
     - English
@@ -196,12 +224,12 @@ MonoBehaviour:
     - '{0}j'
   - key: hub/recycling_time_one
     values:
-    - "Recycling: 1 day"
-    - "Recyclage : 1 jour"
+    - 'Recycling: 1 day'
+    - 'Recyclage : 1 jour'
   - key: hub/recycling_time_many
     values:
-    - "Recycling: {0} days"
-    - "Recyclage : {0} jours"
+    - 'Recycling: {0} days'
+    - 'Recyclage : {0} jours'
   - key: hub/recycling_time_instant
     values:
     - Instant recycling
@@ -396,7 +424,7 @@ MonoBehaviour:
     - "Pr\xE9cision \xE0 distance"
   - key: stat/melee_accuracy
     values:
-    - "Melee Accuracy"
+    - Melee Accuracy
     - "Pr\xE9cision en m\xEAl\xE9e"
   - key: stat/energy_cost
     values:
@@ -1528,31 +1556,31 @@ MonoBehaviour:
     - Shopstructure
   - key: status/burn1
     values:
-    - "Burning"
+    - Burning
     - "Br\xFBlure"
   - key: status/doom
     values:
-    - "Doomed"
+    - Doomed
     - "Condamn\xE9"
   - key: status/flying
     values:
-    - "Flying"
-    - "Vol"
+    - Flying
+    - Vol
   - key: status/marked
     values:
-    - "Marked"
+    - Marked
     - "Marqu\xE9"
   - key: status/rooted
     values:
-    - "Rooted"
+    - Rooted
     - "Entrav\xE9"
   - key: status/smoked
     values:
-    - "Smoke"
+    - Smoke
     - "Fum\xE9e"
   - key: status/stun
     values:
-    - "Stunned"
+    - Stunned
     - "\xC9tourdi"
   - key: unit/cheater_1
     values:
@@ -1760,15 +1788,15 @@ MonoBehaviour:
     - "Unit\xE9 pr\xEAte"
   - key: entity_config/missing_component
     values:
-    - "Missing: {0}"
-    - "Il manque : {0}"
+    - 'Missing: {0}'
+    - 'Il manque : {0}'
   - key: entity_config/damaged_component
     values:
-    - "Damaged: {0}"
+    - 'Damaged: {0}'
     - "\xC0 r\xE9parer : {0}"
   - key: entity_config/energy_exceeded
     values:
-    - "Not enough energy: {0}/{1}"
+    - 'Not enough energy: {0}/{1}'
     - "\xC9nergie insuffisante : {0}/{1}"
   - key: component_type/frame
     values:
@@ -1821,7 +1849,7 @@ MonoBehaviour:
   - key: log/zone_point_enemy
     values:
     - 'The enemy holds the zone: +1 point ({0} - {1})'
-    - "L'ennemi tient la zone : +1 point ({0} - {1})"
+    - 'L''ennemi tient la zone : +1 point ({0} - {1})'
   - key: log/zone_point_none
     values:
     - 'Nobody holds the zone: no point ({0} - {1})'
@@ -1904,12 +1932,12 @@ MonoBehaviour:
     - Assassinat
   - key: reward/blueprint
     values:
-    - "Blueprint: {0}"
-    - "Blueprint : {0}"
+    - 'Blueprint: {0}'
+    - 'Blueprint : {0}'
   - key: tournament/final_challenger
     values:
-    - "Challenger: {0}"
-    - "Challenger : {0}"
+    - 'Challenger: {0}'
+    - 'Challenger : {0}'
   - key: challenger/controle
     values:
     - Control
@@ -1936,375 +1964,391 @@ MonoBehaviour:
     - "Pi\xE8ges"
   - key: action_desc/designation_hint
     values:
-    - "Click: queued on auto-target. Then click a ringed enemy to force it."
+    - 'Click: queued on auto-target. Then click a ringed enemy to force it.'
     - "Clic : s'ajoute en cible auto. Cliquez ensuite un ennemi entour\xE9 pour l'imposer."
   - key: action_desc/designated_target
     values:
-    - "Designated target: {0}"
+    - 'Designated target: {0}'
     - "Cible d\xE9sign\xE9e : {0}"
   - key: action_desc/designate_click
     values:
-    - "Click: make {0} the target"
-    - "Clic : faire de {0} la cible"
+    - 'Click: make {0} the target'
+    - 'Clic : faire de {0} la cible'
   - key: action_desc/undesignate_click
     values:
-    - "Click: back to automatic targeting"
-    - "Clic : revenir au ciblage automatique"
+    - 'Click: back to automatic targeting'
+    - 'Clic : revenir au ciblage automatique'
   - key: log/designated_target_lost
     values:
-    - "{0} cancels <i>{1}</i>: {2} is out of reach"
+    - '{0} cancels <i>{1}</i>: {2} is out of reach'
     - "{0} renonce \xE0 <i>{1}</i> : {2} est hors d'atteinte"
   - key: log/designated_target_fallback
     values:
-    - "{0}: {2} is out of reach, <i>{1}</i> targets {3} instead"
+    - '{0}: {2} is out of reach, <i>{1}</i> targets {3} instead'
     - "{0} : {2} est hors d'atteinte, <i>{1}</i> vise {3} \xE0 la place"
   - key: action_desc/facing_order
     values:
-    - "Facing: chosen by you. Click its icon to change it, right-click to remove it."
-    - "Orientation : choisie par vous. Clic sur son ic\xF4ne pour la changer, clic droit pour la retirer."
+    - 'Facing: chosen by you. Click its icon to change it, right-click to remove
+      it.'
+    - "Orientation : choisie par vous. Clic sur son ic\xF4ne pour la changer, clic
+      droit pour la retirer."
   - key: action_desc/facing_locked
     values:
-    - "Facing: set by the attack, cannot be changed."
+    - 'Facing: set by the attack, cannot be changed.'
     - "Orientation : impos\xE9e par l'attaque, non modifiable."
   - key: briefing/label
     values:
-    - "Match briefing"
-    - "Briefing du match"
+    - Match briefing
+    - Briefing du match
   - key: briefing/squad
     values:
-    - "Squad"
-    - "Escouade"
+    - Squad
+    - Escouade
   - key: briefing/opponents
     values:
-    - "Opponents: {0}"
-    - "Adversaires : {0}"
+    - 'Opponents: {0}'
+    - 'Adversaires : {0}'
   - key: briefing/loading
     values:
-    - "Loading {0} %"
-    - "Chargement {0} %"
+    - Loading {0} %
+    - Chargement {0} %
   - key: briefing/start
     values:
-    - "Match start"
+    - Match start
     - "D\xE9but du match"
   - key: match_goal/extermination
     values:
-    - "Destroy every enemy unit."
+    - Destroy every enemy unit.
     - "D\xE9truire toutes les unit\xE9s adverses."
   - key: match_goal/defense_de_zone
     values:
-    - "Hold the zone at the end of each turn. First to {0} points wins."
+    - Hold the zone at the end of each turn. First to {0} points wins.
     - "Tenir la zone en fin de tour. Le premier \xE0 {0} points l'emporte."
   - key: match_goal/controle_de_point
     values:
-    - "Control every point at the end of a turn."
+    - Control every point at the end of a turn.
     - "Contr\xF4ler tous les points en fin de tour."
   - key: match_goal/construction
     values:
-    - "Link your two communication points with cables."
+    - Link your two communication points with cables.
     - "Relier vos deux points de communication par des c\xE2bles."
   - key: match_goal/sabotage
     values:
-    - "Destroy every enemy sabotage point."
+    - Destroy every enemy sabotage point.
     - "D\xE9truire tous les points de sabotage adverses."
   - key: match_goal/assassinat
     values:
-    - "Take down the enemy king."
-    - "Abattre le roi adverse."
+    - Take down the enemy king.
+    - Abattre le roi adverse.
   - key: briefing/return_station
     values:
-    - "Back to the station"
+    - Back to the station
     - "Retour \xE0 la station"
   - key: briefing/begin
     values:
-    - "Start"
-    - "Commencer"
+    - Start
+    - Commencer
   - key: entity_ui/phase_preparation
     values:
-    - "PREP"
-    - "PREPA"
+    - PREP
+    - PREPA
   - key: entity_ui/phase_perform
     values:
-    - "ACTIVE"
-    - "EXEC"
+    - ACTIVE
+    - EXEC
   - key: entity_ui/phase_cooldown
     values:
-    - "COOLDOWN"
-    - "REFROID"
+    - COOLDOWN
+    - REFROID
   - key: action_type/distance_attack
     values:
-    - "Shot"
-    - "Tir"
+    - Shot
+    - Tir
   - key: action_type/melee_attack
     values:
-    - "Melee"
+    - Melee
     - "M\xEAl\xE9e"
   - key: action_type/movement
     values:
-    - "Movement"
+    - Movement
     - "D\xE9placement"
   - key: action_type/special
     values:
-    - "Special"
+    - Special
     - "Sp\xE9cial"
   - key: action_type/rotation
     values:
-    - "Rotation"
-    - "Rotation"
+    - Rotation
+    - Rotation
   - key: tooltip/target_self
     values:
-    - "Self"
-    - "Sur soi"
+    - Self
+    - Sur soi
   - key: tooltip/target_auto
     values:
     - "Enemy \xB7 auto"
     - "Ennemi \xB7 auto"
   - key: tooltip/target_enemy
     values:
-    - "Enemy"
-    - "Ennemi"
+    - Enemy
+    - Ennemi
   - key: tooltip/target_destination
     values:
-    - "Destination"
-    - "Destination"
+    - Destination
+    - Destination
   - key: tooltip/target_tiles
     values:
-    - "{0} tiles"
-    - "{0} cases"
+    - '{0} tiles'
+    - '{0} cases'
   - key: tooltip/target_tile
     values:
-    - "Tile"
-    - "Case"
+    - Tile
+    - Case
   - key: tooltip/cost_tick
     values:
-    - "tick"
-    - "tick"
+    - tick
+    - tick
   - key: tooltip/cost_ticks
     values:
-    - "ticks"
-    - "ticks"
+    - ticks
+    - ticks
   - key: tooltip/cost_per_tile
     values:
-    - "tick / tile"
-    - "tick / case"
+    - tick / tile
+    - tick / case
   - key: tooltip/range
     values:
-    - "Range"
+    - Range
     - "Port\xE9e"
   - key: tooltip/damage
     values:
-    - "Damage"
+    - Damage
     - "D\xE9g\xE2ts"
   - key: tooltip/speed
     values:
-    - "Speed"
-    - "Vitesse"
+    - Speed
+    - Vitesse
   - key: tooltip/speed_value
     values:
-    - "{0} tile / tick"
-    - "{0} case / tick"
+    - '{0} tile / tick'
+    - '{0} case / tick'
   - key: tooltip/hint_queue
     values:
-    - "Click: added to the queue."
+    - 'Click: added to the queue.'
     - "Clic : s'ajoute \xE0 la file."
   - key: tooltip/hint_destination
     values:
-    - "Click, then click the destination."
-    - "Clic, puis clic sur la destination."
+    - Click, then click the destination.
+    - Clic, puis clic sur la destination.
   - key: tooltip/hint_tiles
     values:
-    - "Click, then up to {0} clicks on tiles in range."
+    - Click, then up to {0} clicks on tiles in range.
     - "Clic, puis jusqu'\xE0 {0} clics sur des cases \xE0 port\xE9e."
   - key: tooltip/hint_tile
     values:
-    - "Click, then click a tile in range."
+    - Click, then click a tile in range.
     - "Clic, puis clic sur une case \xE0 port\xE9e."
   - key: tooltip/more
     values:
-    - "+{0} more: {1}"
-    - "+{0} autres : {1}"
+    - '+{0} more: {1}'
+    - '+{0} autres : {1}'
   - key: tooltip/more_one
     values:
-    - "+{0} more: {1}"
-    - "+{0} autre : {1}"
+    - '+{0} more: {1}'
+    - '+{0} autre : {1}'
   - key: tooltip/unit_tag
     values:
-    - "Unit"
+    - Unit
     - "Unit\xE9"
   - key: tooltip/percent
     values:
-    - "{0}%"
-    - "{0} %"
+    - '{0}%'
+    - '{0} %'
   - key: tooltip/duration_tick
     values:
-    - "{0} tick"
-    - "{0} tick"
+    - '{0} tick'
+    - '{0} tick'
   - key: tooltip/duration_ticks
     values:
-    - "{0} ticks"
-    - "{0} ticks"
+    - '{0} ticks'
+    - '{0} ticks'
   - key: tooltip/duration_round
     values:
-    - "{0} round"
-    - "{0} tour"
+    - '{0} round'
+    - '{0} tour'
   - key: tooltip/duration_rounds
     values:
-    - "{0} rounds"
-    - "{0} tours"
+    - '{0} rounds'
+    - '{0} tours'
   - key: tooltip/and
     values:
-    - " and "
-    - " et "
+    - ' and '
+    - ' et '
   - key: tooltip/or
     values:
-    - " or "
-    - " ou "
+    - ' or '
+    - ' ou '
   - key: exchange/title
     values:
-    - "Exchange"
+    - Exchange
     - "\xC9change"
   - key: exchange/class_poursuite
     values:
-    - "Pursuit"
-    - "Poursuite"
+    - Pursuit
+    - Poursuite
   - key: exchange/class_engagement
     values:
-    - "Engage"
-    - "Engagement"
+    - Engage
+    - Engagement
   - key: exchange/class_barrage
     values:
-    - "Barrage"
-    - "Barrage"
+    - Barrage
+    - Barrage
   - key: exchange/class_reflexe
     values:
-    - "Reflex"
+    - Reflex
     - "R\xE9flexe"
   - key: exchange/class_movement
     values:
-    - "Movement"
+    - Movement
     - "D\xE9placement"
   - key: exchange/class_special
     values:
-    - "Special"
+    - Special
     - "Sp\xE9cial"
   - key: exchange/movers_movement
     values:
-    - "moves"
+    - moves
     - "les d\xE9placements"
   - key: exchange/movers_melee_attack
     values:
-    - "rushes"
+    - rushes
     - "les ru\xE9es"
   - key: exchange/movers_distance_attack
     values:
-    - "moving shots"
-    - "les tirs en mouvement"
+    - moving shots
+    - les tirs en mouvement
   - key: exchange/movers_special
     values:
-    - "moving specials"
+    - moving specials
     - "les sp\xE9ciaux en mouvement"
   - key: exchange/verb_movement
     values:
-    - "moves"
+    - moves
     - "se d\xE9place"
   - key: exchange/verb_melee_attack
     values:
-    - "rushes"
-    - "charge"
+    - rushes
+    - charge
   - key: exchange/verb_distance_attack
     values:
-    - "shoots on the move"
-    - "tire en bougeant"
+    - shoots on the move
+    - tire en bougeant
   - key: exchange/verb_special
     values:
-    - "moves"
-    - "bouge"
+    - moves
+    - bouge
   - key: exchange/row_intercepts
     values:
-    - "<b>Intercepts</b> {0}"
-    - "<b>Intercepte</b> {0}"
+    - <b>Intercepts</b> {0}
+    - <b>Intercepte</b> {0}
   - key: exchange/row_no_intercept
     values:
     - "<b>No intercept</b> \xB7 aims where targets arrive"
     - "<b>N'intercepte pas</b> \xB7 vise l'arriv\xE9e"
   - key: exchange/row_intercepted_by
     values:
-    - "<b>Intercepted by</b> {0}"
+    - <b>Intercepted by</b> {0}
     - "<b>Intercept\xE9e par</b> {0}"
   - key: exchange/row_never_intercepted
     values:
-    - "<b>Never intercepted</b>"
+    - <b>Never intercepted</b>
     - "<b>Jamais intercept\xE9e</b>"
   - key: exchange/row_claim_hold
     values:
-    - "<b>Holds the tile</b>: a unit walking onto it stops short"
+    - '<b>Holds the tile</b>: a unit walking onto it stops short'
     - "<b>Garde la case</b> : l'unit\xE9 qui y marche s'arr\xEAte avant"
   - key: exchange/row_claim_yield
     values:
-    - "<b>Yields the tile</b> to a unit walking onto it"
+    - <b>Yields the tile</b> to a unit walking onto it
     - "<b>C\xE8de la case</b> \xE0 une unit\xE9 qui y marche"
   - key: exchange/row_claim_coin
     values:
-    - "<b>Coin-flip tile</b> against a unit walking onto it"
+    - <b>Coin-flip tile</b> against a unit walking onto it
     - "<b>Case au sort</b> contre une unit\xE9 qui y marche"
   - key: exchange/reach_range
     values:
-    - "the reach"
+    - the reach
     - "de port\xE9e"
   - key: exchange/reach_area
     values:
-    - "the area"
-    - "de la zone"
+    - the area
+    - de la zone
   - key: exchange/text_intercepts
     values:
-    - "A target that {0} during this tick is hit on the tile it leaves: that is Intercept."
-    - "Une cible qui {0} pendant ce tick est touch\xE9e sur la case qu'elle quitte : c'est l'Interception."
+    - 'A target that {0} during this tick is hit on the tile it leaves: that is Intercept.'
+    - "Une cible qui {0} pendant ce tick est touch\xE9e sur la case qu'elle quitte
+      : c'est l'Interception."
   - key: exchange/text_misses_after
     values:
-    - "A target that {0} is aimed where it arrives: leaving {1} dodges it."
+    - 'A target that {0} is aimed where it arrives: leaving {1} dodges it.'
     - "Une cible qui {0} est vis\xE9e l\xE0 o\xF9 elle arrive : sortir {1} l'esquive."
   - key: exchange/text_misses
     values:
-    - "A target that {0} during this tick is aimed where it arrives: leaving {1} dodges it."
-    - "Une cible qui {0} pendant ce tick est vis\xE9e l\xE0 o\xF9 elle arrive : sortir {1} l'esquive."
+    - 'A target that {0} during this tick is aimed where it arrives: leaving {1}
+      dodges it.'
+    - "Une cible qui {0} pendant ce tick est vis\xE9e l\xE0 o\xF9 elle arrive : sortir
+      {1} l'esquive."
   - key: exchange/text_mover
     values:
-    - "While the unit moves, {0} attacks hit it on the tile it leaves; the others aim where it arrives{1}."
-    - "Pendant que l'unit\xE9 bouge, les attaques {0} la touchent sur la case qu'elle quitte ; les autres la visent l\xE0 o\xF9 elle arrive{1}."
+    - While the unit moves, {0} attacks hit it on the tile it leaves; the others
+      aim where it arrives{1}.
+    - "Pendant que l'unit\xE9 bouge, les attaques {0} la touchent sur la case qu'elle
+      quitte ; les autres la visent l\xE0 o\xF9 elle arrive{1}."
   - key: exchange/text_mover_dodge
     values:
-    - ": leaving their reach dodges them"
+    - ': leaving their reach dodges them'
     - " : sortir de leur port\xE9e les esquive"
   - key: exchange/text_mover_never
     values:
-    - "While the unit moves, every attack aims where it arrives."
-    - "Pendant que l'unit\xE9 bouge, toutes les attaques la visent l\xE0 o\xF9 elle arrive."
+    - While the unit moves, every attack aims where it arrives.
+    - "Pendant que l'unit\xE9 bouge, toutes les attaques la visent l\xE0 o\xF9 elle
+      arrive."
   - key: exchange/text_claim_hold
     values:
-    - "If a unit tries to walk onto the target tile during this tick, it stops short: the placement happens."
-    - "Si une unit\xE9 veut marcher sur la case vis\xE9e pendant ce tick, elle s'arr\xEAte avant : la pose a lieu."
+    - 'If a unit tries to walk onto the target tile during this tick, it stops short:
+      the placement happens.'
+    - "Si une unit\xE9 veut marcher sur la case vis\xE9e pendant ce tick, elle s'arr\xEAte
+      avant : la pose a lieu."
   - key: exchange/text_claim_yield
     values:
-    - "If a unit walks onto the target tile during this tick, it goes through: the placement is cancelled."
-    - "Si une unit\xE9 marche sur la case vis\xE9e pendant ce tick, elle passe : la pose est annul\xE9e."
+    - 'If a unit walks onto the target tile during this tick, it goes through: the
+      placement is cancelled.'
+    - "Si une unit\xE9 marche sur la case vis\xE9e pendant ce tick, elle passe :
+      la pose est annul\xE9e."
   - key: exchange/text_claim_coin
     values:
-    - "If a unit tries to walk onto the target tile during this tick, a coin flip decides who gets it."
-    - "Si une unit\xE9 veut marcher sur la case vis\xE9e pendant ce tick, un tirage au sort d\xE9cide qui l'obtient."
+    - If a unit tries to walk onto the target tile during this tick, a coin flip
+      decides who gets it.
+    - "Si une unit\xE9 veut marcher sur la case vis\xE9e pendant ce tick, un tirage
+      au sort d\xE9cide qui l'obtient."
   - key: keyword/auto_target
     values:
-    - "Auto-target"
-    - "Cible auto"
+    - Auto-target
+    - Cible auto
   - key: keyword/auto_target_desc
     values:
-    - "Queued without aiming: on its tick the unit takes the closest enemy in reach and turns to it, unless you designated a target."
-    - "Se place sans viser : \xE0 son tick, l'unit\xE9 prend l'ennemi le plus proche \xE0 port\xE9e et pivote vers lui, sauf si vous avez d\xE9sign\xE9 une cible."
+    - 'Queued without aiming: on its tick the unit takes the closest enemy in reach
+      and turns to it, unless you designated a target.'
+    - "Se place sans viser : \xE0 son tick, l'unit\xE9 prend l'ennemi le plus proche
+      \xE0 port\xE9e et pivote vers lui, sauf si vous avez d\xE9sign\xE9 une cible."
   - key: keyword/multi_target
     values:
-    - "Multi-target {0}"
-    - "Multi-cible {0}"
+    - Multi-target {0}
+    - Multi-cible {0}
   - key: keyword/multi_target_desc
     values:
-    - "Hits up to {0} different targets."
+    - Hits up to {0} different targets.
     - "Touche jusqu'\xE0 {0} cibles diff\xE9rentes."
   - key: keyword/multi_hit
     values:
@@ -2312,59 +2356,63 @@ MonoBehaviour:
     - "Coups \xD7{0}"
   - key: keyword/multi_hit_desc
     values:
-    - "Strikes the same target {0} times."
+    - Strikes the same target {0} times.
     - "Frappe {0} fois la m\xEAme cible."
   - key: keyword/rush
     values:
-    - "Rush"
+    - Rush
     - "Ru\xE9e"
   - key: keyword/rush_desc
     values:
-    - "Dashes toward the target, then strikes from the tile where the unit stops, next to it. Flank, cover and shield are read from that tile."
-    - "S'\xE9lance vers la cible, puis frappe depuis la case o\xF9 l'unit\xE9 s'arr\xEAte, \xE0 c\xF4t\xE9 d'elle. Flanc, couvert et bouclier se lisent depuis cette case."
+    - Dashes toward the target, then strikes from the tile where the unit stops,
+      next to it. Flank, cover and shield are read from that tile.
+    - "S'\xE9lance vers la cible, puis frappe depuis la case o\xF9 l'unit\xE9 s'arr\xEAte,
+      \xE0 c\xF4t\xE9 d'elle. Flanc, couvert et bouclier se lisent depuis cette case."
   - key: keyword/leap
     values:
-    - "Leap"
-    - "Saut"
+    - Leap
+    - Saut
   - key: keyword/leap_desc
     values:
-    - "Jumps over obstacles and lands on a free tile."
-    - "Bondit par-dessus les obstacles et atterrit sur une case libre."
+    - Jumps over obstacles and lands on a free tile.
+    - Bondit par-dessus les obstacles et atterrit sur une case libre.
   - key: keyword/shield
     values:
-    - "Shield"
-    - "Bouclier"
+    - Shield
+    - Bouclier
   - key: keyword/shield_desc
     values:
-    - "Turns the shield to one of the 6 sides. It absorbs damage coming from that side until its HP run out."
-    - "Tourne le bouclier vers l'un des 6 c\xF4t\xE9s. Il absorbe les d\xE9g\xE2ts qui arrivent par ce c\xF4t\xE9 jusqu'\xE0 \xE9puisement de ses PV."
+    - Turns the shield to one of the 6 sides. It absorbs damage coming from that
+      side until its HP run out.
+    - "Tourne le bouclier vers l'un des 6 c\xF4t\xE9s. Il absorbe les d\xE9g\xE2ts
+      qui arrivent par ce c\xF4t\xE9 jusqu'\xE0 \xE9puisement de ses PV."
   - key: keyword/deploy
     values:
-    - "Deploy: {0}"
-    - "Pose : {0}"
+    - 'Deploy: {0}'
+    - 'Pose : {0}'
   - key: keyword/deploy_desc
     values:
-    - "Places an object on a tile: {0}."
-    - "Pose un objet sur une case : {0}."
+    - 'Places an object on a tile: {0}.'
+    - 'Pose un objet sur une case : {0}.'
   - key: keyword/deploy_limit
     values:
-    - " At most {0} in play (counter on the button)."
-    - " {0} en jeu au plus (compteur sur le bouton)."
+    - ' At most {0} in play (counter on the button).'
+    - ' {0} en jeu au plus (compteur sur le bouton).'
   - key: keyword/relocate
     values:
-    - "Relocate: {0}"
+    - 'Relocate: {0}'
     - "D\xE9place : {0}"
   - key: keyword/relocate_desc
     values:
-    - "Moves an object already placed to another tile: {0}."
+    - 'Moves an object already placed to another tile: {0}.'
     - "D\xE9place vers une autre case un objet d\xE9j\xE0 pos\xE9 : {0}."
   - key: keyword/free
     values:
-    - "Free"
-    - "Gratuite"
+    - Free
+    - Gratuite
   - key: keyword/free_desc
     values:
-    - "Attaches to the start of a queued action, costing no tick."
+    - Attaches to the start of a queued action, costing no tick.
     - "Se greffe au d\xE9but d'une action de la file, sans co\xFBter de tick."
   - key: keyword/pulse
     values:
@@ -2372,571 +2420,604 @@ MonoBehaviour:
     - "Onde {0}\u2013{1}"
   - key: keyword/pulse_desc
     values:
-    - "Hits every tile {0} to {1} tiles around the unit, allies included."
-    - "Touche toutes les cases situ\xE9es entre {0} et {1} cases autour de l'unit\xE9, alli\xE9s compris."
+    - Hits every tile {0} to {1} tiles around the unit, allies included.
+    - "Touche toutes les cases situ\xE9es entre {0} et {1} cases autour de l'unit\xE9,
+      alli\xE9s compris."
   - key: keyword/blast_desc
     values:
-    - "Hits every tile within {0} tile{1} of the impact point, allies included. Walls do not stop the blast."
-    - "Touche toutes les cases \xE0 {0} case{1} ou moins du point d'impact, alli\xE9s compris. Les murs n'arr\xEAtent pas l'explosion."
+    - Hits every tile within {0} tile{1} of the impact point, allies included. Walls
+      do not stop the blast.
+    - "Touche toutes les cases \xE0 {0} case{1} ou moins du point d'impact, alli\xE9s
+      compris. Les murs n'arr\xEAtent pas l'explosion."
   - key: keyword/ray_desc
     values:
-    - "Hits every tile on the line between the unit and the aimed tile, allies included."
-    - "Touche chaque case de la ligne entre l'unit\xE9 et la case vis\xE9e, alli\xE9s compris."
+    - Hits every tile on the line between the unit and the aimed tile, allies included.
+    - "Touche chaque case de la ligne entre l'unit\xE9 et la case vis\xE9e, alli\xE9s
+      compris."
   - key: keyword/cone_desc
     values:
-    - "Hits the tiles of a {0} cone in front of the unit, {1}, allies included. Walls cut the cone."
-    - "Touche les cases d'un c\xF4ne {0} devant l'unit\xE9, {1}, alli\xE9s compris. Un mur coupe le c\xF4ne."
+    - Hits the tiles of a {0} cone in front of the unit, {1}, allies included. Walls
+      cut the cone.
+    - "Touche les cases d'un c\xF4ne {0} devant l'unit\xE9, {1}, alli\xE9s compris.
+      Un mur coupe le c\xF4ne."
   - key: keyword/cone_wide
     values:
-    - "wide"
-    - "large"
+    - wide
+    - large
   - key: keyword/cone_narrow
     values:
-    - "narrow"
+    - narrow
     - "\xE9troit"
   - key: keyword/distance_exact
     values:
-    - "at exactly {0} tiles"
+    - at exactly {0} tiles
     - "\xE0 {0} cases exactement"
   - key: keyword/distance_range
     values:
-    - "{0} to {1} tiles away"
+    - '{0} to {1} tiles away'
     - "de {0} \xE0 {1} cases"
   - key: keyword/arc_desc
     values:
-    - "Strikes an arc around the impact point, on the side the unit faces, allies included. Walls do not stop it."
-    - "Frappe en arc autour du point d'impact, du c\xF4t\xE9 o\xF9 regarde l'unit\xE9, alli\xE9s compris. Les murs n'arr\xEAtent pas l'arc."
+    - Strikes an arc around the impact point, on the side the unit faces, allies
+      included. Walls do not stop it.
+    - "Frappe en arc autour du point d'impact, du c\xF4t\xE9 o\xF9 regarde l'unit\xE9,
+      alli\xE9s compris. Les murs n'arr\xEAtent pas l'arc."
   - key: keyword/chain_desc
     values:
-    - "After the target, bounces to up to {0} other enemies within {1} tiles; -{2}% damage per bounce. Spares allies."
-    - "Apr\xE8s la cible, rebondit sur {0} autres ennemis au plus, \xE0 {1} cases ou moins ; -{2} % de d\xE9g\xE2ts par rebond. \xC9pargne les alli\xE9s."
+    - After the target, bounces to up to {0} other enemies within {1} tiles; -{2}%
+      damage per bounce. Spares allies.
+    - "Apr\xE8s la cible, rebondit sur {0} autres ennemis au plus, \xE0 {1} cases
+      ou moins ; -{2} % de d\xE9g\xE2ts par rebond. \xC9pargne les alli\xE9s."
   - key: keyword/lingering
     values:
-    - "Lingering"
-    - "Au sol"
+    - Lingering
+    - Au sol
   - key: keyword/lingering_desc
     values:
-    - "Hit tiles keep {0} for {1}."
+    - Hit tiles keep {0} for {1}.
     - "Les cases touch\xE9es gardent {0} pendant {1}."
   - key: keyword/status_gain
     values:
-    - "Gains {0}"
-    - "Gagne {0}"
+    - Gains {0}
+    - Gagne {0}
   - key: keyword/status_remove
     values:
-    - "Removes {0}"
-    - "Retire {0}"
+    - Removes {0}
+    - Retire {0}
   - key: keyword/status_chance_note
     values:
-    - "Action, weapon and unit chance, before the target's resistance."
-    - "Chance de l'action, de l'arme et de l'unit\xE9, avant la r\xE9sistance de la cible."
+    - Action, weapon and unit chance, before the target's resistance.
+    - "Chance de l'action, de l'arme et de l'unit\xE9, avant la r\xE9sistance de
+      la cible."
   - key: keyword/push
     values:
-    - "Push {0}"
-    - "Repousse {0}"
+    - Push {0}
+    - Repousse {0}
   - key: keyword/push_desc
     values:
-    - "Moves the target {0} tile{1} away. If a wall or a unit stops it: {2} collision damage to each. Pushed into the void, it falls unless Flying."
-    - "\xC9loigne la cible de {0} case{1}. Si un mur ou une unit\xE9 l'arr\xEAte : {2} d\xE9g\xE2ts de collision \xE0 chacun. Pouss\xE9e dans le vide, elle tombe, sauf en Vol."
+    - 'Moves the target {0} tile{1} away. If a wall or a unit stops it: {2} collision
+      damage to each. Pushed into the void, it falls unless Flying.'
+    - "\xC9loigne la cible de {0} case{1}. Si un mur ou une unit\xE9 l'arr\xEAte
+      : {2} d\xE9g\xE2ts de collision \xE0 chacun. Pouss\xE9e dans le vide, elle
+      tombe, sauf en Vol."
   - key: keyword/pull
     values:
-    - "Pull {0}"
-    - "Attire {0}"
+    - Pull {0}
+    - Attire {0}
   - key: keyword/pull_desc
     values:
-    - "Draws the target {0} tile{1} closer, with the same collision and void rules as Push."
-    - "Rapproche la cible de {0} case{1}, avec les m\xEAmes r\xE8gles de collision et de vide que Repousse."
+    - Draws the target {0} tile{1} closer, with the same collision and void rules
+      as Push.
+    - "Rapproche la cible de {0} case{1}, avec les m\xEAmes r\xE8gles de collision
+      et de vide que Repousse."
   - key: keyword/self_destruct
     values:
-    - "Self-destruct"
-    - "Autodestruction"
+    - Self-destruct
+    - Autodestruction
   - key: keyword/self_destruct_desc
     values:
-    - "The unit destroys itself. Its on-death effects, such as a chassis explosion, trigger."
-    - "L'unit\xE9 se d\xE9truit. Ses effets \xE0 la mort, comme l'explosion d'un ch\xE2ssis, se d\xE9clenchent."
+    - The unit destroys itself. Its on-death effects, such as a chassis explosion,
+      trigger.
+    - "L'unit\xE9 se d\xE9truit. Ses effets \xE0 la mort, comme l'explosion d'un
+      ch\xE2ssis, se d\xE9clenchent."
   - key: keyword/steady
     values:
-    - "Anchored"
-    - "Ancrage"
+    - Anchored
+    - Ancrage
   - key: keyword/steady_chip
     values:
-    - "Anchored: {0}"
-    - "Ancrage : {0}"
+    - 'Anchored: {0}'
+    - 'Ancrage : {0}'
   - key: keyword/steady_desc
     values:
-    - "If the unit has not moved earlier this round: {0}."
+    - 'If the unit has not moved earlier this round: {0}.'
     - "Si l'unit\xE9 ne s'est pas d\xE9plac\xE9e plus t\xF4t dans ce tour : {0}."
   - key: keyword/hunt
     values:
-    - "Hunter"
-    - "Traque"
+    - Hunter
+    - Traque
   - key: keyword/hunt_chip
     values:
-    - "Hunter: {0}"
-    - "Traque : {0}"
+    - 'Hunter: {0}'
+    - 'Traque : {0}'
   - key: keyword/hunt_desc
     values:
-    - "Against a Marked target: {0}. The mark is then removed."
+    - 'Against a Marked target: {0}. The mark is then removed.'
     - "Contre une cible Marqu\xE9e : {0}. La marque est alors retir\xE9e."
   - key: keyword/unique
     values:
-    - "Once per match"
-    - "Unique"
+    - Once per match
+    - Unique
   - key: keyword/unique_desc
     values:
-    - "Can be used once per match."
-    - "Utilisable une seule fois par match."
+    - Can be used once per match.
+    - Utilisable une seule fois par match.
   - key: keyword/no_attack
     values:
-    - "No attack first"
-    - "Sans attaque"
+    - No attack first
+    - Sans attaque
   - key: keyword/no_attack_desc
     values:
-    - "Only usable if the unit has not attacked earlier this round."
-    - "Utilisable seulement si l'unit\xE9 n'a pas attaqu\xE9 plus t\xF4t dans ce tour."
+    - Only usable if the unit has not attacked earlier this round.
+    - "Utilisable seulement si l'unit\xE9 n'a pas attaqu\xE9 plus t\xF4t dans ce
+      tour."
   - key: keyword/curved_shot
     values:
-    - "Curved shot"
-    - "Tir courbe"
+    - Curved shot
+    - Tir courbe
   - key: keyword/curved_shot_desc
     values:
-    - "Bends once around a wall, on any tile that lets sight through. Range counts the real path; flank and cover are read from the bend."
-    - "Contourne un mur avec un seul virage, sur une case qui laisse passer la vue. La port\xE9e se compte sur le trajet r\xE9el ; flanc et couvert se lisent depuis le virage."
+    - Bends once around a wall, on any tile that lets sight through. Range counts
+      the real path; flank and cover are read from the bend.
+    - "Contourne un mur avec un seul virage, sur une case qui laisse passer la vue.
+      La port\xE9e se compte sur le trajet r\xE9el ; flanc et couvert se lisent depuis
+      le virage."
   - key: keyword/quick_draw
     values:
-    - "Quick draw"
+    - Quick draw
     - "D\xE9gainage rapide"
   - key: keyword/quick_draw_desc
     values:
-    - "Wind-up and cooldown -{0}, already applied here."
+    - Wind-up and cooldown -{0}, already applied here.
     - "Pr\xE9paration et refroidissement -{0}, d\xE9j\xE0 d\xE9duits ici."
   - key: bonus/range
     values:
-    - "range +{0}"
+    - range +{0}
     - "port\xE9e +{0}"
   - key: bonus/area
     values:
-    - "area +{0}"
-    - "zone +{0}"
+    - area +{0}
+    - zone +{0}
   - key: bonus/targets
     values:
-    - "targets +{0}"
-    - "cibles +{0}"
+    - targets +{0}
+    - cibles +{0}
   - key: bonus/hits
     values:
-    - "hits +{0}"
-    - "coups +{0}"
+    - hits +{0}
+    - coups +{0}
   - key: bonus/damage_factor
     values:
     - "damage \xD7{0}"
     - "d\xE9g\xE2ts \xD7{0}"
   - key: bonus/damage_percent
     values:
-    - "damage +{0}%"
+    - damage +{0}%
     - "d\xE9g\xE2ts +{0} %"
   - key: bonus/cooldown
     values:
-    - "cooldown -{0}"
-    - "refroidissement -{0}"
+    - cooldown -{0}
+    - refroidissement -{0}
   - key: bonus/preparation
     values:
-    - "wind-up -{0}"
+    - wind-up -{0}
     - "pr\xE9paration -{0}"
   - key: bonus/quick_draw
     values:
-    - "wind-up and cooldown -{0}"
+    - wind-up and cooldown -{0}
     - "pr\xE9paration et refroidissement -{0}"
   - key: bonus/applies
     values:
-    - "applies {0}"
-    - "applique {0}"
+    - applies {0}
+    - applique {0}
   - key: bonus/fallback
     values:
-    - "the action's bonus"
-    - "le bonus de l'action"
+    - the action's bonus
+    - le bonus de l'action
   - key: status/stun_desc
     values:
-    - "The unit does nothing: its planned actions are replaced by a wait."
-    - "L'unit\xE9 ne fait rien : ses actions pr\xE9vues sont remplac\xE9es par une attente."
+    - 'The unit does nothing: its planned actions are replaced by a wait.'
+    - "L'unit\xE9 ne fait rien : ses actions pr\xE9vues sont remplac\xE9es par une
+      attente."
   - key: status/marked_desc
     values:
-    - "Attacks with Hunter get their bonus against this unit, then remove the mark."
-    - "Les attaques avec Traque gagnent leur bonus contre cette unit\xE9, puis retirent la marque."
+    - Attacks with Hunter get their bonus against this unit, then remove the mark.
+    - "Les attaques avec Traque gagnent leur bonus contre cette unit\xE9, puis retirent
+      la marque."
   - key: status/burn1_desc
     values:
-    - "1 Fire damage every tick. A burning tile sets the unit on it on fire."
-    - "1 d\xE9g\xE2t de Feu \xE0 chaque tick. Une case en feu enflamme l'unit\xE9 qui s'y trouve."
+    - 1 Fire damage every tick. A burning tile sets the unit on it on fire.
+    - "1 d\xE9g\xE2t de Feu \xE0 chaque tick. Une case en feu enflamme l'unit\xE9
+      qui s'y trouve."
   - key: status/smoked_desc
     values:
-    - "The tile blocks optic sight. Thermal and radar see through."
-    - "La case bloque la vue optique. Thermique et radar voient au travers."
+    - The tile blocks optic sight. Thermal and radar see through.
+    - La case bloque la vue optique. Thermique et radar voient au travers.
   - key: status/rooted_desc
     values:
-    - "The unit cannot move."
+    - The unit cannot move.
     - "L'unit\xE9 ne peut pas se d\xE9placer."
   - key: status/flying_desc
     values:
-    - "The unit does not fall into the void, whether it moves or is pushed there."
+    - The unit does not fall into the void, whether it moves or is pushed there.
     - "L'unit\xE9 ne tombe pas dans le vide, qu'elle s'y d\xE9place ou y soit projet\xE9e."
   - key: status/doom_desc
     values:
-    - "When the countdown ends, the unit is destroyed."
+    - When the countdown ends, the unit is destroyed.
     - "\xC0 la fin du compte \xE0 rebours, l'unit\xE9 est d\xE9truite."
   - key: item/explosivemine
     values:
-    - "Mine"
-    - "Mine"
+    - Mine
+    - Mine
   - key: item/portal
     values:
-    - "Portal"
-    - "Portail"
+    - Portal
+    - Portail
   - key: item/choctrap
     values:
-    - "Shock trap"
+    - Shock trap
     - "Pi\xE8ge \xE0 choc"
   - key: item/markingtrap
     values:
-    - "Marking trap"
+    - Marking trap
     - "Pi\xE8ge marqueur"
   - key: item/amplificateurdefensif
     values:
-    - "Defensive amplifier"
+    - Defensive amplifier
     - "Amplificateur d\xE9fensif"
   - key: item/cable
     values:
-    - "Cable"
+    - Cable
     - "C\xE2ble"
   - key: stat_block/accuracy
     values:
-    - "Accuracy"
+    - Accuracy
     - "Pr\xE9cision"
   - key: stat_block/evasion
     values:
-    - "Evasion"
-    - "Esquive"
+    - Evasion
+    - Esquive
   - key: stat_block/ranged
     values:
-    - "Ranged"
-    - "Distance"
+    - Ranged
+    - Distance
   - key: stat_block/melee
     values:
-    - "Melee"
+    - Melee
     - "M\xEAl\xE9e"
   - key: stat_block/stealth
     values:
-    - "Stealth"
+    - Stealth
     - "Furtivit\xE9"
   - key: stat_block/hidden
     values:
-    - "Thermal sight needed to read its stats"
-    - "Vue thermique requise pour lire ses stats"
+    - Thermal sight needed to read its stats
+    - Vue thermique requise pour lire ses stats
   - key: stat_block/more
     values:
-    - "Other bonuses"
-    - "Autres bonus"
+    - Other bonuses
+    - Autres bonus
   - key: stat_tip/hp
     values:
-    - "The unit's structure points. At 0, it is destroyed."
+    - The unit's structure points. At 0, it is destroyed.
     - "Points de structure de l'unit\xE9. \xC0 0, elle est d\xE9truite."
   - key: stat_tip/energy
     values:
-    - "Sum of the components' energy costs. It must stay within the reactor's output."
-    - "Somme des co\xFBts en \xE9nergie des composants. Elle doit rester sous la production du r\xE9acteur."
+    - Sum of the components' energy costs. It must stay within the reactor's output.
+    - "Somme des co\xFBts en \xE9nergie des composants. Elle doit rester sous la
+      production du r\xE9acteur."
   - key: stat_tip/vision_optic
     values:
-    - "Sees units in full, up to {0} tiles. Walls and smoke block it."
-    - "Voit les unit\xE9s en entier, jusqu'\xE0 {0} cases. Les murs et la fum\xE9e la bloquent."
+    - Sees units in full, up to {0} tiles. Walls and smoke block it.
+    - "Voit les unit\xE9s en entier, jusqu'\xE0 {0} cases. Les murs et la fum\xE9e
+      la bloquent."
   - key: stat_tip/vision_thermic
     values:
-    - "Sees through walls and smoke, up to {0} tiles. Reads the stats of enemies seen only in thermal."
-    - "Voit \xE0 travers murs et fum\xE9e, jusqu'\xE0 {0} cases. Lit les stats des ennemis vus seulement en thermique."
+    - Sees through walls and smoke, up to {0} tiles. Reads the stats of enemies seen
+      only in thermal.
+    - "Voit \xE0 travers murs et fum\xE9e, jusqu'\xE0 {0} cases. Lit les stats des
+      ennemis vus seulement en thermique."
   - key: stat_tip/vision_radar
     values:
-    - "Sees through walls and smoke, up to {0} tiles, but only shows blips."
-    - "Voit \xE0 travers murs et fum\xE9e, jusqu'\xE0 {0} cases, mais ne montre que des \xE9chos."
+    - Sees through walls and smoke, up to {0} tiles, but only shows blips.
+    - "Voit \xE0 travers murs et fum\xE9e, jusqu'\xE0 {0} cases, mais ne montre que
+      des \xE9chos."
   - key: stat_tip/ranged_accuracy
     values:
-    - "Chance to hit with shots, before the target's evasion. Flank bonus up to +{0}."
-    - "Chance de toucher en tir, avant l'esquive de la cible. Bonus de flanc jusqu'\xE0 +{0}."
+    - Chance to hit with shots, before the target's evasion. Flank bonus up to +{0}.
+    - "Chance de toucher en tir, avant l'esquive de la cible. Bonus de flanc jusqu'\xE0
+      +{0}."
   - key: stat_tip/melee_accuracy
     values:
-    - "Chance to hit in melee, before the target's evasion. Flank bonus up to +{0}."
-    - "Chance de toucher en m\xEAl\xE9e, avant l'esquive de la cible. Bonus de flanc jusqu'\xE0 +{0}."
+    - Chance to hit in melee, before the target's evasion. Flank bonus up to +{0}.
+    - "Chance de toucher en m\xEAl\xE9e, avant l'esquive de la cible. Bonus de flanc
+      jusqu'\xE0 +{0}."
   - key: stat_tip/ranged_evasion
     values:
-    - "Taken off the hit chance of enemy shots. Cover adds {0}."
+    - Taken off the hit chance of enemy shots. Cover adds {0}.
     - "Retir\xE9e \xE0 la chance de toucher des tirs ennemis. Un couvert ajoute {0}."
   - key: stat_tip/melee_evasion
     values:
-    - "Taken off the hit chance of enemy melee attacks."
+    - Taken off the hit chance of enemy melee attacks.
     - "Retir\xE9e \xE0 la chance de toucher des attaques de m\xEAl\xE9e ennemies."
   - key: stat_tip/stealth
     values:
-    - "Taken off the enemy's hit chance, for the vision the enemy sees this unit with."
-    - "Retir\xE9e \xE0 la chance de toucher ennemie, selon la vision avec laquelle l'ennemi voit l'unit\xE9."
+    - Taken off the enemy's hit chance, for the vision the enemy sees this unit with.
+    - "Retir\xE9e \xE0 la chance de toucher ennemie, selon la vision avec laquelle
+      l'ennemi voit l'unit\xE9."
   - key: stat_tip/bonus_damage
     values:
-    - "Offensive bonus, applied to the unit's attacks."
+    - Offensive bonus, applied to the unit's attacks.
     - "Bonus offensif, appliqu\xE9 aux attaques de l'unit\xE9."
   - key: stat_tip/bonus_resistance
     values:
-    - "Reduces the damage the unit takes."
+    - Reduces the damage the unit takes.
     - "R\xE9duit les d\xE9g\xE2ts subis par l'unit\xE9."
   - key: stat_tip/bonus_status
     values:
-    - "Affects the statuses the unit inflicts or suffers."
+    - Affects the statuses the unit inflicts or suffers.
     - "Agit sur les statuts que l'unit\xE9 inflige ou subit."
   - key: stat_short/flank_bonus
     values:
-    - "flank hit"
-    - "toucher de flanc"
+    - flank hit
+    - toucher de flanc
   - key: stat_short/fire_damage_bonus
     values:
-    - "fire damage"
+    - fire damage
     - "d\xE9g\xE2ts de feu"
   - key: stat_short/electric_damage_bonus
     values:
-    - "electric damage"
+    - electric damage
     - "d\xE9g\xE2ts \xE9lectriques"
   - key: stat_short/laser_damage_bonus
     values:
-    - "laser damage"
+    - laser damage
     - "d\xE9g\xE2ts laser"
   - key: stat_short/magnetic_damage_bonus
     values:
-    - "magnetic damage"
+    - magnetic damage
     - "d\xE9g\xE2ts magn\xE9tiques"
   - key: stat_short/plasma_damage_bonus
     values:
-    - "plasma damage"
+    - plasma damage
     - "d\xE9g\xE2ts plasma"
   - key: stat_short/radiation_damage_bonus
     values:
-    - "radiation damage"
+    - radiation damage
     - "d\xE9g\xE2ts de radiation"
   - key: stat_short/slash_damage_bonus
     values:
-    - "slash damage"
+    - slash damage
     - "d\xE9g\xE2ts tranchants"
   - key: stat_short/piercing_damage_bonus
     values:
-    - "piercing damage"
+    - piercing damage
     - "d\xE9g\xE2ts perforants"
   - key: stat_short/bludgeoning_damage_bonus
     values:
-    - "blunt damage"
+    - blunt damage
     - "d\xE9g\xE2ts contondants"
   - key: stat_short/physical_damage_bonus
     values:
-    - "physical damage"
+    - physical damage
     - "d\xE9g\xE2ts physiques"
   - key: stat_short/elemental_damage_bonus
     values:
-    - "elemental damage"
+    - elemental damage
     - "d\xE9g\xE2ts \xE9l\xE9mentaires"
   - key: stat_short/general_damage_bonus
     values:
-    - "damage"
+    - damage
     - "d\xE9g\xE2ts"
   - key: stat_short/flank_damage_bonus
     values:
-    - "flank damage"
+    - flank damage
     - "d\xE9g\xE2ts de flanc"
   - key: stat_short/final_damage_bonus
     values:
-    - "final damage"
+    - final damage
     - "d\xE9g\xE2ts finaux"
   - key: stat_short/fire_resitance
     values:
-    - "fire res."
+    - fire res.
     - "r\xE9s. feu"
   - key: stat_short/electric_resitance
     values:
-    - "electric res."
+    - electric res.
     - "r\xE9s. \xE9lectrique"
   - key: stat_short/laser_resitance
     values:
-    - "laser res."
+    - laser res.
     - "r\xE9s. laser"
   - key: stat_short/magnetic_resitance
     values:
-    - "magnetic res."
+    - magnetic res.
     - "r\xE9s. magn\xE9tique"
   - key: stat_short/plasma_resitance
     values:
-    - "plasma res."
+    - plasma res.
     - "r\xE9s. plasma"
   - key: stat_short/radiation_resitance
     values:
-    - "radiation res."
+    - radiation res.
     - "r\xE9s. radiations"
   - key: stat_short/slash_resitance
     values:
-    - "slash res."
+    - slash res.
     - "r\xE9s. tranchant"
   - key: stat_short/piercing_resitance
     values:
-    - "piercing res."
+    - piercing res.
     - "r\xE9s. perforant"
   - key: stat_short/bludgeoning_resitance
     values:
-    - "blunt res."
+    - blunt res.
     - "r\xE9s. contondant"
   - key: stat_short/general_damage_resistance
     values:
-    - "resistance"
+    - resistance
     - "r\xE9sistance"
   - key: stat_short/physical_damage_resistance
     values:
-    - "physical res."
+    - physical res.
     - "r\xE9s. physique"
   - key: stat_short/elemental_damage_resistance
     values:
-    - "elemental res."
+    - elemental res.
     - "r\xE9s. \xE9l\xE9mentaire"
   - key: stat_short/flank_resistance
     values:
-    - "flank res."
+    - flank res.
     - "r\xE9s. de flanc"
   - key: stat_short/status_chance
     values:
-    - "status chance"
-    - "chance de statut"
+    - status chance
+    - chance de statut
   - key: stat_short/status_damage_bonus
     values:
-    - "status damage"
+    - status damage
     - "d\xE9g\xE2ts de statut"
   - key: stat_short/status_resistance
     values:
-    - "status res."
+    - status res.
     - "r\xE9s. aux statuts"
   - key: stat_short/status_duration_reduction
     values:
-    - "shorter statuses"
+    - shorter statuses
     - "statuts \xE9court\xE9s"
   - key: stat_short/status_applied_duration_raise
     values:
-    - "longer statuses"
+    - longer statuses
     - "statuts prolong\xE9s"
   - key: log_card/hit_roll
     values:
-    - "Hit roll"
-    - "Jet de touche"
+    - Hit roll
+    - Jet de touche
   - key: log_card/status_roll
     values:
-    - "Status roll"
-    - "Jet de statut"
+    - Status roll
+    - Jet de statut
   - key: log_card/damage
     values:
-    - "Damage"
+    - Damage
     - "D\xE9g\xE2ts"
   - key: log_card/destroyed
     values:
-    - "Destroyed"
+    - Destroyed
     - "D\xE9truit"
   - key: log_card/hit
     values:
-    - "Hit"
+    - Hit
     - "Touch\xE9"
   - key: log_card/miss
     values:
-    - "Missed"
+    - Missed
     - "Manqu\xE9"
   - key: log_card/applied
     values:
-    - "Applied"
+    - Applied
     - "Appliqu\xE9"
   - key: log_card/resisted
     values:
-    - "Resisted"
+    - Resisted
     - "R\xE9sist\xE9"
   - key: log_card/guaranteed
     values:
-    - "Certain"
-    - "Garanti"
+    - Certain
+    - Garanti
   - key: log_card/attack
     values:
-    - "Attack"
-    - "Attaque"
+    - Attack
+    - Attaque
   - key: log_card/defense
     values:
-    - "Defense"
+    - Defense
     - "D\xE9fense"
   - key: log_card/status_chance
     values:
-    - "Status chance"
-    - "Chance de statut"
+    - Status chance
+    - Chance de statut
   - key: log_card/accuracy
     values:
-    - "Accuracy"
+    - Accuracy
     - "Pr\xE9cision"
   - key: log_card/flank
     values:
-    - "Flank ({0})"
-    - "Flanc ({0})"
+    - Flank ({0})
+    - Flanc ({0})
   - key: log_card/previous_action
     values:
-    - "Previous action"
+    - Previous action
     - "Action pr\xE9c\xE9dente"
   - key: log_card/demolisher
     values:
-    - "Demolisher"
+    - Demolisher
     - "D\xE9molisseur"
   - key: log_card/stealth
     values:
-    - "Stealth ({0})"
+    - Stealth ({0})
     - "Furtivit\xE9 ({0})"
   - key: log_card/evasion
     values:
-    - "Evasion"
-    - "Esquive"
+    - Evasion
+    - Esquive
   - key: log_card/cover
     values:
-    - "Cover"
-    - "Couvert"
+    - Cover
+    - Couvert
   - key: log_card/cover_named
     values:
-    - "Cover ({0})"
-    - "Couvert ({0})"
+    - Cover ({0})
+    - Couvert ({0})
   - key: log_card/base_chance
     values:
-    - "Base chance"
-    - "Chance de base"
+    - Base chance
+    - Chance de base
   - key: log_card/chance_bonus
     values:
-    - "Chance bonus"
-    - "Bonus de chance"
+    - Chance bonus
+    - Bonus de chance
   - key: log_card/target_resistance
     values:
-    - "Target resistance"
+    - Target resistance
     - "R\xE9sistance de la cible"
   - key: log_card/hit_equation
     values:
-    - "Hit chance {0} - {1} = {2}"
-    - "Chance de toucher {0} - {1} = {2}"
+    - Hit chance {0} - {1} = {2}
+    - Chance de toucher {0} - {1} = {2}
   - key: log_card/chance
     values:
-    - "Chance {0}"
-    - "Chance {0}"
+    - Chance {0}
+    - Chance {0}
   - key: log_card/roll
     values:
-    - "Roll {0}"
-    - "Jet {0}"
+    - Roll {0}
+    - Jet {0}
   - key: log_card/step_action
     values:
-    - "action"
-    - "action"
+    - action
+    - action
   - key: log_card/step_type
     values:
-    - "type"
-    - "type"
+    - type
+    - type
   - key: log_card/step_category
     values:
-    - "category"
+    - category
     - "cat\xE9gorie"
   - key: log_card/step_general
     values:
-    - "general"
+    - general
     - "g\xE9n\xE9ral"
   - key: log_card/step_flank
     values:
@@ -2944,91 +3025,91 @@ MonoBehaviour:
     - "flanc \xB7 {0}"
   - key: log_card/step_final
     values:
-    - "final"
-    - "final"
+    - final
+    - final
   - key: log_card/remaining_ticks
     values:
-    - "{0} / {1} ticks left"
-    - "{0} / {1} ticks restants"
+    - '{0} / {1} ticks left'
+    - '{0} / {1} ticks restants'
   - key: log_card/remaining_rounds
     values:
-    - "{0} / {1} rounds left"
-    - "{0} / {1} tours restants"
+    - '{0} / {1} rounds left'
+    - '{0} / {1} tours restants'
   - key: log_card/needs_roll
     values:
-    - "Applied through a status roll"
+    - Applied through a status roll
     - "Appliqu\xE9 via un jet de statut"
   - key: log_card/by
     values:
-    - "By"
-    - "Par"
+    - By
+    - Par
   - key: log_card/killing_blow
     values:
-    - "Killing blow"
-    - "Coup fatal"
+    - Killing blow
+    - Coup fatal
   - key: log_card/critical
     values:
-    - " (critical)"
-    - " (critique)"
+    - ' (critical)'
+    - ' (critique)'
   - key: log_card/health
     values:
-    - "HP"
-    - "PV"
+    - HP
+    - PV
   - key: log_card/tick
     values:
-    - "Tick {0}"
-    - "Tick {0}"
+    - Tick {0}
+    - Tick {0}
   - key: side/front
     values:
-    - "front"
-    - "face"
+    - front
+    - face
   - key: side/forward_side
     values:
-    - "front side"
+    - front side
     - "c\xF4t\xE9 avant"
   - key: side/back_side
     values:
-    - "rear side"
+    - rear side
     - "c\xF4t\xE9 arri\xE8re"
   - key: side/back
     values:
-    - "back"
-    - "dos"
+    - back
+    - dos
   - key: cover/cover
     values:
-    - "obstacle"
-    - "obstacle"
+    - obstacle
+    - obstacle
   - key: cover/player_structure
     values:
-    - "structure"
-    - "structure"
+    - structure
+    - structure
   - key: cover/enemy_structure
     values:
-    - "structure"
-    - "structure"
+    - structure
+    - structure
   - key: log/status_affected_ticks
     values:
-    - "{0} is affected by <i>{1}</i>, {2} ticks remaining"
+    - '{0} is affected by <i>{1}</i>, {2} ticks remaining'
     - "{0} est affect\xE9 par <i>{1}</i>, {2} ticks restants"
   - key: log/status_affected_rounds
     values:
-    - "{0} is affected by <i>{1}</i>, {2} rounds remaining"
+    - '{0} is affected by <i>{1}</i>, {2} rounds remaining'
     - "{0} est affect\xE9 par <i>{1}</i>, {2} tours restants"
   - key: log/exchange_damage
     values:
-    - "{0} damage"
+    - '{0} damage'
     - "{0} d\xE9g\xE2ts"
   - key: log/exchange_target
     values:
-    - "{0}: {1}"
-    - "{0} : {1}"
+    - '{0}: {1}'
+    - '{0} : {1}'
   - key: log_card/wall
     values:
-    - "Blocked by a wall"
+    - Blocked by a wall
     - "Bloqu\xE9 par un mur"
   - key: log_card/more
     values:
-    - "+{0} more steps"
+    - +{0} more steps
     - "+{0} autres \xE9tapes"
   - key: component_gesture/buy
     values:
@@ -3040,149 +3121,152 @@ MonoBehaviour:
     - "Vendre \xB7 +{0}"
   - key: component_gesture/equip
     values:
-    - "Equip"
+    - Equip
     - "\xC9quiper"
   - key: component_gesture/swap
     values:
-    - "Swap"
+    - Swap
     - "\xC9changer"
   - key: component_gesture/remove
     values:
-    - "Remove"
-    - "Retirer"
+    - Remove
+    - Retirer
   - key: component_gesture/take_back
     values:
-    - "Take back"
-    - "Reprendre"
+    - Take back
+    - Reprendre
   - key: component_gesture/deposit
     values:
     - "Drop in \xB7 +{0}"
     - "D\xE9poser \xB7 +{0}"
   - key: component_gesture/double_click
     values:
-    - "Double-click: {0}"
-    - "Double-clic : {0}"
+    - 'Double-click: {0}'
+    - 'Double-clic : {0}'
   - key: component_refusal/too_expensive
     values:
-    - "Too expensive"
-    - "Trop cher"
+    - Too expensive
+    - Trop cher
   - key: component_refusal/damaged
     values:
-    - "Damaged: repair it first"
+    - 'Damaged: repair it first'
     - "Endommag\xE9 : \xE0 r\xE9parer"
   - key: component_refusal/damaged_sub_component
     values:
-    - "A sub-component is damaged"
+    - A sub-component is damaged
     - "Sous-composant endommag\xE9"
   - key: component_refusal/occupant_locked
     values:
-    - "Installed component is locked"
+    - Installed component is locked
     - "Composant en place verrouill\xE9"
   - key: component_refusal/tournament_locked
     values:
-    - "Unit registered in the tournament"
+    - Unit registered in the tournament
     - "Unit\xE9 inscrite au tournoi"
   - key: component_refusal/no_free_slot
     values:
-    - "No free slot"
-    - "Aucun emplacement libre"
+    - No free slot
+    - Aucun emplacement libre
   - key: component_refusal/recycling
     values:
-    - "Recycling in progress"
-    - "Recyclage en cours"
+    - Recycling in progress
+    - Recyclage en cours
   - key: component_refusal/wrong_type
     values:
-    - "Incompatible type"
-    - "Type incompatible"
+    - Incompatible type
+    - Type incompatible
   - key: component_gesture/drop_in
     values:
-    - "Drop in"
+    - Drop in
     - "D\xE9poser"
   - key: component_refusal/slot_occupied
     values:
-    - "Slot occupied"
+    - Slot occupied
     - "Emplacement occup\xE9"
   - key: component_refusal/used_today
     values:
-    - "Already used today"
+    - Already used today
     - "D\xE9j\xE0 utilis\xE9 aujourd'hui"
   - key: briefing/unit_standby
     values:
-    - "STANDBY"
-    - "VEILLE"
+    - STANDBY
+    - VEILLE
   - key: briefing/unit_transfer
     values:
-    - "TRANSFER {0} %"
-    - "TRANSFERT {0} %"
+    - TRANSFER {0} %
+    - TRANSFERT {0} %
   - key: briefing/unit_online
     values:
-    - "ONLINE"
-    - "EN LIGNE"
+    - ONLINE
+    - EN LIGNE
   - key: briefing/squad_ready
     values:
-    - "SQUAD OPERATIONAL"
+    - SQUAD OPERATIONAL
     - "ESCOUADE OP\xC9RATIONNELLE"
   - key: stat_block/resistances
     values:
-    - "Resistances"
+    - Resistances
     - "R\xE9sistances"
   - key: stat_tip/resistances
     values:
-    - "Share of the damage negated, per damage type. The type's resistance, its category's (physical or elemental) and the general resistance multiply."
-    - "Part des d\xE9g\xE2ts annul\xE9e, par type de d\xE9g\xE2ts. La r\xE9sistance du type, celle de sa cat\xE9gorie (physique ou \xE9l\xE9mentaire) et la r\xE9sistance g\xE9n\xE9rale se multiplient."
+    - Share of the damage negated, per damage type. The type's resistance, its category's
+      (physical or elemental) and the general resistance multiply.
+    - "Part des d\xE9g\xE2ts annul\xE9e, par type de d\xE9g\xE2ts. La r\xE9sistance
+      du type, celle de sa cat\xE9gorie (physique ou \xE9l\xE9mentaire) et la r\xE9sistance
+      g\xE9n\xE9rale se multiplient."
   - key: stat_short/visual_perception
     values:
-    - "optic perception"
-    - "perception optique"
+    - optic perception
+    - perception optique
   - key: stat_short/radar_perception
     values:
-    - "radar perception"
-    - "perception radar"
+    - radar perception
+    - perception radar
   - key: stat_short/thermic_perception
     values:
-    - "thermal perception"
-    - "perception thermique"
+    - thermal perception
+    - perception thermique
   - key: stat_tip/conditional
     values:
-    - "Active {0}."
-    - "Actif {0}."
+    - Active {0}.
+    - Actif {0}.
   - key: condition/did_not_move_this_turn
     values:
-    - "if it has not moved this turn"
+    - if it has not moved this turn
     - "s'il n'a pas boug\xE9 ce tour"
   - key: condition/did_not_attack_this_turn
     values:
-    - "if it has not attacked this turn"
+    - if it has not attacked this turn
     - "s'il n'a pas attaqu\xE9 ce tour"
   - key: condition/is_target_marked
     values:
-    - "against a marked target"
+    - against a marked target
     - "contre une cible marqu\xE9e"
   - key: condition/no_ennemy8_cell_distance
     values:
-    - "with no enemy within 8 tiles"
+    - with no enemy within 8 tiles
     - "sans ennemi \xE0 8 cases ou moins"
   - key: condition/ennemy2_cell3_distance
     values:
-    - "with an enemy 2 or 3 tiles away"
+    - with an enemy 2 or 3 tiles away
     - "avec un ennemi \xE0 2 ou 3 cases"
   - key: condition/traveled6_tiles
     values:
-    - "after moving 6 tiles this turn"
+    - after moving 6 tiles this turn
     - "apr\xE8s 6 cases parcourues ce tour"
   - key: condition/is_in_preaparation
     values:
-    - "while preparing an action"
+    - while preparing an action
     - "pendant la pr\xE9paration d'une action"
   - key: condition/is_in_cooldown
     values:
-    - "while an action cools down"
-    - "pendant le refroidissement d'une action"
+    - while an action cools down
+    - pendant le refroidissement d'une action
   - key: condition/cells12_from_start
     values:
-    - "after moving 12 tiles this Match"
+    - after moving 12 tiles this Match
     - "apr\xE8s 12 cases parcourues dans le Match"
   - key: condition/did_not_use_this_game
     values:
-    - "if the action has not been used this Match"
-    - "si l'action n'a pas encore servi ce Match"
+    - if the action has not been used this Match
+    - si l'action n'a pas encore servi ce Match

@@ -31,6 +31,13 @@ public enum LocalizationKey
     option_display_fullscreen,
     option_display_windowed,
     option_window_size,
+    option_quality,
+    option_quality_very_low,
+    option_quality_low,
+    option_quality_medium,
+    option_quality_high,
+    option_quality_very_high,
+    option_quality_ultra,
     language_english,
     language_french,
     hub_hangar,
@@ -830,6 +837,13 @@ public static class LocalizationKeyExtensions
             case LocalizationKey.option_display_fullscreen: return "option/display_fullscreen";
             case LocalizationKey.option_display_windowed: return "option/display_windowed";
             case LocalizationKey.option_window_size: return "option/window_size";
+            case LocalizationKey.option_quality: return "option/quality";
+            case LocalizationKey.option_quality_very_low: return "option/quality_very_low";
+            case LocalizationKey.option_quality_low: return "option/quality_low";
+            case LocalizationKey.option_quality_medium: return "option/quality_medium";
+            case LocalizationKey.option_quality_high: return "option/quality_high";
+            case LocalizationKey.option_quality_very_high: return "option/quality_very_high";
+            case LocalizationKey.option_quality_ultra: return "option/quality_ultra";
             case LocalizationKey.language_english: return "language/english";
             case LocalizationKey.language_french: return "language/french";
             case LocalizationKey.hub_hangar: return "hub/hangar";

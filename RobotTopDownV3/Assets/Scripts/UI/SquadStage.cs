@@ -166,8 +166,7 @@ public class SquadStage : MonoBehaviour
 		m_readyTime = -1f;
 		SetProgress(0f);
 
-		m_ambientProbe = new SphericalHarmonicsL2();
-		m_ambientProbe.AddAmbientLight(QualitySettings.activeColorSpace == ColorSpace.Linear ? m_ambientColor.linear : m_ambientColor);
+		m_ambientProbe = AmbientOverride.CreateFlatProbe(m_ambientColor);
 		RefreshSceneLights();
 		SceneManager.sceneLoaded += OnSceneLoaded;
 

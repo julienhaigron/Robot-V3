@@ -36,6 +36,7 @@ public class OptionPopup : AUIPopup
 	[Header("Graphics")]
 	[SerializeField] private TMP_Dropdown m_displayModeDropdown;
 	[SerializeField] private TMP_Dropdown m_windowSizeDropdown;
+	[SerializeField] private TMP_Dropdown m_qualityDropdown;
 
 	[Header("Controls")]
 	[SerializeField] private RebindEntry[] m_rebindEntries;
@@ -64,6 +65,7 @@ public class OptionPopup : AUIPopup
 		LocalizationManager.onLanguageChanged += RefreshLanguages;
 		m_displayModeDropdown.onValueChanged.AddListener(OnDisplayModeChanged);
 		m_windowSizeDropdown.onValueChanged.AddListener(OnWindowSizeChanged);
+		m_qualityDropdown.onValueChanged.AddListener(OnQualityChanged);
 		LocalizationManager.onLanguageChanged += RefreshGraphics;
 
 		if (m_resetControlsBtn != null)
@@ -86,6 +88,7 @@ public class OptionPopup : AUIPopup
 		LocalizationManager.onLanguageChanged -= RefreshGraphics;
 		m_displayModeDropdown.onValueChanged.RemoveListener(OnDisplayModeChanged);
 		m_windowSizeDropdown.onValueChanged.RemoveListener(OnWindowSizeChanged);
+		m_qualityDropdown.onValueChanged.RemoveListener(OnQualityChanged);
 
 		if (m_resetControlsBtn != null)
 			m_resetControlsBtn.onClick -= OnClickResetControls;
@@ -213,6 +216,26 @@ public class OptionPopup : AUIPopup
 		m_windowSizeDropdown.RefreshShownValue();
 
 		RefreshWindowSizeInteractability();
+
+		m_qualityDropdown.ClearOptions();
+		m_qualityDropdown.AddOptions(new List<string>(QualitySettings.names).ConvertAll(GetQualityLabel));
+		m_qualityDropdown.SetValueWithoutNotify(QualitySettings.GetQualityLevel());
+		m_qualityDropdown.RefreshShownValue();
+	}
+
+	private string GetQualityLabel ( string _levelName )
+	{
+		return LocalizationManager.Instance.Get("option/quality_" + _levelName.ToLowerInvariant().Replace(' ', '_'), _levelName);
+	}
+
+	private void OnQualityChanged ( int _index )
+	{
+		if (_index < 0 || _index >= QualitySettings.count)
+			return;
+
+		QualitySettings.SetQualityLevel(_index, true);
+		GameDatas.current.app.qualityLevel = _index;
+		ApplicationManager.Instance.SaveApplication();
 	}
 
 	private void BuildWindowSizes ()

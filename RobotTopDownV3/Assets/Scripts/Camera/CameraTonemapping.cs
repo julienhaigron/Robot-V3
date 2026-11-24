@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class HubTonemapping : MonoBehaviour
+public class CameraTonemapping : MonoBehaviour
 {
 	private static readonly int s_exposureId = Shader.PropertyToID("_Exposure");
 

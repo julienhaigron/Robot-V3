@@ -9,6 +9,7 @@ using UnityEngine.SceneManagement;
 public class GameManager : SingletonPersistant<GameManager>
 {
 	[SerializeField] private Canvas m_fogCanvas;
+	[SerializeField] private LevelReflectionProbe m_levelReflectionProbe;
 
 	[SerializeField] private EntityAnchor[] m_playersEntityAnchor;
 	public EntityAnchor[] PlayersEntityAnchor => m_playersEntityAnchor;
@@ -217,6 +218,8 @@ public class GameManager : SingletonPersistant<GameManager>
 	{
 		TurnManager.Instance.Init();
 		GridManager.Instance.LoadGrid();
+		if (GridManager.Instance.TryGetTileBounds(out Bounds levelArea))
+			m_levelReflectionProbe.CaptureArea(levelArea, GridManager.Instance.gameObject.scene);
 		m_playersPoints.Clear();
 		m_items.Clear();
 		m_respawningUnits.Clear();

@@ -207,25 +207,7 @@ public class CameraManager : Singleton<CameraManager>
     public bool TryGetGridOverviewPosition ( Vector3 _forward, float _margin, out Vector3 _position )
     {
         _position = default;
-        Tile[] tiles = GridManager.Instance != null ? GridManager.Instance.Tiles : null;
-        if (tiles == null || tiles.Length == 0 || _forward.sqrMagnitude < 1e-8f)
-            return false;
-
-        bool hasBounds = false;
-        Bounds bounds = default;
-        foreach (Tile tile in tiles)
-        {
-            if (tile == null)
-                continue;
-
-            if (hasBounds)
-                bounds.Encapsulate(tile.transform.position);
-            else
-                bounds = new Bounds(tile.transform.position, Vector3.zero);
-            hasBounds = true;
-        }
-
-        if (!hasBounds)
+        if (GridManager.Instance == null || _forward.sqrMagnitude < 1e-8f || !GridManager.Instance.TryGetTileBounds(out Bounds bounds))
             return false;
 
         float halfVertical = m_defaultFieldOfView * .5f * Mathf.Deg2Rad;

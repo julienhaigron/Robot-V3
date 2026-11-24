@@ -88,7 +88,11 @@ MonoBehaviour:
   m_cameraMoveDuration: 1.75
   m_cameraMaxMoveDuration: 4.5
   m_cameraSpeed: 1.2
-  m_unitSpacing: 2
+  m_moonMeshName: Moon
+  m_entranceMeshNamePrefix: Entry-Ring
+  m_entranceOuterOffset: 0.45
+  m_hangarSceneName: HangarScene
+  m_unitSpacing: 2.2
 --- !u!1 &3605053867823303492
 GameObject:
   m_ObjectHideFlags: 0

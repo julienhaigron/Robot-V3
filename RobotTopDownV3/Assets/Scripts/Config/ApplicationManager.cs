@@ -120,9 +120,19 @@ public partial class ApplicationManager : Singleton<ApplicationManager>
         m_gameDatas.Load();
 #endif
 
+		ApplySavedQualityLevel();
+
 		m_loadingElement.SetProgress(0.5f);
 		yield return null;
 		m_loadingElement.EndLoading(true);
+	}
+
+	private void ApplySavedQualityLevel ()
+	{
+		int level = m_gameDatas.app.qualityLevel;
+
+		if (level >= 0 && level < QualitySettings.count && level != QualitySettings.GetQualityLevel())
+			QualitySettings.SetQualityLevel(level, true);
 	}
 
 	public void SaveApplication ()

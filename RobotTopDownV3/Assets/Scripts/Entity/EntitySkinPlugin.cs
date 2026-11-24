@@ -67,6 +67,20 @@ public class EntitySkinPlugin : EntityPlugin
 		TurnManager.onStartInputPhase += OnStartInputPhase;
 		if (m_humanoidEntityIK != null)
 			m_humanoidEntityIK.GripAmount = m_animationProfile != null ? m_animationProfile.gripAmount : 1f;
+
+		MoveSkinToEntityLayer();
+	}
+
+	private void MoveSkinToEntityLayer ()
+	{
+		int entityLayer = LayerMask.NameToLayer("Entity");
+		List<Renderer> renderers = new();
+		CollectSkinRenderers(renderers);
+		foreach (Renderer renderer in renderers)
+		{
+			if (!renderer.TryGetComponent(out Collider _))
+				renderer.gameObject.layer = entityLayer;
+		}
 	}
 
 	private void Update ()

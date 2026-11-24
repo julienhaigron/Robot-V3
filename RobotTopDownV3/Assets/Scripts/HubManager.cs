@@ -493,7 +493,7 @@ public class HubManager : Singleton<HubManager>
 
 		foreach (GameObject root in gameObject.scene.GetRootGameObjects())
 		{
-			if (!root.activeSelf || transform.IsChildOf(root.transform) || root.GetComponentInChildren<HubTonemapping>(true) != null)
+			if (!root.activeSelf || transform.IsChildOf(root.transform) || root.GetComponentInChildren<CameraTonemapping>(true) != null)
 				continue;
 
 			root.SetActive(false);

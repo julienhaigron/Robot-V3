@@ -15,6 +15,29 @@ public class GridManager : Singleton<GridManager>
 	[SerializeField, HideInInspector] private Tile[] m_tiles;
 	public Tile[] Tiles => m_tiles;
 
+	public bool TryGetTileBounds ( out Bounds _bounds )
+	{
+		_bounds = default;
+		bool hasBounds = false;
+
+		if (m_tiles == null)
+			return false;
+
+		foreach (Tile tile in m_tiles)
+		{
+			if (tile == null)
+				continue;
+
+			if (hasBounds)
+				_bounds.Encapsulate(tile.transform.position);
+			else
+				_bounds = new Bounds(tile.transform.position, Vector3.zero);
+			hasBounds = true;
+		}
+
+		return hasBounds;
+	}
+
 	[SerializeField] private int m_height;
 	public int Height => m_height;
 	[SerializeField] private int m_width;
