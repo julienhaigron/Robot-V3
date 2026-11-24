@@ -88,6 +88,7 @@ public class GameAssets : ScriptableObject
         public PoolData arrowPoolData;
         public PoolData rotationHandlePoolData;
         public PoolData shieldMarkerPoolData;
+        public PoolData targetLaserPoolData;
         public PoolData deathVFXPoolData;
         public PoolData doomDeathVFXPoolData;
     }

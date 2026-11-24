@@ -891,6 +891,7 @@ public class PlayerController : Singleton<PlayerController>
 		RangeOverlay.ClearAll();
 		ShieldMarker.ClearAim();
 		FacingMarker.ClearAim();
+		TargetLaser.HideAll();
 	}
 
 	public void RefreshAimedTargets ( AEntityAction _hoveredAction )
@@ -977,6 +978,7 @@ public class PlayerController : Singleton<PlayerController>
 
 	public void RefreshTargetMarkers ()
 	{
+		TargetLaser.HideAll();
 		if (GameManager.Instance == null || GameManager.Instance.PlayersEntityAnchor == null)
 			return;
 
@@ -987,13 +989,21 @@ public class PlayerController : Singleton<PlayerController>
 		{
 			focus = m_turnManager.GetDesignationFocusAction();
 			if (focus != null)
+			{
 				candidates = m_turnManager.GetDesignableEnemies(focus);
+				ShowLasersOf(focus);
+				if (m_designationHoveredEnemy != null && !focus.IsDesignated(m_designationHoveredEnemy.ID))
+					TargetLaser.Show(focus, m_designationHoveredEnemy, true);
+			}
 			else if (m_turnManager.RecordedActions.TryGetValue(m_selectedEntity.ID, out Queue<TurnManager.RecordedAction> queue) && queue != null)
 			{
 				foreach (TurnManager.RecordedAction recordedAction in queue)
 				{
-					if (recordedAction.action.HasDesignatedTargets)
-						designated.UnionWith(recordedAction.action.designatedEntityIDs);
+					if (!recordedAction.action.HasDesignatedTargets)
+						continue;
+
+					designated.UnionWith(recordedAction.action.designatedEntityIDs);
+					ShowLasersOf(recordedAction.action);
 				}
 			}
 		}
@@ -1019,6 +1029,12 @@ public class PlayerController : Singleton<PlayerController>
 				entity.UI.SetTargetMarker(state);
 			}
 		}
+	}
+
+	private static void ShowLasersOf ( AEntityAction _action )
+	{
+		foreach (int entityID in _action.designatedEntityIDs)
+			TargetLaser.Show(_action, GameManager.Instance.GetEntityFromID(entityID), false);
 	}
 
 	public void SetRangePreviewOutlines ( IEnumerable<Tile> _tiles, EntityActionData.MainActionType _mainActionType )
