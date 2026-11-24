@@ -815,6 +815,11 @@ public enum LocalizationKey
     condition_is_in_cooldown,
     condition_cells12_from_start,
     condition_did_not_use_this_game,
+    hub_skip_tutorials,
+    fow_last_seen_now,
+    fow_last_seen_round,
+    fow_last_seen_rounds,
+    ingame_vision_layers,
 }
 
 public static class LocalizationKeyExtensions
@@ -1637,6 +1642,11 @@ public static class LocalizationKeyExtensions
             case LocalizationKey.condition_is_in_cooldown: return "condition/is_in_cooldown";
             case LocalizationKey.condition_cells12_from_start: return "condition/cells12_from_start";
             case LocalizationKey.condition_did_not_use_this_game: return "condition/did_not_use_this_game";
+            case LocalizationKey.hub_skip_tutorials: return "hub/skip_tutorials";
+            case LocalizationKey.fow_last_seen_now: return "fow/last_seen_now";
+            case LocalizationKey.fow_last_seen_round: return "fow/last_seen_round";
+            case LocalizationKey.fow_last_seen_rounds: return "fow/last_seen_rounds";
+            case LocalizationKey.ingame_vision_layers: return "ingame/vision_layers";
             default: return string.Empty;
         }
     }

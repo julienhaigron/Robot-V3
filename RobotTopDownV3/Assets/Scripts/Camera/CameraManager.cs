@@ -77,7 +77,6 @@ public class CameraManager : Singleton<CameraManager>
             return;
 
         m_cameraParent.transform.position = newPosition;
-        FogOfWarRenderer.Instance.MarkDirty();
     }
 
     private bool IsPlayPhase ()

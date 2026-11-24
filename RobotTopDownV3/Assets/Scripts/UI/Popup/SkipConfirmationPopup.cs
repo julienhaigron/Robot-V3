@@ -12,6 +12,8 @@ public class SkipConfirmationPopup : AUIPopup
 	[SerializeField] private BaseButton m_confirmBtn;
 	[SerializeField] private TextMeshProUGUI m_descriptionTMP;
 
+	public static bool SkipsTutorials => GameDatas.current.currentPlayerSave.cycleCount < 1;
+
 	private void Awake ()
 	{
 		m_cancelBtn.onClick += OnClickClose;
@@ -28,7 +30,7 @@ public class SkipConfirmationPopup : AUIPopup
 	{
 		int daysAmountSkip = 0; //base 1
 		string description = "";
-		if (GameDatas.current.currentPlayerSave.cycleCount < 1)
+		if (SkipsTutorials)
 		{
 			//skip FTUE and give all FTUE missions rewards
 			daysAmountSkip = 7 - (GameDatas.current.currentPlayerSave.dayCount);
@@ -54,7 +56,7 @@ public class SkipConfirmationPopup : AUIPopup
 		int daysAmountSkip = 0; //base 1
 		bool doGiveReward = false;
 		int currentDay = GameDatas.current.currentPlayerSave.dayCount;
-		if (GameDatas.current.currentPlayerSave.cycleCount < 1)
+		if (SkipsTutorials)
 		{
 			//skip FTUE and give all FTUE missions rewards
 			daysAmountSkip = 7 - (GameDatas.current.currentPlayerSave.dayCount);

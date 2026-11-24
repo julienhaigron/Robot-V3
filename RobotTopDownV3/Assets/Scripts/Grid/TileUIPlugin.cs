@@ -50,11 +50,26 @@ public class TileUIPlugin : MonoBehaviour
 
 	#region FOW
 
-	public void SetActiveFOW (bool _isActive = false, bool _isInstant = false)
+	private static readonly int s_fowMaskID = Shader.PropertyToID("_Color");
+	private static MaterialPropertyBlock s_fowBlock;
+	private Color? m_fowMask;
+
+	public void SetFOW ( bool _isFogged, bool _hasThermal, bool _hasRadar )
 	{
-		/*GridManager.Instance.fogTexture.SetPixel(m_linkedTile.coordinates.X, m_linkedTile.coordinates.Z, _isActive ? Color.black : Color.white);
-		GridManager.Instance.fogTexture.Apply();*/
-		m_fow.SetActive(_isActive);
+		Color mask = _isFogged ? new Color(1f, _hasThermal ? 1f : 0f, _hasRadar ? 1f : 0f) : Color.black;
+		if (m_fowMask == mask)
+			return;
+
+		m_fowMask = mask;
+		m_fow.SetActive(_isFogged);
+		if (_isFogged)
+		{
+			s_fowBlock ??= new MaterialPropertyBlock();
+			s_fowBlock.SetColor(s_fowMaskID, mask);
+			m_fow.GetComponent<Renderer>().SetPropertyBlock(s_fowBlock);
+		}
+
+		FogOfWarRenderer.Instance.MarkDirty();
 	}
 
 	#endregion

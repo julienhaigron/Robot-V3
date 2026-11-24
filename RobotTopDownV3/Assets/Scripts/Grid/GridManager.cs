@@ -126,7 +126,7 @@ public class GridManager : Singleton<GridManager>
 			}
 			else
 			{
-				m_tiles[i].SetActiveFOW(NeuronalMembraneEquipmentData.VisionTypes.Optic, true, true);
+				m_tiles[i].SetActiveFOW(NeuronalMembraneEquipmentData.VisionTypes.Optic, true);
 
 				if (groundType == TileGroundType.StaticPlayerSpawn || groundType == TileGroundType.DynamicPlayerSpawn)
 					GameManager.Instance.PlayersEntityAnchor[0].AddSpawn(m_tiles[i].coordinates, true, groundType == TileGroundType.StaticPlayerSpawn);
@@ -1331,7 +1331,6 @@ public class GridManager : Singleton<GridManager>
 		}
 
 		RefreshLastKnownEnemyPositions();
-		FogOfWarRenderer.Instance.MarkDirty();
 	}
 
 	public void ClearEntityFromAllTiles ( Entity _entity )
@@ -1344,6 +1343,7 @@ public class GridManager : Singleton<GridManager>
 	{
 		PlayerVisionRangeInfo visionInfo = m_entitiesVisions[_entity.OwnerID];
 		ForgetLastKnownPositionOf(_entity);
+		LastSeenMarkers.Instance.Forget(_entity);
 
 		if (!visionInfo.entitiesVisionRange.TryGetValue(_entity, out HashSet<Tile> tilesInVision))
 			return;
@@ -1354,7 +1354,6 @@ public class GridManager : Singleton<GridManager>
 		}
 
 		visionInfo.entitiesVisionRange.Remove(_entity);
-		FogOfWarRenderer.Instance.MarkDirty();
 	}
 
 	public void OnEntityMovement ( Entity _entity )
@@ -1378,6 +1377,7 @@ public class GridManager : Singleton<GridManager>
 				RemoveVisionTile(tile, _entity.Data.NeuronalMembraneData.visionType);
 			foreach (Tile tile in addedTiles)
 				AddVisionTile(tile, _entity.Data.NeuronalMembraneData.visionType);
+			LastSeenMarkers.Instance.ForgetMarkersOn(_entity.Displacement.Coordinates.GetTile());
 		}
 		else
 		{
@@ -1388,7 +1388,6 @@ public class GridManager : Singleton<GridManager>
 		visionInfo.entitiesVisionRange[_entity] = newVision;
 		m_entitiesVisions[_entity.OwnerID] = visionInfo;
 		RefreshLastKnownEnemyPositions();
-		FogOfWarRenderer.Instance.MarkDirty();
 	}
 
 	private void RegisterGroundTypeWalkedOnByPlayer ( Entity _entity )
@@ -1441,7 +1440,6 @@ public class GridManager : Singleton<GridManager>
 		}
 
 		RefreshLastKnownEnemyPositions();
-		FogOfWarRenderer.Instance.MarkDirty();
 	}
 
 	public void RefreshLastKnownEnemyPositions ()
@@ -1539,12 +1537,12 @@ public class GridManager : Singleton<GridManager>
 
 	private void AddVisionTile ( Tile _tile, NeuronalMembraneEquipmentData.VisionTypes _visionType )
 	{
-		_tile.SetActiveFOW(_visionType, false, false);
+		_tile.SetActiveFOW(_visionType);
 	}
 
 	private void RemoveVisionTile ( Tile _tile, NeuronalMembraneEquipmentData.VisionTypes _visionType )
 	{
-		_tile.SetActiveFOW(_visionType, true, false);
+		_tile.SetActiveFOW(_visionType, true);
 	}
 
 	#endregion

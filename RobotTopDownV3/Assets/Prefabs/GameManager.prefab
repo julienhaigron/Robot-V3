@@ -68,10 +68,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fogCamera: {fileID: 4649002426972070482}
-  fogApplyMaterial: {fileID: 2100000, guid: 96d0a97902395404db97b1afd180819f, type: 2}
   mainCamera: {fileID: 4593530489708470118}
+  m_maskBlitMaterial: {fileID: 2100000, guid: 56a51f2ff6e216840bba757b286ade3e, type: 2}
   m_topDownHeight: 50
   m_gridPadding: 2
+  m_maskResolution: 1024
+  m_edgeBlur: 0.25
+  m_transitionDuration: 0.3
+  m_visionLayersFadeDuration: 0.25
 --- !u!1 &1407988919663270164
 GameObject:
   m_ObjectHideFlags: 0
@@ -339,6 +343,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2843127606357654879}
   - component: {fileID: 6483729387159089662}
+  - component: {fileID: 8861172669130741524}
   m_Layer: 0
   m_Name: OverlayCamera
   m_TagString: Untagged
@@ -401,18 +406,31 @@ Camera:
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 1024
+    m_Bits: 33792
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
   m_TargetEye: 3
-  m_HDR: 1
+  m_HDR: 0
   m_AllowMSAA: 1
   m_AllowDynamicResolution: 0
   m_ForceIntoRT: 0
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
+--- !u!114 &8861172669130741524
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3439695511957025094}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a34df9c87dc34584eb1681d1ca7372bb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: RTD::OverlayCameraSync
+  m_source: {fileID: 4593530489708470118}
 --- !u!1 &3743812647366156567
 GameObject:
   m_ObjectHideFlags: 0
@@ -792,7 +810,7 @@ Camera:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6305636635451735966}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_ClearFlags: 2
   m_BackGroundColor: {r: 0, g: 0, b: 0, a: 1}
@@ -1188,6 +1206,7 @@ Transform:
   - {fileID: 3410856023377398780}
   - {fileID: 6254338007803057089}
   - {fileID: 7203503394763518986}
+  - {fileID: 8579986352902468633}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &4882285926193315697
@@ -1420,7 +1439,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_turnManager: {fileID: 2601377726672517245}
-  m_fogRenderer: {fileID: 5089135159799770867}
   m_inputActions: {fileID: -944628639613478452, guid: 2da90cdffd3702b458769b7a7a8aaf67, type: 3}
   m_edgeScrollScreenRatio: 0.03
   m_centerOnEntityDuration: 0.35
@@ -1605,6 +1623,51 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_staticSpawnCoordinates: []
   m_dynamicSpawnCoordinates: []
+--- !u!1 &8962525828163272436
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8579986352902468633}
+  - component: {fileID: 6929377739914662520}
+  m_Layer: 0
+  m_Name: LastSeenMarkers
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8579986352902468633
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8962525828163272436}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1001864918258139889}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6929377739914662520
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8962525828163272436}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 576a3c03f423a8a4296483e418f30cc3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: RTD::LastSeenMarkers
+  m_markerPrefab: {fileID: 245058474666572061, guid: ac778b8d3464add46a2eecac9e786f68, type: 3}
 --- !u!1 &9106128514747867737
 GameObject:
   m_ObjectHideFlags: 0

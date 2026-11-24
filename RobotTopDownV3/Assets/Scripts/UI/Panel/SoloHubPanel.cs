@@ -8,6 +8,7 @@ public class SoloHubPanel : AUIPanel
 {
 	[SerializeField] private BaseButton m_missionBtn;
 	[SerializeField] private BaseButton m_skipDayBtn;
+	[SerializeField] private TextMeshProUGUI m_skipDayBtnTMP;
 	[SerializeField] private TextMeshProUGUI m_missionBtnTMP;
 	[SerializeField] private BaseButton m_classicMatchBtn;
 	[SerializeField] private TextMeshProUGUI m_classicMatchBtnTMP;
@@ -24,12 +25,12 @@ public class SoloHubPanel : AUIPanel
 
 	private void OnEnable ()
 	{
-		LocalizationManager.onLanguageChanged += RefreshMissionBtnLabel;
+		LocalizationManager.onLanguageChanged += RefreshButtonLabels;
 	}
 
 	private void OnDisable ()
 	{
-		LocalizationManager.onLanguageChanged -= RefreshMissionBtnLabel;
+		LocalizationManager.onLanguageChanged -= RefreshButtonLabels;
 	}
 
 	protected override void OnShowStarted ()
@@ -42,7 +43,7 @@ public class SoloHubPanel : AUIPanel
 	{
 		bool isSquadValid = GameManager.Instance.SquadValidityPredicate();
 
-		RefreshMissionBtnLabel();
+		RefreshButtonLabels();
 
 		m_missionBtn.SetInteractability(isSquadValid);
 
@@ -53,11 +54,12 @@ public class SoloHubPanel : AUIPanel
 		}
 	}
 
-	private void RefreshMissionBtnLabel ()
+	private void RefreshButtonLabels ()
 	{
 		bool isTournament = GameDatas.current.currentPlayerSave.IsTournamentAvailable;
 
 		m_missionBtnTMP.text = LocalizationManager.Instance.Get(isTournament ? LocalizationKey.hub_tournament : LocalizationKey.hub_mission);
+		m_skipDayBtnTMP.text = LocalizationManager.Instance.Get(SkipConfirmationPopup.SkipsTutorials ? LocalizationKey.hub_skip_tutorials : LocalizationKey.hub_skip_day);
 		if (m_classicMatchBtnTMP != null)
 			m_classicMatchBtnTMP.text = LocalizationManager.Instance.Get(LocalizationKey.hub_mission);
 	}

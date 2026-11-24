@@ -1098,6 +1098,7 @@ MonoBehaviour:
   m_necessaryPriceTMP: {fileID: 6938564220898314783}
   m_fullPriceTMP: {fileID: 7128904343484987370}
   m_compactRoot: {fileID: 7471885873312874660}
+  m_compactOutline: {fileID: 8914731634398941551}
   m_compactIcon: {fileID: 5300428440724285821}
   m_compactNameTMP: {fileID: 218765694718417322}
   m_compactDamagedGO: {fileID: 1297015172158741478}

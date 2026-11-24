@@ -3334,3 +3334,23 @@ MonoBehaviour:
     values:
     - if the action has not been used this Match
     - si l'action n'a pas encore servi ce Match
+  - key: hub/skip_tutorials
+    values:
+    - SKIP TUTORIALS
+    - PASSER LES TUTORIELS
+  - key: fow/last_seen_now
+    values:
+    - SEEN THIS ROUND
+    - VU CE TOUR
+  - key: fow/last_seen_round
+    values:
+    - SEEN 1 ROUND AGO
+    - VU IL Y A 1 TOUR
+  - key: fow/last_seen_rounds
+    values:
+    - SEEN {0} ROUNDS AGO
+    - VU IL Y A {0} TOURS
+  - key: ingame/vision_layers
+    values:
+    - VISION LAYERS
+    - COUCHES DE VISION

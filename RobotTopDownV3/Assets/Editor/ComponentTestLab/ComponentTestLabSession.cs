@@ -633,11 +633,9 @@ public static class ComponentTestLabSession
 			return;
 
 		foreach (Tile tile in GridManager.Instance.Tiles)
-			tile.SetActiveFOW(NeuronalMembraneEquipmentData.VisionTypes.Optic, !_isRevealed, true);
+			tile.SetActiveFOW(NeuronalMembraneEquipmentData.VisionTypes.Optic, !_isRevealed);
 
 		IsRevealed = _isRevealed;
-		if (FogOfWarRenderer.Instance != null)
-			FogOfWarRenderer.Instance.MarkDirty();
 	}
 
 	public static void ApplyStatus ( Entity _entity, EntityStatusEnumID _status, int _duration )

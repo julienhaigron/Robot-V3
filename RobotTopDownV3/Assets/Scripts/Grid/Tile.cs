@@ -457,7 +457,7 @@ public class Tile : MonoBehaviour
 		}
 	}
 
-	public void SetActiveFOW ( NeuronalMembraneEquipmentData.VisionTypes _visionType, bool _isRemoving = false, bool _isInstant = false )
+	public void SetActiveFOW ( NeuronalMembraneEquipmentData.VisionTypes _visionType, bool _isRemoving = false )
 	{
 		m_visionTypeCounts.TryGetValue(_visionType, out int count);
 		count += _isRemoving ? -1 : 1;
@@ -467,19 +467,19 @@ public class Tile : MonoBehaviour
 		else
 			m_visionTypeCounts[_visionType] = count;
 
-		RefreshFOW(_isInstant);
+		RefreshFOW();
 	}
 
 	//Smoke and alike block optic vision on this tile without touching the vision counters,
 	//so lifting the block cannot resurrect a vision that nobody provides anymore.
-	public void SetOpticVisionBlocked ( bool _isBlocked, bool _isInstant = false )
+	public void SetOpticVisionBlocked ( bool _isBlocked )
 	{
 		m_opticVisionBlockerCount = Mathf.Max(0, m_opticVisionBlockerCount + (_isBlocked ? 1 : -1));
 
-		RefreshFOW(_isInstant);
+		RefreshFOW();
 	}
 
-	private void RefreshFOW ( bool _isInstant )
+	private void RefreshFOW ()
 	{
 		m_isVisible = false;
 		foreach (NeuronalMembraneEquipmentData.VisionTypes type in m_visionTypeCounts.Keys)
@@ -491,7 +491,7 @@ public class Tile : MonoBehaviour
 			}
 		}
 
-		m_ui.SetActiveFOW(!HasVision(NeuronalMembraneEquipmentData.VisionTypes.Optic), _isInstant);
+		m_ui.SetFOW(!HasVision(NeuronalMembraneEquipmentData.VisionTypes.Optic), HasVision(NeuronalMembraneEquipmentData.VisionTypes.Thermic), HasVision(NeuronalMembraneEquipmentData.VisionTypes.Radar));
 
 		if (TryGetCurrentEntity(out Entity entity) && !entity.IsAlliedTo(GameManager.Instance.PlayerID))
 		{

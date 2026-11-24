@@ -78,6 +78,7 @@ public partial class GameDatas : ScriptableObject
 		public SystemLanguage language = SystemLanguage.French;
 		public int qualityLevel = -1;
 		public string inputBindingOverridesJson = "";
+		public bool fogVisionLayers = false;
 	}
 
 	[System.Serializable]

@@ -304,6 +304,7 @@ public class Entity : MonoBehaviour
 
 	public void SetVisibility ( bool _isVisible, NeuronalMembraneEquipmentData.VisionTypes _visionType )
 	{
+		bool wasVisible = m_isVisible;
 		m_isVisible = _isVisible;
 		if (_isVisible)
 			m_howIsUnitVisible = _visionType;
@@ -312,6 +313,8 @@ public class Entity : MonoBehaviour
 			m_skin.Show(m_howIsUnitVisible);
 		else
 			m_skin.Hide();
+
+		LastSeenMarkers.Instance.OnVisibilityChanged(this, wasVisible);
 	}
 
 	public int GetRemainingStatusDuration ( EntityStatusEnumID _statusID )

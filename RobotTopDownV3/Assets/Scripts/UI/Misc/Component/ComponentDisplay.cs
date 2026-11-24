@@ -37,6 +37,7 @@ public class ComponentDisplay : GestureDisplay
 	private const float TUTORIAL_HIGHLIGHT_SCALE = 1.08f;
 
 	private Color m_baseOutlineColor = Color.white;
+	private bool m_hasOutline;
 	private Sequence m_tutorialHighlightSequence;
 	private bool m_isTutorialHighlighted;
 
@@ -108,8 +109,7 @@ public class ComponentDisplay : GestureDisplay
 				m_priceTMP.gameObject.SetActive(false);
 				m_descriptionTMP.gameObject.SetActive(false);
 				m_priceBackground.gameObject.SetActive(false);
-				if (m_outlineImg != null)
-					m_outlineImg.enabled = false;
+				m_hasOutline = false;
 				break;
 			case DisplayMode.Hangar:
 				m_titleTMP.text = m_componentData == null ? null : m_componentData.GetLocalizedName();
@@ -118,8 +118,7 @@ public class ComponentDisplay : GestureDisplay
 				m_priceTMP.gameObject.SetActive(false);
 				m_descriptionTMP.gameObject.SetActive(false);
 				m_priceBackground.gameObject.SetActive(false);
-				if (m_outlineImg != null)
-					m_outlineImg.enabled = true;
+				m_hasOutline = true;
 				break;
 			case DisplayMode.RepairStation:
 				m_titleTMP.text = m_componentData == null ? null : m_componentData.GetLocalizedName();
@@ -129,8 +128,7 @@ public class ComponentDisplay : GestureDisplay
 				m_priceTMP.gameObject.SetActive(true);
 				m_priceTMP.text = m_componentData == null ? null : GetDisplayedPrice(m_componentData, m_currentDisplayMode).Item2.ToString();
 				m_descriptionTMP.gameObject.SetActive(true);
-				if (m_outlineImg != null)
-					m_outlineImg.enabled = false;
+				m_hasOutline = false;
 				m_descriptionTMP.text = LocalizationManager.Instance.Get(LocalizationKey.component_repair);
 				break;
 			case DisplayMode.RecyclingStation:
@@ -141,8 +139,7 @@ public class ComponentDisplay : GestureDisplay
 				m_priceTMP.gameObject.SetActive(true);
 				m_priceTMP.text = m_componentData == null ? null : GetDisplayedPrice(m_componentData, m_currentDisplayMode).Item2.ToString();
 				m_descriptionTMP.gameObject.SetActive(true);
-				if (m_outlineImg != null)
-					m_outlineImg.enabled = false;
+				m_hasOutline = true;
 				m_descriptionTMP.text = LocalizationManager.Instance.Get(LocalizationKey.component_recycle);
 				break;
 			case DisplayMode.ShopBuying:
@@ -153,8 +150,7 @@ public class ComponentDisplay : GestureDisplay
 				m_priceTMP.gameObject.SetActive(true);
 				m_priceTMP.text = m_componentData == null ? null : GetDisplayedPrice(m_componentData, m_currentDisplayMode).Item2.ToString();
 				m_descriptionTMP.gameObject.SetActive(true);
-				if (m_outlineImg != null)
-					m_outlineImg.enabled = true;
+				m_hasOutline = true;
 				m_descriptionTMP.text = LocalizationManager.Instance.Get(LocalizationKey.component_buy);
 				break;
 			case DisplayMode.ShopSelling:
@@ -166,8 +162,7 @@ public class ComponentDisplay : GestureDisplay
 				m_priceTMP.gameObject.SetActive(true);
 				m_priceTMP.text = m_componentData == null ? null : GetDisplayedPrice(m_componentData, m_currentDisplayMode).Item2.ToString();
 				m_descriptionTMP.gameObject.SetActive(false);
-				if (m_outlineImg != null)
-					m_outlineImg.enabled = true;
+				m_hasOutline = true;
 				break;
 			case DisplayMode.Empty:
 				m_titleTMP.gameObject.SetActive(false);
@@ -177,10 +172,22 @@ public class ComponentDisplay : GestureDisplay
 				m_priceBackground.gameObject.SetActive(false);
 				m_priceTMP.gameObject.SetActive(false);
 				m_descriptionTMP.gameObject.SetActive(false);
-				if (m_outlineImg != null)
-					m_outlineImg.enabled = true;
+				m_hasOutline = true;
 				break;
 		}
+
+		RefreshOutline();
+	}
+
+	private void OnTransformParentChanged ()
+	{
+		RefreshOutline();
+	}
+
+	private void RefreshOutline ()
+	{
+		if (m_outlineImg != null)
+			m_outlineImg.enabled = m_hasOutline && GetComponentInParent<ComponentSlot>(true) == null;
 	}
 
 	public void SetShopData ( GameDatas.PlayerSave.DayData.ShopComponentData _shopData )

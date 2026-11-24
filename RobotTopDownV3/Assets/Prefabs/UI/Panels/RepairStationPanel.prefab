@@ -1053,12 +1053,20 @@ PrefabInstance:
       value: 14.29
       objectReference: {fileID: 0}
     - target: {fileID: 5749233881913313740, guid: 0d27d90efef196a4aa322e480e7a00b4, type: 3}
+      propertyPath: m_Spacing.y
+      value: 24
+      objectReference: {fileID: 0}
+    - target: {fileID: 5749233881913313740, guid: 0d27d90efef196a4aa322e480e7a00b4, type: 3}
       propertyPath: m_CellSize.x
       value: 267
       objectReference: {fileID: 0}
     - target: {fileID: 5749233881913313740, guid: 0d27d90efef196a4aa322e480e7a00b4, type: 3}
       propertyPath: m_CellSize.y
       value: 126
+      objectReference: {fileID: 0}
+    - target: {fileID: 5749233881913313740, guid: 0d27d90efef196a4aa322e480e7a00b4, type: 3}
+      propertyPath: m_Padding.m_Top
+      value: 14
       objectReference: {fileID: 0}
     - target: {fileID: 5749233881913313740, guid: 0d27d90efef196a4aa322e480e7a00b4, type: 3}
       propertyPath: m_Padding.m_Right

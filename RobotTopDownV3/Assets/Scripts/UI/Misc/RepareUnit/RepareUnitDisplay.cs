@@ -19,6 +19,7 @@ public class RepareUnitDisplay : GestureDisplay
 
 	[Header("Compact (slot, drag)")]
 	[SerializeField] private GameObject m_compactRoot;
+	[SerializeField] private Image m_compactOutline;
 	[SerializeField] private Image m_compactIcon;
 	[SerializeField] private TextMeshProUGUI m_compactNameTMP;
 	[SerializeField] private GameObject m_compactDamagedGO;
@@ -83,6 +84,7 @@ public class RepareUnitDisplay : GestureDisplay
 		bool isCompact = GetComponentInParent<RepareUnitDisplayGrid>(true) == null;
 		m_rowRoot.SetActive(!isCompact);
 		m_compactRoot.SetActive(isCompact);
+		m_compactOutline.enabled = GetComponentInParent<RepareUnitSlot>(true) == null;
 		if (isCompact)
 			((RectTransform)transform).sizeDelta = m_compactSize;
 	}

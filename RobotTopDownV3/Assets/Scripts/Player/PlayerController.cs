@@ -13,7 +13,6 @@ public class PlayerController : Singleton<PlayerController>
 	public static Action<int?> onEntityHovered;
 
 	[SerializeField] private TurnManager m_turnManager;
-	[SerializeField] private FogOfWarRenderer m_fogRenderer;
 	[SerializeField] private InputActionAsset m_inputActions;
 
 	public InputActionAsset InputActions => m_inputActions;
@@ -239,7 +238,6 @@ public class PlayerController : Singleton<PlayerController>
 			m_cameraMoveTween.Kill();
 
 		CameraManager.Instance.CameraParent.transform.position = CameraManager.Instance.ClampToBounds(CameraManager.Instance.CameraParent.transform.position + _move);
-		m_fogRenderer.MarkDirty();
 	}
 
 	private void CenterCameraOn ( Entity _entity )
@@ -257,8 +255,7 @@ public class PlayerController : Singleton<PlayerController>
 
 		m_cameraMoveTween = CameraManager.Instance.CameraParent.transform
 			.DOMove(targetPosition, m_centerOnEntityDuration)
-			.SetEase(Ease.OutQuad)
-			.OnUpdate(m_fogRenderer.MarkDirty);
+			.SetEase(Ease.OutQuad);
 	}
 
 	private void HandleCameraRotation ()
@@ -282,8 +279,6 @@ public class PlayerController : Singleton<PlayerController>
 			m_cameraRotationTween.Kill();
 
 		m_cameraRotationTween = CameraManager.Instance.CameraParent.transform.DOLocalRotateQuaternion(m_targetRotation, GameConfig.current.game.cameraRotationDuration).SetEase(Ease.OutQuad);
-		m_fogRenderer.MarkDirty();
-
 	}
 
 	public void ResetZoom ()
@@ -293,8 +288,6 @@ public class PlayerController : Singleton<PlayerController>
 
 		Vector3 cameraPosition = CameraManager.Instance.CameraParent.transform.position;
 		CameraManager.Instance.CameraParent.transform.position = new Vector3(cameraPosition.x, m_currentZoomDistance, cameraPosition.z);
-
-		m_fogRenderer.MarkDirty();
 	}
 
 	public void ResetRotation ()
@@ -360,9 +353,6 @@ public class PlayerController : Singleton<PlayerController>
 		m_currentZoomDistance = Mathf.Clamp(m_currentZoomDistance, GameConfig.current.game.cameraZoomBounds.x, GameConfig.current.game.cameraZoomBounds.y);
 
 		CameraManager.Instance.CameraParent.transform.position = new Vector3(CameraManager.Instance.CameraParent.transform.position.x, m_currentZoomDistance, CameraManager.Instance.CameraParent.transform.position.z);
-		if (zoomMovement != 0)
-			m_fogRenderer.MarkDirty();
-
 	}
 
 	private void OnTileLeftClick ( Tile _tile )

@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6003018844650110604}
   - component: {fileID: 6542302018446447822}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: ScaleContainer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -60,7 +60,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8859655675843022222}
   - component: {fileID: 4384309982057511022}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: Icon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -151,7 +151,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6016353297207123974}
   - component: {fileID: 6976196489625512688}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: FlyingNumber
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -233,7 +233,7 @@ GameObject:
   - component: {fileID: 2853089446596764826}
   - component: {fileID: 946370687195198925}
   - component: {fileID: 3627703823584042143}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: CounterTMP
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -284,7 +284,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  - {fileID: 2100000, guid: 4f747e6d341651ceaf2fedb824d986a2, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -440,7 +440,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7772940217080776497}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: MovedRotContainer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
