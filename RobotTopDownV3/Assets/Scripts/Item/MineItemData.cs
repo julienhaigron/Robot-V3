@@ -29,11 +29,6 @@ public class MineItemData : AItemData
 
     }*/
 
-	public override bool CanWalkThroughPredicate ( AItemLinkedData _linkedData, Item _usedItem, bool _isThisTurn )
-	{
-		return true;
-	}
-
 	public override void OnWalkThrough ( Entity _walkingEntity, AItemLinkedData _linkedData, Item _usedItem, bool _isFromTeleportation )
 	{
 		Tile mineTile = _usedItem.CurrentPosition;

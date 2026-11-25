@@ -28,6 +28,7 @@ public class TournamentPanel : AUIPanel
 
 	[Title("Rewards")]
 	[SerializeField] private ComponentRewardDisplay[] m_componentRewardDisplays;
+	[SerializeField] private BlueprintRewardDisplay[] m_blueprintRewardDisplays;
 	[SerializeField] private CurrencyRewardDisplay[] m_currencyRewardDisplays;
 	[SerializeField] private UnitRewardDisplay[] m_unitRewardDisplays;
 
@@ -176,18 +177,8 @@ public class TournamentPanel : AUIPanel
 
 	private void SetRewardInfo ( MissionData.RewardSet _rewardSet )
 	{
-		for (int i = 0; i < m_componentRewardDisplays.Length; i++)
-		{
-			int blueprintIndex = i - _rewardSet.components.Count;
-			if (_rewardSet.components.Count > i || _rewardSet.blueprints.Count > blueprintIndex)
-			{
-				bool isBlueprint = blueprintIndex >= 0;
-				m_componentRewardDisplays[i].Show();
-				m_componentRewardDisplays[i].Init(isBlueprint ? _rewardSet.blueprints[blueprintIndex] : _rewardSet.components[i], null, false, isBlueprint);
-			}
-			else
-				m_componentRewardDisplays[i].Hide();
-		}
+		ComponentRewardDisplay.InitAll(m_componentRewardDisplays, _rewardSet.components, null, false);
+		ComponentRewardDisplay.InitAll(m_blueprintRewardDisplays, _rewardSet.blueprints, null, false);
 
 		for (int i = 0; i < m_currencyRewardDisplays.Length; i++)
 		{

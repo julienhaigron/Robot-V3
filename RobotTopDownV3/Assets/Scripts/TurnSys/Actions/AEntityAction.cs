@@ -17,7 +17,11 @@ public abstract class AEntityAction : INetworkSerializable
 	public int[] targetedEntityIDs;
 	public int[] targetTileIDs;
 	public int[] designatedEntityIDs = Array.Empty<int>();
-	public bool HasDesignatedTargets => designatedEntityIDs != null && designatedEntityIDs.Length > 0;
+	public int[] designatedItemIDs = Array.Empty<int>();
+	public bool HasDesignatedEntities => designatedEntityIDs != null && designatedEntityIDs.Length > 0;
+	public bool HasDesignatedItem => designatedItemIDs != null && designatedItemIDs.Length > 0;
+	public bool HasDesignatedTargets => HasDesignatedEntities || HasDesignatedItem;
+	public Item DesignatedItem => HasDesignatedItem ? GameManager.Instance.GetItemFromID(designatedItemIDs[0]) : null;
 
 	public int supposedPositionAtActionStartID; //tile
 	public int positionAtActionEndID; //tile
@@ -64,6 +68,7 @@ public abstract class AEntityAction : INetworkSerializable
 		serializer.SerializeValue(ref targetedEntityIDs);
 		serializer.SerializeValue(ref targetTileIDs);
 		serializer.SerializeValue(ref designatedEntityIDs);
+		serializer.SerializeValue(ref designatedItemIDs);
 		serializer.SerializeValue(ref supposedPositionAtActionStartID);
 		serializer.SerializeValue(ref positionAtActionEndID);
 		serializer.SerializeValue(ref effects);
@@ -132,11 +137,64 @@ public abstract class AEntityAction : INetworkSerializable
 
 	public bool IsDesignated ( int _entityID )
 	{
-		return HasDesignatedTargets && Array.IndexOf(designatedEntityIDs, _entityID) >= 0;
+		return HasDesignatedEntities && Array.IndexOf(designatedEntityIDs, _entityID) >= 0;
+	}
+
+	public bool IsDesignated ( Item _item )
+	{
+		return _item != null && HasDesignatedItem && designatedItemIDs[0] == _item.ID;
+	}
+
+	public void ToggleDesignatedItem ( Item _item )
+	{
+		designatedEntityIDs = Array.Empty<int>();
+		designatedItemIDs = IsDesignated(_item) ? Array.Empty<int>() : new[] { _item.ID };
+	}
+
+	public bool RemoveDesignatedItem ( Item _item )
+	{
+		if (!IsDesignated(_item))
+			return false;
+
+		designatedItemIDs = Array.Empty<int>();
+		return true;
+	}
+
+	public List<Tile> GetDesignatedTargetTiles ()
+	{
+		List<Tile> tiles = new();
+		foreach (int entityID in designatedEntityIDs)
+		{
+			Entity entity = GameManager.Instance.GetEntityFromID(entityID);
+			if (entity != null && !entity.Equipment.IsDead)
+				tiles.Add(entity.Displacement.Coordinates.GetTile());
+		}
+
+		Item item = DesignatedItem;
+		if (item != null && item.Health > 0)
+			tiles.Add(item.CurrentPosition);
+		return tiles;
+	}
+
+	public List<string> GetDesignatedTargetNames ()
+	{
+		List<string> names = new();
+		foreach (int entityID in designatedEntityIDs)
+		{
+			Entity entity = GameManager.Instance.GetEntityFromID(entityID);
+			if (entity != null)
+				names.Add(entity.Data.name);
+		}
+
+		Item item = DesignatedItem;
+		if (item != null)
+			names.Add(item.Data.GetLocalizedName());
+		return names;
 	}
 
 	public void ToggleDesignatedTarget ( int _entityID, int _maxTargetAmount )
 	{
+		designatedItemIDs = Array.Empty<int>();
 		List<int> designated = new(designatedEntityIDs ?? Array.Empty<int>());
 		if (!designated.Remove(_entityID))
 		{

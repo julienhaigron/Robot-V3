@@ -39,11 +39,6 @@ public class CableItemData : AItemData
 		}
 	}
 
-	public override bool CanWalkThroughPredicate ( AItemLinkedData _linkedData, Item _usedItem, bool _isThisTurn )
-	{
-		return true;
-	}
-
 	public override void OnWalkThrough ( Entity _walkingEntity, AItemLinkedData _linkedData, Item _usedItem, bool _isFromTeleportation )
 	{
 

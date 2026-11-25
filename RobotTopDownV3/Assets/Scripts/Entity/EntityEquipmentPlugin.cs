@@ -338,10 +338,10 @@ public class EntityEquipmentPlugin : EntityPlugin
 			: m_linkedEntity.Data.BrainData.agility + m_linkedEntity.GetStatBonus(EntityEquipmentData.SecondaryStat.StatType.MeleeAccuracy, _attackAction);
 	}
 
-	public bool SabotagePointAttackRoll ( AttackAction _attackAction, AttackAction.SingleAttackInfo _singleAttackInfo, Tile _pointTile, LogCard _entry, out Tile _coverTile )
+	public bool StructureAttackRoll ( AttackAction _attackAction, AttackAction.SingleAttackInfo _singleAttackInfo, Tile _pointTile, LogCard _entry, out Tile _coverTile )
 	{
-		SabotagePoints.TryGetLivingPoint(_pointTile, out int ownerID);
-		string pointName = SabotagePoints.GetLocalizedName(ownerID);
+		bool isSabotagePoint = SabotagePoints.TryGetLivingPoint(_pointTile, out _);
+		string pointName = AttackAction.GetStructureName(_pointTile) ?? "?";
 		Tile strikeTile = _singleAttackInfo.StrikeTile;
 
 		if (GridManager.Instance.IsThereBlockingWallBetween(strikeTile, _pointTile, true, out _coverTile))
@@ -358,7 +358,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 
 		float userAim = GetAimScore(_attackAction);
 		float modAction = m_linkedEntity.PreviousActionAttackModificator;
-		float demolisherBonus = m_linkedEntity.MatchRole == Entity.MatchRoleType.Demolisher ? GameConfig.current.game.demolisherSabotageHitBonus : 0f;
+		float demolisherBonus = isSabotagePoint && m_linkedEntity.MatchRole == Entity.MatchRoleType.Demolisher ? GameConfig.current.game.demolisherSabotageHitBonus : 0f;
 		float finalScore = userAim + modAction + demolisherBonus;
 
 		float roll = Random.Range(0f, 1f);

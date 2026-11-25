@@ -187,6 +187,7 @@ public partial class GameDatas : ScriptableObject
 		public SerializableDictionary<string, int> upgradeLevels = new SerializableDictionary<string, int>();
 
 		public List<string> unlockedBlueprints = new();
+		public List<string> ownedBlueprints = new();
 		public List<string> beatenChallengers = new();
 
 		public DayData dayData = new();
@@ -227,6 +228,34 @@ public partial class GameDatas : ScriptableObject
 		{
 			if (!string.IsNullOrEmpty(_componentName) && !unlockedBlueprints.Contains(_componentName))
 				unlockedBlueprints.Add(_componentName);
+		}
+
+		public bool OwnsBlueprint ( string _componentName )
+		{
+			return ownedBlueprints.Contains(_componentName);
+		}
+
+		public void AddOwnedBlueprint ( string _componentName )
+		{
+			if (!string.IsNullOrEmpty(_componentName) && !OwnsBlueprint(_componentName) && !IsBlueprintUnlocked(_componentName))
+				ownedBlueprints.Add(_componentName);
+		}
+
+		public bool CanAfford ( System.Tuple<CurrencyType, ulong> _price )
+		{
+			return currencies.TryGetValue(_price.Item1, out ulong owned) && _price.Item2 <= owned;
+		}
+
+		public bool TryProcessBlueprint ( EntityEquipmentData _component )
+		{
+			System.Tuple<CurrencyType, ulong> price = _component.GetShopSellingPrice();
+			if (!OwnsBlueprint(_component.name) || !CanAfford(price))
+				return false;
+
+			RemoveCurrency(price.Item1, price.Item2, CurrencyRemoveMode.Spent);
+			ownedBlueprints.Remove(_component.name);
+			UnlockBlueprint(_component.name);
+			return true;
 		}
 
 		public void MarkChallengerBeaten ( string _challengerId )

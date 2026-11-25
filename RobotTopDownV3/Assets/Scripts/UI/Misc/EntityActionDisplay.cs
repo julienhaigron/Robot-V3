@@ -360,10 +360,7 @@ public class EntityActionDisplay :
 		if (!TurnManager.CanDesignateTargetsOf(action) || !action.HasDesignatedTargets)
 			return notes;
 
-		string targetNames = string.Join(", ", action.designatedEntityIDs
-			.Select(GameManager.Instance.GetEntityFromID)
-			.Where(entity => entity != null)
-			.Select(entity => entity.Data.name));
+		string targetNames = string.Join(", ", action.GetDesignatedTargetNames());
 		string designation = string.Format(LocalizationManager.Instance.Get(LocalizationKey.action_desc_designated_target), targetNames);
 		return notes == null ? designation : notes + "\n" + designation;
 	}

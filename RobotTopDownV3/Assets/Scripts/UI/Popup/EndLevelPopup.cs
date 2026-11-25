@@ -12,6 +12,7 @@ public class EndLevelPopup : AUIPopup
 	[SerializeField] private BaseButton m_continueButton;
 	[SerializeField] private CurrencyRewardDisplay[] m_rewardCurrencyDisplays;
 	[SerializeField] private ComponentRewardDisplay[] m_rewardComponentDisplays;
+	[SerializeField] private BlueprintRewardDisplay[] m_rewardBlueprintDisplays;
 	[SerializeField] private UnitRewardDisplay[] m_rewardUnitsDisplays;
 	[SerializeField] private EndLevelEntityDisplay[] m_unitDisplay;
 	[SerializeField] private BaseButton m_shortenFolderToggleBtn;
@@ -91,19 +92,8 @@ public class EndLevelPopup : AUIPopup
 				m_rewardCurrencyDisplays[i].Hide();
 		}
 
-		for (int i = 0; i < m_rewardComponentDisplays.Length; i++)
-		{
-			int blueprintIndex = i - rewardSet.components.Count;
-			if (rewardSet.components.Count > i || rewardSet.blueprints.Count > blueprintIndex)
-			{
-				bool isBlueprint = blueprintIndex >= 0;
-				m_rewardComponentDisplays[i].Show();
-				m_rewardComponentDisplays[i].Init(isBlueprint ? rewardSet.blueprints[blueprintIndex] : rewardSet.components[i], OnInterractWithRewardBtn, false, isBlueprint);
-				m_rewardComponentDisplays[i].SetIsSelected(isWin);
-			}
-			else
-				m_rewardComponentDisplays[i].Hide();
-		}
+		ComponentRewardDisplay.InitAll(m_rewardComponentDisplays, rewardSet.components, OnInterractWithRewardBtn, isWin);
+		ComponentRewardDisplay.InitAll(m_rewardBlueprintDisplays, rewardSet.blueprints, OnInterractWithRewardBtn, isWin);
 
 		for (int i = 0; i < m_rewardUnitsDisplays.Length; i++)
 		{
@@ -154,24 +144,9 @@ public class EndLevelPopup : AUIPopup
 			if (display.IsSelected && display.IsVisible)
 				totalUsedRewardPoint += MissionData.creditPointValue;
 
-		foreach (ComponentRewardDisplay display in m_rewardComponentDisplays)
-		{
+		foreach (ComponentRewardDisplay display in m_rewardComponentDisplays.Concat(m_rewardBlueprintDisplays))
 			if (display.IsSelected && display.IsVisible)
-			{
-				switch (display.Component.GetEquipmentType())
-				{
-					case EntityEquipmentData.EquipmentType.Frame:
-					case EntityEquipmentData.EquipmentType.Brain:
-					case EntityEquipmentData.EquipmentType.Reactor:
-					case EntityEquipmentData.EquipmentType.NeuronalMembrane:
-						totalUsedRewardPoint += MissionData.mainComponentPointValue;
-						break;
-					default:
-						totalUsedRewardPoint += MissionData.secondaryComponentPointValue;
-						break;
-				}
-			}
-		}
+				totalUsedRewardPoint += MissionData.GetPointValueOf(display.Component);
 
 		foreach (UnitRewardDisplay display in m_rewardUnitsDisplays)
 			if (display.IsSelected && display.IsVisible)
@@ -201,12 +176,6 @@ public class EndLevelPopup : AUIPopup
 
 	private void OnClickContinue ()
 	{
-		foreach (ComponentRewardDisplay display in m_rewardComponentDisplays)
-		{
-			if (display.IsSelected && display.IsVisible && display.IsBlueprint)
-				GameDatas.current.currentPlayerSave.UnlockBlueprint(display.Component.name);
-		}
-
 		GameManager.Instance.ApplyMatchProgression(m_gameResult);
 
 		foreach (GameDatas.PlayerSave.Component component in m_pendingDamagedComponents)
@@ -220,8 +189,14 @@ public class EndLevelPopup : AUIPopup
 
 		foreach (ComponentRewardDisplay display in m_rewardComponentDisplays)
 		{
-			if (display.IsSelected && display.IsVisible && !display.IsBlueprint)
+			if (display.IsSelected && display.IsVisible)
 				GameDatas.current.currentPlayerSave.AddComponentToInventory(display.Component);
+		}
+
+		foreach (BlueprintRewardDisplay display in m_rewardBlueprintDisplays)
+		{
+			if (display.IsSelected && display.IsVisible)
+				GameDatas.current.currentPlayerSave.AddOwnedBlueprint(display.Component.name);
 		}
 
 		foreach (UnitRewardDisplay display in m_rewardUnitsDisplays)

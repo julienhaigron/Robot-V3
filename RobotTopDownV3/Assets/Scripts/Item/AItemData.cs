@@ -7,6 +7,11 @@ public abstract class AItemData : ScriptableObject
 {
     public Item itemPrefab;
 
+    [Title("Grid")]
+    public bool canWalkThrough = true;
+    public bool isTargetable = false;
+    [ShowIf(nameof(isTargetable)), Min(1)] public int maxHealth = 10;
+
     public abstract AItemLinkedData GetNewLinkedData ();
 
     public virtual bool InvokeItemPredicate ( ToolEquipment _invocatingTool, EntityActionData _actionData )
@@ -27,7 +32,10 @@ public abstract class AItemData : ScriptableObject
         linkedData.plannedInvocationCount++;
     }
 
-    public abstract bool CanWalkThroughPredicate ( AItemLinkedData _linkedData, Item _usedItem, bool _isThisTurn );
+    public virtual bool CanWalkThroughPredicate ( AItemLinkedData _linkedData, Item _usedItem, bool _isThisTurn )
+	{
+        return canWalkThrough;
+	}
 
     public abstract void OnWalkThrough ( Entity _walkingEntityn, AItemLinkedData _linkedData, Item _usedItem, bool _isFromTeleportation );
 

@@ -58,6 +58,7 @@ public class PlayerController : Singleton<PlayerController>
 
 	private Tile m_designationHoverTile;
 	private Entity m_designationHoveredEnemy;
+	private Item m_designationHoveredItem;
 	private bool m_isShowingDesignationPreview;
 
 
@@ -74,6 +75,7 @@ public class PlayerController : Singleton<PlayerController>
 		InputManager.onTileRightClick += OnTileRightClick;
 		InputManager.onEmptyRightClick += OnEmptyRightClick;
 		InputManager.onTileHovered += OnTileHovered;
+		TurnManager.onStartInputPhase += ShowAITargets;
 		TurnManager.onEndInputPhase += OnEndInputPhase;
 		EntityEquipmentPlugin.onAnyEntityDeath += OnAnyEntityDeath;
 		TurnManager.onEndLevel += OnEndLevel;
@@ -138,6 +140,7 @@ public class PlayerController : Singleton<PlayerController>
 		InputManager.onTileRightClick -= OnTileRightClick;
 		InputManager.onEmptyRightClick -= OnEmptyRightClick;
 		InputManager.onTileHovered -= OnTileHovered;
+		TurnManager.onStartInputPhase -= ShowAITargets;
 		TurnManager.onEndInputPhase -= OnEndInputPhase;
 		EntityEquipmentPlugin.onAnyEntityDeath -= OnAnyEntityDeath;
 		TurnManager.onEndLevel -= OnEndLevel;
@@ -653,6 +656,7 @@ public class PlayerController : Singleton<PlayerController>
 		SetInteractableOutlinesHidden(false);
 		SelectEntity(null);
 		ClearAllOutlines();
+		HideAITargets();
 		ClearActionOnTileDisplay();
 		ClearGhostActionOnTileDisplay();
 		ClearGhostEntitiesAndItems();
@@ -663,6 +667,7 @@ public class PlayerController : Singleton<PlayerController>
 		RefreshHoveredEntity(null);
 		SelectEntity(null);
 		ClearAllOutlines();
+		HideAITargets();
 		ClearActionOnTileDisplay();
 		ClearGhostActionOnTileDisplay();
 		ClearGhosts();
@@ -931,40 +936,56 @@ public class PlayerController : Singleton<PlayerController>
 	{
 		m_designationHoverTile = _tile;
 		AEntityAction focus = m_turnManager.GetDesignationFocusAction();
-		Entity candidate = focus != null && !InputManager.IsPointerOverBlockingUI()
-			&& m_turnManager.TryGetDesignableEnemyOn(_tile, focus, out Entity enemy) ? enemy : null;
+		bool canHover = focus != null && !InputManager.IsPointerOverBlockingUI();
+		Entity candidate = canHover && m_turnManager.TryGetDesignableEnemyOn(_tile, focus, out Entity enemy) ? enemy : null;
+		Item itemCandidate = canHover && candidate == null && m_turnManager.TryGetDesignableItemOn(_tile, focus, out Item item) ? item : null;
 
-		if (candidate == m_designationHoveredEnemy && !_force)
+		if (candidate == m_designationHoveredEnemy && itemCandidate == m_designationHoveredItem && !_force)
 			return;
 
 		ResetDesignationHover();
 		m_designationHoveredEnemy = candidate;
-		if (candidate != null)
+		m_designationHoveredItem = itemCandidate;
+		if (candidate != null || itemCandidate != null)
 		{
 			m_isShowingDesignationPreview = true;
 			SetRangePreviewOutlines(m_turnManager.GetDesignationReach(focus), focus.Data.GetMainActionType());
 
-			string hint = focus.IsDesignated(candidate.ID)
+			bool isDesignated = candidate != null ? focus.IsDesignated(candidate.ID) : focus.IsDesignated(itemCandidate);
+			string targetName = candidate != null ? candidate.Data.name : itemCandidate.Data.GetLocalizedName();
+			string hint = isDesignated
 				? LocalizationManager.Instance.Get(LocalizationKey.action_desc_undesignate_click)
-				: string.Format(LocalizationManager.Instance.Get(LocalizationKey.action_desc_designate_click), candidate.Data.name);
-			ToolTipManager.Instance.Show(focus.Data.GetLocalizedName(), hint, candidate.UI.gameObject);
+				: string.Format(LocalizationManager.Instance.Get(LocalizationKey.action_desc_designate_click), targetName);
+			ToolTipManager.Instance.Show(focus.Data.GetLocalizedName(), hint, GetDesignationHoverOwner());
 		}
 
 		RefreshTargetMarkers();
 	}
 
+	private GameObject GetDesignationHoverOwner ()
+	{
+		if (m_designationHoveredEnemy != null)
+			return m_designationHoveredEnemy.UI.gameObject;
+
+		if (m_designationHoveredItem == null)
+			return null;
+
+		return m_designationHoveredItem.UI != null ? m_designationHoveredItem.UI.gameObject : m_designationHoveredItem.gameObject;
+	}
+
 	private bool ResetDesignationHover ()
 	{
-		bool hadHoveredEnemy = m_designationHoveredEnemy != null;
+		GameObject hoverOwner = GetDesignationHoverOwner();
 		if (m_isShowingDesignationPreview)
 			ClearRangePreviewOutlines();
 
-		if (hadHoveredEnemy && ToolTipManager.Instance.IsShownFor(m_designationHoveredEnemy.UI.gameObject))
+		if (hoverOwner != null && ToolTipManager.Instance.IsShownFor(hoverOwner))
 			ToolTipManager.Instance.Hide();
 
 		m_isShowingDesignationPreview = false;
 		m_designationHoveredEnemy = null;
-		return hadHoveredEnemy;
+		m_designationHoveredItem = null;
+		return hoverOwner != null;
 	}
 
 	public void RefreshTargetMarkers ()
@@ -975,16 +996,21 @@ public class PlayerController : Singleton<PlayerController>
 
 		AEntityAction focus = null;
 		List<Entity> candidates = null;
+		List<Item> itemCandidates = null;
 		HashSet<int> designated = new();
+		HashSet<Item> designatedItems = new();
 		if (m_turnManager.currentPhase == TurnManager.TurnPhase.Recording && m_selectedEntity != null)
 		{
 			focus = m_turnManager.GetDesignationFocusAction();
 			if (focus != null)
 			{
 				candidates = m_turnManager.GetDesignableEnemies(focus);
+				itemCandidates = m_turnManager.GetDesignableItems(focus);
 				ShowLasersOf(focus);
 				if (m_designationHoveredEnemy != null && !focus.IsDesignated(m_designationHoveredEnemy.ID))
 					TargetLaser.Show(focus, m_designationHoveredEnemy, true);
+				if (m_designationHoveredItem != null && !focus.IsDesignated(m_designationHoveredItem))
+					TargetLaser.Show(focus, m_designationHoveredItem, true);
 			}
 			else if (m_turnManager.RecordedActions.TryGetValue(m_selectedEntity.ID, out Queue<TurnManager.RecordedAction> queue) && queue != null)
 			{
@@ -994,31 +1020,87 @@ public class PlayerController : Singleton<PlayerController>
 						continue;
 
 					designated.UnionWith(recordedAction.action.designatedEntityIDs);
+					if (recordedAction.action.DesignatedItem != null)
+						designatedItems.Add(recordedAction.action.DesignatedItem);
 					ShowLasersOf(recordedAction.action);
 				}
 			}
 		}
 
+		foreach (Item item in GameManager.Instance.Items)
+		{
+			if (item == null || item.UI == null || !item.Data.isTargetable)
+				continue;
+
+			TargetMarker.State state = TargetMarker.State.None;
+			if (focus != null ? focus.IsDesignated(item) : designatedItems.Contains(item))
+				state = TargetMarker.State.Designated;
+			else if (item == m_designationHoveredItem)
+				state = TargetMarker.State.Preview;
+			else if (itemCandidates != null && itemCandidates.Contains(item))
+				state = TargetMarker.State.Candidate;
+
+			item.UI.SetTargetMarker(state);
+		}
+
+		foreach (Entity entity in GetAllEntities())
+		{
+			TargetMarker.State state = TargetMarker.State.None;
+			if (focus != null ? focus.IsDesignated(entity.ID) : designated.Contains(entity.ID))
+				state = TargetMarker.State.Designated;
+			else if (entity == m_designationHoveredEnemy)
+				state = TargetMarker.State.Preview;
+			else if (candidates != null && candidates.Contains(entity))
+				state = TargetMarker.State.Candidate;
+
+			entity.UI.SetTargetMarker(state);
+		}
+	}
+
+	private void ShowAITargets ()
+	{
+		HideAITargets();
+		if (GameManager.Instance == null || GameManager.Instance.PlayersEntityAnchor == null)
+			return;
+
+		Dictionary<Entity, int> allyCountPerTarget = new();
+		foreach (Entity ally in GetAllEntities())
+		{
+			if (ally.OwnerID != GameManager.Instance.PlayerID || ally.Equipment.IsDead || ally.AI == null)
+				continue;
+
+			Entity target = ally.AI.GetStickyTarget();
+			if (target == null || target.Equipment.IsDead || !target.IsShownToLocalPlayer)
+				continue;
+
+			TargetLaser.ShowAITarget(ally, target);
+			allyCountPerTarget[target] = allyCountPerTarget.TryGetValue(target, out int count) ? count + 1 : 1;
+		}
+
+		foreach (KeyValuePair<Entity, int> pair in allyCountPerTarget)
+			pair.Key.UI.SetAITargetCount(pair.Value);
+	}
+
+	private void HideAITargets ()
+	{
+		TargetLaser.HideAITargets();
+		if (GameManager.Instance == null || GameManager.Instance.PlayersEntityAnchor == null)
+			return;
+
+		foreach (Entity entity in GetAllEntities())
+			entity.UI.SetAITargetCount(0);
+	}
+
+	private static IEnumerable<Entity> GetAllEntities ()
+	{
 		foreach (EntityAnchor anchor in GameManager.Instance.PlayersEntityAnchor)
 		{
 			if (anchor == null)
 				continue;
 
 			foreach (Entity entity in anchor.Entities)
-			{
-				if (entity == null || entity.UI == null)
-					continue;
-
-				EntityUIPlugin.TargetMarkerState state = EntityUIPlugin.TargetMarkerState.None;
-				if (focus != null ? focus.IsDesignated(entity.ID) : designated.Contains(entity.ID))
-					state = EntityUIPlugin.TargetMarkerState.Designated;
-				else if (entity == m_designationHoveredEnemy)
-					state = EntityUIPlugin.TargetMarkerState.Preview;
-				else if (candidates != null && candidates.Contains(entity))
-					state = EntityUIPlugin.TargetMarkerState.Candidate;
-
-				entity.UI.SetTargetMarker(state);
-			}
+				if (entity != null && entity.UI != null)
+					yield return entity;
 		}
 	}
 
@@ -1026,6 +1108,7 @@ public class PlayerController : Singleton<PlayerController>
 	{
 		foreach (int entityID in _action.designatedEntityIDs)
 			TargetLaser.Show(_action, GameManager.Instance.GetEntityFromID(entityID), false);
+		TargetLaser.Show(_action, _action.DesignatedItem, false);
 	}
 
 	public void SetRangePreviewOutlines ( IEnumerable<Tile> _tiles, EntityActionData.MainActionType _mainActionType )

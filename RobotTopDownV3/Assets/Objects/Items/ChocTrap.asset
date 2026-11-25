@@ -13,9 +13,13 @@ MonoBehaviour:
   m_Name: ChocTrap
   m_EditorClassIdentifier: RTD::ApplyStatusItemData
   itemPrefab: {fileID: 6520863086066432982, guid: fc67ff068b396d21d7a436e7fb9342e3, type: 3}
+  canWalkThrough: 0
+  isTargetable: 0
+  maxHealth: 10
   type: 0
   range: 1
   givenStatus: {fileID: 11400000, guid: 76af4e2f09571714081bb9cb6f83c0a3, type: 2}
+  givenStatusDuration: 1
   givenStatBonus:
     statBonus:
       type: 22

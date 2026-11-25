@@ -15,6 +15,8 @@ public class ShopPanel : AUIPanel
 	[SerializeField] BaseButton m_rerollBtn;
 	[SerializeField] private TextMeshProUGUI m_rerollTMP;
 	[SerializeField] private TextMeshProUGUI m_freezeTMP;
+	[SerializeField] private BlueprintDisplay[] m_blueprintDisplays;
+	[SerializeField] private GameObject m_noBlueprintGO;
 
 	private EntityEquipmentData.EntityFaction m_currentFaction;
 	public EntityEquipmentData.EntityFaction CurrentFaction => m_currentFaction;
@@ -38,7 +40,7 @@ public class ShopPanel : AUIPanel
 		GameDatas.current.currentPlayerSave.EnsureShopsAreSplit();
 		RefreshShopBuyableItems();
 
-		m_inventoryGrid.Init(m_shopGrid, null, null, item => item.TryGetData(out EntityEquipmentData data) && CanAfford(data.GetShopBuyingPrice())
+		m_inventoryGrid.Init(m_shopGrid, null, null, item => item.TryGetData(out EntityEquipmentData data) && GameDatas.current.currentPlayerSave.CanAfford(data.GetShopBuyingPrice())
 			, ComponentDisplay.DisplayMode.ShopSelling);
 		m_inventoryGrid.SetPredicateRefusal(Gesture.Refusal.TooExpensive);
 		m_inventoryGrid.Cleanup();
@@ -70,11 +72,6 @@ public class ShopPanel : AUIPanel
 		System.Tuple<CurrencyType, ulong> price = _display.ComponentData.GetShopBuyingPrice();
 		GameDatas.current.currentPlayerSave.RemoveCurrency(price.Item1, price.Item2, GameDatas.PlayerSave.CurrencyRemoveMode.Spent);
 		RefreshShopActions();
-	}
-
-	private static bool CanAfford ( System.Tuple<CurrencyType, ulong> _price )
-	{
-		return GameDatas.current.currentPlayerSave.currencies.TryGetValue(_price.Item1, out ulong owned) && _price.Item2 <= owned;
 	}
 
 	private void RemoveFromShop ( GameDatas.PlayerSave.DayData.ShopComponentData _shopData )
@@ -176,6 +173,33 @@ public class ShopPanel : AUIPanel
 			display.SetFreezeInteractability(shopData != null && CurrentDayData.itemsInShop.Contains(shopData) && (shopData.isFrozen || remainingFreezes > 0));
 			display.SetAffordable(m_inventoryGrid.GetRefusal(display) != Gesture.Refusal.TooExpensive);
 		}
+
+		RefreshBlueprints();
+	}
+
+	private void RefreshBlueprints ()
+	{
+		GameDatas.PlayerSave save = GameDatas.current.currentPlayerSave;
+		List<EntityEquipmentData> blueprints = save.ownedBlueprints
+			.Select(name => GameAssets.current.equipments.TryGetValue(name, out EntityEquipmentData data) ? data : null)
+			.Where(data => data != null && data.faction == m_currentFaction)
+			.ToList();
+
+		for (int i = 0; i < m_blueprintDisplays.Length; i++)
+		{
+			if (i < blueprints.Count)
+				m_blueprintDisplays[i].Show(blueprints[i], save.CanAfford(blueprints[i].GetShopSellingPrice()), ProcessBlueprint);
+			else
+				m_blueprintDisplays[i].Hide();
+		}
+
+		m_noBlueprintGO.SetActive(blueprints.Count == 0);
+	}
+
+	private void ProcessBlueprint ( EntityEquipmentData _component )
+	{
+		if (GameDatas.current.currentPlayerSave.TryProcessBlueprint(_component))
+			RefreshShopActions();
 	}
 
 	private void RefreshShopBuyableItems ()

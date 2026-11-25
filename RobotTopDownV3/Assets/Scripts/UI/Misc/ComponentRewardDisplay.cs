@@ -10,18 +10,34 @@ public class ComponentRewardDisplay : ARewardDisplay
 
     private EntityEquipmentData m_component;
     public EntityEquipmentData Component => m_component;
-    private bool m_isBlueprint = false;
-    public bool IsBlueprint => m_isBlueprint;
 
-    public void Init ( EntityEquipmentData _component, System.Action _onSelected, bool _isLockedOnSelected = false, bool _isBlueprint = false )
+    public void Init ( EntityEquipmentData _component, System.Action _onSelected, bool _isLockedOnSelected = false )
 	{
         m_component = _component;
-        m_isBlueprint = _isBlueprint;
-        m_nameTMP.text = _isBlueprint
-            ? string.Format(LocalizationManager.Instance.Get(LocalizationKey.reward_blueprint), _component.GetLocalizedName())
-            : _component.GetLocalizedName();
+        m_nameTMP.text = GetDisplayedName(_component);
         m_mainIcon.sprite = _component.icon;
-        m_priceTMP.text = _component.IsMainComponent() ? "3" : "2";
+        m_priceTMP.text = MissionData.GetPointValueOf(_component).ToString();
         InitSelection(_onSelected, _isLockedOnSelected);
     }
+
+    protected virtual string GetDisplayedName ( EntityEquipmentData _component )
+	{
+        return _component.GetLocalizedName();
+	}
+
+    public static void InitAll ( ComponentRewardDisplay[] _displays, System.Collections.Generic.List<EntityEquipmentData> _components, System.Action _onSelected, bool _isSelected )
+	{
+        for (int i = 0; i < _displays.Length; i++)
+		{
+            if (i >= _components.Count)
+			{
+                _displays[i].Hide();
+                continue;
+			}
+
+            _displays[i].Show();
+            _displays[i].Init(_components[i], _onSelected);
+            _displays[i].SetIsSelected(_isSelected);
+		}
+	}
 }

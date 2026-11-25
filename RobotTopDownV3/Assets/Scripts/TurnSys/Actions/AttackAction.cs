@@ -171,8 +171,14 @@ public class AttackAction : AEntityAction
 	{
 		List<string> targetNames = GetTargetedEntityNames();
 		return targetNames.Count > 0 ? string.Join(", ", targetNames)
-			: SabotagePoints.TryGetLivingPoint(GetTargetTileAt(0), out int sabotagePointOwnerID) ? SabotagePoints.GetLocalizedName(sabotagePointOwnerID)
-			: LocalizationManager.Instance.Get(LocalizationKey.log_use_weapon_ground);
+			: GetStructureName(GetTargetTileAt(0)) ?? LocalizationManager.Instance.Get(LocalizationKey.log_use_weapon_ground);
+	}
+
+	public static string GetStructureName ( Tile _tile )
+	{
+		return SabotagePoints.TryGetLivingPoint(_tile, out int sabotagePointOwnerID) ? SabotagePoints.GetLocalizedName(sabotagePointOwnerID)
+			: Item.TryGetTargetableOn(_tile, out Item item) ? item.Data.GetLocalizedName()
+			: null;
 	}
 
 	private void LogEntry ( LogCard _entry )
@@ -251,8 +257,8 @@ public class AttackAction : AEntityAction
 				else if (targetEntity == null)
 				{
 					Tile targetTile = GetTargetTileAt(attackCount);
-					attackInfo.isAttackSuccessfull = SabotagePoints.TryGetLivingPoint(targetTile, out _)
-						? PerformingEntity.Equipment.SabotagePointAttackRoll(this, attackInfo, targetTile, entry, out coverHitted)
+					attackInfo.isAttackSuccessfull = SabotagePoints.TryGetLivingPoint(targetTile, out _) || Item.TryGetTargetableOn(targetTile, out _)
+						? PerformingEntity.Equipment.StructureAttackRoll(this, attackInfo, targetTile, entry, out coverHitted)
 						: true;
 				}
 				else if (DidDesignatedTargetEscapeReach(attackCount))
@@ -292,11 +298,17 @@ public class AttackAction : AEntityAction
 					PerformingEntity.Equipment.Weapons[linkedEquipmentId].GetDamages(PerformingEntity, targetEntity, this
 						, GetExchangeResultAgainst(targetEntity), out LogCard damageCard, attackInfo.ShotOrigin);
 
+				if (targetEntity == null && Data.aoeType == EntityActionData.AOEType.Noone)
+					damageCard.target = GetStructureName(GetTargetTileAt(attackCount)) ?? damageCard.target;
+
 				if (attackInfo.isAttackSuccessfull)
 					AddDamageStep(entry, damageCard, attackCount);
 
 				if (coverHitted != null)
 					coverHitted.Wall.RegisterDamage(damagesDealt);
+				else if (attackInfo.isAttackSuccessfull && targetEntity == null && Data.aoeType == EntityActionData.AOEType.Noone
+					&& Item.TryGetTargetableOn(GetTargetTileAt(attackCount), out Item targetItem))
+					targetItem.RegisterDamage(damagesDealt);
 
 				attackInfo.damages = new int[damagesDealt.Count];
 				attackInfo.damageTypes = new short[damagesDealt.Count];

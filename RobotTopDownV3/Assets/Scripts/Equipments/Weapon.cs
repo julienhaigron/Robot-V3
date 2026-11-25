@@ -326,7 +326,12 @@ public class Weapon : MonoBehaviour
 
 		Entity targetEntity = _target.ResolvedEntity;
 		if (targetEntity == null)
+		{
+			if (Item.TryGetTargetableOn(_target.targetTile, out Item item))
+				for (int i = 0; i < _attackAction.Data.GetHitAmount(_attackAction, m_user, null); i++)
+					item.TakeDamage(_damages);
 			return;
+		}
 
 		int hitAmount = _attackAction.Data.GetHitAmount(_attackAction, m_user, targetEntity);
 		for (int i = 0; i < hitAmount; i++)

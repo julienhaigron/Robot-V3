@@ -261,7 +261,8 @@ public static class ProceduralMatchGenerator
 	{
 		GameDatas.PlayerSave save = GameDatas.current.currentPlayerSave;
 		return GameAssets.current.equipments.Values
-			.Where(data => data != null && data.canDropRandomly && data.requiresBlueprint && !save.IsBlueprintUnlocked(data.name) && data.IsMainComponent() == _isMain)
+			.Where(data => data != null && data.canDropRandomly && data.requiresBlueprint && !save.IsBlueprintUnlocked(data.name) && !save.OwnsBlueprint(data.name)
+				&& data.IsMainComponent() == _isMain)
 			.ToList();
 	}
 

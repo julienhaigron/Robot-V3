@@ -27,7 +27,7 @@ public class PortalItemData : AItemData
 
 	public override bool CanWalkThroughPredicate (AItemLinkedData _linkedData, Item _usedItem, bool _isThisTurn )
 	{
-        if (_linkedData is not PortalItemLinkedData portalData)
+        if (!canWalkThrough || _linkedData is not PortalItemLinkedData portalData)
             return false;
 
         Tile destination = _usedItem.CurrentPosition == portalData.portalATile ? portalData.portalATile : portalData.portalBTile;

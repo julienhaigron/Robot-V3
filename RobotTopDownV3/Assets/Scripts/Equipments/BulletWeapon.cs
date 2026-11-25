@@ -202,6 +202,9 @@ public class BulletWeapon : Weapon
 			if (tile.Wall != null && tile.Wall.Health > 0)
 				tile.Wall.TakeDamage(damages);
 
+			if (Item.TryGetTargetableOn(tile, out Item item))
+				item.TakeDamage(damages);
+
 			if (!tile.TryGetCurrentEntity(out Entity entity))
 				continue;
 

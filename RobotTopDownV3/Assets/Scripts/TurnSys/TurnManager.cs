@@ -686,13 +686,38 @@ public class TurnManager : Singleton<TurnManager>
 		return _enemy != null && IsDesignableBy(_action.PerformingEntity, _enemy) && GetDesignationReach(_action).Contains(_tile);
 	}
 
+	public bool TryGetDesignableItemOn ( Tile _tile, AEntityAction _action, out Item _item )
+	{
+		_item = _tile == null || _action == null ? null : _tile.GetItem(true);
+		return _item != null && IsItemDesignableBy(_action, _item) && GetDesignationReach(_action).Contains(_tile);
+	}
+
+	public List<Item> GetDesignableItems ( AEntityAction _action )
+	{
+		List<Item> items = new();
+		if (_action == null)
+			return items;
+
+		foreach (Tile tile in GetDesignationReach(_action))
+		{
+			Item item = tile.GetItem(true);
+			if (item != null && IsItemDesignableBy(_action, item) && !items.Contains(item))
+				items.Add(item);
+		}
+
+		return items;
+	}
+
 	public bool TryToggleDesignatedTarget ( Tile _tile )
 	{
 		AEntityAction action = GetDesignationFocusAction();
-		if (!TryGetDesignableEnemyOn(_tile, action, out Entity enemy))
+		if (TryGetDesignableEnemyOn(_tile, action, out Entity enemy))
+			action.ToggleDesignatedTarget(enemy.ID, action.Data.GetMaxTargetAmount(action, action.PerformingEntity, enemy));
+		else if (TryGetDesignableItemOn(_tile, action, out Item item))
+			action.ToggleDesignatedItem(item);
+		else
 			return false;
 
-		action.ToggleDesignatedTarget(enemy.ID, action.Data.GetMaxTargetAmount(action, action.PerformingEntity, enemy));
 		OnDesignatedTargetsChanged(action);
 		return true;
 	}
@@ -700,12 +725,23 @@ public class TurnManager : Singleton<TurnManager>
 	public bool TryRemoveDesignatedTarget ( Tile _tile )
 	{
 		AEntityAction action = GetDesignationFocusAction();
-		Entity entity = _tile == null || action == null ? null : _tile.GetCurrentEntity();
-		if (entity == null || !action.RemoveDesignatedTarget(entity.ID))
+		if (_tile == null || action == null)
+			return false;
+
+		Entity entity = _tile.GetCurrentEntity();
+		bool isRemoved = entity != null ? action.RemoveDesignatedTarget(entity.ID) : action.RemoveDesignatedItem(_tile.GetItem(true));
+		if (!isRemoved)
 			return false;
 
 		OnDesignatedTargetsChanged(action);
 		return true;
+	}
+
+	private static bool IsItemDesignableBy ( AEntityAction _action, Item _item )
+	{
+		Entity performer = _action.PerformingEntity;
+		return performer != null && _action.Data.GetMainActionType() == EntityActionData.MainActionType.Attack
+			&& _item.IsTargetableBy(performer.OwnerID, false) && _item.IsShownToLocalPlayer;
 	}
 
 	private static bool IsDesignableBy ( Entity _performer, Entity _target )
@@ -732,15 +768,7 @@ public class TurnManager : Singleton<TurnManager>
 
 	private void ShowDesignatedTargetsOf ( AEntityAction _action )
 	{
-		List<Tile> targetTiles = new();
-		foreach (int entityID in _action.designatedEntityIDs)
-		{
-			Entity entity = GameManager.Instance.GetEntityFromID(entityID);
-			if (entity != null && !entity.Equipment.IsDead)
-				targetTiles.Add(entity.Displacement.Coordinates.GetTile());
-		}
-
-		PlayerController.Instance.SetTargetOutlines(targetTiles, Array.Empty<Tile>(), _action.Data.GetMainActionType());
+		PlayerController.Instance.SetTargetOutlines(_action.GetDesignatedTargetTiles(), Array.Empty<Tile>(), _action.Data.GetMainActionType());
 	}
 
 	private void EndDesignationWindow ()

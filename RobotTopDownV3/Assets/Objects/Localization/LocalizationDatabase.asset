@@ -608,8 +608,8 @@ MonoBehaviour:
     - INVENTAIRE
   - key: shop/title
     values:
-    - 
-    - 
+    - SHOP
+    - BOUTIQUE
   - key: mission/components
     values:
     - Components
@@ -3370,3 +3370,19 @@ MonoBehaviour:
     values:
     - No bonus
     - Aucun bonus
+  - key: shop/blueprints
+    values:
+    - BLUEPRINTS
+    - BLUEPRINTS
+  - key: shop/process_blueprint
+    values:
+    - PROCESS
+    - TRAITER
+  - key: shop/no_blueprint
+    values:
+    - No blueprint for this corporation
+    - Aucun blueprint pour cette corporation
+  - key: log/item_destroyed
+    values:
+    - "{0} destroyed"
+    - "{0} d\xE9truit"

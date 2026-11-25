@@ -23,14 +23,9 @@ public class EntityUIPlugin : EntityPlugin
 	[SerializeField] private int m_statusPrefabSpawnAtInitCount;
 	[SerializeField] private List<EntityStatusDisplay> m_statusDisplays;
 	[SerializeField] private GameObject m_kingMarker;
-	[SerializeField] private Image m_targetMarker;
-	[SerializeField] private Sprite m_candidateTargetSprite;
-	[SerializeField] private Sprite m_designatedTargetSprite;
-	[SerializeField] private Color m_targetMarkerColor = new(1f, .66f, .23f);
-	[SerializeField, Range(0f, 1f)] private float m_targetPreviewAlpha = .5f;
+	[SerializeField] private TargetMarker m_targetMarker;
+	[SerializeField] private TMPro.TextMeshProUGUI m_aiTargetCountTMP;
 
-	public enum TargetMarkerState { None, Candidate, Preview, Designated }
-	private TargetMarkerState m_targetMarkerState = TargetMarkerState.None;
 	private bool m_isSelected;
 	private bool m_isHovered;
 
@@ -62,8 +57,8 @@ public class EntityUIPlugin : EntityPlugin
 		m_healthBar.Init(m_linkedEntity.IsAlliedTo(GameManager.Instance.PlayerID), m_linkedEntity.Equipment.CurrentHealth, m_linkedEntity.Equipment.MaxHealth);
 		m_actionPhaseIndicator.Init(m_linkedEntity);
 		SetKingMarker(false);
-		m_targetMarkerState = TargetMarkerState.None;
-		ApplyTargetMarker();
+		m_targetMarker.Set(TargetMarker.State.None, true);
+		SetAITargetCount(0);
 
 		foreach (EntityStatusDisplay display in m_statusDisplays)
 			display.Hide();
@@ -93,29 +88,20 @@ public class EntityUIPlugin : EntityPlugin
 			m_kingMarker.SetActive(_isKing);
 	}
 
-	public void SetTargetMarker ( TargetMarkerState _state )
+	public void SetTargetMarker ( TargetMarker.State _state )
 	{
-		if (_state == m_targetMarkerState)
-			return;
-
-		m_targetMarkerState = _state;
-		ApplyTargetMarker();
+		m_targetMarker.Set(_state);
 	}
 
-	private void ApplyTargetMarker ()
+	public void SetAITargetCount ( int _count )
 	{
-		if (m_targetMarker == null)
+		if (m_aiTargetCountTMP == null)
 			return;
 
-		m_targetMarker.gameObject.SetActive(m_targetMarkerState != TargetMarkerState.None);
-		if (m_targetMarkerState == TargetMarkerState.None)
-			return;
-
-		m_targetMarker.sprite = m_targetMarkerState == TargetMarkerState.Candidate ? m_candidateTargetSprite : m_designatedTargetSprite;
-		Color color = m_targetMarkerColor;
-		if (m_targetMarkerState == TargetMarkerState.Preview)
-			color.a *= m_targetPreviewAlpha;
-		m_targetMarker.color = color;
+		bool isShown = _count > 1;
+		m_aiTargetCountTMP.gameObject.SetActive(isShown);
+		if (isShown)
+			m_aiTargetCountTMP.text = "x" + _count;
 	}
 
 	public void ShowText ( string _text, Color? _colorOverride = null )
