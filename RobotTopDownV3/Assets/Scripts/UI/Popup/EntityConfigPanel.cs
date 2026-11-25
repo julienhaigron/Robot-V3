@@ -577,10 +577,10 @@ public class EntityConfigPanel : AUIPanel
 		m_statBlock.Init(m_entityData, true);
 
 		m_inventoryGrid.Cleanup();
-		int capacity = GameConfig.current.game.maxInventoryCapacity;
-		foreach (GameDatas.PlayerSave.Component component in GameDatas.current.currentPlayerSave.equipmentInventory.Take(capacity).Where(InventoryGridPredicate))
+		GameDatas.PlayerSave save = GameDatas.current.currentPlayerSave;
+		foreach (GameDatas.PlayerSave.Component component in save.equipmentInventory.Where(InventoryGridPredicate))
 			m_inventoryGrid.CreateNewDisplay(null, component, ComponentDisplay.DisplayMode.Hangar);
-		m_inventoryGrid.Pad(capacity);
+		m_inventoryGrid.Pad(save.InventoryCapacity);
 		RefreshSlotLocks();
 
 		EntityEquipmentData.EntityFaction dominentCorpo = m_entityData.GetDominentFaction(out float percentage);

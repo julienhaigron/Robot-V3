@@ -9,6 +9,7 @@ public class StructureUpgradePopup : AUIPopup
 	[SerializeField] private TextMeshProUGUI m_titleTMP;
 	[SerializeField] private TextMeshProUGUI m_levelTMP;
 	[SerializeField] private TextMeshProUGUI m_priceTMP;
+	[SerializeField] private GameObject m_priceGO;
 	[SerializeField] private BaseButton m_closeBtn;
 	[SerializeField] private BaseButton m_buyUpgradeBtn;
 	[SerializeField] private StructureUpgradeAddonDisplay[] addonDisplays;
@@ -41,7 +42,7 @@ public class StructureUpgradePopup : AUIPopup
 	{
 		Close();
 	}
-	
+
 	private void OnClickOnBuyBtn ()
 	{
 		if (!Upgrade.CanUpgrade())
@@ -61,19 +62,29 @@ public class StructureUpgradePopup : AUIPopup
 
 	private void RefreshVisual ()
 	{
-		m_buyUpgradeBtn.SetInteractability(Upgrade.CanUpgrade());
+		StructureUpgrade upgrade = Upgrade;
+		int level = upgrade.GetCurrentLevel();
+		bool isMaxedOut = upgrade.IsMaxedOut();
 
-		m_titleTMP.text = Upgrade.GetLocalizedName();
-		m_priceTMP.text = "-" + Upgrade.GetCurrentPrice() + "r";
-		m_levelTMP.text = (Upgrade.GetCurrentLevel() + 1) + "<color=green><size=75%>+1</color></size>";
+		m_buyUpgradeBtn.SetInteractability(upgrade.CanUpgrade());
+
+		m_titleTMP.text = upgrade.GetLocalizedName();
+		m_priceGO.SetActive(!isMaxedOut);
+		m_priceTMP.text = "-" + upgrade.GetCurrentPrice() + "r";
+		m_levelTMP.text = isMaxedOut ? (level + 1).ToString() : (level + 1) + "<color=green><size=75%>+1</size></color>";
+
+		string maxText = LocalizationManager.Instance.Get(LocalizationKey.upgrade_max);
 		for (int i = 0; i < addonDisplays.Length; i++)
 		{
-			if (Upgrade.addonDescriptions.Length <= i)
+			bool isUsed = i < upgrade.AddonCount;
+			addonDisplays[i].gameObject.SetActive(isUsed);
+			if (!isUsed)
 				continue;
 
-			float newValue = Upgrade.GetAddonValue(Upgrade.GetCurrentLevel() + 1, i);
-			float bonus = newValue - Upgrade.GetAddonValue(Upgrade.GetCurrentLevel(), i);
-			addonDisplays[i].Init(Upgrade.GetAddonTitle(i), Upgrade.GetAddonValue(Upgrade.GetCurrentLevel(), i).ToString(), bonus.ToString(), newValue.ToString());
+			if (isMaxedOut)
+				addonDisplays[i].Init(upgrade.GetAddonTitle(i), upgrade.GetAddonValueText(level, i), null, maxText);
+			else
+				addonDisplays[i].Init(upgrade.GetAddonTitle(i), upgrade.GetAddonValueText(level, i), upgrade.GetAddonGainText(level, i), upgrade.GetAddonValueText(level + 1, i));
 		}
 	}
 

@@ -241,10 +241,16 @@ public class EntityEquipmentData : AParsableScriptableObject
 		return new System.Tuple<CurrencyType, ulong>(GetFactionCurrency(faction), creditCost);
 	}
 
-	public System.Tuple<CurrencyType, ulong> GetShopSellingPrice ()
+	public System.Tuple<CurrencyType, ulong> GetShopSellingPrice ( EntityFaction _shopFaction )
 	{
+		ShopStructureUpgrade shop = GameAssets.current.game.GetShopStructureUpgrade(_shopFaction);
 		return new System.Tuple<CurrencyType, ulong>(CurrencyType.SoftCurrency
-			, ApplyTradeBonus(GetSellingPrice().Item2, GameAssets.current.game.CommandoShopStructureUpgrade.GetPriceFactor()));
+			, ApplyTradeBonus(GetSellingPrice().Item2, shop == null ? 0f : shop.GetPriceFactor()));
+	}
+
+	public System.Tuple<CurrencyType, ulong> GetBlueprintProcessingPrice ()
+	{
+		return GetShopSellingPrice(faction);
 	}
 
 	public System.Tuple<CurrencyType, ulong> GetRecyclingPrice ()

@@ -3,7 +3,7 @@ using System;
 public readonly struct Gesture
 {
     public enum Kind { Buy, Sell, Equip, Swap, Remove, TakeBack, Deposit }
-    public enum Refusal { None, Silent, TooExpensive, Damaged, DamagedSubComponent, OccupantLocked, TournamentLocked, NoFreeSlot, Recycling, WrongType, SlotOccupied, UsedToday }
+    public enum Refusal { None, Silent, TooExpensive, Damaged, DamagedSubComponent, OccupantLocked, TournamentLocked, NoFreeSlot, Recycling, WrongType, SlotOccupied, UsedToday, InventoryFull }
 
     public readonly GestureContainer target;
     public readonly Kind kind;
@@ -70,6 +70,7 @@ public readonly struct Gesture
             Refusal.Recycling => LocalizationKey.component_refusal_recycling,
             Refusal.SlotOccupied => LocalizationKey.component_refusal_slot_occupied,
             Refusal.UsedToday => LocalizationKey.component_refusal_used_today,
+            Refusal.InventoryFull => LocalizationKey.component_refusal_inventory_full,
             _ => LocalizationKey.component_refusal_wrong_type
         };
     }

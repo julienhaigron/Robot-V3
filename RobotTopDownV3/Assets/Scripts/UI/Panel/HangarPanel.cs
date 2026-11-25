@@ -13,6 +13,8 @@ public class HangarPanel : AUIPanel
 	[SerializeField] private TextMeshProUGUI m_maxEnergyCostInSquadTMP;
 	[SerializeField] private TextMeshProUGUI m_maxUnitInHangarTMP;
 
+	private Color? m_energyBaseColor;
+
 	private void Awake ()
 	{
 		m_addNewEntityBtn.onClick += OnClickCreateNewEntity;
@@ -21,11 +23,13 @@ public class HangarPanel : AUIPanel
 	private void OnEnable ()
 	{
 		LocalizationManager.onLanguageChanged += RefreshDisplay;
+		GameAssets.current.game.HangarStructureUpgrade.onUpgradeDone += RefreshDisplay;
 	}
 
 	private void OnDisable ()
 	{
 		LocalizationManager.onLanguageChanged -= RefreshDisplay;
+		GameAssets.current.game.HangarStructureUpgrade.onUpgradeDone -= RefreshDisplay;
 	}
 
 	private void OnClickCreateNewEntity ()
@@ -74,16 +78,16 @@ public class HangarPanel : AUIPanel
 
 	public void RefreshTexts ()
 	{
-		int builtUnitCount = GameDatas.current.currentPlayerSave.allBuiltUnits.Count;
-		int maxHangarUnit = GameAssets.current.game.HangarStructureUpgrade.GetCurrentMaxHangarUnit();
-		m_addNewEntityBtn.SetInteractability(builtUnitCount < maxHangarUnit);
-		int squadCount = GameDatas.current.currentPlayerSave.squadUnitsIndex.Count;
-		m_maxUnitInSquadTMP.text = squadCount + "/" + GameAssets.current.game.HangarStructureUpgrade.GetCurrentMaxUnitAmount();
+		GameDatas.PlayerSave save = GameDatas.current.currentPlayerSave;
+		HangarStructureUpgrade hangar = GameAssets.current.game.HangarStructureUpgrade;
+		int builtUnitCount = save.allBuiltUnits.Count;
+		int maxHangarUnit = hangar.GetCurrentMaxHangarUnit();
+		m_addNewEntityBtn.SetInteractability(!save.IsHangarFull);
+		m_maxUnitInSquadTMP.text = save.squadUnitsIndex.Count + "/" + hangar.GetCurrentMaxUnitAmount();
 		m_maxUnitInHangarTMP.text = string.Format(LocalizationManager.Instance.Get(LocalizationKey.hangar_inactive_unit), builtUnitCount, maxHangarUnit);
 
-		int totalEnergyUsed = 0;
-		foreach (EntitySavedData savedEntity in GameDatas.current.currentPlayerSave.GetSquadEntitiesData())
-			totalEnergyUsed += savedEntity.GetTotalEnergyUsed();
-		m_maxEnergyCostInSquadTMP.text = totalEnergyUsed + "/" + GameAssets.current.game.HangarStructureUpgrade.GetCurrentMaxSquadEnergyAmount();
+		m_energyBaseColor ??= m_maxEnergyCostInSquadTMP.color;
+		m_maxEnergyCostInSquadTMP.text = save.GetSquadEnergyUsed() + "/" + hangar.GetCurrentMaxSquadEnergyAmount();
+		m_maxEnergyCostInSquadTMP.color = save.IsSquadEnergyValid ? m_energyBaseColor.Value : GestureFeedback.RefusalColor;
 	}
 }

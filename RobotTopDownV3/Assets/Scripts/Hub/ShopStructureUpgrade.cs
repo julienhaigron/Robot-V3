@@ -8,21 +8,15 @@ public class ShopStructureUpgrade : StructureUpgrade
     public int[] maxRerollEachDayPerLevel;
     public int[] maxLockEachDayPerLevel;
 
-	public override float GetAddonValue ( int _level, int _addonID )
+	protected override Addon[] CreateAddons ()
 	{
-		switch (_addonID)
+		return new Addon[]
 		{
-			case 0:
-				return maxItemEachDayPerLevel[_level];
-			case 1:
-				return priceFactorPerLevel[_level];
-			case 2:
-				return maxRerollEachDayPerLevel[_level];
-			case 3:
-				return maxLockEachDayPerLevel[_level];
-		}
-
-		return -1;
+			new(LocalizationKey.structure_addon_shop_items, _level => maxItemEachDayPerLevel[_level]),
+			new(LocalizationKey.structure_addon_shop_resale, _level => priceFactorPerLevel[_level], true),
+			new(LocalizationKey.structure_addon_shop_rerolls, _level => maxRerollEachDayPerLevel[_level]),
+			new(LocalizationKey.structure_addon_shop_freezes, _level => maxLockEachDayPerLevel[_level]),
+		};
 	}
 
 	public int GetMaxItemAmount ()

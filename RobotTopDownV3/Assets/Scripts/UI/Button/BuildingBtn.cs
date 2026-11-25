@@ -13,10 +13,14 @@ public class BuildingBtn : MonoBehaviour
 
 	private AUIPanel m_panel;
 
-	public void Init( AUIPanel _panel, int _upgradeLevel )
+	public void Init( AUIPanel _panel )
 	{
 		m_panel = _panel;
 		m_openPanelBtn.onClick += OnClickOpenPanel;
+	}
+
+	public void SetLevel ( int _upgradeLevel )
+	{
 		m_levelTMP.text = _upgradeLevel.ToString();
 	}
 

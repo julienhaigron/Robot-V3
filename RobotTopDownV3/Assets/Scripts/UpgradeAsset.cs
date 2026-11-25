@@ -80,10 +80,11 @@ public class UpgradeAsset : ScriptableObject
     [Button("Upgrade")]
     public virtual void Upgrade ( bool removeMoney = true )
     {
+        ulong price = GetCurrentPrice();
         GameDatas.current.currentPlayerSave.upgradeLevels[m_saveKey]++;
         if (removeMoney)
         {
-            GameDatas.current.currentPlayerSave.RemoveCurrency(m_currencyType, GetCurrentPrice(), "Upgrade" + m_displayName + GetCurrentLevel());
+            GameDatas.current.currentPlayerSave.RemoveCurrency(m_currencyType, price, "Upgrade" + m_displayName + GetCurrentLevel());
         }
        /* AnalyticsManager.SendEvent("upgrade", new Dictionary<string, object>()
             {

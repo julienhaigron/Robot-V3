@@ -2177,7 +2177,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a8e84717eb35a2141b62ffd967b6c41f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: RTD::LocalizationText
-  key: hangar_active_squad
+  key: hangar/active_squad
 --- !u!1 &6575453197468115653
 GameObject:
   m_ObjectHideFlags: 0

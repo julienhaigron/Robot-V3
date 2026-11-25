@@ -25,16 +25,9 @@ MonoBehaviour:
   m_currencyType: 1
   m_isInfinite: 0
   m_maxLevel: 3
-  addonDescriptions:
-  - max repaired component slot
-  - repair price bonus
-  - mar reroll per day
-  - mar lock per day
   maxRepairedComponentSlotAmountPerLevel: 04000000050000000600000007000000
   repairPriceBonusPerLevel:
   - 0.15
   - 0.3
   - 0.45
   - 0.6
-  maxRerollPerDayPerLevel: 01000000020000000300000004000000
-  maxLockperDayPerLevel: 01000000020000000300000004000000

@@ -25,10 +25,6 @@ MonoBehaviour:
   m_currencyType: 1
   m_isInfinite: 0
   m_maxLevel: 3
-  addonDescriptions:
-  - max recyling slot
-  - recycling time redution
-  - trade bonus amount
   maxRecyclingSlotAmount: 04000000050000000600000007000000
   recyclingTimeReduction: 00000000010000000200000003000000
   tradeBonusAmount:

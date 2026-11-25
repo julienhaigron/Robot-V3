@@ -502,6 +502,9 @@ public class GameManager : SingletonPersistant<GameManager>
 	//hub
 	public bool SquadValidityPredicate ()
 	{
+		if (!GameDatas.current.currentPlayerSave.IsSquadEnergyValid)
+			return false;
+
 		foreach (EntitySavedData entityData in GameDatas.current.currentPlayerSave.GetSquadEntitiesData())
 		{
 			if (!entityData.IsUnitValid())

@@ -30,6 +30,18 @@ public class ShopPanel : AUIPanel
 		m_rerollBtn.onClick += OnClickReroll;
 	}
 
+	private void OnEnable ()
+	{
+		foreach (EntityEquipmentData.EntityFaction faction in GameDatas.PlayerSave.DayData.ShopFactions)
+			GameAssets.current.game.GetShopStructureUpgrade(faction).onUpgradeDone += OnShopUpgraded;
+	}
+
+	private void OnDisable ()
+	{
+		foreach (EntityEquipmentData.EntityFaction faction in GameDatas.PlayerSave.DayData.ShopFactions)
+			GameAssets.current.game.GetShopStructureUpgrade(faction).onUpgradeDone -= OnShopUpgraded;
+	}
+
 	private static GameDatas.PlayerSave.DayData CurrentDayData => GameDatas.current.currentPlayerSave.dayData;
 
 	public void Init ( EntityEquipmentData.EntityFaction _faction)
@@ -39,26 +51,34 @@ public class ShopPanel : AUIPanel
 		m_corpIcon.color = GameAssets.current.ui.corporationsColors[_faction];
 		GameDatas.current.currentPlayerSave.EnsureShopsAreSplit();
 		RefreshShopBuyableItems();
-
-		m_inventoryGrid.Init(m_shopGrid, null, null, item => item.TryGetData(out EntityEquipmentData data) && GameDatas.current.currentPlayerSave.CanAfford(data.GetShopBuyingPrice())
-			, ComponentDisplay.DisplayMode.ShopSelling);
-		m_inventoryGrid.SetPredicateRefusal(Gesture.Refusal.TooExpensive);
-		m_inventoryGrid.Cleanup();
-
-		int capacity = GameConfig.current.game.maxInventoryCapacity;
-		foreach (GameDatas.PlayerSave.Component component in GameDatas.current.currentPlayerSave.equipmentInventory.Take(capacity))
-			m_inventoryGrid.CreateNewDisplay(null, component, ComponentDisplay.DisplayMode.ShopSelling);
-		m_inventoryGrid.Pad(capacity);
-
+		RefreshInventory();
 		RefreshShopActions();
 		onShopInitialized?.Invoke(this);
+	}
+
+	private void RefreshInventory ()
+	{
+		m_inventoryGrid.Init(m_shopGrid, null, null, item => !GameDatas.current.currentPlayerSave.IsInventoryFull && item.TryGetData(out EntityEquipmentData data)
+			&& GameDatas.current.currentPlayerSave.CanAfford(data.GetShopBuyingPrice()), ComponentDisplay.DisplayMode.ShopSelling);
+		m_inventoryGrid.Cleanup();
+
+		GameDatas.PlayerSave save = GameDatas.current.currentPlayerSave;
+		foreach (GameDatas.PlayerSave.Component component in save.equipmentInventory)
+			m_inventoryGrid.CreateNewDisplay(null, component, ComponentDisplay.DisplayMode.ShopSelling);
+		m_inventoryGrid.Pad(save.InventoryCapacity);
+	}
+
+	private void OnShopUpgraded ()
+	{
+		RefreshInventory();
+		RefreshShopActions();
 	}
 
 	private void SellItem( ComponentContainer _container, ComponentDisplay _display )
 	{
 		GameDatas.current.currentPlayerSave.equipmentInventory.Remove(_display.SavedData);
 
-		System.Tuple<CurrencyType, ulong> price = _display.ComponentData.GetShopSellingPrice();
+		System.Tuple<CurrencyType, ulong> price = _display.ComponentData.GetShopSellingPrice(m_currentFaction);
 		GameDatas.current.currentPlayerSave.AddCurrency(price.Item1, price.Item2);
 		_container.Discard(_display);
 		RefreshShopActions();
@@ -160,18 +180,20 @@ public class ShopPanel : AUIPanel
 
 	private void RefreshShopActions ()
 	{
+		GameDatas.PlayerSave save = GameDatas.current.currentPlayerSave;
 		int remainingRerolls = GetRemainingRerolls();
 		int remainingFreezes = GetRemainingFreezes();
 
 		m_rerollTMP.text = remainingRerolls + "/" + GetMaxRerolls();
 		m_freezeTMP.text = remainingFreezes + "/" + GetMaxFreezes();
 		m_rerollBtn.SetInteractability(remainingRerolls > 0);
+		m_inventoryGrid.SetPredicateRefusal(save.IsInventoryFull ? Gesture.Refusal.InventoryFull : Gesture.Refusal.TooExpensive);
 
 		foreach (ComponentDisplay display in m_shopGrid.Items)
 		{
 			GameDatas.PlayerSave.DayData.ShopComponentData shopData = display.ShopSavedData;
 			display.SetFreezeInteractability(shopData != null && CurrentDayData.itemsInShop.Contains(shopData) && (shopData.isFrozen || remainingFreezes > 0));
-			display.SetAffordable(m_inventoryGrid.GetRefusal(display) != Gesture.Refusal.TooExpensive);
+			display.SetAffordable(display.ComponentData == null || save.CanAfford(display.ComponentData.GetShopBuyingPrice()));
 		}
 
 		RefreshBlueprints();
@@ -188,7 +210,7 @@ public class ShopPanel : AUIPanel
 		for (int i = 0; i < m_blueprintDisplays.Length; i++)
 		{
 			if (i < blueprints.Count)
-				m_blueprintDisplays[i].Show(blueprints[i], save.CanAfford(blueprints[i].GetShopSellingPrice()), ProcessBlueprint);
+				m_blueprintDisplays[i].Show(blueprints[i], save.CanAfford(blueprints[i].GetBlueprintProcessingPrice()), ProcessBlueprint);
 			else
 				m_blueprintDisplays[i].Hide();
 		}

@@ -1,7 +1,4 @@
 using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 
 [CreateAssetMenu(fileName = "RecyclingStationStructureUpgrade", menuName = "ScriptableObject/Structure/RecyclingStationStructureUpgrade")]
 public class RecyclerStructureUpgrade : StructureUpgrade
@@ -10,33 +7,14 @@ public class RecyclerStructureUpgrade : StructureUpgrade
     public int[] recyclingTimeReduction;
     public float[] tradeBonusAmount;
 
-
-	public override void Upgrade ( bool removeMoney = true )
+	protected override Addon[] CreateAddons ()
 	{
-		base.Upgrade(removeMoney);
-
-		int maxSlotAmount = GetCurrentMaxRecyclingSlotAmount();
-
-		for (int currentSlotInSaveAmount = GameDatas.current.currentPlayerSave.dayData.currentlyRecyclingComponents.Count - 1; currentSlotInSaveAmount < maxSlotAmount; currentSlotInSaveAmount++)
-			GameDatas.current.currentPlayerSave.dayData.currentlyRecyclingComponents.Add(new());
-	}
-
-
-	public override float GetAddonValue ( int _level, int _addonID )
-	{
-		switch (_addonID)
+		return new Addon[]
 		{
-			case 0:
-				return maxRecyclingSlotAmount[_level];
-			case 1:
-				return recyclingTimeReduction[_level];
-			case 2:
-				return tradeBonusAmount[_level];
-			case 3:
-				return -1;
-		}
-
-		return -1;
+			new(LocalizationKey.structure_addon_recycler_slots, _level => maxRecyclingSlotAmount[_level]),
+			new(LocalizationKey.structure_addon_recycler_time, _level => recyclingTimeReduction[_level]),
+			new(LocalizationKey.structure_addon_recycler_resale, _level => tradeBonusAmount[_level], true),
+		};
 	}
 
 	public int GetCurrentMaxRecyclingSlotAmount ()

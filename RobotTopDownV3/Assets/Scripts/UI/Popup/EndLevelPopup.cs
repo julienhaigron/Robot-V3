@@ -9,6 +9,7 @@ public class EndLevelPopup : AUIPopup
 {
 	[SerializeField] private TextMeshProUGUI m_texte;
 	[SerializeField] private TextMeshProUGUI m_rewardPointsTMP;
+	[SerializeField] private TextMeshProUGUI m_inventoryTMP;
 	[SerializeField] private BaseButton m_continueButton;
 	[SerializeField] private CurrencyRewardDisplay[] m_rewardCurrencyDisplays;
 	[SerializeField] private ComponentRewardDisplay[] m_rewardComponentDisplays;
@@ -21,6 +22,7 @@ public class EndLevelPopup : AUIPopup
 	public enum GameResult { Win, Draw, Loose }
 
 	private int m_allocatedRewardPoint;
+	private Color? m_inventoryBaseColor;
 	private readonly List<GameDatas.PlayerSave.Component> m_pendingDamagedComponents = new();
 
 	private void Awake ()
@@ -95,6 +97,15 @@ public class EndLevelPopup : AUIPopup
 		ComponentRewardDisplay.InitAll(m_rewardComponentDisplays, rewardSet.components, OnInterractWithRewardBtn, isWin);
 		ComponentRewardDisplay.InitAll(m_rewardBlueprintDisplays, rewardSet.blueprints, OnInterractWithRewardBtn, isWin);
 
+		int freeInventorySlots = GameDatas.current.currentPlayerSave.FreeInventorySlots;
+		foreach (ComponentRewardDisplay display in m_rewardComponentDisplays.Where(display => display.IsSelected && display.IsVisible))
+		{
+			if (freeInventorySlots > 0)
+				freeInventorySlots--;
+			else
+				display.SetIsSelected(false);
+		}
+
 		for (int i = 0; i < m_rewardUnitsDisplays.Length; i++)
 		{
 			if (rewardSet.units.Count > i)
@@ -155,7 +166,33 @@ public class EndLevelPopup : AUIPopup
 		//m_rewardPointsTMP.text = string.Format(LocalizationManager.Instance.Get(LocalizationKey.endlevel_reward_points), m_allocatedRewardPoint - totalUsedRewardPoint);
 		m_rewardPointsTMP.text = (m_allocatedRewardPoint - totalUsedRewardPoint).ToString();
 
-		m_continueButton.SetInteractability(m_allocatedRewardPoint == 5 || totalUsedRewardPoint <= m_allocatedRewardPoint);
+		bool fitsInventory = RefreshInventoryLimits();
+		m_continueButton.SetInteractability((m_allocatedRewardPoint == 5 || totalUsedRewardPoint <= m_allocatedRewardPoint) && fitsInventory);
+	}
+
+	private bool RefreshInventoryLimits ()
+	{
+		GameDatas.PlayerSave save = GameDatas.current.currentPlayerSave;
+
+		int freeHangarSlots = save.FreeHangarSlots;
+		foreach (UnitRewardDisplay display in m_rewardUnitsDisplays.Where(display => display.IsVisible))
+		{
+			bool isDismantled = freeHangarSlots == 0;
+			display.SetDismantled(isDismantled);
+			if (display.IsSelected && !isDismantled)
+				freeHangarSlots--;
+		}
+
+		bool hasComponentRewards = m_rewardComponentDisplays.Any(display => display.IsVisible);
+		int selectedComponents = m_rewardComponentDisplays.Count(display => display.IsSelected && display.IsVisible);
+		bool fitsInventory = selectedComponents <= save.FreeInventorySlots;
+
+		m_inventoryTMP.gameObject.SetActive(hasComponentRewards);
+		m_inventoryBaseColor ??= m_inventoryTMP.color;
+		m_inventoryTMP.text = string.Format(LocalizationManager.Instance.Get(LocalizationKey.endlevel_inventory), save.equipmentInventory.Count + selectedComponents, save.InventoryCapacity);
+		m_inventoryTMP.color = fitsInventory ? m_inventoryBaseColor.Value : GestureFeedback.RefusalColor;
+
+		return fitsInventory;
 	}
 
 	public List<GameDatas.PlayerSave.Component> PickRandomComponents ( EntitySavedData _entity, int _count )

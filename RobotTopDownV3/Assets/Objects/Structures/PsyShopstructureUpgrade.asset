@@ -25,11 +25,6 @@ MonoBehaviour:
   m_currencyType: 1
   m_isInfinite: 0
   m_maxLevel: 3
-  addonDescriptions:
-  - "unit\xE9s construite max"
-  - "composants poss\xE9d\xE9s"
-  - "unit\xE9 max dans la squad"
-  - squad energy
   maxItemEachDayPerLevel: 080000000a0000000c0000000e000000
   priceFactorPerLevel:
   - 0.15

@@ -10,12 +10,21 @@ public class RecyclePanel : AUIPanel
 
 	private System.Func<GameDatas.PlayerSave.Component, bool> InventoryGridPredicate => item => item != null /*&& item.isDamaged*/;
 
+	private void OnEnable ()
+	{
+		GameAssets.current.game.RecyclerStructureUpgrade.onUpgradeDone += Init;
+	}
+
+	private void OnDisable ()
+	{
+		GameAssets.current.game.RecyclerStructureUpgrade.onUpgradeDone -= Init;
+	}
+
 	public void Init ()
 	{
 		int maxSlotAmount = GameAssets.current.game.RecyclerStructureUpgrade.GetCurrentMaxRecyclingSlotAmount();
 
-		for (int currentSlotInSaveAmount = GameDatas.current.currentPlayerSave.dayData.currentlyRecyclingComponents.Count ; currentSlotInSaveAmount < maxSlotAmount; currentSlotInSaveAmount++)
-			GameDatas.current.currentPlayerSave.dayData.currentlyRecyclingComponents.Add(new());
+		GameDatas.PlayerSave.DayData.EnsureSlots(GameDatas.current.currentPlayerSave.dayData.currentlyRecyclingComponents, maxSlotAmount);
 
 		for (int i = 0; i < m_recyclingSlots.Length; i++)
 		{
@@ -29,7 +38,7 @@ public class RecyclePanel : AUIPanel
 
 		m_inventoryGrid.Cleanup();
 		m_inventoryGrid.Init(null, null, null, InventoryGridPredicate, ComponentDisplay.DisplayMode.RecyclingStation);
-		m_inventoryGrid.Pad(GameConfig.current.game.maxInventoryCapacity);
+		m_inventoryGrid.Pad(GameDatas.current.currentPlayerSave.InventoryCapacity);
 		m_inventoryGrid.SetGestureTargetProvider(_display => GetFreeContainer());
 	}
 

@@ -107,8 +107,11 @@ public class EntitySavedData : INetworkSerializable
 
 	public bool CanAddToSquad ()
 	{
-		bool hasCapacity = GameDatas.current.currentPlayerSave.squadUnitsIndex.Count < GameAssets.current.game.HangarStructureUpgrade.GetCurrentMaxUnitAmount();
-		return hasCapacity && IsUnitValid();
+		GameDatas.PlayerSave save = GameDatas.current.currentPlayerSave;
+		HangarStructureUpgrade hangar = GameAssets.current.game.HangarStructureUpgrade;
+		return save.squadUnitsIndex.Count < hangar.GetCurrentMaxUnitAmount()
+			&& save.GetSquadEnergyUsed() + GetTotalEnergyUsed() <= hangar.GetCurrentMaxSquadEnergyAmount()
+			&& IsUnitValid();
 	}
 
 	public List<GameDatas.PlayerSave.Component> GetAllComponents ()

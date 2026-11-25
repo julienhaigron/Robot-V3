@@ -30,7 +30,7 @@ public class BlueprintDisplay : MonoBehaviour
 		m_onProcess = _onProcess;
 		m_icon.sprite = _component.icon;
 		m_nameTMP.text = _component.GetLocalizedName();
-		System.Tuple<CurrencyType, ulong> price = _component.GetShopSellingPrice();
+		System.Tuple<CurrencyType, ulong> price = _component.GetBlueprintProcessingPrice();
 		m_priceTMP.text = price.Item2.ToString();
 		m_currencyIcon.sprite = GameAssets.current.currencies[price.Item1].icon;
 		m_basePriceColor ??= m_priceTMP.color;

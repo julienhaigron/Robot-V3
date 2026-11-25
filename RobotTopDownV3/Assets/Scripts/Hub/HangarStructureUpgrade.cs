@@ -8,26 +8,25 @@ public class HangarStructureUpgrade : StructureUpgrade
     public int[] maxSquadUnitAmountPerLevel;
     public int[] maxSquadEnergyAmountPerLevel;
 
-	public override float GetAddonValue ( int _level, int _addonID )
+	protected override Addon[] CreateAddons ()
 	{
-		switch (_addonID)
+		return new Addon[]
 		{
-			case 0:
-				return maxHangarUnitAmountPerLevel[_level];
-			case 1:
-				return maxComponentCapacityPerLevel[_level];
-			case 2:
-				return maxSquadUnitAmountPerLevel[_level];
-			case 3:
-				return maxSquadEnergyAmountPerLevel[_level];
-		}
-
-		return -1;
+			new(LocalizationKey.structure_addon_hangar_units, _level => maxHangarUnitAmountPerLevel[_level]),
+			new(LocalizationKey.structure_addon_hangar_components, _level => maxComponentCapacityPerLevel[_level]),
+			new(LocalizationKey.structure_addon_hangar_squad_units, _level => maxSquadUnitAmountPerLevel[_level]),
+			new(LocalizationKey.structure_addon_hangar_squad_energy, _level => maxSquadEnergyAmountPerLevel[_level]),
+		};
 	}
 
 	public int GetCurrentMaxHangarUnit ()
 	{
 		return maxHangarUnitAmountPerLevel[GetCurrentLevel()];
+	}
+
+	public int GetCurrentMaxComponentCapacity ()
+	{
+		return maxComponentCapacityPerLevel[GetCurrentLevel()];
 	}
 
 	public int GetCurrentMaxUnitAmount ()

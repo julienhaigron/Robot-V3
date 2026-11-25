@@ -398,7 +398,6 @@ public enum LocalizationKey
     upgrade_hangarstructureupgrade,
     upgrade_recyclingstructureupgrade,
     upgrade_repairstationstructureupgrade,
-    upgrade_shopstructureupgrade,
     status_burn1,
     status_doom,
     status_flying,
@@ -829,6 +828,27 @@ public enum LocalizationKey
     shop_process_blueprint,
     shop_no_blueprint,
     log_item_destroyed,
+    upgrade_max,
+    upgrade_upgrade,
+    upgrade_psyshopstructureupgrade,
+    upgrade_commandoshopstructureupgrade,
+    upgrade_paladinshopstructureupgrade,
+    structure_addon_hangar_units,
+    structure_addon_hangar_components,
+    structure_addon_hangar_squad_units,
+    structure_addon_hangar_squad_energy,
+    structure_addon_shop_items,
+    structure_addon_shop_resale,
+    structure_addon_shop_rerolls,
+    structure_addon_shop_freezes,
+    structure_addon_recycler_slots,
+    structure_addon_recycler_time,
+    structure_addon_recycler_resale,
+    structure_addon_repair_slots,
+    structure_addon_repair_discount,
+    component_refusal_inventory_full,
+    endlevel_inventory,
+    endlevel_unit_dismantled,
 }
 
 public static class LocalizationKeyExtensions
@@ -1234,7 +1254,6 @@ public static class LocalizationKeyExtensions
             case LocalizationKey.upgrade_hangarstructureupgrade: return "upgrade/hangarstructureupgrade";
             case LocalizationKey.upgrade_recyclingstructureupgrade: return "upgrade/recyclingstructureupgrade";
             case LocalizationKey.upgrade_repairstationstructureupgrade: return "upgrade/repairstationstructureupgrade";
-            case LocalizationKey.upgrade_shopstructureupgrade: return "upgrade/shopstructureupgrade";
             case LocalizationKey.status_burn1: return "status/burn1";
             case LocalizationKey.status_doom: return "status/doom";
             case LocalizationKey.status_flying: return "status/flying";
@@ -1665,6 +1684,27 @@ public static class LocalizationKeyExtensions
             case LocalizationKey.shop_process_blueprint: return "shop/process_blueprint";
             case LocalizationKey.shop_no_blueprint: return "shop/no_blueprint";
             case LocalizationKey.log_item_destroyed: return "log/item_destroyed";
+            case LocalizationKey.upgrade_max: return "upgrade/max";
+            case LocalizationKey.upgrade_upgrade: return "upgrade/upgrade";
+            case LocalizationKey.upgrade_psyshopstructureupgrade: return "upgrade/psyshopstructureupgrade";
+            case LocalizationKey.upgrade_commandoshopstructureupgrade: return "upgrade/commandoshopstructureupgrade";
+            case LocalizationKey.upgrade_paladinshopstructureupgrade: return "upgrade/paladinshopstructureupgrade";
+            case LocalizationKey.structure_addon_hangar_units: return "structure_addon/hangar_units";
+            case LocalizationKey.structure_addon_hangar_components: return "structure_addon/hangar_components";
+            case LocalizationKey.structure_addon_hangar_squad_units: return "structure_addon/hangar_squad_units";
+            case LocalizationKey.structure_addon_hangar_squad_energy: return "structure_addon/hangar_squad_energy";
+            case LocalizationKey.structure_addon_shop_items: return "structure_addon/shop_items";
+            case LocalizationKey.structure_addon_shop_resale: return "structure_addon/shop_resale";
+            case LocalizationKey.structure_addon_shop_rerolls: return "structure_addon/shop_rerolls";
+            case LocalizationKey.structure_addon_shop_freezes: return "structure_addon/shop_freezes";
+            case LocalizationKey.structure_addon_recycler_slots: return "structure_addon/recycler_slots";
+            case LocalizationKey.structure_addon_recycler_time: return "structure_addon/recycler_time";
+            case LocalizationKey.structure_addon_recycler_resale: return "structure_addon/recycler_resale";
+            case LocalizationKey.structure_addon_repair_slots: return "structure_addon/repair_slots";
+            case LocalizationKey.structure_addon_repair_discount: return "structure_addon/repair_discount";
+            case LocalizationKey.component_refusal_inventory_full: return "component_refusal/inventory_full";
+            case LocalizationKey.endlevel_inventory: return "endlevel/inventory";
+            case LocalizationKey.endlevel_unit_dismantled: return "endlevel/unit_dismantled";
             default: return string.Empty;
         }
     }

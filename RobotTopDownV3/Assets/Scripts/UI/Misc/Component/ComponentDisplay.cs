@@ -51,6 +51,8 @@ public class ComponentDisplay : GestureDisplay
 	public override bool IsPlaceholder => m_currentDisplayMode == DisplayMode.Empty || m_componentData == null;
 	protected override bool CanLift => !m_isTutorialHighlighted;
 
+	private static EntityEquipmentData.EntityFaction CurrentShopFaction => UIManager.Instance.GetPanel<ShopPanel>().CurrentFaction;
+
 	public static System.Tuple<CurrencyType, ulong> GetDisplayedPrice ( EntityEquipmentData _componentData, DisplayMode _displayMode )
 	{
 		if (_componentData == null)
@@ -61,7 +63,7 @@ public class ComponentDisplay : GestureDisplay
 			case DisplayMode.RecyclingStation:
 				return _componentData.GetRecyclingPrice();
 			case DisplayMode.ShopSelling:
-				return _componentData.GetShopSellingPrice();
+				return _componentData.GetShopSellingPrice(CurrentShopFaction);
 			case DisplayMode.ShopBuying:
 				return _componentData.GetShopBuyingPrice();
 			default:
@@ -260,7 +262,7 @@ public class ComponentDisplay : GestureDisplay
 		return _kind switch
 		{
 			Gesture.Kind.Buy => m_componentData.GetShopBuyingPrice(),
-			Gesture.Kind.Sell => m_componentData.GetShopSellingPrice(),
+			Gesture.Kind.Sell => m_componentData.GetShopSellingPrice(CurrentShopFaction),
 			Gesture.Kind.Deposit => m_componentData.GetRecyclingPrice(),
 			_ => null
 		};

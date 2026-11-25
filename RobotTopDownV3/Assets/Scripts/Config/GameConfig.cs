@@ -36,7 +36,6 @@ public partial class GameConfig : ScriptableObject
 	{
 		[Title("Macro")]
 		public int nbOfDayInCycle = 7;
-		public int maxInventoryCapacity = 80;
 
 		[Title("Micro")]
 		public int zonePointsToWin = 5;

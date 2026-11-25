@@ -33,12 +33,21 @@ public class RepairStationPanel : AUIPanel
 		}
 	}
 
+	private void OnEnable ()
+	{
+		GameAssets.current.game.RepairStationStructureUpgrade.onUpgradeDone += Init;
+	}
+
+	private void OnDisable ()
+	{
+		GameAssets.current.game.RepairStationStructureUpgrade.onUpgradeDone -= Init;
+	}
+
 	public void Init ()
 	{
 		int maxSlotAmount = GameAssets.current.game.RepairStationStructureUpgrade.GetCurrentMaxRepairedComponentSlotAmountPerLevel();
 
-		for (int currentSlotInSaveAmount = GameDatas.current.currentPlayerSave.dayData.repairingComponents.Count; currentSlotInSaveAmount < maxSlotAmount; currentSlotInSaveAmount++)
-			GameDatas.current.currentPlayerSave.dayData.repairingComponents.Add(new());
+		GameDatas.PlayerSave.DayData.EnsureSlots(GameDatas.current.currentPlayerSave.dayData.repairingComponents, maxSlotAmount);
 
 		for (int i = 0; i < m_repairingSlots.Length; i++)
 		{

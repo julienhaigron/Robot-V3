@@ -111,7 +111,14 @@ public class UnitPreset : AParsableScriptableObject
     [Button]
     public void AddToUnits (bool _addToSquadIfAble)
 	{
-        GameDatas.current.currentPlayerSave.AddNewUnit(GetSavedData(), _addToSquadIfAble);
+        GameDatas.PlayerSave save = GameDatas.current.currentPlayerSave;
+        EntitySavedData unit = GetSavedData();
+
+        if (!save.IsHangarFull)
+            save.AddNewUnit(unit, _addToSquadIfAble);
+        else
+            foreach (GameDatas.PlayerSave.Component component in unit.GetAllComponents())
+                save.AddEquipmentToInventory(component);
     }
 
 	protected override string GetSheetID ()

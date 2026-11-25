@@ -304,8 +304,8 @@ MonoBehaviour:
     - "Cr\xE9er une unit\xE9"
   - key: hangar/active_squad
     values:
-    - 'Active squad: {0}/{1}'
-    - 'Escouade active : {0}/{1}'
+    - "ACTIVE SQUAD"
+    - "ESCOUADE ACTIVE"
   - key: hangar/inactive_unit
     values:
     - 'Hangar: {0}/{1}'
@@ -1596,20 +1596,16 @@ MonoBehaviour:
     - Tuto
   - key: upgrade/hangarstructureupgrade
     values:
-    - Hangar Structure upgrade
-    - Hangar Structure upgrade
+    - "HANGAR"
+    - "HANGAR"
   - key: upgrade/recyclingstructureupgrade
     values:
-    - Recyclingstructure
-    - Recyclingstructure
+    - "RECYCLING"
+    - "RECYCLAGE"
   - key: upgrade/repairstationstructureupgrade
     values:
-    - Repairstationstructure
-    - Repairstationstructure
-  - key: upgrade/shopstructureupgrade
-    values:
-    - Shopstructure
-    - Shopstructure
+    - "REPAIR"
+    - "R\xC9PARATION"
   - key: status/burn1
     values:
     - Burning
@@ -3386,3 +3382,87 @@ MonoBehaviour:
     values:
     - "{0} destroyed"
     - "{0} d\xE9truit"
+  - key: upgrade/max
+    values:
+    - "MAX"
+    - "MAX"
+  - key: upgrade/upgrade
+    values:
+    - "UPGRADE"
+    - "AM\xC9LIORER"
+  - key: upgrade/psyshopstructureupgrade
+    values:
+    - "PSY SHOP"
+    - "BOUTIQUE PSY"
+  - key: upgrade/commandoshopstructureupgrade
+    values:
+    - "COMMANDO SHOP"
+    - "BOUTIQUE COMMANDO"
+  - key: upgrade/paladinshopstructureupgrade
+    values:
+    - "PALADIN SHOP"
+    - "BOUTIQUE PALADIN"
+  - key: structure_addon/hangar_units
+    values:
+    - "Max built units"
+    - "Unit\xE9s construites max"
+  - key: structure_addon/hangar_components
+    values:
+    - "Component capacity"
+    - "Capacit\xE9 de composants"
+  - key: structure_addon/hangar_squad_units
+    values:
+    - "Max squad units"
+    - "Unit\xE9s max dans l'escouade"
+  - key: structure_addon/hangar_squad_energy
+    values:
+    - "Squad energy"
+    - "\xC9nergie de l'escouade"
+  - key: structure_addon/shop_items
+    values:
+    - "Items per day"
+    - "Articles par jour"
+  - key: structure_addon/shop_resale
+    values:
+    - "Resale bonus"
+    - "Bonus de revente"
+  - key: structure_addon/shop_rerolls
+    values:
+    - "Rerolls per day"
+    - "Relances par jour"
+  - key: structure_addon/shop_freezes
+    values:
+    - "Freezes per day"
+    - "Gels par jour"
+  - key: structure_addon/recycler_slots
+    values:
+    - "Recycling slots"
+    - "Postes de recyclage"
+  - key: structure_addon/recycler_time
+    values:
+    - "Recycling time cut (days)"
+    - "Recyclage raccourci (jours)"
+  - key: structure_addon/recycler_resale
+    values:
+    - "Recycling bonus"
+    - "Bonus de recyclage"
+  - key: structure_addon/repair_slots
+    values:
+    - "Repair slots"
+    - "Postes de r\xE9paration"
+  - key: structure_addon/repair_discount
+    values:
+    - "Repair discount"
+    - "Remise sur les r\xE9parations"
+  - key: component_refusal/inventory_full
+    values:
+    - "Inventory full"
+    - "Inventaire plein"
+  - key: endlevel/inventory
+    values:
+    - "Inventory: {0}/{1}"
+    - "Inventaire : {0}/{1}"
+  - key: endlevel/unit_dismantled
+    values:
+    - "Hangar full: dismantled"
+    - "Hangar plein : d\xE9mont\xE9e"

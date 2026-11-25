@@ -16,15 +16,35 @@ public class StructureShortcutsFolder : MonoBehaviour
 
 	private void Awake ()
 	{
-		m_openShopBtns[EntityEquipmentData.EntityFaction.Psy].Init(UIManager.Instance.GetPanel<ShopPanel>(), GameAssets.current.game.PsyShopStructureUpgrade.GetCurrentLevel() + 1 );
-		m_openShopBtns[EntityEquipmentData.EntityFaction.Commando].Init(UIManager.Instance.GetPanel<ShopPanel>(), GameAssets.current.game.CommandoShopStructureUpgrade.GetCurrentLevel() + 1 );
-		m_openShopBtns[EntityEquipmentData.EntityFaction.Paladin].Init(UIManager.Instance.GetPanel<ShopPanel>(), GameAssets.current.game.PaladinShopStructureUpgrade.GetCurrentLevel() + 1 );
+		foreach (KeyValuePair<EntityEquipmentData.EntityFaction, BuildingBtn> shopBtn in m_openShopBtns)
+			shopBtn.Value.Init(UIManager.Instance.GetPanel<ShopPanel>());
 
-		m_hangarBtn.Init(UIManager.Instance.GetPanel<HangarPanel>(), GameAssets.current.game.HangarStructureUpgrade.GetCurrentLevel() + 1 );
-		m_recycleShopBtn.Init(UIManager.Instance.GetPanel<RecyclePanel>(), GameAssets.current.game.RecyclerStructureUpgrade.GetCurrentLevel() + 1 );
-		m_repairBtn.Init(UIManager.Instance.GetPanel<RepairStationPanel>(), GameAssets.current.game.RepairStationStructureUpgrade.GetCurrentLevel() + 1);
-		m_missionSelectionPanelBtn.Init(UIManager.Instance.GetPanel<SelectMissionPanel>(), 0 );
+		m_hangarBtn.Init(UIManager.Instance.GetPanel<HangarPanel>());
+		m_recycleShopBtn.Init(UIManager.Instance.GetPanel<RecyclePanel>());
+		m_repairBtn.Init(UIManager.Instance.GetPanel<RepairStationPanel>());
+		m_missionSelectionPanelBtn.Init(UIManager.Instance.GetPanel<SelectMissionPanel>());
+		m_missionSelectionPanelBtn.SetLevel(0);
 		m_shortenFolderToggleBtn.onClick += OnClickShortenFolderToggle;
+
+		RefreshLevels();
+		foreach (StructureUpgrade upgrade in GameAssets.current.game.structureUpgrades.Values)
+			upgrade.onUpgradeDone += RefreshLevels;
+	}
+
+	private void OnDestroy ()
+	{
+		foreach (StructureUpgrade upgrade in GameAssets.current.game.structureUpgrades.Values)
+			upgrade.onUpgradeDone -= RefreshLevels;
+	}
+
+	private void RefreshLevels ()
+	{
+		foreach (KeyValuePair<EntityEquipmentData.EntityFaction, BuildingBtn> shopBtn in m_openShopBtns)
+			shopBtn.Value.SetLevel(GameAssets.current.game.GetShopStructureUpgrade(shopBtn.Key).GetCurrentLevel() + 1);
+
+		m_hangarBtn.SetLevel(GameAssets.current.game.HangarStructureUpgrade.GetCurrentLevel() + 1);
+		m_recycleShopBtn.SetLevel(GameAssets.current.game.RecyclerStructureUpgrade.GetCurrentLevel() + 1);
+		m_repairBtn.SetLevel(GameAssets.current.game.RepairStationStructureUpgrade.GetCurrentLevel() + 1);
 	}
 
 	public void SetVisibility(bool _isVisible )

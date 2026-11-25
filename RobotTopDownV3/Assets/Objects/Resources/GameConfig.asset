@@ -17,7 +17,6 @@ MonoBehaviour:
     skipFTUE: 0
   game:
     nbOfDayInCycle: 7
-    maxInventoryCapacity: 80
     zonePointsToWin: 5
     sabotagePointHealth: 10
     demolisherSabotageHitBonus: 1

@@ -246,9 +246,25 @@ public partial class GameDatas : ScriptableObject
 			return currencies.TryGetValue(_price.Item1, out ulong owned) && _price.Item2 <= owned;
 		}
 
+		public int GetSquadEnergyUsed ()
+		{
+			int total = 0;
+			foreach (int index in squadUnitsIndex)
+				total += allBuiltUnits[index].GetTotalEnergyUsed();
+
+			return total;
+		}
+
+		public bool IsSquadEnergyValid => GetSquadEnergyUsed() <= GameAssets.current.game.HangarStructureUpgrade.GetCurrentMaxSquadEnergyAmount();
+		public int FreeHangarSlots => Mathf.Max(0, GameAssets.current.game.HangarStructureUpgrade.GetCurrentMaxHangarUnit() - allBuiltUnits.Count);
+		public bool IsHangarFull => FreeHangarSlots == 0;
+		public int InventoryCapacity => GameAssets.current.game.HangarStructureUpgrade.GetCurrentMaxComponentCapacity();
+		public int FreeInventorySlots => Mathf.Max(0, InventoryCapacity - equipmentInventory.Count);
+		public bool IsInventoryFull => FreeInventorySlots == 0;
+
 		public bool TryProcessBlueprint ( EntityEquipmentData _component )
 		{
-			System.Tuple<CurrencyType, ulong> price = _component.GetShopSellingPrice();
+			System.Tuple<CurrencyType, ulong> price = _component.GetBlueprintProcessingPrice();
 			if (!OwnsBlueprint(_component.name) || !CanAfford(price))
 				return false;
 
@@ -305,6 +321,12 @@ public partial class GameDatas : ScriptableObject
 			{
 				public EntitySavedData unit;
 				public bool wasUsedToday;
+			}
+
+			public static void EnsureSlots<T> ( List<T> _slots, int _count ) where T : new()
+			{
+				while (_slots.Count < _count)
+					_slots.Add(new());
 			}
 
 		}
