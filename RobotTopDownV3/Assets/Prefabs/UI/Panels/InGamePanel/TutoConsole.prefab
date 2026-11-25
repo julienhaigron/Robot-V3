@@ -616,6 +616,7 @@ GameObject:
   - component: {fileID: 2018059693267644269}
   - component: {fileID: 4443261088190819135}
   - component: {fileID: 6631331029855124799}
+  - component: {fileID: 5443471079780576300}
   m_Layer: 5
   m_Name: TextBackground
   m_TagString: Untagged
@@ -844,6 +845,7 @@ GameObject:
   - component: {fileID: 7523819863874654224}
   - component: {fileID: 309774284911788640}
   - component: {fileID: 228539167926089996}
+  - component: {fileID: 2430823700480101287}
   m_Layer: 5
   m_Name: Imagebackground
   m_TagString: Untagged
@@ -1760,3 +1762,27 @@ MonoBehaviour:
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.RectMask2D
   m_Padding: {x: 0, y: 0, z: 0, w: 0}
   m_Softness: {x: 0, y: 0}
+--- !u!114 &5443471079780576300
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3651381051088841299}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b48349306e8236b40924020db335ad99, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: RTD::TutorialSpotlightLit
+--- !u!114 &2430823700480101287
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5227857757134439416}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b48349306e8236b40924020db335ad99, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: RTD::TutorialSpotlightLit

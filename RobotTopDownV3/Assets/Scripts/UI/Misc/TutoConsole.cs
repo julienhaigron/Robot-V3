@@ -37,6 +37,7 @@ public class TutoConsole : MonoBehaviour
 	{
 		public DialogueData dialogue;
 		public string[] highlightedZoneIds;
+		public bool isSpotlit;
 	}
 
 	private TutoDialogueContainer m_currentDialogueData;
@@ -178,11 +179,11 @@ public class TutoConsole : MonoBehaviour
 		m_hideBtn.SetVisible(false, true);
 	}
 
-	public TutoDialogueContainer PlayDialogue ( DialogueData _dialogueData, params string[] _higlightedZoneIDs )
+	public TutoDialogueContainer PlayDialogue ( DialogueData _dialogueData, string[] _higlightedZoneIDs = null, bool _isSpotlit = true )
 	{
 		bool wasCaughtUp = IsCaughtUp();
 
-		TutoDialogueContainer newDialogue = new() { dialogue = _dialogueData, highlightedZoneIds = _higlightedZoneIDs };
+		TutoDialogueContainer newDialogue = new() { dialogue = _dialogueData, highlightedZoneIds = _higlightedZoneIDs, isSpotlit = _isSpotlit };
 		m_allDialogs.Add(newDialogue);
 
 		Show(false);
@@ -243,7 +244,7 @@ public class TutoConsole : MonoBehaviour
 
 		foreach (string highlightedZoneId in m_currentDialogueData.highlightedZoneIds)
 			if (FTUEManager.Instance.TryGetTutorialHighlightZone(highlightedZoneId, out TutorialHighlightZone currentZone))
-				currentZone.Show();
+				currentZone.Show(m_currentDialogueData.isSpotlit);
 	}
 
 	private void DisplayCurrentLine ()

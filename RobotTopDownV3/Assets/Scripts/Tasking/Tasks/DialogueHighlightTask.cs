@@ -72,7 +72,7 @@ public class DialogueHighlightTask : Task
             TutorialHighlightZone.HideAllActive();
 
             foreach (TutorialHighlightZone zone in zonesToShow)
-                zone.Show();
+                zone.Show(!completeOnEntitySelected);
         }
 
         if (completeOnEntitySelected)
@@ -84,7 +84,7 @@ public class DialogueHighlightTask : Task
                 zoneButton.onClick += CompleteTask;
 
             tutoConsole = ((InGamePanel)_context.UI.currentPanel).TutoConsole;
-            dialogueContainer = tutoConsole.PlayDialogue(dialogue, resolvedZoneIDs);
+            dialogueContainer = tutoConsole.PlayDialogue(dialogue, resolvedZoneIDs, !completeOnEntitySelected);
 
             if (buttons.Count == 0)
                 Complete();

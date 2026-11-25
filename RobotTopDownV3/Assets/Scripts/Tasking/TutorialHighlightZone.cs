@@ -22,6 +22,9 @@ public class TutorialHighlightZone : MonoBehaviour
 	private bool m_isVisible = false;
 	public bool IsVisible => m_isVisible;
 
+	private bool m_isSpotlit;
+	public bool IsSpotlit => m_isSpotlit;
+
 	private void Awake ()
 	{
 		if(!string.IsNullOrEmpty(m_id))
@@ -58,7 +61,7 @@ public class TutorialHighlightZone : MonoBehaviour
 		}
 	}
 
-	public void Show ()
+	public void Show ( bool _isSpotlit = true )
 	{
 		CollapsibleFolder folder = GetComponentInParent<CollapsibleFolder>();
 		if (folder != null)
@@ -68,6 +71,7 @@ public class TutorialHighlightZone : MonoBehaviour
 			s_activeHighlightZones.Add(this);
 
 		m_isVisible = true;
+		m_isSpotlit = _isSpotlit;
 		RefreshRaycastTarget();
 		m_highlight.SetActive(true);
 	}
