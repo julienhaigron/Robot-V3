@@ -81,42 +81,31 @@ public class DialogueHighlightTask : Task
         if (isInGame)
         {
             foreach (BaseButton zoneButton in buttons)
-                zoneButton.onClick += CompleteTask;
+                zoneButton.onClick += Complete;
 
             tutoConsole = ((InGamePanel)_context.UI.currentPanel).TutoConsole;
             dialogueContainer = tutoConsole.PlayDialogue(dialogue, resolvedZoneIDs, !completeOnEntitySelected);
 
-            if (buttons.Count == 0)
+            if (buttons.Count == 0 && !completeOnEntitySelected)
                 Complete();
 
             return;
         }
 
-        _context.Dialogue.PlayDialogue(dialogue, CompleteTask);
+        _context.Dialogue.PlayDialogue(dialogue, Complete);
     }
 
     private void OnEntitySelected ( int? _entityID )
     {
         if (_entityID.HasValue)
-            CompleteTask();
-    }
-
-    private void CompleteTask ()
-    {
-        if (IsCompleted)
-            return;
-
-        Complete();
-
-        if (tutoConsole != null)
-            tutoConsole.GoToNextLineOrDialogue();
+            Complete();
     }
 
     protected override void OnComplete ()
     {
         foreach (BaseButton zoneButton in buttons)
             if (zoneButton != null)
-                zoneButton.onClick -= CompleteTask;
+                zoneButton.onClick -= Complete;
 
         if (completeOnEntitySelected)
             PlayerController.onEntitySelected -= OnEntitySelected;

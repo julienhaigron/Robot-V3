@@ -27,6 +27,7 @@ public sealed class UIManager : SingletonPersistant<UIManager>
 	private bool m_nextShowPanelInstant;
 	private PanelTransition m_panelTransition;
 	public PanelTransition PanelTransition => m_panelTransition;
+	public bool IsSwitchingPanel => m_panelTransition != null && m_panelTransition.IsSwitchingPanel;
 	private MatchBriefing m_matchBriefing;
 	public MatchBriefing MatchBriefing => m_matchBriefing;
 	private MatchExtraction m_matchExtraction;

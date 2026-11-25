@@ -35,6 +35,7 @@ public class FTUEManager : Singleton<FTUEManager>
 
 
 	public const string FTUEID = "FTUESequence";
+	private const string INTRO_TUTO_ID = "MicroTuto0";
 	private bool m_isInit = false;
 
 	public bool IsFTUERunning
@@ -124,13 +125,20 @@ public class FTUEManager : Singleton<FTUEManager>
 		ftueSequence.Start();
 	}
 
+	public void RestartIntroTutorial ()
+	{
+		SerializableDictionary<string, int> progressions = GameDatas.current.currentPlayerSave.sequencesProgressions;
+		if (progressions.ContainsKey(INTRO_TUTO_ID))
+			progressions[INTRO_TUTO_ID] = 0;
+	}
+
 	public void ForceFinishFTUE ()
 	{
 		if (GameDatas.current.currentPlayerSave.sequencesProgressions[FTUEID] != -1)
 			TaskManager.Instance.StopAndMarkAsCompletedSequence(FTUEID);
 
-		if (!GameDatas.current.currentPlayerSave.sequencesProgressions.ContainsKey("MicroTuto0") || GameDatas.current.currentPlayerSave.sequencesProgressions["MicroTuto0"] != -1)
-			TaskManager.Instance.StopAndMarkAsCompletedSequence("MicroTuto0");
+		if (!GameDatas.current.currentPlayerSave.sequencesProgressions.ContainsKey(INTRO_TUTO_ID) || GameDatas.current.currentPlayerSave.sequencesProgressions[INTRO_TUTO_ID] != -1)
+			TaskManager.Instance.StopAndMarkAsCompletedSequence(INTRO_TUTO_ID);
 		if (!GameDatas.current.currentPlayerSave.sequencesProgressions.ContainsKey("Day1Tuto") || GameDatas.current.currentPlayerSave.sequencesProgressions["Day1Tuto"] != -1)
 			TaskManager.Instance.StopAndMarkAsCompletedSequence("Day1Tuto");
 		if (!GameDatas.current.currentPlayerSave.sequencesProgressions.ContainsKey("Day2Tuto") || GameDatas.current.currentPlayerSave.sequencesProgressions["Day2Tuto"] != -1)
@@ -187,6 +195,11 @@ public class FTUEManager : Singleton<FTUEManager>
 		return _context.UI.currentPanel is InGamePanel;
 	}
 
+	private static bool IsOnHubWithoutPopup ( TaskManager.TaskContext _context )
+	{
+		return _context.UI.currentPanel is SoloHubPanel && _context.UI.activePopup == null;
+	}
+
 	private static bool IsTournamentReached ( TaskManager.TaskContext _context )
 	{
 		return _context.UI.currentPanel is TournamentPanel or InGamePanel;
@@ -215,7 +228,7 @@ public class FTUEManager : Singleton<FTUEManager>
 	{
 		int firstPlayerEntityID = 0;
 
-		TaskSequence tutoSequence = new("MicroTuto0");
+		TaskSequence tutoSequence = new(INTRO_TUTO_ID);
 
 		//input phase
 		tutoSequence.Append(new DialogueTask("Camera explenation", ( context ) => context.Game.CurrentMission != null && context.Game.CurrentMission.enumID == m_day0MissionData.enumID
@@ -239,15 +252,15 @@ public class FTUEManager : Singleton<FTUEManager>
 		tutoSequence.Append(new DialogueHighlightTask("State modification explenation", IsUnitSelected, m_firstTutoDialogues[6], "stateLines")
 			.SetSkipPredicateWhilePerforming(IsInputPhaseOver));
 
-		tutoSequence.Append(new HighlightLogTask("Highlight attack roll logs", ( context ) => context.Log.Logs.ContainsKey(LogConsole.LogEventType.AttackRoll)
-		, LogConsole.LogEventType.AttackRoll, true));
+		tutoSequence.Append(new HighlightLogTask("Highlight attack roll logs", ( context ) => context.Log.HasLoggedCard(LogCard.Kind.HitRoll)
+		, LogConsole.LogEventType.UseWeapon, true));
 		tutoSequence.Append(new DialogueHighlightTask("Attack roll explenation", IsNoUnitSelected, m_firstTutoDialogues[7], "logs"));
-		tutoSequence.Append(new HighlightLogTask("Stop highlighting attack roll logs", null, LogConsole.LogEventType.AttackRoll, false));
+		tutoSequence.Append(new HighlightLogTask("Stop highlighting attack roll logs", null, LogConsole.LogEventType.UseWeapon, false));
 
-		tutoSequence.Append(new HighlightLogTask("Highlight damage logs", ( context ) => context.Log.Logs.ContainsKey(LogConsole.LogEventType.Damage)
-		, LogConsole.LogEventType.Damage, true));
+		tutoSequence.Append(new HighlightLogTask("Highlight damage logs", ( context ) => context.Log.HasLoggedCard(LogCard.Kind.Damage)
+		, LogConsole.LogEventType.UseWeapon, true));
 		tutoSequence.Append(new DialogueHighlightTask("Damage explenation", IsNoUnitSelected, m_firstTutoDialogues[8], "logs"));
-		tutoSequence.Append(new HighlightLogTask("Stop highlighting damage logs", null, LogConsole.LogEventType.Damage, false));
+		tutoSequence.Append(new HighlightLogTask("Stop highlighting damage logs", null, LogConsole.LogEventType.UseWeapon, false));
 
 		tutoSequence.SetSkipPredicate(( context ) => GameDatas.current.currentPlayerSave.didStartTuto && GameDatas.current.currentPlayerSave.dayCount >= 0);
 		return tutoSequence;
@@ -271,8 +284,7 @@ public class FTUEManager : Singleton<FTUEManager>
 		, m_day1TutoDialogues[1], "squadUnit2Select").SetSkipPredicate(( context ) => context.UI.currentPanel is SoloHubPanel));
 		tutoSequence.Append(new DialogueHighlightTask("Return btn explenation", null
 		, m_day1TutoDialogues[2], "topCanvasReturnBtn").SetSkipPredicate(( context ) => context.UI.currentPanel is SoloHubPanel));
-		tutoSequence.Append(new DialogueHighlightTask("Hub presentation", ( context ) => context.UI.currentPanel is SoloHubPanel
-		, m_day1TutoDialogues[3], "missionSection"));
+		tutoSequence.Append(new DialogueHighlightTask("Hub presentation", IsOnHubWithoutPopup, m_day1TutoDialogues[3], "missionSection"));
 		tutoSequence.Append(new DialogueHighlightTask("Available matches explenation", ( context ) => context.UI.currentPanel is MissionPanel
 		, m_day1TutoDialogues[4], "missionSelectionBtn"));
 		tutoSequence.Append(new DialogueHighlightTask("Start match btn explenation", null, m_day1TutoDialogues[5], "startMissionBtn"));
@@ -308,8 +320,7 @@ public class FTUEManager : Singleton<FTUEManager>
 		{
 			GameDatas.current.currentPlayerSave.didUnlockReturnToHubPopup = true;
 		}));
-		tutoSequence.Append(new DialogueHighlightTask("Go to hangar", ( context ) => context.UI.currentPanel is SoloHubPanel
-		, m_day2TutoDialogues[0], "hangarBtn"));
+		tutoSequence.Append(new DialogueHighlightTask("Go to hangar", IsOnHubWithoutPopup, m_day2TutoDialogues[0], "hangarBtn"));
 		tutoSequence.Append(new DialogueHighlightTask("Go to workshop", ( context ) => context.UI.currentPanel is HangarPanel
 		, m_day2TutoDialogues[1], "squadUnit2").SetSkipPredicate(IsMatchLaunched));
 		tutoSequence.Append(new DialogueTask("Unit composition explenation", ( context ) => context.UI.currentPanel is EntityConfigPanel
@@ -337,14 +348,12 @@ public class FTUEManager : Singleton<FTUEManager>
 		{
 			GameDatas.current.currentPlayerSave.didUnlockRecycler = true;
 		}));
-		tutoSequence.Append(new DialogueHighlightTask("Go to hangar", ( context ) => context.UI.currentPanel is SoloHubPanel
-		, m_day3TutoDialogues[0], "hangarBtn"));
+		tutoSequence.Append(new DialogueHighlightTask("Go to hangar", IsOnHubWithoutPopup, m_day3TutoDialogues[0], "hangarBtn"));
 		tutoSequence.Append(new DialogueHighlightTask("Go to workshop", ( context ) => context.UI.currentPanel is HangarPanel
 		, m_day3TutoDialogues[1], "squadUnit0").SetSkipPredicate(IsMatchLaunched));
 		tutoSequence.Append(new DialogueTask("Secondary components explenation", ( context ) => context.UI.currentPanel is EntityConfigPanel
 		, m_day3TutoDialogues[2]).SetSkipPredicate(( context ) => context.UI.currentPanel is InGamePanel));
-		tutoSequence.Append(new DialogueHighlightTask("Recycling explenation", ( context ) => context.UI.currentPanel is SoloHubPanel
-		, m_day3TutoDialogues[3], "recycleBtn").SetSkipPredicate(IsMatchLaunched));
+		tutoSequence.Append(new DialogueHighlightTask("Recycling explenation", IsOnHubWithoutPopup, m_day3TutoDialogues[3], "recycleBtn").SetSkipPredicate(IsMatchLaunched));
 		tutoSequence.Append(new DialogueTask("Recycling station explenation", ( context ) => context.UI.currentPanel is RecyclePanel
 		, m_day3TutoDialogues[4]).SetSkipPredicate(( context ) => context.UI.currentPanel is InGamePanel));
 
@@ -367,8 +376,7 @@ public class FTUEManager : Singleton<FTUEManager>
 		tutoSequence.Append(new WaitEndLoadingTask("Wait for end loading", ( context ) => GameDatas.current.currentPlayerSave.dayCount == 3));
 		tutoSequence.Append(new ManualTask("Force finish recycling", null, () => GameDatas.current.currentPlayerSave.ForceFinishRecycling()));
 		tutoSequence.Append(new ManualTask("Unlock repare station", null, () => GameDatas.current.currentPlayerSave.didUnlockRepareStation = true));
-		tutoSequence.Append(new DialogueHighlightTask("Goto repair station", ( context ) => context.UI.currentPanel is SoloHubPanel
-		, m_day4TutoDialogues[0], "repareBtn"));
+		tutoSequence.Append(new DialogueHighlightTask("Goto repair station", IsOnHubWithoutPopup, m_day4TutoDialogues[0], "repareBtn"));
 		tutoSequence.Append(new DialogueTask("Repair station explenation", ( context ) => context.UI.currentPanel is RepairStationPanel
 			&& GameDatas.current.currentPlayerSave.dayCount == 3, m_day4TutoDialogues[1]));
 
@@ -381,7 +389,7 @@ public class FTUEManager : Singleton<FTUEManager>
 		TaskSequence tutoSequence = new("Day5Tuto");
 
 		//macro
-		tutoSequence.Append(new DialogueHighlightTask("Go to hangar to create a unit", ( context ) => context.UI.currentPanel is SoloHubPanel
+		tutoSequence.Append(new DialogueHighlightTask("Go to hangar to create a unit", ( context ) => IsOnHubWithoutPopup(context)
 			&& GameDatas.current.currentPlayerSave.dayCount == 4, m_day5TutoDialogues[0], "hangarBtn"));
 		tutoSequence.Append(new DialogueHighlightTask("Create unit btn explenation", ( context ) => context.UI.currentPanel is HangarPanel, m_day5TutoDialogues[1], "createUnitBtn")
 			.SetSkipPredicate(IsTournamentReached));

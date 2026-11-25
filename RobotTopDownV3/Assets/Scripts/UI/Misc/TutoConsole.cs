@@ -28,6 +28,7 @@ public class TutoConsole : MonoBehaviour
 	[SerializeField] private float m_newDialogueBlinkDuration = 1.5f;
 	[SerializeField] private int m_newDialogueBlinkCount = 3;
 	[SerializeField] private float m_newDialogueBlinkAlpha = .3f;
+	[SerializeField] private float m_autoAdvanceDelay = 2.5f;
 
 	private List<TutoDialogueContainer> m_allDialogs = new();
 	public List<TutoDialogueContainer> AllDialogs => m_allDialogs;
@@ -47,6 +48,8 @@ public class TutoConsole : MonoBehaviour
 	private RectTransform m_dialogueTextRect;
 	private Sequence m_scrollSequence;
 	private Tween m_blinkTween;
+	private Tween m_autoAdvanceTween;
+	private bool m_isBrowsingHistory;
 
 	private void Awake ()
 	{
@@ -62,6 +65,7 @@ public class TutoConsole : MonoBehaviour
 	{
 		m_scrollSequence?.Kill();
 		m_blinkTween?.Kill();
+		m_autoAdvanceTween?.Kill();
 		m_previousBtn.onClick -= GoToPreviousLineOrDialogue;
 		m_nextBtn.onClick -= GoToNextLineOrDialogue;
 		m_showBtn.onClick -= OnClickShow;
@@ -141,6 +145,8 @@ public class TutoConsole : MonoBehaviour
 		TutorialHighlightZone.HideAllActive();
 
 		m_currentTextTween?.Kill();
+		m_autoAdvanceTween?.Kill();
+		m_isBrowsingHistory = false;
 		m_currentDialogueData = null;
 		m_currentDialogueIndex = -1;
 		m_currentLineIndex = 0;
@@ -191,7 +197,11 @@ public class TutoConsole : MonoBehaviour
 		if (wasCaughtUp)
 			DisplayDialogue(m_allDialogs.Count - 1);
 		else
+		{
 			RefreshButtons();
+			if (!m_currentTextTween.IsActive())
+				ScheduleAutoAdvance();
+		}
 
 		BlinkForNewDialogue();
 
@@ -225,7 +235,10 @@ public class TutoConsole : MonoBehaviour
 	{
 		int previousDialogueIndex = m_currentDialogueIndex;
 
+		m_autoAdvanceTween?.Kill();
 		m_currentDialogueIndex = Mathf.Clamp(_dialogueIndex, 0, m_allDialogs.Count - 1);
+		if (m_currentDialogueIndex == m_allDialogs.Count - 1)
+			m_isBrowsingHistory = false;
 		m_currentDialogueData = m_allDialogs[m_currentDialogueIndex];
 		m_currentLineIndex = Mathf.Clamp(_lineIndex, 0, m_currentDialogueData.dialogue.lines.Count - 1);
 
@@ -271,10 +284,21 @@ public class TutoConsole : MonoBehaviour
 				m_dialogueTMP.text = line.sentence;
 				m_dialogueTMP.ForceMeshUpdate();
 				StartScrollLoop();
+				ScheduleAutoAdvance();
 			}
 		);
 
 		RefreshButtons();
+	}
+
+	private void ScheduleAutoAdvance ()
+	{
+		m_autoAdvanceTween?.Kill();
+
+		if (m_isBrowsingHistory || m_currentDialogueIndex >= m_allDialogs.Count - 1)
+			return;
+
+		m_autoAdvanceTween = DOVirtual.DelayedCall(m_autoAdvanceDelay, GoToNextLineOrDialogue);
 	}
 
 	private void RefreshButtons ()
@@ -297,6 +321,9 @@ public class TutoConsole : MonoBehaviour
 		if (m_currentDialogueIndex < 0)
 			return;
 
+		m_autoAdvanceTween?.Kill();
+		m_isBrowsingHistory = true;
+
 		if (m_currentTextTween.IsActive())
 			m_currentTextTween.Complete();
 		else if (m_currentLineIndex > 0)
@@ -309,6 +336,8 @@ public class TutoConsole : MonoBehaviour
 	{
 		if (m_currentDialogueIndex < 0)
 			return;
+
+		m_autoAdvanceTween?.Kill();
 
 		if (m_currentTextTween.IsActive())
 			m_currentTextTween.Complete();

@@ -51,7 +51,8 @@ public class PanelTransition : MonoBehaviour
 	private float m_nextCaptureTime;
 	private int m_shownDoorsPercent = -1;
 	private bool m_isPlaying;
-	public bool IsPlaying => m_isPlaying;
+	private bool m_isSwitchingPanel;
+	public bool IsSwitchingPanel => m_isSwitchingPanel;
 
 	private void Awake ()
 	{
@@ -214,6 +215,7 @@ public class PanelTransition : MonoBehaviour
 	private IEnumerator PlayHoloSweep ( Action _switchPanel, bool _isOpening, Action _onFinished = null )
 	{
 		m_isPlaying = true;
+		m_isSwitchingPanel = _switchPanel != null;
 		SetBlocking(true);
 
 		float direction = _isOpening ? 1f : -1f;
@@ -237,6 +239,7 @@ public class PanelTransition : MonoBehaviour
 		SetBlocking(false);
 		m_captureImage.gameObject.SetActive(false);
 		m_isPlaying = false;
+		m_isSwitchingPanel = false;
 		_onFinished?.Invoke();
 	}
 
@@ -247,6 +250,7 @@ public class PanelTransition : MonoBehaviour
 	private IEnumerator PlayDiveAndDoors ( AUIPanel _from, AUIPanel _to, Action _switchPanel )
 	{
 		m_isPlaying = true;
+		m_isSwitchingPanel = true;
 		SetBlocking(true);
 
 		HubManager hub = HubManager.Instance;
@@ -297,6 +301,7 @@ public class PanelTransition : MonoBehaviour
 		m_doorsImage.gameObject.SetActive(false);
 		SetBlocking(false);
 		m_isPlaying = false;
+		m_isSwitchingPanel = false;
 	}
 
 	public float DoorsCloseDuration => m_doorsCloseDuration + m_doorsImpactDuration;

@@ -37,7 +37,7 @@ public class TaskManager : SingletonPersistant<TaskManager>
 
 	private void Update ()
 	{
-        if (m_context == null)
+        if (m_context == null || m_context.UI.IsSwitchingPanel)
             return;
 
 		m_updatedSequences.Clear();

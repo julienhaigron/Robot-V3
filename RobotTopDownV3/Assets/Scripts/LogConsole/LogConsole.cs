@@ -16,6 +16,9 @@ public class LogConsole : SingletonPersistant<LogConsole>
 	private Dictionary<string, LogDetails> m_logsDetails = new();
 	public Dictionary<string, LogDetails> LogsDetails => m_logsDetails;
 
+	private readonly HashSet<LogCard.Kind> m_loggedCardKinds = new();
+	public bool HasLoggedCard ( LogCard.Kind _kind ) => m_loggedCardKinds.Contains(_kind);
+
 	private int m_counter = 0;
 	public int Counter
 	{
@@ -48,6 +51,7 @@ public class LogConsole : SingletonPersistant<LogConsole>
 		Instance.m_allLogs.Clear();
 		Instance.m_logs.Clear();
 		Instance.m_logsDetails.Clear();
+		Instance.m_loggedCardKinds.Clear();
 		onCleared?.Invoke();
 	}
 
@@ -67,6 +71,10 @@ public class LogConsole : SingletonPersistant<LogConsole>
 				Instance.LogsDetails[_details.ID] = _details;
 			else
 				Instance.LogsDetails.Add(_details.ID, _details);
+
+			Instance.m_loggedCardKinds.Add(_details.card.kind);
+			foreach (LogCard step in _details.card.steps)
+				Instance.m_loggedCardKinds.Add(step.kind);
 		}
 
 		onLogAdded?.Invoke(newLog);

@@ -74,13 +74,16 @@ public class GameManager : SingletonPersistant<GameManager>
 		GameDatas.current.game.lastPlayerSaveSelectedID = _saveID;
 		m_currentGameMode = GameMode.Offline;
 
-		FTUEManager.Instance.InitFTUE();
-
 		bool doesTuto = !GameDatas.current.currentPlayerSave.DidFirstIntroLevel;
 #if UNITY_EDITOR
 		if (GameConfig.current.debug.skipFTUE)
 			doesTuto = false;
 #endif
+
+		if (doesTuto)
+			FTUEManager.Instance.RestartIntroTutorial();
+
+		FTUEManager.Instance.InitFTUE();
 
 		if (!doesTuto)
 		{
