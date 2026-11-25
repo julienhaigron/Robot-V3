@@ -288,7 +288,12 @@ public class LogStepView : MonoBehaviour
 			m_durationCells[i].color = i < _card.remaining ? status.color : _style.cellOffColor;
 		}
 
-		LocalizationKey key = status.durationType == AEntityStatus.DurationType.Tick ? LocalizationKey.log_card_remaining_ticks : LocalizationKey.log_card_remaining_rounds;
+		LocalizationKey key = status.durationType switch
+		{
+			AEntityStatus.DurationType.Tick => LocalizationKey.log_card_remaining_ticks,
+			AEntityStatus.DurationType.Round => LocalizationKey.log_card_remaining_rounds,
+			_ => LocalizationKey.log_card_remaining_charges
+		};
 		m_durationTMP.text = string.Format(LocalizationManager.Instance.Get(key), _card.remaining, _card.duration);
 	}
 

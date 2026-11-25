@@ -263,15 +263,17 @@ public class EntityEquipmentPlugin : EntityPlugin
 		return GridManager.Instance.GetTilesInAoERange(_action.Data.aoeType, m_linkedEntity, from, _targetTile, minDistance, maxDistance, extraValue, _isThisTurn, orientation, _entityOnTile);
 	}
 
-	public bool AttackRoll ( AttackAction _attackAction, AttackAction.SingleAttackInfo _singleAttackInfo, Entity _targetEntity, LogCard _entry, out Tile _coverTile )
+	public bool AttackRoll ( AttackAction _attackAction, AttackAction.SingleAttackInfo _singleAttackInfo, Entity _targetEntity, LogCard _entry, out Tile _coverTile, Tile _forcedBend = null )
 	{
 		bool doesWinPFC = _attackAction.DoesWinExchangeAgainst(_targetEntity);
 		Tile strikeTile = _singleAttackInfo.StrikeTile;
 		Tile targetTile = _attackAction.GetExchangeTileOf(_targetEntity);
-		Tile curveTile = null;
+		Tile curveTile = _forcedBend;
 
-		if (GridManager.Instance.IsThereBlockingWallBetween(strikeTile, targetTile, true, out _coverTile)
-			&& !TryCurveShot(_attackAction, strikeTile, targetTile, out curveTile))
+		bool isBlocked = _forcedBend != null
+			? GridManager.Instance.IsThereBlockingWallBetween(_forcedBend, targetTile, true, out _coverTile)
+			: GridManager.Instance.IsThereBlockingWallBetween(strikeTile, targetTile, true, out _coverTile) && !TryCurveShot(_attackAction, strikeTile, targetTile, out curveTile);
+		if (isBlocked)
 		{
 			_entry.steps.Add(LogCard.Note(LocalizationKey.log_card_wall, _targetEntity.Data.name));
 			return false;
@@ -283,9 +285,16 @@ public class EntityEquipmentPlugin : EntityPlugin
 		string coverName = isThereCoverBetween ? _coverTile.GroundType.GetLocalizedCoverName() : null;
 
 		NeuronalMembraneEquipmentData.VisionTypes seenWith = GridManager.Instance.GetBestVisionOf(m_linkedEntity.OwnerID, targetTile);
-		float targetCamo = _targetEntity.Data.GetOccultorCamo(seenWith)
-			+ _targetEntity.GetStatBonus(NeuronalMembraneEquipmentData.GetCamoStat(seenWith));
-		EntityEquipmentData.SecondaryStat.StatType perceptionStat = NeuronalMembraneEquipmentData.GetPerceptionStat(seenWith);
+		NeuronalMembraneEquipmentData.VisionTypes perceivedWith = seenWith;
+		if (_attackAction.IsBoostedBy(EntityStatusEnumID.TacticalScanner))
+		{
+			seenWith = GetWeakestCamoVisionOf(_targetEntity);
+			perceivedWith = GetStrongestPerceptionVision(_attackAction);
+			_entry.steps.Add(LogCard.Note(LocalizationKey.log_card_scanner, _targetEntity.Data.name));
+		}
+
+		float targetCamo = GetCamoOf(_targetEntity, seenWith);
+		EntityEquipmentData.SecondaryStat.StatType perceptionStat = NeuronalMembraneEquipmentData.GetPerceptionStat(perceivedWith);
 		float perception = Mathf.Clamp(m_linkedEntity.GetStatBonus(perceptionStat, _attackAction), 0f, Mathf.Max(targetCamo, 0f));
 
 		float evationRatio = _attackAction.Data.type == EntityActionData.ActionType.DistanceAttack
@@ -329,6 +338,87 @@ public class EntityEquipmentPlugin : EntityPlugin
 
 		_entry.steps.Add(card);
 		return isAttackSuccessful;
+	}
+
+	public void Riposte ( Entity _target )
+	{
+		if (m_isDead || _target == null || _target.Equipment.IsDead || !TryGetRiposteAction(out EntityActionData data, out string weaponID))
+			return;
+
+		Tile origin = m_linkedEntity.Displacement.Coordinates.GetTile();
+		Tile targetTile = _target.Displacement.Coordinates.GetTile();
+		int range = data.GetMaxRange(null, m_linkedEntity, _target);
+		if (GridManager.Instance.GetDistanceBetween(origin, targetTile, range, true) > range)
+			return;
+
+		if (TurnManager.Instance.GetAction(data, m_linkedEntity.ID, weaponID, TurnManager.currentTick) is not AttackAction riposte)
+			return;
+
+		riposte.isRiposte = true;
+		riposte.hasClaimedStatusCharges = true;
+		riposte.targetTileIDs = new[] { targetTile.coordinates.ID };
+		riposte.targetedEntityIDs = new[] { _target.ID };
+		riposte.orientationAtPerform = GridManager.Instance.GetClosestOrientation(origin, targetTile);
+
+		LogConsole.AddLog(string.Format(LocalizationManager.Instance.Get(LocalizationKey.log_riposte), m_linkedEntity.Data.name, _target.Data.name), LogConsole.LogEventType.ActionResolution);
+		riposte.ConflictCheckPrewarm();
+		riposte.Prepare(m_linkedEntity.State);
+
+		TurnManager.RecordedEvent riposteEvent = new("Riposte " + m_linkedEntity.Data.name);
+		TurnManager.Instance.AddGameEvent(riposteEvent);
+		m_weapons[weaponID].QueueAttack(riposte, riposteEvent.EndEvent);
+	}
+
+	private bool TryGetRiposteAction ( out EntityActionData _data, out string _weaponID )
+	{
+		_data = null;
+		_weaponID = null;
+		foreach (EntityActionEnumID actionID in m_linkedEntity.KnownedActions)
+		{
+			EntityActionData data = GameAssets.current.game.entityActionsData[actionID];
+			if (data.type != EntityActionData.ActionType.MeleeAttack || data.codeType != EntityActionData.ActionCodeType.Attack
+				|| !m_linkedEntity.ComponentLinkedToAction.TryGetValue(actionID, out List<string> componentIDs) || componentIDs.Count == 0
+				|| !m_weapons.ContainsKey(componentIDs[0]))
+				continue;
+
+			if (_data == null || data.GetTokenTotalCost(null, m_linkedEntity, null) < _data.GetTokenTotalCost(null, m_linkedEntity, null))
+			{
+				_data = data;
+				_weaponID = componentIDs[0];
+			}
+		}
+
+		return _data != null;
+	}
+
+	private static float GetCamoOf ( Entity _target, NeuronalMembraneEquipmentData.VisionTypes _vision )
+	{
+		return _target.Data.GetOccultorCamo(_vision) + _target.GetStatBonus(NeuronalMembraneEquipmentData.GetCamoStat(_vision));
+	}
+
+	private static NeuronalMembraneEquipmentData.VisionTypes GetWeakestCamoVisionOf ( Entity _target )
+	{
+		NeuronalMembraneEquipmentData.VisionTypes weakest = NeuronalMembraneEquipmentData.VisionTypes.Optic;
+		foreach (NeuronalMembraneEquipmentData.VisionTypes vision in System.Enum.GetValues(typeof(NeuronalMembraneEquipmentData.VisionTypes)))
+		{
+			if (GetCamoOf(_target, vision) < GetCamoOf(_target, weakest))
+				weakest = vision;
+		}
+
+		return weakest;
+	}
+
+	private NeuronalMembraneEquipmentData.VisionTypes GetStrongestPerceptionVision ( AttackAction _attackAction )
+	{
+		NeuronalMembraneEquipmentData.VisionTypes strongest = NeuronalMembraneEquipmentData.VisionTypes.Optic;
+		foreach (NeuronalMembraneEquipmentData.VisionTypes vision in System.Enum.GetValues(typeof(NeuronalMembraneEquipmentData.VisionTypes)))
+		{
+			if (m_linkedEntity.GetStatBonus(NeuronalMembraneEquipmentData.GetPerceptionStat(vision), _attackAction)
+				> m_linkedEntity.GetStatBonus(NeuronalMembraneEquipmentData.GetPerceptionStat(strongest), _attackAction))
+				strongest = vision;
+		}
+
+		return strongest;
 	}
 
 	private float GetAimScore ( AttackAction _attackAction )
@@ -471,7 +561,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 		return GridManager.Instance.GetIncomingSide(shotOrigin, hitTile);
 	}
 
-	public enum DeathCause { Default, Doom }
+	public enum DeathCause { Default, Doom, Vanish }
 
 	public void InstantDeath ( DeathCause _cause = DeathCause.Default )
 	{
@@ -523,7 +613,8 @@ public class EntityEquipmentPlugin : EntityPlugin
 		if (m_isDead)
 			return;
 
-		PlayDeathVFX(_cause);
+		if (_cause != DeathCause.Vanish)
+			PlayDeathVFX(_cause);
 
 		if (m_linkedEntity.LastPerformedAction != null && m_linkedEntity.LastPerformedAction.IsPerforming)
 			m_linkedEntity.LastPerformedAction.CancelAction();
@@ -532,7 +623,8 @@ public class EntityEquipmentPlugin : EntityPlugin
 		//destination lives on a tile the entity never reached.
 		GridManager.Instance.ClearEntityFromAllTiles(m_linkedEntity);
 
-		LogConsole.AddLog(string.Format(LocalizationManager.Instance.Get(LocalizationKey.log_death), m_linkedEntity.Data.name), LogConsole.LogEventType.Death
+		LocalizationKey deathKey = _cause == DeathCause.Vanish ? LocalizationKey.log_illusion_vanished : LocalizationKey.log_death;
+		LogConsole.AddLog(string.Format(LocalizationManager.Instance.Get(deathKey), m_linkedEntity.Data.name), LogConsole.LogEventType.Death
 			, new LogConsole.LogDetails(BuildDeathCard(_damageInfo)));
 
 		m_isDead = true;

@@ -7,6 +7,10 @@ using System.Linq;
 public class AttackAction : AEntityAction
 {
 	public SingleAttackInfo[] attacksInfos; //reset at each active tick
+	public bool isRiposte;
+	private readonly HashSet<int> m_hitEntityIDs = new();
+	private int m_attacksPerTick = 1;
+	private readonly List<int> m_reboundTargetIDs = new();
 
 	//for client only
 	private HashSet<Tile> m_tilesInRange;
@@ -54,12 +58,21 @@ public class AttackAction : AEntityAction
 
 	private int GetTargetIndex ( int _attackIndex )
 	{
-		int attacksPerTick = attacksInfos != null && attacksInfos.Length > 0 ? attacksInfos.Length : 1;
-		return Mathf.Max(0, ActiveLifetime) * attacksPerTick + _attackIndex;
+		return Mathf.Max(0, ActiveLifetime) * m_attacksPerTick + _attackIndex;
+	}
+
+	private bool IsReboundAttack ( int _attackIndex, out Entity _target )
+	{
+		int reboundIndex = _attackIndex - m_attacksPerTick;
+		_target = reboundIndex >= 0 && reboundIndex < m_reboundTargetIDs.Count ? GameManager.Instance.GetEntityFromID(m_reboundTargetIDs[reboundIndex]) : null;
+		return reboundIndex >= 0;
 	}
 
 	public Entity GetTargetEntityAt ( int _attackIndex )
 	{
+		if (IsReboundAttack(_attackIndex, out Entity reboundTarget))
+			return reboundTarget;
+
 		int index = GetTargetIndex(_attackIndex);
 
 		return targetedEntityIDs != null && index >= 0 && index < targetedEntityIDs.Length
@@ -69,6 +82,9 @@ public class AttackAction : AEntityAction
 
 	public Tile GetTargetTileAt ( int _attackIndex )
 	{
+		if (IsReboundAttack(_attackIndex, out Entity reboundTarget))
+			return reboundTarget == null ? null : reboundTarget.Displacement.Coordinates.GetTile();
+
 		int index = GetTargetIndex(_attackIndex);
 
 		return targetTileIDs != null && index >= 0 && index < targetTileIDs.Length
@@ -152,6 +168,16 @@ public class AttackAction : AEntityAction
 		return PerformingEntity.Displacement.Coordinates.GetTile();
 	}
 
+	public virtual int GetOwnMovementLength ()
+	{
+		return 0;
+	}
+
+	public bool RegisterHitOn ( Entity _entity )
+	{
+		return m_hitEntityIDs.Add(_entity.ID);
+	}
+
 	public virtual Tile GetPlannedStrikeTile ( Tile _from, Tile _target )
 	{
 		return _from;
@@ -162,6 +188,8 @@ public class AttackAction : AEntityAction
 		base.ConflictCheckPrewarm();
 
 		int maxTarget = targetTileIDs == null || actualDuration <= 0 ? 0 : targetTileIDs.Length / actualDuration;
+		m_attacksPerTick = Mathf.Max(1, maxTarget);
+		m_reboundTargetIDs.Clear();
 		attacksInfos = new SingleAttackInfo[maxTarget];
 		for (int i = 0; i < attacksInfos.Length; i++)
 			attacksInfos[i] = new();
@@ -226,102 +254,159 @@ public class AttackAction : AEntityAction
 
 	public override void Prepare ( Entity.EntityState _state )
 	{
+		m_hitEntityIDs.Clear();
 		if (targetedEntityIDs != null || (Data.aoeType != EntityActionData.AOEType.Noone && targetTileIDs != null))
 		{
 			LogCard entry = LogCard.Action(Data, PerformingEntity.Data.name, GetTargetLabel());
 
 			for (int attackCount = 0; attackCount < attacksInfos.Length; attackCount++)
-			{
-				SingleAttackInfo attackInfo = attacksInfos[attackCount];
-				attackInfo.curveTileID = -1;
-				attackInfo.strikeTileID = GetAttackOriginTile().coordinates.ID;
+				PrepareSingleAttack(attackCount, entry, null);
 
-				Entity targetEntity = GetTargetEntityAt(attackCount);
-				Tile coverHitted = null;
-				if (Data.aoeType != EntityActionData.AOEType.Noone)
-				{
-					attackInfo.isAttackSuccessfull = true;
-
-					Tile strikeTile = attackInfo.StrikeTile;
-					Tile aoeCenter = GridManager.Instance.Tiles[targetTileIDs[GetTargetIndex(attackCount)]];
-					bool isBlockedByWall = GridManager.Instance.IsThereBlockingWallBetween(strikeTile, aoeCenter, true, out coverHitted);
-
-					if (isBlockedByWall && PerformingEntity.Equipment.TryCurveShot(this, strikeTile, aoeCenter, out Tile curveTile))
-					{
-						attackInfo.curveTileID = curveTile.coordinates.ID;
-						coverHitted = null;
-					}
-					else if (isBlockedByWall)
-						targetTileIDs[GetTargetIndex(attackCount)] = coverHitted.coordinates.ID;
-				}
-				else if (targetEntity == null)
-				{
-					Tile targetTile = GetTargetTileAt(attackCount);
-					attackInfo.isAttackSuccessfull = SabotagePoints.TryGetLivingPoint(targetTile, out _) || Item.TryGetTargetableOn(targetTile, out _)
-						? PerformingEntity.Equipment.StructureAttackRoll(this, attackInfo, targetTile, entry, out coverHitted)
-						: true;
-				}
-				else if (DidDesignatedTargetEscapeReach(attackCount))
-				{
-					attackInfo.isAttackSuccessfull = false;
-					attackInfo.didTargetDodge = true;
-					entry.steps.Add(LogCard.Miss(PerformingEntity.Data.name, targetEntity.Data.name));
-				}
-				else
-					attackInfo.isAttackSuccessfull = PerformingEntity.Equipment.AttackRoll(this, attackInfo, targetEntity, entry, out coverHitted);
-
-				attackInfo.hittedTileID = coverHitted == null ? -1 : coverHitted.coordinates.ID;
-
-				if (attackInfo.isAttackSuccessfull && targetEntity != null)
-				{
-					List<ApplyStatusPassiveEffect> appliedStatusEffects = Data.GetAppliedStatusEffects(this, PerformingEntity, targetEntity);
-					attackInfo.statusIds = new short[appliedStatusEffects.Count];
-					attackInfo.statusDurations = new short[appliedStatusEffects.Count];
-					for (int i = 0; i < appliedStatusEffects.Count; i++)
-					{
-						attackInfo.statusIds[i] = (short)appliedStatusEffects[i].statusApplied;
-						attackInfo.statusDurations[i] = (short)appliedStatusEffects[i].duration;
-					}
-					attackInfo.areStatusesSuccess = new bool[attackInfo.statusIds.Length];
-					for (int i = 0; i < attackInfo.statusIds.Length; i++)
-					{
-						if (!appliedStatusEffects[i].Status.doesNeedRoll)
-							attackInfo.areStatusesSuccess[i] = true;
-						else
-							attackInfo.areStatusesSuccess[i] = PerformingEntity.Equipment.StatusRoll(targetEntity, GameAssets.current.game.entityStatus[(EntityStatusEnumID)attackInfo.statusIds[i]]
-							, this, entry);
-					}
-
-				}
-
-				Dictionary<WeaponEquipmentData.DamageType, int> damagesDealt =
-					PerformingEntity.Equipment.Weapons[linkedEquipmentId].GetDamages(PerformingEntity, targetEntity, this
-						, GetExchangeResultAgainst(targetEntity), out LogCard damageCard, attackInfo.ShotOrigin);
-
-				if (targetEntity == null && Data.aoeType == EntityActionData.AOEType.Noone)
-					damageCard.target = GetStructureName(GetTargetTileAt(attackCount)) ?? damageCard.target;
-
-				if (attackInfo.isAttackSuccessfull)
-					AddDamageStep(entry, damageCard, attackCount);
-
-				if (coverHitted != null)
-					coverHitted.Wall.RegisterDamage(damagesDealt);
-				else if (attackInfo.isAttackSuccessfull && targetEntity == null && Data.aoeType == EntityActionData.AOEType.Noone
-					&& Item.TryGetTargetableOn(GetTargetTileAt(attackCount), out Item targetItem))
-					targetItem.RegisterDamage(damagesDealt);
-
-				attackInfo.damages = new int[damagesDealt.Count];
-				attackInfo.damageTypes = new short[damagesDealt.Count];
-				int damageIndex = 0;
-				foreach (KeyValuePair<WeaponEquipmentData.DamageType, int> pair in damagesDealt)
-				{
-					attackInfo.damages[damageIndex] = pair.Value;
-					attackInfo.damageTypes[damageIndex++] = (short)pair.Key;
-				}
-			}
+			if (IsBoostedBy(EntityStatusEnumID.Rebound) && Data.type == EntityActionData.ActionType.DistanceAttack && Data.aoeType == EntityActionData.AOEType.Noone)
+				AddRebounds(entry);
 
 			LogEntry(entry);
 		}
+	}
+
+	private void PrepareSingleAttack ( int attackCount, LogCard entry, Tile _forcedBend )
+	{
+		SingleAttackInfo attackInfo = attacksInfos[attackCount];
+		attackInfo.curveTileID = -1;
+		attackInfo.strikeTileID = GetAttackOriginTile().coordinates.ID;
+
+		Entity targetEntity = GetTargetEntityAt(attackCount);
+		Tile coverHitted = null;
+		if (Data.aoeType != EntityActionData.AOEType.Noone)
+		{
+			attackInfo.isAttackSuccessfull = true;
+
+			Tile strikeTile = attackInfo.StrikeTile;
+			Tile aoeCenter = GridManager.Instance.Tiles[targetTileIDs[GetTargetIndex(attackCount)]];
+			bool isBlockedByWall = GridManager.Instance.IsThereBlockingWallBetween(strikeTile, aoeCenter, true, out coverHitted);
+
+			if (isBlockedByWall && PerformingEntity.Equipment.TryCurveShot(this, strikeTile, aoeCenter, out Tile curveTile))
+			{
+				attackInfo.curveTileID = curveTile.coordinates.ID;
+				coverHitted = null;
+			}
+			else if (isBlockedByWall)
+				targetTileIDs[GetTargetIndex(attackCount)] = coverHitted.coordinates.ID;
+		}
+		else if (targetEntity == null)
+		{
+			Tile targetTile = GetTargetTileAt(attackCount);
+			attackInfo.isAttackSuccessfull = SabotagePoints.TryGetLivingPoint(targetTile, out _) || Item.TryGetTargetableOn(targetTile, out _)
+				? PerformingEntity.Equipment.StructureAttackRoll(this, attackInfo, targetTile, entry, out coverHitted)
+				: true;
+		}
+		else if (_forcedBend == null && DidDesignatedTargetEscapeReach(attackCount))
+		{
+			attackInfo.isAttackSuccessfull = false;
+			attackInfo.didTargetDodge = true;
+			entry.steps.Add(LogCard.Miss(PerformingEntity.Data.name, targetEntity.Data.name));
+		}
+		else
+			attackInfo.isAttackSuccessfull = PerformingEntity.Equipment.AttackRoll(this, attackInfo, targetEntity, entry, out coverHitted, _forcedBend);
+
+		attackInfo.hittedTileID = coverHitted == null ? -1 : coverHitted.coordinates.ID;
+
+		if (attackInfo.isAttackSuccessfull && targetEntity != null)
+		{
+			List<ApplyStatusPassiveEffect> appliedStatusEffects = Data.GetAppliedStatusEffects(this, PerformingEntity, targetEntity);
+			attackInfo.statusIds = new short[appliedStatusEffects.Count];
+			attackInfo.statusDurations = new short[appliedStatusEffects.Count];
+			for (int i = 0; i < appliedStatusEffects.Count; i++)
+			{
+				attackInfo.statusIds[i] = (short)appliedStatusEffects[i].statusApplied;
+				attackInfo.statusDurations[i] = (short)appliedStatusEffects[i].duration;
+			}
+			attackInfo.areStatusesSuccess = new bool[attackInfo.statusIds.Length];
+			for (int i = 0; i < attackInfo.statusIds.Length; i++)
+			{
+				if (!appliedStatusEffects[i].Status.doesNeedRoll)
+					attackInfo.areStatusesSuccess[i] = true;
+				else
+					attackInfo.areStatusesSuccess[i] = PerformingEntity.Equipment.StatusRoll(targetEntity, GameAssets.current.game.entityStatus[(EntityStatusEnumID)attackInfo.statusIds[i]]
+					, this, entry);
+			}
+
+		}
+
+		Dictionary<WeaponEquipmentData.DamageType, int> damagesDealt =
+			PerformingEntity.Equipment.Weapons[linkedEquipmentId].GetDamages(PerformingEntity, targetEntity, this
+				, GetExchangeResultAgainst(targetEntity), out LogCard damageCard, attackInfo.ShotOrigin);
+
+		if (targetEntity == null && Data.aoeType == EntityActionData.AOEType.Noone)
+			damageCard.target = GetStructureName(GetTargetTileAt(attackCount)) ?? damageCard.target;
+
+		if (attackInfo.isAttackSuccessfull)
+			AddDamageStep(entry, damageCard, attackCount);
+
+		if (coverHitted != null)
+			coverHitted.Wall.RegisterDamage(damagesDealt);
+		else if (attackInfo.isAttackSuccessfull && targetEntity == null && Data.aoeType == EntityActionData.AOEType.Noone
+			&& Item.TryGetTargetableOn(GetTargetTileAt(attackCount), out Item targetItem))
+			targetItem.RegisterDamage(damagesDealt);
+
+		attackInfo.damages = new int[damagesDealt.Count];
+		attackInfo.damageTypes = new short[damagesDealt.Count];
+		int damageIndex = 0;
+		foreach (KeyValuePair<WeaponEquipmentData.DamageType, int> pair in damagesDealt)
+		{
+			attackInfo.damages[damageIndex] = pair.Value;
+			attackInfo.damageTypes[damageIndex++] = (short)pair.Key;
+		}
+	}
+
+	private void AddRebounds ( LogCard _entry )
+	{
+		int baseCount = attacksInfos.Length;
+		for (int i = 0; i < baseCount; i++)
+		{
+			Entity firstTarget = GetTargetEntityAt(i);
+			if (!attacksInfos[i].isAttackSuccessfull || firstTarget == null || firstTarget.Equipment.IsDead)
+				continue;
+
+			Tile bounceTile = GetExchangeTileOf(firstTarget);
+			Entity reboundTarget = PickReboundTarget(firstTarget, bounceTile);
+			if (reboundTarget == null)
+				continue;
+
+			m_reboundTargetIDs.Add(reboundTarget.ID);
+			SingleAttackInfo[] infos = new SingleAttackInfo[attacksInfos.Length + 1];
+			attacksInfos.CopyTo(infos, 0);
+			infos[^1] = new();
+			attacksInfos = infos;
+
+			LogConsole.AddLog(string.Format(LocalizationManager.Instance.Get(LocalizationKey.log_rebound), PerformingEntity.Data.name, reboundTarget.Data.name), LogConsole.LogEventType.ActionResolution);
+			PrepareSingleAttack(attacksInfos.Length - 1, _entry, bounceTile);
+		}
+	}
+
+	private bool IsTargetOfThisAttack ( Entity _entity )
+	{
+		return (targetedEntityIDs != null && System.Array.IndexOf(targetedEntityIDs, _entity.ID) >= 0) || m_reboundTargetIDs.Contains(_entity.ID);
+	}
+
+	private Entity PickReboundTarget ( Entity _firstTarget, Tile _bounceTile )
+	{
+		int remainingRange = Data.GetMaxRange(this, PerformingEntity, _firstTarget) - GetAttackOriginTile().coordinates.DistanceTo(_bounceTile.coordinates);
+		List<Entity> candidates = new();
+		foreach (EntityAnchor anchor in GameManager.Instance.PlayersEntityAnchor)
+		{
+			foreach (Entity entity in anchor.Entities)
+			{
+				if (entity.Equipment.IsDead || entity.IsAlliedTo(PerformingEntity.OwnerID) || IsTargetOfThisAttack(entity))
+					continue;
+
+				Tile tile = GetExchangeTileOf(entity);
+				if (_bounceTile.coordinates.DistanceTo(tile.coordinates) <= remainingRange && !GridManager.Instance.IsThereBlockingWallBetween(_bounceTile, tile, true, out _))
+					candidates.Add(entity);
+			}
+		}
+
+		return candidates.Count == 0 ? null : candidates[Random.Range(0, candidates.Count)];
 	}
 
 	protected override void Perform ( Entity.EntityState _state )

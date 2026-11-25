@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f23858ac2674e144b91f1e5c6d35376f, type: 3}
+  m_Name: Illusion
+  m_EditorClassIdentifier: RTD::IllusionStatus
+  enumID: 19
+  durationType: 0
+  consumedBy: 0
+  doesStackCharges: 0
+  doesNeedRoll: 0
+  description: A decoy with 1 HP that cannot attack. It vanishes when the countdown
+    ends.
+  icon: {fileID: 0}
+  color: {r: 0.4, g: 0.9, b: 1, a: 1}
+  groundPrefab: {fileID: 0}
+  entityPrefab: {fileID: 0}
+  entityVisualAnchor: 0

@@ -3466,3 +3466,139 @@ MonoBehaviour:
     values:
     - "Hangar full: dismantled"
     - "Hangar plein : d\xE9mont\xE9e"
+  - key: log/status_affected_charges
+    values:
+    - "{0} is affected by <i>{1}</i>, {2} charges remaining"
+    - "{0} est affect\xE9 par <i>{1}</i>, {2} charges restantes"
+  - key: log_card/remaining_charges
+    values:
+    - "{0} / {1} charges left"
+    - "{0} / {1} charges restantes"
+  - key: log/echo_damage
+    values:
+    - "Echo: {0} takes {1} damage again"
+    - "\xC9cho : {0} subit \xE0 nouveau {1} d\xE9g\xE2ts"
+  - key: log_card/scanner
+    values:
+    - "Tactical scanner on {0}"
+    - "Scanner tactique sur {0}"
+  - key: log/riposte
+    values:
+    - "{0} ripostes against {1}"
+    - "{0} riposte contre {1}"
+  - key: log/rebound
+    values:
+    - "The shot of {0} bounces to {1}"
+    - "Le tir de {0} rebondit sur {1}"
+  - key: log/retreat
+    values:
+    - "{0} retreats"
+    - "{0} bat en retraite"
+  - key: log/illusion_summoned
+    values:
+    - "{0} summons an illusion"
+    - "{0} invoque une illusion"
+  - key: log/illusion_vanished
+    values:
+    - "The illusion of {0} vanishes"
+    - "L'illusion de {0} se dissipe"
+  - key: status/echo
+    values:
+    - "Echo"
+    - "\xC9cho"
+  - key: status/echo_desc
+    values:
+    - "The damage of the next melee actions is dealt again one tick later."
+    - "Les d\xE9g\xE2ts des prochaines actions de m\xEAl\xE9e sont r\xE9appliqu\xE9s un tick plus tard."
+  - key: status/sabotage
+    values:
+    - "Sabotage"
+    - "Sabotage"
+  - key: status/sabotage_desc
+    values:
+    - "The next melee actions inflict a Sabotaged charge."
+    - "Les prochaines actions de m\xEAl\xE9e infligent une charge de Sabot\xE9."
+  - key: status/sabotaged
+    values:
+    - "Sabotaged"
+    - "Sabot\xE9"
+  - key: status/sabotaged_desc
+    values:
+    - "Each charge adds 1 preparation tick to the next movement action."
+    - "Chaque charge ajoute 1 tick de pr\xE9paration \xE0 la prochaine action de d\xE9placement."
+  - key: status/assault
+    values:
+    - "Assault"
+    - "Assaut"
+  - key: status/assault_desc
+    values:
+    - "The next melee actions deal +10% damage per tile traveled this round."
+    - "Les prochaines actions de m\xEAl\xE9e infligent +10 % de d\xE9g\xE2ts par case parcourue ce tour."
+  - key: status/riposte
+    values:
+    - "Riposte"
+    - "Riposte"
+  - key: status/riposte_desc
+    values:
+    - "Each melee attack received triggers a free riposte against the attacker."
+    - "Chaque attaque de m\xEAl\xE9e re\xE7ue d\xE9clenche une riposte gratuite contre l'attaquant."
+  - key: status/rebound
+    values:
+    - "Rebound"
+    - "Rebond"
+  - key: status/rebound_desc
+    values:
+    - "The next shots bounce to a random enemy within the weapon's range."
+    - "Les prochains tirs rebondissent sur un ennemi al\xE9atoire \xE0 port\xE9e de l'arme."
+  - key: status/erosion
+    values:
+    - "Erosion"
+    - "\xC9rosion"
+  - key: status/erosion_desc
+    values:
+    - "The next shots lower the target's resistance to their elements by 10% until the end of the round."
+    - "Les prochains tirs r\xE9duisent de 10 % la r\xE9sistance de la cible \xE0 leurs \xE9l\xE9ments jusqu'\xE0 la fin du tour."
+  - key: status/tacticalscanner
+    values:
+    - "Tactical scanner"
+    - "Scanner tactique"
+  - key: status/tacticalscanner_desc
+    values:
+    - "The next shots use the shooter's best perception against the target's weakest camouflage."
+    - "Les prochains tirs opposent la meilleure perception du tireur au camouflage le plus faible de la cible."
+  - key: status/overdrive
+    values:
+    - "Overdrive"
+    - "Surr\xE9gime"
+  - key: status/overdrive_desc
+    values:
+    - "The next multi-target shots gain +2 targets."
+    - "Les prochains tirs multicibles gagnent +2 cibles."
+  - key: status/intangible
+    values:
+    - "Intangible"
+    - "Intangible"
+  - key: status/intangible_desc
+    values:
+    - "The unit moves through walls and objects, but cannot stop inside one."
+    - "L'unit\xE9 traverse murs et objets, mais ne peut pas s'arr\xEAter dedans."
+  - key: status/anchored
+    values:
+    - "Anchored"
+    - "Ancr\xE9"
+  - key: status/anchored_desc
+    values:
+    - "The unit cannot be pushed or pulled."
+    - "L'unit\xE9 ne peut \xEAtre ni pouss\xE9e ni tir\xE9e."
+  - key: status/illusion
+    values:
+    - "Illusion"
+    - "Illusion"
+  - key: status/illusion_desc
+    values:
+    - "A decoy with 1 HP that cannot attack. It vanishes when the countdown ends."
+    - "Un leurre \xE0 1 PV qui ne peut pas attaquer. Il dispara\xEEt \xE0 la fin du compte \xE0 rebours."
+  - key: action/swapwithillusion
+    values:
+    - "Swap"
+    - "\xC9changer"

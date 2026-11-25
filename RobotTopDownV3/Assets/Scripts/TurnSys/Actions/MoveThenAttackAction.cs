@@ -152,6 +152,11 @@ public class MoveThenAttackAction : AttackAction
 		return new() { isFirstActionConflicted = doesSelfHaveConflict, isSecondActionConflicted = doesOtherHaveConflict };
 	}
 
+	public override int GetOwnMovementLength ()
+	{
+		return HasDash ? GridManager.Instance.GetDistanceBetween(GridManager.Instance.Tiles[supposedPositionAtActionStartID], GridManager.Instance.Tiles[positionAfterMovementID], Data.movementSpeed, false) : 0;
+	}
+
 	private bool IsDashTooLong ()
 	{
 		return GridManager.Instance.GetDistanceBetween(GridManager.Instance.Tiles[supposedPositionAtActionStartID], GridManager.Instance.Tiles[positionAfterMovementID], Data.movementSpeed, false)

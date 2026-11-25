@@ -41,6 +41,19 @@ public abstract class AEntityAction : INetworkSerializable
 	public float tickTimeReserve;
 	public float TickTimeLeft => TurnManager.GetTickTimeLeft(tickTimeReserve);
 	public bool wasReplacedByAI;
+	public bool hasClaimedStatusCharges;
+	public short[] boostingStatusIDs = Array.Empty<short>();
+	public short[] plannedStatusIDs;
+
+	public bool IsBoostedBy ( EntityStatusEnumID _statusID )
+	{
+		return boostingStatusIDs != null && Array.IndexOf(boostingStatusIDs, (short)_statusID) >= 0;
+	}
+
+	public bool IsPlannedWith ( EntityStatusEnumID _statusID )
+	{
+		return plannedStatusIDs != null && Array.IndexOf(plannedStatusIDs, (short)_statusID) >= 0;
+	}
 
 	public string TagLogMessage ( string _message )
 	{
@@ -79,6 +92,9 @@ public abstract class AEntityAction : INetworkSerializable
 		serializer.SerializeValue(ref doesFreeActionOwnFacing);
 		serializer.SerializeValue(ref orientationAtPerform);
 		serializer.SerializeValue(ref wasReplacedByAI);
+		serializer.SerializeValue(ref hasClaimedStatusCharges);
+		serializer.SerializeValue(ref boostingStatusIDs);
+		serializer.SerializeValue(ref plannedStatusIDs);
 		serializer.SerializeValue(ref timeAtStart);
 		serializer.SerializeValue(ref m_isPerforming);
 	}
@@ -95,6 +111,7 @@ public abstract class AEntityAction : INetworkSerializable
 		effects = performingEntity.KnownedPassiveEffectsPerAction == null || !performingEntity.KnownedPassiveEffectsPerAction.ContainsKey(enumID)
 			? null : performingEntity.KnownedPassiveEffectsPerAction[enumID].ToArray();
 
+		plannedStatusIDs = performingEntity.GetPlanningBoundCharges(this);
 		preparationDuration = _data.GetTokenPreparationCost(this, performingEntity, null);
 		actualDuration = _data.tokenDuration;
 		cooldownDuration = _data.GetTokenCooldownCost(this, performingEntity, null);

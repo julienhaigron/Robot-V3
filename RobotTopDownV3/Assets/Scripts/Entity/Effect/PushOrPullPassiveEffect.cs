@@ -26,6 +26,8 @@ public class PushOrPullPassiveEffect : AEntityPassiveEffect
 	{
 		Tile origin = _targetEntity.Displacement.Coordinates.GetTile();
 		PushPrediction prediction = new() { destination = origin };
+		if (_targetEntity.Status.Contains(EntityStatusEnumID.Anchored))
+			return prediction;
 
 		Tile from = _originTile == null || _originTile == origin ? _casterTile : _originTile;
 		if (origin == null || from == null || from == origin)

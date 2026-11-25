@@ -598,8 +598,9 @@ public class BotEnnemiPlayer : MonoBehaviour
 			MoveToTargetAction movementAction = TurnManager.Instance.GetAction(movementActionData, _entity.ID, _entity.ComponentLinkedToAction[movementActionData.enumID][0], spentTokens) as MoveToTargetAction;
 
 			List<int> thisActionPath = new();
-			for (int j = 0; j < movementActionData.movementSpeed && walkedTiles + j + 1 < _path.Count; j++)
-				thisActionPath.Add(_path[walkedTiles + j + 1].coordinates.ID);
+			int stepEnd = MoveToTargetAction.GetStepEnd(_path, walkedTiles, movementActionData.movementSpeed, true);
+			for (int j = walkedTiles + 1; j <= stepEnd; j++)
+				thisActionPath.Add(_path[j].coordinates.ID);
 
 			if (thisActionPath.Count == 0)
 				return spentTokens;

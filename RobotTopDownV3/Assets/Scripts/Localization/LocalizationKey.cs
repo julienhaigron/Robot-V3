@@ -849,6 +849,40 @@ public enum LocalizationKey
     component_refusal_inventory_full,
     endlevel_inventory,
     endlevel_unit_dismantled,
+    log_status_affected_charges,
+    log_card_remaining_charges,
+    log_echo_damage,
+    log_card_scanner,
+    log_riposte,
+    log_rebound,
+    log_retreat,
+    log_illusion_summoned,
+    log_illusion_vanished,
+    status_echo,
+    status_echo_desc,
+    status_sabotage,
+    status_sabotage_desc,
+    status_sabotaged,
+    status_sabotaged_desc,
+    status_assault,
+    status_assault_desc,
+    status_riposte,
+    status_riposte_desc,
+    status_rebound,
+    status_rebound_desc,
+    status_erosion,
+    status_erosion_desc,
+    status_tacticalscanner,
+    status_tacticalscanner_desc,
+    status_overdrive,
+    status_overdrive_desc,
+    status_intangible,
+    status_intangible_desc,
+    status_anchored,
+    status_anchored_desc,
+    status_illusion,
+    status_illusion_desc,
+    action_swapwithillusion,
 }
 
 public static class LocalizationKeyExtensions
@@ -1705,6 +1739,40 @@ public static class LocalizationKeyExtensions
             case LocalizationKey.component_refusal_inventory_full: return "component_refusal/inventory_full";
             case LocalizationKey.endlevel_inventory: return "endlevel/inventory";
             case LocalizationKey.endlevel_unit_dismantled: return "endlevel/unit_dismantled";
+            case LocalizationKey.log_status_affected_charges: return "log/status_affected_charges";
+            case LocalizationKey.log_card_remaining_charges: return "log_card/remaining_charges";
+            case LocalizationKey.log_echo_damage: return "log/echo_damage";
+            case LocalizationKey.log_card_scanner: return "log_card/scanner";
+            case LocalizationKey.log_riposte: return "log/riposte";
+            case LocalizationKey.log_rebound: return "log/rebound";
+            case LocalizationKey.log_retreat: return "log/retreat";
+            case LocalizationKey.log_illusion_summoned: return "log/illusion_summoned";
+            case LocalizationKey.log_illusion_vanished: return "log/illusion_vanished";
+            case LocalizationKey.status_echo: return "status/echo";
+            case LocalizationKey.status_echo_desc: return "status/echo_desc";
+            case LocalizationKey.status_sabotage: return "status/sabotage";
+            case LocalizationKey.status_sabotage_desc: return "status/sabotage_desc";
+            case LocalizationKey.status_sabotaged: return "status/sabotaged";
+            case LocalizationKey.status_sabotaged_desc: return "status/sabotaged_desc";
+            case LocalizationKey.status_assault: return "status/assault";
+            case LocalizationKey.status_assault_desc: return "status/assault_desc";
+            case LocalizationKey.status_riposte: return "status/riposte";
+            case LocalizationKey.status_riposte_desc: return "status/riposte_desc";
+            case LocalizationKey.status_rebound: return "status/rebound";
+            case LocalizationKey.status_rebound_desc: return "status/rebound_desc";
+            case LocalizationKey.status_erosion: return "status/erosion";
+            case LocalizationKey.status_erosion_desc: return "status/erosion_desc";
+            case LocalizationKey.status_tacticalscanner: return "status/tacticalscanner";
+            case LocalizationKey.status_tacticalscanner_desc: return "status/tacticalscanner_desc";
+            case LocalizationKey.status_overdrive: return "status/overdrive";
+            case LocalizationKey.status_overdrive_desc: return "status/overdrive_desc";
+            case LocalizationKey.status_intangible: return "status/intangible";
+            case LocalizationKey.status_intangible_desc: return "status/intangible_desc";
+            case LocalizationKey.status_anchored: return "status/anchored";
+            case LocalizationKey.status_anchored_desc: return "status/anchored_desc";
+            case LocalizationKey.status_illusion: return "status/illusion";
+            case LocalizationKey.status_illusion_desc: return "status/illusion_desc";
+            case LocalizationKey.action_swapwithillusion: return "action/swapwithillusion";
             default: return string.Empty;
         }
     }

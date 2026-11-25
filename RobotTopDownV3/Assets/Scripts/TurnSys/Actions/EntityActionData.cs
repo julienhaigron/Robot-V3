@@ -162,7 +162,8 @@ public class EntityActionData : AParsableScriptableObject
 		Wait,
 		InvokeItem,
 		JumpMove,
-		MoveItem
+		MoveItem,
+		SwapWithIllusion
 	}
 
 	#region Target Vars
@@ -442,6 +443,9 @@ public class EntityActionData : AParsableScriptableObject
 			totalTokenCooldown -= (GameAssets.current.game.entityEffects[EntityPassiveEffectEnumID.QuickDraw] as QuickDrawPassiveEffect).reductionAmount;
 		}
 
+		if (_performingEntity != null && _performingEntity.HasChargeFor(EntityStatusEnumID.Sabotaged, _action))
+			totalTokenCooldown += (GameAssets.current.game.entityStatus[EntityStatusEnumID.Sabotaged] as SabotagedStatus).extraPreparation;
+
 		return Mathf.Max(0, totalTokenCooldown);
 	}
 
@@ -487,13 +491,17 @@ public class EntityActionData : AParsableScriptableObject
 
 	public int GetMaxTargetAmount ( AEntityAction _action, Entity _performingEntity, Entity _targetEntity )
 	{
+		int amount = maxTargetAmount;
 		if (_action != null && _performingEntity != null && ContainsEffect(_performingEntity, EntityPassiveEffectEnumID.MaxTargetUp, out AEntityPassiveEffect.PassiveEffectContainer effectContainer)
 			&& Condition.UseConditionPredicate(_action, _performingEntity, _targetEntity, effectContainer.conditionType))
 		{
-			return maxTargetAmount + (GameAssets.current.game.entityEffects[EntityPassiveEffectEnumID.MaxTargetUp] as MaxTargetUpPassiveEffect).targetBoostAmount;
+			amount += (GameAssets.current.game.entityEffects[EntityPassiveEffectEnumID.MaxTargetUp] as MaxTargetUpPassiveEffect).targetBoostAmount;
 		}
 
-		return maxTargetAmount;
+		if (_performingEntity != null && _performingEntity.HasChargeFor(EntityStatusEnumID.Overdrive, _action))
+			amount += (GameAssets.current.game.entityStatus[EntityStatusEnumID.Overdrive] as OverdriveStatus).bonusTargets;
+
+		return amount;
 	}
 
 	public float GetDamageFactorAmountForType ( AEntityAction _action, Entity _performingEntity, Entity _targetEntity, WeaponEquipmentData.DamageType _damageType )
@@ -510,6 +518,9 @@ public class EntityActionData : AParsableScriptableObject
 		{
 			totalDamageFactor += (GameAssets.current.game.entityEffects[EntityPassiveEffectEnumID.DoubleDamage] as DamageUpPassiveEffect).damageBoostAmount;
 		}
+
+		if (_performingEntity != null && _performingEntity.HasChargeFor(EntityStatusEnumID.Assault, _action))
+			totalDamageFactor += (GameAssets.current.game.entityStatus[EntityStatusEnumID.Assault] as AssaultStatus).GetDamageBonus(_action, _performingEntity);
 
 		return totalDamageFactor;
 	}

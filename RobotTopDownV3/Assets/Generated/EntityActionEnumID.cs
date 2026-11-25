@@ -58,5 +58,6 @@ public enum EntityActionEnumID
 	Dooming,
 	RotateToEntity,
 	Set_Cable,
+	SwapWithIllusion,
 	//#END#ENTITYACTIONENUMID#//
 }

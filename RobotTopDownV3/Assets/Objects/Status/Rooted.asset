@@ -14,6 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enumID: 4
   durationType: 0
+  consumedBy: 0
+  doesStackCharges: 0
   doesNeedRoll: 1
   description: 
   icon: {fileID: 21300000, guid: 93c19375d39acef01d9d8365bbb68a70, type: 3}

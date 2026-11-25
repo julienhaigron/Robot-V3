@@ -19,7 +19,7 @@ public abstract class AMovementAction : AEntityAction
 	public override void OnSelectActionTileInteractPredicatePrewarm ()
 	{
 		base.OnSelectActionTileInteractPredicatePrewarm();
-		GridManager.Instance.BFS(GridManager.Instance.Tiles[TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntityID)], MaxMovementDistance, null, true);
+		GridManager.Instance.BFS(GridManager.Instance.Tiles[TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntityID)], MaxMovementDistance, null, true, _movingEntity: PerformingEntity);
 	}
 
 	public override bool DoesLeaveTileThisTick ( int _tileID )

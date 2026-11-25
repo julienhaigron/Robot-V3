@@ -19,6 +19,8 @@ public class Weapon : MonoBehaviour
 	protected string m_id;
 	public string ID => m_id;
 	protected Coroutine m_attackCR;
+	private readonly Queue<(AttackAction action, Action onEnd)> m_queuedAttacks = new();
+	private Coroutine m_queuedAttacksCR;
 	protected AttackAction m_lastPerformedAction;
 	protected Action m_onPerformAttackEnd;
 	protected HashSet<Tile> m_targetedTiles = new();
@@ -141,6 +143,41 @@ public class Weapon : MonoBehaviour
 	{
 		if (m_attackCR != null && GameManager.Instance != null)
 			GameManager.Instance.StopCoroutine(m_attackCR);
+	}
+
+	public void QueueAttack ( AttackAction _attackAction, Action _onPerformEnd )
+	{
+		m_queuedAttacks.Enqueue((_attackAction, _onPerformEnd));
+		if (m_queuedAttacksCR == null)
+			m_queuedAttacksCR = GameManager.Instance.StartCoroutine(PerformQueuedAttacksCR());
+	}
+
+	private IEnumerator PerformQueuedAttacksCR ()
+	{
+		while (m_queuedAttacks.Count > 0)
+		{
+			while (m_attackCR != null)
+				yield return null;
+
+			(AttackAction action, Action onEnd) = m_queuedAttacks.Dequeue();
+			if (this == null || m_user == null || m_user.Equipment.IsDead)
+			{
+				onEnd?.Invoke();
+				continue;
+			}
+
+			bool isDone = false;
+			PerformAttack(action, () =>
+			{
+				isDone = true;
+				onEnd?.Invoke();
+			});
+
+			while (!isDone)
+				yield return null;
+		}
+
+		m_queuedAttacksCR = null;
 	}
 
 	public virtual void PerformAttack ( AttackAction _attackAction, Action _onPerformEnd )
@@ -351,6 +388,16 @@ public class Weapon : MonoBehaviour
 			shotOrigin = _attackInfo.ShotOrigin,
 			hitTile = _attackAction.GetExchangeTileOf(_entity)
 		});
+
+		if (_entity.Equipment.IsDead)
+			return;
+
+		bool isFirstHitOnTarget = _attackAction.RegisterHitOn(_entity);
+		foreach (short statusID in _attackAction.boostingStatusIDs)
+			GameAssets.current.game.entityStatus[(EntityStatusEnumID)statusID].OnBoostedHit(_attackAction, m_user, _entity, _damages, isFirstHitOnTarget);
+
+		if (isFirstHitOnTarget)
+			_entity.OnHitReceived(_attackAction, m_user);
 	}
 
 	private void PlayHitVFX ( AttackAction _attackAction, WeaponTarget _target )

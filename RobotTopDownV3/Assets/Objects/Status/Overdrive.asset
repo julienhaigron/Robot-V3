@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f5832c55e9daed24ca75be11556088f5, type: 3}
+  m_Name: Overdrive
+  m_EditorClassIdentifier: RTD::OverdriveStatus
+  enumID: 16
+  durationType: 2
+  consumedBy: 3
+  doesStackCharges: 0
+  isBoundAtPlanning: 1
+  doesNeedRoll: 0
+  description: The next multi-target shots gain +2 targets.
+  icon: {fileID: 0}
+  color: {r: 0.8862746, g: 0.76470596, b: 0.27450982, a: 1}
+  groundPrefab: {fileID: 0}
+  entityPrefab: {fileID: 0}
+  entityVisualAnchor: 0
+  bonusTargets: 2

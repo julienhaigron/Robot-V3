@@ -1170,6 +1170,39 @@ public class GridManager : Singleton<GridManager>
 		return Mathf.FloorToInt(angle / 60f) % 6;
 	}
 
+	public static bool CanPhaseThrough ( Entity _entity )
+	{
+		return _entity != null && _entity.Status.Contains(EntityStatusEnumID.Intangible);
+	}
+
+	private static bool IsObstacleFor ( Tile _tile, Tile _to, bool _isThisTurn, Entity _movingEntity )
+	{
+		return _tile.IsObstacle(_isThisTurn) && (!CanPhaseThrough(_movingEntity) || _tile.GroundType == TileGroundType.Void || _tile == _to);
+	}
+
+	public Tile GetNearestFreeTile ( Tile _origin, Entity _mover )
+	{
+		HashSet<Tile> visited = new() { _origin };
+		Queue<Tile> frontier = new();
+		frontier.Enqueue(_origin);
+		while (frontier.Count > 0)
+		{
+			Tile current = frontier.Dequeue();
+			Entity occupant = current.GetCurrentEntity();
+			if (!current.IsObstacle(true) && (occupant == null || occupant == _mover) && current.GetBlockingEntityFor(_mover) == null)
+				return current;
+
+			for (int i = 0; i < 6; i++)
+			{
+				Tile neighbor = current.GetNeighbor((HexDirection)i);
+				if (neighbor != null && visited.Add(neighbor))
+					frontier.Enqueue(neighbor);
+			}
+		}
+
+		return null;
+	}
+
 	private bool IsBlockedByEntity ( Tile _tile, Tile _to, bool _isThisTurn, Entity _movingEntity, bool _canTraverseAllies, bool _canEndOnOccupiedTile )
 	{
 		if (_to == null || (_canEndOnOccupiedTile && _tile.coordinates.ID == _to.coordinates.ID))
@@ -1231,7 +1264,7 @@ public class GridManager : Singleton<GridManager>
 				}
 
 				//obstacle
-				if (!_ignoreObstacles && (neighbor.IsObstacle(_isThisTurn) || IsBlockedByEntity(neighbor, _to, _isThisTurn, _movingEntity, _canTraverseAllies, _canEndOnOccupiedTile)))
+				if (!_ignoreObstacles && (IsObstacleFor(neighbor, _to, _isThisTurn, _movingEntity) || IsBlockedByEntity(neighbor, _to, _isThisTurn, _movingEntity, _canTraverseAllies, _canEndOnOccupiedTile)))
 				{
 					continue;
 				}

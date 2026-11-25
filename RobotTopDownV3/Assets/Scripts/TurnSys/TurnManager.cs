@@ -26,6 +26,7 @@ public class TurnManager : Singleton<TurnManager>
 	
 	public static int currentTick = 0;
 	public bool IsLastTickOfRound => currentTick >= GameConfig.current.game.actionTokenPerRound - 1;
+	public int RemainingTicksInRound => Mathf.Max(1, GameConfig.current.game.actionTokenPerRound - currentTick);
 #if UNITY_EDITOR
 	public static bool isMatchEndDisabled;
 #endif
@@ -360,6 +361,26 @@ public class TurnManager : Singleton<TurnManager>
 	{
 		float elapsed = Instance != null && Instance.currentPhase == TurnPhase.Playing ? Time.time - Instance.m_tickPlayStartTime : 0f;
 		return Mathf.Max(TickDuration * c_minActionTimeShare, TickDuration - elapsed - _reserve);
+	}
+
+	public int CountUnclaimedQueuedActionsBefore ( int _entityID, AEntityAction _action, Func<AEntityAction, bool> _predicate )
+	{
+		int count = 0;
+		foreach (SerializableDictionary<int, Queue<RecordedAction>> queues in new[] { m_actionsToPlay, m_recordedActionInput })
+		{
+			if (!queues.TryGetValue(_entityID, out Queue<RecordedAction> queue) || queue == null)
+				continue;
+
+			foreach (RecordedAction recordedAction in queue)
+			{
+				if (recordedAction.action == _action)
+					return count;
+				if (!recordedAction.action.hasClaimedStatusCharges && _predicate(recordedAction.action))
+					count++;
+			}
+		}
+
+		return count;
 	}
 
 	public void TrackEntireGameAction ( int _entityID, EntityActionEnumID _actionType )
@@ -1145,6 +1166,9 @@ public class TurnManager : Singleton<TurnManager>
 			case EntityActionData.ActionCodeType.MoveItem:
 				action = new MoveItemAction();
 				break;
+			case EntityActionData.ActionCodeType.SwapWithIllusion:
+				action = new SwapWithIllusionAction();
+				break;
 			default:
 				Debug.LogError("Missing entree in TurnManager.GetAction for type \"" + _actionData.codeType + "\"");
 				return action;
@@ -1609,6 +1633,7 @@ public class TurnManager : Singleton<TurnManager>
 					continue;
 
 				recordedAction.action.orientationAtPerform = GetOrientationAtPerformOf(recordedAction);
+				recordedAction.action.PerformingEntity.ClaimStatusCharges(recordedAction.action);
 				recordedAction.action.Prepare(recordedAction.entityState);
 			}
 		}
@@ -2016,11 +2041,11 @@ public class TurnManager : Singleton<TurnManager>
 		bool isPlayerOneAlive = false;
 		bool isPlayerTwolive = false;
 		foreach (Entity ally in GameManager.Instance.PlayersEntityAnchor[0].Entities)
-			if (!ally.Equipment.IsDead && !ally.Data.FrameData.isImmortal)
+			if (!ally.Equipment.IsDead && !ally.Data.FrameData.isImmortal && !ally.IsIllusion)
 				isPlayerOneAlive = true;
 
 		foreach (Entity enemy in GameManager.Instance.PlayersEntityAnchor[1].Entities)
-			if (!enemy.Equipment.IsDead && !enemy.Data.FrameData.isImmortal)
+			if (!enemy.Equipment.IsDead && !enemy.Data.FrameData.isImmortal && !enemy.IsIllusion)
 				isPlayerTwolive = true;
 
 		_playerOneWin = !isPlayerTwolive;
@@ -2155,6 +2180,13 @@ public class TurnManager : Singleton<TurnManager>
 
 	public void AddEntityMidGame ( Entity _entity, Action _onEndSpawn = null )
 	{
+		if (currentPhase == TurnPhase.Recording)
+		{
+			m_remainingActionToken[_entity.ID] = GameConfig.current.game.actionTokenPerRound;
+			_onEndSpawn?.Invoke();
+			return;
+		}
+
 		int remainingActionTickThisTurn = GameConfig.current.game.actionTokenPerRound - currentTick;
 
 		Entity.EntityState availableState = GetDefaultStateOf(_entity);

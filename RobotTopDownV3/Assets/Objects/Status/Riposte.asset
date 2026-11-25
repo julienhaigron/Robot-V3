@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8628215727ca00428dc65f4ade45ca8, type: 3}
+  m_Name: Riposte
+  m_EditorClassIdentifier: RTD::RiposteStatus
+  enumID: 12
+  durationType: 0
+  consumedBy: 0
+  doesStackCharges: 0
+  doesNeedRoll: 0
+  description: Each melee attack received triggers a free riposte against the attacker.
+  icon: {fileID: 0}
+  color: {r: 0.8862746, g: 0.76470596, b: 0.27450982, a: 1}
+  groundPrefab: {fileID: 0}
+  entityPrefab: {fileID: 0}
+  entityVisualAnchor: 0

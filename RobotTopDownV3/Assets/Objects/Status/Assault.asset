@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cd677b29ab5244b4480bed91aabdc7aa, type: 3}
+  m_Name: Assault
+  m_EditorClassIdentifier: RTD::AssaultStatus
+  enumID: 11
+  durationType: 2
+  consumedBy: 1
+  doesStackCharges: 0
+  doesNeedRoll: 0
+  description: The next melee actions deal +10% damage per tile traveled this round.
+  icon: {fileID: 0}
+  color: {r: 0.34117648, g: 0.6666667, b: 0.8705883, a: 1}
+  groundPrefab: {fileID: 0}
+  entityPrefab: {fileID: 0}
+  entityVisualAnchor: 0
+  damageBonusPerTile: 0.1

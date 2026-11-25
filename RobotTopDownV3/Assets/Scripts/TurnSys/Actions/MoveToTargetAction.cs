@@ -48,11 +48,18 @@ public class MoveToTargetAction : AMovementAction
 
 	protected override IEnumerator PerformCR ()
 	{
-		int movementAmount = Mathf.Min(targetTileIDs.Length, Data.movementSpeed);
+		int movementAmount = targetTileIDs.Length;
 		float stepDuration = TickTimeLeft / movementAmount;
 
 		for (int i = 0; i < movementAmount; i++)
 		{
+			if (GridManager.Instance.Tiles[targetTileIDs[i]].IsObstacle(true) && !GridManager.CanPhaseThrough(PerformingEntity))
+			{
+				ReleaseBookedTiles();
+				PerformingEntity.Displacement.RegisterOnCurrentTile();
+				break;
+			}
+
 			m_movementTween = PerformingEntity.Displacement.MoveToTile(targetTileIDs[i], null, true, stepDuration);
 
 			if (m_movementTween == null)
@@ -102,7 +109,7 @@ public class MoveToTargetAction : AMovementAction
 
 		path.Reverse();
 		int actionCount = 0;
-		for (int i = 0; i < path.Count - 1; i += Data.movementSpeed)
+		for (int i = 0; i < path.Count - 1;)
 		{
 			MoveToTargetAction action = new MoveToTargetAction();
 
@@ -112,9 +119,11 @@ public class MoveToTargetAction : AMovementAction
 				action.targetEntiyID = _tile.GetEntity(true).ID;
 			action.mode = mode;
 
+			int stepEnd = GetStepEnd(path, i, Data.movementSpeed, true);
+
 			List<int> tileIDList = new();
-			for (int j = 0; j < Data.movementSpeed && i + j < path.Count - 1; j++)
-				tileIDList.Add(path[i + j + 1].coordinates.ID);
+			for (int j = i + 1; j <= stepEnd; j++)
+				tileIDList.Add(path[j].coordinates.ID);
 			action.targetTileIDs = tileIDList.ToArray();
 			action.Init(Data, linkedEquipmentId, performingEntityID, path[i].coordinates.ID, timeAtStart + (actionCount * Data.tokenDuration));
 
@@ -123,6 +132,7 @@ public class MoveToTargetAction : AMovementAction
 
 			actionCount++;
 			TurnManager.Instance.RegisterAction(performingEntityID, action, TurnManager.Instance.GetDefaultStateOf(performingEntityID));
+			i = stepEnd;
 
 			if (TurnManager.Instance.RemainingActionToken[performingEntityID] < Data.tokenDuration)
 				break;
@@ -145,7 +155,7 @@ public class MoveToTargetAction : AMovementAction
 				RefreshDestinatedTile();
 			doesSelfHaveConflict = _isCheck || finalTargetTileID == -1;
 		}
-		else if (GridManager.Instance.GetDistanceBetween(PerformingEntity.Displacement.Coordinates.GetTile(), GridManager.Instance.Tiles[targetTileIDs[0]], Data.movementSpeed, false) > 1)
+		else if (!IsFirstStepReachable())
 		{
 			doesSelfHaveConflict = true;
 			RefreshDestinatedTile();
@@ -168,6 +178,22 @@ public class MoveToTargetAction : AMovementAction
 			BookTargetTiles();
 
 		return new() { isFirstActionConflicted = doesSelfHaveConflict, isSecondActionConflicted = doesOtherHaveConflict };
+	}
+
+	private bool IsFirstStepReachable ()
+	{
+		Tile from = PerformingEntity.Displacement.Coordinates.GetTile();
+		Tile firstStep = GridManager.Instance.Tiles[targetTileIDs[0]];
+		return from.coordinates.DistanceTo(firstStep.coordinates) == 1 && (!firstStep.IsObstacle(false) || GridManager.CanPhaseThrough(PerformingEntity));
+	}
+
+	public static int GetStepEnd ( List<Tile> _path, int _from, int _movementSpeed, bool _isThisTurn )
+	{
+		int stepEnd = Mathf.Min(_from + _movementSpeed, _path.Count - 1);
+		while (stepEnd < _path.Count - 1 && _path[stepEnd].IsObstacle(_isThisTurn))
+			stepEnd++;
+
+		return stepEnd;
 	}
 
 	private bool IsSwappingTilesWith ( MoveToTargetAction _otherAction )
@@ -201,7 +227,7 @@ public class MoveToTargetAction : AMovementAction
 
 		pathToTile.Reverse();
 
-		int stepCount = Mathf.Min(Data.movementSpeed, pathToTile.Count - 1);
+		int stepCount = GetStepEnd(pathToTile, 0, Data.movementSpeed, false);
 		targetTileIDs = new int[stepCount];
 		for (int i = 0; i < stepCount; i++)
 			targetTileIDs[i] = pathToTile[i + 1].coordinates.ID;

@@ -156,13 +156,13 @@ public class EntityDisplacementPlugin : EntityPlugin
 		return m_movementTween;
 	}
 
-	public void TeleportToTile ( int _tileID, System.Action onMovementDoneAction )
+	public void TeleportToTile ( int _tileID, System.Action onMovementDoneAction, bool _keepsOrientation = false )
 	{
 		Tile tile = GridManager.Instance.Tiles[_tileID];
 		if (IsEntryRefused(tile, onMovementDoneAction))
 			return;
 
-		if (ShouldFaceMovementDirection())
+		if (!_keepsOrientation && ShouldFaceMovementDirection())
 			Rotate(tile, GameConfig.current.game.actionDuration);
 
 		KillMovementTweenAndReleasePendingAction();
@@ -170,6 +170,33 @@ public class EntityDisplacementPlugin : EntityPlugin
 		transform.position = tile.transform.position - m_bottomPosition.localPosition;
 		EnterTile(tile, true);
 		onMovementDoneAction?.Invoke();
+		onAnyEntityMovement?.Invoke(m_linkedEntity);
+	}
+
+	public void SwapWith ( EntityDisplacementPlugin _other )
+	{
+		Tile tile = m_coordinate.GetTile();
+		Tile otherTile = _other.m_coordinate.GetTile();
+		ClearFrom(tile);
+		_other.ClearFrom(otherTile);
+		PlaceOn(otherTile);
+		_other.PlaceOn(tile);
+	}
+
+	private void ClearFrom ( Tile _tile )
+	{
+		if (_tile.GetEntity(true) == m_linkedEntity)
+			_tile.SetEntity(null, _isThisTurn: true);
+		if (_tile.GetEntity(false) == m_linkedEntity)
+			_tile.SetEntity(null, _isThisTurn: false);
+	}
+
+	private void PlaceOn ( Tile _tile )
+	{
+		KillMovementTweenAndReleasePendingAction();
+		transform.position = _tile.transform.position - m_bottomPosition.localPosition;
+		EnterTile(_tile, true);
+		RegisterOnCurrentTile();
 		onAnyEntityMovement?.Invoke(m_linkedEntity);
 	}
 
