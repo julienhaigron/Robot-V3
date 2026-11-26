@@ -3366,10 +3366,6 @@ MonoBehaviour:
     values:
     - No bonus
     - Aucun bonus
-  - key: shop/blueprints
-    values:
-    - BLUEPRINTS
-    - BLUEPRINTS
   - key: shop/process_blueprint
     values:
     - PROCESS
@@ -3602,3 +3598,11 @@ MonoBehaviour:
     values:
     - "Swap"
     - "\xC9changer"
+  - key: shop/tab_components
+    values:
+    - "COMPONENTS"
+    - "COMPOSANTS"
+  - key: shop/tab_blueprints
+    values:
+    - "BLUEPRINTS ({0})"
+    - "BLUEPRINTS ({0})"

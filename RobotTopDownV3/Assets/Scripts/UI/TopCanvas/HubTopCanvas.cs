@@ -28,6 +28,7 @@ public class HubTopCanvas : AUITopCanvas
 	[SerializeField] private float m_currencyBumpScale = .15f;
 
 	private bool m_isStructureUpgradePopupOpened = false;
+	private AUIPanel m_folderPanel;
 	private CurrencyType m_shopCurrency = CurrencyType.Unknown;
 	private readonly Dictionary<CurrencyType, ulong> m_shownCurrencies = new();
 	private readonly Dictionary<CurrencyType, Tween> m_currencyRolls = new();
@@ -52,8 +53,11 @@ public class HubTopCanvas : AUITopCanvas
 
 	private void OnShopInitialized ( ShopPanel _shop )
 	{
-		if (m_visible && UIManager.Instance.currentPanel == _shop)
-			Init(true, _shop);
+		if (!m_visible || UIManager.Instance.currentPanel != _shop)
+			return;
+
+		Init(true, _shop);
+		m_structureShortcutsFolder.SetCollapsed(true);
 	}
 
 	private void OnFocusedWindowChanged ()
@@ -67,19 +71,18 @@ public class HubTopCanvas : AUITopCanvas
 			m_isStructureUpgradePopupOpened = false;
 		}
 
-		if (UIManager.Instance.currentPanel is ShopPanel shop)
-		{
+		AUIPanel panel = UIManager.Instance.currentPanel;
+		bool isBuildingPanel = panel is ShopPanel or RepairStationPanel or RecyclePanel;
+		bool showsFolder = isBuildingPanel || panel is SoloHubPanel;
+		m_structureShortcutsFolder.SetVisibility(showsFolder);
+		if (showsFolder && panel != m_folderPanel)
+			m_structureShortcutsFolder.SetCollapsed(isBuildingPanel);
+		m_folderPanel = panel;
+
+		if (panel is ShopPanel shop)
 			Init(true, shop);
-			m_structureShortcutsFolder.SetVisibility(true);
-		}
 		else
-		{
-			if(UIManager.Instance.currentPanel is RepairStationPanel or RecyclePanel or SoloHubPanel)
-				m_structureShortcutsFolder.SetVisibility(true);
-			else
-				m_structureShortcutsFolder.SetVisibility(false);
 			Init(false, null);
-		}
 	}
 
 	private void OnCurrencyChange ( CurrencyType _type )

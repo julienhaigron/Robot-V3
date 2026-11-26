@@ -824,7 +824,6 @@ public enum LocalizationKey
     return_hub_recycled,
     return_hub_day_header,
     stat_block_no_bonus,
-    shop_blueprints,
     shop_process_blueprint,
     shop_no_blueprint,
     log_item_destroyed,
@@ -883,6 +882,8 @@ public enum LocalizationKey
     status_illusion,
     status_illusion_desc,
     action_swapwithillusion,
+    shop_tab_components,
+    shop_tab_blueprints,
 }
 
 public static class LocalizationKeyExtensions
@@ -1714,7 +1715,6 @@ public static class LocalizationKeyExtensions
             case LocalizationKey.return_hub_recycled: return "return_hub/recycled";
             case LocalizationKey.return_hub_day_header: return "return_hub/day_header";
             case LocalizationKey.stat_block_no_bonus: return "stat_block/no_bonus";
-            case LocalizationKey.shop_blueprints: return "shop/blueprints";
             case LocalizationKey.shop_process_blueprint: return "shop/process_blueprint";
             case LocalizationKey.shop_no_blueprint: return "shop/no_blueprint";
             case LocalizationKey.log_item_destroyed: return "log/item_destroyed";
@@ -1773,6 +1773,8 @@ public static class LocalizationKeyExtensions
             case LocalizationKey.status_illusion: return "status/illusion";
             case LocalizationKey.status_illusion_desc: return "status/illusion_desc";
             case LocalizationKey.action_swapwithillusion: return "action/swapwithillusion";
+            case LocalizationKey.shop_tab_components: return "shop/tab_components";
+            case LocalizationKey.shop_tab_blueprints: return "shop/tab_blueprints";
             default: return string.Empty;
         }
     }

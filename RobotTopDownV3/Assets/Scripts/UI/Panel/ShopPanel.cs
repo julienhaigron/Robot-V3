@@ -17,6 +17,24 @@ public class ShopPanel : AUIPanel
 	[SerializeField] private TextMeshProUGUI m_freezeTMP;
 	[SerializeField] private BlueprintDisplay[] m_blueprintDisplays;
 	[SerializeField] private GameObject m_noBlueprintGO;
+	[SerializeField] private Tab m_itemsTab;
+	[SerializeField] private Tab m_blueprintsTab;
+
+	[System.Serializable]
+	private struct Tab
+	{
+		public BaseButton button;
+		public GameObject underline;
+		public GameObject[] contents;
+
+		public void SetActive ( bool _isActive )
+		{
+			button.SetInteractability(!_isActive);
+			underline.SetActive(_isActive);
+			foreach (GameObject content in contents)
+				content.SetActive(_isActive);
+		}
+	}
 
 	private EntityEquipmentData.EntityFaction m_currentFaction;
 	public EntityEquipmentData.EntityFaction CurrentFaction => m_currentFaction;
@@ -28,6 +46,14 @@ public class ShopPanel : AUIPanel
 		m_inventoryGrid.onItemAdded += BuyItem;
 		GameDatas.onNewDay += OnNewDay;
 		m_rerollBtn.onClick += OnClickReroll;
+		m_itemsTab.button.onClick += () => ShowTab(false);
+		m_blueprintsTab.button.onClick += () => ShowTab(true);
+	}
+
+	private void ShowTab ( bool _showsBlueprints )
+	{
+		m_itemsTab.SetActive(!_showsBlueprints);
+		m_blueprintsTab.SetActive(_showsBlueprints);
 	}
 
 	private void OnEnable ()
@@ -50,6 +76,7 @@ public class ShopPanel : AUIPanel
 		m_corpIcon.sprite = GameAssets.current.ui.corporationsIcons[_faction];
 		m_corpIcon.color = GameAssets.current.ui.corporationsColors[_faction];
 		GameDatas.current.currentPlayerSave.EnsureShopsAreSplit();
+		ShowTab(false);
 		RefreshShopBuyableItems();
 		RefreshInventory();
 		RefreshShopActions();
@@ -216,6 +243,7 @@ public class ShopPanel : AUIPanel
 		}
 
 		m_noBlueprintGO.SetActive(blueprints.Count == 0);
+		m_blueprintsTab.button.SetLabel(string.Format(LocalizationManager.Instance.Get(LocalizationKey.shop_tab_blueprints), blueprints.Count));
 	}
 
 	private void ProcessBlueprint ( EntityEquipmentData _component )

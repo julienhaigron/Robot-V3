@@ -47,6 +47,11 @@ public class StructureShortcutsFolder : MonoBehaviour
 		m_repairBtn.SetLevel(GameAssets.current.game.RepairStationStructureUpgrade.GetCurrentLevel() + 1);
 	}
 
+	public void SetCollapsed ( bool _isCollapsed )
+	{
+		m_structureFolder.SetCollapsed(_isCollapsed, false);
+	}
+
 	public void SetVisibility(bool _isVisible )
 	{
 		gameObject.SetActive(_isVisible);
