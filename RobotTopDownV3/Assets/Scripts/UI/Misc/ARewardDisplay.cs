@@ -84,6 +84,7 @@ public abstract class ARewardDisplay : MonoBehaviour
 		m_selectedGO.SetActive(isTaken);
 		m_checkBadge.SetActive(isTaken);
 		m_emptyBadge.SetActive(isChoosable && !m_isSelected);
+		m_canvasGroup.blocksRaycasts = isChoosable;
 
 		m_feedbackTween?.Kill();
 		if (!_animate || !isActiveAndEnabled)
