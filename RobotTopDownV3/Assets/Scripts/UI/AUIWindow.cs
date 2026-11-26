@@ -97,9 +97,14 @@ public class AUIWindow : UICanvasParent
 		SetContainersVisible(false, _instant ? 0f : (m_overrideDurations ? m_hideDuration : null));
 
 		if (!_instant)
-			yield return m_hideDurationWFS;
+			yield return HideWait();
 
 		OnHideFinished();
+	}
+
+	protected virtual object HideWait ()
+	{
+		return m_hideDurationWFS;
 	}
 
 	protected virtual void OnHideStarted ()

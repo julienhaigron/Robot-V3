@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using Sirenix.OdinInspector;
 using TMPro;
-using UnityEngine.Serialization;
 
 public class StructureShortcutsFolder : MonoBehaviour
 {
@@ -11,7 +10,6 @@ public class StructureShortcutsFolder : MonoBehaviour
 	[SerializeField] private BuildingBtn m_hangarBtn;
 	[SerializeField] private BuildingBtn m_recycleShopBtn;
 	[SerializeField] private BuildingBtn m_repairBtn;
-	[SerializeField, FormerlySerializedAs("m_missionSelectionPanelBtn")] private BuildingBtn m_arenaBtn;
 	[SerializeField] private BaseButton m_shortenFolderToggleBtn;
 	[SerializeField] private CollapsibleFolder m_structureFolder;
 
@@ -23,8 +21,6 @@ public class StructureShortcutsFolder : MonoBehaviour
 		m_hangarBtn.Init(UIManager.Instance.GetPanel<HangarPanel>());
 		m_recycleShopBtn.Init(UIManager.Instance.GetPanel<RecyclePanel>());
 		m_repairBtn.Init(UIManager.Instance.GetPanel<RepairStationPanel>());
-		m_arenaBtn.Init(UIManager.Instance.GetPanel<MissionPanel>());
-		m_arenaBtn.SetLevel(0);
 		m_shortenFolderToggleBtn.onClick += OnClickShortenFolderToggle;
 
 		RefreshLevels();
@@ -66,8 +62,6 @@ public class StructureShortcutsFolder : MonoBehaviour
 		m_recycleShopBtn.SetInteractability(GameDatas.current.currentPlayerSave.didUnlockRecycler);
 		foreach (KeyValuePair<EntityEquipmentData.EntityFaction, BuildingBtn> shopBtn in m_openShopBtns)
 			shopBtn.Value.SetInteractability(GameDatas.current.currentPlayerSave.didUnlockShops);
-		m_arenaBtn.SetInteractability(GameDatas.current.currentPlayerSave.cycleCount > 0);
-		//m_tournamentBtn.SetInteractability(isSquadValid);
 	}
 
 	private void OnClickShortenFolderToggle ()

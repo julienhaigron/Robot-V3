@@ -2,8 +2,9 @@ using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using DG.Tweening;
+using UnityEngine.UI;
 
-public abstract class GestureDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler
+public abstract class GestureDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler, IPointerUpHandler
 {
 	private static GestureDisplay s_dragged;
 
@@ -54,6 +55,7 @@ public abstract class GestureDisplay : MonoBehaviour, IBeginDragHandler, IDragHa
 
 	[SerializeField] protected CanvasGroup m_canvasGroup;
 	[SerializeField] private RectTransform m_visual;
+	[SerializeField] private Image m_shine;
 
 	public GestureContainer CurrentContainer;
 
@@ -62,6 +64,9 @@ public abstract class GestureDisplay : MonoBehaviour, IBeginDragHandler, IDragHa
 	private Gesture? m_pendingRefusal;
 
 	private Tween m_liftTween;
+	private Tween m_shineTween;
+	private bool m_isLifted;
+	private bool m_isPressed;
 	private Tween m_visualTween;
 	private Tween m_flightTween;
 	private Tween m_restoreCall;
@@ -102,9 +107,8 @@ public abstract class GestureDisplay : MonoBehaviour, IBeginDragHandler, IDragHa
 		m_flightTween?.Kill();
 		m_isChangingActivation = false;
 		m_visualTween?.Kill(true);
-		m_liftTween?.Kill();
-		if (CanLift)
-			transform.localScale = Vector3.one;
+		m_shineTween?.Kill();
+		ResetLift();
 
 		if (s_dragged == this)
 		{
@@ -133,8 +137,11 @@ public abstract class GestureDisplay : MonoBehaviour, IBeginDragHandler, IDragHa
 
 	protected void ResetLift ()
 	{
+		m_isLifted = false;
+		m_isPressed = false;
 		m_liftTween?.Kill();
-		transform.localScale = Vector3.one;
+		if (CanLift)
+			transform.localScale = Vector3.one;
 	}
 
 	private void SetLifted ( bool _isLifted )
@@ -142,8 +149,24 @@ public abstract class GestureDisplay : MonoBehaviour, IBeginDragHandler, IDragHa
 		if (!CanLift)
 			return;
 
+		if (_isLifted && !m_isLifted && m_shine != null)
+		{
+			m_shineTween?.Kill();
+			m_shineTween = UIMotion.Shine(m_shine);
+		}
+
+		m_isLifted = _isLifted;
+		if (!_isLifted)
+			m_isPressed = false;
+		RefreshLift();
+	}
+
+	private void RefreshLift ()
+	{
+		GameConfig.PanelMotion settings = UIMotion.Settings;
+		float scale = (m_isLifted ? GestureFeedback.LiftScale : 1f) * (m_isPressed ? settings.pressScale : 1f);
 		m_liftTween?.Kill();
-		m_liftTween = transform.DOScale(_isLifted ? GestureFeedback.LiftScale : 1f, .12f).SetUpdate(true);
+		m_liftTween = UIMotion.Scale(transform, scale, m_isPressed ? settings.pressDuration : .12f);
 	}
 
 	public void Shake ()
@@ -280,6 +303,9 @@ public abstract class GestureDisplay : MonoBehaviour, IBeginDragHandler, IDragHa
 		m_flightTween?.Kill();
 		GestureFeedback.HideHint(this);
 		s_dragged = this;
+		m_isPressed = false;
+		if (CanLift)
+			RefreshLift();
 		m_pendingRefusal = null;
 
 		transform.SetParent(UIManager.Instance.TopLayer);
@@ -428,6 +454,24 @@ public abstract class GestureDisplay : MonoBehaviour, IBeginDragHandler, IDragHa
 
 		SetLifted(false);
 		GestureFeedback.HideHint(this);
+	}
+
+	public void OnPointerDown ( PointerEventData eventData )
+	{
+		if (!CanLift || IsPlaceholder || s_dragged != null)
+			return;
+
+		m_isPressed = true;
+		RefreshLift();
+	}
+
+	public void OnPointerUp ( PointerEventData eventData )
+	{
+		if (!m_isPressed)
+			return;
+
+		m_isPressed = false;
+		RefreshLift();
 	}
 
 	#endregion

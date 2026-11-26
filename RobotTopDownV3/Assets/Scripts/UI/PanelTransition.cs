@@ -13,6 +13,7 @@ public class PanelTransition : MonoBehaviour
 		None,
 		DiveAndDoors,
 		HoloSweep,
+		Slide,
 	}
 
 	private const float k_readyTimeout = 6f;
@@ -79,6 +80,9 @@ public class PanelTransition : MonoBehaviour
 		if (IsPair<SoloHubPanel, MissionPanel>(_from, _to) || IsPair<SoloHubPanel, TournamentPanel>(_from, _to) || IsPair<HangarPanel, EntityConfigPanel>(_from, _to))
 			return Style.HoloSweep;
 
+		if (IsHubPlacePanel(_from) && IsHubPlacePanel(_to))
+			return Style.Slide;
+
 		return Style.None;
 	}
 
@@ -105,7 +109,7 @@ public class PanelTransition : MonoBehaviour
 	public bool TryPlay ( AUIPanel _from, AUIPanel _to, Action _switchPanel )
 	{
 		Style style = GetStyle(_from, _to);
-		if (style == Style.None)
+		if (style is Style.None or Style.Slide)
 			return false;
 
 		if (m_isPlaying)

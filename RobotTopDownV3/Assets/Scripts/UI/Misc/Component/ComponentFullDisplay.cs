@@ -17,8 +17,10 @@ public class ComponentFullDisplay : MonoBehaviour
 	[SerializeField] private TextMeshProUGUI m_gestureTMP;
 	[SerializeField] private Color m_recyclingPriceTextColor = new(0.47058827f, 0.9686275f, 0.28627452f, 1f);
 	[SerializeField] private Color m_recyclingPriceIconColor = new(0.4784314f, 0.9843138f, 0.28627452f, 1f);
+	[SerializeField] private ContentSwap m_swap;
 
 	private ComponentDisplay m_currentDisplayedComponent;
+	private GameDatas.PlayerSave.Component m_shownComponent;
 	private bool m_hasCachedPriceColors;
 	private Color m_defaultPriceTextColor;
 	private Color m_defaultPriceIconColor;
@@ -30,6 +32,10 @@ public class ComponentFullDisplay : MonoBehaviour
 
 	public void Init ( GameDatas.PlayerSave.Component _componentSavedData, ComponentDisplay.DisplayMode _displayMode = ComponentDisplay.DisplayMode.Hangar )
 	{
+		if (_componentSavedData != null && m_shownComponent != null && _componentSavedData != m_shownComponent && m_swap != null)
+			m_swap.Play();
+		m_shownComponent = _componentSavedData;
+
 		ShowGesture(null);
 		EntityEquipmentData componentData = _componentSavedData != null ? _componentSavedData.GetData<EntityEquipmentData>() : null;
 		m_componentTypeIcon.sprite = componentData == null ? null : GameAssets.current.ui.componentIcons[componentData.GetEquipmentType()];

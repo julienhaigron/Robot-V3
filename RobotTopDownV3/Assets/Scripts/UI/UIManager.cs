@@ -170,10 +170,13 @@ public sealed class UIManager : SingletonPersistant<UIManager>
 		nextPanel = panelsDictionary[_type];
 		m_nextShowPanelDelay = _showDelay;
 		m_nextShowPanelInstant = _showInstant;
+		bool slides = PanelTransition.GetStyle(currentPanel, nextPanel) == PanelTransition.Style.Slide;
 
 		if (currentPanel != null)
 		{
 			currentPanel.CanClick = false;
+			if (slides)
+				currentPanel.SlideOutOnHide();
 			currentPanel.Close(0f, _closePreviousInstant);
 
 			if (_pushHistory)
@@ -185,6 +188,8 @@ public sealed class UIManager : SingletonPersistant<UIManager>
 		else
 			rootPanel = nextPanel;
 
+		if (slides)
+			nextPanel.DelayEntrance(GameConfig.current.ui.motion.slideEntranceDelay);
 		nextPanel.SetCanvasEnable(true);
 		nextPanel.ShowWindow(m_nextShowPanelDelay, m_nextShowPanelInstant);
 		currentPanel = nextPanel;

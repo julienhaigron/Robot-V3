@@ -140,6 +140,7 @@ public partial class GameConfig : ScriptableObject
 		public Color opticVisionColor = new(.93f, .95f, .97f);
 		public Color thermalVisionColor = new(1f, .42f, .24f);
 		public Color radarVisionColor = new(.49f, 1f, .42f);
+		public PanelMotion motion = new();
 
 		public Color GetVisionColor ( NeuronalMembraneEquipmentData.VisionTypes _vision )
 		{
@@ -150,6 +151,37 @@ public partial class GameConfig : ScriptableObject
 				_ => opticVisionColor
 			};
 		}
+	}
+
+	[System.Serializable]
+	public class PanelMotion
+	{
+		[Title("Holo reveal of panel sections")]
+		[Min(0f)] public float revealDuration = .5f;
+		[Min(0f)] public float revealStagger = .1f;
+		[Min(0f)] public float revealSoftness = 28f;
+		[Min(1f)] public float scanLineHeight = 12f;
+		public Color revealColor = new(.33f, .86f, .95f, 1f);
+		[Range(0f, 1f)] public float trailAlpha = .16f;
+		[Min(0f)] public float trailHeight = 110f;
+
+		[Title("Leaving a hub place")]
+		[Min(0f)] public float exitDuration = .24f;
+		[Min(0f)] public float exitStagger = .05f;
+		[Min(0f)] public float exitDistance = 90f;
+		[Min(0f)] public float slideEntranceDelay = .14f;
+
+		[Title("Micro-interactions")]
+		[Min(1f)] public float buttonHoverScale = 1.03f;
+		[Min(0f)] public float hoverDuration = .14f;
+		[Range(.5f, 1f)] public float pressScale = .94f;
+		[Min(0f)] public float pressDuration = .06f;
+		[Range(0f, 1f)] public float shineAlpha = .3f;
+		[Min(0f)] public float shineDuration = .45f;
+		[Min(0f)] public float swapDistance = 14f;
+		[Min(0f)] public float swapDuration = .22f;
+		[Min(0f)] public float fillDuration = .35f;
+		[Min(0f)] public float growDuration = .22f;
 	}
 
 	[System.Serializable]

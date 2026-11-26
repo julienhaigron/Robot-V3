@@ -108,6 +108,7 @@ public class UnitStatBlock : MonoBehaviour
 	private readonly List<Bonus> m_bonuses = new();
 	private EntitySavedData m_data;
 	private EntitySavedData m_preview;
+	private EntitySavedData m_shownData;
 	private bool m_areStatsVisible;
 
 	private void OnEnable ()
@@ -133,6 +134,8 @@ public class UnitStatBlock : MonoBehaviour
 		m_areStatsVisible = _areStatsVisible;
 
 		EntitySavedData shownData = _preview ?? _data;
+		bool animatesFills = isActiveAndEnabled && m_shownData != null && m_shownData != shownData;
+		m_shownData = shownData;
 		StatDescriptions current = _data.GetStatsDesciptions();
 		StatDescriptions shown = _preview == null ? current : _preview.GetStatsDesciptions();
 		bool isPreview = _preview != null && _areStatsVisible;
@@ -159,10 +162,10 @@ public class UnitStatBlock : MonoBehaviour
 		m_visionTooltip.Init(StatType.VisionType.GetLocalizedTitle(), membrane == null ? "" : VisionTip(membrane.visionType, shownData.GetVisionRange()));
 
 		string flank = MaxFlankRatio().ToPercentText();
-		SetCell(m_rangedAccuracy, StatType.DistanceAccuracy, string.Format(localization.Get(LocalizationKey.stat_tip_ranged_accuracy), flank), current, shown, _areStatsVisible, isPreview);
-		SetCell(m_rangedEvasion, StatType.DistanceEvasion, string.Format(localization.Get(LocalizationKey.stat_tip_ranged_evasion), GameConfig.current.game.entityCoverBonus.ToPercentText()), current, shown, _areStatsVisible, isPreview);
-		SetCell(m_meleeAccuracy, StatType.MeleeAccuracy, string.Format(localization.Get(LocalizationKey.stat_tip_melee_accuracy), flank), current, shown, _areStatsVisible, isPreview);
-		SetCell(m_meleeEvasion, StatType.MeleeEvasion, localization.Get(LocalizationKey.stat_tip_melee_evasion), current, shown, _areStatsVisible, isPreview);
+		SetCell(m_rangedAccuracy, StatType.DistanceAccuracy, string.Format(localization.Get(LocalizationKey.stat_tip_ranged_accuracy), flank), current, shown, _areStatsVisible, isPreview, animatesFills);
+		SetCell(m_rangedEvasion, StatType.DistanceEvasion, string.Format(localization.Get(LocalizationKey.stat_tip_ranged_evasion), GameConfig.current.game.entityCoverBonus.ToPercentText()), current, shown, _areStatsVisible, isPreview, animatesFills);
+		SetCell(m_meleeAccuracy, StatType.MeleeAccuracy, string.Format(localization.Get(LocalizationKey.stat_tip_melee_accuracy), flank), current, shown, _areStatsVisible, isPreview, animatesFills);
+		SetCell(m_meleeEvasion, StatType.MeleeEvasion, localization.Get(LocalizationKey.stat_tip_melee_evasion), current, shown, _areStatsVisible, isPreview, animatesFills);
 
 		StringBuilder stealthTip = new(localization.Get(LocalizationKey.stat_tip_stealth));
 		if (_areStatsVisible)
@@ -181,12 +184,12 @@ public class UnitStatBlock : MonoBehaviour
 		SetBonuses(shown, shownData, _areStatsVisible);
 	}
 
-	private void SetCell ( StatCell _cell, StatType _stat, string _tip, StatDescriptions _current, StatDescriptions _shown, bool _isVisible, bool _isPreview )
+	private void SetCell ( StatCell _cell, StatType _stat, string _tip, StatDescriptions _current, StatDescriptions _shown, bool _isVisible, bool _isPreview, bool _animatesFill )
 	{
 		float value = _isVisible ? Value(_shown, _stat) : 0f;
 		float baseValue = Value(_current, _stat);
 		_cell.value.text = _isVisible ? Mathf.RoundToInt(value * 100f).ToString() : "?";
-		_cell.fill.anchorMax = new Vector2(Mathf.Clamp01(value), 1f);
+		UIMotion.Fill(_cell.fill, value, _animatesFill);
 		SetDelta(_cell.delta, _isPreview, Delta(_shown, _current, _stat, 100f), false);
 
 		bool hasSegment = _isPreview && !Mathf.Approximately(value, baseValue);

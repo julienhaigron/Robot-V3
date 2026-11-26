@@ -27,10 +27,12 @@ public class ShopPanel : AUIPanel
 		public GameObject underline;
 		public GameObject[] contents;
 
-		public void SetActive ( bool _isActive )
+		public void SetActive ( bool _isActive, bool _animates )
 		{
 			button.SetInteractability(!_isActive);
 			underline.SetActive(_isActive);
+			if (_isActive && _animates)
+				UIMotion.Grow(underline.transform);
 			foreach (GameObject content in contents)
 				content.SetActive(_isActive);
 		}
@@ -46,14 +48,14 @@ public class ShopPanel : AUIPanel
 		m_inventoryGrid.onItemAdded += BuyItem;
 		GameDatas.onNewDay += OnNewDay;
 		m_rerollBtn.onClick += OnClickReroll;
-		m_itemsTab.button.onClick += () => ShowTab(false);
-		m_blueprintsTab.button.onClick += () => ShowTab(true);
+		m_itemsTab.button.onClick += () => ShowTab(false, true);
+		m_blueprintsTab.button.onClick += () => ShowTab(true, true);
 	}
 
-	private void ShowTab ( bool _showsBlueprints )
+	private void ShowTab ( bool _showsBlueprints, bool _animates )
 	{
-		m_itemsTab.SetActive(!_showsBlueprints);
-		m_blueprintsTab.SetActive(_showsBlueprints);
+		m_itemsTab.SetActive(!_showsBlueprints, _animates);
+		m_blueprintsTab.SetActive(_showsBlueprints, _animates);
 	}
 
 	private void OnEnable ()
@@ -76,7 +78,7 @@ public class ShopPanel : AUIPanel
 		m_corpIcon.sprite = GameAssets.current.ui.corporationsIcons[_faction];
 		m_corpIcon.color = GameAssets.current.ui.corporationsColors[_faction];
 		GameDatas.current.currentPlayerSave.EnsureShopsAreSplit();
-		ShowTab(false);
+		ShowTab(false, false);
 		RefreshShopBuyableItems();
 		RefreshInventory();
 		RefreshShopActions();

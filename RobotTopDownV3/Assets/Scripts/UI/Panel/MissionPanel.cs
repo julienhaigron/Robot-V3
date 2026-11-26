@@ -22,6 +22,7 @@ public class MissionPanel : AUIPanel
 	[SerializeField] private TextMeshProUGUI m_currentMissionNameTMP;
 	[SerializeField] private TextMeshProUGUI m_currentMissionDescriptionTMP;
 	[SerializeField] private Color m_nextDayEventColor = new(.91f, .7f, .23f, 1f);
+	[SerializeField] private ContentSwap m_detailsSwap;
 	[SerializeField] private ComponentRewardDisplay[] m_componentRewardDisplays;
 	[SerializeField] private CurrencyRewardDisplay[] m_currencyRewardDisplays;
 	[SerializeField] private UnitRewardDisplay[] m_unitRewardDisplays;
@@ -126,6 +127,8 @@ public class MissionPanel : AUIPanel
 		if (!gameObject.activeInHierarchy || _missionBtn == m_currentMissionHovered)
 			return;
 
+		if (m_currentMissionHovered != null)
+			m_detailsSwap.Play();
 		m_currentMissionHovered = _missionBtn;
 
 		m_currentMissionNameTMP.text = _missionBtn.MissionData.GetLocalizedName();

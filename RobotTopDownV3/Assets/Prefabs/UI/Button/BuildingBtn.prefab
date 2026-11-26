@@ -830,7 +830,10 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 4822083072303499819, guid: 610470f5c7e09224499375bfa2416e56, type: 3}
       insertIndex: -1
       addedObject: {fileID: 6284355909107216315}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 4566894963644359181, guid: 610470f5c7e09224499375bfa2416e56, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6509613394753194451}
   m_SourcePrefab: {fileID: 100100000, guid: 610470f5c7e09224499375bfa2416e56, type: 3}
 --- !u!114 &1214201104310492529 stripped
 MonoBehaviour:
@@ -963,3 +966,33 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 4089774982011291642, guid: d4b64a824f89b934f85c452aaf5023bf, type: 3}
   m_PrefabInstance: {fileID: 6002061511079150196}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &203467122283995353 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4566894963644359181, guid: 610470f5c7e09224499375bfa2416e56, type: 3}
+  m_PrefabInstance: {fileID: 4445618534868812500}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &6509613394753194451
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 203467122283995353}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: adbcbb0ed53f33446a3dea5bc1b79de2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: RTD::PressMotion
+  m_target: {fileID: 8048989447793510016}
+  m_selectable: {fileID: 1197269516527323326}
+--- !u!114 &1197269516527323326 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3255975849467071082, guid: 610470f5c7e09224499375bfa2416e56, type: 3}
+  m_PrefabInstance: {fileID: 4445618534868812500}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 203467122283995353}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier:

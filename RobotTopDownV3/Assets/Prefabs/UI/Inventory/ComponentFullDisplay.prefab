@@ -2596,6 +2596,7 @@ GameObject:
   - component: {fileID: 2196480482947549660}
   - component: {fileID: 5894867845226342642}
   - component: {fileID: 3179739228128315908}
+  - component: {fileID: 8579413217836374302}
   m_Layer: 0
   m_Name: ComponentFullDisplay
   m_TagString: Untagged
@@ -2659,6 +2660,7 @@ MonoBehaviour:
   m_gestureTMP: {fileID: 8496390806873976343}
   m_recyclingPriceTextColor: {r: 0.47058827, g: 0.9686275, b: 0.28627452, a: 1}
   m_recyclingPriceIconColor: {r: 0.4784314, g: 0.9843138, b: 0.28627452, a: 1}
+  m_swap: {fileID: 8579413217836374302}
 --- !u!225 &3179739228128315908
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -4677,3 +4679,16 @@ MonoBehaviour:
     - {r: 0, g: 0, b: 0, a: 0}
     - {r: 0, g: 0, b: 0, a: 0}
     m_Rotation: 0
+--- !u!114 &8579413217836374302
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7194101089313587555}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5360251c467d68e4a9e1519264a18a2f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: RTD::ContentSwap
+  m_group: {fileID: 3179739228128315908}

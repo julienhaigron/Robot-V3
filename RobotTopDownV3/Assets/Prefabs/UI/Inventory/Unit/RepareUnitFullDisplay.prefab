@@ -5129,6 +5129,7 @@ GameObject:
   - component: {fileID: 2196480482947549660}
   - component: {fileID: 2077665381948842816}
   - component: {fileID: 3179739228128315908}
+  - component: {fileID: 5453893657310013207}
   m_Layer: 0
   m_Name: RepareUnitFullDisplay
   m_TagString: Untagged
@@ -5207,6 +5208,7 @@ MonoBehaviour:
   m_damagedIconColor: {r: 0.91, g: 0.27, b: 0.24, a: 1}
   m_mainKindColor: {r: 0.91, g: 0.27, b: 0.24, a: 1}
   m_secondaryKindColor: {r: 0.6, g: 0.61, b: 0.69, a: 1}
+  m_swap: {fileID: 5453893657310013207}
 --- !u!225 &3179739228128315908
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -7241,3 +7243,16 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &5453893657310013207
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7194101089313587555}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5360251c467d68e4a9e1519264a18a2f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: RTD::ContentSwap
+  m_group: {fileID: 3179739228128315908}

@@ -181,10 +181,48 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 4822083072303499819, guid: 610470f5c7e09224499375bfa2416e56, type: 3}
       insertIndex: -1
       addedObject: {fileID: 584583206999631399}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 4566894963644359181, guid: 610470f5c7e09224499375bfa2416e56, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7373533458643624146}
   m_SourcePrefab: {fileID: 100100000, guid: 610470f5c7e09224499375bfa2416e56, type: 3}
 --- !u!224 &5143361104529993891 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 4822083072303499819, guid: 610470f5c7e09224499375bfa2416e56, type: 3}
+  m_PrefabInstance: {fileID: 399580864926792328}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &2928488082690633954 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3255975849467071082, guid: 610470f5c7e09224499375bfa2416e56, type: 3}
+  m_PrefabInstance: {fileID: 399580864926792328}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4245564486679517317}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier:
+--- !u!1 &4245564486679517317 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4566894963644359181, guid: 610470f5c7e09224499375bfa2416e56, type: 3}
+  m_PrefabInstance: {fileID: 399580864926792328}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &7373533458643624146
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4245564486679517317}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: adbcbb0ed53f33446a3dea5bc1b79de2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: RTD::PressMotion
+  m_target: {fileID: 6307954751596609244}
+  m_selectable: {fileID: 2928488082690633954}
+--- !u!224 &6307954751596609244 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 5909219420003501140, guid: 610470f5c7e09224499375bfa2416e56, type: 3}
   m_PrefabInstance: {fileID: 399580864926792328}
   m_PrefabAsset: {fileID: 0}

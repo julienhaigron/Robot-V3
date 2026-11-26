@@ -155,6 +155,7 @@ public class HubTopCanvas : AUITopCanvas
 	private void OnNewDay ()
 	{
 		RefreshDayDisplay();
+		m_structureShortcutsFolder.RefreshVisual();
 	}
 
 	private void OnNewCycle ()

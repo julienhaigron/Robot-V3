@@ -39,6 +39,7 @@ public class RepareUnitFullDisplay : MonoBehaviour
 	[SerializeField] private Color m_damagedIconColor = new(.91f, .27f, .24f);
 	[SerializeField] private Color m_mainKindColor = new(.91f, .27f, .24f);
 	[SerializeField] private Color m_secondaryKindColor = new(.6f, .61f, .69f);
+	[SerializeField] private ContentSwap m_swap;
 
 	private EntitySavedData m_unit;
 
@@ -64,6 +65,8 @@ public class RepareUnitFullDisplay : MonoBehaviour
 
 	public void Show ( EntitySavedData _unit )
 	{
+		if (_unit != null && m_unit != null && _unit != m_unit && m_swap != null)
+			m_swap.Play();
 		m_unit = _unit;
 		Refresh();
 	}
