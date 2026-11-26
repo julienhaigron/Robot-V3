@@ -40,7 +40,10 @@ public class Projectile : PoolElement
 		base.OnStartUse();
 
 		if (m_trail != null)
+		{
+			m_trail.Clear();
 			m_trail.emitting = true;
+		}
 	}
 
 	protected virtual void OnTriggerEnter ( Collider _other )

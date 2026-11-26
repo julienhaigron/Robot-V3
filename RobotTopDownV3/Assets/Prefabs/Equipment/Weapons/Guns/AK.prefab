@@ -62,7 +62,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2228564425604616484, guid: 321c15f11c30d63469167f59475dd867, type: 3}
       propertyPath: m_speed
-      value: 40
+      value: 28
       objectReference: {fileID: 0}
     - target: {fileID: 2228564425604616484, guid: 321c15f11c30d63469167f59475dd867, type: 3}
       propertyPath: m_bulletPool
