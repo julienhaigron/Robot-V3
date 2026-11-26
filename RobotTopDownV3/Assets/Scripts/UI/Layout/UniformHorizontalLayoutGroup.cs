@@ -78,7 +78,7 @@ public class UniformHorizontalLayoutGroup : HorizontalLayoutGroup
 			float scaleFactor = childScaleWidth ? child.localScale.x : 1f;
 
 			if (childControlWidth)
-				SetChildAlongAxisWithScale(child, 0, pos, slot, scaleFactor);
+				SetChildAlongAxisWithScale(child, 0, pos, scaleFactor > 0f ? slot / scaleFactor : slot, scaleFactor);
 			else
 				SetChildAlongAxisWithScale(child, 0, pos + (slot - child.sizeDelta.x * scaleFactor) * alignmentInSlot, scaleFactor);
 
@@ -115,7 +115,8 @@ public class UniformHorizontalLayoutGroup : HorizontalLayoutGroup
 				for (int i = 0; i < rectChildren.Count; i++)
 				{
 					RectTransform child = rectChildren[i];
-					widest = Mathf.Max(widest, childControlWidth ? LayoutUtility.GetPreferredSize(child, 0) : child.sizeDelta.x);
+					float width = childControlWidth ? LayoutUtility.GetPreferredSize(child, 0) : child.sizeDelta.x;
+					widest = Mathf.Max(widest, childScaleWidth ? width * child.localScale.x : width);
 				}
 
 				return widest;
