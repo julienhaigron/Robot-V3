@@ -23,7 +23,7 @@ public class RecyclingComponentInfoDisplay : MonoBehaviour
 		EntityEquipmentData data = _component.component.GetData<EntityEquipmentData>();
 		m_icon.sprite = data.icon;
 		m_nameTMP.text = data.GetLocalizedName();
-		m_price = data.GetRecyclingPrice().Item2;
+		m_price = data.GetRecyclingPrice(_component.yieldBonusPercent).Item2;
 		m_priceTMP.text = PriceText(m_price);
 		gameObject.SetActive(true);
 	}

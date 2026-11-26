@@ -75,8 +75,14 @@ public partial class GameConfig : ScriptableObject
 		[Title("Hub")]
 		public string hubSceneName;
 		public string startScreenSceneName;
-		public int missionAmountInMissionSelectionPanel = 12;
-		public int selectableMissionAmount = 8;
+		[Min(1)] public int dailyMatchAmount = 4;
+		[Min(1)] public int maxRewardComponentCount = 3;
+
+		[Title("Day events")]
+		[Range(0f, 1f)] public float randomDayEventChance = .5f;
+		[Range(0f, 1f)] public float matchNextDayEventChance = .2f;
+		[InfoBox("Cycle and day as shown in the hub, counted from 1.")]
+		public List<ScriptedDayEvent> scriptedDayEvents = new();
 
 		[Title("Procedural matches")]
 		public EnemySquadRules[] enemySquadRules;
@@ -89,6 +95,14 @@ public partial class GameConfig : ScriptableObject
 		[Title("Tournament")]
 		public int challengerTournamentInterval = 2;
 
+	}
+
+	[System.Serializable]
+	public class ScriptedDayEvent
+	{
+		[Min(1)] public int cycle = 1;
+		[Min(1)] public int day = 1;
+		public DayEventData dayEvent;
 	}
 
 	[System.Serializable]

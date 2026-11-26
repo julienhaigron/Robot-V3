@@ -61,7 +61,7 @@ public class ComponentDisplay : GestureDisplay
 		switch (_displayMode)
 		{
 			case DisplayMode.RecyclingStation:
-				return _componentData.GetRecyclingPrice();
+				return _componentData.GetRecyclingPriceToday();
 			case DisplayMode.ShopSelling:
 				return _componentData.GetShopSellingPrice(CurrentShopFaction);
 			case DisplayMode.ShopBuying:
@@ -150,7 +150,7 @@ public class ComponentDisplay : GestureDisplay
 				m_componentTypeIcon.gameObject.SetActive(true);
 				m_priceBackground.gameObject.SetActive(true);
 				m_priceTMP.gameObject.SetActive(true);
-				m_priceTMP.text = m_componentData == null ? null : GetDisplayedPrice(m_componentData, m_currentDisplayMode).Item2.ToString();
+				m_priceTMP.text = m_componentData == null ? null : DayEventState.FormatPrice(m_componentData.GetShopBuyingPrice().Item2, m_componentData.GetShopBuyingPrice(false).Item2);
 				m_descriptionTMP.gameObject.SetActive(true);
 				m_hasOutline = true;
 				m_descriptionTMP.text = LocalizationManager.Instance.Get(LocalizationKey.component_buy);
@@ -263,7 +263,7 @@ public class ComponentDisplay : GestureDisplay
 		{
 			Gesture.Kind.Buy => m_componentData.GetShopBuyingPrice(),
 			Gesture.Kind.Sell => m_componentData.GetShopSellingPrice(CurrentShopFaction),
-			Gesture.Kind.Deposit => m_componentData.GetRecyclingPrice(),
+			Gesture.Kind.Deposit => m_componentData.GetRecyclingPriceToday(),
 			_ => null
 		};
 	}

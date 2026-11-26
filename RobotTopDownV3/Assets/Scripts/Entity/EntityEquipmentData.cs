@@ -236,9 +236,10 @@ public class EntityEquipmentData : AParsableScriptableObject
 		return new System.Tuple<CurrencyType, ulong>(CurrencyType.SoftCurrency, creditCost / 2ul);
 	}
 
-	public System.Tuple<CurrencyType, ulong> GetShopBuyingPrice ()
+	public System.Tuple<CurrencyType, ulong> GetShopBuyingPrice ( bool _withDayEvent = true )
 	{
-		return new System.Tuple<CurrencyType, ulong>(GetFactionCurrency(faction), creditCost);
+		float factor = _withDayEvent ? GameDatas.current.currentPlayerSave.dayEvent.ShopPriceFactor(faction) : 1f;
+		return new System.Tuple<CurrencyType, ulong>(GetFactionCurrency(faction), (ulong)Mathf.RoundToInt(creditCost * factor));
 	}
 
 	public System.Tuple<CurrencyType, ulong> GetShopSellingPrice ( EntityFaction _shopFaction )
@@ -253,15 +254,21 @@ public class EntityEquipmentData : AParsableScriptableObject
 		return GetShopSellingPrice(faction);
 	}
 
-	public System.Tuple<CurrencyType, ulong> GetRecyclingPrice ()
+	public System.Tuple<CurrencyType, ulong> GetRecyclingPrice ( int _yieldBonusPercent )
 	{
-		return new System.Tuple<CurrencyType, ulong>(CurrencyType.SoftCurrency
-			, ApplyTradeBonus(GetSellingPrice().Item2, GameAssets.current.game.RecyclerStructureUpgrade.GetCurrentTradeBonusAmount()));
+		ulong price = ApplyTradeBonus(GetSellingPrice().Item2, GameAssets.current.game.RecyclerStructureUpgrade.GetCurrentTradeBonusAmount());
+		return new System.Tuple<CurrencyType, ulong>(CurrencyType.SoftCurrency, price * (100ul + (ulong)Mathf.Max(0, _yieldBonusPercent)) / 100ul);
+	}
+
+	public System.Tuple<CurrencyType, ulong> GetRecyclingPriceToday ()
+	{
+		return GetRecyclingPrice(GameDatas.current.currentPlayerSave.dayEvent.RecyclingYieldBonusPercent);
 	}
 
 	public int GetRecyclingDuration ()
 	{
-		return Mathf.Max(0, recyclingDurationAmount - GameAssets.current.game.RecyclerStructureUpgrade.GetCurrentRecyclingTimeReduction());
+		int duration = Mathf.Max(0, recyclingDurationAmount - GameAssets.current.game.RecyclerStructureUpgrade.GetCurrentRecyclingTimeReduction());
+		return GameDatas.current.currentPlayerSave.dayEvent.ApplyRecyclingRule(duration);
 	}
 
 	private static ulong ApplyTradeBonus ( ulong _basePrice, float _bonus )

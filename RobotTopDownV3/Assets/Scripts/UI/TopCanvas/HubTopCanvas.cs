@@ -15,6 +15,7 @@ public class HubTopCanvas : AUITopCanvas
 	[SerializeField] private SerializableDictionary<CurrencyType, CurrencyDisplay> m_currencyDisplays = new();
 	[SerializeField] private GameObject[] m_dayDisplays;
 	[SerializeField] private TextMeshProUGUI m_cycleTMP;
+	[SerializeField] private DayEventChip m_dayEventChip;
 	[SerializeField] private Image m_returnBtnIMG;
 	[SerializeField] private Sprite m_defaultReturnIcon;
 	[SerializeField] private Sprite m_returnToStartMenuIcon;
@@ -183,14 +184,7 @@ public class HubTopCanvas : AUITopCanvas
 
 	private void OnClickReturn ()
 	{
-		if (UIManager.Instance.currentPanel is SelectMissionPanel)
-		{
-			if (GameDatas.current.currentPlayerSave.cycleData.didSelectMissions)
-				UIManager.Instance.OpenPanel<SoloHubPanel>();
-
-			//wait for player to selected required minimum mission amount
-		}
-		else if (UIManager.Instance.currentPanel is HangarPanel or ShopPanel or RecyclePanel or RepairStationPanel or TournamentPanel or MissionPanel)
+		if (UIManager.Instance.currentPanel is HangarPanel or ShopPanel or RecyclePanel or RepairStationPanel or TournamentPanel or MissionPanel)
 		{
 			UIManager.Instance.OpenPanel<SoloHubPanel>();
 		}
@@ -295,6 +289,8 @@ public class HubTopCanvas : AUITopCanvas
 		{
 			m_dayDisplays[i].SetActive(GameDatas.current.currentPlayerSave.dayCount >= i);
 		}
+
+		m_dayEventChip.Refresh();
 	}
 
 }

@@ -2647,7 +2647,11 @@ MonoBehaviour:
   m_showDuration: 0.3
   m_hideDuration: 0.3
   m_closeBtn: {fileID: 5180132102302766100}
+  m_titleText: {fileID: 9123456789012345601}
   m_contentTMP: {fileID: 5144231032750910105}
+  m_illustration: {fileID: 6788710984588076080}
+  m_separator: {fileID: 3396453159100727771}
+  m_effectTMP: {fileID: 2626151018006163764}
   m_dayDisplays:
   - {fileID: 6258411503428143618}
   - {fileID: 5291438941660210946}

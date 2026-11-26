@@ -921,6 +921,56 @@ public enum LocalizationKey
     action_ability_illusoryclone_desc,
     action_ability_retreat_desc,
     log_ability_back,
+    event_effect_shop_discount,
+    event_effect_shop_items,
+    event_effect_repair_discount,
+    event_effect_repair_free,
+    event_effect_repaired,
+    event_effect_repaired_none,
+    event_effect_recycling_set,
+    event_effect_recycling_reduce,
+    event_effect_recycling_yield,
+    event_effect_match_type,
+    event_effect_match_count,
+    event_effect_enemy_faction,
+    event_effect_credits,
+    event_effect_components,
+    event_effect_corpo,
+    event_effect_unit_buff,
+    return_hub_event_title,
+    return_hub_calm_title,
+    return_hub_calm_text,
+    mission_next_day_event,
+    event_shopsale,
+    event_shopsale_lore,
+    event_shoprestock,
+    event_shoprestock_lore,
+    event_repairdiscount,
+    event_repairdiscount_lore,
+    event_repairfree,
+    event_repairfree_lore,
+    event_freerepair,
+    event_freerepair_lore,
+    event_recyclingexpress,
+    event_recyclingexpress_lore,
+    event_recyclingpriority,
+    event_recyclingpriority_lore,
+    event_scrapboom,
+    event_scrapboom_lore,
+    event_factionfervor,
+    event_factionfervor_lore,
+    event_victorybounty,
+    event_victorybounty_lore,
+    event_corpofavor,
+    event_corpofavor_lore,
+    event_doublesalvage,
+    event_doublesalvage_lore,
+    event_sabotageday,
+    event_sabotageday_lore,
+    event_grandprix,
+    event_grandprix_lore,
+    event_commandopromo,
+    event_commandopromo_lore,
 }
 
 public static class LocalizationKeyExtensions
@@ -1849,6 +1899,56 @@ public static class LocalizationKeyExtensions
             case LocalizationKey.action_ability_illusoryclone_desc: return "action/ability_illusoryclone_desc";
             case LocalizationKey.action_ability_retreat_desc: return "action/ability_retreat_desc";
             case LocalizationKey.log_ability_back: return "log/ability_back";
+            case LocalizationKey.event_effect_shop_discount: return "event_effect/shop_discount";
+            case LocalizationKey.event_effect_shop_items: return "event_effect/shop_items";
+            case LocalizationKey.event_effect_repair_discount: return "event_effect/repair_discount";
+            case LocalizationKey.event_effect_repair_free: return "event_effect/repair_free";
+            case LocalizationKey.event_effect_repaired: return "event_effect/repaired";
+            case LocalizationKey.event_effect_repaired_none: return "event_effect/repaired_none";
+            case LocalizationKey.event_effect_recycling_set: return "event_effect/recycling_set";
+            case LocalizationKey.event_effect_recycling_reduce: return "event_effect/recycling_reduce";
+            case LocalizationKey.event_effect_recycling_yield: return "event_effect/recycling_yield";
+            case LocalizationKey.event_effect_match_type: return "event_effect/match_type";
+            case LocalizationKey.event_effect_match_count: return "event_effect/match_count";
+            case LocalizationKey.event_effect_enemy_faction: return "event_effect/enemy_faction";
+            case LocalizationKey.event_effect_credits: return "event_effect/credits";
+            case LocalizationKey.event_effect_components: return "event_effect/components";
+            case LocalizationKey.event_effect_corpo: return "event_effect/corpo";
+            case LocalizationKey.event_effect_unit_buff: return "event_effect/unit_buff";
+            case LocalizationKey.return_hub_event_title: return "return_hub/event_title";
+            case LocalizationKey.return_hub_calm_title: return "return_hub/calm_title";
+            case LocalizationKey.return_hub_calm_text: return "return_hub/calm_text";
+            case LocalizationKey.mission_next_day_event: return "mission/next_day_event";
+            case LocalizationKey.event_shopsale: return "event/shopsale";
+            case LocalizationKey.event_shopsale_lore: return "event/shopsale_lore";
+            case LocalizationKey.event_shoprestock: return "event/shoprestock";
+            case LocalizationKey.event_shoprestock_lore: return "event/shoprestock_lore";
+            case LocalizationKey.event_repairdiscount: return "event/repairdiscount";
+            case LocalizationKey.event_repairdiscount_lore: return "event/repairdiscount_lore";
+            case LocalizationKey.event_repairfree: return "event/repairfree";
+            case LocalizationKey.event_repairfree_lore: return "event/repairfree_lore";
+            case LocalizationKey.event_freerepair: return "event/freerepair";
+            case LocalizationKey.event_freerepair_lore: return "event/freerepair_lore";
+            case LocalizationKey.event_recyclingexpress: return "event/recyclingexpress";
+            case LocalizationKey.event_recyclingexpress_lore: return "event/recyclingexpress_lore";
+            case LocalizationKey.event_recyclingpriority: return "event/recyclingpriority";
+            case LocalizationKey.event_recyclingpriority_lore: return "event/recyclingpriority_lore";
+            case LocalizationKey.event_scrapboom: return "event/scrapboom";
+            case LocalizationKey.event_scrapboom_lore: return "event/scrapboom_lore";
+            case LocalizationKey.event_factionfervor: return "event/factionfervor";
+            case LocalizationKey.event_factionfervor_lore: return "event/factionfervor_lore";
+            case LocalizationKey.event_victorybounty: return "event/victorybounty";
+            case LocalizationKey.event_victorybounty_lore: return "event/victorybounty_lore";
+            case LocalizationKey.event_corpofavor: return "event/corpofavor";
+            case LocalizationKey.event_corpofavor_lore: return "event/corpofavor_lore";
+            case LocalizationKey.event_doublesalvage: return "event/doublesalvage";
+            case LocalizationKey.event_doublesalvage_lore: return "event/doublesalvage_lore";
+            case LocalizationKey.event_sabotageday: return "event/sabotageday";
+            case LocalizationKey.event_sabotageday_lore: return "event/sabotageday_lore";
+            case LocalizationKey.event_grandprix: return "event/grandprix";
+            case LocalizationKey.event_grandprix_lore: return "event/grandprix_lore";
+            case LocalizationKey.event_commandopromo: return "event/commandopromo";
+            case LocalizationKey.event_commandopromo_lore: return "event/commandopromo_lore";
             default: return string.Empty;
         }
     }

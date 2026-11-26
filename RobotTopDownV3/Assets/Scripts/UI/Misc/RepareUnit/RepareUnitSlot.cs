@@ -127,9 +127,9 @@ public class RepareUnitSlot : RepareUnitContainer
         bool isAffordable = price != null && GameDatas.current.currentPlayerSave.currencies[price.Item1] >= price.Item2;
 
         _button.SetLabel(LocalizationManager.Instance.Get(_labelKey));
-        _priceTMP.text = price == null ? "—"
-            : isAffordable ? price.Item2.ToString()
-            : "<color=#" + ColorUtility.ToHtmlStringRGB(GestureFeedback.RefusalColor) + ">" + price.Item2 + "</color>";
+        string priceText = price == null ? UnitRepairInfo.NoPrice : DayEventState.FormatPrice(price.Item2, _unit.GetRepairPrice(_isFullRepair, false).Item2);
+        _priceTMP.text = price == null || isAffordable ? priceText
+            : "<color=#" + ColorUtility.ToHtmlStringRGB(GestureFeedback.RefusalColor) + ">" + priceText + "</color>";
 
         if (_currencyIconGO != null)
             _currencyIconGO.SetActive(price != null);

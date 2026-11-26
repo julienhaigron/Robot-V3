@@ -213,11 +213,11 @@ public class EndLevelPopup : AUIPopup
 
 	private void OnClickContinue ()
 	{
-		GameManager.Instance.ApplyMatchProgression(m_gameResult);
-
 		foreach (GameDatas.PlayerSave.Component component in m_pendingDamagedComponents)
 			component.isDamaged = true;
 		m_pendingDamagedComponents.Clear();
+
+		GameManager.Instance.ApplyMatchProgression(m_gameResult);
 
 		//give rewards
 		foreach (CurrencyRewardDisplay display in m_rewardCurrencyDisplays)

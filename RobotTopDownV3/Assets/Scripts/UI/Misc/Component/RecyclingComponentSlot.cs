@@ -90,7 +90,7 @@ public class RecyclingComponentSlot : ComponentSlot
 		{
 			ComponentDisplay display = CurrentDisplay;
 			Rect from = display.VisualWorldRect;
-			System.Tuple<CurrencyType, ulong> price = componentData.GetRecyclingPrice();
+			System.Tuple<CurrencyType, ulong> price = componentData.GetRecyclingPriceToday();
 			GestureFeedback.HoldCurrency(price.Item1);
 			playerSave.AddCurrency(price.Item1, price.Item2);
 			GestureFeedback.PlayMoney(from.center, price.Item1, (long)price.Item2);
@@ -99,7 +99,7 @@ public class RecyclingComponentSlot : ComponentSlot
 		}
 		else
 		{
-			playerSave.dayData.currentlyRecyclingComponents[Index] = new() { component = component, remainingTime = duration };
+			playerSave.dayData.currentlyRecyclingComponents[Index] = new() { component = component, remainingTime = duration, yieldBonusPercent = playerSave.dayEvent.RecyclingYieldBonusPercent };
 			m_doors.SetClosed(true, _isInstant: false);
 		}
 
@@ -133,7 +133,7 @@ public class RecyclingComponentSlot : ComponentSlot
 			m_infoTMP.text = string.Format(LocalizationManager.Instance.Get(LocalizationKey.hub_recycling_duration)
 				, isRecycling ? recyclingData.remainingTime : componentData.GetRecyclingDuration());
 		else
-			m_infoTMP.text = "+ " + componentData.GetRecyclingPrice().Item2;
+			m_infoTMP.text = "+ " + (isRecycling ? componentData.GetRecyclingPrice(recyclingData.yieldBonusPercent) : componentData.GetRecyclingPriceToday()).Item2;
 
 		m_recycleBtn.SetInteractability(isPending);
 		m_doors.SetClosed(isRecycling, _isInstant: true);

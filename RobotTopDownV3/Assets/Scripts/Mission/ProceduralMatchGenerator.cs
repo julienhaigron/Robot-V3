@@ -59,11 +59,36 @@ public static class ProceduralMatchGenerator
 		return matches;
 	}
 
-	public static GameDatas.ProceduralMatchData Generate ( PlaythroughPhase _phase )
+	public static List<GameDatas.ProceduralMatchData> GenerateDay ( GameDatas.PlayerSave _save )
+	{
+		PlaythroughPhase phase = GetPhase(_save.cycleCount);
+		DayEventState dayEvent = _save.dayEvent;
+		bool canPromiseEvent = !_save.IsTomorrowScripted;
+		List<GameDatas.ProceduralMatchData> matches = new();
+		for (int i = 0; i < dayEvent.DailyMatchCount; i++)
+		{
+			GameDatas.ProceduralMatchData match = Generate(phase, dayEvent);
+			if (match == null)
+				continue;
+
+			if (canPromiseEvent && UnityEngine.Random.value < GameConfig.current.game.matchNextDayEventChance)
+			{
+				DayEventData nextDayEvent = DayEventState.PickRandom(dayEvent.eventName);
+				match.nextDayEventName = nextDayEvent == null ? "" : nextDayEvent.name;
+			}
+			matches.Add(match);
+		}
+
+		return matches;
+	}
+
+	public static GameDatas.ProceduralMatchData Generate ( PlaythroughPhase _phase, DayEventState _dayEvent = null )
 	{
 		List<MissionData.MissionType> types = GameAssets.current.game.mapsPerMissionType
 			.Where(pair => pair.Value != null && pair.Value.maps.Any(map => map != null))
 			.Select(pair => pair.Key).ToList();
+		if (_dayEvent != null && _dayEvent.TryGetForcedMatchType(out MissionData.MissionType forcedType) && types.Contains(forcedType))
+			types = new() { forcedType };
 		if (types.Count == 0)
 		{
 			Debug.LogError("No map in GameAssets.game.mapsPerMissionType: no procedural match can be generated.");
@@ -79,7 +104,7 @@ public static class ProceduralMatchGenerator
 
 		Array strategies = Enum.GetValues(typeof(MatchStrategy));
 		match.strategy = (MatchStrategy)strategies.GetValue(UnityEngine.Random.Range(0, strategies.Length));
-		match.generatedEnemies = EnemyUnitGenerator.GenerateSquad(_phase);
+		match.generatedEnemies = _dayEvent == null ? EnemyUnitGenerator.GenerateSquad(_phase) : EnemyUnitGenerator.GenerateSquad(_phase, _dayEvent.faction, _dayEvent.EnemyFactionShare);
 		if (match.generatedEnemies.Count == 0)
 		{
 			Debug.LogWarning("No faction has a complete set of droppable components: the enemy squad falls back to the " + _phase + " presets.");
@@ -87,6 +112,7 @@ public static class ProceduralMatchGenerator
 		}
 
 		MissionData.RewardSet rewardSet = MissionData.GenerateRewardSet(MissionData.RollRewardTemplate());
+		_dayEvent?.ApplyRewardModifiers(rewardSet);
 		match.rewardCredits = new List<ulong>(rewardSet.creditAmounts);
 		match.rewardComponentNames = rewardSet.components.Where(component => component != null).Select(component => component.name).ToList();
 

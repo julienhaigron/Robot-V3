@@ -19,8 +19,8 @@ public readonly struct UnitRepairInfo
 	public readonly List<DamagedPart> parts;
 	public readonly int componentCount;
 	public readonly int mainCount;
-	public readonly ulong necessaryPrice;
-	public readonly ulong fullPrice;
+	public readonly string necessaryPriceText;
+	public readonly string fullPriceText;
 
 	public bool IsOutOfService => mainCount > 0;
 
@@ -41,7 +41,14 @@ public readonly struct UnitRepairInfo
 		}
 
 		componentCount = _unit.GetAllEquipments().Count;
-		necessaryPrice = mainCount > 0 ? _unit.GetRepairPrice(false).Item2 : 0ul;
-		fullPrice = parts.Count > 0 ? _unit.GetRepairPrice(true).Item2 : 0ul;
+		necessaryPriceText = mainCount > 0 ? PriceText(_unit, false) : NoPrice;
+		fullPriceText = parts.Count > 0 ? PriceText(_unit, true) : NoPrice;
+	}
+
+	public const string NoPrice = "—";
+
+	private static string PriceText ( EntitySavedData _unit, bool _isFullRepair )
+	{
+		return DayEventState.FormatPrice(_unit.GetRepairPrice(_isFullRepair).Item2, _unit.GetRepairPrice(_isFullRepair, false).Item2);
 	}
 }

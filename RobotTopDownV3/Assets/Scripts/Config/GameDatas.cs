@@ -194,6 +194,8 @@ public partial class GameDatas : ScriptableObject
 		public CycleData cycleData = new();
 		public int cycleCount = 0;
 		public int dayCount = 0;
+		public DayEventState dayEvent = new();
+		public string pendingDayEventName = "";
 
 		public bool IsTournamentDay => dayCount > 3;
 		public int TournamentRound => dayCount - 4;
@@ -201,7 +203,9 @@ public partial class GameDatas : ScriptableObject
 		public bool CanJoinTournament => dayCount == 4 && !cycleData.hasJoinedTournament && !cycleData.hasDeclinedTournament;
 		public bool IsTournamentAvailable => IsInTournament || CanJoinTournament;
 
-		public bool HasScriptedTournament
+		public bool HasScriptedTournament => IsTutorialCycle;
+
+		public bool IsTutorialCycle
 		{
 			get
 			{
@@ -299,6 +303,7 @@ public partial class GameDatas : ScriptableObject
 			public SerializableDictionary<EntityEquipmentData.EntityFaction, int> shopFreezesUsed = new();
 			public List<RecyclingComponentData> currentlyRecyclingComponents = new();
 			public List<RepairingUnitData> repairingComponents = new();
+			public List<ProceduralMatchData> dayMatches = new();
 
 			[Serializable]
 			public class ShopComponentData
@@ -314,6 +319,7 @@ public partial class GameDatas : ScriptableObject
 			{
 				public Component component;
 				public int remainingTime;
+				public int yieldBonusPercent;
 			}
 
 			[Serializable]
@@ -332,18 +338,16 @@ public partial class GameDatas : ScriptableObject
 		}
 
 		[Button]
-		public void NewDay ()
+		public void NewDay ( bool _endsCycle = false )
 		{
 			dayCount++;
-			if (dayCount >= GameConfig.current.game.nbOfDayInCycle)
+			if (_endsCycle || dayCount >= GameConfig.current.game.nbOfDayInCycle)
 				NewCycle();
 
-			//new items in shop
 			foreach (DayData.ShopComponentData shopData in dayData.itemsInShop)
 				if (shopData != null)
 					shopData.frozenTodayInShop = EntityEquipmentData.EntityFaction.Noone;
 
-			RefillShop();
 			dayData.shopRerollsUsed.Clear();
 			dayData.shopFreezesUsed.Clear();
 
@@ -362,8 +366,29 @@ public partial class GameDatas : ScriptableObject
 				if (data != null)
 					data.wasUsedToday = false;
 
+			StartDay();
 			onNewDay?.Invoke();
 		}
+
+		public void StartDay ()
+		{
+			dayEvent = DayEventState.Roll(this, dayEvent.eventName);
+			dayEvent.ApplyDayStartRepairs(this);
+			RefillShop();
+			dayData.dayMatches = ProceduralMatchGenerator.GenerateDay(this);
+		}
+
+		public List<ProceduralMatchData> GetDayMatches ()
+		{
+			if (dayData.dayMatches.Count == 0)
+				dayData.dayMatches = ProceduralMatchGenerator.GenerateDay(this);
+
+			return dayData.dayMatches;
+		}
+
+		public bool IsTomorrowScripted => dayCount + 1 >= GameConfig.current.game.nbOfDayInCycle
+			? DayEventState.FindScripted(cycleCount + 1, 0) != null
+			: DayEventState.FindScripted(cycleCount, dayCount + 1) != null;
 
 		public void RefillShop ()
 		{
@@ -403,7 +428,7 @@ public partial class GameDatas : ScriptableObject
 				return;
 
 			List<EntityEquipmentData> shopPool = GameAssets.current.GetRandomlyDroppableEquipments().Where(data => data.faction == _shopFaction).ToList();
-			int maxItemAmount = shopUpgrade.GetMaxItemAmount();
+			int maxItemAmount = shopUpgrade.GetMaxItemAmount() + dayEvent.ShopExtraItems(_shopFaction);
 			int itemAmount = dayData.itemsInShop.Count(shopData => shopData.shopFaction == _shopFaction);
 
 			while (shopPool.Count > 0 && itemAmount < maxItemAmount)
@@ -454,7 +479,7 @@ public partial class GameDatas : ScriptableObject
 				EntityEquipmentData componentData = data.component.GetData<EntityEquipmentData>();
 				report += string.Format(LocalizationManager.Instance.Get(LocalizationKey.return_hub_recycled), componentData.GetLocalizedName()) + "\n";
 
-				System.Tuple<CurrencyType, ulong> sellingPrice = componentData.GetRecyclingPrice();
+				System.Tuple<CurrencyType, ulong> sellingPrice = componentData.GetRecyclingPrice(data.yieldBonusPercent);
 				AddCurrency(sellingPrice.Item1, sellingPrice.Item2);
 				dayData.currentlyRecyclingComponents[i] = null;
 			}
@@ -467,11 +492,8 @@ public partial class GameDatas : ScriptableObject
 		{
 			public List<MissionDataEnumID> selectedMissionsIds = new();
 			public MissionDataEnumID[] roundsDatas;
-			public List<ProceduralMatchData> availableMatches = new();
-			public List<int> selectedMatchIndexes = new();
 			public List<ProceduralMatchData> tournamentMatches = new();
 
-			public bool didSelectMissions => selectedMissionsIds.Count > 0 || selectedMatchIndexes.Count > 0;
 			public bool hasInitTournament = false;
 			public bool hasJoinedTournament = false;
 			public bool hasDeclinedTournament = false;
@@ -496,17 +518,6 @@ public partial class GameDatas : ScriptableObject
 			{
 				if (hasInitTournament && tournamentRewardCredits.Count == 0 && tournamentRewardBlueprints.Count == 0)
 					ProceduralMatchGenerator.RollTournamentReward(tournamentRewardCredits, tournamentRewardBlueprints);
-			}
-
-			public List<ProceduralMatchData> GetSelectedMatches ()
-			{
-				return selectedMatchIndexes.Where(index => index >= 0 && index < availableMatches.Count).Select(index => availableMatches[index]).ToList();
-			}
-
-			public void EnsureAvailableMatches ()
-			{
-				if (availableMatches.Count == 0)
-					availableMatches = ProceduralMatchGenerator.Generate(GameConfig.current.game.missionAmountInMissionSelectionPanel, current.currentPlayerSave.cycleCount);
 			}
 
 			public void StartTournament ()
@@ -555,12 +566,10 @@ public partial class GameDatas : ScriptableObject
 			cycleData.roundsDatas = new MissionDataEnumID[3];
 
 			cycleData.selectedMissionsIds.Clear();
-			cycleData.selectedMatchIndexes.Clear();
 			cycleData.tournamentMatches.Clear();
 
 			cycleCount++;
 			dayCount = 0;
-			cycleData.availableMatches = ProceduralMatchGenerator.Generate(GameConfig.current.game.missionAmountInMissionSelectionPanel, cycleCount);
 			onNewCycle?.Invoke();
 		}
 

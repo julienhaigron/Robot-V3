@@ -2,11 +2,16 @@ using System.Collections.Generic;
 using DG.Tweening;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ReturnToHubPopup : AUIPopup
 {
 	[SerializeField] private BaseButton m_closeBtn;
+	[SerializeField] private LocalizationText m_titleText;
 	[SerializeField] private TextMeshProUGUI m_contentTMP;
+	[SerializeField] private Image m_illustration;
+	[SerializeField] private GameObject m_separator;
+	[SerializeField] private TextMeshProUGUI m_effectTMP;
 	[SerializeField] private GameObject[] m_dayDisplays;
 	[SerializeField] private TextMeshProUGUI m_cycleTMP;
 	[SerializeField] private TextMeshProUGUI m_dayTMP;
@@ -49,9 +54,6 @@ public class ReturnToHubPopup : AUIPopup
 	{
 		UIManager.Instance.GetPanel<SoloHubPanel>().RefreshVisual();
 		Close();
-
-		if (!GameDatas.current.currentPlayerSave.cycleData.didSelectMissions)
-			UIManager.Instance.OpenPanel<SelectMissionPanel>();
 	}
 
 	public void Init ( string _dayReport, List<GameDatas.PlayerSave.DayData.RecyclingComponentData> _recycledComponent )
@@ -75,7 +77,17 @@ public class ReturnToHubPopup : AUIPopup
 		LocalizationManager localization = LocalizationManager.Instance;
 		GameDatas.PlayerSave save = GameDatas.current.currentPlayerSave;
 
-		m_contentTMP.text = string.IsNullOrWhiteSpace(m_dayReport) ? localization.Get(LocalizationKey.return_hub_nothing) : m_dayReport;
+		DayEventData dayEvent = save.dayEvent.Data;
+		bool hasEvent = dayEvent != null;
+		m_titleText.SetKey(hasEvent ? "return_hub/event_title" : "return_hub/calm_title");
+		m_contentTMP.text = hasEvent ? "<b>" + dayEvent.GetLocalizedName() + "</b>\n" + dayEvent.GetLocalizedLore()
+			: string.IsNullOrWhiteSpace(m_dayReport) ? localization.Get(LocalizationKey.return_hub_calm_text) : m_dayReport;
+		m_illustration.gameObject.SetActive(hasEvent && dayEvent.illustration != null);
+		if (hasEvent)
+			m_illustration.sprite = dayEvent.illustration;
+		m_separator.SetActive(hasEvent);
+		m_effectTMP.gameObject.SetActive(hasEvent);
+		m_effectTMP.text = string.Join("\n", save.dayEvent.GetEffectLines());
 		m_cycleTMP.text = string.Format(localization.Get(LocalizationKey.hub_cycle), save.cycleCount + 1);
 		m_dayTMP.text = string.Format(localization.Get(LocalizationKey.hub_day), save.dayCount + 1);
 

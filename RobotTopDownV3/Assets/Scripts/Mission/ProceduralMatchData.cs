@@ -17,6 +17,7 @@ public partial class GameDatas
 		public List<ulong> rewardCredits = new();
 		public List<string> rewardComponentNames = new();
 		public string challengerId;
+		public string nextDayEventName = "";
 
 		[NonSerialized] private MissionData m_missionData;
 
@@ -47,6 +48,7 @@ public partial class GameDatas
 			missionData.unitReward = new();
 			missionData.SetFixedRewardSet(BuildRewardSet());
 			missionData.SetTeamStrategy(strategy);
+			missionData.SetNextDayEvent(DayEventState.Find(nextDayEventName));
 
 			if (missionData.map == null)
 				Debug.LogError("Procedural match map " + mapName + " is no longer in GameAssets.game.mapsPerMissionType.");

@@ -70,8 +70,8 @@ public class RepareUnitDisplay : GestureDisplay
 		m_moreDamagedTMP.gameObject.SetActive(hiddenCount > 0);
 		m_moreDamagedTMP.text = "+" + hiddenCount;
 
-		m_necessaryPriceTMP.text = hasUnit && info.IsOutOfService ? info.necessaryPrice.ToString() : "—";
-		m_fullPriceTMP.text = damagedCount > 0 ? info.fullPrice.ToString() : "—";
+		m_necessaryPriceTMP.text = hasUnit ? info.necessaryPriceText : UnitRepairInfo.NoPrice;
+		m_fullPriceTMP.text = hasUnit ? info.fullPriceText : UnitRepairInfo.NoPrice;
 	}
 
 	private void OnTransformParentChanged ()

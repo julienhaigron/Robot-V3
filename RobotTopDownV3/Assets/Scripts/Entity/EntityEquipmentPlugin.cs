@@ -27,6 +27,14 @@ public class EntityEquipmentPlugin : EntityPlugin
 	private bool m_isDead = false;
 	public bool IsDead => m_isDead;
 
+	public void RaiseMaxHealth ( float _ratio )
+	{
+		int bonus = Mathf.RoundToInt(m_maxHealth * _ratio);
+		m_maxHealth += bonus;
+		m_currentHealth += bonus;
+		m_linkedEntity.UI.RefreshHealth();
+	}
+
 	private bool m_didAttackThisTurn = false;
 	public bool DidAttackThisTurn => m_didAttackThisTurn;
 

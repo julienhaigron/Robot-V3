@@ -70,6 +70,7 @@ public class GameAssets : ScriptableObject
 
         [Title("Tournament")]
         public List<ChallengerData> challengers = new();
+        public List<DayEventData> dayEvents = new();
 
         [Title("Entity")]
         public Entity defaultEntity;

@@ -125,19 +125,9 @@ public class GameManager : SingletonPersistant<GameManager>
 
 				string dayReport = GameDatas.current.currentPlayerSave.ProcessRecycledComponents(out List<GameDatas.PlayerSave.DayData.RecyclingComponentData> _recycledComponent);
 
-				if (m_returnFromMatch)
-				{
-					if (GameDatas.current.currentPlayerSave.didUnlockReturnToHubPopup)
-						UIManager.Instance.OpenPopup<ReturnToHubPopup>().Init(dayReport, _recycledComponent);
-					UIManager.Instance.OpenPanel<SoloHubPanel>();
-				}
-				else
-				{
-					if (!GameDatas.current.currentPlayerSave.cycleData.didSelectMissions)
-						UIManager.Instance.OpenPanel<SelectMissionPanel>();
-					else
-						UIManager.Instance.OpenPanel<SoloHubPanel>();
-				}
+				if (m_returnFromMatch && GameDatas.current.currentPlayerSave.didUnlockReturnToHubPopup)
+					UIManager.Instance.OpenPopup<ReturnToHubPopup>().Init(dayReport, _recycledComponent);
+				UIManager.Instance.OpenPanel<SoloHubPanel>();
 
 				ApplicationManager.Instance.SaveApplication();
 			}
@@ -258,6 +248,7 @@ public class GameManager : SingletonPersistant<GameManager>
 		{
 			LogConsole.AddLog("Start OfflineGame", LogConsole.LogEventType.DebugSys);
 			m_playersEntityAnchor[0].Init(GameDatas.current.currentPlayerSave.GetSquadEntitiesData(), 0);
+			GameDatas.current.currentPlayerSave.dayEvent.ApplyUnitBuffs(m_playersEntityAnchor[0].Entities);
 			List<EntitySavedData> ennemies = new();
 			foreach (UnitPreset ennemi in m_currentMission.enemies)
 			{
@@ -456,22 +447,18 @@ public class GameManager : SingletonPersistant<GameManager>
 	public void ApplyMatchProgression ( EndLevelPopup.GameResult _gameResult )
 	{
 		GameDatas.PlayerSave save = GameDatas.current.currentPlayerSave;
+		bool isWin = _gameResult == EndLevelPopup.GameResult.Win;
 		bool wasTournamentMatch = save.IsInTournament;
-		bool wasFinal = save.TournamentRound >= 2;
-		string challengerId = save.cycleData.tournamentChallengerId;
-		int cycleBeforeMatch = save.cycleCount;
-		save.NewDay();
-
-		if (!wasTournamentMatch)
-			return;
-
-		if (_gameResult == EndLevelPopup.GameResult.Win)
+		if (isWin)
 		{
-			if (wasFinal)
-				save.MarkChallengerBeaten(challengerId);
+			save.dayEvent.GrantVictoryBonus(save);
+			if (m_currentMission != null && m_currentMission.NextDayEvent != null)
+				save.pendingDayEventName = m_currentMission.NextDayEvent.name;
+			if (wasTournamentMatch && save.TournamentRound >= 2)
+				save.MarkChallengerBeaten(save.cycleData.tournamentChallengerId);
 		}
-		else if (save.cycleCount == cycleBeforeMatch)
-			save.NewCycle();
+
+		save.NewDay(wasTournamentMatch && !isWin);
 	}
 
 	/*private void SaveMacroChanges ()

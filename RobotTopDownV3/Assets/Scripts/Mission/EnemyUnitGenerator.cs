@@ -63,7 +63,7 @@ public static class EnemyUnitGenerator
 		}
 	}
 
-	public static List<GeneratedUnitData> GenerateSquad ( PlaythroughPhase _phase )
+	public static List<GeneratedUnitData> GenerateSquad ( PlaythroughPhase _phase, EntityEquipmentData.EntityFaction _favouredFaction = EntityEquipmentData.EntityFaction.Noone, float _favouredShare = 0f )
 	{
 		List<GeneratedUnitData> squad = new();
 		GameConfig.EnemySquadRules rules = ProceduralMatchGenerator.GetSquadRules(_phase);
@@ -85,7 +85,7 @@ public static class EnemyUnitGenerator
 		{
 			int maxEnergy = isExpensive[i] ? Mathf.FloorToInt(energyPerShare * expensiveRatio) : cheapUnitMaxEnergy;
 			int energyToExceed = isExpensive[i] ? cheapUnitMaxEnergy : 0;
-			GeneratedUnitData unit = Shuffle(pools).Select(pool => GenerateUnit(pool, maxEnergy, energyToExceed)).FirstOrDefault(generated => generated != null);
+			GeneratedUnitData unit = OrderPools(pools, _favouredFaction, _favouredShare).Select(pool => GenerateUnit(pool, maxEnergy, energyToExceed)).FirstOrDefault(generated => generated != null);
 			if (unit == null)
 				continue;
 
@@ -95,6 +95,15 @@ public static class EnemyUnitGenerator
 		}
 
 		return squad;
+	}
+
+	private static IEnumerable<FactionPool> OrderPools ( List<FactionPool> _pools, EntityEquipmentData.EntityFaction _favouredFaction, float _favouredShare )
+	{
+		if (_favouredShare <= 0f || !_pools.Any(pool => pool.faction == _favouredFaction))
+			return Shuffle(_pools);
+
+		bool isFavoured = UnityEngine.Random.value < _favouredShare;
+		return Shuffle(_pools).OrderBy(pool => (pool.faction == _favouredFaction) == isFavoured ? 0 : 1);
 	}
 
 	public static UnitPreset BuildPreset ( GeneratedUnitData _unit )

@@ -192,15 +192,16 @@ public class EntitySavedData : INetworkSerializable
 		return _component.TryGetData(out EntityEquipmentData data) ? data.GetSellingPrice().Item2 : 0ul;
 	}
 
-	public System.Tuple<CurrencyType, ulong> GetRepairPrice ( bool _isFullRepair )
+	public System.Tuple<CurrencyType, ulong> GetRepairPrice ( bool _isFullRepair, bool _withDayEvent = true )
 	{
 		ulong price = 0ul;
 		foreach (GameDatas.PlayerSave.Component ep in GetComponentsToRepair(_isFullRepair))
 			price += GetBaseRepairPrice(ep);
 
 		float discount = GameAssets.current.game.RepairStationStructureUpgrade.GetCurrentRepairPriceBonusPerLevel();
+		float eventFactor = _withDayEvent ? GameDatas.current.currentPlayerSave.dayEvent.RepairPriceFactor : 1f;
 
-		return new System.Tuple<CurrencyType, ulong>(CurrencyType.SoftCurrency, (ulong)Mathf.Max(0f, price * (1f - discount)));
+		return new System.Tuple<CurrencyType, ulong>(CurrencyType.SoftCurrency, (ulong)Mathf.Max(0f, price * (1f - discount) * eventFactor));
 	}
 
 	public int GetTotalEnergyUsed ()

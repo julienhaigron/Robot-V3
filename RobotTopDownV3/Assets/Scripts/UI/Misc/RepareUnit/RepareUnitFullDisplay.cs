@@ -94,12 +94,12 @@ public class RepareUnitFullDisplay : MonoBehaviour
 		RefreshDamageRows(info);
 		RefreshLosses();
 
-		m_necessaryPriceTMP.text = info.IsOutOfService ? info.necessaryPrice.ToString() : "—";
+		m_necessaryPriceTMP.text = info.necessaryPriceText;
 		m_necessaryDescriptionTMP.text = info.IsOutOfService
 			? string.Format(LocalizationManager.Instance.Get(LocalizationKey.hub_necessary_description),
 				string.Join(", ", info.parts.Where(part => part.isMain).Select(part => EntityEquipmentData.GetLocalizedTypeName(part.Type)).Distinct()))
 			: LocalizationManager.Instance.Get(LocalizationKey.hub_necessary_none);
-		m_fullPriceTMP.text = info.parts.Count > 0 ? info.fullPrice.ToString() : "—";
+		m_fullPriceTMP.text = info.fullPriceText;
 		m_fullDescriptionTMP.text = string.Format(LocalizationManager.Instance.Get(info.parts.Count == 1 ? LocalizationKey.hub_full_description_one : LocalizationKey.hub_full_description), info.parts.Count);
 	}
 

@@ -21,6 +21,7 @@ public class MissionPanel : AUIPanel
 	[Title("SingleMissionDetails")]
 	[SerializeField] private TextMeshProUGUI m_currentMissionNameTMP;
 	[SerializeField] private TextMeshProUGUI m_currentMissionDescriptionTMP;
+	[SerializeField] private Color m_nextDayEventColor = new(.91f, .7f, .23f, 1f);
 	[SerializeField] private ComponentRewardDisplay[] m_componentRewardDisplays;
 	[SerializeField] private CurrencyRewardDisplay[] m_currencyRewardDisplays;
 	[SerializeField] private UnitRewardDisplay[] m_unitRewardDisplays;
@@ -70,7 +71,7 @@ public class MissionPanel : AUIPanel
 		bool doTutoMission = FTUEManager.Instance.IsFTUERunning
 			&& GameDatas.current.currentPlayerSave.dayCount >= 0
 			&& GameDatas.current.currentPlayerSave.cycleData.selectedMissionsIds.Count > GameDatas.current.currentPlayerSave.dayCount;
-		List<GameDatas.ProceduralMatchData> selectedMatches = GameDatas.current.currentPlayerSave.cycleData.GetSelectedMatches();
+		List<GameDatas.ProceduralMatchData> dayMatches = doTutoMission ? new() : GameDatas.current.currentPlayerSave.GetDayMatches();
 		for (int i = 0; i < m_missionBtns.Length; i++)
 		{
 			if (doTutoMission)
@@ -83,26 +84,13 @@ public class MissionPanel : AUIPanel
 				else
 					m_missionBtns[i].SetVisible(false, true);
 			}
-			else if (selectedMatches.Count > 0)
+			else if (dayMatches.Count > i)
 			{
-				if (selectedMatches.Count > i)
-				{
-					m_missionBtns[i].SetVisible(true, true);
-					m_missionBtns[i].Init(selectedMatches[i]);
-				}
-				else
-					m_missionBtns[i].SetVisible(false, true);
+				m_missionBtns[i].SetVisible(true, true);
+				m_missionBtns[i].Init(dayMatches[i]);
 			}
 			else
-			{
-				if (GameDatas.current.currentPlayerSave.cycleData.selectedMissionsIds.Count > i)
-				{
-					m_missionBtns[i].SetVisible(true, true);
-					m_missionBtns[i].Init(GameDatas.current.currentPlayerSave.cycleData.selectedMissionsIds[i]);
-				}
-				else
-					m_missionBtns[i].SetVisible(false, true);
-			}
+				m_missionBtns[i].SetVisible(false, true);
 		}
 
 		UnitMissionDisplay.RefreshPlayerUnits(m_unitDisplays);
@@ -141,7 +129,12 @@ public class MissionPanel : AUIPanel
 		m_currentMissionHovered = _missionBtn;
 
 		m_currentMissionNameTMP.text = _missionBtn.MissionData.GetLocalizedName();
-		m_currentMissionDescriptionTMP.text = _missionBtn.MissionData.GetDescription();
+		string description = _missionBtn.MissionData.GetDescription();
+		DayEventData nextDayEvent = _missionBtn.MissionData.NextDayEvent;
+		if (nextDayEvent != null)
+			description += "\n\n<color=#" + ColorUtility.ToHtmlStringRGB(m_nextDayEventColor) + ">"
+				+ string.Format(LocalizationManager.Instance.Get(LocalizationKey.mission_next_day_event), nextDayEvent.GetLocalizedName()) + "</color>";
+		m_currentMissionDescriptionTMP.text = description;
 
 		MissionData.RewardSet rewardSet = _missionBtn.MissionData.GetRewardSet();
 

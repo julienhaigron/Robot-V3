@@ -26,7 +26,9 @@ public class BuildingBtn : MonoBehaviour
 
 	private void OnClickOpenPanel ()
 	{
-		if(m_panel is SelectMissionPanel or HangarPanel)
+		if (m_panel is MissionPanel)
+			SoloHubPanel.OpenMatchPanel();
+		else if (m_panel is HangarPanel)
 			UIManager.Instance.OpenPanel(m_panel);
 		else if (m_panel is RecyclePanel)
 			UIManager.Instance.OpenPanel<RecyclePanel>().Init();

@@ -44,6 +44,16 @@ public static class LocalizedDataExtensions
 		return _data == null ? "" : LocalizationManager.Instance.Get(KeyOf(_data, "item"), _data.name);
 	}
 
+	public static string GetLocalizedName ( this DayEventData _data )
+	{
+		return _data == null ? "" : LocalizationManager.Instance.Get(KeyOf(_data, "event"), _data.displayName);
+	}
+
+	public static string GetLocalizedLore ( this DayEventData _data )
+	{
+		return _data == null ? "" : LocalizationManager.Instance.Get(KeyOf(_data, "event") + "_lore", _data.lore);
+	}
+
 	public static string GetLocalizedName ( this MissionData _data )
 	{
 		return _data == null ? "" : LocalizationManager.Instance.Get(KeyOf(_data, "mission"), _data.missionName);

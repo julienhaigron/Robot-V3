@@ -3773,3 +3773,204 @@ MonoBehaviour:
     values:
     - back
     - "en arri\xE8re"
+
+  - key: event_effect/shop_discount
+    values:
+    - "\u2013{0}% on purchases ({1})"
+    - "\u2013{0}\_% sur les achats ({1})"
+  - key: event_effect/shop_items
+    values:
+    - +{0} items in shop ({1})
+    - +{0} articles en boutique ({1})
+  - key: event_effect/repair_discount
+    values:
+    - "Repairs \u2013{0}%"
+    - "R\xE9parations \u2013{0}\_%"
+  - key: event_effect/repair_free
+    values:
+    - Free repairs
+    - "R\xE9parations gratuites"
+  - key: event_effect/repaired
+    values:
+    - 'Repaired for free: {0}'
+    - "R\xE9par\xE9 gratuitement\_: {0}"
+  - key: event_effect/repaired_none
+    values:
+    - A free repair, but nothing was damaged
+    - "Une r\xE9paration offerte, mais rien n'\xE9tait endommag\xE9"
+  - key: event_effect/recycling_set
+    values:
+    - Recycling takes at most {0} day
+    - Recyclage en {0} jour au plus
+  - key: event_effect/recycling_reduce
+    values:
+    - Recycling {0} day shorter
+    - Recyclage plus court de {0} jour
+  - key: event_effect/recycling_yield
+    values:
+    - "Recycling started today pays \xD7{0}"
+    - "Les recyclages lanc\xE9s aujourd'hui rapportent \xD7{0}"
+  - key: event_effect/match_type
+    values:
+    - Only {0} matches today
+    - Uniquement des matchs de {0} aujourd'hui
+  - key: event_effect/match_count
+    values:
+    - '{0} matches available today'
+    - '{0} matchs disponibles aujourd''hui'
+  - key: event_effect/enemy_faction
+    values:
+    - '{0}% of enemy units are {1}'
+    - "{0}\_% des unit\xE9s ennemies sont {1}"
+  - key: event_effect/credits
+    values:
+    - "Match credits \xD7{0}"
+    - "Cr\xE9dits des matchs \xD7{0}"
+  - key: event_effect/components
+    values:
+    - Reward components doubled
+    - "Composants des r\xE9compenses doubl\xE9s"
+  - key: event_effect/corpo
+    values:
+    - 'Victory: +{0} {1} credits'
+    - "Victoire\_: +{0} cr\xE9dits {1}"
+  - key: event_effect/unit_buff
+    values:
+    - '{0} units: +{1}% damage, +{2}% HP'
+    - "Unit\xE9s {0}\_: +{1}\_% de d\xE9g\xE2ts, +{2}\_% de PV"
+  - key: return_hub/event_title
+    values:
+    - EVENT OF THE DAY
+    - "\xC9V\xC9NEMENT DU JOUR"
+  - key: return_hub/calm_title
+    values:
+    - QUIET DAY
+    - "JOURN\xC9E CALME"
+  - key: return_hub/calm_text
+    values:
+    - No event today.
+    - "Aucun \xE9v\xE8nement aujourd'hui."
+  - key: mission/next_day_event
+    values:
+    - 'Victory: {0} event tomorrow'
+    - "Victoire\_: \xE9v\xE8nement \xAB\_{0}\_\xBB demain"
+  - key: event/shopsale
+    values:
+    - Sale
+    - Soldes
+  - key: event/shopsale_lore
+    values:
+    - The counters are clearing out their stock.
+    - Les comptoirs bradent leurs stocks pour faire de la place.
+  - key: event/shoprestock
+    values:
+    - New stock
+    - Arrivage
+  - key: event/shoprestock_lore
+    values:
+    - A convoy just restocked the counters.
+    - "Un convoi vient de r\xE9approvisionner les comptoirs."
+  - key: event/repairdiscount
+    values:
+    - Workshop discount
+    - Atelier en promo
+  - key: event/repairdiscount_lore
+    values:
+    - The station mechanics slash their prices.
+    - "Les m\xE9canos de la station cassent les prix."
+  - key: event/repairfree
+    values:
+    - Free repairs
+    - "R\xE9parations offertes"
+  - key: event/repairfree_lore
+    values:
+    - A sponsor covers every repair today.
+    - "Un sponsor prend en charge toutes les r\xE9parations."
+  - key: event/freerepair
+    values:
+    - Passing mechanic
+    - "M\xE9cano de passage"
+  - key: event/freerepair_lore
+    values:
+    - A mechanic passing through fixes one of your parts.
+    - "Un m\xE9cano de passage remet une de vos pi\xE8ces d'aplomb."
+  - key: event/recyclingexpress
+    values:
+    - Express shredder
+    - Broyeur express
+  - key: event/recyclingexpress_lore
+    values:
+    - The shredder runs at full speed.
+    - "Le broyeur tourne \xE0 plein r\xE9gime."
+  - key: event/recyclingpriority
+    values:
+    - Priority recycling
+    - Recyclage prioritaire
+  - key: event/recyclingpriority_lore
+    values:
+    - The recyclers handle your parts first.
+    - "Les recycleurs traitent vos pi\xE8ces en priorit\xE9."
+  - key: event/scrapboom
+    values:
+    - Scrap boom
+    - Cours de la ferraille
+  - key: event/scrapboom_lore
+    values:
+    - Scrap prices are soaring.
+    - Le cours de la ferraille s'envole.
+  - key: event/factionfervor
+    values:
+    - Faction fervor
+    - Ferveur de faction
+  - key: event/factionfervor_lore
+    values:
+    - A corpo fires up its machines before the fight.
+    - Une corpo galvanise ses machines avant le combat.
+  - key: event/victorybounty
+    values:
+    - Victory bounty
+    - Prime de victoire
+  - key: event/victorybounty_lore
+    values:
+    - Bettors are staking big on today's matches.
+    - Les parieurs misent gros sur les matchs du jour.
+  - key: event/corpofavor
+    values:
+    - Corpo favor
+    - Faveur de corpo
+  - key: event/corpofavor_lore
+    values:
+    - A corpo rewards today's winners.
+    - "Une corpo r\xE9compense les vainqueurs du jour."
+  - key: event/doublesalvage
+    values:
+    - Double salvage
+    - "R\xE9cup\xE9ration double"
+  - key: event/doublesalvage_lore
+    values:
+    - Today's wrecks are full of parts.
+    - "Les \xE9paves du jour regorgent de pi\xE8ces."
+  - key: event/sabotageday
+    values:
+    - Sabotage day
+    - "Journ\xE9e sabotage"
+  - key: event/sabotageday_lore
+    values:
+    - The league only runs sabotage matches today.
+    - La ligue n'organise que des matchs de sabotage.
+  - key: event/grandprix
+    values:
+    - Grand prix
+    - Grand prix
+  - key: event/grandprix_lore
+    values:
+    - The league puts everything into a few headline matches.
+    - La ligue concentre ses moyens sur quelques grandes affiches.
+  - key: event/commandopromo
+    values:
+    - Commando promo
+    - Promo Commando
+  - key: event/commandopromo_lore
+    values:
+    - After a Commando promotion, their machines flood the arena.
+    - "Suite \xE0 une promo chez Commando, leurs machines envahissent l'ar\xE8ne."

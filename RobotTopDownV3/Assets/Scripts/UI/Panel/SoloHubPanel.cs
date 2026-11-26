@@ -68,6 +68,11 @@ public class SoloHubPanel : AUIPanel
 
 	private void OnClickMissionBtn ()
 	{
+		OpenMatchPanel();
+	}
+
+	public static void OpenMatchPanel ()
+	{
 		if (GameDatas.current.currentPlayerSave.IsTournamentAvailable)
 			UIManager.Instance.OpenPanel<TournamentPanel>();
 		else

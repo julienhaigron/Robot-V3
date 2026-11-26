@@ -89,7 +89,7 @@ public class PanelTransition : MonoBehaviour
 
 	private static bool IsHubPlacePanel ( AUIPanel _panel )
 	{
-		return _panel is SoloHubPanel or ShopPanel or RecyclePanel or RepairStationPanel or MissionPanel or TournamentPanel or SelectMissionPanel;
+		return _panel is SoloHubPanel or ShopPanel or RecyclePanel or RepairStationPanel or MissionPanel or TournamentPanel;
 	}
 
 	private static bool IsOpening ( AUIPanel _to )

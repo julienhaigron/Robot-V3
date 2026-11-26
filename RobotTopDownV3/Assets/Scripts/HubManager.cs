@@ -111,7 +111,7 @@ public class HubManager : Singleton<HubManager>
 			SoloHubPanel => Building.Overview,
 			RecyclePanel => Building.Recycler,
 			RepairStationPanel => Building.RepairStation,
-			SelectMissionPanel or MissionPanel or TournamentPanel => Building.Arena,
+			MissionPanel or TournamentPanel => Building.Arena,
 			ShopPanel shop => GetShopBuilding(shop.CurrentFaction),
 			_ => null,
 		};

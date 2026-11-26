@@ -47,6 +47,13 @@ public class MissionData : ScriptableEnum<MissionDataEnumID>
     [System.NonSerialized] private RewardSet m_fixedRewardSet;
     [System.NonSerialized] private bool m_hasTeamStrategy;
     [System.NonSerialized] private MatchStrategy m_teamStrategy;
+    [System.NonSerialized] private DayEventData m_nextDayEvent;
+    public DayEventData NextDayEvent => m_nextDayEvent;
+
+    public void SetNextDayEvent ( DayEventData _dayEvent )
+    {
+        m_nextDayEvent = _dayEvent;
+    }
 
     public void SetTeamStrategy ( MatchStrategy _strategy )
     {
@@ -169,15 +176,15 @@ public class MissionData : ScriptableEnum<MissionDataEnumID>
             set.creditAmounts.Add(RollCreditAmount());
 
         for (int i = 0; i < _template.mainComponentCount; i++)
-            AddRandomComponentTo(set, true);
+            AddRandomComponent(set, true);
 
         for (int i = 0; i < _template.secondaryComponentCount; i++)
-            AddRandomComponentTo(set, false);
+            AddRandomComponent(set, false);
 
         return set;
     }
 
-    private static void AddRandomComponentTo ( RewardSet _set, bool _isMain )
+    public static void AddRandomComponent ( RewardSet _set, bool _isMain )
     {
         List<EntityEquipmentData> pool = new();
         foreach (EntityEquipmentData data in GameAssets.current.GetRandomlyDroppableEquipments())
