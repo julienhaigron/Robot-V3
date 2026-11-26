@@ -13,9 +13,10 @@ MonoBehaviour:
   m_Name: TacticalScanner
   m_EditorClassIdentifier: RTD::AbilityStatus
   enumID: 15
-  durationType: 2
+  durationType: 0
   consumedBy: 2
   doesStackCharges: 0
+  isBoundAtPlanning: 0
   doesNeedRoll: 0
   description: The next shots use the shooter's best perception against the target's
     weakest camouflage.

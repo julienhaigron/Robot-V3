@@ -28,7 +28,8 @@ public enum ActionKeywordType
 	Unique,
 	NoAttack,
 	CurvedShot,
-	QuickDraw
+	QuickDraw,
+	SpecialAbility
 }
 
 public enum ActionKeywordFamily
@@ -56,6 +57,7 @@ public struct ActionKeyword
 	public int duration;
 	public AEntityStatus status;
 	public AItemData item;
+	public EntityActionData ability;
 	public List<AEntityPassiveEffect> bonuses;
 
 	public ActionKeywordFamily Family => type switch
@@ -63,7 +65,8 @@ public struct ActionKeyword
 		ActionKeywordType.AutoTarget or ActionKeywordType.MultiTarget or ActionKeywordType.MultiHit => ActionKeywordFamily.Target,
 		ActionKeywordType.Pulse or ActionKeywordType.Blast or ActionKeywordType.Ray or ActionKeywordType.Cone or ActionKeywordType.Arc
 			or ActionKeywordType.Chain or ActionKeywordType.Lingering => ActionKeywordFamily.Zone,
-		ActionKeywordType.Status or ActionKeywordType.Push or ActionKeywordType.Pull or ActionKeywordType.SelfDestruct => ActionKeywordFamily.Effect,
+		ActionKeywordType.Status or ActionKeywordType.Push or ActionKeywordType.Pull or ActionKeywordType.SelfDestruct
+			or ActionKeywordType.SpecialAbility => ActionKeywordFamily.Effect,
 		ActionKeywordType.Steady or ActionKeywordType.Hunt => ActionKeywordFamily.Condition,
 		ActionKeywordType.Unique or ActionKeywordType.NoAttack => ActionKeywordFamily.Limit,
 		_ => isUnit ? ActionKeywordFamily.Unit : ActionKeywordFamily.Mechanic
@@ -125,6 +128,7 @@ public struct ActionKeyword
 				case ActionKeywordType.CurvedShot: return localization.Get(LocalizationKey.keyword_curved_shot);
 				case ActionKeywordType.QuickDraw: return localization.Get(LocalizationKey.keyword_quick_draw);
 				case ActionKeywordType.Status: return status.GetLocalizedName();
+				case ActionKeywordType.SpecialAbility: return ability.GetLocalizedName();
 				default: return Label;
 			}
 		}
@@ -171,12 +175,22 @@ public struct ActionKeyword
 				case ActionKeywordType.NoAttack: return localization.Get(LocalizationKey.keyword_no_attack_desc);
 				case ActionKeywordType.CurvedShot: return localization.Get(LocalizationKey.keyword_curved_shot_desc);
 				case ActionKeywordType.QuickDraw: return string.Format(localization.Get(LocalizationKey.keyword_quick_draw_desc), value);
+				case ActionKeywordType.SpecialAbility: return ability.GetLocalizedDescription();
 				default: return "";
 			}
 		}
 	}
 
-	public string Note => type == ActionKeywordType.Status && !isSelf && !isRemoval ? LocalizationManager.Instance.Get(LocalizationKey.keyword_status_chance_note) : "";
+	public string Note => type switch
+	{
+		ActionKeywordType.Status when !isSelf && !isRemoval => LocalizationManager.Instance.Get(LocalizationKey.keyword_status_chance_note),
+		ActionKeywordType.SpecialAbility => LocalizationManager.Instance.Get(ability.abilityEffect == EntityActionData.SpecialAbilityEffect.Retreat
+			? LocalizationKey.keyword_special_ability_note_retreat : LocalizationKey.keyword_special_ability_note),
+		_ => ""
+	};
+
+	public string Tag => isUnit ? LocalizationManager.Instance.Get(LocalizationKey.tooltip_unit_tag)
+		: type == ActionKeywordType.SpecialAbility ? LocalizationManager.Instance.Get(LocalizationKey.keyword_special_ability) : "";
 
 	private EntityActionData.AOEType ConeType => isWide ? EntityActionData.AOEType.LargeCone : EntityActionData.AOEType.ThinCone;
 

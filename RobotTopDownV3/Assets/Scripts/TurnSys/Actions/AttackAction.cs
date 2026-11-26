@@ -445,7 +445,9 @@ public class AttackAction : AEntityAction
 		int maxTargetAmount = Data.GetMaxTargetAmount(this, PerformingEntity, null);
 		m_tilesInRange = null;
 
-		if (TurnManager.Instance.CurrentActionTargetTiles.Count % maxTargetAmount != 0)
+		if (TurnManager.Instance.IsRotationLockedFor(this))
+			m_tilesInRange = user.Equipment.GetTilesInWeaponRange(this, false, from, currentOrientation, true).ToHashSet();
+		else if (TurnManager.Instance.CurrentActionTargetTiles.Count % maxTargetAmount != 0)
 			m_tilesInRange = user.Equipment.GetTilesInWeaponRange(this, false, from, m_orientations.Count == 0 ? currentOrientation : m_orientations[^1], true).ToHashSet();
 		else
 		{
@@ -468,7 +470,7 @@ public class AttackAction : AEntityAction
 		Tile from = GridManager.Instance.Tiles[TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntityID)];
 		int currentOrientation = TurnManager.Instance.GetLastRegisteredOrientationOfEntity(performingEntityID);
 		int targetOrientation = GridManager.Instance.GetClosestOrientation(from, _tile);
-		if (currentOrientation == targetOrientation && m_orientations.Count == 0)
+		if ((currentOrientation == targetOrientation && m_orientations.Count == 0) || TurnManager.Instance.IsRotationLockedFor(this))
 		{
 			base.RegisterInteraction(_tile);
 			return;

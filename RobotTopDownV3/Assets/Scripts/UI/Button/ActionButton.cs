@@ -52,7 +52,8 @@ public class ActionButton : BaseButton, IPointerExitHandler
 		m_linkedEquipmentData = _linkedEquipmentData;
 		EntityActionData data = GameAssets.current.game.entityActionsData[_action];
 		m_icon.sprite = data.icon;
-		m_zone.SetId(gameObject.name + "_" + _action);
+		if (m_zone != null)
+			m_zone.SetId(gameObject.name + "_" + _action);
 		/*m_name.text = data.displayName;
 		m_tokenCost.text = data.GetTokenTotalCost(null, null, null).ToString();*/
 		m_isOnlyVisual = false;
@@ -137,7 +138,7 @@ public class ActionButton : BaseButton, IPointerExitHandler
 			m_invocationCountRoot.SetActive(_isVisible);
 	}
 
-	protected void RefreshVisual ()
+	protected virtual void RefreshVisual ()
 	{
 		RefreshInteractability();
 
@@ -181,12 +182,16 @@ public class ActionButton : BaseButton, IPointerExitHandler
 		if (m_isOnlyVisual)
 			return;
 
+		Activate();
+		base.OnClick();
+	}
+
+	protected virtual void Activate ()
+	{
 		Select();
 		SelectActionInTurnManager();
 		if (TurnManager.Instance.TryRegisterActionWithoutTarget())
 			DisplayRangePreview(GameAssets.current.game.entityActionsData[m_actionType]);
-
-		base.OnClick();
 	}
 
 	protected virtual void SelectActionInTurnManager ()
@@ -219,8 +224,8 @@ public class ActionButton : BaseButton, IPointerExitHandler
 		base.OnPointerEnter(eventData);
 
 		EntityActionData data = GameAssets.current.game.entityActionsData[m_actionType];
-		ActionTooltipContent content = new(data, TooltipUnit);
-		ToolTipManager.Instance.ShowAction(content, gameObject, m_isOnlyVisual ? null : content.Hint);
+		ActionTooltipContent content = new(data, TooltipUnit, m_isOnlyVisual ? null : TooltipAbility);
+		ToolTipManager.Instance.ShowAction(content, gameObject, m_isOnlyVisual ? null : GetTooltipHint(content));
 
 		if (PlayerController.Instance != null)
 		{
@@ -250,9 +255,16 @@ public class ActionButton : BaseButton, IPointerExitHandler
 	private EntitySavedData TooltipUnit => m_isOnlyVisual ? m_unitData
 		: PlayerController.Instance != null && PlayerController.Instance.SelectedEntity != null ? PlayerController.Instance.SelectedEntity.Data : null;
 
+	protected virtual SpecialAbilityState TooltipAbility => null;
+
+	protected virtual string GetTooltipHint ( ActionTooltipContent _content )
+	{
+		return _content.Hint;
+	}
+
 	private void DisplayRangePreview ( EntityActionData _data )
 	{
-		if (m_isOnlyVisual || PlayerController.Instance == null || PlayerController.Instance.SelectedEntity == null)
+		if (m_isOnlyVisual || _data.IsSpecialAbility || PlayerController.Instance == null || PlayerController.Instance.SelectedEntity == null)
 			return;
 
 		Entity entity = PlayerController.Instance.SelectedEntity;

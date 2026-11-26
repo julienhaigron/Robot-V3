@@ -71,16 +71,16 @@ public class EntityActionDisplay :
 	private void OnEnable ()
 	{
 		TurnManager.onDesignatedTargetsChanged += OnDesignatedTargetsChanged;
-		TurnManager.onFacingOrdersChanged += OnFacingOrdersChanged;
+		TurnManager.onActionModChanged += OnActionModChanged;
 	}
 
 	private void OnDisable ()
 	{
 		TurnManager.onDesignatedTargetsChanged -= OnDesignatedTargetsChanged;
-		TurnManager.onFacingOrdersChanged -= OnFacingOrdersChanged;
+		TurnManager.onActionModChanged -= OnActionModChanged;
 	}
 
-	private void OnFacingOrdersChanged ( TurnManager.RecordedAction _host )
+	private void OnActionModChanged ( TurnManager.RecordedAction _host )
 	{
 		if (m_recordedAction != null && m_recordedAction == _host)
 			Init(m_recordedAction, m_isLeftAngleRectangle);
@@ -115,7 +115,7 @@ public class EntityActionDisplay :
 			return;
 
 		bool clickedModAction = eventData.pointerPressRaycast.gameObject == m_modActionIconImg.gameObject;
-		bool selectModAction = clickedModAction && GetDisplayedFreeAction() != null;
+		bool selectModAction = clickedModAction && GetDisplayedFreeAction() != null && GetDisplayedFreeAction() is not SpecialAbilityAction;
 
 		if (clickedModAction && IsLockedFacing())
 			return;
@@ -124,6 +124,12 @@ public class EntityActionDisplay :
 		{
 			if (clickedModAction && GetDisplayedFreeAction() is RotateEntityAction)
 				TurnManager.Instance.RemoveFacingOrderOf(m_recordedAction);
+			else if (clickedModAction && GetDisplayedFreeAction() is SpecialAbilityAction)
+			{
+				m_recordedAction.freeAction = null;
+				m_recordedAction.freeActionType = EntityActionEnumID.Wait;
+				TurnManager.Instance.OnSpecialAbilityPlanChanged(m_recordedAction.action.PerformingEntity, m_recordedAction);
+			}
 			else if (clickedModAction)
 			{
 				m_recordedAction.freeAction = null;
@@ -353,9 +359,12 @@ public class EntityActionDisplay :
 	private string GetTooltipNotes ()
 	{
 		AEntityAction action = m_recordedAction.action;
-		string notes = GetDisplayedFreeAction() is RotateEntityAction rotation
-			? LocalizationManager.Instance.Get(rotation.isFacingOrder ? LocalizationKey.action_desc_facing_order : LocalizationKey.action_desc_facing_locked)
-			: null;
+		string notes = GetDisplayedFreeAction() switch
+		{
+			RotateEntityAction rotation => LocalizationManager.Instance.Get(rotation.isFacingOrder ? LocalizationKey.action_desc_facing_order : LocalizationKey.action_desc_facing_locked),
+			SpecialAbilityAction ability => string.Format(LocalizationManager.Instance.Get(LocalizationKey.action_desc_special_ability), ability.Data.GetLocalizedName()),
+			_ => null
+		};
 
 		if (!TurnManager.CanDesignateTargetsOf(action) || !action.HasDesignatedTargets)
 			return notes;

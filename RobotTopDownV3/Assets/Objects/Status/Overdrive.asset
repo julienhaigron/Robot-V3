@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Overdrive
   m_EditorClassIdentifier: RTD::OverdriveStatus
   enumID: 16
-  durationType: 2
+  durationType: 0
   consumedBy: 3
   doesStackCharges: 0
   isBoundAtPlanning: 1

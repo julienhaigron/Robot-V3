@@ -59,5 +59,17 @@ public enum EntityActionEnumID
 	RotateToEntity,
 	Set_Cable,
 	SwapWithIllusion,
+	Ability_IllusoryClone,
+	Ability_Intangibility,
+	Ability_Retreat,
+	Ability_Anchoring,
+	Ability_Echo,
+	Ability_Sabotage,
+	Ability_Assault,
+	Ability_Riposte,
+	Ability_Rebound,
+	Ability_Erosion,
+	Ability_TacticalScanner,
+	Ability_Overdrive,
 	//#END#ENTITYACTIONENUMID#//
 }

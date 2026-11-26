@@ -13,9 +13,10 @@ MonoBehaviour:
   m_Name: Rebound
   m_EditorClassIdentifier: RTD::AbilityStatus
   enumID: 13
-  durationType: 2
+  durationType: 0
   consumedBy: 2
   doesStackCharges: 0
+  isBoundAtPlanning: 0
   doesNeedRoll: 0
   description: The next shots bounce to a random enemy within the weapon's range.
   icon: {fileID: 0}

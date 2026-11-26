@@ -13,9 +13,10 @@ MonoBehaviour:
   m_Name: Erosion
   m_EditorClassIdentifier: RTD::ErosionStatus
   enumID: 14
-  durationType: 2
+  durationType: 0
   consumedBy: 2
   doesStackCharges: 0
+  isBoundAtPlanning: 0
   doesNeedRoll: 0
   description: The next shots lower the target's resistance to their elements by
     10% until the end of the round.

@@ -10,6 +10,7 @@ public class SquadUnitFullMicroDisplay : MonoBehaviour
 	[SerializeField] private TextMeshProUGUI m_mainFactionPercentageTMP;
 	[SerializeField] private StatusDisplay[] m_statusDisplays;
 	[SerializeField] private UnitStatBlock m_statBlock;
+	[SerializeField] private SpecialAbilityGaugeView m_abilityView;
 
 	private void Awake ()
 	{
@@ -58,7 +59,9 @@ public class SquadUnitFullMicroDisplay : MonoBehaviour
 		m_mainFactionPercentageTMP.text = (percentage*100f).ToString() + "%" ;
 		m_mainFactionIconImg.sprite = GameAssets.current.ui.corporationsIcons[mainFaction];
 
-		m_statBlock.Init(entity.Data, AreStatsVisibleOn(entity));
+		bool areStatsVisible = AreStatsVisibleOn(entity);
+		m_statBlock.Init(entity.Data, areStatsVisible);
+		m_abilityView.Bind(entity, areStatsVisible);
 
 		for (int i = 0; i < m_statusDisplays.Length; i++)
 		{

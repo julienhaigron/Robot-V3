@@ -3504,16 +3504,19 @@ MonoBehaviour:
     - "\xC9cho"
   - key: status/echo_desc
     values:
-    - "The damage of the next melee actions is dealt again one tick later."
-    - "Les d\xE9g\xE2ts des prochaines actions de m\xEAl\xE9e sont r\xE9appliqu\xE9s un tick plus tard."
+    - The damage of the melee actions started while active is dealt again one tick
+      later.
+    - "Les d\xE9g\xE2ts des actions de m\xEAl\xE9e lanc\xE9es pendant l'effet sont
+      r\xE9appliqu\xE9s un tick plus tard."
   - key: status/sabotage
     values:
     - "Sabotage"
     - "Sabotage"
   - key: status/sabotage_desc
     values:
-    - "The next melee actions inflict a Sabotaged charge."
-    - "Les prochaines actions de m\xEAl\xE9e infligent une charge de Sabot\xE9."
+    - The melee actions started while active inflict a Sabotaged charge.
+    - "Les actions de m\xEAl\xE9e lanc\xE9es pendant l'effet infligent une charge
+      de Sabot\xE9."
   - key: status/sabotaged
     values:
     - "Sabotaged"
@@ -3528,8 +3531,10 @@ MonoBehaviour:
     - "Assaut"
   - key: status/assault_desc
     values:
-    - "The next melee actions deal +10% damage per tile traveled this round."
-    - "Les prochaines actions de m\xEAl\xE9e infligent +10 % de d\xE9g\xE2ts par case parcourue ce tour."
+    - The melee actions started while active deal +10% damage per tile traveled this
+      round.
+    - "Les actions de m\xEAl\xE9e lanc\xE9es pendant l'effet infligent +10\_% de
+      d\xE9g\xE2ts par case parcourue ce round."
   - key: status/riposte
     values:
     - "Riposte"
@@ -3544,32 +3549,38 @@ MonoBehaviour:
     - "Rebond"
   - key: status/rebound_desc
     values:
-    - "The next shots bounce to a random enemy within the weapon's range."
-    - "Les prochains tirs rebondissent sur un ennemi al\xE9atoire \xE0 port\xE9e de l'arme."
+    - The shots started while active bounce to a random enemy within the weapon's
+      range.
+    - "Les tirs lanc\xE9s pendant l'effet rebondissent sur un ennemi al\xE9atoire
+      \xE0 port\xE9e de l'arme."
   - key: status/erosion
     values:
     - "Erosion"
     - "\xC9rosion"
   - key: status/erosion_desc
     values:
-    - "The next shots lower the target's resistance to their elements by 10% until the end of the round."
-    - "Les prochains tirs r\xE9duisent de 10 % la r\xE9sistance de la cible \xE0 leurs \xE9l\xE9ments jusqu'\xE0 la fin du tour."
+    - The shots started while active lower the target's resistance to their elements
+      by 10% until the end of the round.
+    - "Les tirs lanc\xE9s pendant l'effet r\xE9duisent de 10\_% la r\xE9sistance
+      de la cible \xE0 leurs \xE9l\xE9ments jusqu'\xE0 la fin du round."
   - key: status/tacticalscanner
     values:
     - "Tactical scanner"
     - "Scanner tactique"
   - key: status/tacticalscanner_desc
     values:
-    - "The next shots use the shooter's best perception against the target's weakest camouflage."
-    - "Les prochains tirs opposent la meilleure perception du tireur au camouflage le plus faible de la cible."
+    - The shots started while active use the shooter's best perception against the
+      target's weakest camouflage.
+    - "Les tirs lanc\xE9s pendant l'effet opposent la meilleure perception du tireur
+      au camouflage le plus faible de la cible."
   - key: status/overdrive
     values:
     - "Overdrive"
     - "Surr\xE9gime"
   - key: status/overdrive_desc
     values:
-    - "The next multi-target shots gain +2 targets."
-    - "Les prochains tirs multicibles gagnent +2 cibles."
+    - The multi-target shots started while active gain +2 targets.
+    - "Les tirs multicibles lanc\xE9s pendant l'effet gagnent +2 cibles."
   - key: status/intangible
     values:
     - "Intangible"
@@ -3606,3 +3617,159 @@ MonoBehaviour:
     values:
     - "BLUEPRINTS ({0})"
     - "BLUEPRINTS ({0})"
+
+  - key: tooltip/ability_charges
+    values:
+    - Charges
+    - Charges
+  - key: tooltip/ability_recharge
+    values:
+    - Recharge
+    - Recharge
+  - key: tooltip/ability_charges_max
+    values:
+    - '{0} max'
+    - '{0} max'
+  - key: tooltip/ability_recharge_value
+    values:
+    - '{0} / {1} ticks'
+    - '{0} / {1} ticks'
+  - key: tooltip/ability_ratio_value
+    values:
+    - '{0} ticks per charge'
+    - '{0} ticks par charge'
+  - key: tooltip/ability_carrier
+    values:
+    - On an action
+    - Sur une action
+  - key: tooltip/ability_ready
+    values:
+    - 'Click: place it on the next {0} action.'
+    - "Clic\_: la poser sur la prochaine action de {0}."
+  - key: tooltip/ability_attach
+    values:
+    - 'Click: place it on the selected action.'
+    - "Clic\_: la poser sur l'action s\xE9lectionn\xE9e."
+  - key: tooltip/ability_detach
+    values:
+    - 'Click: remove it from this action.'
+    - "Clic\_: la retirer de cette action."
+  - key: tooltip/ability_pending
+    values:
+    - Placed on the next {0} action. Click to cancel.
+    - "Pos\xE9e sur la prochaine action de {0}. Clic\_: annuler."
+  - key: tooltip/ability_planned
+    values:
+    - Already planned this round.
+    - "D\xE9j\xE0 planifi\xE9e ce round."
+  - key: tooltip/ability_rotation
+    values:
+    - This action carries a rotation.
+    - Cette action porte une rotation.
+  - key: tooltip/ability_wrong_action
+    values:
+    - Only on a {0} action.
+    - Seulement sur une action de {0}.
+  - key: tooltip/ability_no_tick
+    values:
+    - No tick left this round.
+    - Plus de tick libre ce round.
+  - key: tooltip/ability_active
+    values:
+    - Already active.
+    - "D\xE9j\xE0 active."
+  - key: tooltip/ability_no_charge
+    values:
+    - No charge yet.
+    - Pas encore de charge.
+  - key: keyword/special_ability
+    values:
+    - Special ability
+    - "Capacit\xE9 sp\xE9ciale"
+  - key: keyword/special_ability_note
+    values:
+    - 'All charges are spent: 1 charge = 1 tick of effect.'
+    - "Toutes les charges partent\_: 1 charge = 1 tick d'effet."
+  - key: keyword/special_ability_note_retreat
+    values:
+    - 'All charges are spent: 1 charge = 1 tick back.'
+    - "Toutes les charges partent\_: 1 charge = 1 tick en arri\xE8re."
+  - key: log/ability_activated
+    values:
+    - '{0} activates {1} ({2})'
+    - '{0} active {1} ({2})'
+  - key: log/ability_not_activated
+    values:
+    - '{0}: {1} is not activated'
+    - "{0}\_: {1} n'est pas activ\xE9e"
+  - key: action_desc/special_ability
+    values:
+    - 'Special ability: {0}'
+    - "Capacit\xE9 sp\xE9ciale\_: {0}"
+  - key: action/ability_illusoryclone
+    values:
+    - Illusory Clone
+    - Clone illusoire
+  - key: action/ability_intangibility
+    values:
+    - Intangibility
+    - "Intangibilit\xE9"
+  - key: action/ability_retreat
+    values:
+    - Retreat
+    - Retraite
+  - key: action/ability_anchoring
+    values:
+    - Anchoring
+    - Ancrage
+  - key: action/ability_echo
+    values:
+    - Echo
+    - "\xC9cho"
+  - key: action/ability_sabotage
+    values:
+    - Sabotage
+    - Sabotage
+  - key: action/ability_assault
+    values:
+    - Assault
+    - Assaut
+  - key: action/ability_riposte
+    values:
+    - Riposte
+    - Riposte
+  - key: action/ability_rebound
+    values:
+    - Rebound
+    - Rebond
+  - key: action/ability_erosion
+    values:
+    - Erosion
+    - "\xC9rosion"
+  - key: action/ability_tacticalscanner
+    values:
+    - Tactical Scanner
+    - Scanner tactique
+  - key: action/ability_overdrive
+    values:
+    - Overdrive
+    - "Surr\xE9gime"
+  - key: action/ability_illusoryclone_desc
+    values:
+    - Leaves an illusion of the unit on the tile it leaves, for as many ticks as
+      charges spent. The illusion can move but not attack; the unit can swap places
+      with it.
+    - "Laisse une illusion de l'unit\xE9 sur la case qu'elle quitte, autant de ticks
+      que de charges d\xE9pens\xE9es. L'illusion peut se d\xE9placer mais pas attaquer\_;
+      l'unit\xE9 peut \xE9changer sa place avec elle."
+  - key: action/ability_retreat_desc
+    values:
+    - The unit goes back to the tile it held as many ticks earlier as charges spent,
+      then its movement continues from there.
+    - "L'unit\xE9 retourne sur la case qu'elle occupait autant de ticks plus t\xF4t
+      que de charges d\xE9pens\xE9es, puis son d\xE9placement repart de l\xE0."
+
+  - key: log/ability_back
+    values:
+    - back
+    - "en arri\xE8re"

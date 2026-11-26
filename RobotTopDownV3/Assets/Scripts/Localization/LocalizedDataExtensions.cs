@@ -11,6 +11,14 @@ public static class LocalizedDataExtensions
 		return _data == null ? "" : LocalizationManager.Instance.Get(KeyOf(_data, "action"), _data.displayName);
 	}
 
+	public static string GetLocalizedDescription ( this EntityActionData _data )
+	{
+		if (_data != null && _data.IsSpecialAbility && _data.abilityEffect == EntityActionData.SpecialAbilityEffect.Status)
+			return GameAssets.current.game.entityStatus[_data.abilityStatus].GetLocalizedDescription();
+
+		return _data == null ? "" : LocalizationManager.Instance.Get(KeyOf(_data, "action") + "_desc", "");
+	}
+
 	public static string GetLocalizedName ( this EntityEquipmentData _data )
 	{
 		return _data == null ? "" : LocalizationManager.Instance.Get(KeyOf(_data, "component"), _data.displayName);

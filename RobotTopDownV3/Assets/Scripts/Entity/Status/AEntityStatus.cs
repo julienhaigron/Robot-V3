@@ -10,9 +10,9 @@ public abstract class AEntityStatus : ScriptableEnum<EntityStatusEnumID>
     public enum ChargeConsumer { None, MeleeAttack, Shot, MultiTargetShot, Movement }
 
     public DurationType durationType = DurationType.Tick;
-    [ShowIf(nameof(durationType), DurationType.Charges)] public ChargeConsumer consumedBy = ChargeConsumer.None;
+    [ShowIf("@durationType != DurationType.Round")] public ChargeConsumer consumedBy = ChargeConsumer.None;
     [ShowIf(nameof(durationType), DurationType.Charges)] public bool doesStackCharges = false;
-    [ShowIf(nameof(durationType), DurationType.Charges)] public bool isBoundAtPlanning = false;
+    [ShowIf("@consumedBy != ChargeConsumer.None")] public bool isBoundAtPlanning = false;
     public bool doesNeedRoll = false;
     [TextArea(2, 6)] public string description;
 
@@ -37,7 +37,12 @@ public abstract class AEntityStatus : ScriptableEnum<EntityStatusEnumID>
 
     public bool IsConsumedBy ( AEntityAction _action )
     {
-        if (durationType != DurationType.Charges || _action == null || _action.Data == null || _action.Data.isModAction)
+        return durationType == DurationType.Charges && Boosts(_action);
+    }
+
+    public bool Boosts ( AEntityAction _action )
+    {
+        if (consumedBy == ChargeConsumer.None || durationType == DurationType.Round || _action == null || _action.Data == null || _action.Data.isModAction)
             return false;
 
         EntityActionData data = _action.Data;

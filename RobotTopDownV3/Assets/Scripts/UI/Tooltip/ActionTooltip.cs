@@ -193,7 +193,12 @@ public class ActionTooltip : TooltipCard
 	private void BindStats ( ActionTooltipContent _content )
 	{
 		int index = 0;
-		if (_content.HasSpeed)
+		if (_content.IsSpecialAbility)
+		{
+			SetStat(index++, LocalizationKey.tooltip_ability_charges, _content.AbilityChargesValue);
+			SetStat(index++, LocalizationKey.tooltip_ability_recharge, _content.AbilityRechargeValue);
+		}
+		else if (_content.HasSpeed)
 			SetStat(index++, LocalizationKey.tooltip_speed, _content.SpeedValue);
 		else if (_content.HasRange)
 			SetStat(index++, LocalizationKey.tooltip_range, _content.RangeValue
@@ -290,8 +295,7 @@ public class ActionTooltip : TooltipCard
 				continue;
 			}
 
-			string tag = keyword.isUnit ? LocalizationManager.Instance.Get(LocalizationKey.tooltip_unit_tag) : "";
-			m_boxes[count++].Show(IconOf(keyword), ColorOf(keyword), keyword.Title, tag, keyword.Text, keyword.Note, keyword.HasZone ? keyword : (ActionKeyword?)null);
+			m_boxes[count++].Show(IconOf(keyword), ColorOf(keyword), keyword.Title, keyword.Tag, keyword.Text, keyword.Note, keyword.HasZone ? keyword : (ActionKeyword?)null);
 		}
 
 		for (int i = count; i < m_boxes.Length; i++)
@@ -357,6 +361,8 @@ public class ActionTooltip : TooltipCard
 	{
 		if (_keyword.type == ActionKeywordType.Status && _keyword.status != null && _keyword.status.icon != null)
 			return _keyword.status.icon;
+		if (_keyword.type == ActionKeywordType.SpecialAbility && _keyword.ability != null && _keyword.ability.icon != null)
+			return _keyword.ability.icon;
 		return Icon(_keyword.type.ToString());
 	}
 

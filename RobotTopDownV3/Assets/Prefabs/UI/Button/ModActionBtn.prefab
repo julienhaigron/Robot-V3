@@ -182,6 +182,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 6984857244575012449}
   - {fileID: 9217389030187913504}
   - {fileID: 5330609966715860883}
   m_Father: {fileID: 0}
@@ -211,6 +212,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2843eb9e86508164aab6b7661f6b9894, type: 3}
   m_Name: 
   m_EditorClassIdentifier: RTD::ModActionButton
+  m_label: {fileID: 0}
   m_button: {fileID: 8316944323044440879}
   m_image: {fileID: 6720206594890336095}
   m_useDefaultSfx: 1
@@ -218,6 +220,15 @@ MonoBehaviour:
   m_hoverSfxOverride: 0
   m_icon: {fileID: 8788899401807284414}
   m_selectionOutline: {fileID: 7200035795850294257}
+  m_zone: {fileID: 0}
+  m_invocationCountRoot: {fileID: 0}
+  m_invocationCountTMP: {fileID: 0}
+  m_invocationCountColor: {r: 1, g: 1, b: 1, a: 1}
+  m_invocationPlannedColor: {r: 0.45, g: 0.82, b: 1, a: 1}
+  m_invocationFullColor: {r: 1, g: 0.42, b: 0.35, a: 1}
+  m_chargeRing: {fileID: 3634454592324576003}
+  m_fullPulseAlpha: 0.4
+  m_fullPulseDuration: 0.8
 --- !u!114 &6720206594890336095
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -292,3 +303,75 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!1 &1360445060609939551
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6984857244575012449}
+  - component: {fileID: 999804173183819930}
+  - component: {fileID: 3634454592324576003}
+  m_Layer: 5
+  m_Name: ChargeRing
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!224 &6984857244575012449
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1360445060609939551}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1261786944420087736}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 48, y: 48}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!222 &999804173183819930
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1360445060609939551}
+  m_CullTransparentMesh: 1
+--- !u!114 &3634454592324576003
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1360445060609939551}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f568e5479f1a749409eeea7f20493b3d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: RTD::ChargeGaugeGraphic
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 0
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_shape: 0
+  m_thickness: 3.5
+  m_gap: 2.5
+  m_emptyColor: {r: 0.17, g: 0.19, b: 0.31, a: 1}
+  m_chargeColor: {r: 0.91, g: 0.7, b: 0.23, a: 1}
+  m_partialColor: {r: 0.48, g: 0.37, b: 0.13, a: 1}
+  m_activeColor: {r: 0.18, g: 0.9, b: 1, a: 1}

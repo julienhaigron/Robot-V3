@@ -22,11 +22,17 @@ public class TurnManager : Singleton<TurnManager>
 	public static Action onEndLevel;
 	public static Action onActionTargetsChanged;
 	public static Action<AEntityAction> onDesignatedTargetsChanged;
-	public static Action<RecordedAction> onFacingOrdersChanged;
+	public static Action<RecordedAction> onActionModChanged;
+	public static Action onSpecialAbilityPlanChanged;
 	
 	public static int currentTick = 0;
 	public bool IsLastTickOfRound => currentTick >= GameConfig.current.game.actionTokenPerRound - 1;
 	public int RemainingTicksInRound => Mathf.Max(1, GameConfig.current.game.actionTokenPerRound - currentTick);
+
+	public int AbsoluteTick ( int _tick )
+	{
+		return Mathf.Max(0, m_roundCount - 1) * GameConfig.current.game.actionTokenPerRound + _tick;
+	}
 #if UNITY_EDITOR
 	public static bool isMatchEndDisabled;
 #endif
@@ -461,11 +467,215 @@ public class TurnManager : Singleton<TurnManager>
 			RefreshActionDisplay(performingEntityID, false);
 	}
 
-	private int GetNextActionStartTime ( int _entityID )
+	public int GetNextActionStartTime ( int _entityID )
 	{
 		RecordedAction lastRecordedAction = GetLastRecordedAction(_entityID);
 		return lastRecordedAction == null ? currentTick : lastRecordedAction.action.TimeAtEnd;
 	}
+
+	#region Special abilities planning
+
+	public bool IsSpecialAbilityPending ( int _entityID )
+	{
+		return m_currentEntityModAction is SpecialAbilityAction && m_currentEntityModAction.performingEntityID == _entityID;
+	}
+
+	public bool TryGetSpecialAbilityHost ( int _entityID, out RecordedAction _host )
+	{
+		_host = null;
+		if (!m_recordedActionInput.TryGetValue(_entityID, out Queue<RecordedAction> queue) || queue == null)
+			return false;
+
+		foreach (RecordedAction recordedAction in queue)
+		{
+			if (recordedAction.freeAction is SpecialAbilityAction)
+			{
+				_host = recordedAction;
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	public int PredictSpecialAbilityCharges ( Entity _entity, int _tick )
+	{
+		m_recordedActionInput.TryGetValue(_entity.ID, out Queue<RecordedAction> queue);
+		return _entity.SpecialAbility == null ? 0 : _entity.SpecialAbility.PredictChargesAt(queue, _tick, AbsoluteTick);
+	}
+
+	public bool IsStatusPlannedAt ( Entity _entity, EntityStatusEnumID _statusID, int _tick )
+	{
+		int remaining = _entity.Status.Contains(_statusID) ? _entity.GetRemainingStatusDuration(_statusID) : 0;
+		if (currentPhase != TurnPhase.Recording)
+			return remaining > 0;
+		if (_tick < remaining)
+			return true;
+
+		SpecialAbilityState ability = _entity.SpecialAbility;
+		if (ability == null || ability.data.abilityEffect != EntityActionData.SpecialAbilityEffect.Status || ability.data.abilityStatus != _statusID)
+			return false;
+
+		int activationTick = TryGetSpecialAbilityHost(_entity.ID, out RecordedAction host) ? host.action.timeAtStart
+			: IsSpecialAbilityPending(_entity.ID) ? GetNextActionStartTime(_entity.ID) : -1;
+		return activationTick >= 0 && _tick >= activationTick && _tick < activationTick + PredictSpecialAbilityCharges(_entity, activationTick);
+	}
+
+	public bool IsRotationLockedFor ( AEntityAction _action )
+	{
+		if (EntityActionDisplay.SelectedDisplay != null)
+			return EntityActionDisplay.SelectedDisplay.RecordedAction.action == _action && EntityActionDisplay.SelectedDisplay.RecordedAction.freeAction is SpecialAbilityAction;
+
+		return m_currentEntityModAction is SpecialAbilityAction ability && ability.performingEntityID == _action.performingEntityID
+			&& _action.Data.CanCarrySpecialAbility(ability.Data);
+	}
+
+	public int GetPlannedMoveStart ( AEntityAction _move )
+	{
+		int lastPosition = GetLastRegisteredPositionOfEntity(_move.performingEntityID);
+		if (EntityActionDisplay.SelectedDisplay != null || m_currentEntityModAction is not SpecialAbilityAction { IsRetreat: true } retreat
+			|| retreat.performingEntityID != _move.performingEntityID || !_move.Data.CanCarrySpecialAbility(retreat.Data))
+			return lastPosition;
+
+		Entity entity = _move.PerformingEntity;
+		int startTick = GetNextActionStartTime(entity.ID);
+		int charges = PredictSpecialAbilityCharges(entity, startTick);
+		if (charges <= 0)
+			return lastPosition;
+
+		Tile destination = GridManager.Instance.GetNearestFreeTile(GridManager.Instance.Tiles[GetPlannedTileAtTickStart(entity, AbsoluteTick(startTick) - charges)], entity);
+		return destination != null ? destination.coordinates.ID : lastPosition;
+	}
+
+	private int GetPlannedTileAtTickStart ( Entity _entity, int _absoluteTick )
+	{
+		if (_absoluteTick < AbsoluteTick(0))
+			return _entity.GetTileAtTickStart(_absoluteTick);
+
+		int tileID = _entity.Displacement.Coordinates.ID;
+		if (m_recordedActionInput.TryGetValue(_entity.ID, out Queue<RecordedAction> queue) && queue != null)
+		{
+			foreach (RecordedAction recordedAction in queue)
+			{
+				if (AbsoluteTick(recordedAction.action.TimeAtEnd) > _absoluteTick)
+					break;
+
+				tileID = recordedAction.action.positionAtActionEndID;
+			}
+		}
+
+		return tileID;
+	}
+
+	public bool CanPlanSpecialAbility ( Entity _entity, out LocalizationKey _reason )
+	{
+		_reason = LocalizationKey.tooltip_ability_ready;
+		SpecialAbilityState ability = _entity == null ? null : _entity.SpecialAbility;
+		if (ability == null || currentPhase != TurnPhase.Recording)
+			return false;
+
+		RecordedAction host = GetSelectedHostOf(_entity.ID);
+		if (TryGetSpecialAbilityHost(_entity.ID, out RecordedAction plannedHost) && plannedHost != host)
+		{
+			_reason = LocalizationKey.tooltip_ability_planned;
+			return false;
+		}
+
+		if (host != null && host.freeAction is SpecialAbilityAction)
+		{
+			_reason = LocalizationKey.tooltip_ability_detach;
+			return true;
+		}
+
+		if (host == null && IsSpecialAbilityPending(_entity.ID))
+		{
+			_reason = LocalizationKey.tooltip_ability_pending;
+			return true;
+		}
+
+		if (host != null && (!host.action.Data.CanCarrySpecialAbility(ability.data) || host.HasFreeAction))
+		{
+			_reason = host.HasFreeAction ? LocalizationKey.tooltip_ability_rotation : LocalizationKey.tooltip_ability_wrong_action;
+			return false;
+		}
+
+		if (host == null && (!m_remainingActionToken.TryGetValue(_entity.ID, out int remainingTokens) || remainingTokens <= 0))
+		{
+			_reason = LocalizationKey.tooltip_ability_no_tick;
+			return false;
+		}
+
+		int startTick = host != null ? host.action.timeAtStart : GetNextActionStartTime(_entity.ID);
+		if (ability.IsActiveAt(AbsoluteTick(startTick)))
+		{
+			_reason = LocalizationKey.tooltip_ability_active;
+			return false;
+		}
+
+		if (PredictSpecialAbilityCharges(_entity, startTick) <= 0)
+		{
+			_reason = LocalizationKey.tooltip_ability_no_charge;
+			return false;
+		}
+
+		_reason = host != null ? LocalizationKey.tooltip_ability_attach : LocalizationKey.tooltip_ability_ready;
+		return true;
+	}
+
+	public void ToggleSpecialAbility ( Entity _entity )
+	{
+		if (!CanPlanSpecialAbility(_entity, out _))
+			return;
+
+		RecordedAction host = GetSelectedHostOf(_entity.ID);
+		if (host != null)
+		{
+			if (host.freeAction is SpecialAbilityAction)
+			{
+				host.freeAction = null;
+				host.freeActionType = EntityActionEnumID.Wait;
+			}
+			else
+			{
+				host.AddActionMod(GetAction(_entity.SpecialAbility.data, _entity.ID, _entity.SpecialAbility.componentID, host.action.timeAtStart));
+				if (IsSpecialAbilityPending(_entity.ID))
+					m_currentEntityModAction = null;
+			}
+
+			OnSpecialAbilityPlanChanged(_entity, host);
+			return;
+		}
+
+		m_currentEntityModAction = IsSpecialAbilityPending(_entity.ID)
+			? null : GetAction(_entity.SpecialAbility.data, _entity.ID, _entity.SpecialAbility.componentID, GetNextActionStartTime(_entity.ID));
+		OnSpecialAbilityPlanChanged(_entity, null);
+	}
+
+	public void OnSpecialAbilityPlanChanged ( Entity _entity, RecordedAction _host )
+	{
+		if (m_recordedActionInput.TryGetValue(_entity.ID, out Queue<RecordedAction> queue) && queue != null)
+		{
+			foreach (RecordedAction recordedAction in queue)
+				_entity.RefreshPlannedAbilityStatus(recordedAction.action);
+		}
+
+		if (_host != null)
+		{
+			onActionModChanged?.Invoke(_host);
+			onActionTargetsChanged?.Invoke();
+		}
+
+		onSpecialAbilityPlanChanged?.Invoke();
+		RefreshActionDisplay(_entity.ID, _host == null, _host != null ? _host.action.TimeAtEnd : -1);
+	}
+
+	private static RecordedAction GetSelectedHostOf ( int _entityID )
+	{
+		return EntityActionDisplay.SelectedDisplay != null && EntityActionDisplay.SelectedDisplay.RecordedAction.performingEntityID == _entityID
+			? EntityActionDisplay.SelectedDisplay.RecordedAction : null;
+	}
+
+	#endregion
 
 	public void AddTargetTileInCurrentAction ( Tile _tile, AEntityAction _action = null )
 	{
@@ -950,7 +1160,7 @@ public class TurnManager : Singleton<TurnManager>
 		{
 			host.AddActionMod(facingOrder);
 			onActionTargetsChanged?.Invoke();
-			onFacingOrdersChanged?.Invoke(host);
+			onActionModChanged?.Invoke(host);
 		}
 		else
 			RegisterActionAndMod(picker.entityID, GetAction(EntityActionEnumID.Wait, picker.entityID, null, timeAtStart), facingOrder, GetDefaultStateOf(picker.entityID));
@@ -971,7 +1181,7 @@ public class TurnManager : Singleton<TurnManager>
 		_host.freeActionType = EntityActionEnumID.Wait;
 
 		onActionTargetsChanged?.Invoke();
-		onFacingOrdersChanged?.Invoke(_host);
+		onActionModChanged?.Invoke(_host);
 		RefreshActionDisplay(_host.action.performingEntityID, false);
 	}
 
@@ -1169,6 +1379,9 @@ public class TurnManager : Singleton<TurnManager>
 			case EntityActionData.ActionCodeType.SwapWithIllusion:
 				action = new SwapWithIllusionAction();
 				break;
+			case EntityActionData.ActionCodeType.SpecialAbility:
+				action = new SpecialAbilityAction();
+				break;
 			default:
 				Debug.LogError("Missing entree in TurnManager.GetAction for type \"" + _actionData.codeType + "\"");
 				return action;
@@ -1230,8 +1443,12 @@ public class TurnManager : Singleton<TurnManager>
 			WriteCurrentTargetTilesInto(_action);
 		m_currentActionTargetTiles.Clear();
 
-		RecordedAction recordedAction = new(_action, _state, _modAction);
-		m_currentEntityModAction = null;
+		AEntityAction modAction = _modAction is SpecialAbilityAction && !_action.Data.CanCarrySpecialAbility(_modAction.Data) ? null : _modAction;
+		RecordedAction recordedAction = new(_action, _state);
+		if (modAction != null)
+			recordedAction.AddActionMod(modAction);
+		if (modAction == m_currentEntityModAction || m_currentEntityModAction is not SpecialAbilityAction)
+			m_currentEntityModAction = null;
 
 		m_recordedActionInput[_entityID].Enqueue(recordedAction);
 		m_remainingActionToken[_entityID] -= _action.TotalDuration;
@@ -1522,6 +1739,7 @@ public class TurnManager : Singleton<TurnManager>
 	{
 		EndDesignationWindow();
 		CloseFacingPicker(false);
+		m_currentEntityModAction = null;
 		currentPhase = TurnPhase.Calculating;
 
 		//A half picked action leaves its tiles here, and the next AddAction takes them for its own - which
@@ -1604,6 +1822,9 @@ public class TurnManager : Singleton<TurnManager>
 						recordedAction.freeAction.CancelAction();
 					if (resultInfo.replacedFreeAction != null)
 						resultInfo.replacedFreeAction.OnModActionAdded(resultInfo.replacedAction);
+					if (recordedAction.freeAction is SpecialAbilityAction && resultInfo.replacedFreeAction != recordedAction.freeAction && entity.IsAlliedTo(GameManager.Instance.PlayerID))
+						LogConsole.AddLog(string.Format(LocalizationManager.Instance.Get(LocalizationKey.log_ability_not_activated), entity.Data.name, recordedAction.freeAction.Data.GetLocalizedName())
+							, LogConsole.LogEventType.ActionResolution);
 
 					resultInfo.replacedAction.wasReplacedByAI = true;
 
@@ -1616,6 +1837,8 @@ public class TurnManager : Singleton<TurnManager>
 
 			m_actionsToPlay[entityID] = returnActionToPlayThisRound;
 		}
+
+		StartActionsOfTick();
 
 		int currentIteration = 0;
 		m_recordedConflict = CheckForConflicts();
@@ -1656,6 +1879,23 @@ public class TurnManager : Singleton<TurnManager>
 					LogConsole.AddLog("Action sent: " + recordedAction.action.ToString(), LogConsole.LogEventType.InputPhase);
 			}
 			m_networkedTurnSystem.StartPlayPhaseClientRPC(actionsToSend.ToArray());
+		}
+	}
+
+	private void StartActionsOfTick ()
+	{
+		foreach (Queue<RecordedAction> queue in m_actionsToPlay.Values)
+		{
+			foreach (RecordedAction recordedAction in queue)
+			{
+				AEntityAction action = recordedAction.action;
+				Entity performer = action.timeAtStart == currentTick && action.lifetime == 0 ? action.PerformingEntity : null;
+				if (performer == null || performer.Equipment.IsDead)
+					continue;
+
+				performer.TryActivateSpecialAbility(recordedAction);
+				performer.ClaimStatusCharges(action);
+			}
 		}
 	}
 
@@ -1777,7 +2017,7 @@ public class TurnManager : Singleton<TurnManager>
 
 	private bool DoesPlayFreeActionAtTick ( RecordedAction _recordedAction )
 	{
-		return _recordedAction.HasFreeAction
+		return _recordedAction.HasFreeAction && _recordedAction.freeAction is not SpecialAbilityAction
 			&& _recordedAction.freeAction.lifetime < _recordedAction.freeAction.TotalDuration
 			&& _recordedAction.action.IsPerformingAtTick(currentTick);
 	}
@@ -1800,6 +2040,8 @@ public class TurnManager : Singleton<TurnManager>
 	private void PlayActionTick ( RecordedAction _recordedAction )
 	{
 		m_stateOfLastPlayedAction[_recordedAction.performingEntityID] = _recordedAction.entityState;
+		if (GameManager.Instance.GetEntityFromID(out Entity performer, _recordedAction.performingEntityID))
+			performer.EarnSpecialAbilityPoint(_recordedAction.action);
 		bool doesPlayFreeAction = DoesPlayFreeActionAtTick(_recordedAction);
 		bool isFreeActionPlayedFirst = doesPlayFreeAction && _recordedAction.freeAction.IsPlayedFirst;
 

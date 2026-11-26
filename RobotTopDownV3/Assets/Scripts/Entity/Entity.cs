@@ -136,6 +136,10 @@ public class Entity : MonoBehaviour
 				(actionData.isModAction ? m_knowedModActions : m_knownedActions).Add(actionID);
 		}
 
+		EntityActionEnumID abilityID = m_knowedModActions.Find(_actionID => GameAssets.current.game.entityActionsData[_actionID].IsSpecialAbility);
+		m_specialAbility = abilityID == EntityActionEnumID.Unknowned
+			? null : new SpecialAbilityState(GameAssets.current.game.entityActionsData[abilityID], m_componentLinkedToAction[abilityID][0]);
+
 		m_ai.Init(_data);
 		foreach (EntityActionEnumID actionID in m_knownedActions)
 		{
@@ -323,6 +327,12 @@ public class Entity : MonoBehaviour
 	public void EndTick ()
 	{
 		onEndTick?.Invoke();
+
+		if (m_pendingIllusionTicks > 0)
+		{
+			SummonIllusion(m_pendingIllusionTicks, m_pendingIllusionTileID);
+			m_pendingIllusionTicks = 0;
+		}
 	}
 
 	public void EndPerformAction ()
@@ -370,11 +380,11 @@ public class Entity : MonoBehaviour
 		return m_appliedDurationToActiveStatuses.TryGetValue(_status, out int duration) ? duration : 0;
 	}
 
-	public void AddStatus ( EntityStatusEnumID _statusID, int _baseDuration, Entity _source = null )
+	public void AddStatus ( EntityStatusEnumID _statusID, int _baseDuration, Entity _source = null, bool _isScaled = true )
 	{
 		AEntityStatus status = GameAssets.current.game.entityStatus[_statusID];
 		bool isCharged = status.durationType == AEntityStatus.DurationType.Charges;
-		int duration = isCharged ? _baseDuration : GetStatusDuration(_baseDuration, _source);
+		int duration = isCharged || !_isScaled ? _baseDuration : GetStatusDuration(_baseDuration, _source);
 		if (duration <= 0 && _baseDuration > 0)
 			return;
 
@@ -424,11 +434,12 @@ public class Entity : MonoBehaviour
 		foreach (EntityStatusEnumID statusID in m_status.ToArray())
 		{
 			AEntityStatus status = GameAssets.current.game.entityStatus[statusID];
-			if (!status.IsConsumedBy(_action) || GetRemainingStatusDuration(statusID) <= 0 || (status.isBoundAtPlanning && !_action.IsPlannedWith(statusID)))
+			if (!status.Boosts(_action) || GetRemainingStatusDuration(statusID) <= 0 || (status.isBoundAtPlanning && !_action.IsPlannedWith(statusID)))
 				continue;
 
 			boostingStatusIDs.Add((short)statusID);
-			ConsumeStatusCharge(statusID);
+			if (status.durationType == AEntityStatus.DurationType.Charges)
+				ConsumeStatusCharge(statusID);
 		}
 
 		_action.boostingStatusIDs = boostingStatusIDs.ToArray();
@@ -456,29 +467,56 @@ public class Entity : MonoBehaviour
 			return false;
 		if (_action.hasClaimedStatusCharges)
 			return _action.IsBoostedBy(_statusID);
-		if (!m_status.Contains(_statusID))
-			return false;
 
 		AEntityStatus status = GameAssets.current.game.entityStatus[_statusID];
-		return status.isBoundAtPlanning && _action.plannedStatusIDs != null ? _action.IsPlannedWith(_statusID) : IsChargeAvailableFor(status, _action);
+		return status.isBoundAtPlanning && _action.plannedStatusIDs != null ? _action.IsPlannedWith(_statusID) : IsBoostAvailableFor(status, _action);
 	}
 
 	public short[] GetPlanningBoundCharges ( AEntityAction _action )
 	{
 		List<short> plannedStatusIDs = new();
 		foreach (EntityStatusEnumID statusID in m_status)
-		{
-			AEntityStatus status = GameAssets.current.game.entityStatus[statusID];
-			if (status.isBoundAtPlanning && IsChargeAvailableFor(status, _action))
-				plannedStatusIDs.Add((short)statusID);
-		}
+			AddIfPlanningBound(plannedStatusIDs, statusID, _action);
+
+		if (m_specialAbility != null && m_specialAbility.data.abilityEffect == EntityActionData.SpecialAbilityEffect.Status && !m_status.Contains(m_specialAbility.data.abilityStatus))
+			AddIfPlanningBound(plannedStatusIDs, m_specialAbility.data.abilityStatus, _action);
 
 		return plannedStatusIDs.ToArray();
 	}
 
-	private bool IsChargeAvailableFor ( AEntityStatus _status, AEntityAction _action )
+	private void AddIfPlanningBound ( List<short> _plannedStatusIDs, EntityStatusEnumID _statusID, AEntityAction _action )
 	{
-		return _status.IsConsumedBy(_action)
+		AEntityStatus status = GameAssets.current.game.entityStatus[_statusID];
+		if (status.isBoundAtPlanning && IsBoostAvailableFor(status, _action))
+			_plannedStatusIDs.Add((short)_statusID);
+	}
+
+	public void RefreshPlannedAbilityStatus ( AEntityAction _action )
+	{
+		if (m_specialAbility == null || m_specialAbility.data.abilityEffect != EntityActionData.SpecialAbilityEffect.Status)
+			return;
+
+		EntityStatusEnumID statusID = m_specialAbility.data.abilityStatus;
+		AEntityStatus status = GameAssets.current.game.entityStatus[statusID];
+		if (!status.isBoundAtPlanning || _action.hasClaimedStatusCharges)
+			return;
+
+		List<short> plannedStatusIDs = new(_action.plannedStatusIDs ?? Array.Empty<short>());
+		plannedStatusIDs.Remove((short)statusID);
+		if (IsBoostAvailableFor(status, _action))
+			plannedStatusIDs.Add((short)statusID);
+		_action.plannedStatusIDs = plannedStatusIDs.ToArray();
+	}
+
+	private bool IsBoostAvailableFor ( AEntityStatus _status, AEntityAction _action )
+	{
+		if (!_status.Boosts(_action))
+			return false;
+
+		if (_status.durationType != AEntityStatus.DurationType.Charges)
+			return TurnManager.Instance.IsStatusPlannedAt(this, _status.enumID, _action.timeAtStart);
+
+		return m_status.Contains(_status.enumID)
 			&& GetRemainingStatusDuration(_status.enumID) > TurnManager.Instance.CountUnclaimedQueuedActionsBefore(ID, _action, _queued => DoesReserveCharge(_status, _queued));
 	}
 
@@ -599,25 +637,98 @@ public class Entity : MonoBehaviour
 	#region Special abilities
 
 	private const int c_positionHistoryLength = 64;
-	private readonly List<int> m_positionHistory = new();
+	private readonly List<(int tick, int tileID)> m_positionHistory = new();
 	private int m_illusionSourceID = -1;
 	private int m_illusionID = -1;
 	public bool IsIllusion => m_illusionSourceID >= 0;
 	public Entity Illusion => m_illusionID >= 0 ? GameManager.Instance.GetEntityFromID(m_illusionID) : null;
+	public bool IsBotControlled => !GameManager.Instance.IsOnline && !IsAlliedTo(GameManager.Instance.PlayerID);
+
+	private SpecialAbilityState m_specialAbility;
+	public SpecialAbilityState SpecialAbility => m_specialAbility;
+	private int m_pendingIllusionTicks;
+	private int m_pendingIllusionTileID = -1;
 
 	private void RecordPosition ()
 	{
-		m_positionHistory.Add(m_displacement.Coordinates.ID);
+		m_positionHistory.Add((TurnManager.Instance.AbsoluteTick(TurnManager.currentTick), m_displacement.Coordinates.ID));
 		if (m_positionHistory.Count > c_positionHistoryLength)
 			m_positionHistory.RemoveAt(0);
 	}
 
-	public void Retreat ( int _ticksBack )
+	public int GetTileAtTickStart ( int _absoluteTick )
 	{
-		if (m_positionHistory.Count == 0 || m_equipment.IsDead)
+		for (int i = m_positionHistory.Count - 1; i >= 0; i--)
+		{
+			if (m_positionHistory[i].tick <= _absoluteTick)
+				return m_positionHistory[i].tileID;
+		}
+
+		return m_positionHistory.Count > 0 ? m_positionHistory[0].tileID : m_displacement.Coordinates.ID;
+	}
+
+	public void EarnSpecialAbilityPoint ( AEntityAction _action )
+	{
+		m_specialAbility?.Earn(_action.Data, TurnManager.Instance.AbsoluteTick(TurnManager.currentTick));
+	}
+
+	public void TryActivateSpecialAbility ( TurnManager.RecordedAction _recordedAction )
+	{
+		if (m_specialAbility == null)
 			return;
 
-		Tile formerTile = GridManager.Instance.Tiles[m_positionHistory[Mathf.Max(0, m_positionHistory.Count - _ticksBack)]];
+		if (IsBotControlled)
+			m_ai.TryAttachSpecialAbility(_recordedAction);
+
+		if (_recordedAction.freeAction is not SpecialAbilityAction ability)
+			return;
+
+		int charges = m_specialAbility.Charges;
+		bool canActivate = charges > 0 && _recordedAction.action.Data.CanCarrySpecialAbility(m_specialAbility.data)
+			&& !m_specialAbility.IsActiveAt(TurnManager.Instance.AbsoluteTick(TurnManager.currentTick));
+		ability.chargesSpent = canActivate ? charges : 0;
+
+		if (canActivate)
+		{
+			ActivateSpecialAbility(charges);
+			RefreshPlannedAbilityStatus(_recordedAction.action);
+		}
+		else if (IsAlliedTo(GameManager.Instance.PlayerID))
+			LogConsole.AddLog(string.Format(LocalizationManager.Instance.Get(LocalizationKey.log_ability_not_activated), m_data.name, m_specialAbility.data.GetLocalizedName())
+				, LogConsole.LogEventType.ActionResolution);
+	}
+
+	private void ActivateSpecialAbility ( int _charges )
+	{
+		EntityActionData data = m_specialAbility.data;
+		m_specialAbility.Activate(_charges, TurnManager.Instance.AbsoluteTick(TurnManager.currentTick));
+		string duration = string.Format(LocalizationManager.Instance.Get(_charges > 1 ? LocalizationKey.tooltip_duration_ticks : LocalizationKey.tooltip_duration_tick), _charges);
+		if (data.abilityEffect == EntityActionData.SpecialAbilityEffect.Retreat)
+			duration += " " + LocalizationManager.Instance.Get(LocalizationKey.log_ability_back);
+		LogConsole.AddLog(string.Format(LocalizationManager.Instance.Get(LocalizationKey.log_ability_activated), m_data.name, data.GetLocalizedName(), duration)
+			, LogConsole.LogEventType.ActionResolution);
+
+		switch (data.abilityEffect)
+		{
+			case EntityActionData.SpecialAbilityEffect.Status:
+				AddStatus(data.abilityStatus, _charges, null, false);
+				break;
+			case EntityActionData.SpecialAbilityEffect.Retreat:
+				Retreat(_charges);
+				break;
+			case EntityActionData.SpecialAbilityEffect.Illusion:
+				m_pendingIllusionTicks = _charges;
+				m_pendingIllusionTileID = m_displacement.Coordinates.ID;
+				break;
+		}
+	}
+
+	public void Retreat ( int _ticksBack )
+	{
+		if (m_equipment.IsDead)
+			return;
+
+		Tile formerTile = GridManager.Instance.Tiles[GetTileAtTickStart(TurnManager.Instance.AbsoluteTick(TurnManager.currentTick) - _ticksBack)];
 		Tile destination = GridManager.Instance.GetNearestFreeTile(formerTile, this);
 		if (destination == null || destination == m_displacement.Coordinates.GetTile())
 			return;
@@ -627,13 +738,13 @@ public class Entity : MonoBehaviour
 		m_displacement.RegisterOnCurrentTile();
 	}
 
-	public void SummonIllusion ( int _ticks )
+	public void SummonIllusion ( int _ticks, int _originTileID )
 	{
 		Entity current = Illusion;
 		if (current != null && !current.Equipment.IsDead)
 			current.Equipment.InstantDeath(EntityEquipmentPlugin.DeathCause.Vanish);
 
-		Tile tile = GridManager.Instance.GetNearestFreeTile(m_displacement.Coordinates.GetTile(), null);
+		Tile tile = GridManager.Instance.GetNearestFreeTile(GridManager.Instance.Tiles[_originTileID], null);
 		if (tile == null || m_equipment.IsDead)
 			return;
 
@@ -656,7 +767,9 @@ public class Entity : MonoBehaviour
 	{
 		m_illusionSourceID = _source.ID;
 		m_knownedActions.RemoveAll(actionID => GameAssets.current.game.entityActionsData[actionID].GetMainActionType() == EntityActionData.MainActionType.Attack);
-		AddStatus(EntityStatusEnumID.Illusion, _ticks);
+		m_knowedModActions.RemoveAll(actionID => GameAssets.current.game.entityActionsData[actionID].IsSpecialAbility);
+		m_specialAbility = null;
+		AddStatus(EntityStatusEnumID.Illusion, _ticks, null, false);
 	}
 
 	private void OnIllusionDeath ( int _illusionID )
@@ -706,7 +819,13 @@ public class Entity : MonoBehaviour
 	[FoldoutGroup("Special abilities (debug)"), ShowIf("@UnityEngine.Application.isPlaying"), Button]
 	private void DebugSummonIllusion ( int _ticks = 5 )
 	{
-		SummonIllusion(_ticks);
+		SummonIllusion(_ticks, m_displacement.Coordinates.ID);
+	}
+
+	[FoldoutGroup("Special abilities (debug)"), ShowIf("@UnityEngine.Application.isPlaying"), Button]
+	private void DebugFillSpecialAbility ()
+	{
+		m_specialAbility?.DebugFill();
 	}
 #endif
 

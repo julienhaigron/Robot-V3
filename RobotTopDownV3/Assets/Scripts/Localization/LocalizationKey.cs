@@ -884,6 +884,43 @@ public enum LocalizationKey
     action_swapwithillusion,
     shop_tab_components,
     shop_tab_blueprints,
+    tooltip_ability_charges,
+    tooltip_ability_recharge,
+    tooltip_ability_charges_max,
+    tooltip_ability_recharge_value,
+    tooltip_ability_ratio_value,
+    tooltip_ability_carrier,
+    tooltip_ability_ready,
+    tooltip_ability_attach,
+    tooltip_ability_detach,
+    tooltip_ability_pending,
+    tooltip_ability_planned,
+    tooltip_ability_rotation,
+    tooltip_ability_wrong_action,
+    tooltip_ability_no_tick,
+    tooltip_ability_active,
+    tooltip_ability_no_charge,
+    keyword_special_ability,
+    keyword_special_ability_note,
+    keyword_special_ability_note_retreat,
+    log_ability_activated,
+    log_ability_not_activated,
+    action_desc_special_ability,
+    action_ability_illusoryclone,
+    action_ability_intangibility,
+    action_ability_retreat,
+    action_ability_anchoring,
+    action_ability_echo,
+    action_ability_sabotage,
+    action_ability_assault,
+    action_ability_riposte,
+    action_ability_rebound,
+    action_ability_erosion,
+    action_ability_tacticalscanner,
+    action_ability_overdrive,
+    action_ability_illusoryclone_desc,
+    action_ability_retreat_desc,
+    log_ability_back,
 }
 
 public static class LocalizationKeyExtensions
@@ -1775,6 +1812,43 @@ public static class LocalizationKeyExtensions
             case LocalizationKey.action_swapwithillusion: return "action/swapwithillusion";
             case LocalizationKey.shop_tab_components: return "shop/tab_components";
             case LocalizationKey.shop_tab_blueprints: return "shop/tab_blueprints";
+            case LocalizationKey.tooltip_ability_charges: return "tooltip/ability_charges";
+            case LocalizationKey.tooltip_ability_recharge: return "tooltip/ability_recharge";
+            case LocalizationKey.tooltip_ability_charges_max: return "tooltip/ability_charges_max";
+            case LocalizationKey.tooltip_ability_recharge_value: return "tooltip/ability_recharge_value";
+            case LocalizationKey.tooltip_ability_ratio_value: return "tooltip/ability_ratio_value";
+            case LocalizationKey.tooltip_ability_carrier: return "tooltip/ability_carrier";
+            case LocalizationKey.tooltip_ability_ready: return "tooltip/ability_ready";
+            case LocalizationKey.tooltip_ability_attach: return "tooltip/ability_attach";
+            case LocalizationKey.tooltip_ability_detach: return "tooltip/ability_detach";
+            case LocalizationKey.tooltip_ability_pending: return "tooltip/ability_pending";
+            case LocalizationKey.tooltip_ability_planned: return "tooltip/ability_planned";
+            case LocalizationKey.tooltip_ability_rotation: return "tooltip/ability_rotation";
+            case LocalizationKey.tooltip_ability_wrong_action: return "tooltip/ability_wrong_action";
+            case LocalizationKey.tooltip_ability_no_tick: return "tooltip/ability_no_tick";
+            case LocalizationKey.tooltip_ability_active: return "tooltip/ability_active";
+            case LocalizationKey.tooltip_ability_no_charge: return "tooltip/ability_no_charge";
+            case LocalizationKey.keyword_special_ability: return "keyword/special_ability";
+            case LocalizationKey.keyword_special_ability_note: return "keyword/special_ability_note";
+            case LocalizationKey.keyword_special_ability_note_retreat: return "keyword/special_ability_note_retreat";
+            case LocalizationKey.log_ability_activated: return "log/ability_activated";
+            case LocalizationKey.log_ability_not_activated: return "log/ability_not_activated";
+            case LocalizationKey.action_desc_special_ability: return "action_desc/special_ability";
+            case LocalizationKey.action_ability_illusoryclone: return "action/ability_illusoryclone";
+            case LocalizationKey.action_ability_intangibility: return "action/ability_intangibility";
+            case LocalizationKey.action_ability_retreat: return "action/ability_retreat";
+            case LocalizationKey.action_ability_anchoring: return "action/ability_anchoring";
+            case LocalizationKey.action_ability_echo: return "action/ability_echo";
+            case LocalizationKey.action_ability_sabotage: return "action/ability_sabotage";
+            case LocalizationKey.action_ability_assault: return "action/ability_assault";
+            case LocalizationKey.action_ability_riposte: return "action/ability_riposte";
+            case LocalizationKey.action_ability_rebound: return "action/ability_rebound";
+            case LocalizationKey.action_ability_erosion: return "action/ability_erosion";
+            case LocalizationKey.action_ability_tacticalscanner: return "action/ability_tacticalscanner";
+            case LocalizationKey.action_ability_overdrive: return "action/ability_overdrive";
+            case LocalizationKey.action_ability_illusoryclone_desc: return "action/ability_illusoryclone_desc";
+            case LocalizationKey.action_ability_retreat_desc: return "action/ability_retreat_desc";
+            case LocalizationKey.log_ability_back: return "log/ability_back";
             default: return string.Empty;
         }
     }

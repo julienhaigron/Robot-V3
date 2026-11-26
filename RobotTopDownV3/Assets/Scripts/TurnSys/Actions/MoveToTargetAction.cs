@@ -101,7 +101,7 @@ public class MoveToTargetAction : AMovementAction
 
 	public override void RegisterInteraction ( Tile _tile )
 	{
-		Tile from = GridManager.Instance.Tiles[TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntityID)];
+		Tile from = GridManager.Instance.Tiles[TurnManager.Instance.GetPlannedMoveStart(this)];
 		List<Tile> path = GridManager.Instance.GetPath(from, _tile, true, _movingEntity: PerformingEntity, _canTraverseAllies: true);
 
 		if (path == null)
@@ -239,7 +239,7 @@ public class MoveToTargetAction : AMovementAction
 		if (positionAtActionEndID == -1)
 			return;
 
-		Tile from = GridManager.Instance.Tiles[TurnManager.Instance.GetLastRegisteredPositionOfEntity(performingEntityID)];
+		Tile from = GridManager.Instance.Tiles[TurnManager.Instance.GetPlannedMoveStart(this)];
 		List<Tile> path = GridManager.Instance.GetPath(from, GridManager.Instance.Tiles[positionAtActionEndID], true, false, PerformingEntity, _canTraverseAllies: true);
 		if (path == null)
 			return;

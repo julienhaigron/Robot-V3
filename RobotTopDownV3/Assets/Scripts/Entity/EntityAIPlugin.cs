@@ -57,7 +57,8 @@ public class EntityAIPlugin : EntityPlugin
 			replacedAction = _replacedAction;
 			replacementReasonTxt = _reasonTxt;
 
-			if (!_keepsFacingOrder && replacedFreeAction is RotateEntityAction { isFacingOrder: true })
+			if ((replacedFreeAction is SpecialAbilityAction && !_replacedAction.Data.CanCarrySpecialAbility(replacedFreeAction.Data))
+				|| (!_keepsFacingOrder && replacedFreeAction is RotateEntityAction { isFacingOrder: true }))
 				replacedFreeAction = null;
 		}
 
@@ -536,6 +537,16 @@ public class EntityAIPlugin : EntityPlugin
 			return GridManager.Instance.Tiles[moveAction.finalTargetTileID];
 
 		return m_linkedEntity.Displacement.Coordinates.GetTile();
+	}
+
+	public void TryAttachSpecialAbility ( TurnManager.RecordedAction _recordedAction )
+	{
+		SpecialAbilityState ability = m_linkedEntity.SpecialAbility;
+		if (ability == null || !ability.IsFull || _recordedAction.HasFreeAction || !_recordedAction.action.Data.CanCarrySpecialAbility(ability.data)
+			|| ability.IsActiveAt(TurnManager.Instance.AbsoluteTick(TurnManager.currentTick)))
+			return;
+
+		_recordedAction.AddActionMod(TurnManager.Instance.GetAction(ability.data, m_linkedEntity.ID, ability.componentID, TurnManager.currentTick));
 	}
 
 	private RotateEntityAction GetRotationActionFor ( TurnManager.RecordedAction _recordedAction, int _orientation )
@@ -1248,6 +1259,12 @@ public class EntityAIPlugin : EntityPlugin
 
 	private bool TryResolveEntityTarget ( TurnManager.RecordedAction _recordedAction, ref CheckActionResultInfo _resultInfo, out string _failureReason )
 	{
+		return (_recordedAction.freeAction is SpecialAbilityAction && TryResolveEntityTarget(_recordedAction, true, ref _resultInfo, out _failureReason))
+			|| TryResolveEntityTarget(_recordedAction, false, ref _resultInfo, out _failureReason);
+	}
+
+	private bool TryResolveEntityTarget ( TurnManager.RecordedAction _recordedAction, bool _keepsFacing, ref CheckActionResultInfo _resultInfo, out string _failureReason )
+	{
 		_failureReason = null;
 		AEntityAction action = _recordedAction.action;
 		Tile from = m_linkedEntity.Displacement.Coordinates.GetTile();
@@ -1259,9 +1276,9 @@ public class EntityAIPlugin : EntityPlugin
 		int slotCount = -1;
 		Entity lostTarget = null;
 
-		if (action.HasDesignatedItem && TryGetDesignatedItemInReach(action, from, out structureTarget, out orientation))
+		if (action.HasDesignatedItem && TryGetDesignatedItemInReach(action, from, _keepsFacing, out structureTarget, out orientation))
 			targets = new();
-		else if (action.HasDesignatedEntities && TryGetDesignatedTargetsInReach(action, from, isStrict, out targets, out orientation, out lostTarget))
+		else if (action.HasDesignatedEntities && TryGetDesignatedTargetsInReach(action, from, isStrict, _keepsFacing, out targets, out orientation, out lostTarget))
 			slotCount = targets.Count;
 		else if (action.HasDesignatedTargets && isStrict)
 		{
@@ -1269,7 +1286,7 @@ public class EntityAIPlugin : EntityPlugin
 				, m_linkedEntity.Data.name, action.Data.GetLocalizedName(), GetDesignatedTargetName(action, lostTarget));
 			return false;
 		}
-		else if (!TryGetTargetsInReach(action, from, out targets, out structureTarget, out orientation))
+		else if (!TryGetTargetsInReach(action, from, out targets, out structureTarget, out orientation, _keepsFacing))
 			return false;
 		else if (action.HasDesignatedEntities)
 			lostTarget = GameManager.Instance.GetEntityFromID(action.designatedEntityIDs[0]);
@@ -1311,7 +1328,7 @@ public class EntityAIPlugin : EntityPlugin
 		return true;
 	}
 
-	private bool TryGetTargetsInReach ( AEntityAction _action, Tile _from, out List<Entity> _targets, out Tile _structure, out int _orientation )
+	private bool TryGetTargetsInReach ( AEntityAction _action, Tile _from, out List<Entity> _targets, out Tile _structure, out int _orientation, bool _keepsFacing = false )
 	{
 		_targets = new();
 		_structure = null;
@@ -1330,7 +1347,7 @@ public class EntityAIPlugin : EntityPlugin
 		int bestRange = int.MaxValue;
 		int bestPriority = -1;
 
-		for (int i = 0; i < 6; i++)
+		for (int i = 0; i < OrientationCount(_keepsFacing); i++)
 		{
 			int orientation = (m_linkedEntity.Displacement.CurrentOrientation + i) % 6;
 			List<Tile> cone = m_linkedEntity.Equipment.GetTilesInWeaponRange(_action, true, _from, orientation, true);
@@ -1363,7 +1380,7 @@ public class EntityAIPlugin : EntityPlugin
 		return _targets.Count > 0 || _structure != null;
 	}
 
-	private bool TryGetDesignatedTargetsInReach ( AEntityAction _action, Tile _from, bool _isStrict, out List<Entity> _targets, out int _orientation, out Entity _lostTarget )
+	private bool TryGetDesignatedTargetsInReach ( AEntityAction _action, Tile _from, bool _isStrict, bool _keepsFacing, out List<Entity> _targets, out int _orientation, out Entity _lostTarget )
 	{
 		_targets = new();
 		_orientation = m_linkedEntity.Displacement.CurrentOrientation;
@@ -1376,7 +1393,7 @@ public class EntityAIPlugin : EntityPlugin
 		int bestDesignatedCount = 0;
 		int bestRange = int.MaxValue;
 
-		foreach ((IEnumerable<Tile> tiles, int orientation) in GetReachSets(_action, _from))
+		foreach ((IEnumerable<Tile> tiles, int orientation) in GetReachSets(_action, _from, _keepsFacing))
 		{
 			List<Entity> enemies = GetEnemiesOn(tiles, _from, stickyTarget);
 			List<Entity> designatedInReach = designated.Where(enemies.Contains).ToList();
@@ -1409,7 +1426,12 @@ public class EntityAIPlugin : EntityPlugin
 		return chosenTargets.Count > 0;
 	}
 
-	private IEnumerable<(IEnumerable<Tile> tiles, int orientation)> GetReachSets ( AEntityAction _action, Tile _from )
+	private static int OrientationCount ( bool _keepsFacing )
+	{
+		return _keepsFacing ? 1 : 6;
+	}
+
+	private IEnumerable<(IEnumerable<Tile> tiles, int orientation)> GetReachSets ( AEntityAction _action, Tile _from, bool _keepsFacing )
 	{
 		int currentOrientation = m_linkedEntity.Displacement.CurrentOrientation;
 		if (_action.Data.GetMainActionType() != EntityActionData.MainActionType.Attack)
@@ -1419,14 +1441,14 @@ public class EntityAIPlugin : EntityPlugin
 			yield break;
 		}
 
-		for (int i = 0; i < 6; i++)
+		for (int i = 0; i < OrientationCount(_keepsFacing); i++)
 		{
 			int orientation = (currentOrientation + i) % 6;
 			yield return (m_linkedEntity.Equipment.GetTilesInWeaponRange(_action, true, _from, orientation, true), orientation);
 		}
 	}
 
-	private bool TryGetDesignatedItemInReach ( AEntityAction _action, Tile _from, out Tile _itemTile, out int _orientation )
+	private bool TryGetDesignatedItemInReach ( AEntityAction _action, Tile _from, bool _keepsFacing, out Tile _itemTile, out int _orientation )
 	{
 		_itemTile = null;
 		_orientation = m_linkedEntity.Displacement.CurrentOrientation;
@@ -1434,7 +1456,7 @@ public class EntityAIPlugin : EntityPlugin
 		if (item == null || !item.IsTargetableBy(m_linkedEntity.OwnerID, true))
 			return false;
 
-		foreach ((IEnumerable<Tile> tiles, int orientation) in GetReachSets(_action, _from))
+		foreach ((IEnumerable<Tile> tiles, int orientation) in GetReachSets(_action, _from, _keepsFacing))
 		{
 			if (!tiles.Contains(item.CurrentPosition))
 				continue;

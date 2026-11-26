@@ -13,9 +13,10 @@ MonoBehaviour:
   m_Name: Sabotage
   m_EditorClassIdentifier: RTD::SabotageStatus
   enumID: 9
-  durationType: 2
+  durationType: 0
   consumedBy: 1
   doesStackCharges: 0
+  isBoundAtPlanning: 0
   doesNeedRoll: 0
   description: The next melee actions inflict a Sabotaged charge.
   icon: {fileID: 0}

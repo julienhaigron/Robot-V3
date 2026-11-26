@@ -13,9 +13,10 @@ MonoBehaviour:
   m_Name: Assault
   m_EditorClassIdentifier: RTD::AssaultStatus
   enumID: 11
-  durationType: 2
+  durationType: 0
   consumedBy: 1
   doesStackCharges: 0
+  isBoundAtPlanning: 0
   doesNeedRoll: 0
   description: The next melee actions deal +10% damage per tile traveled this round.
   icon: {fileID: 0}

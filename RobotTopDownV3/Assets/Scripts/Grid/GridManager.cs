@@ -1172,7 +1172,13 @@ public class GridManager : Singleton<GridManager>
 
 	public static bool CanPhaseThrough ( Entity _entity )
 	{
-		return _entity != null && _entity.Status.Contains(EntityStatusEnumID.Intangible);
+		if (_entity == null)
+			return false;
+
+		TurnManager turnManager = TurnManager.Instance;
+		return turnManager != null && turnManager.currentPhase == TurnManager.TurnPhase.Recording
+			? turnManager.IsStatusPlannedAt(_entity, EntityStatusEnumID.Intangible, turnManager.GetNextActionStartTime(_entity.ID))
+			: _entity.Status.Contains(EntityStatusEnumID.Intangible);
 	}
 
 	private static bool IsObstacleFor ( Tile _tile, Tile _to, bool _isThisTurn, Entity _movingEntity )

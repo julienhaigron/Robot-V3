@@ -21,6 +21,7 @@ public sealed class ActionTooltipContent
 
 	public readonly EntityActionData data;
 	public readonly EntitySavedData unit;
+	public readonly SpecialAbilityState ability;
 	public readonly int preparation;
 	public readonly int cooldown;
 	public readonly int maxRange;
@@ -34,10 +35,11 @@ public sealed class ActionTooltipContent
 	private readonly List<OwnedEffect> m_effects = new();
 	private readonly EntityActionData.MainActionType m_mainType;
 
-	public ActionTooltipContent ( EntityActionData _data, EntitySavedData _unit )
+	public ActionTooltipContent ( EntityActionData _data, EntitySavedData _unit, SpecialAbilityState _ability = null )
 	{
 		data = _data;
 		unit = _unit;
+		ability = _ability;
 		m_mainType = _data.GetMainActionType();
 		CollectEffects();
 
@@ -61,11 +63,25 @@ public sealed class ActionTooltipContent
 
 	public string TypeLabel => data.IsRotation ? LocalizationManager.Instance.Get(LocalizationKey.action_type_rotation) : data.type.GetLocalizedTitle();
 
+	public bool IsSpecialAbility => data.IsSpecialAbility;
+
+	public string CarrierTypeLabel => data.type.GetLocalizedTitle().ToLowerInvariant();
+
+	public string AbilityChargesValue => ability != null
+		? ability.Charges + " / " + data.abilityChargeMax
+		: string.Format(LocalizationManager.Instance.Get(LocalizationKey.tooltip_ability_charges_max), data.abilityChargeMax);
+
+	public string AbilityRechargeValue => ability != null
+		? string.Format(LocalizationManager.Instance.Get(LocalizationKey.tooltip_ability_recharge_value), ability.PointsTowardNextCharge, data.abilityRatio)
+		: string.Format(LocalizationManager.Instance.Get(LocalizationKey.tooltip_ability_ratio_value), data.abilityRatio);
+
 	public string TargetLabel
 	{
 		get
 		{
 			LocalizationManager localization = LocalizationManager.Instance;
+			if (IsSpecialAbility)
+				return localization.Get(LocalizationKey.tooltip_ability_carrier);
 			if (data.targetType == EntityActionData.TargetType.Self)
 				return localization.Get(LocalizationKey.tooltip_target_self);
 			if (data.DoesResolveItsOwnTarget())
@@ -212,6 +228,8 @@ public sealed class ActionTooltipContent
 					keywords.Add(new ActionKeyword { type = ActionKeywordType.Relocate, item = data.invocatedItem });
 				break;
 		}
+		if (IsSpecialAbility)
+			keywords.Add(new ActionKeyword { type = ActionKeywordType.SpecialAbility, ability = data });
 		if (data.isModAction)
 			Add(ActionKeywordType.Free);
 

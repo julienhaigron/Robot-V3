@@ -163,7 +163,27 @@ public class EntityActionData : AParsableScriptableObject
 		InvokeItem,
 		JumpMove,
 		MoveItem,
-		SwapWithIllusion
+		SwapWithIllusion,
+		SpecialAbility
+	}
+
+	public enum SpecialAbilityEffect { Status, Retreat, Illusion }
+	[ShowIf("@codeType == ActionCodeType.SpecialAbility"), Min(1)] public int abilityChargeMax = 5;
+	[ShowIf("@codeType == ActionCodeType.SpecialAbility"), Min(1)] public int abilityRatio = 3;
+	[ShowIf("@codeType == ActionCodeType.SpecialAbility")] public SpecialAbilityEffect abilityEffect;
+	[ShowIf("@codeType == ActionCodeType.SpecialAbility && abilityEffect == SpecialAbilityEffect.Status")] public EntityStatusEnumID abilityStatus;
+
+	public bool IsSpecialAbility => codeType == ActionCodeType.SpecialAbility;
+
+	public bool CanCarrySpecialAbility ( EntityActionData _ability )
+	{
+		return _ability != null && !isModAction && codeType != ActionCodeType.Wait && type == _ability.type
+			&& (_ability.abilityEffect != SpecialAbilityEffect.Retreat || codeType == ActionCodeType.TargetTileMove);
+	}
+
+	public int GetAbilityWindowLength ( int _charges )
+	{
+		return abilityEffect == SpecialAbilityEffect.Retreat ? 1 : _charges;
 	}
 
 	#region Target Vars

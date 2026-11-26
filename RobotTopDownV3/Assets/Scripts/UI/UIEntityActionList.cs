@@ -54,6 +54,7 @@ public class UIEntityActionList : MonoBehaviour
 		Vector2 newSize2 = m_modActionButtonsParent.sizeDelta;
 		newSize2.x = m_modActionListBaseWidth + ((keys2.Length - 1) * m_modActionListElementWidth);
 		m_modActionButtonsParent.sizeDelta = newSize2;
+		m_modActionButtonsParent.gameObject.SetActive(keys2.Length > 0);
 
 		for (int i = 0; i < m_actionButtons.Length; i++)
 		{
