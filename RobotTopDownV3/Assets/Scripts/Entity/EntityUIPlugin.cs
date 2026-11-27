@@ -126,7 +126,7 @@ public class EntityUIPlugin : EntityPlugin
 		else
 		{
 			if (_damageInfo.absorbedDamage > 0)
-				ShowAbsorbedDamage(_damageInfo.absorbedDamage);
+				ShowAbsorbedDamage(_damageInfo.absorbedDamage, _damageInfo.absorbingShield);
 
 			foreach (KeyValuePair<WeaponEquipmentData.DamageType, int> pair in _damageInfo.damages)
 			{
@@ -146,16 +146,10 @@ public class EntityUIPlugin : EntityPlugin
 		m_healthBar.SetHealth(m_linkedEntity.Equipment.CurrentHealth, m_linkedEntity.Equipment.MaxHealth);
 	}
 
-	private void ShowAbsorbedDamage ( int _amount )
+	private void ShowAbsorbedDamage ( int _amount, Shield _shield )
 	{
-		foreach (ToolEquipment tool in m_linkedEntity.Equipment.Tools.Values)
-		{
-			if (tool is Shield shield && shield.Data != null && shield.Data.icon != null)
-			{
-				m_flyingTextManagerDamage.ShowNumber(_amount, shield.Data.icon, false, false, 1f, m_absorbedTextColor);
-				return;
-			}
-		}
+		if (_shield != null && _shield.Data != null && _shield.Data.icon != null)
+			m_flyingTextManagerDamage.ShowNumber(_amount, _shield.Data.icon, false, false, 1f, m_absorbedTextColor);
 	}
 
 	private void OnEntitySelected ( int? _entityID )

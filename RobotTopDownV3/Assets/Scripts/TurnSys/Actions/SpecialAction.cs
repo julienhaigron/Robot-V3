@@ -422,6 +422,10 @@ public class SpecialAction : AEntityAction
 			return true;
 
 		Entity entity = _tile.GetCurrentEntity();
-		return entity != null && isInRange && !entity.IsAlliedTo(GameManager.Instance.GetEntityFromID(performingEntityID).OwnerID);
+		if (entity == null || !isInRange)
+			return false;
+
+		Entity performer = GameManager.Instance.GetEntityFromID(performingEntityID);
+		return Data.targetsAllies ? entity != performer && entity.IsAlliedTo(performer.OwnerID) : !entity.IsAlliedTo(performer.OwnerID);
 	}
 }

@@ -43,7 +43,7 @@ public static class CsvTypeConverter
             if (splits.Length >= 1)
                 value.x = int.Parse(splits[0]);
             if(splits.Length >= 2)
-                value.x = int.Parse(splits[1]);
+                value.y = int.Parse(splits[1]);
 
             return value;
 		}

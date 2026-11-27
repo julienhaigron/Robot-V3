@@ -64,6 +64,7 @@ MonoBehaviour:
   minDistance: 0
   maxDistance: 0
   maxTargetAmount: 1
+  targetsAllies: 0
   aoeType: 0
   doesAffectTile: 0
   aoECenterType: 0
@@ -81,5 +82,6 @@ MonoBehaviour:
   invocatedEntity: {fileID: 0}
   invocatedItem: {fileID: 0}
   invocationCountLimit: 1
+  deployDuration: 3
   movementSpeed: 1
   movementAnimation: 

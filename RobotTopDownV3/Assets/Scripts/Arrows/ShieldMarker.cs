@@ -43,9 +43,12 @@ public class ShieldMarker : GroundDisplay
 	private float m_breakStart = -1f;
 	private float m_drawnFill = -1f;
 	private Color m_drawnColor;
+	private int m_drawnSides;
+	private int m_ghostSides = 1;
 	private int m_label = int.MinValue;
 
 	private float HealthShare => m_shield != null && m_shield.MaxHp > 0 ? m_shield.CurrentHp / (float)m_shield.MaxHp : 0f;
+	private int CoveredSides => m_shield != null ? m_shield.CoveredSides : m_ghostSides;
 
 	protected override void Awake ()
 	{
@@ -73,7 +76,7 @@ public class ShieldMarker : GroundDisplay
 
 		int entityID = _shield.LinkedEntity.ID;
 		Color color = ghost.TeamColorOf(_shield);
-		ghost.ShowGhost(color, _tick);
+		ghost.ShowGhost(color, _tick, _shield.CoveredSides);
 		PlayerController.Instance.AddOrderDisplay(ghost, entityID);
 		if (_fromOrientation >= 0 && _fromOrientation != _toOrientation)
 			RotationActionDisplay.ShowShieldTurn(entityID, _pivot, _fromOrientation, _toOrientation, color, _isPreview);
@@ -91,6 +94,12 @@ public class ShieldMarker : GroundDisplay
 		m_isAimed = false;
 		m_teamColor = Color.clear;
 		AnimateShards(1f);
+	}
+
+	public void Raise ()
+	{
+		Bind(m_shield);
+		m_flashStart = Time.time;
 	}
 
 	public void SetAimed ( bool _isAimed )
@@ -132,9 +141,10 @@ public class ShieldMarker : GroundDisplay
 		return _shield.LinkedEntity.IsAlliedTo(GameManager.Instance.PlayerID) ? m_allyColor : m_enemyColor;
 	}
 
-	private void ShowGhost ( Color _color, int _tick )
+	private void ShowGhost ( Color _color, int _tick, int _coveredSides )
 	{
 		m_shield = null;
+		m_ghostSides = _coveredSides;
 		m_teamColor = _color;
 		SetStyle(_color, true);
 		SetShown(true);
@@ -221,26 +231,31 @@ public class ShieldMarker : GroundDisplay
 		empty.a *= m_emptyAlpha;
 		Head.color = Faded(_fill > 0f ? _color : empty);
 		m_number.color = Faded(m_numberColor);
-		if (_color == m_drawnColor && Mathf.Approximately(_fill, m_drawnFill))
+		int sides = CoveredSides;
+		if (_color == m_drawnColor && Mathf.Approximately(_fill, m_drawnFill) && sides == m_drawnSides)
 			return;
 
 		m_drawnColor = _color;
 		m_drawnFill = _fill;
+		m_drawnSides = sides;
 		Vector3 centre = transform.position;
 		float facing = transform.eulerAngles.y;
-		float reach = (m_halfSpan - m_innerGap) * Mathf.Clamp01(_fill);
 		Strip.Clear();
-		for (int side = -1; side <= 1; side += 2)
-		{
-			float inner = facing + side * m_innerGap;
-			float split = inner + side * reach;
-			float outer = facing + side * m_halfSpan;
-			if (reach > .01f)
-				Strip.AddArc(centre, m_radius, inner, split, StripHalfWidth, _color);
-			if (Mathf.Abs(outer - split) > .01f)
-				Strip.AddArc(centre, m_radius, split, outer, StripHalfWidth, empty);
-		}
+		AddWing(centre, facing, -1, m_halfSpan + (sides >= 3 ? 60f : 0f), _fill, _color, empty);
+		AddWing(centre, facing, 1, m_halfSpan + (sides >= 2 ? 60f : 0f), _fill, _color, empty);
 		Strip.Apply();
+	}
+
+	private void AddWing ( Vector3 _centre, float _facing, int _side, float _span, float _fill, Color _color, Color _empty )
+	{
+		float reach = (_span - m_innerGap) * Mathf.Clamp01(_fill);
+		float inner = _facing + _side * m_innerGap;
+		float split = inner + _side * reach;
+		float outer = _facing + _side * _span;
+		if (reach > .01f)
+			Strip.AddArc(_centre, m_radius, inner, split, StripHalfWidth, _color);
+		if (Mathf.Abs(outer - split) > .01f)
+			Strip.AddArc(_centre, m_radius, split, outer, StripHalfWidth, _empty);
 	}
 
 	private void SetShown ( bool _isShown )

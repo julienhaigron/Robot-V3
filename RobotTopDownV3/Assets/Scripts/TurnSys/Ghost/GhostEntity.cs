@@ -9,7 +9,11 @@ public class GhostEntity : MonoBehaviour
 
 	public void Init ( Entity _linkedEntity )
 	{
-		GameObject skin = Instantiate(_linkedEntity.Skin.IK.gameObject, m_visual);
+		GameObject source = _linkedEntity.Skin.GhostSource;
+		if (source == null)
+			return;
+
+		GameObject skin = Instantiate(source, m_visual);
 
 		if (skin.TryGetComponent(out LegsAnimator legsAnimator))
 			legsAnimator.Initialize_BaseTransform(m_visual);

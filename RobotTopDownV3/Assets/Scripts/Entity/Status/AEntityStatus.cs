@@ -66,6 +66,21 @@ public abstract class AEntityStatus : ScriptableEnum<EntityStatusEnumID>
 
     }
 
+    public virtual bool TryRedirectDamage ( Entity _holder, ref EntityEquipmentPlugin.TakeDamageCallback _damageInfo )
+    {
+        return false;
+    }
+
+    public virtual void OnDamageTaken ( Entity _holder, EntityEquipmentPlugin.TakeDamageCallback _damageInfo )
+    {
+
+    }
+
+    public virtual bool IsBroken ( Entity _holder )
+    {
+        return false;
+    }
+
     public virtual string GetTickEffectText ( int _remainingDuration, Entity _entity )
     {
         return null;

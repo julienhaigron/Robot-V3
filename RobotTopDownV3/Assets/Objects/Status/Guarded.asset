@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e239ddb12f9298740a49a96dd192f588, type: 3}
+  m_Name: Guarded
+  m_EditorClassIdentifier: RTD::GuardedStatus
+  enumID: 21
+  durationType: 0
+  consumedBy: 0
+  doesStackCharges: 0
+  isBoundAtPlanning: 0
+  doesNeedRoll: 0
+  description: An adjacent protector takes all the damage aimed at this unit.
+  icon: {fileID: 0}
+  color: {r: 0.35, g: 0.85, b: 1, a: 1}
+  groundPrefab: {fileID: 0}
+  entityPrefab: {fileID: 0}
+  entityVisualAnchor: 0

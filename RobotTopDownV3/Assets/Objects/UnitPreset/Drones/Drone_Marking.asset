@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f0bd4350348c78f4e89080417667cc11, type: 3}
+  m_Name: Drone_Marking
+  m_EditorClassIdentifier: RTD::UnitPreset
+  spreadsheetId: 
+  displayName: Marking drone
+  frame: {fileID: 11400000, guid: 9efaa1fd7b9f2d94d8ae39e24add48ec, type: 2}
+  reactor: {fileID: 11400000, guid: 3ac6affda30deee4e8b82cd8c469bd25, type: 2}
+  brain: {fileID: 11400000, guid: 2261c00c52c27a646bda5aea69e4bb9b, type: 2}
+  neuronalMembrane: {fileID: 11400000, guid: 80795059694745a4dafaaed676086d59, type: 2}
+  arms:
+  - {fileID: 11400000, guid: 6c7477622917edd45b9fb906c45e80bd, type: 2}
+  auxiliary: []
+  chipsets: []
+  icon: {fileID: 0}
+  isInvocation: 1
+  isTangible: 1
+  aiRole: 4
+  archetype: 0
+  m_totalEnergyCostRemaining: 0

@@ -146,6 +146,7 @@ public class TurnManager : Singleton<TurnManager>
 		public AEntityAction action;
 		public EntityActionEnumID freeActionType;
 		public AEntityAction freeAction;
+		public bool isLocked;
 
 		public bool HasFreeAction => freeAction != null && freeActionType != EntityActionEnumID.Wait && freeActionType != EntityActionEnumID.Unknowned;
 
@@ -1382,6 +1383,12 @@ public class TurnManager : Singleton<TurnManager>
 			case EntityActionData.ActionCodeType.SpecialAbility:
 				action = new SpecialAbilityAction();
 				break;
+			case EntityActionData.ActionCodeType.DeployDrone:
+				action = new DeployDroneAction();
+				break;
+			case EntityActionData.ActionCodeType.Escort:
+				action = new EscortAction();
+				break;
 			default:
 				Debug.LogError("Missing entree in TurnManager.GetAction for type \"" + _actionData.codeType + "\"");
 				return action;
@@ -1469,6 +1476,9 @@ public class TurnManager : Singleton<TurnManager>
 		CloseFacingPickerOf(_actionToStartRemoveFrom.performingEntityID);
 
 		List<RecordedAction> actionQueue = m_recordedActionInput[_actionToStartRemoveFrom.performingEntityID].ToList();
+		if (actionQueue[_recordedActionPositionInQueue].isLocked)
+			return;
+
 		for (int i = actionQueue.Count - 1; i >= _recordedActionPositionInQueue; i--)
 		{
 			actionQueue[i].action.CancelAction();
@@ -1614,7 +1624,7 @@ public class TurnManager : Singleton<TurnManager>
 		{
 			Entity selectedEntity = GameManager.Instance.GetEntityFromID(_selectedEntityID.Value);
 			EntityActionData movementAction = selectedEntity != null ? selectedEntity.AI.GetMovementAction() : null;
-			bool canReselect = GameAssets.current.game.entityActionsData[m_currentActionTypeSelected].CanInvokeMoreItems(selectedEntity, m_currentEquipmentLinkedToActionTypeSelected);
+			bool canReselect = GameAssets.current.game.entityActionsData[m_currentActionTypeSelected].CanInvokeMore(selectedEntity, m_currentEquipmentLinkedToActionTypeSelected);
 
 			if (!canReselect && movementAction != null)
 				SetCurrentActionSelected(movementAction.enumID, null, _isResetingAction);
@@ -1690,6 +1700,7 @@ public class TurnManager : Singleton<TurnManager>
 		m_recordedActionInput.Clear();
 		foreach (EntityAnchor anchor in GameManager.Instance.PlayersEntityAnchor)
 		{
+			anchor.DiscardPendingInvocations();
 			foreach (Entity entity in anchor.Entities)
 			{
 				m_remainingActionToken.Add(entity.ID, GameConfig.current.game.actionTokenPerRound);
@@ -2228,10 +2239,35 @@ public class TurnManager : Singleton<TurnManager>
 			GameAssets.current.game.entityEffects[effetID.enumID].OnDeathTrigger(deadEntity);
 		}
 		LogConsole.AddLog(deadEntity.Data.name + " died", LogConsole.LogEventType.DebugSys);
+		DropQueuedActions(_entityID);
+	}
 
+	private void DropQueuedActions ( int _entityID )
+	{
 		m_recordedActionInput.Remove(_entityID);
 		m_actionsToPlay.Remove(_entityID);
 		m_actionsBeingDone.Remove(_entityID);
+	}
+
+	public void DiscardEntity ( int _entityID )
+	{
+		DropQueuedActions(_entityID);
+		m_remainingActionToken.Remove(_entityID);
+		m_trackedEventsPerEntity.Remove(_entityID);
+		m_entireGameTrackedEventsPerEntity.Remove(_entityID);
+	}
+
+	public void ReservePendingTicks ( Entity _entity, int _spawnTick )
+	{
+		Queue<RecordedAction> reserved = new();
+		Entity.EntityState state = GetDefaultStateOf(_entity);
+		int lastTick = Mathf.Min(_spawnTick, GameConfig.current.game.actionTokenPerRound - 1);
+		for (int tick = 0; tick <= lastTick; tick++)
+			reserved.Enqueue(new RecordedAction(GetAction(EntityActionEnumID.Wait, _entity.ID, null, tick), state) { isLocked = true });
+
+		m_recordedActionInput[_entity.ID] = reserved;
+		m_remainingActionToken[_entity.ID] = GameConfig.current.game.actionTokenPerRound - reserved.Count;
+		TrackedEventCheck();
 	}
 
 	public EndLevelPopup.GameResult GetLocalGameResult ( bool _playerOneWin, bool _playerTwoWin )
@@ -2283,11 +2319,11 @@ public class TurnManager : Singleton<TurnManager>
 		bool isPlayerOneAlive = false;
 		bool isPlayerTwolive = false;
 		foreach (Entity ally in GameManager.Instance.PlayersEntityAnchor[0].Entities)
-			if (!ally.Equipment.IsDead && !ally.Data.FrameData.isImmortal && !ally.IsIllusion)
+			if (!ally.Equipment.IsDead && !ally.Data.FrameData.isImmortal && !ally.IsIllusion && !ally.IsInvocation)
 				isPlayerOneAlive = true;
 
 		foreach (Entity enemy in GameManager.Instance.PlayersEntityAnchor[1].Entities)
-			if (!enemy.Equipment.IsDead && !enemy.Data.FrameData.isImmortal && !enemy.IsIllusion)
+			if (!enemy.Equipment.IsDead && !enemy.Data.FrameData.isImmortal && !enemy.IsIllusion && !enemy.IsInvocation)
 				isPlayerTwolive = true;
 
 		_playerOneWin = !isPlayerTwolive;

@@ -48,6 +48,13 @@ public class Weapon : MonoBehaviour
 
 	public Vector3 ProjectileOrigin => LaunchPose.position;
 
+	public virtual bool DrivesUserPose => true;
+
+	public virtual void PointAt ( Vector3 _target )
+	{
+
+	}
+
 	public static void PlayOrientedVFX ( PoolData _pool, Vector3 _position, Vector3 _direction, string _context )
 	{
 		if (_pool == null)
@@ -139,7 +146,7 @@ public class Weapon : MonoBehaviour
 		}
 	}
 
-	private void OnDestroy ()
+	protected virtual void OnDestroy ()
 	{
 		if (m_attackCR != null && GameManager.Instance != null)
 			GameManager.Instance.StopCoroutine(m_attackCR);
@@ -422,7 +429,7 @@ public class Weapon : MonoBehaviour
 	protected bool PlayAttackAnimation ( AttackAction _attackAction, AttackAction.SingleAttackInfo _attackInfo, bool _isFinalStrike, out float _impactDelay )
 	{
 		_impactDelay = 0f;
-		if (m_user == null || m_user.Skin == null)
+		if (!DrivesUserPose || m_user == null || m_user.Skin == null)
 			return false;
 
 		string weaponKey = _attackInfo.isAttackSuccessfull && !string.IsNullOrEmpty(m_data.attackAnimationSuccessId)
@@ -431,7 +438,7 @@ public class Weapon : MonoBehaviour
 		return m_user.Skin.PlayAttackAnimation(_attackAction, weaponKey, isLeftHand, _isFinalStrike, out _impactDelay);
 	}
 
-	public void PlayShotRecoil ( EntityActionData _data )
+	public virtual void PlayShotRecoil ( EntityActionData _data )
 	{
 		if (_data == null || _data.shotRecoilStrength <= 0f || m_user == null || m_user.Skin == null || m_user.Skin.IK == null)
 			return;

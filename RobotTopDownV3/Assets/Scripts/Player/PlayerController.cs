@@ -377,6 +377,12 @@ public class PlayerController : Singleton<PlayerController>
 		if (m_selectedEntity != null && !_tile.CanInteract && m_turnManager.TryOpenFacingPickerAt(m_selectedEntity, _tile))
 			return;
 
+		if (!_tile.CanInteract && GameManager.Instance.PlayersEntityAnchor[PlayerID].TryGetPendingInvocationOn(_tile, out Entity pending))
+		{
+			SelectEntity(pending);
+			return;
+		}
+
 		//Event => Select // unselect entity
 		if (_tile.TryGetEntity(true, out Entity _entity) && !_tile.CanInteract)
 		{
@@ -920,11 +926,8 @@ public class PlayerController : Singleton<PlayerController>
 
 		int incomingSide = GridManager.Instance.GetIncomingSide(_shotOrigin, _tile);
 		FacingMarker.Aim(target, incomingSide);
-		foreach (ToolEquipment tool in target.Equipment.Tools.Values)
-		{
-			if (tool is Shield shield && shield.Covers(incomingSide))
-				shield.SetAimed(true);
-		}
+		foreach (Shield shield in target.Equipment.GetShieldsCovering(incomingSide))
+			shield.SetAimed(true);
 	}
 
 	public void RefreshDesignationHover ()

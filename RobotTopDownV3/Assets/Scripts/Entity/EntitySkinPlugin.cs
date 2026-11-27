@@ -17,6 +17,7 @@ public class EntitySkinPlugin : EntityPlugin
 	[SerializeField] private Animator m_animator;
 	[SerializeField] private HumanoidEntityIK m_humanoidEntityIK;
 	public HumanoidEntityIK IK => m_humanoidEntityIK;
+	public GameObject GhostSource => m_humanoidEntityIK != null ? m_humanoidEntityIK.gameObject : m_visualRoot;
 
 	[SerializeField] private SerializableDictionary<EntityActionData.ActionType, string> m_animationKeyPerActionDictionary;
 	[SerializeField] private EntityAnimationProfile m_animationProfile;
@@ -212,12 +213,16 @@ public class EntitySkinPlugin : EntityPlugin
 			|| _action.IsPerformingAtTick(TurnManager.currentTick) || !TryGetLinkedWeapon(_action, out Weapon weapon))
 			return;
 
-		m_guardWeapon = weapon;
 		if (data.AimsDuringPreparation)
 		{
 			VisualyAimAt(_action.linkedEquipmentId, weapon.GetAimPoint(_action, 0), data);
 			return;
 		}
+
+		if (!weapon.DrivesUserPose)
+			return;
+
+		m_guardWeapon = weapon;
 
 		bool isLeftHand = m_humanoidEntityIK != null && m_humanoidEntityIK.IsHeldInLeftHand(weapon.transform);
 		float seconds = Mathf.Max(1, _action.TimeAtStartPerform - TurnManager.currentTick) * GameConfig.current.game.actionDuration;
@@ -272,6 +277,12 @@ public class EntitySkinPlugin : EntityPlugin
 	{
 		if (m_humanoidEntityIK == null || !m_linkedEntity.Equipment.Weapons.TryGetValue(_weaponID, out Weapon weapon) || weapon == null)
 			return;
+
+		if (!weapon.DrivesUserPose)
+		{
+			weapon.PointAt(_aimedPosition);
+			return;
+		}
 
 		m_isAiming = true;
 		m_guardWeapon = weapon;

@@ -71,5 +71,18 @@ public enum EntityActionEnumID
 	Ability_Erosion,
 	Ability_TacticalScanner,
 	Ability_Overdrive,
+	Activate_Energy_Shield,
+	Drone_Shot,
+	Deploy_Drone,
+	Invoke_Marking_Drone,
+	Invoke_Shield_Drone,
+	Invoke_Incendiary_Drone,
+	Invoke_Offensive_Drone,
+	Drone_Mark,
+	Escort,
+	Drone_Ignite,
+	Drone_Offensive_Shot,
+	Apply_Thorns,
+	Protect,
 	//#END#ENTITYACTIONENUMID#//
 }

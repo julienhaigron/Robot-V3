@@ -111,7 +111,7 @@ public class EntityActionDisplay :
 
 	public void OnPointerClick ( PointerEventData eventData )
 	{
-		if (m_recordedAction == null || TurnManager.Instance.currentPhase != TurnManager.TurnPhase.Recording || !gameObject.activeInHierarchy)
+		if (m_recordedAction == null || m_recordedAction.isLocked || TurnManager.Instance.currentPhase != TurnManager.TurnPhase.Recording || !gameObject.activeInHierarchy)
 			return;
 
 		bool clickedModAction = eventData.pointerPressRaycast.gameObject == m_modActionIconImg.gameObject;

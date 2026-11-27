@@ -60,7 +60,7 @@ public class EntityEquipmentPlugin : EntityPlugin
 				if (stringContainer == null || !stringContainer.TryGetData(out EntityEquipmentData data))
 					continue;
 
-				Transform socket = m_linkedEntity.Skin.IK.GetGrabSocket(armIndex);
+				Transform socket = m_linkedEntity.Skin.IK != null ? m_linkedEntity.Skin.IK.GetGrabSocket(armIndex) : m_linkedEntity.Skin.StatusVisualParent;
 				if (data is WeaponEquipmentData weaponData)
 					AddWeapon(weaponData, stringContainer.ID, socket);
 				else if (data is ToolEquipmentData toolData)
@@ -100,6 +100,9 @@ public class EntityEquipmentPlugin : EntityPlugin
 		public Tile shotOrigin;
 		public Tile hitTile;
 		public int absorbedDamage;
+		public Shield absorbingShield;
+		public bool isRedirected;
+		public bool isReflected;
 		public bool critical;
 		public Vector3 hitPos;
 		public Vector3 hitNormal;
@@ -518,23 +521,30 @@ public class EntityEquipmentPlugin : EntityPlugin
 
 	public void TakeDamage ( TakeDamageCallback _damageInfo )
 	{
+		if (TryRedirectDamage(ref _damageInfo))
+		{
+			_damageInfo.entityTargeted.Equipment.TakeDamage(_damageInfo);
+			return;
+		}
+
 		if (m_linkedEntity.Data.FrameData.isImmortal)
 		{
 			onHealthChangeDamage?.Invoke(_damageInfo);
 			return;
 		}
-		Dictionary<WeaponEquipmentData.DamageType, int> damages = new(_damageInfo.damages);
-		int incomingSide = GetIncomingSide(_damageInfo);
-		foreach (ToolEquipment tool in m_tools.Values)
-		{
-			if (tool is not Shield shield || !shield.Covers(incomingSide))
-				continue;
 
+		Dictionary<WeaponEquipmentData.DamageType, int> damages = new(_damageInfo.damages);
+		foreach (Shield shield in GetShieldsCovering(GetIncomingSide(_damageInfo)))
+		{
 			foreach (WeaponEquipmentData.DamageType damageType in _damageInfo.damages.Keys)
 			{
 				int absorbed = shield.Absorb(damages[damageType]);
+				if (absorbed <= 0)
+					continue;
+
 				damages[damageType] -= absorbed;
 				_damageInfo.absorbedDamage += absorbed;
+				_damageInfo.absorbingShield = shield;
 			}
 		}
 
@@ -548,6 +558,47 @@ public class EntityEquipmentPlugin : EntityPlugin
 			Death(_damageInfo);
 
 		onHealthChangeDamage?.Invoke(_damageInfo);
+
+		foreach (EntityStatusEnumID statusID in m_linkedEntity.Status.ToArray())
+			GameAssets.current.game.entityStatus[statusID].OnDamageTaken(m_linkedEntity, _damageInfo);
+	}
+
+	private bool TryRedirectDamage ( ref TakeDamageCallback _damageInfo )
+	{
+		foreach (EntityStatusEnumID statusID in m_linkedEntity.Status)
+		{
+			if (GameAssets.current.game.entityStatus[statusID].TryRedirectDamage(m_linkedEntity, ref _damageInfo))
+				return true;
+		}
+
+		return false;
+	}
+
+	public IEnumerable<Shield> GetShieldsCovering ( int _incomingSide )
+	{
+		if (_incomingSide < 0)
+			yield break;
+
+		foreach (Shield shield in GetCoveringShieldsOf(m_linkedEntity, _incomingSide))
+			yield return shield;
+
+		foreach (Entity escort in GameManager.Instance.PlayersEntityAnchor[m_linkedEntity.OwnerID].Entities)
+		{
+			if (escort == m_linkedEntity || !escort.IsEscorting(m_linkedEntity))
+				continue;
+
+			foreach (Shield shield in GetCoveringShieldsOf(escort, _incomingSide))
+				yield return shield;
+		}
+	}
+
+	private static IEnumerable<Shield> GetCoveringShieldsOf ( Entity _entity, int _incomingSide )
+	{
+		foreach (ToolEquipment tool in _entity.Equipment.m_tools.Values)
+		{
+			if (tool is Shield shield && shield.Covers(_incomingSide))
+				yield return shield;
+		}
 	}
 
 	public Dictionary<WeaponEquipmentData.DamageType, int> GetDamagesAfterResistances ( Dictionary<WeaponEquipmentData.DamageType, int> _damages )
@@ -570,6 +621,13 @@ public class EntityEquipmentPlugin : EntityPlugin
 	}
 
 	public enum DeathCause { Default, Doom, Vanish }
+
+	public void Dismiss ()
+	{
+		m_isDead = true;
+		m_linkedEntity.Skin.Hide();
+		m_linkedEntity.UI.gameObject.SetActive(false);
+	}
 
 	public void InstantDeath ( DeathCause _cause = DeathCause.Default )
 	{

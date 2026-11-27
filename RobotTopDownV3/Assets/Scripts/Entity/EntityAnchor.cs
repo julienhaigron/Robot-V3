@@ -9,6 +9,8 @@ public class EntityAnchor : MonoBehaviour
 	private List<Entity> m_entities = new();
     public List<Entity> Entities => m_entities;
 	private readonly Dictionary<int, Entity> m_entitiesByID = new();
+	private readonly List<Entity> m_pendingInvocations = new();
+	private readonly Stack<int> m_releasedEntityIDs = new();
 	private int m_issuedEntityIDCount;
 	private Entity m_king;
     public Entity King => m_king;
@@ -124,6 +126,9 @@ public class EntityAnchor : MonoBehaviour
 
 	public int ReserveEntityIDs ( int _playerID, int _count = 1 )
 	{
+		if (_count == 1 && m_releasedEntityIDs.Count > 0)
+			return m_releasedEntityIDs.Pop();
+
 		m_issuedEntityIDCount = Mathf.Max(m_issuedEntityIDCount, m_entities.Count);
 		int firstID = (100 * _playerID) + m_issuedEntityIDCount; //0 - 99 id slots for units per player
 		m_issuedEntityIDCount += _count;
@@ -159,8 +164,16 @@ public class EntityAnchor : MonoBehaviour
 				Destroy(entity.gameObject);
 		}
 
+		foreach (Entity entity in m_pendingInvocations)
+		{
+			if (entity != null)
+				Destroy(entity.gameObject);
+		}
+
 		m_entities.Clear();
 		m_entitiesByID.Clear();
+		m_pendingInvocations.Clear();
+		m_releasedEntityIDs.Clear();
 	}
 
 	public void DesignateRandomKing ()
@@ -181,13 +194,76 @@ public class EntityAnchor : MonoBehaviour
 			m_king.UI.SetKingMarker(true);
 	}
 
-	public void SpawnEntityDuringPlay ( EntitySavedData _entityData, int _entityID, int _playerID, int _tileID, System.Action _onEndSpawn = null )
+	public Entity SpawnInvocation ( EntitySavedData _entityData, int _entityID, Entity _invoker, string _componentID, int _tileID, int _pendingUntilTick = -1 )
 	{
-		Entity entity = Instantiate(_entityData.FrameData.prefab, transform);
-		Register(entity, _entityID);
-		entity.Init(_entityData, new Spawn(GridManager.Instance.Tiles[_tileID].coordinates, Spawn.InitializationState.Success, true, true), _entityID, _playerID);
+		bool isPending = _pendingUntilTick >= 0;
+		Entity entity = CreateOnTile(_entityData, _entityID, _invoker.OwnerID, _tileID, isPending);
+		entity.BecomeInvocationOf(_invoker, _componentID, isPending);
 		onEntityAdded?.Invoke(entity);
 
+		if (isPending)
+			TurnManager.Instance.ReservePendingTicks(entity, _pendingUntilTick);
+		else
+			TurnManager.Instance.AddEntityMidGame(entity);
+
+		return entity;
+	}
+
+	public void MaterializeInvocation ( Entity _entity )
+	{
+		m_pendingInvocations.Remove(_entity);
+		m_entities.Add(_entity);
+		_entity.Materialize();
+	}
+
+	public void DiscardPendingInvocation ( Entity _entity )
+	{
+		m_pendingInvocations.Remove(_entity);
+		TurnManager.Instance.DiscardEntity(_entity.ID);
+		if (TurnManager.Instance.currentPhase != TurnManager.TurnPhase.Recording)
+		{
+			_entity.Equipment.Dismiss();
+			return;
+		}
+
+		if (PlayerController.Instance.SelectedEntity == _entity)
+			PlayerController.Instance.SelectEntity(null);
+		m_entitiesByID.Remove(_entity.ID);
+		m_releasedEntityIDs.Push(_entity.ID);
+		Destroy(_entity.gameObject);
+	}
+
+	public void DiscardPendingInvocations ()
+	{
+		foreach (Entity pending in m_pendingInvocations.ToArray())
+			DiscardPendingInvocation(pending);
+	}
+
+	public bool TryGetPendingInvocationOn ( Tile _tile, out Entity _entity )
+	{
+		_entity = _tile == null ? null : m_pendingInvocations.Find(pending => pending != null && !pending.Equipment.IsDead && pending.Displacement.Coordinates.ID == _tile.coordinates.ID);
+		return _entity != null;
+	}
+
+	public void SpawnEntityDuringPlay ( EntitySavedData _entityData, int _entityID, int _playerID, int _tileID, System.Action _onEndSpawn = null )
+	{
+		Entity entity = CreateOnTile(_entityData, _entityID, _playerID, _tileID, false);
+		onEntityAdded?.Invoke(entity);
 		TurnManager.Instance.AddEntityMidGame(entity, _onEndSpawn);
+	}
+
+	private Entity CreateOnTile ( EntitySavedData _entityData, int _entityID, int _playerID, int _tileID, bool _isPending )
+	{
+		Entity entity = Instantiate(_entityData.FrameData.prefab, transform);
+		if (_isPending)
+		{
+			m_entitiesByID[_entityID] = entity;
+			m_pendingInvocations.Add(entity);
+		}
+		else
+			Register(entity, _entityID);
+
+		entity.Init(_entityData, new Spawn(GridManager.Instance.Tiles[_tileID].coordinates, Spawn.InitializationState.Success, true, true), _entityID, _playerID, !_isPending);
+		return entity;
 	}
 }

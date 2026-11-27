@@ -971,6 +971,14 @@ public enum LocalizationKey
     event_grandprix_lore,
     event_commandopromo,
     event_commandopromo_lore,
+    log_guard_intercept,
+    log_thorns_reflect,
+    status_thorns,
+    status_thorns_desc,
+    status_guarded,
+    status_guarded_desc,
+    log_drone_recalled,
+    log_invocation_failed,
 }
 
 public static class LocalizationKeyExtensions
@@ -1949,6 +1957,14 @@ public static class LocalizationKeyExtensions
             case LocalizationKey.event_grandprix_lore: return "event/grandprix_lore";
             case LocalizationKey.event_commandopromo: return "event/commandopromo";
             case LocalizationKey.event_commandopromo_lore: return "event/commandopromo_lore";
+            case LocalizationKey.log_guard_intercept: return "log/guard_intercept";
+            case LocalizationKey.log_thorns_reflect: return "log/thorns_reflect";
+            case LocalizationKey.status_thorns: return "status/thorns";
+            case LocalizationKey.status_thorns_desc: return "status/thorns_desc";
+            case LocalizationKey.status_guarded: return "status/guarded";
+            case LocalizationKey.status_guarded_desc: return "status/guarded_desc";
+            case LocalizationKey.log_drone_recalled: return "log/drone_recalled";
+            case LocalizationKey.log_invocation_failed: return "log/invocation_failed";
             default: return string.Empty;
         }
     }

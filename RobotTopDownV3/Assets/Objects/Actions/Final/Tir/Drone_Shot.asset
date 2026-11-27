@@ -1,0 +1,87 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a743e40aeafc0445b10e59cec8dfa98, type: 3}
+  m_Name: Drone_Shot
+  m_EditorClassIdentifier: RTD::EntityActionData
+  spreadsheetId: https://docs.google.com/spreadsheets/d/1quAn64T5zuE6npFmDzjOhNFFvw4UJaXSoWxX-uvy3gI/export?format=csv&gid=1875123267
+  displayName: Drone shot
+  enumID: 64
+  icon: {fileID: 21300000, guid: aaa74e87497e6ea4ca4b28f89fccd63f, type: 3}
+  tileOutlineColor: {r: 0, g: 1, b: 0, a: 1}
+  m_tokenPreparationDuration: 0
+  m_tokenCooldown: 0
+  tokenDuration: 1
+  isModAction: 0
+  isPlayedFirst: 1
+  preparationAnimationKey: 
+  afterPerformAnimationKey: 
+  performAnimationKey: 
+  performAnimationHitDelay: 0
+  preparationAnimationMode: 0
+  preparationHoldDelay: 0.2
+  preparationWindUpRatio: 0.8
+  recoveryAnimationMode: 0
+  recoveryHoldDelay: 0.6
+  shotRecoilStrength: 1
+  onPerformSingleAttackSFXID: 7
+  onSingleAttackHitSFXID: 1
+  onSingleAttackHitVFXPool: {fileID: 11400000, guid: 41055fbce587bd73c361a10dd777f8ea, type: 2}
+  onPerformVFXPool: {fileID: 11400000, guid: efda108436f7455593e54b2b8817ac5e, type: 2}
+  movementTrailPool: {fileID: 0}
+  visualEffectType: 0
+  visualEffectDuration: 0.3
+  projectilePool: {fileID: 0}
+  projectileSpeed: 10
+  spellVfxPrefab: {fileID: 0}
+  spellVfxLifetime: 2
+  attackProjectileMode: 0
+  attackProjectilePool: {fileID: 0}
+  attackProjectileSpeed: 20
+  doesAttackProjectileReturn: 0
+  attackProjectileSprayCount: 10
+  attackProjectileSprayInterval: 0.04
+  doesSprayRepeatPerformVFX: 1
+  conditionType: 11
+  previousActionAttackModificator: 0
+  type: 0
+  subType: 3
+  codeType: 1
+  abilityChargeMax: 5
+  abilityRatio: 3
+  abilityEffect: 0
+  abilityStatus: 0
+  targetType: 1
+  trajectoryType: 0
+  minDistance: 1
+  maxDistance: 4
+  maxTargetAmount: 1
+  targetsAllies: 0
+  aoeType: 0
+  doesAffectTile: 0
+  aoECenterType: 0
+  aoeMinEffectRange: 0
+  aoeMaxEffectRange: 0
+  maxChainedTarget: 1
+  damageReductionOnChain: 0.1
+  hitAmount: 1
+  damageFactor: 1
+  baseDamages:
+    keys: 05000000
+    values: 05000000
+  statusHitProbability: 0
+  passiveEffects: []
+  invocatedEntity: {fileID: 0}
+  invocatedItem: {fileID: 0}
+  invocationCountLimit: 1
+  deployDuration: 3
+  movementSpeed: 1
+  movementAnimation: 

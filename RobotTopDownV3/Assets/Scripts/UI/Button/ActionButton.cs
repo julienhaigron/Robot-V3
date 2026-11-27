@@ -103,7 +103,7 @@ public class ActionButton : BaseButton, IPointerExitHandler
 
 		bool hasEnoughToken = TurnManager.Instance.RemainingActionToken.TryGetValue(entityID, out int remainingToken)
 			&& remainingToken >= action.Data.GetTokenTotalCost(action, PlayerController.Instance.SelectedEntity, null);
-		bool canInvoke = action.Data.CanInvokeMoreItems(PlayerController.Instance.SelectedEntity, m_linkedEquipmentData);
+		bool canInvoke = action.Data.CanInvokeMore(PlayerController.Instance.SelectedEntity, m_linkedEquipmentData);
 
 		RefreshInvocationCount(action.Data, PlayerController.Instance.SelectedEntity);
 		SetInteractability(hasEnoughToken && canInvoke && Condition.UseConditionPredicate(action, PlayerController.Instance.SelectedEntity, null, action.Data.conditionType));

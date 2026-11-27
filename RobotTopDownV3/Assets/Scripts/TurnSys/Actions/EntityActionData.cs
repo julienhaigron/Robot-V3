@@ -164,7 +164,9 @@ public class EntityActionData : AParsableScriptableObject
 		JumpMove,
 		MoveItem,
 		SwapWithIllusion,
-		SpecialAbility
+		SpecialAbility,
+		DeployDrone,
+		Escort
 	}
 
 	public enum SpecialAbilityEffect { Status, Retreat, Illusion }
@@ -213,6 +215,8 @@ public class EntityActionData : AParsableScriptableObject
 
 	[Parsing("Target Amount")]
 	public int maxTargetAmount = 1;
+	[ShowIf("@targetType == TargetType.OtherEntity"), Tooltip("Vise un allié choisi à la planification, au lieu d'un ennemi résolu au tick.")]
+	public bool targetsAllies;
 	#endregion
 
 	#region AOE Vars
@@ -257,6 +261,7 @@ public class EntityActionData : AParsableScriptableObject
 	[ShowIf("@codeType == ActionCodeType.InvokeEntity")] public UnitPreset invocatedEntity;
 	[ShowIf("@codeType == ActionCodeType.InvokeItem || codeType == ActionCodeType.MoveItem")] public AItemData invocatedItem;
 	[ShowIf("@codeType == ActionCodeType.InvokeEntity || codeType == ActionCodeType.InvokeItem")] public int invocationCountLimit = 1;
+	[ShowIf("@codeType == ActionCodeType.DeployDrone"), Min(1), Tooltip("Ticks pendant lesquels le drone posé tire avant de revenir seul. Son rayon de garde est le rayon max de la zone (AoE Circle, centrée sur la cible).")] public int deployDuration = 3;
 	[ShowIf("@type == ActionType.Movement || codeType == ActionCodeType.MoveThenAttack ")] public int movementSpeed = 1;
 	[ShowIf("@type == ActionType.Movement || codeType == ActionCodeType.MoveThenAttack "), Tooltip("Style de déplacement : l'état « Move <nom> » du calque Locomotion (Walk, Run, Dash…). Vide = Walk. En vol, l'état « Move Fly » passe devant.")]
 	public string movementAnimation = "";
@@ -272,7 +277,7 @@ public class EntityActionData : AParsableScriptableObject
 	public bool DoesResolveItsOwnTarget ()
 	{
 		MainActionType mainType = GetMainActionType();
-		return targetType == TargetType.OtherEntity
+		return targetType == TargetType.OtherEntity && !targetsAllies
 			&& (mainType == MainActionType.Attack || mainType == MainActionType.Special);
 	}
 
@@ -300,8 +305,11 @@ public class EntityActionData : AParsableScriptableObject
 			&& _entity.Equipment.Tools.TryGetValue(_linkedEquipmentID, out _tool) && _tool != null;
 	}
 
-	public bool CanInvokeMoreItems ( Entity _entity, string _linkedEquipmentID )
+	public bool CanInvokeMore ( Entity _entity, string _linkedEquipmentID )
 	{
+		if (codeType == ActionCodeType.InvokeEntity)
+			return _entity == null || _entity.CountLivingInvocationsFrom(_linkedEquipmentID) < invocationCountLimit;
+
 		return !TryGetInvocationTool(_entity, _linkedEquipmentID, out ToolEquipment tool) || invocatedItem.InvokeItemPredicate(tool, this);
 	}
 
@@ -541,6 +549,10 @@ public class EntityActionData : AParsableScriptableObject
 
 		if (_performingEntity != null && _performingEntity.HasChargeFor(EntityStatusEnumID.Assault, _action))
 			totalDamageFactor += (GameAssets.current.game.entityStatus[EntityStatusEnumID.Assault] as AssaultStatus).GetDamageBonus(_action, _performingEntity);
+
+		if (_action != null && _performingEntity != null && ContainsEffect(_performingEntity, EntityPassiveEffectEnumID.Horde, out AEntityPassiveEffect.PassiveEffectContainer hordeEffect)
+			&& Condition.UseConditionPredicate(_action, _performingEntity, _targetEntity, hordeEffect.conditionType))
+			totalDamageFactor += (GameAssets.current.game.entityEffects[EntityPassiveEffectEnumID.Horde] as HordePassiveEffect).GetDamageBonus(_performingEntity);
 
 		return totalDamageFactor;
 	}

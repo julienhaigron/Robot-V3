@@ -14,7 +14,8 @@ public class Condition
 		IsInPreaparation, 
 		IsInCooldown, 
 		Cells12FromStart,
-		DidNotUseThisGame
+		DidNotUseThisGame,
+		IsDroneDocked
 	}
 
 	public static bool UseConditionPredicate ( AEntityAction _action, Entity _entity, Entity _targetEntity, ConditionType _conditionType )
@@ -57,11 +58,18 @@ public class Condition
 				bool recordCheck4 = _entity.Displacement.TraveledTileTotalCount + TurnManager.Instance.TrackedEventsPerEntity[_entity.ID].traveledTileCountThisTurn >= 12;
 				bool liveCheck4 = _entity.Displacement.TraveledTileTotalCount >= 12;
 				return isLive ? liveCheck4 : recordCheck4;
+			case ConditionType.IsDroneDocked:
+				return _entity.Equipment.Weapons.TryGetValue(_action.linkedEquipmentId ?? string.Empty, out Weapon weapon) && weapon is DroneWeapon drone && drone.IsDockedAt(_action);
 			case ConditionType.DidNotUseThisGame:
 				bool liveCheck5 = !TurnManager.Instance.DidUseActionThisGame(_entity.ID, _action.enumID);
 				bool recordCheck5 = liveCheck5 && !TurnManager.Instance.TrackedEventsPerEntity[_entity.ID].usedActionThisTurn.Contains(_action.enumID);
 				return isLive ? liveCheck5 : recordCheck5;
 		}
+	}
+
+	public static bool IsCheckedAtResolution ( ConditionType _conditionType )
+	{
+		return _conditionType == ConditionType.IsDroneDocked;
 	}
 
 	private static TileCoordinates GetPositionOf ( AEntityAction _action, Entity _entity, bool _isLive )

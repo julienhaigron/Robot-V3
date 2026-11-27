@@ -1,0 +1,93 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a743e40aeafc0445b10e59cec8dfa98, type: 3}
+  m_Name: Activate_Energy_Shield
+  m_EditorClassIdentifier: RTD::EntityActionData
+  spreadsheetId: https://docs.google.com/spreadsheets/d/1quAn64T5zuE6npFmDzjOhNFFvw4UJaXSoWxX-uvy3gI/export?format=csv&gid=1776854952
+  displayName: Energy shield
+  enumID: 63
+  icon: {fileID: 21300000, guid: bc8f395fbbcd7624c9a136ad3035aa14, type: 3}
+  tileOutlineColor: {r: 0, g: 1, b: 0, a: 1}
+  m_tokenPreparationDuration: 0
+  m_tokenCooldown: 0
+  tokenDuration: 1
+  isModAction: 0
+  isPlayedFirst: 1
+  preparationAnimationKey: 
+  afterPerformAnimationKey: 
+  performAnimationKey: 
+  performAnimationHitDelay: 0.3
+  preparationAnimationMode: 0
+  preparationHoldDelay: 0.2
+  preparationWindUpRatio: 0.8
+  recoveryAnimationMode: 0
+  recoveryHoldDelay: 0.6
+  shotRecoilStrength: 1
+  onPerformSingleAttackSFXID: 0
+  onSingleAttackHitSFXID: 0
+  onSingleAttackHitVFXPool: {fileID: 0}
+  onPerformVFXPool: {fileID: 0}
+  movementTrailPool: {fileID: 0}
+  visualEffectType: 1
+  visualEffectDuration: 0.3
+  projectilePool: {fileID: 0}
+  projectileSpeed: 10
+  spellVfxPrefab: {fileID: 7392000000000000001, guid: f5de1e9d3e5e9c0dc2d590e045e103d0, type: 3}
+  spellVfxLifetime: 2
+  attackProjectileMode: 0
+  attackProjectilePool: {fileID: 0}
+  attackProjectileSpeed: 20
+  doesAttackProjectileReturn: 0
+  attackProjectileSprayCount: 10
+  attackProjectileSprayInterval: 0.04
+  doesSprayRepeatPerformVFX: 1
+  conditionType: 0
+  previousActionAttackModificator: 0
+  type: 3
+  subType: 7
+  codeType: 5
+  abilityChargeMax: 5
+  abilityRatio: 3
+  abilityEffect: 0
+  abilityStatus: 0
+  targetType: 0
+  trajectoryType: 0
+  minDistance: 0
+  maxDistance: 0
+  maxTargetAmount: 1
+  targetsAllies: 0
+  aoeType: 0
+  doesAffectTile: 0
+  aoECenterType: 0
+  aoeMinEffectRange: 0
+  aoeMaxEffectRange: 0
+  maxChainedTarget: 1
+  damageReductionOnChain: 0.1
+  hitAmount: 0
+  damageFactor: 1
+  baseDamages:
+    keys: 
+    values: 
+  statusHitProbability: 1
+  passiveEffects:
+  - enumID: 28
+    conditionType: 0
+    targetType: 0
+    aoeType: 0
+    centerType: 0
+    effectRange: {x: 0, y: 0}
+  invocatedEntity: {fileID: 0}
+  invocatedItem: {fileID: 0}
+  invocationCountLimit: 1
+  deployDuration: 3
+  movementSpeed: 1
+  movementAnimation: 

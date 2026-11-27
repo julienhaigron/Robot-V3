@@ -42,13 +42,20 @@ public static class AISpecialEvaluator
 	private const int c_smokeCoverRadius = 2;
 	private const float c_mineValue = 2f;
 	private const float c_buffValuePerUnit = 0.6f;
+	private const float c_invocationScore = 2.5f;
+	private const float c_sentryValuePerEnemy = 1.2f;
+	private const float c_shieldRaiseScore = 2.2f;
+	private const float c_thornsScore = 1.5f;
+	private const float c_guardScore = 1.5f;
+	private const int c_threatRange = 5;
 
 	public static bool IsUsableSpecial ( EntityActionData _data )
 	{
 		if (_data == null || _data.isModAction || _data.IsRotation || _data.GetMainActionType() != EntityActionData.MainActionType.Special)
 			return false;
 
-		if (_data.codeType == EntityActionData.ActionCodeType.TurnShield || IsSelfDestruct(_data))
+		if (_data.codeType == EntityActionData.ActionCodeType.TurnShield || IsSelfDestruct(_data)
+			|| _data.codeType == EntityActionData.ActionCodeType.InvokeEntity || _data.codeType == EntityActionData.ActionCodeType.DeployDrone || IsSingleTargetBuff(_data))
 			return true;
 
 		if (_data.codeType == EntityActionData.ActionCodeType.InvokeItem)
@@ -76,6 +83,15 @@ public static class AISpecialEvaluator
 
 		if (data.codeType == EntityActionData.ActionCodeType.InvokeItem)
 			return TryGetItemPlacement(_context, _action, out _choice);
+
+		if (data.codeType == EntityActionData.ActionCodeType.InvokeEntity)
+			return TryGetInvocationTile(_context, _action, out _choice);
+
+		if (data.codeType == EntityActionData.ActionCodeType.DeployDrone)
+			return TryGetSentryTile(_context, _action, out _choice);
+
+		if (IsSingleTargetBuff(data))
+			return TryGetBuffTarget(_context, _action, out _choice);
 
 		if (data.targetType == EntityActionData.TargetType.Self)
 		{
@@ -261,6 +277,170 @@ public static class AISpecialEvaluator
 
 		return false;
 	}
+
+	#region Drones and buffs
+
+	private static bool IsSingleTargetBuff ( EntityActionData _data )
+	{
+		return _data.codeType == EntityActionData.ActionCodeType.ApplyEffect && _data.aoeType == EntityActionData.AOEType.Noone
+			&& (_data.targetType == EntityActionData.TargetType.Self || _data.targetsAllies)
+			&& _data.passiveEffects != null && _data.passiveEffects.Length > 0;
+	}
+
+	private static List<Tile> GetTilesInRange ( Context _context, AEntityAction _action )
+	{
+		return GridManager.Instance.GetTilesInVisionRange(_context.casterTile, _action.Data.minDistance, _action.Data.GetMaxRange(_action, _context.caster, null), false, true, true);
+	}
+
+	private static bool TryGetInvocationTile ( Context _context, AEntityAction _action, out SpecialChoice _choice )
+	{
+		_choice = default;
+		if (!_action.Data.CanInvokeMore(_context.caster, _action.linkedEquipmentId))
+			return false;
+
+		Tile best = null;
+		int bestDistance = int.MaxValue;
+		foreach (Tile tile in GetTilesInRange(_context, _action))
+		{
+			if (tile.IsObstacle(true) || tile.GetCurrentEntity() != null)
+				continue;
+
+			int distance = GetDistanceToClosestEnemy(_context, tile);
+			if (distance >= bestDistance)
+				continue;
+
+			best = tile;
+			bestDistance = distance;
+		}
+
+		_choice = new SpecialChoice { targetTile = best, affectedEnemies = new List<Entity>(), score = c_invocationScore };
+		return best != null;
+	}
+
+	private static int GetDistanceToClosestEnemy ( Context _context, Tile _tile )
+	{
+		int closest = int.MaxValue;
+		foreach (Entity enemy in _context.visibleEnemies)
+			closest = Mathf.Min(closest, _tile.coordinates.DistanceTo(enemy.Displacement.Coordinates));
+		return closest;
+	}
+
+	private static bool TryGetSentryTile ( Context _context, AEntityAction _action, out SpecialChoice _choice )
+	{
+		_choice = default;
+		if (!_context.caster.Equipment.Weapons.TryGetValue(_action.linkedEquipmentId ?? string.Empty, out Weapon weapon) || weapon is not DroneWeapon drone || drone.IsDeployed)
+			return false;
+
+		int radius = _action.Data.GetAoEMaxRange(_action, _context.caster, null);
+		bool hasChoice = false;
+		foreach (Tile tile in GetTilesInRange(_context, _action))
+		{
+			if (tile.GroundType == TileGroundType.Wall)
+				continue;
+
+			HashSet<Tile> sight = new(GridManager.Instance.GetTilesInVisionRange(tile, 1, radius, false, true, true));
+			int covered = 0;
+			foreach (Entity enemy in _context.visibleEnemies)
+			{
+				if (sight.Contains(enemy.Displacement.Coordinates.GetTile()))
+					covered++;
+			}
+
+			float score = covered * c_sentryValuePerEnemy;
+			if (covered == 0 || (hasChoice && score <= _choice.score))
+				continue;
+
+			_choice = new SpecialChoice { targetTile = tile, affectedEnemies = new List<Entity>(), score = score };
+			hasChoice = true;
+		}
+
+		return hasChoice;
+	}
+
+	private static bool TryGetBuffTarget ( Context _context, AEntityAction _action, out SpecialChoice _choice )
+	{
+		_choice = default;
+		if (_action.Data.targetType == EntityActionData.TargetType.Self)
+		{
+			float selfScore = GetBuffValue(_context, _action.Data, _context.caster);
+			_choice = new SpecialChoice { targetTile = _context.casterTile, affectedEnemies = new List<Entity>(), score = selfScore };
+			return selfScore > 0f;
+		}
+
+		bool hasChoice = false;
+		foreach (Tile tile in GetTilesInRange(_context, _action))
+		{
+			Entity ally = tile.GetCurrentEntity();
+			if (ally == null || ally == _context.caster || ally.Equipment.IsDead || !ally.IsAlliedTo(_context.caster.OwnerID))
+				continue;
+
+			float score = GetBuffValue(_context, _action.Data, ally);
+			if (score <= 0f || (hasChoice && score <= _choice.score))
+				continue;
+
+			_choice = new SpecialChoice { targetTile = tile, affectedEnemies = new List<Entity> { ally }, score = score };
+			hasChoice = true;
+		}
+
+		return hasChoice;
+	}
+
+	private static float GetBuffValue ( Context _context, EntityActionData _data, Entity _target )
+	{
+		if (!IsThreatened(_context, _target))
+			return 0f;
+
+		float value = 0f;
+		foreach (AEntityPassiveEffect.PassiveEffectContainer container in _data.passiveEffects)
+		{
+			if (!GameAssets.current.game.entityEffects.TryGetValue(container.enumID, out AEntityPassiveEffect effect))
+				continue;
+
+			if (effect is ActivateEnergyShieldPassiveEffect && HasLoweredShield(_target))
+				value += c_shieldRaiseScore;
+			else if (effect is ApplyStatusPassiveEffect statusEffect && !_target.Status.Contains(statusEffect.statusApplied))
+				value += GetBuffStatusValue(statusEffect.statusApplied, _target);
+		}
+
+		return value;
+	}
+
+	private static float GetBuffStatusValue ( EntityStatusEnumID _status, Entity _target )
+	{
+		switch (_status)
+		{
+			case EntityStatusEnumID.Thorns:
+				return c_thornsScore;
+			case EntityStatusEnumID.Guarded:
+				return _target.IsInvocation ? 0f : c_guardScore + 1f - _target.Equipment.CurrentHealth / (float)Mathf.Max(1, _target.Equipment.MaxHealth);
+			default:
+				return 0f;
+		}
+	}
+
+	private static bool IsThreatened ( Context _context, Entity _target )
+	{
+		foreach (Entity enemy in _context.visibleEnemies)
+		{
+			if (_target.Displacement.Coordinates.DistanceTo(enemy.Displacement.Coordinates) <= c_threatRange)
+				return true;
+		}
+
+		return false;
+	}
+
+	private static bool HasLoweredShield ( Entity _entity )
+	{
+		foreach (ToolEquipment tool in _entity.Equipment.Tools.Values)
+		{
+			if (tool is Shield shield && shield.IsActivable && !shield.IsUp)
+				return true;
+		}
+
+		return false;
+	}
+
+	#endregion
 
 	#region Smoke
 
@@ -569,7 +749,7 @@ public static class AISpecialEvaluator
 		_choice = default;
 		if (string.IsNullOrEmpty(_action.linkedEquipmentId)
 			|| !_context.caster.Equipment.Tools.TryGetValue(_action.linkedEquipmentId, out ToolEquipment tool)
-			|| tool is not Shield shield || shield.CurrentHp <= 0)
+			|| tool is not Shield shield || !shield.IsUp)
 			return false;
 
 		Entity threat = null;
@@ -593,7 +773,7 @@ public static class AISpecialEvaluator
 
 		int orientation = GridManager.Instance.GetIncomingSide(threat.Displacement.Coordinates.GetTile(), _context.casterTile);
 		Tile neighbor = _context.casterTile.Neighbors[orientation];
-		if (orientation == shield.Orientation || neighbor == null)
+		if (shield.IsSideCovered(orientation) || neighbor == null)
 			return false;
 
 		_choice = new SpecialChoice

@@ -143,6 +143,18 @@ public class EntityAIPlugin : EntityPlugin
 			//we dont handle it here
 			return resultInfo;
 		}
+		else if (m_linkedEntity.IsPendingInvocation)
+		{
+			if (_recordedAction.action is not WaitAction)
+				resultInfo.ReplaceAction(GetWaitActionFor(_recordedAction), "Invocation not spawned yet");
+			return resultInfo;
+		}
+		else if (Condition.IsCheckedAtResolution(_recordedAction.action.Data.conditionType)
+			&& !Condition.UseConditionPredicate(_recordedAction.action, m_linkedEntity, null, _recordedAction.action.Data.conditionType))
+		{
+			resultInfo.ReplaceAction(GetWaitActionFor(_recordedAction), _recordedAction.action.Data.name + " is unavailable");
+			return resultInfo;
+		}
 		else if (m_linkedEntity.Status.Contains(EntityStatusEnumID.Stun))
 		{
 			resultInfo.ReplaceAction(GetWaitActionFor(_recordedAction), "Unit is stun");
@@ -156,6 +168,9 @@ public class EntityAIPlugin : EntityPlugin
 		bool isPrewarmed = false;
 		if (m_usesTeamTactics && _recordedAction.entityState == Entity.EntityState.Patroling
 			&& TryReplaceActionWithSpecial(_recordedAction, ref resultInfo, out isPrewarmed))
+			return resultInfo;
+
+		if (_recordedAction.entityState == Entity.EntityState.Patroling && TryEscortInvoker(_recordedAction, ref resultInfo))
 			return resultInfo;
 
 		bool isExecutingOrders = _recordedAction.entityState == Entity.EntityState.NoAIChange || isFleeing;
@@ -398,6 +413,27 @@ public class EntityAIPlugin : EntityPlugin
 		_resultInfo.ReplaceAction(bestAction, "Uses " + bestAction.Data.name);
 		m_specialUseRound[bestAction.enumID] = round;
 		return true;
+	}
+
+	private bool TryEscortInvoker ( TurnManager.RecordedAction _recordedAction, ref CheckActionResultInfo _resultInfo )
+	{
+		Entity invoker = m_linkedEntity.Invoker;
+		if (invoker == null || invoker.Equipment.IsDead || m_linkedEntity.IsAdjacentTo(invoker) || m_linkedEntity.Status.Contains(EntityStatusEnumID.Rooted)
+			|| _recordedAction.action.Data.codeType == EntityActionData.ActionCodeType.Escort)
+			return false;
+
+		foreach (EntityActionEnumID actionID in m_linkedEntity.KnownedActions)
+		{
+			if (GameAssets.current.game.entityActionsData[actionID].codeType != EntityActionData.ActionCodeType.Escort
+				|| TurnManager.Instance.GetAction(actionID, m_linkedEntity.ID, m_linkedEntity.ComponentLinkedToAction[actionID][0], TurnManager.currentTick) is not EscortAction escort)
+				continue;
+
+			escort.escortedID = invoker.ID;
+			_resultInfo.ReplaceAction(escort, "Escorts " + invoker.Data.name);
+			return true;
+		}
+
+		return false;
 	}
 
 	private bool TryReplaceActionWithAttack ( TurnManager.RecordedAction _recordedAction, List<Entity> _enemies, EntityActionEnumID _attackEnumID

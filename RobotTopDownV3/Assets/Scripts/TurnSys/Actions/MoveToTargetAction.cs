@@ -207,7 +207,7 @@ public class MoveToTargetAction : AMovementAction
 		return System.Array.IndexOf(targetTileIDs, otherTileID) >= 0 && System.Array.IndexOf(_otherAction.targetTileIDs, myTileID) >= 0;
 	}
 
-	private void RefreshDestinatedTile ()
+	protected void RefreshDestinatedTile ()
 	{
 		if (finalTargetTileID == -1)
 			return;

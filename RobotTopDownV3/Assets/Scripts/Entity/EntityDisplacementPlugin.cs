@@ -107,20 +107,25 @@ public class EntityDisplacementPlugin : EntityPlugin
 		tile.SetEntity(m_linkedEntity, _isThisTurn: false);
 	}
 
-	public void SetSpawn ( EntityAnchor.Spawn _spawn )
+	public void SetSpawn ( EntityAnchor.Spawn _spawn, bool _isMaterialized = true )
 	{
 		Tile spawn = _spawn.coordinates.GetTile();
 		transform.position = spawn.transform.position - m_bottomPosition.localPosition;
 		m_traveledTileTotalCount = 0;
 		Rotate(GetSpawnOrientation(spawn, _spawn.isFirstSide));
-
-		spawn.SetEntity(m_linkedEntity, _isThisTurn: true);
 		m_coordinate.SetCoordinate(spawn.coordinates.X, spawn.coordinates.Z, spawn.coordinates.ID);
 
 		if (m_facingMarker == null)
 			m_facingMarker = Instantiate(GameAssets.current.game.facingMarker);
 		m_facingMarker.Bind(m_linkedEntity);
 
+		if (_isMaterialized)
+			Materialize();
+	}
+
+	public void Materialize ()
+	{
+		m_coordinate.GetTile().SetEntity(m_linkedEntity, _isThisTurn: true);
 		onAnyEntitySpawn?.Invoke(m_linkedEntity);
 	}
 

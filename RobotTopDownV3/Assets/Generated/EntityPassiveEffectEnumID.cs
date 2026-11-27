@@ -29,6 +29,13 @@ public enum EntityPassiveEffectEnumID
 	DoubleDamage,
 	QuickDraw,
 	ApplyDoomStatus,
+	Horde,
+	DeathFireExplosion,
+	ActivateEnergyShield,
+	ApplyMarkedLongStatus,
+	ApplyIgniteStatus,
+	ApplyThornsStatus,
+	ApplyGuardedStatus,
 	//#END#ENTITYPASSIVEEFFECTENUMID#//
 
 }

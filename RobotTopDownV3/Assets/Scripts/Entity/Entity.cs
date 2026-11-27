@@ -72,6 +72,7 @@ public class Entity : MonoBehaviour
 	private const float c_feetHeight = .03f;
 	private Dictionary<AEntityStatus, int> m_appliedDurationToActiveStatuses = new();
 	private readonly Dictionary<AEntityStatus, float> m_statusDamageFactors = new();
+	private readonly Dictionary<EntityStatusEnumID, int> m_statusSourceIDs = new();
 	private List<EntityEquipmentData.StatBonusBuff> m_statBuffs = new();
 	private readonly List<EntityEquipmentPlugin.TakeDamageCallback> m_pendingEchoes = new();
 	private Dictionary<EntityEquipmentData.SecondaryStat.StatType, float> m_activeStatBonusBuffs = new();
@@ -118,12 +119,12 @@ public class Entity : MonoBehaviour
 		TurnManager.onNewRoundStart -= OnRoundStart;
 	}
 
-	public void Init ( EntitySavedData _data, EntityAnchor.Spawn _spawn, int _id, int _playerID )
+	public void Init ( EntitySavedData _data, EntityAnchor.Spawn _spawn, int _id, int _playerID, bool _isMaterialized = true )
 	{
 		ID = _id;
 		m_ownerID = _playerID;
 		m_data = _data;
-		Displacement.SetSpawn(_spawn);
+		Displacement.SetSpawn(_spawn, _isMaterialized);
 
 		m_equipment.Init(_data);
 		m_ui.Init(_data);
@@ -267,8 +268,8 @@ public class Entity : MonoBehaviour
 		foreach (EntityStatusEnumID statusID in m_status.ToArray())
 		{
 			AEntityStatus status = GameAssets.current.game.entityStatus[statusID];
-			if (m_remainingDurationToActiveStatuses.ContainsKey(status)
-				&& m_remainingDurationToActiveStatuses[status] <= 0)
+			if ((m_remainingDurationToActiveStatuses.ContainsKey(status) && m_remainingDurationToActiveStatuses[status] <= 0)
+				|| status.IsBroken(this))
 			{
 				RemoveStatus(statusID);
 			}
@@ -345,6 +346,90 @@ public class Entity : MonoBehaviour
 		return m_ownerID == _playerOwnerId;
 	}
 
+	public bool IsAdjacentTo ( Entity _other )
+	{
+		return _other != null && _other != this && m_displacement.Coordinates.DistanceTo(_other.Displacement.Coordinates) == 1;
+	}
+
+	private int m_invokerID = -1;
+	private string m_invokerComponentID;
+	private bool m_isPendingInvocation;
+	private readonly List<int> m_invocationIDs = new();
+	public bool IsInvocation => m_invokerID >= 0;
+	public bool IsPendingInvocation => m_isPendingInvocation;
+	public Entity Invoker => m_invokerID >= 0 ? GameManager.Instance.GetEntityFromID(m_invokerID) : null;
+
+	public void BecomeInvocationOf ( Entity _invoker, string _componentID, bool _isPending )
+	{
+		m_invokerID = _invoker.ID;
+		m_invokerComponentID = _componentID;
+		m_defaultState = _invoker.IsBotControlled ? EntityState.Patroling : EntityState.NoAIChange;
+		if (_isPending)
+			SetPendingLook(true);
+		_invoker.RegisterInvocation(this);
+	}
+
+	public void Materialize ()
+	{
+		SetPendingLook(false);
+		m_displacement.Materialize();
+	}
+
+	private void SetPendingLook ( bool _isPending )
+	{
+		m_isPendingInvocation = _isPending;
+		m_skin.SetForcedLook(_isPending ? GhostEntity.DefaultHologram : null);
+		m_ui.gameObject.SetActive(!_isPending);
+	}
+
+	private void RegisterInvocation ( Entity _invocation )
+	{
+		if (m_invocationIDs.Count == 0)
+			m_equipment.onDeath += OnInvokerDeath;
+		m_invocationIDs.Add(_invocation.ID);
+	}
+
+	public int CountLivingInvocationsFrom ( string _componentID )
+	{
+		int count = 0;
+		foreach (int invocationID in m_invocationIDs)
+		{
+			Entity invocation = GameManager.Instance.GetEntityFromID(invocationID);
+			if (invocation != null && !invocation.Equipment.IsDead && invocation.m_invokerComponentID == _componentID)
+				count++;
+		}
+
+		return count;
+	}
+
+	private void OnInvokerDeath ( int _invokerID )
+	{
+		foreach (int invocationID in m_invocationIDs.ToArray())
+		{
+			Entity invocation = GameManager.Instance.GetEntityFromID(invocationID);
+			if (invocation == null || invocation.Equipment.IsDead)
+				continue;
+
+			if (invocation.IsPendingInvocation)
+				GameManager.Instance.PlayersEntityAnchor[invocation.OwnerID].DiscardPendingInvocation(invocation);
+			else
+				invocation.Equipment.InstantDeath();
+		}
+	}
+
+	private int m_escortedID = -1;
+	public Entity Escorted => m_escortedID >= 0 ? GameManager.Instance.GetEntityFromID(m_escortedID) : null;
+
+	public void Escort ( Entity _target )
+	{
+		m_escortedID = _target == null ? -1 : _target.ID;
+	}
+
+	public bool IsEscorting ( Entity _target )
+	{
+		return _target != null && m_escortedID == _target.ID && !m_equipment.IsDead && IsAdjacentTo(_target);
+	}
+
 	public void Select ()
 	{
 		onSelect?.Invoke();
@@ -398,6 +483,8 @@ public class Entity : MonoBehaviour
 		m_appliedDurationToActiveStatuses[status] = duration;
 		if (_source != null || !m_statusDamageFactors.ContainsKey(status))
 			m_statusDamageFactors[status] = 1f + (_source == null ? 0f : _source.GetStatBonus(EntityEquipmentData.SecondaryStat.StatType.StatusDamageBonus));
+		if (_source != null)
+			m_statusSourceIDs[_statusID] = _source.ID;
 
 		if (wasAlreadyActive)
 		{
@@ -417,6 +504,11 @@ public class Entity : MonoBehaviour
 		float raise = _source == null ? 0f : _source.GetStatBonus(EntityEquipmentData.SecondaryStat.StatType.StatusAppliedDurationRaise);
 		float reduction = _source == this ? 0f : GetStatBonus(EntityEquipmentData.SecondaryStat.StatType.StatusDurationReduction);
 		return Mathf.Max(0, Mathf.FloorToInt(_baseDuration * (1f + raise - reduction) + .5f));
+	}
+
+	public Entity GetStatusSource ( EntityStatusEnumID _statusID )
+	{
+		return m_statusSourceIDs.TryGetValue(_statusID, out int sourceID) ? GameManager.Instance.GetEntityFromID(sourceID) : null;
 	}
 
 	public float GetStatusDamageFactor ( EntityStatusEnumID _statusID )
@@ -545,6 +637,7 @@ public class Entity : MonoBehaviour
 		m_remainingDurationToActiveStatuses.Remove(GameAssets.current.game.entityStatus[_statusID]);
 		m_appliedDurationToActiveStatuses.Remove(GameAssets.current.game.entityStatus[_statusID]);
 		m_statusDamageFactors.Remove(GameAssets.current.game.entityStatus[_statusID]);
+		m_statusSourceIDs.Remove(_statusID);
 		HideStatusVisual(_statusID);
 
 		onStatusRemoved?.Invoke(_statusID);

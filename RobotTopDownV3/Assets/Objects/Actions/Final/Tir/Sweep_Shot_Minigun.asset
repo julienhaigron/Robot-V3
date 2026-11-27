@@ -55,11 +55,16 @@ MonoBehaviour:
   type: 0
   subType: 3
   codeType: 1
+  abilityChargeMax: 5
+  abilityRatio: 3
+  abilityEffect: 0
+  abilityStatus: 0
   targetType: 1
   trajectoryType: 0
   minDistance: 4
   maxDistance: 4
   maxTargetAmount: 1
+  targetsAllies: 0
   aoeType: 3
   doesAffectTile: 0
   aoECenterType: 0
@@ -89,5 +94,6 @@ MonoBehaviour:
   invocatedEntity: {fileID: 0}
   invocatedItem: {fileID: 0}
   invocationCountLimit: 1
+  deployDuration: 3
   movementSpeed: 1
   movementAnimation: 

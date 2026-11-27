@@ -3974,3 +3974,35 @@ MonoBehaviour:
     values:
     - After a Commando promotion, their machines flood the arena.
     - "Suite \xE0 une promo chez Commando, leurs machines envahissent l'ar\xE8ne."
+  - key: log/guard_intercept
+    values:
+    - "{0} intercepts the damage aimed at {1}"
+    - "{0} intercepte les d\xE9g\xE2ts destin\xE9s \xE0 {1}"
+  - key: log/thorns_reflect
+    values:
+    - "Thorns: {0} reflects {1} damage to {2}"
+    - "\xC9pine : {0} renvoie {1} d\xE9g\xE2ts \xE0 {2}"
+  - key: status/thorns
+    values:
+    - "Thorns"
+    - "\xC9pine"
+  - key: status/thorns_desc
+    values:
+    - "Reflects 30% of the hull damage received from unit attacks back to the attacker."
+    - "Renvoie \xE0 l'attaquant 30 % des d\xE9g\xE2ts de coque re\xE7us des attaques d'unit\xE9s."
+  - key: status/guarded
+    values:
+    - "Guarded"
+    - "Garde"
+  - key: status/guarded_desc
+    values:
+    - "An adjacent protector takes all the damage aimed at this unit. Lost when they are no longer adjacent."
+    - "Un protecteur adjacent encaisse tous les d\xE9g\xE2ts destin\xE9s \xE0 cette unit\xE9. Perdu d\xE8s qu'ils ne sont plus adjacents."
+  - key: log/drone_recalled
+    values:
+    - "The drone of {0} returns"
+    - "Le drone de {0} revient"
+  - key: log/invocation_failed
+    values:
+    - "The invocation of {0} fails: its tile is taken"
+    - "L'invocation de {0} \xE9choue : sa case est occup\xE9e"

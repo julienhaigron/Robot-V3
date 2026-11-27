@@ -20,4 +20,6 @@ public enum EntityStatusEnumID
     Intangible = 17,
     Anchored = 18,
     Illusion = 19,
+    Thorns = 20,
+    Guarded = 21,
 }

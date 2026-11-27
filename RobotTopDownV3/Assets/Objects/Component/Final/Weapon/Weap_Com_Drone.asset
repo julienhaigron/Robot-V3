@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 377ca2099ac4b6147bf777f681302f03, type: 3}
+  m_Name: Weap_Com_Drone
+  m_EditorClassIdentifier: RTD::WeaponEquipmentData
+  spreadsheetId: https://docs.google.com/spreadsheets/d/1AeQujaBf6YdyVQRD2gBNWazoosesi46DpAoY5b6hrt8/export?format=csv&gid=1562946535
+  faction: 4
+  icon: {fileID: -183017367, guid: b61920d2917644949a125f8a6af0e45c, type: 3}
+  displayName: Drone
+  energyCost: 15
+  knownedActions: 4000000041000000
+  passiveEffects: []
+  creditCost: 35
+  recyclingDurationAmount: 1
+  reparingDurationAmount: 1
+  canDropRandomly: 0
+  requiresBlueprint: 0
+  prefab: {fileID: 1434319415051491085, guid: 1b8a617767b361b4fb082ad3e4fde05a, type: 3}
+  attackAnimationSuccessId: 
+  attackAnimationFailureId: 
+  isTwoHanded: 0
+  singleAttackAnimationDuration: 0.3
+  guardAnimation: Throw
+  guardTorsoYaw: 35
+  aimAnimation: Cannon

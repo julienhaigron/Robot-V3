@@ -13,10 +13,14 @@ public class Shield : ToolEquipment
 	[SerializeField] private float m_turnVFXDistance = .72f;
 
 	private int m_currentHp;
+	private int m_remainingActiveTicks;
 	private ShieldMarker m_marker;
 
 	public int CurrentHp => m_currentHp;
 	public int MaxHp => ShieldData != null ? ShieldData.hp : 0;
+	public int CoveredSides => ShieldData != null ? Mathf.Clamp(ShieldData.coveredSides, 1, 3) : 1;
+	public bool IsActivable => ShieldData != null && ShieldData.activeDuration > 0;
+	public bool IsUp => m_currentHp > 0;
 	public bool IsShownToLocalPlayer => m_user != null && m_user.IsShownToLocalPlayer;
 
 	public override void Init ( Entity _user, ToolEquipmentData _data, string _id )
@@ -24,7 +28,11 @@ public class Shield : ToolEquipment
 		base.Init(_user, _data, _id);
 
 		Orientation = _user.Displacement.CurrentOrientation;
-		m_currentHp = MaxHp;
+		m_currentHp = IsActivable ? 0 : MaxHp;
+		m_remainingActiveTicks = 0;
+		TurnManager.onNewRoundStart -= OnTick;
+		if (IsActivable)
+			TurnManager.onNewRoundStart += OnTick;
 
 		if (m_marker == null && m_markerPrefab != null)
 			m_marker = Instantiate(m_markerPrefab);
@@ -34,7 +42,36 @@ public class Shield : ToolEquipment
 
 	public bool Covers ( int _incomingSide )
 	{
-		return m_currentHp > 0 && _incomingSide == Orientation;
+		return IsUp && IsSideCovered(_incomingSide);
+	}
+
+	public bool IsSideCovered ( int _side )
+	{
+		if (_side < 0)
+			return false;
+
+		int offset = ((_side - Orientation) % 6 + 6) % 6;
+		return offset == 0 || (offset == 1 && CoveredSides >= 2) || (offset == 5 && CoveredSides >= 3);
+	}
+
+	public void Activate ()
+	{
+		if (!IsActivable || m_user == null || m_user.Equipment.IsDead)
+			return;
+
+		Orientation = m_user.Displacement.CurrentOrientation;
+		m_currentHp = MaxHp;
+		m_remainingActiveTicks = ShieldData.activeDuration;
+		if (m_marker != null)
+			m_marker.Raise();
+	}
+
+	private void OnTick ()
+	{
+		if (m_remainingActiveTicks > 0)
+			m_remainingActiveTicks--;
+		else
+			m_currentHp = 0;
 	}
 
 	public int Absorb ( int _damage )
@@ -80,6 +117,7 @@ public class Shield : ToolEquipment
 
 	private void OnDestroy ()
 	{
+		TurnManager.onNewRoundStart -= OnTick;
 		if (m_marker != null)
 			Destroy(m_marker.gameObject);
 	}

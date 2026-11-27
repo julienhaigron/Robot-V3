@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e340e03f272314442a53b80f2350e240, type: 3}
+  m_Name: Frame_Drone_Shield
+  m_EditorClassIdentifier: RTD::FrameEquipmentData
+  spreadsheetId: https://docs.google.com/spreadsheets/d/1AeQujaBf6YdyVQRD2gBNWazoosesi46DpAoY5b6hrt8/export?format=csv&gid=0
+  faction: 0
+  icon: {fileID: -1360359492, guid: b61920d2917644949a125f8a6af0e45c, type: 3}
+  displayName: Shield drone
+  energyCost: 0
+  knownedActions: 1200000047000000
+  passiveEffects: []
+  creditCost: 0
+  recyclingDurationAmount: 1
+  reparingDurationAmount: 1
+  canDropRandomly: 0
+  requiresBlueprint: 0
+  prefab: {fileID: 975633150165840247, guid: a7b197b347784094e82fec9383384256, type: 3}
+  maxHealth: 5
+  armouringSlotAvailable: 1
+  occultorSlotAvailable: 0
+  statBonuses: []
+  isImmortal: 0

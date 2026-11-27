@@ -16,6 +16,7 @@ MonoBehaviour:
   durationType: 0
   consumedBy: 0
   doesStackCharges: 0
+  isBoundAtPlanning: 0
   doesNeedRoll: 0
   description: The unit moves through walls and objects, but cannot stop inside one.
   icon: {fileID: 0}
