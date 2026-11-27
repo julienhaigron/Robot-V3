@@ -979,6 +979,38 @@ public enum LocalizationKey
     status_guarded_desc,
     log_drone_recalled,
     log_invocation_failed,
+    action_activate_energy_shield,
+    action_drone_shot,
+    action_deploy_drone,
+    action_invoke_marking_drone,
+    action_invoke_shield_drone,
+    action_invoke_incendiary_drone,
+    action_invoke_offensive_drone,
+    action_drone_mark,
+    action_escort,
+    action_drone_ignite,
+    action_drone_offensive_shot,
+    action_apply_thorns,
+    action_protect,
+    component_tool_com_energy_shield,
+    component_weap_com_drone,
+    component_tool_psy_marking_drone,
+    component_tool_psy_shield_drone,
+    component_tool_com_incendiary_drone,
+    component_tool_pal_offensive_drone,
+    component_tool_pal_thorn_rib,
+    component_tool_pal_protector,
+    component_frame_drone_marking,
+    component_frame_drone_shield,
+    component_frame_drone_incendiary,
+    component_frame_drone_offensive,
+    component_tool_psy_dronemarker,
+    component_tool_psy_droneigniter,
+    component_tool_psy_droneenergyshield,
+    component_weap_psy_dronegun,
+    effect_horde,
+    effect_deathfireexplosion,
+    effect_activateenergyshield,
 }
 
 public static class LocalizationKeyExtensions
@@ -1965,6 +1997,38 @@ public static class LocalizationKeyExtensions
             case LocalizationKey.status_guarded_desc: return "status/guarded_desc";
             case LocalizationKey.log_drone_recalled: return "log/drone_recalled";
             case LocalizationKey.log_invocation_failed: return "log/invocation_failed";
+            case LocalizationKey.action_activate_energy_shield: return "action/activate_energy_shield";
+            case LocalizationKey.action_drone_shot: return "action/drone_shot";
+            case LocalizationKey.action_deploy_drone: return "action/deploy_drone";
+            case LocalizationKey.action_invoke_marking_drone: return "action/invoke_marking_drone";
+            case LocalizationKey.action_invoke_shield_drone: return "action/invoke_shield_drone";
+            case LocalizationKey.action_invoke_incendiary_drone: return "action/invoke_incendiary_drone";
+            case LocalizationKey.action_invoke_offensive_drone: return "action/invoke_offensive_drone";
+            case LocalizationKey.action_drone_mark: return "action/drone_mark";
+            case LocalizationKey.action_escort: return "action/escort";
+            case LocalizationKey.action_drone_ignite: return "action/drone_ignite";
+            case LocalizationKey.action_drone_offensive_shot: return "action/drone_offensive_shot";
+            case LocalizationKey.action_apply_thorns: return "action/apply_thorns";
+            case LocalizationKey.action_protect: return "action/protect";
+            case LocalizationKey.component_tool_com_energy_shield: return "component/tool_com_energy_shield";
+            case LocalizationKey.component_weap_com_drone: return "component/weap_com_drone";
+            case LocalizationKey.component_tool_psy_marking_drone: return "component/tool_psy_marking_drone";
+            case LocalizationKey.component_tool_psy_shield_drone: return "component/tool_psy_shield_drone";
+            case LocalizationKey.component_tool_com_incendiary_drone: return "component/tool_com_incendiary_drone";
+            case LocalizationKey.component_tool_pal_offensive_drone: return "component/tool_pal_offensive_drone";
+            case LocalizationKey.component_tool_pal_thorn_rib: return "component/tool_pal_thorn_rib";
+            case LocalizationKey.component_tool_pal_protector: return "component/tool_pal_protector";
+            case LocalizationKey.component_frame_drone_marking: return "component/frame_drone_marking";
+            case LocalizationKey.component_frame_drone_shield: return "component/frame_drone_shield";
+            case LocalizationKey.component_frame_drone_incendiary: return "component/frame_drone_incendiary";
+            case LocalizationKey.component_frame_drone_offensive: return "component/frame_drone_offensive";
+            case LocalizationKey.component_tool_psy_dronemarker: return "component/tool_psy_dronemarker";
+            case LocalizationKey.component_tool_psy_droneigniter: return "component/tool_psy_droneigniter";
+            case LocalizationKey.component_tool_psy_droneenergyshield: return "component/tool_psy_droneenergyshield";
+            case LocalizationKey.component_weap_psy_dronegun: return "component/weap_psy_dronegun";
+            case LocalizationKey.effect_horde: return "effect/horde";
+            case LocalizationKey.effect_deathfireexplosion: return "effect/deathfireexplosion";
+            case LocalizationKey.effect_activateenergyshield: return "effect/activateenergyshield";
             default: return string.Empty;
         }
     }

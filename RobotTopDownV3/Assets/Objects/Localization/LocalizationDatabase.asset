@@ -4006,3 +4006,131 @@ MonoBehaviour:
     values:
     - "The invocation of {0} fails: its tile is taken"
     - "L'invocation de {0} \xE9choue : sa case est occup\xE9e"
+  - key: action/activate_energy_shield
+    values:
+    - "Energy shield"
+    - "Bouclier \xE9nerg\xE9tique"
+  - key: action/drone_shot
+    values:
+    - "Drone shot"
+    - "Tir drone"
+  - key: action/deploy_drone
+    values:
+    - "Deploy drone"
+    - "Poser drone"
+  - key: action/invoke_marking_drone
+    values:
+    - "Marking drone"
+    - "Drone de marquage"
+  - key: action/invoke_shield_drone
+    values:
+    - "Shield drone"
+    - "Drone bouclier"
+  - key: action/invoke_incendiary_drone
+    values:
+    - "Incendiary drone"
+    - "Drone incendiaire"
+  - key: action/invoke_offensive_drone
+    values:
+    - "Offensive drone"
+    - "Drone offensif"
+  - key: action/drone_mark
+    values:
+    - "Mark"
+    - "Marquage"
+  - key: action/escort
+    values:
+    - "Escort"
+    - "Escorte"
+  - key: action/drone_ignite
+    values:
+    - "Ignite"
+    - "Embrasement"
+  - key: action/drone_offensive_shot
+    values:
+    - "Offensive shot"
+    - "Tir offensif"
+  - key: action/apply_thorns
+    values:
+    - "Thorns"
+    - "\xC9pine"
+  - key: action/protect
+    values:
+    - "Protect"
+    - "Protection"
+  - key: component/tool_com_energy_shield
+    values:
+    - "Energy shield"
+    - "Bouclier \xE9nerg\xE9tique"
+  - key: component/weap_com_drone
+    values:
+    - "Drone"
+    - "Drone"
+  - key: component/tool_psy_marking_drone
+    values:
+    - "Marking drone"
+    - "Drone de marquage"
+  - key: component/tool_psy_shield_drone
+    values:
+    - "Shield drone"
+    - "Drone bouclier"
+  - key: component/tool_com_incendiary_drone
+    values:
+    - "Incendiary drone"
+    - "Drone incendiaire"
+  - key: component/tool_pal_offensive_drone
+    values:
+    - "Offensive drone"
+    - "Drone offensif"
+  - key: component/tool_pal_thorn_rib
+    values:
+    - "Thorn rib"
+    - "C\xF4te d'\xE9pine"
+  - key: component/tool_pal_protector
+    values:
+    - "Protector"
+    - "Protecteur"
+  - key: component/frame_drone_marking
+    values:
+    - "Marking drone"
+    - "Drone de marquage"
+  - key: component/frame_drone_shield
+    values:
+    - "Shield drone"
+    - "Drone bouclier"
+  - key: component/frame_drone_incendiary
+    values:
+    - "Incendiary drone"
+    - "Drone incendiaire"
+  - key: component/frame_drone_offensive
+    values:
+    - "Offensive drone"
+    - "Drone offensif"
+  - key: component/tool_psy_dronemarker
+    values:
+    - "Marker"
+    - "Marqueur"
+  - key: component/tool_psy_droneigniter
+    values:
+    - "Igniter"
+    - "Embraseur"
+  - key: component/tool_psy_droneenergyshield
+    values:
+    - "Energy shield"
+    - "Bouclier \xE9nerg\xE9tique"
+  - key: component/weap_psy_dronegun
+    values:
+    - "Drone gun"
+    - "Canon de drone"
+  - key: effect/horde
+    values:
+    - "Horde"
+    - "Horde"
+  - key: effect/deathfireexplosion
+    values:
+    - "Death fire explosion"
+    - "Explosion incendiaire"
+  - key: effect/activateenergyshield
+    values:
+    - "Energy shield"
+    - "Bouclier \xE9nerg\xE9tique"
