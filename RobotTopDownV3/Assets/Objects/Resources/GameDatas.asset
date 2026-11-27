@@ -191,8 +191,8 @@ MonoBehaviour:
     dayData:
       itemsInShop:
       - component:
-          ID: Tool_Psy_Thorn_Rib511
-          dataID: Tool_Psy_Thorn_Rib
+          ID: Tool_Pal_Thorn_Rib511
+          dataID: Tool_Pal_Thorn_Rib
           isDamaged: 0
           acquisitionDateTicks: 0
         shopFaction: 2
@@ -207,8 +207,8 @@ MonoBehaviour:
         isFrozen: 0
         frozenTodayInShop: 0
       - component:
-          ID: Tool_Psy_Thorn_Rib513
-          dataID: Tool_Psy_Thorn_Rib
+          ID: Tool_Pal_Thorn_Rib513
+          dataID: Tool_Pal_Thorn_Rib
           isDamaged: 0
           acquisitionDateTicks: 0
         shopFaction: 2
@@ -239,8 +239,8 @@ MonoBehaviour:
         isFrozen: 0
         frozenTodayInShop: 0
       - component:
-          ID: Tool_Psy_Thorn_Rib517
-          dataID: Tool_Psy_Thorn_Rib
+          ID: Tool_Pal_Thorn_Rib517
+          dataID: Tool_Pal_Thorn_Rib
           isDamaged: 0
           acquisitionDateTicks: 0
         shopFaction: 2
@@ -558,7 +558,7 @@ MonoBehaviour:
           neuronalMembrane: NeurInt_Psy_Radar
           arms:
           - Weap_Psy_Glaive
-          - Tool_Psy_Protector
+          - Tool_Pal_Protector
           - Weap_Psy_Railgun
           - Weap_Psy_Spear
           auxiliary:
@@ -579,10 +579,10 @@ MonoBehaviour:
           brain: AIM_Psy_Chi
           neuronalMembrane: NeurInt_Psy_Radar
           arms:
-          - Tool_Psy_Thorn_Rib
+          - Tool_Pal_Thorn_Rib
           - Weap_Psy_Railgun
           - Tool_Psy_Repulsor
-          - Tool_Psy_Protector
+          - Tool_Pal_Protector
           auxiliary:
           - Arm_Psy_Plasma
           - Arm_Psy_Rad
@@ -716,7 +716,7 @@ MonoBehaviour:
           - Weap_Psy_Railgun
           - Weap_Psy_Sniper
           - Weap_Psy_Spear
-          - Tool_Psy_Protector
+          - Tool_Pal_Protector
           auxiliary:
           - Occ_Psy_Radar
           - Arm_Psy_Plasma
@@ -764,7 +764,7 @@ MonoBehaviour:
           brain: AIM_Psy_Chi
           neuronalMembrane: NeurInt_Psy_Optic
           arms:
-          - Tool_Psy_Protector
+          - Tool_Pal_Protector
           - Weap_Psy_Sniper
           auxiliary:
           - Arm_Psy_Rad
@@ -835,7 +835,7 @@ MonoBehaviour:
           neuronalMembrane: NeurInt_Psy_Radar
           arms:
           - Weap_Psy_Railgun
-          - Tool_Psy_Protector
+          - Tool_Pal_Protector
           - Tool_Psy_Repulsor
           - Weap_Psy_Glaive
           auxiliary:

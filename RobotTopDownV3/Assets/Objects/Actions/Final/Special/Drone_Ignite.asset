@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Drone_Ignite
   m_EditorClassIdentifier: RTD::EntityActionData
   spreadsheetId: https://docs.google.com/spreadsheets/d/1quAn64T5zuE6npFmDzjOhNFFvw4UJaXSoWxX-uvy3gI/export?format=csv&gid=1776854952
-  displayName: Ignite
+  displayName: Embrasement
   enumID: 72
   icon: {fileID: 21300000, guid: bc8f395fbbcd7624c9a136ad3035aa14, type: 3}
   tileOutlineColor: {r: 0, g: 1, b: 0, a: 1}
@@ -84,7 +84,7 @@ MonoBehaviour:
     targetType: 1
     aoeType: 0
     centerType: 0
-    effectRange: {x: 0, y: 0}
+    effectRange: {x: -1, y: -1}
   invocatedEntity: {fileID: 0}
   invocatedItem: {fileID: 0}
   invocationCountLimit: 1

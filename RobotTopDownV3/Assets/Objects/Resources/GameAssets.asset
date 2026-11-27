@@ -597,18 +597,18 @@ MonoBehaviour:
     - Frame_Drone_Marking
     - Frame_Drone_Offensive
     - Frame_Drone_Shield
-    - Tool_Drone_Energy_Shield
-    - Tool_Drone_Igniter
-    - Tool_Drone_Marker
-    - Weap_Drone_Gun
     - Weap_Com_Drone
     - Tool_Psy_Marking_Drone
     - Tool_Psy_Shield_Drone
     - Tool_Pal_Offensive_Drone
     - Tool_Com_Energy_Shield
-    - Tool_Psy_Protector
     - Tool_Com_Incendiary_Drone
-    - Tool_Psy_Thorn_Rib
+    - Weap_Psy_DroneGun
+    - Tool_Psy_DroneMarker
+    - Tool_Psy_DroneIgniter
+    - Tool_Psy_DroneEnergyShield
+    - Tool_Pal_Thorn_Rib
+    - Tool_Pal_Protector
     values:
     - {fileID: 11400000, guid: 67ac34424bf991b49b53d71803c6b56a, type: 2}
     - {fileID: 11400000, guid: 0c93d7333747ae447851bc8e94221059, type: 2}
@@ -736,18 +736,18 @@ MonoBehaviour:
     - {fileID: 11400000, guid: 9efaa1fd7b9f2d94d8ae39e24add48ec, type: 2}
     - {fileID: 11400000, guid: 191b1d6b689dc444a8fe295394ef0e87, type: 2}
     - {fileID: 11400000, guid: 1798f4ff03b6fa04e860c74490f2292b, type: 2}
-    - {fileID: 11400000, guid: f20118c202035454cb4cc936961cfb2d, type: 2}
-    - {fileID: 11400000, guid: 56a514e5ec7488143a6828b1678efbe6, type: 2}
-    - {fileID: 11400000, guid: 6c7477622917edd45b9fb906c45e80bd, type: 2}
-    - {fileID: 11400000, guid: 4fc869e44b95ebd4fa3d7b34ae7eb182, type: 2}
     - {fileID: 11400000, guid: b3983b0ac9c96004f813df26abe15dca, type: 2}
     - {fileID: 11400000, guid: 0dd20c60494669046b59e52ddbb72f28, type: 2}
     - {fileID: 11400000, guid: fcf87ae92468e3543a8a98e77b27bce4, type: 2}
     - {fileID: 11400000, guid: f90ad6052a631454f9d3adc97baf67f9, type: 2}
     - {fileID: 11400000, guid: a91ee58df64e7254d8c22f0435fcc492, type: 2}
-    - {fileID: 11400000, guid: d5bff7fbc6170b043b1ea23957e83185, type: 2}
     - {fileID: 11400000, guid: 1e7b943ca73b5b545bde0b2f28560b74, type: 2}
+    - {fileID: 11400000, guid: 4fc869e44b95ebd4fa3d7b34ae7eb182, type: 2}
+    - {fileID: 11400000, guid: 6c7477622917edd45b9fb906c45e80bd, type: 2}
+    - {fileID: 11400000, guid: 56a514e5ec7488143a6828b1678efbe6, type: 2}
+    - {fileID: 11400000, guid: f20118c202035454cb4cc936961cfb2d, type: 2}
     - {fileID: 11400000, guid: b40ab4e9dc330c742b71f44c1f05b79c, type: 2}
+    - {fileID: 11400000, guid: d5bff7fbc6170b043b1ea23957e83185, type: 2}
   upgrades:
   - {fileID: 11400000, guid: 0d4448f120cab5c42814f6681918124f, type: 2}
   - {fileID: 11400000, guid: 8463f427f2e71a5448135f40294b8ede, type: 2}

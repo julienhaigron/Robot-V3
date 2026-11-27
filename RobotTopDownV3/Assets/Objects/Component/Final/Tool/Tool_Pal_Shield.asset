@@ -19,7 +19,6 @@ MonoBehaviour:
   energyCost: 15
   knownedActions: 1e000000
   passiveEffects: []
-  statusHitProbability: 0.5
   creditCost: 50
   recyclingDurationAmount: 1
   reparingDurationAmount: 1
@@ -31,3 +30,5 @@ MonoBehaviour:
   attackAnimationFailureId: 
   isTwoHanded: 0
   hp: 10
+  coveredSides: 1
+  activeDuration: 0

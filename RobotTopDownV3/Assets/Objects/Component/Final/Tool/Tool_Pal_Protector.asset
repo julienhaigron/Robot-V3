@@ -9,26 +9,23 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a7b956a167edb8544850603dd1e925bf, type: 3}
-  m_Name: Tool_Drone_Energy_Shield
+  m_Script: {fileID: 11500000, guid: 3be6976ce71a11d45bc16b9a311a29a7, type: 3}
+  m_Name: Tool_Pal_Protector
   m_EditorClassIdentifier: RTD::ToolEquipmentData
   spreadsheetId: https://docs.google.com/spreadsheets/d/1AeQujaBf6YdyVQRD2gBNWazoosesi46DpAoY5b6hrt8/export?format=csv&gid=1532817546
-  faction: 0
+  faction: 3
   icon: {fileID: -1629911396, guid: b61920d2917644949a125f8a6af0e45c, type: 3}
-  displayName: Energy shield
-  energyCost: 0
-  knownedActions: 3f000000
+  displayName: Protector
+  energyCost: 15
+  knownedActions: 4b000000
   passiveEffects: []
   creditCost: 50
   recyclingDurationAmount: 1
   reparingDurationAmount: 1
-  canDropRandomly: 0
-  requiresBlueprint: 0
-  prefab: {fileID: 7320000000000000001, guid: 604db8eef758dc25895436c6fbdb1ca2, type: 3}
+  canDropRandomly: 1
+  requiresBlueprint: 1
+  prefab: {fileID: 871335888112447800, guid: d866045fa9ff03f94e404e5a53f8bada, type: 3}
   range: 0
   attackAnimationSuccessId: 
   attackAnimationFailureId: 
   isTwoHanded: 0
-  hp: 7
-  coveredSides: 3
-  activeDuration: 3

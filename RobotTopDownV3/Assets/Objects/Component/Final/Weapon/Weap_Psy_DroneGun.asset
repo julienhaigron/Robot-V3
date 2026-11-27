@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 377ca2099ac4b6147bf777f681302f03, type: 3}
-  m_Name: Weap_Drone_Gun
+  m_Name: Weap_Psy_DroneGun
   m_EditorClassIdentifier: RTD::WeaponEquipmentData
   spreadsheetId: https://docs.google.com/spreadsheets/d/1AeQujaBf6YdyVQRD2gBNWazoosesi46DpAoY5b6hrt8/export?format=csv&gid=1562946535
-  faction: 0
+  faction: 2
   icon: {fileID: -183017367, guid: b61920d2917644949a125f8a6af0e45c, type: 3}
   displayName: Drone gun
   energyCost: 0
@@ -23,7 +23,7 @@ MonoBehaviour:
   recyclingDurationAmount: 1
   reparingDurationAmount: 1
   canDropRandomly: 0
-  requiresBlueprint: 0
+  requiresBlueprint: 1
   prefab: {fileID: 7856189691443182411, guid: 6b7999d0bcf5448429a52e2e4c8e2ede, type: 3}
   attackAnimationSuccessId: 
   attackAnimationFailureId: 

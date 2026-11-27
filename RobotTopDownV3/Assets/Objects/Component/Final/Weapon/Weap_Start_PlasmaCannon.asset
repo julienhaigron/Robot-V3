@@ -19,7 +19,6 @@ MonoBehaviour:
   energyCost: 20
   knownedActions: 2d0000002c0000002e000000
   passiveEffects: []
-  statusHitProbability: 0.5
   creditCost: 35
   recyclingDurationAmount: 1
   reparingDurationAmount: 1

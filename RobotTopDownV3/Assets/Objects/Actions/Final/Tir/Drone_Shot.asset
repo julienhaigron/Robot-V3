@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Drone_Shot
   m_EditorClassIdentifier: RTD::EntityActionData
   spreadsheetId: https://docs.google.com/spreadsheets/d/1quAn64T5zuE6npFmDzjOhNFFvw4UJaXSoWxX-uvy3gI/export?format=csv&gid=1875123267
-  displayName: Drone shot
+  displayName: Tir drone
   enumID: 64
   icon: {fileID: 21300000, guid: aaa74e87497e6ea4ca4b28f89fccd63f, type: 3}
   tileOutlineColor: {r: 0, g: 1, b: 0, a: 1}
